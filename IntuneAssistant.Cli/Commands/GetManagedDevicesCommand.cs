@@ -1,4 +1,5 @@
 using System.CommandLine;
+using IntuneAssistant.Extensions;
 using IntuneAssistant.Interfaces;
 using IntuneAssistant.Models;
 using Spectre.Console;
@@ -10,12 +11,14 @@ public class GetManagedDevicesCommand : Command<FetchManagedDevicesCommandOption
     public GetManagedDevicesCommand() : base("devices", "Fetches devices from Intune")
     {
         AddOption(new Option<bool>("--non-compliant", "Shows all duplicate devices based on device name"));
+        AddOption(new Option<string>("--export-csv", "Exports the list to a csv file"));
     }
 }
 
 public class FetchManagedDevicesCommandOptions : ICommandOptions
 {
     public bool NonCompliant { get; set; } = false;
+    public string ExportCsv { get; set; } = String.Empty;
 }
 
 public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchManagedDevicesCommandOptions>
@@ -31,6 +34,7 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
     {
         
         var nonCompliantProvided = options.NonCompliant;
+        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         // Microsoft Graph
         // Implementation of shared service from infrastructure comes here
         var devices = new List<DeviceModel?>();
@@ -56,19 +60,25 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
                 }
 
             });
+        if (exportCsv)
+        {
+            ExportData.ExportCsv(devices,options.ExportCsv);
+        }
         var table = new Table();
         table.Collapse();
         table.AddColumn("Id");
         table.AddColumn("DeviceName");
         table.AddColumn("Status");
         table.AddColumn("LastSyncDateTime");
-        
+        table.AddColumn("OsVersion");
+
         foreach (var device in devices.Where(device => device is not null))
             table.AddRow(
                 device.Id.ToString(),
                 device.DeviceName,
                 device.Status,
-                device.LastSyncDateTime.ToString()
+                device.LastSyncDateTime.ToString(),
+                device.OsVersion
             );
         AnsiConsole.Write(table);
         return 0;

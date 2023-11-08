@@ -16,7 +16,8 @@ var rootCommand = new RootCommand
     new GetManagedDevicesCommand(),
     new DeviceDuplicateCommand(),
     new LoginToIntuneCommand(),
-    new LogoutFromIntuneCommand()
+    new LogoutFromIntuneCommand(),
+    new CompliancePolicyCommand()
 };
 
 var builder = new CommandLineBuilder(rootCommand)
@@ -30,6 +31,7 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<ILogoutService, LogoutService>();
     services.AddScoped<IDeviceService, DeviceService>();
     services.AddScoped<IDeviceDuplicateService, DeviceDuplicateServices>();
+    services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
 });
 
 AnsiConsole.MarkupLine($"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline blue]{Branding.Builder}[/]");
