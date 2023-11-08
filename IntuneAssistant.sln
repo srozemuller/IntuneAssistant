@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuneAssistant", "IntuneAssistant\IntuneAssistant.csproj", "{754E00B9-3C3D-4C61-BC18-D873BAD30527}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuneAssistant.Cli", "IntuneAssistant.Cli\IntuneAssistant.Cli.csproj", "{2B3D1AFD-CF7A-4044-A3AC-06D7B6B4C76C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{754E00B9-3C3D-4C61-BC18-D873BAD30527}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{754E00B9-3C3D-4C61-BC18-D873BAD30527}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{754E00B9-3C3D-4C61-BC18-D873BAD30527}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{754E00B9-3C3D-4C61-BC18-D873BAD30527}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B3D1AFD-CF7A-4044-A3AC-06D7B6B4C76C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B3D1AFD-CF7A-4044-A3AC-06D7B6B4C76C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B3D1AFD-CF7A-4044-A3AC-06D7B6B4C76C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B3D1AFD-CF7A-4044-A3AC-06D7B6B4C76C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
