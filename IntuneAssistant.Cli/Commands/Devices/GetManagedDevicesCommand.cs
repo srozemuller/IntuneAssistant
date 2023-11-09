@@ -78,7 +78,8 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
         table.AddColumn("Status");
         table.AddColumn("LastSyncDateTime");
 
-        foreach (var device in devices.Where(device => device is not null))
+        foreach (var device in devices.Where(
+                     device => device is not null).GroupBy(d => d?.Id).Select(g => g.First()))
             table.AddRow(
                 device.Id.ToString(),
                 device.DeviceName,
