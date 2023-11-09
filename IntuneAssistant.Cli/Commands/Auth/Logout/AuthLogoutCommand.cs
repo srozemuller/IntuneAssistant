@@ -5,7 +5,7 @@ namespace IntuneAssistant.Cli.Commands.Auth.Logout;
 
 public class AuthLogoutCommand : Command<AuthLogoutCommandOptions, AuthLogoutCommandHandler>
 {
-    public AuthLogoutCommand() : base("logout", "Authenticate with Azure AD")
+    public AuthLogoutCommand() : base(CommandConfiguration.AuthLogoutCommandName, CommandConfiguration.AuthLogoutCommandDescription)
     {
     }
 }

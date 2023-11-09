@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Azure.Identity;
-using IntuneAssistant.Constants;
+using CommandConfiguration;
 using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Graph.Beta;
 using Microsoft.Identity.Client;

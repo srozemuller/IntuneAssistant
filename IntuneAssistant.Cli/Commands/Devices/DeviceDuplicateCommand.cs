@@ -5,14 +5,14 @@ using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Models;
 using Spectre.Console;
 
-namespace IntuneAssistant.Cli.Commands;
+namespace IntuneAssistant.Cli.Commands.Devices;
 
 public class DeviceDuplicateCommand : Command<FetchDeviceDuplicateCommandOptions,FetchDeviceDuplicateCommandHandler>
 {
-    public DeviceDuplicateCommand() : base("duplicates", "Fetches duplicate devices from Intune")
+    public DeviceDuplicateCommand() : base(CommandConfiguration.DevicesDuplicatesCommandName, CommandConfiguration.DevicesDuplicatesCommandDescription)
     {
-        AddOption(new Option<bool>(Constants.RemoveArg, Constants.RemoveArgDescription));
-        AddOption(new Option<string>(Constants.ExportCsvArg, Constants.ExportCsvArgDescription));
+        AddOption(new Option<bool>(CommandConfiguration.RemoveArg, CommandConfiguration.RemoveArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
     }
 }
 public class FetchDeviceDuplicateCommandOptions : ICommandOptions
@@ -29,10 +29,10 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
     {
         _deviceDuplicateService = deviceDuplicateService;
     }
-    
+
     public async Task<int> HandleAsync(FetchDeviceDuplicateCommandOptions options)
     {
-        
+
         var removeProvided = options.Remove;
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var accessToken = await new IdentityHelperService().GetAccessTokenSilentOrInteractiveAsync();
@@ -63,12 +63,12 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
                 }
 
             });
-        
+
         if (exportCsv)
         {
             ExportData.ExportCsv(devices,options.ExportCsv);
         }
-        
+
         var table = new Table();
         table.Collapse();
         table.AddColumn("Id");

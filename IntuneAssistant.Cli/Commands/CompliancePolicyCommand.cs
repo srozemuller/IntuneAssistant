@@ -11,7 +11,7 @@ public class CompliancePolicyCommand : Command<FetchCompliancePoliciesCommandOpt
 {
     public CompliancePolicyCommand() : base("compliance-policies", "Fetches compliance policies from Intune")
     {
-        AddOption(new Option<string>(Constants.ExportCsvArg, Constants.ExportCsvArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.RemoveArg, CommandConfiguration.ExportCsvArgDescription));
     }
 }
 
