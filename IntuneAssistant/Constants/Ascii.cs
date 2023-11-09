@@ -5,12 +5,10 @@ namespace IntuneAssistant.Constants;
 /// </summary>
 public static class Ascii
 {
-  
-
     /// <summary>
     /// Blueshift ASCII art.
     /// </summary>
-    public const string IntuneAssistantAscii = @"
+    public const string INTUNE_ASSISTANT_ASCII = @"
 .___        __                         _____                .__          __                 __   
 |   | _____/  |_ __ __  ____   ____   /  _  \   ______ _____|__| _______/  |______    _____/  |_ 
 |   |/    \   __\  |  \/    \_/ __ \ /  /_\  \ /  ___//  ___/  |/  ___/\   __\__  \  /    \   __\
@@ -18,6 +16,4 @@ public static class Ascii
 |___|___|  /__| |____/|___|  /\___  >____|__  /____  >____  >__/____  > |__| (____  /___|  /__|  
          \/                \/     \/        \/     \/     \/        \/            \/     \/      
 ";
-
-
 }

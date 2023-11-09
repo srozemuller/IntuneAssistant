@@ -1,34 +1,18 @@
-﻿using IntuneAssistant.Interfaces;
-using IntuneAssistant.Helpers;
+﻿using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Graph;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
-using Microsoft.Identity.Client;
 
-
-namespace IntuneAssistant.Services;
+namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class DeviceService : IDeviceService
 {
-
-    private string _accessToken = string.Empty;
-    private readonly ILoginService _loginService;
-    public DeviceService(ILoginService loginService)
-    {
-        _loginService = loginService;
-        Init(); 
-    }
-
-    private void Init()
-    {
-        _accessToken = Environment.GetEnvironmentVariable("ACCESS_TOKEN") ?? throw new Exception("No token provided");
-    }
-    public async Task<List<ManagedDevice>?> GetManagedDevicesListAsync()
+    public async Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string accessToken)
     {
         try
         {
             // Create a new instance of GraphServiceClient with the DeviceCodeCredential and scopes
-            var graphClient = new GraphClient(_accessToken).GetAuthenticatedGraphClient();
+            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
             var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync();
             return result?.Value;
         }
@@ -39,15 +23,16 @@ public sealed class DeviceService : IDeviceService
             throw;
         }
     }
-    public async Task<List<ManagedDevice>?> GetNonCompliantManagedDevicesListAsync()
+
+    public async Task<List<ManagedDevice>?> GetNonCompliantManagedDevicesListAsync(string accessToken)
     {
-        try 
+        try
         {
-            var graphClient = new GraphClient(_accessToken).GetAuthenticatedGraphClient();
+            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
             var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync();
             return result?.Value?.Where(device => device.ComplianceState is ComplianceState.Noncompliant).ToList();
-        } 
-        catch (ODataError odataError) 
+        }
+        catch (ODataError odataError)
         {
             Console.WriteLine(odataError.Error?.Code);
             Console.WriteLine(odataError.Error?.Message);

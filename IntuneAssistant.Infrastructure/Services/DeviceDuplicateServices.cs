@@ -1,13 +1,11 @@
-using System.Text;
-using IntuneAssistant.Constants;
-using IntuneAssistant.Helpers;
-using IntuneAssistant.Interfaces;
+using IntuneAssistant.Extensions;
+using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 
-namespace IntuneAssistant.Services;
+namespace IntuneAssistant.Infrastructure.Services;
 
 public class DeviceDuplicateServices : IDeviceDuplicateService
 {
@@ -21,7 +19,7 @@ public class DeviceDuplicateServices : IDeviceDuplicateService
 
     public async Task<List<ManagedDevice>?> GetDuplicateDevicesListAsync()
     {
-        try 
+        try
         {
             // Create a new instance of GraphServiceClient with the DeviceCodeCredential and scopes
             var graphClient = new GraphClient(_accessToken).GetAuthenticatedGraphClient();
@@ -31,17 +29,16 @@ public class DeviceDuplicateServices : IDeviceDuplicateService
                     .SelectMany(g => g)
                     .ToList();
             return duplicateDevices;
-        } 
-        catch (ODataError odataError) 
+        }
+        catch (ODataError odataError)
         {
-            Console.WriteLine(odataError.Error?.Code);
-            Console.WriteLine(odataError.Error?.Message);
+            Console.WriteLine(odataError.ToMessage());
             throw;
         }
     }
     public async Task<List<ManagedDevice>?> RemoveDuplicateDevicesAsync()
     {
-        try 
+        try
         {
             // Create a new instance of GraphServiceClient with the DeviceCodeCredential and scopes
             var graphClient = new GraphClient(_accessToken).GetAuthenticatedGraphClient();

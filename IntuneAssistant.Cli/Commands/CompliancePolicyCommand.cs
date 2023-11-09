@@ -1,9 +1,7 @@
 using System.CommandLine;
 using IntuneAssistant.Extensions;
-using IntuneAssistant.Interfaces;
-using IntuneAssistant.Models;
+using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Graph.Beta.Models;
-using Microsoft.Graph.Beta.Models.Networkaccess;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
@@ -13,13 +11,13 @@ public class CompliancePolicyCommand : Command<FetchCompliancePoliciesCommandOpt
 {
     public CompliancePolicyCommand() : base("compliance-policies", "Fetches compliance policies from Intune")
     {
-        AddOption(new Option<string>("--export-csv", "Exports the list to a csv file"));
+        AddOption(new Option<string>(Constants.ExportCsvArg, Constants.ExportCsvArgDescription));
     }
 }
 
 public class FetchCompliancePoliciesCommandOptions : ICommandOptions
 {
-    public string ExportCsv { get; set; } = String.Empty;
+    public string ExportCsv { get; set; } = string.Empty;
 }
 
 public class FetchCompliancePoliciesCommandHandler : ICommandOptionsHandler<FetchCompliancePoliciesCommandOptions>
@@ -40,7 +38,7 @@ public class FetchCompliancePoliciesCommandHandler : ICommandOptionsHandler<Fetc
         // Show progress spinner while fetching data
         await AnsiConsole.Status().StartAsync("Fetching compliance policies from Intune", async _ =>
         {
-            var allCompliancePoliciesResults = await _compliancePoliciesService.GetCompliancePoliciesListAsync();
+            var allCompliancePoliciesResults = await _compliancePoliciesService.GetCompliancePoliciesListAsync("");
             if (allCompliancePoliciesResults is not null)
             {
                 compliancePolicies.AddRange(allCompliancePoliciesResults.ToList());
@@ -60,7 +58,7 @@ public class FetchCompliancePoliciesCommandHandler : ICommandOptionsHandler<Fetc
         foreach (var policy in compliancePolicies.Where(policy => policy is not null))
         {
 
-            var assignmentList = await _compliancePoliciesService.GetCompliancePolicyAssignmentListAsync(policy.Id);
+            var assignmentList = await _compliancePoliciesService.GetCompliancePolicyAssignmentListAsync("", policy.Id);
             bool isAssigned = !assignmentList.IsNullOrEmpty();
             table.AddRow(
                 policy.Id,

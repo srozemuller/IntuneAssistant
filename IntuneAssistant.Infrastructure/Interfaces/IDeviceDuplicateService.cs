@@ -1,5 +1,6 @@
 using Microsoft.Graph.Beta.Models;
-namespace IntuneAssistant.Interfaces;
+
+namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IDeviceDuplicateService
 {

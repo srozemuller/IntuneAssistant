@@ -1,6 +1,6 @@
 using System.CommandLine;
 using IntuneAssistant.Extensions;
-using IntuneAssistant.Interfaces;
+using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Spectre.Console;
 

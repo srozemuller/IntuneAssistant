@@ -1,7 +1,8 @@
 using Microsoft.Graph.Beta;
 using Microsoft.Kiota.Abstractions.Authentication;
 
-namespace IntuneAssistant.Helpers;
+namespace IntuneAssistant.Infrastructure;
+
 public class TokenProvider : IAccessTokenProvider
 {
     public string Token { get; set; }
@@ -16,7 +17,7 @@ public class TokenProvider : IAccessTokenProvider
 
 public class GraphClient
 {
-    private TokenProvider _tokenProvider;
+    private readonly TokenProvider _tokenProvider;
 
     public GraphClient(string accessToken)
     {

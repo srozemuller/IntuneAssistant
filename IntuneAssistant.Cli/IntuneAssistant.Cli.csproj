@@ -5,6 +5,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <SelfContained>true</SelfContained>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj" />
       <ProjectReference Include="..\IntuneAssistant\IntuneAssistant.csproj" />
     </ItemGroup>
 
