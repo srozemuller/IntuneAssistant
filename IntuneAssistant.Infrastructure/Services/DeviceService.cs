@@ -39,4 +39,12 @@ public sealed class DeviceService : IDeviceService
             throw;
         }
     }
+    public async Task<List<ManagedDevice>?> GetFilteredDevices(string accessToken)
+    {
+        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
+        var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync((r) => {
+            r.QueryParameters.Filter = "operatingSystem eq 'windows'";
+        });
+        return result?.Value;
+    }
 }

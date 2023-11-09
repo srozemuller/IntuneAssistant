@@ -6,4 +6,5 @@ public interface IDeviceDuplicateService
 {
     Task<List<ManagedDevice>?> GetDuplicateDevicesListAsync(string accessToken);
     Task<List<ManagedDevice>?> RemoveDuplicateDevicesAsync(string accessToken);
+    
 }

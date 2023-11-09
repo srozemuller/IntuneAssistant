@@ -27,6 +27,7 @@ public class DeviceDuplicateServices : IDeviceDuplicateService
                     .SelectMany(g => g)
                     .ToList();
             return duplicateDevices;
+            
         }
         catch (ODataError odataError)
         {
