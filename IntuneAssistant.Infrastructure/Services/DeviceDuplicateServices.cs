@@ -9,20 +9,18 @@ namespace IntuneAssistant.Infrastructure.Services;
 
 public class DeviceDuplicateServices : IDeviceDuplicateService
 {
-    private string _accessToken = string.Empty;
+
     private readonly ILogger<DeviceDuplicateServices> _logger;
     public DeviceDuplicateServices(ILogger<DeviceDuplicateServices> logger)
     {
-        _accessToken = Environment.GetEnvironmentVariable("ACCESS_TOKEN") ?? throw new Exception("No token provided");
-        _logger = _logger;
     }
 
-    public async Task<List<ManagedDevice>?> GetDuplicateDevicesListAsync()
+    public async Task<List<ManagedDevice>?> GetDuplicateDevicesListAsync(string accessToken)
     {
         try
         {
-            // Create a new instance of GraphServiceClient with the DeviceCodeCredential and scopes
-            var graphClient = new GraphClient(_accessToken).GetAuthenticatedGraphClient();
+            // Create a new instance of GraphServiceClient with the DeviceCodeCredential and scope
+            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
             var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync();
             var duplicateDevices = result?.Value?.GroupBy(d => d.DeviceName)
                     .Where(g => g.Count() > 1)
@@ -36,12 +34,14 @@ public class DeviceDuplicateServices : IDeviceDuplicateService
             throw;
         }
     }
-    public async Task<List<ManagedDevice>?> RemoveDuplicateDevicesAsync()
+    
+
+    public async Task<List<ManagedDevice>?> RemoveDuplicateDevicesAsync(string accessToken)
     {
         try
         {
             // Create a new instance of GraphServiceClient with the DeviceCodeCredential and scopes
-            var graphClient = new GraphClient(_accessToken).GetAuthenticatedGraphClient();
+            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
             var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync();
 
             var devices = result?.Value?.GroupBy(d => d.DeviceName)

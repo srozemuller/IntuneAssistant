@@ -1,6 +1,7 @@
 using System.CommandLine;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Models;
 using Spectre.Console;
 
@@ -8,15 +9,12 @@ namespace IntuneAssistant.Cli.Commands;
 
 public class DeviceDuplicateCommand : Command<FetchDeviceDuplicateCommandOptions,FetchDeviceDuplicateCommandHandler>
 {
-    public DeviceDuplicateCommand() : base("duplicate-devices", "Fetches duplicate devices from Intune")
+    public DeviceDuplicateCommand() : base("duplicates", "Fetches duplicate devices from Intune")
     {
-        AddOption(new Option<bool>("--remove", "Removes all duplicate devices from Intune"));
-        AddOption(new Option<string>("--export-csv", "Exports the list to a csv file"));
+        AddOption(new Option<bool>(Constants.RemoveArg, Constants.RemoveArgDescription));
+        AddOption(new Option<string>(Constants.ExportCsvArg, Constants.ExportCsvArgDescription));
     }
 }
-
-
-
 public class FetchDeviceDuplicateCommandOptions : ICommandOptions
 {
     public bool Remove { get; set; } = false;
@@ -37,6 +35,7 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
         
         var removeProvided = options.Remove;
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
+        var accessToken = await new IdentityHelperService().GetAccessTokenSilentOrInteractiveAsync();
         // Microsoft Graph
         // Implementation of shared service from infrastructure comes here
         var devices = new List<DeviceModel?>();
@@ -46,7 +45,7 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
             {
                 if (removeProvided)
                 {
-                    var duplicates = await _deviceDuplicateService.RemoveDuplicateDevicesAsync();
+                    var duplicates = await _deviceDuplicateService.RemoveDuplicateDevicesAsync(accessToken);
                     if (duplicates is not null)
                     {
                         Console.WriteLine("Got results from duplicates");
@@ -55,7 +54,7 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
                 }
                 else
                 {
-                    var allDeviceResults = await _deviceDuplicateService.GetDuplicateDevicesListAsync();
+                    var allDeviceResults = await _deviceDuplicateService.GetDuplicateDevicesListAsync(accessToken);
                     if (allDeviceResults is not null)
                     {
                         Console.WriteLine("Got results from duplicates");

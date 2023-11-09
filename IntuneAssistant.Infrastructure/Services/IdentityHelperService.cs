@@ -10,7 +10,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class IdentityHelperService : IIdentityHelperService
 {
-    private static readonly string[] Scopes = { "user.read" };
+    //private static readonly string[] Scopes = { "https://graph.microsoft.com//.default" };
 
     /// <summary>
     /// Gets a default client application based on the configuration in the appsettings.json file.
@@ -55,7 +55,7 @@ public sealed class IdentityHelperService : IIdentityHelperService
     /// Gets an access token silently or interactively.
     /// </summary>
     /// <returns>An access token or null.</returns>
-    public async Task<string?> GetAccessTokenSilentOrInteractiveAsync()
+    public async Task<string> GetAccessTokenSilentOrInteractiveAsync()
     {
         AuthenticationResult? result = null;
 
@@ -64,7 +64,7 @@ public sealed class IdentityHelperService : IIdentityHelperService
 
         try
         {
-            result = await app.AcquireTokenSilent(Scopes, accounts.FirstOrDefault())
+            result = await app.AcquireTokenSilent(AppConfiguration.GRAPH_INTERACTIVE_SCOPE, accounts.FirstOrDefault())
                 .ExecuteAsync();
         }
         catch (MsalUiRequiredException ex)
@@ -75,7 +75,7 @@ public sealed class IdentityHelperService : IIdentityHelperService
 
             try
             {
-                result = await app.AcquireTokenInteractive(Scopes).ExecuteAsync();
+                result = await app.AcquireTokenInteractive(AppConfiguration.GRAPH_INTERACTIVE_SCOPE).ExecuteAsync();
             }
             catch (MsalException msalException)
             {
@@ -87,8 +87,6 @@ public sealed class IdentityHelperService : IIdentityHelperService
         {
             Debug.WriteLine("An exception has occurred while acquiring a token silently");
             Debug.WriteLine($"Exception: {ex.Message}");
-
-            return null;
         }
 
         return result?.AccessToken;

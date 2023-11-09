@@ -9,6 +9,7 @@ public static class AppConfiguration
     public const string CLIENT_ID = "14d82eec-204b-4c2f-b7e8-296a70dab67e";
     public const string REDIRECT_URI = "http://localhost";
     public const string GRAPH_URL = "https://graph.microsoft.com/v1.0/";
+    public static readonly string[] GRAPH_INTERACTIVE_SCOPE = new string[] {"https://graph.microsoft.com//.default" };
 
     // Cache settings
     public const string CACHE_FILE_NAME = "msal-cache.plaintext";
