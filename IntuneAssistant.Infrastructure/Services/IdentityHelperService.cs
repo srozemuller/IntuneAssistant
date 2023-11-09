@@ -113,26 +113,17 @@ public sealed class IdentityHelperService : IIdentityHelperService
     /// Iterates over all accounts and removes them from the cache.
     /// </summary>
     /// <returns>The number of removed accounts or -1 if an exception occurred.</returns>
-    public async Task<int> LogoutAsync()
+    public async Task LogoutAsync()
     {
-        try
-        {
-            var app = await GetDefaultClientApplication();
-            var accounts = await app.GetAccountsAsync();
-            var accountList = accounts.ToList();
+        var app = await GetDefaultClientApplication();
+        var accounts = await app.GetAccountsAsync();
+        var accountList = accounts.ToList();
 
-            while (accountList.Any())
-            {
-                await app.RemoveAsync(accountList.FirstOrDefault());
-                accounts = await app.GetAccountsAsync();
-                accountList = accounts.ToList();
-            }
-
-            return accountList.Count;
-        }
-        catch (Exception)
+        while (accountList.Any())
         {
-            return -1;
+            await app.RemoveAsync(accountList.FirstOrDefault());
+            accounts = await app.GetAccountsAsync();
+            accountList = accounts.ToList();
         }
     }
 }

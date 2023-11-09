@@ -12,7 +12,6 @@ public class AuthLogoutCommand : Command<AuthLogoutCommandOptions, AuthLogoutCom
 
 public class AuthLogoutCommandOptions : ICommandOptions
 {
-    public bool Logout { get; set; } = false;
 }
 
 public sealed class AuthLogoutCommandHandler : ICommandOptionsHandler<AuthLogoutCommandOptions>
@@ -26,16 +25,21 @@ public sealed class AuthLogoutCommandHandler : ICommandOptionsHandler<AuthLogout
 
     public async Task<int> HandleAsync(AuthLogoutCommandOptions commandOptions)
     {
-        AnsiConsole.MarkupLine("[yellow]Logging out...[/]");
-        var accountsLoggedOut = await _identityHelperService.LogoutAsync();
+        await AnsiConsole.Status()
+            .Spinner(Spinner.Known.Default)
+            .StartAsync("Signing out of all cached accounts...", async ctx =>
+            {
+                try
+                {
+                    await _identityHelperService.LogoutAsync();
+                    AnsiConsole.MarkupLine(":check_mark_button:  Successfully signed out of all cached accounts");
+                }
+                catch (Exception e)
+                {
+                    AnsiConsole.MarkupLine($":hollow_red_circle:  Failed to sign out of account(s): {e.Message}");
+                }
+            });
 
-        if (accountsLoggedOut == -1)
-        {
-            AnsiConsole.MarkupLine($"[red]Failed to logout[/]");
-            return -1;
-        }
-
-        AnsiConsole.MarkupLine($"[green]Successfully logged out of all accounts[/]");
         return 0;
     }
 }
