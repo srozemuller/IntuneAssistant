@@ -19,20 +19,18 @@ public sealed class IdentityHelperService : IIdentityHelperService
     /// <exception cref="InvalidOperationException">Thrown when the appsettings.json file is missing a required configuration value.</exception>
     public async Task<IPublicClientApplication> GetDefaultClientApplication()
     {
-        // TODO: Only use this for development
         var storageProperties = new StorageCreationPropertiesBuilder(
                 AppConfiguration.CACHE_FILE_NAME,
     AppConfiguration.CacheDir)
-            .WithUnprotectedFile()
-        //     .WithLinuxKeyring(
-        //         IdentityConfiguration.LinuxKeyRingSchema,
-        //         IdentityConfiguration.LinuxKeyRingCollection,
-        //         IdentityConfiguration.LinuxKeyRingLabel,
-        // IdentityConfiguration.LinuxKeyRingAttr1,
-        // IdentityConfiguration.LinuxKeyRingAttr2)
-        //     .WithMacKeyChain(
-        //         IdentityConfiguration.KeyChainServiceName,
-        //         IdentityConfiguration.KeyChainAccountName)
+            .WithLinuxKeyring(
+                AppConfiguration.LINUX_KEY_RING_SCHEMA,
+                AppConfiguration.LINUX_KEY_RING_COLLECTION,
+                AppConfiguration.LINUX_KEY_RING_LABEL,
+        AppConfiguration.LinuxKeyRingAttr1,
+        AppConfiguration.LinuxKeyRingAttr2)
+            .WithMacKeyChain(
+                AppConfiguration.KEY_CHAIN_SERVICE_NAME,
+                AppConfiguration.KEY_CHAIN_ACCOUNT_NAME)
             .Build();
 
         var pcaOptions = new PublicClientApplicationOptions

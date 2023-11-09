@@ -20,7 +20,7 @@ public static class AppConfiguration
 
     public const string LINUX_KEY_RING_SCHEMA = "com.srozemuller.intuneassistant.tokencache";
     public const string LINUX_KEY_RING_COLLECTION = MsalCacheHelper.LinuxKeyRingDefaultCollection;
-    public const string LINUX_KEY_RING_LABEL = "MSAL token cache for all Contoso dev tool apps.";
+    public const string LINUX_KEY_RING_LABEL = "MSAL token cache for Intune Assistant CLI.";
     public static readonly KeyValuePair<string, string> LinuxKeyRingAttr1 = new("Version", "1");
     public static readonly KeyValuePair<string, string> LinuxKeyRingAttr2 = new("ProductGroup", "MyApps");
 }
