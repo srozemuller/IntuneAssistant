@@ -19,7 +19,7 @@ public class GetManagedDevicesCommand : Command<FetchManagedDevicesCommandOption
 public class FetchManagedDevicesCommandOptions : ICommandOptions
 {
     public bool NonCompliant { get; set; } = false;
-    
+    public bool Windows { get; set; } = false;
 }
 
 public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchManagedDevicesCommandOptions>
@@ -37,6 +37,7 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
     {
 
         var nonCompliantProvided = options.NonCompliant;
+        var windowsFilter = options.Windows;
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
 
         var devices = new List<DeviceModel?>();
@@ -44,6 +45,14 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
         await AnsiConsole.Status()
             .StartAsync("Fetching devices from Intune", async _ =>
             {
+                if (windowsFilter)
+                {
+                    var results = await _deviceService.GetFilteredDevices(accessToken);
+                    if (results is not null)
+                    {
+                        devices.AddRange(results.Select(x => x.ToDeviceModel()));
+                    } 
+                }
                 if (nonCompliantProvided)
                 {
                     var results = await _deviceService.GetNonCompliantManagedDevicesListAsync(accessToken);
@@ -79,12 +88,5 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
         AnsiConsole.Write(table);
         return 0;
     }
-    public async Task<List<ManagedDevice>?> GetFilteredDevices(string accessToken)
-    {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-        var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync((r) => {
-            r.QueryParameters.Filter = "operatingSystem eq 'windows'";
-        });
-        return result?.Value;
-    }
+
 }
