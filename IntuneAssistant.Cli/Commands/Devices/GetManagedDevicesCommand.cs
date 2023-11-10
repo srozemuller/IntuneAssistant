@@ -15,6 +15,9 @@ public class GetManagedDevicesCommand : Command<FetchManagedDevicesCommandOption
         AddOption(new Option<bool>(CommandConfiguration.DevicesIosFilterName, CommandConfiguration.DevicesIosFilterDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesAndroidFilterName, CommandConfiguration.DevicesAndroidFilterDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesNonCompliantFilterName, CommandConfiguration.DevicesNonCompliantFilterDescription));
+
+        // TODO: Remove temporary argument
+        AddOption(new Option<string>("--token", "The access token to use for authentication"));
     }
 }
 
@@ -25,6 +28,9 @@ public class FetchManagedDevicesCommandOptions : ICommandOptions
     public bool IncludeIos { get; set; } = false;
     public bool IncludeAndroid { get; set; } = false;
     public bool SelectNonCompliant { get; set; } = false;
+
+    // TODO: Remove temporary argument
+    public string Token { get; set; } = string.Empty;
 }
 
 public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchManagedDevicesCommandOptions>
@@ -40,10 +46,19 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
 
     public async Task<int> HandleAsync(FetchManagedDevicesCommandOptions options)
     {
-        var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
+        var accessToken = options.Token;
+
         if (string.IsNullOrWhiteSpace(accessToken))
         {
-            return -1;
+            var tokenFromHelper = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
+
+            if (string.IsNullOrWhiteSpace(tokenFromHelper))
+            {
+                AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
+                return -1;
+            }
+
+            accessToken = tokenFromHelper;
         }
 
         var table = new Table();
