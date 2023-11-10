@@ -1,4 +1,4 @@
-namespace CommandConfiguration;
+namespace IntuneAssistant.Constants;
 
 public static class Branding
 {

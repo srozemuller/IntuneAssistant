@@ -1,6 +1,6 @@
 using Microsoft.Identity.Client.Extensions.Msal;
 
-namespace CommandConfiguration;
+namespace IntuneAssistant.Constants;
 
 public static class AppConfiguration
 {

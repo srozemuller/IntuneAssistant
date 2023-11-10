@@ -1,4 +1,4 @@
-namespace CommandConfiguration;
+namespace IntuneAssistant.Constants;
 
 /// <summary>
 /// Static class containing ASCII art constants.

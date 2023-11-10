@@ -1,4 +1,5 @@
 using System.CommandLine;
+using IntuneAssistant.Cli.Commands.Auth.Login;
 using IntuneAssistant.Cli.Commands.Auth.Logout;
 
 namespace IntuneAssistant.Cli.Commands.Auth;
