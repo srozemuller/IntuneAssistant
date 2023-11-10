@@ -7,7 +7,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class DeviceService : IDeviceService
 {
-    public async Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string accessToken)
+    public async Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string accessToken, string? filter)
     {
         try
         {
@@ -39,11 +39,12 @@ public sealed class DeviceService : IDeviceService
             throw;
         }
     }
-    public async Task<List<ManagedDevice>?> GetFilteredDevices(string accessToken)
+    
+    public async Task<List<ManagedDevice>?> GetFilteredDevices(string accessToken, string? filter)
     {
         var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync((r) => {
-            r.QueryParameters.Filter = "operatingSystem eq 'windows'";
+            r.QueryParameters.Filter = filter;
         });
         return result?.Value;
     }

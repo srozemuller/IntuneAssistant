@@ -13,6 +13,7 @@ public class GetManagedDevicesCommand : Command<FetchManagedDevicesCommandOption
     {
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesWindowsFilterName, CommandConfiguration.DevicesWindowsFilterDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesMacOsFilterName, CommandConfiguration.DevicesMacOsFilterDescription));
     }
 }
 
@@ -20,6 +21,8 @@ public class FetchManagedDevicesCommandOptions : ICommandOptions
 {
     public bool NonCompliant { get; set; } = false;
     public bool Windows { get; set; } = false;
+    
+    public bool MacOs { get; set; } = false;
 }
 
 public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchManagedDevicesCommandOptions>
@@ -38,8 +41,9 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
 
         var nonCompliantProvided = options.NonCompliant;
         var windowsFilter = options.Windows;
+        var macOsFilter = options.MacOs;
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
-
+        var filter = "";
         var devices = new List<DeviceModel?>();
         // Show progress spinner while fetching data
         await AnsiConsole.Status()
@@ -47,11 +51,12 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
             {
                 if (windowsFilter)
                 {
-                    var results = await _deviceService.GetFilteredDevices(accessToken);
-                    if (results is not null)
-                    {
-                        devices.AddRange(results.Select(x => x.ToDeviceModel()));
-                    } 
+                    var filter = "operatingSystem eq 'windows'";
+                }
+
+                if (macOsFilter)
+                {
+                    var filter = "operatingSystem eq 'macOs'";
                 }
                 if (nonCompliantProvided)
                 {
@@ -63,7 +68,7 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
                 }
                 else
                 {
-                    var allDeviceResults = await _deviceService.GetManagedDevicesListAsync(accessToken);
+                    var allDeviceResults = await _deviceService.GetManagedDevicesListAsync(accessToken, filter);
                     if (allDeviceResults is not null)
                     {
                         devices.AddRange(allDeviceResults.Select(x => x.ToDeviceModel()));

@@ -19,6 +19,8 @@ public static class CommandConfiguration
     public const string DevicesCommandDescription = "Retrieve a list of all devices from Intune";
     public const string DevicesWindowsFilterName = "--windows";
     public const string DevicesWindowsFilterDescription = "Retrieves all Windows devices from Intune";
+    public const string DevicesMacOsFilterName = "--macOs";
+    public const string DevicesMacOsFilterDescription = "Retrieves all macOs devices from Intune";
     
 
     // devices duplicates
