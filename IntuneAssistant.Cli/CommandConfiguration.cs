@@ -17,11 +17,16 @@ public static class CommandConfiguration
     // devices
     public const string DevicesCommandName = "devices";
     public const string DevicesCommandDescription = "Retrieve a list of all devices from Intune";
-    public const string DevicesWindowsFilterName = "--windows";
+    public const string DevicesWindowsFilterName = "--include-windows";
     public const string DevicesWindowsFilterDescription = "Retrieves all Windows devices from Intune";
-    public const string DevicesMacOsFilterName = "--macOs";
+    public const string DevicesMacOsFilterName = "--include-macos";
     public const string DevicesMacOsFilterDescription = "Retrieves all macOs devices from Intune";
-    
+    public const string DevicesIosFilterName = "--include-ios";
+    public const string DevicesIosFilterDescription = "Retrieves all iOS devices from Intune";
+    public const string DevicesAndroidFilterName = "--include-android";
+    public const string DevicesAndroidFilterDescription = "Retrieves all Android devices from Intune";
+    public const string DevicesNonCompliantFilterName = "--select-non-compliant";
+    public const string DevicesNonCompliantFilterDescription = "Retrieves all non-compliant devices from Intune";
 
     // devices duplicates
     public const string DevicesDuplicatesCommandName = "duplicates";

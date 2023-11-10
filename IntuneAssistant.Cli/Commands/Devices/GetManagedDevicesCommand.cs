@@ -1,7 +1,5 @@
 using System.CommandLine;
-using IntuneAssistant.Infrastructure;
 using IntuneAssistant.Infrastructure.Interfaces;
-using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models;
 using Spectre.Console;
 
@@ -14,15 +12,19 @@ public class GetManagedDevicesCommand : Command<FetchManagedDevicesCommandOption
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesWindowsFilterName, CommandConfiguration.DevicesWindowsFilterDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesMacOsFilterName, CommandConfiguration.DevicesMacOsFilterDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesIosFilterName, CommandConfiguration.DevicesIosFilterDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesAndroidFilterName, CommandConfiguration.DevicesAndroidFilterDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesNonCompliantFilterName, CommandConfiguration.DevicesNonCompliantFilterDescription));
     }
 }
 
 public class FetchManagedDevicesCommandOptions : ICommandOptions
 {
-    public bool NonCompliant { get; set; } = false;
-    public bool Windows { get; set; } = false;
-    
-    public bool MacOs { get; set; } = false;
+    public bool IncludeWindows { get; set; } = false;
+    public bool IncludeMacOs { get; set; } = false;
+    public bool IncludeIos { get; set; } = false;
+    public bool IncludeAndroid { get; set; } = false;
+    public bool SelectNonCompliant { get; set; } = false;
 }
 
 public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchManagedDevicesCommandOptions>
@@ -38,61 +40,54 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
 
     public async Task<int> HandleAsync(FetchManagedDevicesCommandOptions options)
     {
-
-        var nonCompliantProvided = options.NonCompliant;
-        var windowsFilter = options.Windows;
-        var macOsFilter = options.MacOs;
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
-        var filter = "";
-        var devices = new List<DeviceModel?>();
-        // Show progress spinner while fetching data
-        await AnsiConsole.Status()
-            .StartAsync("Fetching devices from Intune", async _ =>
-            {
-                if (windowsFilter)
-                {
-                    var filter = "operatingSystem eq 'windows'";
-                }
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            return -1;
+        }
 
-                if (macOsFilter)
-                {
-                    var filter = "operatingSystem eq 'macOs'";
-                }
-                if (nonCompliantProvided)
-                {
-                    var results = await _deviceService.GetNonCompliantManagedDevicesListAsync(accessToken);
-                    if (results is not null)
-                    {
-                        devices.AddRange(results.Select(x => x.ToDeviceModel()));
-                    }
-                }
-                else
-                {
-                    var allDeviceResults = await _deviceService.GetManagedDevicesListAsync(accessToken, filter);
-                    if (allDeviceResults is not null)
-                    {
-                        devices.AddRange(allDeviceResults.Select(x => x.ToDeviceModel()));
-                    }
-                }
-
-            });
         var table = new Table();
         table.Collapse();
         table.AddColumn("Id");
         table.AddColumn("DeviceName");
-        table.AddColumn("Status");
+        table.AddColumn("OS");
         table.AddColumn("LastSyncDateTime");
 
-        foreach (var device in devices.Where(
-                     device => device is not null).GroupBy(d => d?.Id).Select(g => g.First()))
+        var devices = new List<ManagedDevice>();
+        var deviceFilterOptions = new DeviceFilterOptions
+        {
+            IncludeWindows = options.IncludeWindows,
+            IncludeMacOs = options.IncludeMacOs,
+            IncludeIos = options.IncludeIos,
+            IncludeAndroid = options.IncludeAndroid,
+            SelectNonCompliant = options.SelectNonCompliant
+        };
+
+        // Show progress spinner while fetching data
+        await AnsiConsole.Status()
+            .StartAsync("Fetching devices from Intune", async _ =>
+            {
+                devices = await _deviceService.GetFilteredDevices(accessToken, deviceFilterOptions);
+            });
+
+        if (devices?.Count == 0)
+        {
+            AnsiConsole.MarkupLine("No devices matched the specified filter");
+            return 0;
+        }
+
+        foreach (var device in devices)
+        {
             table.AddRow(
-                device.Id.ToString(),
-                device.DeviceName,
-                device.Status,
-                device.LastSyncDateTime.ToString()
+                device.Id ?? string.Empty,
+                device.DeviceName ?? string.Empty,
+                device.OperatingSystem ?? string.Empty,
+                device.LastSyncDateTime.ToString() ?? string.Empty
             );
+        }
+
         AnsiConsole.Write(table);
+
         return 0;
     }
-
 }

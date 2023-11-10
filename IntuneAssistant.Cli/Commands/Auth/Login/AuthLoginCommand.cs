@@ -1,7 +1,7 @@
 using IntuneAssistant.Infrastructure.Interfaces;
 using Spectre.Console;
 
-namespace IntuneAssistant.Cli.Commands.Auth;
+namespace IntuneAssistant.Cli.Commands.Auth.Login;
 
 public class AuthLoginCommand : Command<AuthLoginCommandOptions, AuthLoginCommandHandler>
 {

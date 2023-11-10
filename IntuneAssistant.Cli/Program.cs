@@ -2,8 +2,8 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using IntuneAssistant.Cli.Middleware;
-using CommandConfiguration;
 using IntuneAssistant.Cli.Commands;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
