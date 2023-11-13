@@ -1,5 +1,6 @@
 using System.CommandLine;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Models.Options;
 using Microsoft.Graph.Beta.Models;
 using Spectre.Console;
 

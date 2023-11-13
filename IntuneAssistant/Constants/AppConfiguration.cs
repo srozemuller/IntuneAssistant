@@ -10,7 +10,8 @@ public static class AppConfiguration
     public const string REDIRECT_URI = "http://localhost";
     public const string GRAPH_URL = "https://graph.microsoft.com/v1.0/";
     public static readonly string[] GRAPH_INTERACTIVE_SCOPE = new string[] {"https://graph.microsoft.com//.default" };
-
+    public const string DEFAULT_EXPORTFILENAME = $"IntuneAssistant_export";
+    
     // Cache settings
     public const string CACHE_FILE_NAME = "msal-cache.plaintext";
     public const string CACHE_DIR_NAME = ".intuneassistant";

@@ -23,9 +23,9 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
 });
 
-AnsiConsole.MarkupLine($"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline cyan]{Branding.Builder}[/]");
+AnsiConsole.MarkupLine($"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline orange]{Branding.Builder}[/]");
 AnsiConsole.MarkupLine($"Version {Branding.VersionInternalBuild} [yellow bold]INTERNAL BUILD[/]");
-AnsiConsole.MarkupLine($"[yellow]{Ascii.INTUNE_ASSISTANT_ASCII}[/]");
+AnsiConsole.MarkupLine($"[orange]{Ascii.INTUNE_ASSISTANT_ASCII}[/]");
 
 AnsiConsole.MarkupLine("\n[grey]Refer to the [cyan link=https://rozemuller.com]rozemuller.com[/] for more information about the command-line usage.\n[/]");
 

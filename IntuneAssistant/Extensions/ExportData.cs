@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 
 namespace IntuneAssistant.Extensions;
@@ -8,7 +9,8 @@ public static class ExportData
     {
         var sb = new StringBuilder();
         var basePath = AppDomain.CurrentDomain.BaseDirectory;
-        var finalPath = Path.Combine(basePath, fileName + ".csv");
+        var currentDate = DateTime.Now.ToString("yyyy-MM-ddHH:mm:ss").ToString(CultureInfo.CurrentUICulture);
+        var finalPath = Path.Combine(basePath, fileName + currentDate +".csv");
         var header = "";
         var info = typeof(T).GetProperties();
         if (!File.Exists(finalPath))

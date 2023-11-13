@@ -1,8 +1,11 @@
 using System.CommandLine;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Options;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Devices;
@@ -13,12 +16,22 @@ public class DeviceDuplicateCommand : Command<FetchDeviceDuplicateCommandOptions
     {
         AddOption(new Option<bool>(CommandConfiguration.RemoveArg, CommandConfiguration.RemoveArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesWindowsFilterName, CommandConfiguration.DevicesWindowsFilterDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesMacOsFilterName, CommandConfiguration.DevicesMacOsFilterDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesIosFilterName, CommandConfiguration.DevicesIosFilterDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesAndroidFilterName, CommandConfiguration.DevicesAndroidFilterDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DevicesNonCompliantFilterName, CommandConfiguration.DevicesNonCompliantFilterDescription));
     }
 }
 public class FetchDeviceDuplicateCommandOptions : ICommandOptions
 {
     public bool Remove { get; set; } = false;
     public string ExportCsv { get; set; } = String.Empty;
+    public bool IncludeWindows { get; set; } = false;
+    public bool IncludeMacOs { get; set; } = false;
+    public bool IncludeIos { get; set; } = false;
+    public bool IncludeAndroid { get; set; } = false;
+    public bool SelectNonCompliant { get; set; } = false;
 }
 
 public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDeviceDuplicateCommandOptions>
@@ -34,41 +47,47 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
     {
 
         var removeProvided = options.Remove;
-        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var accessToken = await new IdentityHelperService().GetAccessTokenSilentOrInteractiveAsync();
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
+            return -1;
+        }
         // Microsoft Graph
         // Implementation of shared service from infrastructure comes here
         var devices = new List<DeviceModel?>();
+        var deviceFilterOptions = new DeviceFilterOptions
+        {
+            IncludeWindows = options.IncludeWindows,
+            IncludeMacOs = options.IncludeMacOs,
+            IncludeIos = options.IncludeIos,
+            IncludeAndroid = options.IncludeAndroid,
+            SelectNonCompliant = options.SelectNonCompliant
+        };
+        var exportOptions = new ExportOptions
+        {
+            ExportCsv = options.ExportCsv
+        };
         // Show progress spinner while fetching data
         await AnsiConsole.Status()
             .StartAsync("Fetching duplicate devices from Intune", async _ =>
             {
-                if (removeProvided)
-                {
-                    var duplicates = await _deviceDuplicateService.RemoveDuplicateDevicesAsync(accessToken);
-                    if (duplicates is not null)
-                    {
-                        Console.WriteLine("Got results from duplicates");
-                        devices.AddRange(duplicates.Select(x => x.ToDeviceModel()));
-                    }
-                }
-                else
-                {
-                    var allDeviceResults = await _deviceDuplicateService.GetDuplicateDevicesListAsync(accessToken);
+
+                    var allDeviceResults = await _deviceDuplicateService.GetDuplicateDevicesListAsync(accessToken, deviceFilterOptions, exportOptions);
                     if (allDeviceResults is not null)
                     {
-                        Console.WriteLine("Got results from duplicates");
                         devices.AddRange(allDeviceResults.Select(x => x.ToDeviceModel()));
+                        if (removeProvided)
+                        {
+                            await _deviceDuplicateService.RemoveDuplicateDevicesAsync(accessToken);
+                        }
                     }
-                }
-
             });
-
-        if (exportCsv)
+        if (devices?.Count == 0)
         {
-            ExportData.ExportCsv(devices,options.ExportCsv);
+            AnsiConsole.MarkupLine("No devices matched the specified filter");
+            return 0;
         }
-
         var table = new Table();
         table.Collapse();
         table.AddColumn("Id");

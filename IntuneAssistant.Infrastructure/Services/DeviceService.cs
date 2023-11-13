@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Models.Options;
 using Microsoft.Graph;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
@@ -53,7 +54,7 @@ public sealed class DeviceService : IDeviceService
             sb.Append("operatingSystem eq 'Windows'");
 
             if (filterOptions.SelectNonCompliant)
-                sb.Append(" and complianceState eq 'nonCompliant'");
+                sb.Append(" and complianceState eq 'NonCompliant'");
         }
 
         if (filterOptions.IncludeMacOs)
@@ -63,8 +64,8 @@ public sealed class DeviceService : IDeviceService
 
             sb.Append("operatingSystem eq 'macOS'");
 
-            if (filterOptions.SelectNonCompliant)
-                sb.Append(" and complianceState eq 'nonCompliant'");
+          //  if (filterOptions.SelectNonCompliant)
+          //      sb.Append(" and complianceState eq 'nonCompliant'");
         }
 
         if (filterOptions.IncludeIos)
@@ -74,8 +75,8 @@ public sealed class DeviceService : IDeviceService
 
             sb.Append("operatingSystem eq 'iOS'");
 
-            if (filterOptions.SelectNonCompliant)
-                sb.Append(" and complianceState eq 'nonCompliant'");
+            //if (filterOptions.SelectNonCompliant)
+            //    sb.Append(" and complianceState eq 'nonCompliant'");
         }
 
         if (filterOptions.IncludeAndroid)
@@ -85,10 +86,14 @@ public sealed class DeviceService : IDeviceService
 
             sb.Append("operatingSystem eq 'Android'");
 
-            if (filterOptions.SelectNonCompliant)
-                sb.Append(" and complianceState eq 'nonCompliant'");
+            //if (filterOptions.SelectNonCompliant)
+            //    sb.Append(" and complianceState eq 'nonCompliant'");
         }
 
+        if (filterOptions.SelectNonCompliant)
+        {
+            sb.Append(" complianceState eq 'nonCompliant'");
+        }
         var odataFilter = sb.ToString();
         var filter = string.IsNullOrWhiteSpace(odataFilter) ? null : odataFilter;
 

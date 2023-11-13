@@ -31,7 +31,17 @@ public static class CommandConfiguration
     // devices duplicates
     public const string DevicesDuplicatesCommandName = "duplicates";
     public const string DevicesDuplicatesCommandDescription = "Retrieve a list of all duplicate devices from Intune";
-
+    
+    // policies
+    public const string PoliciesCommandName = "policies";
+    public const string PoliciesCommandDescription = "Retrieve a list of all policies from Intune";
+    
+    // compliance policies
+    public const string CompliantPolicyCommandName = "compliance";
+    public const string CompliantPolicyCommandDescription = "Retrieve a list of all comppliance policies from Intune";    
+    public const string NonAssignedArg = "--non-assigned"; 
+    public const string NonAssignedArgDescription = "Retrieve a list of all non-assigned compliance policies from Intune";     
+    
     // arguments
     public const string ExportCsvArg = "--export-csv";
     public const string ExportCsvArgDescription = "Exports the list to a csv file";
