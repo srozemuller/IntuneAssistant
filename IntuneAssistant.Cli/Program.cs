@@ -23,10 +23,10 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
 });
 
-AnsiConsole.MarkupLine($"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline orange]{Branding.Builder}[/]");
-AnsiConsole.MarkupLine($"Version {Branding.VersionInternalBuild} [yellow bold]INTERNAL BUILD[/]");
-AnsiConsole.MarkupLine($"[orange]{Ascii.INTUNE_ASSISTANT_ASCII}[/]");
+AnsiConsole.MarkupLine($"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline darkorange]{Branding.Builder}[/]");
+//AnsiConsole.MarkupLine($"Version {Branding.VersionInternalBuild} [yellow bold]INTERNAL BUILD[/]");
+AnsiConsole.MarkupLine($"[darkorange]{Ascii.INTUNE_ASSISTANT_ASCII}[/]");
 
-AnsiConsole.MarkupLine("\n[grey]Refer to the [cyan link=https://rozemuller.com]rozemuller.com[/] for more information about the command-line usage.\n[/]");
+AnsiConsole.MarkupLine("\n[grey]Refer to the [darkorange link=https://rozemuller.com]rozemuller.com[/] for more information about the command-line usage.\n[/]");
 
 return builder.Build().Invoke(args);
