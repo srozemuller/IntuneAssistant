@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace IntuneAssistant.Cli;
 
 public static class CommandConfiguration
@@ -52,7 +54,11 @@ public static class CommandConfiguration
    
     // assignments 
     public const string AssignmentsArg = "--assignments"; 
-    public const string AssignmentsArgDescription = "Shows the assignement of the specific item in Intune"; 
+    public const string AssignmentsArgDescription = "Shows the assignement of the specific item in Intune";
+    
+    // assignment filters
+    public const string AssignmentFilterCommandName = "filters";
+    public const string AssignmentFilterDescription = "Shows the assignement filters in Intune";
 
     // device status
     public const string DeviceStatusCommandName = "--device-status";
