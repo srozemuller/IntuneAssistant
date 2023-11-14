@@ -6,9 +6,9 @@ using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Devices;
 
-public class GetManagedDevicesCommand : Command<FetchManagedDevicesCommandOptions, FetchManagedDevicesCommandHandler>
+public class ManagedDevicesCmd : Command<FetchManagedDevicesCommandOptions, FetchManagedDevicesCommandHandler>
 {
-    public GetManagedDevicesCommand() : base(CommandConfiguration.DevicesCommandName, CommandConfiguration.DevicesCommandDescription)
+    public ManagedDevicesCmd() : base(CommandConfiguration.DevicesCommandName, CommandConfiguration.DevicesCommandDescription)
     {
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesWindowsFilterName, CommandConfiguration.DevicesWindowsFilterDescription));

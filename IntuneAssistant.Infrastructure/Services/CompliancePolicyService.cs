@@ -2,6 +2,7 @@ using System.Text;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models.Options;
+using Microsoft.Graph.Beta.DeviceManagement.Reports.GetComplianceSettingsReport;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 
@@ -33,13 +34,14 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
             return results;
     }
 
-    public async Task<List<DeviceCompliancePolicyAssignment>?> GetCompliancePolicyAssignmentListAsync(string accessToken, string policyId)
+    public async Task<DeviceComplianceDeviceStatusCollectionResponse> GetCompliancePolicyDeviceStatusAsync(string accessToken, string policyId)
     {
         try
         {
             var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-            var result = await graphClient.DeviceManagement.DeviceCompliancePolicies[policyId].Assignments.GetAsync();
-            return result?.Value;
+            var result = await graphClient.DeviceManagement.DeviceCompliancePolicies[policyId].DeviceStatuses
+                .GetAsync();
+            return result;
         }
         catch (Exception e)
         {

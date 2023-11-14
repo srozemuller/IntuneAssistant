@@ -6,8 +6,8 @@ public static class DevicesCmd
 {
     public static Command New()
     {
-        var devicesCommand = new GetManagedDevicesCommand();
-        var devicesDuplicateCommand = new DeviceDuplicateCommand();
+        var devicesCommand = new ManagedDevicesCmd();
+        var devicesDuplicateCommand = new DeviceDuplicateCmd();
 
         devicesCommand.AddCommand(devicesDuplicateCommand);
 

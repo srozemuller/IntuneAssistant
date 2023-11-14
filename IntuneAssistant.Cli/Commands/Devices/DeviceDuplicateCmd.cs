@@ -10,9 +10,9 @@ using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Devices;
 
-public class DeviceDuplicateCommand : Command<FetchDeviceDuplicateCommandOptions,FetchDeviceDuplicateCommandHandler>
+public class DeviceDuplicateCmd : Command<FetchDeviceDuplicateCommandOptions,FetchDeviceDuplicateCommandHandler>
 {
-    public DeviceDuplicateCommand() : base(CommandConfiguration.DevicesDuplicatesCommandName, CommandConfiguration.DevicesDuplicatesCommandDescription)
+    public DeviceDuplicateCmd() : base(CommandConfiguration.DevicesDuplicatesCommandName, CommandConfiguration.DevicesDuplicatesCommandDescription)
     {
         AddOption(new Option<bool>(CommandConfiguration.RemoveArg, CommandConfiguration.RemoveArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));

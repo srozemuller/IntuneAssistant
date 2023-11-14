@@ -1,7 +1,7 @@
 using System.CommandLine;
 using IntuneAssistant.Cli.Commands.Auth;
 using IntuneAssistant.Cli.Commands.Devices;
-using IntuneAssistant.Cli.Commands.Policies;
+using IntuneAssistant.Cli.Commands.Show;
 
 namespace IntuneAssistant.Cli.Commands;
 
@@ -13,7 +13,7 @@ public static class RootCmd
         {
             AuthCmd.New(),
             DevicesCmd.New(),
-            PoliciesCmd.New()
+            ShowCmd.New()
         };
 
         return rootCommand;

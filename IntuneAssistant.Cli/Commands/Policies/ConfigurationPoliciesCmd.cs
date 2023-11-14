@@ -1,44 +1,45 @@
 using System.CommandLine;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
-using IntuneAssistant.Models.Options;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
-namespace IntuneAssistant.Cli.Commands.Policies;
+namespace IntuneAssistant.Cli.Commands.Show;
 
-public class GetCompliancePoliciesCommand : Command<FetchCompliancePoliciesCommandOptions, FetchCompliancePoliciesCommandHandler>
+public class ConfigurationPoliciesCmd : Command<FetchConfigurationPoliciesCommandOptions,FetchConfigurationPoliciesCommandHandler>
 {
-    public GetCompliancePoliciesCommand() : base(CommandConfiguration.PoliciesCommandName, CommandConfiguration.PoliciesCommandDescription)
+    public ConfigurationPoliciesCmd() : base(CommandConfiguration.ConfigurationPolicyCommandName, CommandConfiguration.ConfigurationPolicyCommandDescription)
     {
-        AddOption(new Option<bool>(CommandConfiguration.NonAssignedArg, CommandConfiguration.NonAssignedArg));
+        AddOption(new Option<bool>(CommandConfiguration.NonAssignedArg, CommandConfiguration.NonAssignedArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
     }
 }
 
-public class FetchCompliancePoliciesCommandOptions : ICommandOptions
+
+public class FetchConfigurationPoliciesCommandOptions : ICommandOptions
 {
     public bool NonAssigned { get; set; } = false;
     public string ExportCsv { get; set; } = string.Empty;
     
 }
 
-public class FetchCompliancePoliciesCommandHandler : ICommandOptionsHandler<FetchCompliancePoliciesCommandOptions>
+
+public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<FetchConfigurationPoliciesCommandOptions>
 {
 
-    private readonly ICompliancePoliciesService _compliancePoliciesService;
+    private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly IIdentityHelperService _identityHelperService;
 
-    public FetchCompliancePoliciesCommandHandler(ICompliancePoliciesService compliancePoliciesService, IIdentityHelperService identityHelperService)
+    public FetchConfigurationPoliciesCommandHandler(IConfigurationPolicyService configurationPoliciesService, IIdentityHelperService identityHelperService)
     {
-        _compliancePoliciesService = compliancePoliciesService;
+        _configurationPolicyService = configurationPoliciesService;
         _identityHelperService = identityHelperService;
     }
-    public async Task<int> HandleAsync(FetchCompliancePoliciesCommandOptions options)
+    public async Task<int> HandleAsync(FetchConfigurationPoliciesCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
-        var policies = new List<DeviceCompliancePolicy>();
+        var policies = new List<DeviceManagementConfigurationPolicy>();
         var isAssigned = new bool();
         if (string.IsNullOrWhiteSpace(accessToken))
         {
@@ -49,11 +50,11 @@ public class FetchCompliancePoliciesCommandHandler : ICommandOptionsHandler<Fetc
         var nonAssigned = options.NonAssigned;
         // Microsoft Graph
         // Implementation of shared service from infrastructure comes here
-        var allCompliancePoliciesResults = new List<DeviceCompliancePolicy>();
+        var allCompliancePoliciesResults = new List<DeviceManagementConfigurationPolicy>();
         // Show progress spinner while fetching data
-        await AnsiConsole.Status().StartAsync("Fetching compliance policies from Intune", async _ =>
+        await AnsiConsole.Status().StartAsync("Fetching configuration policies from Intune", async _ =>
         {
-            allCompliancePoliciesResults = await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+            allCompliancePoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
             if (nonAssigned)
             {
                 policies.AddRange(allCompliancePoliciesResults.Where(p => p.Assignments.IsNullOrEmpty()));
@@ -84,11 +85,12 @@ public class FetchCompliancePoliciesCommandHandler : ICommandOptionsHandler<Fetc
             {
                 isAssigned = true;
             }
+
             table.AddRow(
                 policy.Id,
-                policy.DisplayName,
+                policy.Name,
                 isAssigned.ToString(),
-                "Compliance"
+                "Configuration"
             );
         }
 
