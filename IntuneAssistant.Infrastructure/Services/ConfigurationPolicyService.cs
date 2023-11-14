@@ -40,19 +40,4 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
 
         return results;
     }
-
-    public async Task<List<DeviceCompliancePolicyAssignment>?> GetCompliancePolicyAssignmentListAsync(string accessToken, string policyId)
-    {
-        try
-        {
-            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-            var result = await graphClient.DeviceManagement.DeviceCompliancePolicies[policyId].Assignments.GetAsync();
-            return result?.Value;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
 }

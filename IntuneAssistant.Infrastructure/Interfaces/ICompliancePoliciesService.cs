@@ -1,4 +1,3 @@
-using IntuneAssistant.Models.Options;
 using Microsoft.Graph.Beta.Models;
 
 namespace IntuneAssistant.Infrastructure.Interfaces;
