@@ -5,12 +5,13 @@ using IntuneAssistant.Models.Options;
 using Microsoft.Graph.Beta.DeviceManagement.Reports.GetComplianceSettingsReport;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class CompliancePolicyService : ICompliancePoliciesService
 {
-    public async Task<List<DeviceCompliancePolicy>?> GetCompliancePoliciesListAsync(string accessToken)
+    public async Task<List<DeviceCompliancePolicy>?> GetCompliancePoliciesListAsync(string accessToken, bool assignmentFilter)
     {
             var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
             var results = new List<DeviceCompliancePolicy>();
@@ -23,7 +24,14 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
                 });
 
                 if (result?.Value != null)
-                    results.AddRange(result.Value);
+                    if (assignmentFilter)
+                    {
+                        results.AddRange(result.Value.Where(r=> r.Assignments.IsNullOrEmpty()));
+                    }
+                    else
+                    {
+                        results.AddRange(result.Value);
+                    }
             }
             catch (ODataError ex)
             {

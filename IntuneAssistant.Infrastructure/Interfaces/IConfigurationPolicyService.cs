@@ -4,5 +4,5 @@ namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IConfigurationPolicyService
 {
-    Task<List<DeviceManagementConfigurationPolicy>?> GetConfigurationPoliciesListAsync(string accessToken);
+    Task<List<DeviceManagementConfigurationPolicy>?> GetConfigurationPoliciesListAsync(string accessToken, bool assignmentFilter);
 }

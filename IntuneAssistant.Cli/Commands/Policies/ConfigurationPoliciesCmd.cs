@@ -5,22 +5,24 @@ using Microsoft.Graph.Beta.Models;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
-namespace IntuneAssistant.Cli.Commands.Show;
+namespace IntuneAssistant.Cli.Commands.Policies;
 
 public class ConfigurationPoliciesCmd : Command<FetchConfigurationPoliciesCommandOptions,FetchConfigurationPoliciesCommandHandler>
 {
     public ConfigurationPoliciesCmd() : base(CommandConfiguration.ConfigurationPolicyCommandName, CommandConfiguration.ConfigurationPolicyCommandDescription)
     {
-        AddOption(new Option<bool>(CommandConfiguration.NonAssignedArg, CommandConfiguration.NonAssignedArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.PolicyIdArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
+        AddOption(new Option<bool>(CommandConfiguration.DeviceStatusCommandName, CommandConfiguration.DeviceStatusCommandDescription));
     }
 }
 
 
 public class FetchConfigurationPoliciesCommandOptions : ICommandOptions
 {
-    public bool NonAssigned { get; set; } = false;
     public string ExportCsv { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
+    public bool DeviceStatus { get; set; } = false;
     
 }
 
@@ -39,7 +41,6 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
     public async Task<int> HandleAsync(FetchConfigurationPoliciesCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
-        var policies = new List<DeviceManagementConfigurationPolicy>();
         var isAssigned = new bool();
         if (string.IsNullOrWhiteSpace(accessToken))
         {
@@ -47,22 +48,13 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
             return -1;
         }
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
-        var nonAssigned = options.NonAssigned;
         // Microsoft Graph
         // Implementation of shared service from infrastructure comes here
         var allCompliancePoliciesResults = new List<DeviceManagementConfigurationPolicy>();
         // Show progress spinner while fetching data
         await AnsiConsole.Status().StartAsync("Fetching configuration policies from Intune", async _ =>
         {
-            allCompliancePoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
-            if (nonAssigned)
-            {
-                policies.AddRange(allCompliancePoliciesResults.Where(p => p.Assignments.IsNullOrEmpty()));
-            }
-            else
-            {
-                policies.AddRange(allCompliancePoliciesResults);
-            }
+            allCompliancePoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken, false);
         });
 
         if (exportCsv)
@@ -75,7 +67,7 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
         table.AddColumn("DeviceName");
         table.AddColumn("Assigned");
         table.AddColumn("PolicyType");
-        foreach (var policy in policies)
+        foreach (var policy in allCompliancePoliciesResults)
         {
             if (policy.Assignments.IsNullOrEmpty())
             {

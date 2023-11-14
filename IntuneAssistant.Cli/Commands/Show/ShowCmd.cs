@@ -8,11 +8,11 @@ public static class ShowCmd
     public static Command New()
     {
         var showCommand = new Command(CommandConfiguration.ShowCommandName, CommandConfiguration.ShowCommandDescription);
-        var showPolicyCommand = new Command(CommandConfiguration.PoliciesCommandName, CommandConfiguration.PoliciesCommandDescription);
 
+        var showPolicyCommand = new PoliciesCmd();
         var showCompliancePolicyCommand = new CompliancePoliciesCmd();
         var showConfigurationPolicyCommand = new ConfigurationPoliciesCmd();
-
+        
         showPolicyCommand.AddCommand(showCompliancePolicyCommand);
         showPolicyCommand.AddCommand(showConfigurationPolicyCommand);
 

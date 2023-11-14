@@ -1,7 +1,7 @@
 using System.CommandLine;
-using IntuneAssistant.Cli.Fetches;
 using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Graph.Beta.Models;
+using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Policies;
@@ -12,14 +12,12 @@ public class CompliancePoliciesCmd : Command<FetchCompliancePoliciesCommandOptio
     {
         AddOption(new Option<string>(CommandConfiguration.PolicyIdArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
-        AddOption(new Option<bool>(CommandConfiguration.NonAssignedArg, CommandConfiguration.NonAssignedArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DeviceStatusCommandName, CommandConfiguration.DeviceStatusCommandDescription));
     }
 }
 
 public class FetchCompliancePoliciesCommandOptions : ICommandOptions
 {
-    public bool NonAssigned { get; set; } = false;
     public string ExportCsv { get; set; } = string.Empty;
     public string Id { get; set; } = string.Empty;
     public bool DeviceStatus { get; set; } = false;
@@ -39,24 +37,25 @@ public class FetchCompliancePoliciesCommandHandler : ICommandOptionsHandler<Fetc
     public async Task<int> HandleAsync(FetchCompliancePoliciesCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
+        var results = new DeviceComplianceDeviceStatusCollectionResponse();
+        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
+        var policyId = options.Id;
+        var deviceStatus = options.DeviceStatus;
+        
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
             return -1;
         }
-        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
-        var policyId = options.Id;
-        var deviceStatus = options.DeviceStatus;
-        var nonAssigned = options.NonAssigned;
-        if (nonAssigned)
+        if (policyId.IsNullOrEmpty())
         {
-            var table = await new ComplianceInfoFetch().AssignmentInfo(accessToken, policyId,
-                _compliancePoliciesService);
+            throw new Exception("Please provide the policy id using --id");
         }
+
         if (deviceStatus)
         {
-            var table = await new ComplianceInfoFetch().DeviceStatus(accessToken, policyId, _compliancePoliciesService);
-            AnsiConsole.Write(table);
+            results = await _compliancePoliciesService.GetCompliancePolicyDeviceStatusAsync(accessToken, policyId);
+            Console.Write(results);
         }
         return 0;
     }
