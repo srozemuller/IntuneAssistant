@@ -41,16 +41,18 @@ public static class CommandConfiguration
     // policies
     public const string PoliciesCommandName = "policies";
     public const string PoliciesCommandDescription = "Retrieve a list of all policies from Intune";
-    public const string PolicyIdArg = "--id";
-    public const string PolicyIdArgDescription = "Enter the policy ID to retreive specific policy information";
+    public const string PoliciesConfigurationFilterName = "--include-configuration";
+    public const string PoliciesConfigurationFilterDescription = "Retrieves all configuration policies from Intune";
+    public const string PoliciesComplianceFilterName = "--include-compliance";
+    public const string PoliciesComplianceFilterDescription = "Retrieves all compliance policies from Intune";
 
     // configuration policies
     public const string ConfigurationPolicyCommandName = "configuration";
-    public const string ConfigurationPolicyCommandDescription = "Retrieve a list of all configuration policies from Intune";
+    public const string ConfigurationPolicyCommandDescription = "Gives you options to select a specific configuration policy from Intune";
     
     // compliance policies
     public const string CompliancePolicyCommandName = "compliance";
-    public const string CompliantPolicyCommandDescription = "Retrieve a list of all comppliance policies from Intune";    
+    public const string CompliantPolicyCommandDescription = "Gives you options to select a specific compliance policy from Intune";    
    
     // assignments 
     public const string AssignmentsArg = "--assignments"; 
@@ -59,10 +61,17 @@ public static class CommandConfiguration
     // assignment filters
     public const string AssignmentFilterCommandName = "filters";
     public const string AssignmentFilterDescription = "Shows the assignement filters in Intune";
+    
+    public const string AssignmentFilterEvaluationCommandName = "evaluate";
+    public const string AssignmentFilterEvaluationDescription = "Evaluates the connected devices in the filter";
 
     // device status
     public const string DeviceStatusCommandName = "--device-status";
     public const string DeviceStatusCommandDescription = "Shows the devices statusses in the policy";
+    
+    // device OS overview
+    public const string DeviceOsBuildOverviewCommandName = "osbuild";
+    public const string DeviceOsBuildOverviewCommandDescription = "Shows the devices OS build overview";  
 
     // arguments
     public const string ExportCsvArg = "--export-csv";
@@ -71,4 +80,8 @@ public static class CommandConfiguration
     public const string RemoveArgDescription = "Removes all duplicate devices from Intune";
     public const string NonAssignedArg = "--non-assigned"; 
     public const string NonAssignedArgDescription = "Retrieve a list of all non-assigned compliance policies from Intune";
+    public const string IdArg = "--id";
+    public const string IdArgDescription = "The unique id of the item in Intune";
+    public const string ForceArg = "--force";
+    public const string ForceArgDescription = "Forces an action in Intune";
 }

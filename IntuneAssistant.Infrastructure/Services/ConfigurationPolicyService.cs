@@ -37,7 +37,6 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
-
         return results;
     }
 }

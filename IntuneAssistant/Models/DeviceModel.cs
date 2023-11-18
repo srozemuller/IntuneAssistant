@@ -25,4 +25,4 @@ public static class DeviceModelExtensions
             OsVersion = device.OsVersion
         };
     }
-} 
+}

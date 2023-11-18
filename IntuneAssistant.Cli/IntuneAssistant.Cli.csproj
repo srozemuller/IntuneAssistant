@@ -6,8 +6,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <SelfContained>false</SelfContained>
-        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-        <TargetType>exe</TargetType>
     </PropertyGroup>
 
     <ItemGroup>

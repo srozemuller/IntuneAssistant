@@ -1,11 +1,8 @@
 using System.CommandLine;
-using IntuneAssistant.Constants;
-using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Options;
-using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Devices;
@@ -15,6 +12,7 @@ public class DeviceDuplicateCmd : Command<FetchDeviceDuplicateCommandOptions,Fet
     public DeviceDuplicateCmd() : base(CommandConfiguration.DevicesDuplicatesCommandName, CommandConfiguration.DevicesDuplicatesCommandDescription)
     {
         AddOption(new Option<bool>(CommandConfiguration.RemoveArg, CommandConfiguration.RemoveArgDescription));
+        AddOption(new Option<bool>(CommandConfiguration.ForceArg, CommandConfiguration.ForceArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesWindowsFilterName, CommandConfiguration.DevicesWindowsFilterDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesMacOsFilterName, CommandConfiguration.DevicesMacOsFilterDescription));
@@ -32,6 +30,7 @@ public class FetchDeviceDuplicateCommandOptions : ICommandOptions
     public bool IncludeIos { get; set; } = false;
     public bool IncludeAndroid { get; set; } = false;
     public bool SelectNonCompliant { get; set; } = false;
+    public bool Force { get; set; } = false;
 }
 
 public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDeviceDuplicateCommandOptions>
@@ -47,6 +46,7 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
     {
 
         var removeProvided = options.Remove;
+        var forceProviced = options.Force;
         var accessToken = await new IdentityHelperService().GetAccessTokenSilentOrInteractiveAsync();
         if (string.IsNullOrWhiteSpace(accessToken))
         {
@@ -77,10 +77,6 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
                     if (allDeviceResults is not null)
                     {
                         devices.AddRange(allDeviceResults.Select(x => x.ToDeviceModel()));
-                        if (removeProvided)
-                        {
-                            await _deviceDuplicateService.RemoveDuplicateDevicesAsync(accessToken);
-                        }
                     }
             });
         if (devices?.Count == 0)
@@ -105,6 +101,31 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
                 device.OsVersion
             );
         AnsiConsole.Write(table);
+        if (removeProvided && forceProviced)
+        {
+            await _deviceDuplicateService.RemoveDuplicateDevicesAsync(accessToken);
+        }
+
+        if (removeProvided)
+        {
+            ConsoleKey input;
+            do {
+                AnsiConsole.MarkupLine("[red]Do you want to remove all duplicate devices above in Intune? (y/n)[/]");
+                input = Console.ReadKey().Key;
+                switch (input)
+                {
+                    case ConsoleKey.Y:
+                        //do something
+                        break;
+                    case ConsoleKey.N:
+                        //do something else
+                        break;
+                    default:
+                        AnsiConsole.MarkupLine("[red]Invalid input. Please press y or n.[/]");
+                        break;
+                }
+            } while (input != ConsoleKey.Y && input != ConsoleKey.N);
+        }
         return 0;
     }
 }

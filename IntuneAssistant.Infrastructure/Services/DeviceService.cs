@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Models;
 using IntuneAssistant.Models.Options;
 using Microsoft.Graph;
 using Microsoft.Graph.Beta.Models;
@@ -42,7 +43,7 @@ public sealed class DeviceService : IDeviceService
         }
     }
 
-    public async Task<List<ManagedDevice>?> GetFilteredDevices(string accessToken, DeviceFilterOptions? filterOptions)
+    public async Task<List<ManagedDevice>?> GetFilteredDevicesListAsync(string accessToken, DeviceFilterOptions? filterOptions)
     {
         filterOptions ??= new DeviceFilterOptions();
 
@@ -63,9 +64,6 @@ public sealed class DeviceService : IDeviceService
                 sb.Append(" or ");
 
             sb.Append("operatingSystem eq 'macOS'");
-
-          //  if (filterOptions.SelectNonCompliant)
-          //      sb.Append(" and complianceState eq 'nonCompliant'");
         }
 
         if (filterOptions.IncludeIos)
@@ -74,9 +72,6 @@ public sealed class DeviceService : IDeviceService
                 sb.Append(" or ");
 
             sb.Append("operatingSystem eq 'iOS'");
-
-            //if (filterOptions.SelectNonCompliant)
-            //    sb.Append(" and complianceState eq 'nonCompliant'");
         }
 
         if (filterOptions.IncludeAndroid)
@@ -85,9 +80,6 @@ public sealed class DeviceService : IDeviceService
                 sb.Append(" or ");
 
             sb.Append("operatingSystem eq 'Android'");
-
-            //if (filterOptions.SelectNonCompliant)
-            //    sb.Append(" and complianceState eq 'nonCompliant'");
         }
 
         if (filterOptions.SelectNonCompliant)
@@ -117,5 +109,74 @@ public sealed class DeviceService : IDeviceService
         }
 
         return results;
+    }
+    public async Task<List<OsBuildModel>> GetDevicesOsVersionsOverviewAsync(string accessToken, DeviceFilterOptions? filterOptions)
+    {
+        filterOptions ??= new DeviceFilterOptions();
+
+        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
+        var sb = new StringBuilder();
+
+        if (filterOptions.IncludeWindows)
+        {
+            sb.Append("operatingSystem eq 'Windows'");
+
+            if (filterOptions.SelectNonCompliant)
+                sb.Append(" and complianceState eq 'NonCompliant'");
+        }
+
+        if (filterOptions.IncludeMacOs)
+        {
+            if (sb.Length > 0)
+                sb.Append(" or ");
+
+            sb.Append("operatingSystem eq 'macOS'");
+        }
+
+        if (filterOptions.IncludeIos)
+        {
+            if (sb.Length > 0)
+                sb.Append(" or ");
+
+            sb.Append("operatingSystem eq 'iOS'");
+        }
+
+        if (filterOptions.IncludeAndroid)
+        {
+            if (sb.Length > 0)
+                sb.Append(" or ");
+
+            sb.Append("operatingSystem eq 'Android'");
+        }
+
+        if (filterOptions.SelectNonCompliant)
+        {
+            sb.Append(" complianceState eq 'nonCompliant'");
+        }
+        var odataFilter = sb.ToString();
+        var filter = string.IsNullOrWhiteSpace(odataFilter) ? null : odataFilter;
+
+        Console.WriteLine(filter);
+
+        try
+        {
+            var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync(requestConfiguration =>
+            {
+                requestConfiguration.QueryParameters.Filter = filter;
+            });
+    
+            var groupedDevices = result.Value.GroupBy(d => new { d.OsVersion, d.OperatingSystem }).Select(g => new OsBuildModel()
+            {
+                OS = g.Key.OperatingSystem,
+                OsVersion = g.Key.OsVersion,
+                Count = g.Count()
+            }).ToList();
+            return groupedDevices;
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            return null;
+        }
     }
 }

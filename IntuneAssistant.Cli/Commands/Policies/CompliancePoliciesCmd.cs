@@ -10,7 +10,7 @@ public class CompliancePoliciesCmd : Command<FetchCompliancePoliciesCommandOptio
 {
     public CompliancePoliciesCmd() : base(CommandConfiguration.CompliancePolicyCommandName, CommandConfiguration.CompliantPolicyCommandDescription)
     {
-        AddOption(new Option<string>(CommandConfiguration.PolicyIdArg, CommandConfiguration.ExportCsvArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.IdArg, CommandConfiguration.IdArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DeviceStatusCommandName, CommandConfiguration.DeviceStatusCommandDescription));
     }

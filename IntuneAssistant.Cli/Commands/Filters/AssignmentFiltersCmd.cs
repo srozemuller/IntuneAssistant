@@ -5,17 +5,19 @@ using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Filters;
 
-public class FiltersCmd : Command<FetchFiltersCommandOptions, FetchFiltersCommandHandler>
+public class AssignmentFiltersCmd : Command<FetchFiltersCommandOptions, FetchFiltersCommandHandler>
 {
-    public FiltersCmd() : base(CommandConfiguration.AssignmentFilterCommandName, CommandConfiguration.AssignmentFilterDescription)
+    public AssignmentFiltersCmd() : base(CommandConfiguration.AssignmentFilterCommandName, CommandConfiguration.AssignmentFilterDescription)
     {
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.IdArg, CommandConfiguration.IdArgDescription));
     }
 }
 
 public class FetchFiltersCommandOptions : ICommandOptions
 {
     public string ExportCsv { get; set; } = string.Empty;
+    public string Id { get; set; } = String.Empty;
 }
 
 public class FetchFiltersCommandHandler : ICommandOptionsHandler<FetchFiltersCommandOptions>
@@ -34,30 +36,46 @@ public class FetchFiltersCommandHandler : ICommandOptionsHandler<FetchFiltersCom
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var results = new List<DeviceAndAppManagementAssignmentFilter>();
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
-        var table = new Table();
-        table.Collapse();
-        table.AddColumn("Id");
-        table.AddColumn("DisplayName");
-        table.AddColumn("Rule");
+        var idProvided = !string.IsNullOrWhiteSpace(options.Id);
+
         
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
             return -1;
         }
-        results = await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
 
-        foreach (var filter in results)
+        if (idProvided)
         {
-            table.AddRow(
-                filter.Id,
-                filter.DisplayName,
-                filter.Rule
-            );
-                    
+            var result = await _assignmentFiltersService.GetAssignmentFilterInfoAsync(accessToken, options.Id);
+            if (result is not null)
+                results.Add(result);
         }
-        AnsiConsole.Write(table);
-        
-        return 0;
+        else
+        {
+            results = await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
+        }
+
+        if (results is not null)
+        {
+            var table = new Table();
+            table.Collapse();
+            table.AddColumn("Id");
+            table.AddColumn("DisplayName");
+            table.AddColumn("Rule");
+            foreach (var filter in results)
+            {
+                table.AddRow(
+                    filter.Id,
+                    filter.DisplayName,
+                    filter.Rule
+                );
+
+            }
+            AnsiConsole.Write(table);
+            return 0;
+        }
+        AnsiConsole.MarkupLine($"[yellow]No filters found in Intune, consider using filters. Using filters is a best practice.[/]");
+        return -1;
     }
 }

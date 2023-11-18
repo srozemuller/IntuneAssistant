@@ -1,4 +1,7 @@
+using System.Text.RegularExpressions;
+
 namespace IntuneAssistant.Extensions;
+
 
 /// <summary>
 /// Extension methods for <see cref="string"/>.
@@ -30,5 +33,12 @@ public static class StringExtensions
             length = value.Length - startIndex;
 
         return value.Substring(startIndex, length);
+    }
+    
+    public static string GetStringBetweenTwoStrings(string input, string pattern1, string pattern2)
+    {
+        string pattern = $"{Regex.Escape(pattern1)}(.*?){Regex.Escape(pattern2)}";
+        var match = Regex.Match(input, pattern);
+        return match.Groups[1].Value;
     }
 }

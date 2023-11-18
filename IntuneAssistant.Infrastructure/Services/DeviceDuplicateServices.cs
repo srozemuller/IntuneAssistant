@@ -72,17 +72,22 @@ public class DeviceDuplicateServices : IDeviceDuplicateService
                     requestConfiguration.QueryParameters.Filter = filter;
                 });
 
-                var duplicateDevices = result?.Value?.GroupBy(d => d.DeviceName)
+                var duplicateDevices = result?.Value?.Where(t => t.Model != "Virtual Machine").GroupBy(d => d.SerialNumber)
                     .Where(g => g.Count() > 1)
                     .SelectMany(g => g)
                     .ToList();
-
+                var duplicateVirtualDevices = result?.Value?.Where(t => t.Model == "Virtual Machine").GroupBy(d => d.DeviceName)
+                    .Where(g => g.Count() > 1)
+                    .SelectMany(g => g)
+                    .ToList();
+                if (duplicateDevices != null)
+                    results.AddRange(duplicateDevices);
+                if (duplicateVirtualDevices != null)
+                    results.AddRange(duplicateVirtualDevices);
                 if (exportOptions.ExportCsv.Length > 0)
                 {
-                    ExportData.ExportCsv(duplicateDevices, exportOptions.ExportCsv);
+                    ExportData.ExportCsv(results, exportOptions.ExportCsv);
                 }
-                if (result?.Value != null)
-                    results.AddRange(duplicateDevices);
                 return results;
             }
             catch (ODataError ex)
@@ -107,15 +112,16 @@ public class DeviceDuplicateServices : IDeviceDuplicateService
             // Create a new instance of GraphServiceClient with the DeviceCodeCredential and scopes
             var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
             var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync();
-            var devices = result?.Value?.GroupBy(d => d.DeviceName)
+            var devices = result?.Value?.Where(dm => dm.Model != "Virtual Machine").GroupBy(d => d.SerialNumber)
                     .Where(g => g.Count() > 1)
                     .SelectMany(g => g.OrderBy(i => i.LastSyncDateTime).Take(g.Count() - 1))
                     .ToList();
+            
                 foreach (var device in devices)
                 {
-                    _logger.LogWarning($"Removing devices, storing list in {AppConfiguration.DEFAULT_EXPORTFILENAME} ");
                     await graphClient.DeviceManagement.ManagedDevices[$"{device.Id}"].DeleteAsync();
                 }
+                _logger.LogWarning($"Removing physical devices, storing list in {AppConfiguration.DEFAULT_EXPORTFILENAME} ");
                 ExportData.ExportCsv(devices,AppConfiguration.DEFAULT_EXPORTFILENAME);
                 return devices;
         }

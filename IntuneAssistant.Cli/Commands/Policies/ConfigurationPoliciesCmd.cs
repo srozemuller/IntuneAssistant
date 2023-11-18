@@ -1,6 +1,7 @@
 using System.CommandLine;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
@@ -11,7 +12,7 @@ public class ConfigurationPoliciesCmd : Command<FetchConfigurationPoliciesComman
 {
     public ConfigurationPoliciesCmd() : base(CommandConfiguration.ConfigurationPolicyCommandName, CommandConfiguration.ConfigurationPolicyCommandDescription)
     {
-        AddOption(new Option<string>(CommandConfiguration.PolicyIdArg, CommandConfiguration.ExportCsvArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.IdArg, CommandConfiguration.IdArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DeviceStatusCommandName, CommandConfiguration.DeviceStatusCommandDescription));
     }
@@ -41,7 +42,6 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
     public async Task<int> HandleAsync(FetchConfigurationPoliciesCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
-        var isAssigned = new bool();
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
@@ -67,22 +67,38 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
         table.AddColumn("DeviceName");
         table.AddColumn("Assigned");
         table.AddColumn("PolicyType");
+        table.AddColumn("AssignmentTarget");
         foreach (var policy in allCompliancePoliciesResults)
         {
-            if (policy.Assignments.IsNullOrEmpty())
+            var assignmentTypes = new List<string>();
+            string policyType;
+            var assignmentInfo = new AssignmentInfoModel();
+            if (policy.TemplateReference.TemplateFamily is not null)
             {
-                isAssigned = false;
+                policyType = policy.TemplateReference.TemplateFamily.Value.ToString();
             }
             else
             {
-                isAssigned = true;
+                policyType = policy.TemplateReference.ToString();
             }
-
+            if (policy.Assignments.IsNullOrEmpty())
+            {
+                assignmentTypes.Add("None");
+            }
+            else
+            {
+                foreach (var assignment  in policy.Assignments)
+                {
+                    assignmentInfo = AssignmentInfoModelExtensions.ToAssignmentInfoModel(assignment.Target);
+                    assignmentTypes.Add($"{assignmentInfo.AssignmentType} ({assignmentInfo.FilterType})");
+                }   
+            }
             table.AddRow(
                 policy.Id,
                 policy.Name,
-                isAssigned.ToString(),
-                "Configuration"
+                assignmentInfo.IsAssigned.ToString(),
+                policyType,
+                string.Join(",",assignmentTypes)
             );
         }
 

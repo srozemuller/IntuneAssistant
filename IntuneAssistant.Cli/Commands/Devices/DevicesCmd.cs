@@ -8,8 +8,10 @@ public static class DevicesCmd
     {
         var devicesCommand = new ManagedDevicesCmd();
         var devicesDuplicateCommand = new DeviceDuplicateCmd();
+        var devicesOsBuildOverview = new DevicesOsBuildOverviewCmd();
 
         devicesCommand.AddCommand(devicesDuplicateCommand);
+        devicesCommand.AddCommand(devicesOsBuildOverview);
 
         return devicesCommand;
     }
