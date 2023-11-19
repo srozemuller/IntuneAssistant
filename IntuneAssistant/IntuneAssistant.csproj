@@ -11,8 +11,4 @@
       <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.57.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Helpers\" />
-    </ItemGroup>
-
 </Project>

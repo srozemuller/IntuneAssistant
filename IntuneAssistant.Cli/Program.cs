@@ -23,6 +23,9 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<IDeviceDuplicateService, DeviceDuplicateServices>();
     services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
     services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
+    services.AddScoped<IAssignmentFiltersService, AssignmentFiltersService>();
+    services.AddScoped<IAssignmentsService, AssignmentsService>();
+    services.AddScoped<IGroupInformationService, GroupInformationService>();
 });
 
     AnsiConsole.MarkupLine(

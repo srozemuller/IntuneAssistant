@@ -3,7 +3,7 @@ using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Graph.Beta.Models;
 using Spectre.Console;
 
-namespace IntuneAssistant.Cli.Commands.Filters;
+namespace IntuneAssistant.Cli.Commands.Assignments;
 
 public class AssignmentFiltersCmd : Command<FetchFiltersCommandOptions, FetchFiltersCommandHandler>
 {

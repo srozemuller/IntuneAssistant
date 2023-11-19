@@ -55,8 +55,12 @@ public static class CommandConfiguration
     public const string CompliantPolicyCommandDescription = "Gives you options to select a specific compliance policy from Intune";    
    
     // assignments 
-    public const string AssignmentsArg = "--assignments"; 
-    public const string AssignmentsArgDescription = "Shows the assignement of the specific item in Intune";
+    public const string AssignmentsCommandName = "assignments"; 
+    public const string AssignmentsCommandDescription = "Retrieves all assignments in Intune";
+    public const string AssignmentsGroupIdCommandName = "--group-id"; 
+    public const string AssignmentsGroupIdCommandDescription = "Enter the Entra ID Group ID";
+    public const string AssignmentsGroupNameCommandName = "--group-name"; 
+    public const string AssignmentsGroupNameCommandDescription = "Enter the Entra ID Group name";
     
     // assignment filters
     public const string AssignmentFilterCommandName = "filters";
