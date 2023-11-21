@@ -1,6 +1,8 @@
 using System.CommandLine;
 using IntuneAssistant.Infrastructure.Interfaces;
+using Microsoft.Extensions.Logging;
 using IntuneAssistant.Models;
+using IntuneAssistant.Extensions;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Assignments;
@@ -34,52 +36,162 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         _assignmentsService = assignmentsService;
         _groupInformationService = groupInformationService;
         _identityHelperService = identityHelperService;
-        
     }
     public async Task<int> HandleAsync(FetchAssignmentsCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
-        var results = new List<AssignmentsModel>();
+        var allResults = new List<AssignmentsModel>();
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
-        var groupIdprovided = !string.IsNullOrWhiteSpace(options.GroupId);
-        var groupName = !string.IsNullOrEmpty(options.GroupName);
+        var groupIdProvided = !string.IsNullOrWhiteSpace(options.GroupId);
+        var groupNameProvided = !string.IsNullOrWhiteSpace(options.GroupName);
         var groupInfo = new Microsoft.Graph.Beta.Models.Group();
-        await AnsiConsole.Status()
-                .StartAsync("Fetching group information from Entra ID",
-                    async _ =>
-                    {
-                        if (groupIdprovided)
-                        {
-                            groupInfo = await _groupInformationService.GetGroupInformationByIdAsync(accessToken,
-                                options.GroupId);
-                        }
-                        else
-                        {
-                            groupInfo = await _groupInformationService.GetGroupInformationByNameAsync(accessToken,
-                                options.GroupName);
-                        }
-                    }); 
-        if (groupInfo is not null)
-            {
-                await AnsiConsole.Status()
-                    .StartAsync("Fetching assignments based on specific group from Intune",
-                        async _ =>
-                        {
-                            results = await _assignmentsService.GetAssignmentsByGroupListAsync(accessToken, groupInfo);
-                        });
-            }
-            else
-            {
-                AnsiConsole.MarkupLine($"[red]No group found![/]");
-                return -1;
-            }
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
             return -1;
         }
 
-        if (results is not null)
+        if (groupIdProvided || groupNameProvided)
+        {
+            await AnsiConsole.Status()
+                .StartAsync("Fetching group information from Entra ID",
+                    async _ =>
+                    {
+                        if (groupIdProvided)
+                        {
+
+                                groupInfo = await _groupInformationService.GetGroupInformationByIdAsync(accessToken,
+                                    options.GroupId);
+                        }
+                        else
+                        {
+                            groupInfo = await _groupInformationService.GetGroupInformationByNameAsync(accessToken,
+                                options.GroupName);
+                        }
+                    });
+            if (groupInfo is null)
+            {
+                AnsiConsole.MarkupLine($"[red]No group found! Provided {options.GroupId}{options.GroupName}[/]");
+                return -1;
+            }
+
+            await AnsiConsole.Status()
+                    .StartAsync(
+                        $"Fetching compliance policy assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = new List<AssignmentsModel>();
+                            results =
+                                await _assignmentsService.GetCompliancePolicyAssignmentsByGroupListAsync(accessToken,
+                                    groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+                await AnsiConsole.Status()
+                    .StartAsync(
+                        $"Fetching configuration policy assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = new List<AssignmentsModel>();
+                            results =
+                                await _assignmentsService.GetConfigurationPolicyAssignmentsByGroupListAsync(accessToken,
+                                    groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+                await AnsiConsole.Status()
+                    .StartAsync(
+                        $"Fetching configuration policy assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = new List<AssignmentsModel>();
+                            results =
+                                await _assignmentsService.GetDeviceManagementScriptsAssignmentsByGroupListAsync(
+                                    accessToken, groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+                await AnsiConsole.Status()
+                    .StartAsync(
+                        $"Fetching remediation scripts assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = new List<AssignmentsModel>();
+                            results = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken,
+                                groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+                await AnsiConsole.Status()
+                    .StartAsync(
+                        $"Fetching auto pilot profile assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = new List<AssignmentsModel>();
+                            results = await _assignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken,
+                                groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+                await AnsiConsole.Status()
+                    .StartAsync(
+                        $"Fetching mobile application assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = new List<AssignmentsModel>();
+                            results = await _assignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken,
+                                groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+                await AnsiConsole.Status()
+                    .StartAsync(
+                        $"Fetching application configuration assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = new List<AssignmentsModel>();
+                            results =
+                                await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(
+                                    accessToken, groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+                await AnsiConsole.Status()
+                    .StartAsync(
+                        $"Fetching application protection assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = new List<AssignmentsModel>();
+                            results = await _assignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken,
+                                groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+        }
+        if (exportCsv)
+        {
+            await AnsiConsole.Status()
+                .StartAsync($"Exporting results to {options.ExportCsv}",
+                    async _ => { ExportData.ExportCsv(allResults, options.ExportCsv); });
+        }
+
+        if (allResults.Count > 0)
         {
             var table = new Table();
             table.Collapse();
@@ -88,8 +200,8 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             table.AddColumn("ResourceName");
             table.AddColumn("AssignmentType");
             table.AddColumn("TargetId");
-            table.AddColumn("GroupName");
-            foreach (var filter in results)
+            table.AddColumn("TargetName");
+            foreach (var filter in allResults)
             {
                 table.AddRow(
                     filter.ResourceType,
@@ -99,7 +211,6 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                     filter.TargetId,
                     groupInfo.DisplayName
                 );
-            
             }
             AnsiConsole.Write(table);
             return 0;

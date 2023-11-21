@@ -7,7 +7,6 @@ using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Spectre.Console;
 
 var rootCommand = RootCmd.New();

@@ -20,7 +20,7 @@ public class AssignmentsModel
 
 public static class AssignmentModelExtensions
 {
-    public static AssignmentsModel ToAssignmentModel(this DeviceAndAppManagementAssignmentTarget? target, string assignmentId, string? modelString, string? resourceName)
+    public static AssignmentsModel ToAssignmentModel(this DeviceAndAppManagementAssignmentTarget? target, string resourceId, string? modelString, string? resourceName, string targetId)
     {
         if (target is not null)
         {
@@ -29,8 +29,6 @@ public static class AssignmentModelExtensions
             string pattern1 = "Microsoft.Graph.Beta.Models.";
             string pattern2 = "AssignmentTarget";
             string assignmentType = StringExtensions.GetStringBetweenTwoStrings(target.ToString(), pattern1, pattern2);
-            string targetId = assignmentId.Split("_")[1];
-            string resourceId = assignmentId.Split("_")[0];
             string resourceType = "Type not found";
              if (modelString is not null)
                  resourceType = ResourceHelper.GetResourceTypeFromOdata(modelString);

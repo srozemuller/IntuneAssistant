@@ -1,4 +1,5 @@
 using IntuneAssistant.Infrastructure.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Beta.Models;
 
 namespace IntuneAssistant.Infrastructure.Services;
@@ -6,10 +7,19 @@ namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class GroupInformationService : IGroupInformationService
 {
+
     public async Task<Group?> GetGroupInformationByIdAsync(string accessToken, string groupId)
     {
         var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-        var results = await graphClient.Groups[groupId].GetAsync(); 
+        var results = new Group();
+        try
+        {
+            results = await graphClient.Groups[groupId].GetAsync();
+        }
+        catch
+        {
+            return null;
+        }
         return results;
     }
 
