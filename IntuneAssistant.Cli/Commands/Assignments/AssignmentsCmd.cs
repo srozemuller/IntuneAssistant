@@ -47,11 +47,46 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 $"Fetching global assignments overview from Intune",
                 async _ =>
                 {
-                    var results = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null);
-                    if (results is not null)
-                    {
-                        allResults.AddRange(results);
-                    }
+                        var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null);
+                        if (complianceResults is not null)
+                        {
+                            allResults.AddRange(complianceResults);
+                        }
+                        var configurationResults = await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null);
+                        if (configurationResults is not null)
+                        {
+                            allResults.AddRange(configurationResults);
+                        }
+                        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
+                        if (deviceScriptsResults is not null)
+                        {
+                            allResults.AddRange(deviceScriptsResults);
+                        }
+                        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, null);
+                        if (healthScriptsResults is not null)
+                        {
+                            allResults.AddRange(healthScriptsResults);
+                        }
+                        var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken, null);
+                        if (autoPilotResults is not null)
+                        {
+                            allResults.AddRange(autoPilotResults);
+                        }
+                        var appProtectionResults = await _assignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, null);
+                        if (appProtectionResults is not null)
+                        {
+                            allResults.AddRange(appProtectionResults);
+                        }
+                        var mobileAppResults = await _assignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, null);
+                        if (mobileAppResults is not null)
+                        {
+                            allResults.AddRange(mobileAppResults);
+                        }
+                        var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, null);
+                        if (targetAppResults is not null)
+                        {
+                            allResults.AddRange(targetAppResults);
+                        }
                 });
         if (allResults.Count > 0)
         {
