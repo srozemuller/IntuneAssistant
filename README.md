@@ -46,6 +46,11 @@ To view a specific group based on group id, overview use this command:
 ./IntuneAssistant.Cli show assignments groups --group-id 000-0000
 ```
 
+To export the overview to CSV use:
+```shell
+./IntuneAssistant.Cli show assignments groups --group-id 000-0000 --export-csv filename.csv
+```
+
 ![intune-groupoverview](Documentation/images/intune-groupoverview.jpeg)
 
 ### Help
