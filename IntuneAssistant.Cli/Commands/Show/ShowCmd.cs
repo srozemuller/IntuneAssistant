@@ -28,9 +28,12 @@ public static class ShowCmd
 
 
         var showAssignements = new AssignmentsCmd();
+        var showGroupAssignments = new AssignmentsGroupCmd();
+        
         devicesCommand.AddCommand(devicesDuplicateCommand);
         devicesCommand.AddCommand(devicesOsBuildOverview);
 
+        showAssignements.AddCommand(showGroupAssignments);
         showCommand.AddCommand(showPolicyCommand);
         showCommand.AddCommand(showAssignmentFiltersCommand);
         showCommand.AddCommand(devicesCommand);

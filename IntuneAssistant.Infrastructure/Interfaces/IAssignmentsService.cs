@@ -5,13 +5,13 @@ namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IAssignmentsService
 {
-    Task<List<AssignmentsModel>?> GetCompliancePolicyAssignmentsByGroupListAsync(string accessToken, Group group);
-    Task<List<AssignmentsModel>?> GetConfigurationPolicyAssignmentsByGroupListAsync(string accessToken, Group group);
-    Task<List<AssignmentsModel>?> GetDeviceManagementScriptsAssignmentsByGroupListAsync(string accessToken, Group group);
-    Task<List<AssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken, Group group);
-    Task<List<AssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, Group group);
-    Task<List<AssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, Group group);
-    Task<List<AssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(string accessToken, Group group);
-    Task<List<AssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken, Group group);
-    Task<List<AssignmentsModel>?> GetAssignmentsListAsync(string accessToken);
+    Task<List<AssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string accessToken, Group? group);
+    Task<List<AssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken, Group? group);
+    Task<List<AssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken, Group? group);
+    Task<List<AssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, Group? group);
+    Task<List<AssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, Group? group);
+    Task<List<AssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(string accessToken, Group? group);
+    Task<List<AssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken, Group? group);
+    Task<List<AssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken, Group? group);
+
 }

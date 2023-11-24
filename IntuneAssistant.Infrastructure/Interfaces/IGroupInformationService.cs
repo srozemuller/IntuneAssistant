@@ -6,4 +6,5 @@ public interface IGroupInformationService
 {
     Task<Group?> GetGroupInformationByIdAsync(string accessToken, string groupId);
     Task<Group?> GetGroupInformationByNameAsync(string accessToken, string groupName);
+    Task<List<Group?>> GetGroupInformationByIdsCollectionListAsync(string accessToken, List<string> groupIds);
 }

@@ -20,6 +20,7 @@ public sealed class GroupInformationService : IGroupInformationService
         {
             return null;
         }
+
         return results;
     }
 
@@ -30,4 +31,22 @@ public sealed class GroupInformationService : IGroupInformationService
         var results = allResults.Value.Where(g => g.DisplayName == groupName).FirstOrDefault();
         return results;
     }
+
+    public async Task<List<Group?>> GetGroupInformationByIdsCollectionListAsync(string accessToken,
+        List<string> groupIds)
+    {
+        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
+        var allResults = new List<Group>();
+        var groupResults = new Group();
+        foreach (var groupId in groupIds)
+        {
+            groupResults = await graphClient.Groups[groupId].GetAsync();
+            if (groupResults is not null)
+            {
+                allResults.Add(groupResults);
+            }
+        }
+
+        return allResults;
+        }
 }

@@ -1,4 +1,5 @@
 using System.CommandLine;
+using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models.Options;
 using Microsoft.Graph.Beta.Models;
@@ -10,13 +11,13 @@ public class ManagedDevicesCmd : Command<FetchManagedDevicesCommandOptions, Fetc
 {
     public ManagedDevicesCmd() : base(CommandConfiguration.DevicesCommandName, CommandConfiguration.DevicesCommandDescription)
     {
-        AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesWindowsFilterName, CommandConfiguration.DevicesWindowsFilterDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesMacOsFilterName, CommandConfiguration.DevicesMacOsFilterDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesIosFilterName, CommandConfiguration.DevicesIosFilterDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesAndroidFilterName, CommandConfiguration.DevicesAndroidFilterDescription));
         AddOption(new Option<bool>(CommandConfiguration.DevicesNonCompliantFilterName, CommandConfiguration.DevicesNonCompliantFilterDescription));
-
+        AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
+        
         // TODO: Remove temporary argument
         AddOption(new Option<string>("--token", "The access token to use for authentication"));
     }
@@ -29,6 +30,8 @@ public class FetchManagedDevicesCommandOptions : ICommandOptions
     public bool IncludeIos { get; set; } = false;
     public bool IncludeAndroid { get; set; } = false;
     public bool SelectNonCompliant { get; set; } = false;
+    public string ExportCsv { get; set; } = string.Empty;
+    
 
     // TODO: Remove temporary argument
     public string Token { get; set; } = string.Empty;
@@ -48,7 +51,8 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
     public async Task<int> HandleAsync(FetchManagedDevicesCommandOptions options)
     {
         var accessToken = options.Token;
-
+        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
+        
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             var tokenFromHelper = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
@@ -101,7 +105,12 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
                 device.LastSyncDateTime.ToString() ?? string.Empty
             );
         }
-
+        if (exportCsv)
+        {
+            await AnsiConsole.Status()
+                .StartAsync($"Exporting results to {options.ExportCsv}",
+                    async _ => { ExportData.ExportCsv(devices, options.ExportCsv); });
+        }
         AnsiConsole.Write(table);
 
         return 0;

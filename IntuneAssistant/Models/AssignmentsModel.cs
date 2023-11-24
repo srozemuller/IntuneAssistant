@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using Azure.Core;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Helpers;
@@ -14,35 +15,60 @@ public class AssignmentsModel
     public string TargetId { get; set; } = String.Empty;
     public string ResourceId { get; set; } = String.Empty;
     public string ResourceName { get; set; } = String.Empty;
+    public string FilterId { get; set; } = String.Empty;
+    public string FilterType { get; set; } = "None";
 }
 
 
 
 public static class AssignmentModelExtensions
 {
-    public static AssignmentsModel ToAssignmentModel(this DeviceAndAppManagementAssignmentTarget? target, string resourceId, string? modelString, string? resourceName, string targetId)
+    public static AssignmentsModel ToAssignmentModel(this DeviceAndAppManagementAssignmentTarget? deviceTarget, GroupAssignmentTarget? groupTarget, string resourceId, string? modelString, string? resourceName)
     {
-        if (target is not null)
+        string targetId = String.Empty;
+        string pattern1 = "Microsoft.Graph.Beta.Models.";
+        string pattern2 = "AssignmentTarget";
+        string assignmentType = String.Empty;
+        bool isAssigned = false;
+        string filterId = String.Empty;
+        string filterType = String.Empty; 
+        string resourceType = "Type not found"; 
+        if (groupTarget is not null)
         {
-            string targetType = target.DeviceAndAppManagementAssignmentFilterType.ToString();
-            var isAssigned = !target.DeviceAndAppManagementAssignmentFilterType.ToString().IsNullOrEmpty();
-            string pattern1 = "Microsoft.Graph.Beta.Models.";
-            string pattern2 = "AssignmentTarget";
-            string assignmentType = StringExtensions.GetStringBetweenTwoStrings(target.ToString(), pattern1, pattern2);
-            string resourceType = "Type not found";
-             if (modelString is not null)
-                 resourceType = ResourceHelper.GetResourceTypeFromOdata(modelString);
-            // //GroupAssignmentTarget 
-            return new AssignmentsModel
+            targetId = "none";
+            assignmentType = StringExtensions.GetStringBetweenTwoStrings(groupTarget.ToString(), pattern1, pattern2);
+            isAssigned = !groupTarget.DeviceAndAppManagementAssignmentFilterType.ToString().IsNullOrEmpty();
+            filterId = groupTarget.DeviceAndAppManagementAssignmentFilterId.IsNullOrEmpty() ? "No Filter" : groupTarget.DeviceAndAppManagementAssignmentFilterId;
+            filterType = groupTarget.DeviceAndAppManagementAssignmentFilterType.ToString(); 
+            if (groupTarget is GroupAssignmentTarget group)
             {
-                AssignmentType = assignmentType,
-                IsAssigned = isAssigned,
-                ResourceType = resourceType,
-                ResourceId = resourceId,
-                TargetId = targetId,
-                ResourceName = resourceName
-            };
+                targetId = group.GroupId;
+            }
+            if (modelString is not null)
+                resourceType = ResourceHelper.GetResourceTypeFromOdata(modelString);
         }
-        return new AssignmentsModel();
+        if (deviceTarget is not null)
+        {
+            isAssigned = !deviceTarget.DeviceAndAppManagementAssignmentFilterType.ToString().IsNullOrEmpty();
+            assignmentType = StringExtensions.GetStringBetweenTwoStrings(deviceTarget.ToString(), pattern1, pattern2);
+            filterId = deviceTarget.DeviceAndAppManagementAssignmentFilterId.IsNullOrEmpty() ? "No Filter" : deviceTarget.DeviceAndAppManagementAssignmentFilterId;
+            filterType = deviceTarget.DeviceAndAppManagementAssignmentFilterType.ToString(); 
+
+            if (modelString is not null)
+                 resourceType = ResourceHelper.GetResourceTypeFromOdata(modelString);
+            
+        }
+        return new AssignmentsModel
+        {
+            AssignmentType = assignmentType,
+            IsAssigned = isAssigned,
+            ResourceType = resourceType,
+            ResourceId = resourceId,
+            TargetId = targetId,
+            ResourceName = resourceName,
+            FilterId = filterId,
+            FilterType = filterType
+        };
+
     }
 } 

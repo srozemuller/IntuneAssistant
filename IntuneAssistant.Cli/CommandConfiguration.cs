@@ -62,9 +62,13 @@ public static class CommandConfiguration
     public const string AssignmentsGroupNameCommandName = "--group-name"; 
     public const string AssignmentsGroupNameCommandDescription = "Enter the Entra ID Group name";
     
+    // assignment groups
+    public const string AssignmentsGroupsCommandName = "groups";
+    public const string AssignmentsGroupsCommandDescription = "Shows all group assignements in Intune";
+    
     // assignment filters
     public const string AssignmentFilterCommandName = "filters";
-    public const string AssignmentFilterDescription = "Shows the assignement filters in Intune";
+    public const string AssignmentFilterCommandDescription = "Shows the assignement filters in Intune";
     
     public const string AssignmentFilterEvaluationCommandName = "evaluate";
     public const string AssignmentFilterEvaluationDescription = "Evaluates the connected devices in the filter";

@@ -5,7 +5,7 @@ namespace IntuneAssistant.Extensions;
 
 public static class ExportData
 {
-    public static void ExportCsv<T>(List<T> genericList, string fileName)
+    public static void ExportCsv<T>(List<T>? genericList, string fileName)
     {
         var sb = new StringBuilder();
         var basePath = AppDomain.CurrentDomain.BaseDirectory;

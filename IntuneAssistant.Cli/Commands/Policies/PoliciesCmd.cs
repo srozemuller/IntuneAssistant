@@ -1,4 +1,5 @@
 using System.CommandLine;
+using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models;
@@ -85,7 +86,7 @@ public class FetchPoliciesCommandHandler : ICommandOptionsHandler<FetchPoliciesC
         foreach (var policy in complianceResults)
         {
             var assignmentTypes = new List<string>();
-            string policyType = "Compliance";
+            string policyType = ResourceHelper.GetResourceTypeFromOdata(policy.OdataType);
             var assignmentInfo = new AssignmentInfoModel();
             if (policy.Assignments.IsNullOrEmpty())
             {

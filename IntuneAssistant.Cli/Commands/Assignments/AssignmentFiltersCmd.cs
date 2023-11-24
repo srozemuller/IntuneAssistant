@@ -7,7 +7,7 @@ namespace IntuneAssistant.Cli.Commands.Assignments;
 
 public class AssignmentFiltersCmd : Command<FetchFiltersCommandOptions, FetchFiltersCommandHandler>
 {
-    public AssignmentFiltersCmd() : base(CommandConfiguration.AssignmentFilterCommandName, CommandConfiguration.AssignmentFilterDescription)
+    public AssignmentFiltersCmd() : base(CommandConfiguration.AssignmentFilterCommandName, CommandConfiguration.AssignmentFilterCommandDescription)
     {
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<string>(CommandConfiguration.IdArg, CommandConfiguration.IdArgDescription));
