@@ -5,8 +5,8 @@ Welcome to **The IntuneCLI**. This CLI helps you managing Microsoft Intune envir
 In this very first version one small command is available to help you removing duplicate devices from Intune.
 The current version has two supported platforms, Windows and macOS.  
 
-The Windows client can be downloaded here: [The IntuneCLI Windows](https://github.com/srozemuller/IntuneAssistant/blob/main/ClientDownloads/Windows/intunecli-win-x64-v1.exe)  
-The macOS client can be downloaded here: [The IntuneCLI macOS](https://github.com/srozemuller/IntuneAssistant/blob/main/ClientDownloads/macOS/intunecli-osx-arm64-v1)
+The Windows client can be downloaded here: [The IntuneCLI Windows](https://github.com/srozemuller/IntuneAssistant/blob/main/ClientDownloads/Windows/intunecli-win-x64-v1.1.exe)  
+The macOS client can be downloaded here: [The IntuneCLI macOS](https://github.com/srozemuller/IntuneAssistant/blob/main/ClientDownloads/macOS/intunecli-osx-arm64-v1.1)
 
 
 ![theintuneCLI.png](Documentation%2Fimages%2FtheintuneCLI.png)
