@@ -10,6 +10,7 @@ public static class AppConfiguration
     public const string REDIRECT_URI = "http://localhost";
     public const string GRAPH_URL = "https://graph.microsoft.com/beta/";
     public static readonly string[] GRAPH_INTERACTIVE_SCOPE = {
+        "Group.Read.All",
         "DeviceManagementConfiguration.ReadWrite.All",
         "DeviceManagementServiceConfig.ReadWrite.All",
         "DeviceManagementApps.ReadWrite.All"
