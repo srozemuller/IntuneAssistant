@@ -15,6 +15,11 @@ var builder = new CommandLineBuilder(rootCommand)
     .UseHelp()
     .UseDependencyInjection(services =>
 {
+    services.AddHttpClient("Test", client =>
+    {
+        client.DefaultRequestHeaders
+            .Add("x-ms-throttle-priority", "low");
+    });
     services.AddSingleton(new HttpClient());
     services.AddLogging();
     services.AddSingleton<IIdentityHelperService, IdentityHelperService>();

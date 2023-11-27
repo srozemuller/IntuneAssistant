@@ -47,7 +47,7 @@ public class FetchPoliciesCommandHandler : ICommandOptionsHandler<FetchPoliciesC
         var assignmentFilter = options.NonAssigned;
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var complianceResults = new List<DeviceCompliancePolicy>();
-        var configurationResults = new List<DeviceManagementConfigurationPolicy>();
+        var configurationResults = new List<ConfigurationPolicy>();
         var returnConfiguration = options.IncludeConfiguration;
         var returnCompliance = options.IncludeCompliance;
         var table = new Table();
@@ -110,36 +110,36 @@ public class FetchPoliciesCommandHandler : ICommandOptionsHandler<FetchPoliciesC
         }
         foreach (var policy in configurationResults)
         {
-            var assignmentTypes = new List<string>();
-            string policyType;
-            var assignmentInfo = new AssignmentInfoModel();
-            if (policy.TemplateReference.TemplateFamily is not null)
-            {
-                policyType = policy.TemplateReference.TemplateFamily.Value.ToString();
-            }
-            else
-            {
-                policyType = policy.TemplateReference.ToString();
-            }
-            if (policy.Assignments.IsNullOrEmpty())
-            {
-                assignmentTypes.Add("None");
-            }
-            else
-            {
-                foreach (var assignment  in policy.Assignments)
-                {
-                    assignmentInfo = AssignmentInfoModelExtensions.ToAssignmentInfoModel(assignment.Target);
-                    assignmentTypes.Add($"{assignmentInfo.AssignmentType} ({assignmentInfo.FilterType})");
-                }   
-            }
-            table.AddRow(
-                policy.Id,
-                policy.Name,
-                assignmentInfo.IsAssigned.ToString(),
-                policyType,
-                string.Join(",",assignmentTypes)
-            );
+            // var assignmentTypes = new List<string>();
+            // string policyType;
+            // var assignmentInfo = new AssignmentInfoModel();
+            // if (policy.TemplateReference.TemplateFamily is not null)
+            // {
+            //     policyType = policy.TemplateReference.TemplateFamily.Value.ToString();
+            // }
+            // else
+            // {
+            //     policyType = policy.TemplateReference.ToString();
+            // }
+            // if (policy.Assignments.IsNullOrEmpty())
+            // {
+            //     assignmentTypes.Add("None");
+            // }
+            // else
+            // {
+            //     foreach (var assignment  in policy.Assignments)
+            //     {
+            //         assignmentInfo = AssignmentInfoModelExtensions.ToAssignmentInfoModel(assignment.Target);
+            //         assignmentTypes.Add($"{assignmentInfo.AssignmentType} ({assignmentInfo.FilterType})");
+            //     }   
+            // }
+            // table.AddRow(
+            //     policy.Id,
+            //     policy.Name,
+            //     assignmentInfo.IsAssigned.ToString(),
+            //     policyType,
+            //     string.Join(",",assignmentTypes)
+            // );
         }
         AnsiConsole.Write(table);
         return 0;

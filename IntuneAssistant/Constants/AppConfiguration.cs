@@ -5,11 +5,12 @@ namespace IntuneAssistant.Constants;
 public static class AppConfiguration
 {
     // App settings
+    public const string HTTP_CLIENT_NAME = "MicrosoftGraph";
     public const string AUTHORITY = "https://login.microsoftonline.com/common";
     public const string CLIENT_ID = "14d82eec-204b-4c2f-b7e8-296a70dab67e";
     public const string REDIRECT_URI = "http://localhost";
-    public const string GRAPH_URL = "https://graph.microsoft.com/v1.0/";
-    public static readonly string[] GRAPH_INTERACTIVE_SCOPE = new string[] {"https://graph.microsoft.com//.default" };
+    public const string GRAPH_URL = "https://graph.microsoft.com/beta";
+    public static readonly string[] GRAPH_INTERACTIVE_SCOPE = new string[] {"https://graph.microsoft.com/.default" };
     public const string DEFAULT_EXPORTFILENAME = $"IntuneAssistant_export";
     
     // Cache settings

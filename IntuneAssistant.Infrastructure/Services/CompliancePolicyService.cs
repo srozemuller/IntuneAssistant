@@ -42,12 +42,28 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
             return results;
     }
 
-    public async Task<DeviceComplianceDeviceStatusCollectionResponse> GetCompliancePolicyDeviceStatusAsync(string accessToken, string policyId)
+    public async Task<DeviceComplianceDeviceStatusCollectionResponse>? GetCompliancePolicyDeviceStatusByIdAsync(string accessToken, string policyId)
     {
         try
         {
             var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
             var result = await graphClient.DeviceManagement.DeviceCompliancePolicies[policyId].DeviceStatuses
+                .GetAsync();
+            return result;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<DeviceCompliancePolicy>? GetCompliancePolicyByIdAsync(string accessToken, string policyId)
+    {
+        try
+        {
+            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
+            var result = await graphClient.DeviceManagement.DeviceCompliancePolicies[policyId]
                 .GetAsync();
             return result;
         }

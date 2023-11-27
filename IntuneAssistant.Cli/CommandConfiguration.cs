@@ -84,6 +84,8 @@ public static class CommandConfiguration
     // arguments
     public const string ExportCsvArg = "--export-csv";
     public const string ExportCsvArgDescription = "Exports the content to a csv file";
+    public const string BackupArg = "--backup";
+    public const string BackupArgDescription = "Creates a JSON file as a backup. Enter the path to store the JSON files";
     public const string RemoveArg = "--remove";
     public const string RemoveArgDescription = "Removes all duplicate devices from Intune";
     public const string NonAssignedArg = "--non-assigned"; 

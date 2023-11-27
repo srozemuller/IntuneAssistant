@@ -25,11 +25,13 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
 
     private readonly IAssignmentsService _assignmentsService;
     private readonly IIdentityHelperService _identityHelperService;
+    private readonly ILogger _logger;
 
-    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService)
+    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, ILogger logger)
     {
         _assignmentsService = assignmentsService;
         _identityHelperService = identityHelperService;
+        _logger = logger;
     }
     public async Task<int> HandleAsync(FetchAssignmentsCommandOptions options)
     {

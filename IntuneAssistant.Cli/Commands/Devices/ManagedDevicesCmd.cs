@@ -93,24 +93,32 @@ public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchMan
         if (devices?.Count == 0)
         {
             AnsiConsole.MarkupLine("No devices matched the specified filter");
-            return 0;
+            return -1;
         }
 
-        foreach (var device in devices)
+        if (devices != null)
         {
-            table.AddRow(
-                device.Id ?? string.Empty,
-                device.DeviceName ?? string.Empty,
-                device.OperatingSystem ?? string.Empty,
-                device.LastSyncDateTime.ToString() ?? string.Empty
-            );
+            foreach (var device in devices)
+            {
+                table.AddRow(
+                    device.Id ?? string.Empty,
+                    device.DeviceName ?? string.Empty,
+                    device.OperatingSystem ?? string.Empty,
+                    device.LastSyncDateTime.ToString() ?? string.Empty
+                );
+            }
+
+            if (exportCsv)
+            {
+                await AnsiConsole.Status()
+                    .StartAsync($"Exporting results to {options.ExportCsv}", _ =>
+                    {
+                        ExportData.ExportCsv(devices, options.ExportCsv);
+                        return Task.CompletedTask;
+                    });
+            }
         }
-        if (exportCsv)
-        {
-            await AnsiConsole.Status()
-                .StartAsync($"Exporting results to {options.ExportCsv}",
-                    async _ => { ExportData.ExportCsv(devices, options.ExportCsv); });
-        }
+
         AnsiConsole.Write(table);
 
         return 0;

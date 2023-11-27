@@ -1,4 +1,7 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/srozemuller/.nuget/packages/microsoft.extensions.dependencyinjection/8.0.0-rc.2.23479.6/lib/net7.0/Microsoft.Extensions.DependencyInjection.dll" /&gt;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+  &lt;Assembly Path="/Users/srozemuller/.nuget/packages/microsoft.extensions.logging.console/6.0.0/lib/net6.0/Microsoft.Extensions.Logging.Console.dll" /&gt;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Entra/@EntryIndexedValue">True</s:Boolean>
+	</wpf:ResourceDictionary>
