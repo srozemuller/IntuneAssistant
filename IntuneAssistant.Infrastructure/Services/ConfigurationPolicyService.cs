@@ -1,12 +1,10 @@
 using System.Net;
 using System.Net.Http.Headers;
-using Az.Avd.Core.Helpers;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Configuration;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
-using Microsoft.Graph.Beta.Models;
-using System.Text.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
@@ -26,29 +24,27 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
     {
         var nextUrl = GraphUris.ConfigurationPolicies;
         var saveChanges = true;
-        var remoteManagedDevices = new List<ConfigurationPolicy>();
+        var allConfigurationPolicies = new List<ConfigurationPolicy>();
         
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         _graphHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        while (nextUrl is not null)
-        {
+
             try
             {
-                var response = await _graphHttpClient.GetStreamAsync(nextUrl,default);
-                //var responseStream = await response.Content.ReadAsStreamAsync();
-                var result = await JsonSerializer.DeserializeAsync<GraphResponse<ConfigurationPolicy>?>(response, JsonSerializerConfiguration.Default);
+                var response = await _graphHttpClient.GetStreamAsync(nextUrl, default);
+                var configurationPolicies =
+                    await JsonSerializer.DeserializeAsync<GraphResponse<ConfigurationPolicy>>(
+                        response, JsonSerializerConfiguration.Default, default);
+                if (configurationPolicies?.Value is null)
+                {
+                   // nextUrl = null;
 
-                //
-                // if (result?.Value is null)
-                // {
-                //     nextUrl = null;
-                //     continue;
-                // }
-                //
-                // // remoteManagedDevices.AddRange(result.Value.Select(d => d.ToManagedDevice(tenantId, d.Id)));
-                // nextUrl = result.ODataNextLink;
+                }
+
+                allConfigurationPolicies.AddRange(configurationPolicies.Value.Select(d => d));
+                //nextUrl = configurationPolicies.ODataNextLink;
             }
             catch (HttpRequestException e)
             {
@@ -57,18 +53,9 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                     return null;
                 }
                 
-                nextUrl = null;
-                saveChanges = false;
+                //nextUrl = null;
             }
-        }
-
-        if (!saveChanges)
-        {
-            return null;
-        }
-        
-
-        return remoteManagedDevices.Select(d => d).ToList();
+            return allConfigurationPolicies.ToList();
     }
 
     public async Task<ConfigurationPolicy?> GetConfigurationPolicyByIdAsync(string accessToken, string policyId)
@@ -92,13 +79,16 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
 
     public async Task<ConfigurationPolicy?> GetConfigurationPolicySettingsByIdAsync(string accessToken, string policyId)
     {
+        _graphHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
         try
         {
-            string url = $"{Constants.AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies('{policyId}')?$expand=settings" ;
-            var response = await _http.GetAsync(url);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            ConfigurationPolicy? result = await JsonSerializer.DeserializeAsync<ConfigurationPolicy>(responseStream, JsonSerializerConfiguration.Default);
-            return result;
+            string nextUrl = $"{Constants.AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies('{policyId}')?select=id,name,description" ;
+            var response = await _graphHttpClient.GetStreamAsync(nextUrl, default);
+            ConfigurationPolicy? configurationPolicies =
+                await JsonSerializer.DeserializeAsync<ConfigurationPolicy>(
+                    response, JsonSerializerConfiguration.Default, default);
+            return configurationPolicies;
         }
         catch (Exception e)
         {

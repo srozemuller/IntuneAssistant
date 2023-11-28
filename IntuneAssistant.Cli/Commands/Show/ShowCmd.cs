@@ -2,7 +2,6 @@ using System.CommandLine;
 using IntuneAssistant.Cli.Commands.Assignments;
 using IntuneAssistant.Cli.Commands.Auth;
 using IntuneAssistant.Cli.Commands.Policies;
-using IntuneAssistant.Cli.Commands.Filters;
 using IntuneAssistant.Cli.Commands.Devices;
 
 namespace IntuneAssistant.Cli.Commands.Show;
@@ -27,17 +26,19 @@ public static class ShowCmd
         var devicesOsBuildOverview = new DevicesOsBuildOverviewCmd();
 
 
-        var showAssignements = new AssignmentsCmd();
+        var showAssignments = new AssignmentsCmd();
         var showGroupAssignments = new AssignmentsGroupCmd();
+        var showAssignmentFilters = new AssignmentFiltersCmd();
         
         devicesCommand.AddCommand(devicesDuplicateCommand);
         devicesCommand.AddCommand(devicesOsBuildOverview);
 
-        showAssignements.AddCommand(showGroupAssignments);
+        showAssignments.AddCommand(showGroupAssignments);
+        showAssignments.AddCommand(showAssignmentFilters);
         showCommand.AddCommand(showPolicyCommand);
         showCommand.AddCommand(showAssignmentFiltersCommand);
         showCommand.AddCommand(devicesCommand);
-        showCommand.AddCommand(showAssignements);
+        showCommand.AddCommand(showAssignments);
         
         return showCommand;
     }

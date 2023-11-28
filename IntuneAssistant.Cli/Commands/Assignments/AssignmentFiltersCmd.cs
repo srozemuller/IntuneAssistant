@@ -9,14 +9,12 @@ public class AssignmentFiltersCmd : Command<FetchFiltersCommandOptions, FetchFil
 {
     public AssignmentFiltersCmd() : base(CommandConfiguration.AssignmentFilterCommandName, CommandConfiguration.AssignmentFilterCommandDescription)
     {
-        AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<string>(CommandConfiguration.IdArg, CommandConfiguration.IdArgDescription));
     }
 }
 
 public class FetchFiltersCommandOptions : ICommandOptions
 {
-    public string ExportCsv { get; set; } = string.Empty;
     public string Id { get; set; } = String.Empty;
 }
 
@@ -35,9 +33,7 @@ public class FetchFiltersCommandHandler : ICommandOptionsHandler<FetchFiltersCom
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var results = new List<DeviceAndAppManagementAssignmentFilter>();
-        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var idProvided = !string.IsNullOrWhiteSpace(options.Id);
-
         
         if (string.IsNullOrWhiteSpace(accessToken))
         {
@@ -47,7 +43,7 @@ public class FetchFiltersCommandHandler : ICommandOptionsHandler<FetchFiltersCom
 
         if (idProvided)
         {
-            var result = await _assignmentFiltersService.GetAssignmentFilterInfoAsync(accessToken, options.Id);
+            var result = await _assignmentFiltersService.GetAssignmentFilterInfoAsync(accessToken, options.Id)!;
             if (result is not null)
                 results.Add(result);
         }
@@ -63,12 +59,12 @@ public class FetchFiltersCommandHandler : ICommandOptionsHandler<FetchFiltersCom
             table.AddColumn("Id");
             table.AddColumn("DisplayName");
             table.AddColumn("Rule");
-            foreach (var filter in results)
+            foreach (var r in results)
             {
                 table.AddRow(
-                    filter.Id,
-                    filter.DisplayName,
-                    filter.Rule
+                    r.Id,
+                    r.DisplayName,
+                    r.Rule
                 );
 
             }

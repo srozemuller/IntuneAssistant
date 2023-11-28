@@ -1,10 +1,8 @@
 using System.CommandLine;
 using IntuneAssistant.Infrastructure.Interfaces;
-using IntuneAssistant.Infrastructure.Responses;
-using Microsoft.Graph.Beta.Models;
 using Spectre.Console;
 
-namespace IntuneAssistant.Cli.Commands.Filters;
+namespace IntuneAssistant.Cli.Commands.Assignments;
 
 public class AssignmentFilterDeviceEvaluationCmd : Command<FetchDevicesByFilterCommandOptions, FetchDevicesByFilterCommandHandler>
 {
@@ -35,9 +33,6 @@ public class FetchDevicesByFilterCommandHandler : ICommandOptionsHandler<FetchDe
     public async Task<int> HandleAsync(FetchDevicesByFilterCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
-        var results = new AssignmentFiltersDeviceEvaluationResponse();
-        var filterInfo = new DeviceAndAppManagementAssignmentFilter();
-        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var filterId = options.Id;
         var table = new Table();
         if (string.IsNullOrWhiteSpace(accessToken))
@@ -46,8 +41,8 @@ public class FetchDevicesByFilterCommandHandler : ICommandOptionsHandler<FetchDe
             return -1;
         }
         
-        results = await _assignmentFiltersService.GetAssignmentFilterDeviceListAsync(accessToken, filterId);
-        if (results.TotalRowCount > 0)
+        var results = await _assignmentFiltersService.GetAssignmentFilterDeviceListAsync(accessToken, filterId);
+        if (results is not null && results.TotalRowCount > 0)
         {
             table.Collapse();
             table.AddColumn(results.Columns[1].Name);  // Device Category

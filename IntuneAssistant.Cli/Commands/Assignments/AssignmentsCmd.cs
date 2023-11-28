@@ -25,20 +25,17 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
 
     private readonly IAssignmentsService _assignmentsService;
     private readonly IIdentityHelperService _identityHelperService;
-    private readonly ILogger _logger;
 
-    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, ILogger logger)
+    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService)
     {
         _assignmentsService = assignmentsService;
         _identityHelperService = identityHelperService;
-        _logger = logger;
     }
     public async Task<int> HandleAsync(FetchAssignmentsCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var allResults = new List<AssignmentsModel>();
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
-        string targetName = String.Empty;
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
@@ -119,8 +116,11 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         if (exportCsv)
         {
             await AnsiConsole.Status()
-                .StartAsync($"Exporting results to {options.ExportCsv}",
-                    async _ => { ExportData.ExportCsv(allResults, options.ExportCsv); });
+                .StartAsync($"Exporting results to {options.ExportCsv}", _ =>
+                    {
+                        ExportData.ExportCsv(allResults, options.ExportCsv);
+                        return Task.CompletedTask;
+                    });
         }
         AnsiConsole.MarkupLine($"[yellow]No assignments found in Intune.[/]");
         return -1;

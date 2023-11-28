@@ -15,7 +15,7 @@ public class CompliancePoliciesCmd : Command<FetchCompliancePoliciesCommandOptio
         AddOption(new Option<string>(CommandConfiguration.IdArg, CommandConfiguration.IdArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.DeviceStatusCommandName, CommandConfiguration.DeviceStatusCommandDescription));
-        AddOption(new Option<string>(CommandConfiguration.BackupArg, CommandConfiguration.BackupArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.ExportJsonArg, CommandConfiguration.ExportJsonDescription));
     }
 }
 
@@ -57,7 +57,7 @@ public class FetchCompliancePoliciesCommandHandler : ICommandOptionsHandler<Fetc
 
         if (deviceStatus)
         {
-            var deviceStatusResults = await _compliancePoliciesService.GetCompliancePolicyDeviceStatusByIdAsync(accessToken, policyId);
+            var deviceStatusResults = await _compliancePoliciesService.GetCompliancePolicyDeviceStatusByIdAsync(accessToken, policyId)!;
             Console.Write(deviceStatusResults);
             return 0;
         }

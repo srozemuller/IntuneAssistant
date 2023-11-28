@@ -22,8 +22,9 @@ public sealed class AssignmentFiltersService : IAssignmentFiltersService
                     requestConfiguration.QueryParameters.Filter = null;
                 });
 
-                if (result?.Value != null)
+                if (result?.Value?.Select(r => r) != null)
                     results.AddRange(result.Value);
+                return results;
                     
             }
             catch (ODataError ex)
@@ -31,57 +32,49 @@ public sealed class AssignmentFiltersService : IAssignmentFiltersService
                 Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
                 return null;
             }
-            return results;
     }
 
-    public async Task<DeviceAndAppManagementAssignmentFilter?> GetAssignmentFilterInfoAsync(string accessToken, string filterId)
+    public async Task<DeviceAndAppManagementAssignmentFilter?>? GetAssignmentFilterInfoAsync(string accessToken, string filterId)
     {
         var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-        var result = new DeviceAndAppManagementAssignmentFilter();
         try
         {
-            result = await graphClient.DeviceManagement.AssignmentFilters[filterId].GetAsync();
+            var result = await graphClient.DeviceManagement.AssignmentFilters[filterId].GetAsync();
             return result;
-           
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            Console.WriteLine($"An exception has occurred while fetching filter with ID {filterId}: " + ex.ToMessage());
             return null;
         }
     }
     
-    public async Task<AssignmentFiltersDeviceEvaluationResponse> GetAssignmentFilterDeviceListAsync(
+    public async Task<AssignmentFiltersDeviceEvaluationResponse?> GetAssignmentFilterDeviceListAsync(
         string accessToken, string filterId)
     { 
         var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-        var filterInfo = await GetAssignmentFilterInfoAsync(accessToken, filterId);
+        var assignmentFilterResult = await graphClient.DeviceManagement.AssignmentFilters[filterId].GetAsync();
         try
         {
-            if (filterInfo is not null)
+            if (assignmentFilterResult is not null)
             {
                 var requestBody = new AssignmentFilterEvaluateRequest
                 {
-                    Platform = filterInfo.Platform,
-                    Rule = filterInfo.Rule
+                    Platform = assignmentFilterResult.Platform,
+                    Rule = assignmentFilterResult.Rule
 
                 };
                 var postBody = new EvaluateAssignmentFilterPostRequestBody();
                 postBody.Data = requestBody;
                 var result = await graphClient.DeviceManagement.EvaluateAssignmentFilter.PostAsync(postBody);
-                //var sr = new StreamReader(result);
-                //var x = await sr.ReadToEndAsync();
                 if (result is not null)
                 {
                     var jsonResult =
                         await JsonSerializer.DeserializeAsync<AssignmentFiltersDeviceEvaluationResponse>(result);
                     return jsonResult;
                 }
-                else
-                {
-                    Console.WriteLine($"No devices found in filter {filterInfo.DisplayName} ");
-                    return null;
-                }
+                Console.WriteLine($"No devices found in filter {assignmentFilterResult.DisplayName} ");
+                return null;
             }
         }
         catch (ODataError ex)
