@@ -1,24 +1,43 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>exe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <SelfContained>false</SelfContained>
+        <IsPackable>true</IsPackable>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageId>IntuneCLI</PackageId>
+        <Title>IntuneCLI</Title>
+        <Authors>Sander Rozemuller</Authors>
+        <Description>This CLI helps you managing Intune environments</Description>
+        <PackageProjectUrl>https://github.com/srozemuller/IntuneAssistant</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/srozemuller/IntuneAssistant</RepositoryUrl>
+        <PackageTags>Microsoft Intune</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryType>git</RepositoryType>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>intuneCli</ToolCommandName>
+        <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     </PropertyGroup>
-
     <ItemGroup>
       <PackageReference Include="Azure.Identity" Version="1.10.2" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
       <PackageReference Include="Microsoft.Identity.Client" Version="4.57.0" />
       <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.26" />
       <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj" />
-      <ProjectReference Include="..\IntuneAssistant\IntuneAssistant.csproj" />
+      <ProjectReference Include="..\IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj" PrivateAssets="all" />
+      <ProjectReference Include="..\IntuneAssistant\IntuneAssistant.csproj" PrivateAssets="all" />
     </ItemGroup>
-
+    <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+        <ItemGroup>
+            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+        </ItemGroup>
+    </Target>
 </Project>

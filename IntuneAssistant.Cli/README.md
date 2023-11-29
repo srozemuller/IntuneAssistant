@@ -9,7 +9,7 @@ The Windows client can be downloaded here: [The IntuneCLI Windows](https://githu
 The macOS client can be downloaded here: [The IntuneCLI macOS](https://github.com/srozemuller/IntuneAssistant/blob/main/ClientDownloads/macOS/intunecli-osx-arm64-v1.1)
 
 ## Installation
-This package can be downloaded as a dotnet tool. Make sure you have Dotnet 7 installed on your computer.
+This package can be downloaded as a dotnet tool. Make sure you have Dotnet 7 installed on your computer. 
 
 ### Install dotnet 7 sdk Windows
 winget install --id Microsoft.DotNet.SDK.7 --source winget
