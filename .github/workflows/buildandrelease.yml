@@ -28,8 +28,8 @@ jobs:
         id: without_checkout
         uses: mikepenz/release-changelog-builder-action@develop
         with:
-            fromTag: v1.0.0
-            toTag: v1.0.1
+            fromTag: 1.0.0
+            toTag: 1.0.1
             configurationJson: |
                 {
                 "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
