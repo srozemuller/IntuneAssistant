@@ -184,19 +184,27 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                 {
                     foreach (var filter in allResults)
                     {
+                        string targetFriendly = groupInfo.DisplayName ?? "No target found";
+                        // Adding the target name to the all results object. This is for exporting later.
+                        filter.TargetName = targetFriendly;
                         table.AddRow(
                             filter.ResourceType,
                             filter.ResourceId,
                             filter.ResourceName,
                             filter.AssignmentType,
                             filter.TargetId,
-                            groupInfo.DisplayName ?? "No target found",
+                            filter.TargetName,
                             filter.FilterId,
                             filter.FilterType
                         );
                     }
                     AnsiConsole.Write(table);
-                    return 0;
+                    if (exportCsv)
+                    {
+                        var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
+                        AnsiConsole.Write($"File stored at location {fileLocation}");
+                    }
+                return 0;
                 }
         }
         else
@@ -249,42 +257,36 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                     });
             if (allResults.Count > 0)
             {
-                var uniqueGroupIds = allResults?.DistinctBy(d => d.TargetId).Select(t => t.TargetId)
+                var uniqueGroupIds = allResults.DistinctBy(d => d.TargetId).Select(t => t.TargetId)
                     .ToList();
                 
                 // Search in every group assignment for unique group ID values. For every group ID, search for group information. 
-                if (uniqueGroupIds is not null)
                 {
                     var allGroupsInfo =
                         await _groupInformationService.GetGroupInformationByIdsCollectionListAsync(accessToken,
                             uniqueGroupIds);
-                    if (allResults != null)
+                    foreach (var filter in allResults)
                     {
-                        foreach (var filter in allResults)
-                        {
-                            var target = allGroupsInfo.Find(g => g?.Id == filter.TargetId);
-                            table.AddRow(
-                                filter.ResourceType,
-                                filter.ResourceId,
-                                filter.ResourceName,
-                                filter.AssignmentType,
-                                filter.TargetId,
-                                target?.DisplayName ?? "No target found" ,
-                                filter.FilterId,
-                                filter.FilterType
-                            );
-                        }
-                        if (exportCsv)
-                        {
-                            await AnsiConsole.Status().SpinnerStyle(Color.Orange1)
-                                .StartAsync($"Exporting results to {options.ExportCsv}", _ =>
-                                    {
-                                        ExportData.ExportCsv(allResults, options.ExportCsv);
-                                        return Task.CompletedTask;
-                                    });
-                        }
+                        var target = allGroupsInfo.Find(g => g?.Id == filter.TargetId);
+                        string targetFriendly = target?.DisplayName ?? "No target found";
+                        filter.TargetName = targetFriendly;
+                        table.AddRow(
+                            filter.ResourceType,
+                            filter.ResourceId,
+                            filter.ResourceName,
+                            filter.AssignmentType,
+                            filter.TargetId,
+                            filter.TargetName,
+                            filter.FilterId,
+                            filter.FilterType
+                        );
                     }
                     AnsiConsole.Write(table);
+                    if (exportCsv)
+                    {
+                        var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
+                        AnsiConsole.Write($"File stored at location {fileLocation}");
+                    }
                     return 0;
                 }
             }

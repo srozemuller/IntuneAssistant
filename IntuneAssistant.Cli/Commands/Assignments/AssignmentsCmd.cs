@@ -1,6 +1,5 @@
 using System.CommandLine;
 using IntuneAssistant.Infrastructure.Interfaces;
-using Microsoft.Extensions.Logging;
 using IntuneAssistant.Models;
 using IntuneAssistant.Extensions;
 using Spectre.Console;
@@ -36,7 +35,6 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var allResults = new List<AssignmentsModel>();
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
-        string targetName = String.Empty;
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
@@ -111,14 +109,12 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 );
             }
             AnsiConsole.Write(table);
+            if (exportCsv)
+            {
+                var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
+                AnsiConsole.Write($"File stored at location {fileLocation}");
+            }
             return 0;
-        }
-        
-        if (exportCsv)
-        {
-            await AnsiConsole.Status()
-                .StartAsync($"Exporting results to {options.ExportCsv}",
-                    async _ => { ExportData.ExportCsv(allResults, options.ExportCsv); });
         }
         AnsiConsole.MarkupLine($"[yellow]No assignments found in Intune.[/]");
         return -1;

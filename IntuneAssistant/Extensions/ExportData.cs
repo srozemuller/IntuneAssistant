@@ -1,17 +1,19 @@
-using System.Globalization;
+using System.Data;
+using Spectre.Console;
 using System.Text;
+using IntuneAssistant.Constants;
 
 namespace IntuneAssistant.Extensions;
 
 public static class ExportData
 {
-    public static void ExportCsv<T>(List<T>? genericList, string fileName)
+    public static string ExportCsv<T>(List<T>? genericList, string fileName)
     {
         var sb = new StringBuilder();
         var basePath = AppDomain.CurrentDomain.BaseDirectory;
-        var currentDate = DateTime.Now.ToString("yyyy-MM-ddHH:mm:ss").ToString(CultureInfo.CurrentUICulture);
+        var currentDate = DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
         var finalPath = Path.Combine(basePath, fileName + currentDate +".csv");
-        var header = "";
+        var header = $"Made by {Branding.LegalName}";
         var info = typeof(T).GetProperties();
         if (!File.Exists(finalPath))
         {
@@ -44,5 +46,6 @@ public static class ExportData
             sw.Write(sb.ToString());
             sw.Close();
         }
+        return finalPath;
     }
 }

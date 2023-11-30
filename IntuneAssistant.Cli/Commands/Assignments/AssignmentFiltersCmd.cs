@@ -9,14 +9,12 @@ public class AssignmentFiltersCmd : Command<FetchFiltersCommandOptions, FetchFil
 {
     public AssignmentFiltersCmd() : base(CommandConfiguration.AssignmentFilterCommandName, CommandConfiguration.AssignmentFilterCommandDescription)
     {
-        AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<string>(CommandConfiguration.IdArg, CommandConfiguration.IdArgDescription));
     }
 }
 
 public class FetchFiltersCommandOptions : ICommandOptions
 {
-    public string ExportCsv { get; set; } = string.Empty;
     public string Id { get; set; } = String.Empty;
 }
 
@@ -35,10 +33,8 @@ public class FetchFiltersCommandHandler : ICommandOptionsHandler<FetchFiltersCom
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var results = new List<DeviceAndAppManagementAssignmentFilter>();
-        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var idProvided = !string.IsNullOrWhiteSpace(options.Id);
 
-        
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
