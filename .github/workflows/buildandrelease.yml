@@ -44,7 +44,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./publish/linux-x64/intuneCli
+          asset_path: ./IntuneAssistant.Cli.publish/linux-x64/intuneCli
           asset_name: intuneCli-linux-x64
           asset_content_type: application/octet-stream
 
@@ -55,7 +55,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./publish/win-x64/intuneCli.exe
+          asset_path: ./IntuneAssistant.Cli.publish/win-x64/intuneCli.exe
           asset_name: intuneCli-windows-x64.exe
           asset_content_type: application/octet-stream
 
@@ -66,6 +66,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./publish/osx-x64/intuneCli
+          asset_path: ./IntuneAssistant.Cli/.publish/osx-x64/intuneCli
           asset_name: intuneCli-osx-x64
           asset_content_type: application/octet-stream
