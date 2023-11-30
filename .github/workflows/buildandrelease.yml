@@ -25,6 +25,11 @@ jobs:
           dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -o ./publish/win-x64
           dotnet publish -c Release -r osx-x64 -p:PublishSingleFile=true -o ./publish/osx-x64
 
+      - name: Check folders
+        run: |
+            ls ./publish/linux-x64
+            ls ./publish/win-x64
+            ls ./publish/osx-x64
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
