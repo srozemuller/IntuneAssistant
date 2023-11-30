@@ -2,7 +2,6 @@ using System.CommandLine;
 using IntuneAssistant.Cli.Commands.Assignments;
 using IntuneAssistant.Cli.Commands.Auth;
 using IntuneAssistant.Cli.Commands.Policies;
-using IntuneAssistant.Cli.Commands.Filters;
 using IntuneAssistant.Cli.Commands.Devices;
 
 namespace IntuneAssistant.Cli.Commands.Show;

@@ -9,6 +9,7 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Graph.Beta" Version="5.50.0-preview" />
       <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.57.0" />
+      <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.26" />
     </ItemGroup>
 
 </Project>
