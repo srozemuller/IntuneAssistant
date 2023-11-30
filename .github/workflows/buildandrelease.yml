@@ -21,9 +21,8 @@ jobs:
       - name: Build binaries
         run: |
           dotnet publish -c Release -r linux-x64 -p:PublishSingleFile=true -o ./publish/linux-x64
-          dotnet publish -c Release -r win-x64 true -p:PublishSingleFile=true -o ./publish/win-x64
-          dotnet publish -c Release -r osx-x64 true -p:PublishSingleFile=true -o ./publish/osx-x64
-          # Add more platforms as needed...
+          dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -o ./publish/win-x64
+          dotnet publish -c Release -r osx-x64 -p:PublishSingleFile=true -o ./publish/osx-x64
 
       - name: Create Release
         id: create_release
