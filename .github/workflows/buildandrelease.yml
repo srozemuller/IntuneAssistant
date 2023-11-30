@@ -27,9 +27,7 @@ jobs:
 
       - name: Check folders
         run: |
-            ls ./publish/linux-x64
-            ls ./publish/win-x64
-            ls ./publish/osx-x64
+            ls -la
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
