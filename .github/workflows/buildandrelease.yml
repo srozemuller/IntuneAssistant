@@ -20,31 +20,72 @@ jobs:
 
       - name: Build binaries
         run: |
+          cd ./IntuneAssistant.Cli
           dotnet publish -c Release -r linux-x64 -p:PublishSingleFile=true -o ./publish/linux-x64
-          dotnet publish -c Release -r win-x64 true -p:PublishSingleFile=true -o ./publish/win-x64
-          dotnet publish -c Release -r osx-x64 true -p:PublishSingleFile=true -o ./publish/osx-x64
-          # Add more platforms as needed...
-
+          dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -o ./publish/win-x64
+          dotnet publish -c Release -r osx-x64 -p:PublishSingleFile=true -o ./publish/osx-x64
+      - name: "Configuration without Checkout"
+        id: without_checkout
+        uses: mikepenz/release-changelog-builder-action@develop
+        with:
+            fromTag: v1.0.0
+            toTag: v1.0.1
+            configurationJson: |
+                {
+                "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+                "categories": [
+                    {
+                        "title": "## ❗️ Breaking!!!",
+                        "labels": ["breaking"]
+                    },
+                    {
+                        "title": "## 🚀 Features",
+                        "labels": ["feature"]
+                    },
+                    {
+                        "title": "## 🐛 Fixes",
+                        "labels": ["bug"]
+                    },
+                    {
+                        "title": "## 📝 Refactor",
+                        "labels": ["refactor"]
+                    },
+                    {
+                        "title": "## 🧪 Tests",
+                        "labels": ["test"]
+                    },
+                    {
+                        "title": "## 💬 Other",
+                        "labels": ["other"]
+                    },
+                    {
+                        "title": "## 📦 Dependencies",
+                        "labels": ["dependencies"]
+                    }
+                ]
+                }
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: 1.0.1
+          release_name: Release 1.0.1
           draft: false
           prerelease: false
-
+          body: ${{ steps.without_checkout.outputs.changelog }}
       - name: Upload Release Asset - Linux
         id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./publish/linux-x64/mytool
-          asset_name: mytool-linux-x64
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./IntuneAssistant.Cli/publish/linux-x64/intuneCli
+          asset_name: intuneCli-linux-x64
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset - Windows
@@ -53,9 +94,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./publish/win-x64/mytool.exe
-          asset_name: mytool-windows-x64.exe
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./IntuneAssistant.Cli/publish/win-x64/intuneCli.exe
+          asset_name: intuneCli-windows-x64.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset - macOS
@@ -64,7 +105,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./publish/osx-x64/mytool
-          asset_name: mytool-osx-x64
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./IntuneAssistant.Cli/publish/osx-x64/intuneCli
+          asset_name: intuneCli-osx-x64
           asset_content_type: application/octet-stream
