@@ -24,12 +24,8 @@ jobs:
           dotnet publish -c Release -r linux-x64 -p:PublishSingleFile=true -o ./publish/linux-x64
           dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -o ./publish/win-x64
           dotnet publish -c Release -r osx-x64 -p:PublishSingleFile=true -o ./publish/osx-x64
-
-      - name: Check folders
-        run: |
-            ls -la ./IntuneAssistant.Cli/bin/Release/net7.0/linux-x64/publish
-            ls -la ./IntuneAssistant.Cli/bin/Release/net7.0/osx-x64/publish
-            ls -la ./IntuneAssistant.Cli/bin/Release/net7.0/win-x64/publish
+          ls -la
+          ls -la ./publish
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
