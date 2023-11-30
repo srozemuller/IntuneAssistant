@@ -1,0 +1,70 @@
+name: Build and Release Binaries
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '7.0.403' # adjust this to your .NET version
+
+      - name: Build binaries
+        run: |
+          dotnet publish -c Release -r linux-x64 -p:PublishSingleFile=true -o ./publish/linux-x64
+          dotnet publish -c Release -r win-x64 true -p:PublishSingleFile=true -o ./publish/win-x64
+          dotnet publish -c Release -r osx-x64 true -p:PublishSingleFile=true -o ./publish/osx-x64
+          # Add more platforms as needed...
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset - Linux
+        id: upload-release-asset-linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./publish/linux-x64/mytool
+          asset_name: mytool-linux-x64
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset - Windows
+        id: upload-release-asset-windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./publish/win-x64/mytool.exe
+          asset_name: mytool-windows-x64.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset - macOS
+        id: upload-release-asset-macos
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./publish/osx-x64/mytool
+          asset_name: mytool-osx-x64
+          asset_content_type: application/octet-stream
