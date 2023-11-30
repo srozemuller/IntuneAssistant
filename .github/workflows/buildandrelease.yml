@@ -42,9 +42,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./publish/linux-x64/mytool
-          asset_name: mytool-linux-x64
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./publish/linux-x64/intuneCli
+          asset_name: intuneCli-linux-x64
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset - Windows
@@ -53,9 +53,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./publish/win-x64/mytool.exe
-          asset_name: mytool-windows-x64.exe
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./publish/win-x64/intuneCli.exe
+          asset_name: intuneCli-windows-x64.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset - macOS
@@ -64,7 +64,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./publish/osx-x64/mytool
-          asset_name: mytool-osx-x64
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./publish/osx-x64/intuneCli
+          asset_name: intuneCli-osx-x64
           asset_content_type: application/octet-stream
