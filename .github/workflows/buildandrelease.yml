@@ -76,6 +76,7 @@ jobs:
           release_name: Release 1.0.1
           draft: false
           prerelease: false
+          body: ${{ steps.without_checkout.outputs.changelog }}
       - name: Upload Release Asset - Linux
         id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
