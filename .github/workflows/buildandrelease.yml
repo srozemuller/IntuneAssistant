@@ -24,19 +24,58 @@ jobs:
           dotnet publish -c Release -r linux-x64 -p:PublishSingleFile=true -o ./publish/linux-x64
           dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -o ./publish/win-x64
           dotnet publish -c Release -r osx-x64 -p:PublishSingleFile=true -o ./publish/osx-x64
-          ls -la
-          ls -la ./publish
+      - name: "Configuration without Checkout"
+        id: without_checkout
+        uses: mikepenz/release-changelog-builder-action@develop
+        with:
+            fromTag: v1.0.0
+            toTag: v1.0.1
+            configurationJson: |
+                {
+                "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+                "categories": [
+                    {
+                        "title": "## ❗️ Breaking!!!",
+                        "labels": ["breaking"]
+                    },
+                    {
+                        "title": "## 🚀 Features",
+                        "labels": ["feature"]
+                    },
+                    {
+                        "title": "## 🐛 Fixes",
+                        "labels": ["bug"]
+                    },
+                    {
+                        "title": "## 📝 Refactor",
+                        "labels": ["refactor"]
+                    },
+                    {
+                        "title": "## 🧪 Tests",
+                        "labels": ["test"]
+                    },
+                    {
+                        "title": "## 💬 Other",
+                        "labels": ["other"]
+                    },
+                    {
+                        "title": "## 📦 Dependencies",
+                        "labels": ["dependencies"]
+                    }
+                ]
+                }
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: 1.0.0
-          release_name: Release 1.0.0
+          tag_name: 1.0.1
+          release_name: Release 1.0.1
           draft: false
           prerelease: false
-
       - name: Upload Release Asset - Linux
         id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
