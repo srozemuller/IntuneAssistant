@@ -27,7 +27,9 @@ jobs:
 
       - name: Check folders
         run: |
-            ls -la
+            ls -la ./IntuneAssistant.Cli/bin/Release/net7.0/linux-x64/publish
+            ls -la ./IntuneAssistant.Cli/bin/Release/net7.0/osx-x64/publish
+            ls -la ./IntuneAssistant.Cli/bin/Release/net7.0/win-x64/publish
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
