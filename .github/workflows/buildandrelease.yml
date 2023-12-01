@@ -18,17 +18,23 @@ jobs:
         with:
           dotnet-version: '7.0.403' # adjust this to your .NET version
 
-      - name: Build binaries
+      - name: Build & archive binaries
         run: |
           cd ./IntuneAssistant.Cli
           dotnet publish -c Release -r linux-x64 -p:PublishSingleFile=true -o ./publish/linux-x64
           dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -o ./publish/win-x64
           dotnet publish -c Release -r osx-x64 -p:PublishSingleFile=true -o ./publish/osx-x64
+          dotnet publish -c Release -r osx-arm64 -p:PublishSingleFile=true -o ./publish/osx-arm64
+
+          zip linux-x64-1.0.4.zip ./publish/linux-x64/intuneCli
+          zip osx-x64-1.0.4.zip ./publish/osx-x64/intuneCli
+          zip osx-arm64-1.0.4.zip ./publish/osx-arm64/intuneCli
+          zip win-x64-1.0.4.zip ./publish/win-x64/intuneCli.exe
       - name: "Configuration without Checkout"
         id: without_checkout
         uses: mikepenz/release-changelog-builder-action@develop
         with:
-            fromTag: 1.0.0
+            fromTag: 1.0.2
             toTag: 1.0.1
             configurationJson: |
                 {
@@ -72,8 +78,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: 1.0.1
-          release_name: Release 1.0.1
+          tag_name: 1.0.2
+          release_name: Release 1.0.2
           draft: false
           prerelease: false
           body: ${{ steps.without_checkout.outputs.changelog }}
@@ -84,8 +90,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./IntuneAssistant.Cli/publish/linux-x64/intuneCli
-          asset_name: intuneCli-linux-x64
+          asset_path: ./IntuneAssistant.Cli/linux-x64-1.0.4.zip
+          asset_name: linux-x64-1.0.4.zip
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset - Windows
@@ -95,8 +101,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./IntuneAssistant.Cli/publish/win-x64/intuneCli.exe
-          asset_name: intuneCli-windows-x64.exe
+          asset_path: ./IntuneAssistant.Cli/win-x64-1.0.4.zip
+          asset_name: win-x64-1.0.4.zip
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset - macOS
@@ -106,6 +112,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./IntuneAssistant.Cli/publish/osx-x64/intuneCli
-          asset_name: intuneCli-osx-x64
+          asset_path: ./IntuneAssistant.Cli/osx-x64-1.0.4.zip
+          asset_name: osx-x64-1.0.4.zip
           asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset - macOS
+        id: upload-release-asset-macos-arm64
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: ./IntuneAssistant.Cli/osx-arm64-1.0.4.zip
+            asset_name: osx-arm64-1.0.4.zip
+            asset_content_type: application/octet-stream
+
