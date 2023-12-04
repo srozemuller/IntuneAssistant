@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 
 var rootCommand = RootCmd.New();
+
 var builder = new CommandLineBuilder(rootCommand)
     .UseDefaults()
     .UseHelp()
@@ -27,13 +28,14 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<IGroupInformationService, GroupInformationService>();
 });
 
+if (args.Contains("--help") || args.Contains("-h") || args.Contains("-?"))
+{
     AnsiConsole.MarkupLine(
         $"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline darkorange]{Branding.Builder}[/]");
-//AnsiConsole.MarkupLine($"Version {Branding.VersionInternalBuild} [yellow bold]INTERNAL BUILD[/]");
+    AnsiConsole.MarkupLine($"Version {Branding.VersionInternalBuild} [yellow bold]INTERNAL BUILD[/]");
     AnsiConsole.MarkupLine($"[darkorange]{Ascii.INTUNE_ASSISTANT_ASCII}[/]");
-
     AnsiConsole.MarkupLine(
-        "\n[grey]Refer to the [darkorange link=https://rozemuller.com]rozemuller.com[/] for more information about the command-line usage.\n[/]");
-
+        "\n[grey]Refer to the [darkorange link=https://rozemuller.com/intuneCli]rozemuller.com/intuneCli[/] for more information about the command-line usage.\n[/]");
+}
 
 return builder.Build().Invoke(args);
