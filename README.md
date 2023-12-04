@@ -1,3 +1,13 @@
+### General module information
+<a href="https://github.com/srozemuller/intuneassistant" target="_blank"><img src="https://img.shields.io/github/v/release/srozemuller/intuneassistant?label=latest-release&style=flat-square" alt="CurrentVersion"></a> <a href="https://github.com/srozemuller/intuneassistant/issues" target="_blank"><img src="https://img.shields.io/github/issues/srozemuller/intuneassistant?style=flat-square" alt="Issues"></a> </a><a href="https://github.com/srozemuller/intuneassistant/tree/beta" target="_blank"><img src="https://img.shields.io/maintenance/yes/2023?style=flat-square" alt="Beta"></a> </a><a href="https://github.com/srozemuller/intuneassistant/tree/beta" target="_blank"><img src="https://img.shields.io/github/license/srozemuller/intuneassistant?style=flat-square" alt="Beta"></a>
+
+![Nuget](https://img.shields.io/nuget/dt/IntuneCli?style=flat-square&label=NuGet%20downloads)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/srozemuller/IntuneAssistant/main?style=flat-square)
+
+
+<a href="https://www.buymeacoffee.com/srozemuller" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 30px !important;width: 117px !important;"></a>
+
+
 # IntuneAssistant
 
 Welcome to **The IntuneCLI**. This CLI helps you managing Microsoft Intune environments.
