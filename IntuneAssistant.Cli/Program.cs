@@ -31,8 +31,8 @@ var builder = new CommandLineBuilder(rootCommand)
 if (args.Contains("--help") || args.Contains("-h") || args.Contains("-?"))
 {
     AnsiConsole.MarkupLine(
-        $"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline darkorange]{Branding.Builder}[/]");
-    AnsiConsole.MarkupLine($"Version {Branding.VersionInternalBuild} [yellow bold]INTERNAL BUILD[/]");
+        $"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline darkorange]{Branding.Builder}[/] - VERSION: [bold]{Branding.Version}[/]");
+    //AnsiConsole.MarkupLine($"Version {Branding.VersionInternalBuild} [yellow bold]INTERNAL BUILD[/]");
     AnsiConsole.MarkupLine($"[darkorange]{Ascii.INTUNE_ASSISTANT_ASCII}[/]");
     AnsiConsole.MarkupLine(
         "\n[grey]Refer to the [darkorange link=https://rozemuller.com/intuneCli]rozemuller.com/intuneCli[/] for more information about the command-line usage.\n[/]");
