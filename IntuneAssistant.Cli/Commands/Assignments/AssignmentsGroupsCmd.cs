@@ -48,14 +48,15 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         var groupInfo = new Group();
         var table = new Table();
         table.Collapse();
+        table.Border = TableBorder.Rounded;
         table.AddColumn("ResourceType");
         table.AddColumn("ResourceId");
         table.AddColumn("ResourceName");
-        table.AddColumn("AssignmentType");
         table.AddColumn("TargetId");
         table.AddColumn("TargetName");
         table.AddColumn("FilterId");
         table.AddColumn("FilterType");
+        
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
@@ -70,7 +71,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                     {
                         if (groupIdProvided)
                         {
-
                                 groupInfo = await _groupInformationService.GetGroupInformationByIdAsync(accessToken,
                                     options.GroupId);
                         }
@@ -191,7 +191,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                             filter.ResourceType,
                             filter.ResourceId,
                             filter.ResourceName,
-                            filter.AssignmentType,
                             filter.TargetId,
                             filter.TargetName,
                             filter.FilterId,
@@ -217,42 +216,57 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null);
                         if (complianceResults is not null)
                         {
-                            allResults.AddRange(complianceResults.Where(r => r.AssignmentType == "Group"));
+                            allResults.AddRange(complianceResults.Where(r => r.AssignmentType == "group"));
                         }
                         var configurationResults = await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null);
                         if (configurationResults is not null)
                         {
-                            allResults.AddRange(configurationResults.Where(r => r.AssignmentType == "Group"));
+                            allResults.AddRange(configurationResults.Where(r => r.AssignmentType == "group"));
                         }
                         var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
                         if (deviceScriptsResults is not null)
                         {
-                            allResults.AddRange(deviceScriptsResults.Where(r => r.AssignmentType == "Group"));
+                            allResults.AddRange(deviceScriptsResults.Where(r => r.AssignmentType == "group"));
                         }
                         var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, null);
                         if (healthScriptsResults is not null)
                         {
-                            allResults.AddRange(healthScriptsResults.Where(r => r.AssignmentType == "Group"));
+                            allResults.AddRange(healthScriptsResults.Where(r => r.AssignmentType == "group"));
                         }
                         var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken, null);
                         if (autoPilotResults is not null)
                         {
-                            allResults.AddRange(autoPilotResults.Where(r => r.AssignmentType == "Group"));
+                            allResults.AddRange(autoPilotResults.Where(r => r.AssignmentType == "group"));
                         }
                         var appProtectionResults = await _assignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, null);
                         if (appProtectionResults is not null)
                         {
-                            allResults.AddRange(appProtectionResults.Where(r => r.AssignmentType == "Group"));
+                            allResults.AddRange(appProtectionResults.Where(r => r.AssignmentType == "group"));
                         }
                         var mobileAppResults = await _assignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, null);
                         if (mobileAppResults is not null)
                         {
-                            allResults.AddRange(mobileAppResults.Where(r => r.AssignmentType == "Group"));
+                            allResults.AddRange(mobileAppResults.Where(r => r.AssignmentType == "group"));
                         }
                         var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, null);
                         if (targetAppResults is not null)
                         {
-                            allResults.AddRange(targetAppResults.Where(r => r.AssignmentType == "Group"));
+                            allResults.AddRange(targetAppResults.Where(r => r.AssignmentType == "group"));
+                        }
+                        var updateRingsResults = await _assignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, null);
+                        if (updateRingsResults is not null)
+                        {
+                            allResults.AddRange(updateRingsResults.Where(r => r.AssignmentType == "group"));
+                        }
+                        var featureUpdateResults = await _assignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(accessToken, null);
+                        if (featureUpdateResults is not null)
+                        {
+                            allResults.AddRange(featureUpdateResults.Where(r => r.AssignmentType == "group"));
+                        }
+                        var windowsDriverUpdateResults = await _assignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, null);
+                        if (windowsDriverUpdateResults is not null)
+                        {
+                            allResults.AddRange(windowsDriverUpdateResults.Where(r => r.AssignmentType == "group"));
                         }
                     });
             if (allResults.Count > 0)
@@ -274,7 +288,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                             filter.ResourceType,
                             filter.ResourceId,
                             filter.ResourceName,
-                            filter.AssignmentType,
                             filter.TargetId,
                             filter.TargetName,
                             filter.FilterId,

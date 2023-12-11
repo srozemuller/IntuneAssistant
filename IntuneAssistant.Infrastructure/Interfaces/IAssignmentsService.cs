@@ -13,5 +13,10 @@ public interface IAssignmentsService
     Task<List<AssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(string accessToken, Group? group);
     Task<List<AssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken, Group? group);
     Task<List<AssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken, Group? group);
-
+    Task<List<AssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,
+        Group? group);
+    Task<List<AssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken,
+        Group? group);
+    Task<List<AssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken,
+        Group? group);
 }
