@@ -1,3 +1,4 @@
+using IntuneAssistant.Enums;
 using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace IntuneAssistant.Constants;
@@ -9,6 +10,8 @@ public static class AppConfiguration
     public const string CLIENT_ID = "14d82eec-204b-4c2f-b7e8-296a70dab67e";
     public const string REDIRECT_URI = "http://localhost";
     public const string GRAPH_URL = "https://graph.microsoft.com/beta/";
+    public const string DEFAULT_OUTPUT = "table";
+    public const string STRINGTOREMOVE = "#microsoft.graph.";
     public static readonly string[] GRAPH_INTERACTIVE_SCOPE = {
         "Group.Read.All",
         "DeviceManagementConfiguration.ReadWrite.All",
