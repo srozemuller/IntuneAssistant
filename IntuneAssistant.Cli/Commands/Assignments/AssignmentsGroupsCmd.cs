@@ -45,7 +45,8 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var groupIdProvided = !string.IsNullOrWhiteSpace(options.GroupId);
         var groupNameProvided = !string.IsNullOrWhiteSpace(options.GroupName);
-        var groupInfo = new Group();
+        var groupInfo = new GroupModel();
+        
         var table = new Table();
         table.Collapse();
         table.Border = TableBorder.Rounded;

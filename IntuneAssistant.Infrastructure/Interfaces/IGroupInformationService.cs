@@ -1,10 +1,11 @@
+using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models;
 
 namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IGroupInformationService
 {
-    Task<Group?> GetGroupInformationByIdAsync(string accessToken, string groupId);
-    Task<Group?> GetGroupInformationByNameAsync(string accessToken, string groupName);
-    Task<List<Group?>> GetGroupInformationByIdsCollectionListAsync(string accessToken, List<string> groupIds);
+    Task<GroupModel?> GetGroupInformationByIdAsync(string accessToken, string groupId);
+    Task<GroupModel?> GetGroupInformationByNameAsync(string accessToken, string groupName);
+    Task<List<GroupModel>> GetGroupInformationByIdsCollectionListAsync(string accessToken, List<string> groupIds);
 }

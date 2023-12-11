@@ -4,7 +4,6 @@ using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
-using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 
 namespace IntuneAssistant.Infrastructure.Services;
@@ -13,7 +12,7 @@ public sealed class AssignmentsService : IAssignmentsService
 {
     private readonly HttpClient _http = new();
     public async Task<List<AssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -53,7 +52,7 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<AssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -93,7 +92,7 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<AssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -132,7 +131,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, Group? group)
+    public async Task<List<AssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -171,7 +170,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, Group? group)
+    public async Task<List<AssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -211,7 +210,7 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<AssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(
-        string accessToken, Group? group)
+        string accessToken, GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -251,7 +250,7 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<AssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -366,7 +365,7 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<AssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -406,7 +405,7 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<AssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -445,7 +444,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken, Group? group)
+    public async Task<List<AssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
         var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -484,7 +483,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken, Group? group)
+    public async Task<List<AssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
        var results = new List<AssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
