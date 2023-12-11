@@ -85,12 +85,32 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                         {
                             allResults.AddRange(targetAppResults);
                         }
+                        var updateRingResults =
+                            await _assignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, null);
+                        if (updateRingResults is not null)
+                        {
+                            allResults.AddRange(updateRingResults);
+                        }
+                        var featureUpdateResults =
+                            await _assignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(accessToken, null);
+                        if (featureUpdateResults is not null)
+                        {
+                            allResults.AddRange(featureUpdateResults);
+                        }
+                        var driverUpdateResults =
+                            await _assignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, null);
+                        if (driverUpdateResults is not null)
+                        {
+                            allResults.AddRange(driverUpdateResults);
+                        }
                 });
+
         if (allResults.Count > 0)
         {
             
             var table = new Table();
             table.Collapse();
+            table.Border = TableBorder.Rounded;
             table.AddColumn("ResourceType");
             table.AddColumn("ResourceId");
             table.AddColumn("ResourceName");
