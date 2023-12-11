@@ -39,6 +39,10 @@ jobs:
           zip osx-x64-${{ steps.get_version.outputs.VERSION }}.zip ./publish/osx-x64/intuneCli
           zip osx-arm64-${{ steps.get_version.outputs.VERSION }}.zip ./publish/osx-arm64/intuneCli
           zip win-x64-${{ steps.get_version.outputs.VERSION }}.zip ./publish/win-x64/intuneCli.exe
+      - name: Create NuGet package
+        run: |
+          cd ./IntuneAssistant.Cli
+          dotnet pack -c Release -p:PackageVersion=${{ steps.get_version.outputs.VERSION }} -o .
       - name: "Configuration without Checkout"
         id: without_checkout
         uses: mikepenz/release-changelog-builder-action@develop
@@ -106,7 +110,6 @@ jobs:
           asset_path: ./IntuneAssistant.Cli/linux-x64-${{ steps.get_version.outputs.VERSION }}.zip
           asset_name: linux-x64-${{ steps.get_version.outputs.VERSION }}.zip
           asset_content_type: application/octet-stream
-
       - name: Upload Release Asset - Windows
         id: upload-release-asset-windows
         uses: actions/upload-release-asset@v1
@@ -139,4 +142,15 @@ jobs:
             asset_path: ./IntuneAssistant.Cli/osx-arm64-${{ steps.get_version.outputs.VERSION }}.zip
             asset_name: osx-arm64-${{ steps.get_version.outputs.VERSION }}.zip
             asset_content_type: application/octet-stream
-
+      - name: Upload NuGet package asset
+        id: upload-release-asset-nuget
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: ./IntuneAssistant.Cli/IntuneCLI${{ steps.get_version.outputs.VERSION }}.nupkg
+            asset_name: IntuneCLI${{ steps.get_version.outputs.VERSION }}.nupkg
+            asset_content_type: application/octet-stream
+      - name: Push to NuGet
+        run: dotnet nuget push "./IntuneAssistant.Cli/*.nupkg" --api-key ${{secrets.NUGET_APIKEY}} --source https://api.nuget.org/v3/index.json
