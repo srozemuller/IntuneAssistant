@@ -1,11 +1,11 @@
-using System.Runtime.InteropServices.JavaScript;
-using Azure.Core;
+using System.Text.Json.Serialization;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Helpers;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.IdentityModel.Tokens;
-
 namespace IntuneAssistant.Models;
+
 
 public class AssignmentsModel
 {
@@ -19,57 +19,70 @@ public class AssignmentsModel
     public string FilterId { get; set; } = String.Empty;
     public string FilterType { get; set; } = "None";
 }
+public class Target
+{
+    [JsonPropertyName("@odata.type")]
+    public string OdataType { get; set; }
 
+    public string? DeviceAndAppManagementAssignmentFilterId { get; set; }
+    public string? DeviceAndAppManagementAssignmentFilterType { get; set; }
+    public string? GroupId { get; set; }
+}
 
+public class Assignment
+{
+    public string Id { get; set; }
+    public Target Target { get; set; }
+}
+
+public class AssignmentsResponseModel
+{
+    [JsonPropertyName("@odata.type")]
+    public string OdataType { get; set; }
+
+    public string Id { get; set; }
+    public string DisplayName { get; set; }
+    public string Description { get; set; }
+
+    [JsonPropertyName("assignments@odata.context")]
+    public string AssignmentsOdataContext { get; set; }
+
+    public List<Assignment> Assignments { get; set; }
+}
 
 public static class AssignmentModelExtensions
 {
-    public static AssignmentsModel ToAssignmentModel(this DeviceAndAppManagementAssignmentTarget? deviceTarget, GroupAssignmentTarget? groupTarget, string resourceId, string? modelString, string? resourceName)
+    public static AssignmentsModel ToAssignmentModel(this Assignment assignment, AssignmentsResponseModel assigmentResponseModel, Enums.ResourceTypes resourceType)
     {
         string targetId = String.Empty;
-        string pattern1 = "Microsoft.Graph.Beta.Models.";
         string pattern2 = "AssignmentTarget";
-        string assignmentType = String.Empty;
+        string assignmentType = assignment.Target.OdataType;
         bool isAssigned = false;
-        string filterId = String.Empty;
-        string filterType = String.Empty; 
-        string resourceType = "Type not found"; 
-        if (groupTarget is not null)
+        string filterId = "No filter";
+        if (assignment.Target.DeviceAndAppManagementAssignmentFilterId is not null)
         {
-            targetId = "none";
-            assignmentType = StringExtensions.GetStringBetweenTwoStrings(groupTarget.ToString(), pattern1, pattern2);
-            isAssigned = !groupTarget.DeviceAndAppManagementAssignmentFilterType.ToString().IsNullOrEmpty();
-            filterId = groupTarget.DeviceAndAppManagementAssignmentFilterId.IsNullOrEmpty() ? "No Filter" : groupTarget.DeviceAndAppManagementAssignmentFilterId;
-            filterType = groupTarget.DeviceAndAppManagementAssignmentFilterType.ToString(); 
-            if (groupTarget is GroupAssignmentTarget group)
-            {
-                targetId = group.GroupId;
-            }
-            if (modelString is not null)
-                resourceType = ResourceHelper.GetResourceTypeFromOdata(modelString);
+            filterId = assignment.Target.DeviceAndAppManagementAssignmentFilterId;
         }
-        if (deviceTarget is not null)
-        {
-            isAssigned = !deviceTarget.DeviceAndAppManagementAssignmentFilterType.ToString().IsNullOrEmpty();
-            assignmentType = StringExtensions.GetStringBetweenTwoStrings(deviceTarget.ToString(), pattern1, pattern2);
-            filterId = deviceTarget.DeviceAndAppManagementAssignmentFilterId.IsNullOrEmpty() ? "No Filter" : deviceTarget.DeviceAndAppManagementAssignmentFilterId;
-            filterType = deviceTarget.DeviceAndAppManagementAssignmentFilterType.ToString(); 
 
-            if (modelString is not null)
-                 resourceType = ResourceHelper.GetResourceTypeFromOdata(modelString);
-            
+        string filterType = String.Empty;
+        if (assignmentType.StartsWith(AppConfiguration.STRINGTOREMOVE))
+        {
+            assignmentType = StringExtensions.GetStringBetweenTwoStrings(assignment.Target.OdataType, AppConfiguration.STRINGTOREMOVE, pattern2);
+        }
+        if (assignment.Target.GroupId is not null)
+        {
+            targetId = assignment.Target.GroupId;
         }
         return new AssignmentsModel
         {
             AssignmentType = assignmentType,
             IsAssigned = isAssigned,
-            ResourceType = resourceType,
-            ResourceId = resourceId,
+            ResourceType = resourceType.ToString(),
+            ResourceId = assigmentResponseModel.Id,
             TargetId = targetId,
-            ResourceName = resourceName,
+            ResourceName = assigmentResponseModel.DisplayName,
             FilterId = filterId,
-            FilterType = filterType
+            FilterType = assignment.Target.DeviceAndAppManagementAssignmentFilterType
         };
-
     }
 } 

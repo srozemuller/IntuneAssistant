@@ -1,50 +1,86 @@
+using System.Text.Json;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
-using Microsoft.Extensions.Logging;
-using Microsoft.Graph.Beta.Models;
+using IntuneAssistant.Models;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 
 public sealed class GroupInformationService : IGroupInformationService
 {
-
-    public async Task<Group?> GetGroupInformationByIdAsync(string accessToken, string groupId)
+    private readonly HttpClient _http = new();
+    public async Task<GroupModel?> GetGroupInformationByIdAsync(string accessToken, string groupId)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-        var results = new Group();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        
+        var results = new GroupModel();
         try
         {
-            results = await graphClient.Groups[groupId].GetAsync();
+            var url = $"{GraphUrls.GroupsUrl}&$filter=id eq '{groupId}'";
+            var response = await _http.GetAsync(url);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<GroupModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                return result.Value.FirstOrDefault();
+            }
         }
         catch
         {
             return null;
         }
-
         return results;
     }
 
-    public async Task<Group?> GetGroupInformationByNameAsync(string accessToken, string groupName)
+    public async Task<GroupModel?> GetGroupInformationByNameAsync(string accessToken, string groupName)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-        var allResults = await graphClient.Groups.GetAsync();
-        var results = allResults.Value.Where(g => g.DisplayName == groupName).FirstOrDefault();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var url = $"{GraphUrls.GroupsUrl}&$filter=displayName eq '{groupName}'";
+        var results = new GroupModel();
+        try
+        {
+            var response = await _http.GetAsync(url);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result =
+                await JsonSerializer.DeserializeAsync<GraphValueResponse<GroupModel>>(responseStream,
+                    CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                return result.Value.FirstOrDefault();
+            }
+        }
+        catch (Exception exception)
+        {
+            return null;
+        }
         return results;
     }
 
-    public async Task<List<Group?>> GetGroupInformationByIdsCollectionListAsync(string accessToken,
+    public async Task<List<GroupModel>> GetGroupInformationByIdsCollectionListAsync(string accessToken,
         List<string> groupIds)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-        var allResults = new List<Group>();
-        var groupResults = new Group();
-        foreach (var groupId in groupIds)
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var groupIdsInString = "(" + string.Join(",", groupIds.Select(x => $"'{x}'")) + ")";
+        var url = $"{GraphUrls.GroupsUrl}&$filter=id in {groupIdsInString}";
+        var allResults = new List<GroupModel>();
+        try
         {
-            groupResults = await graphClient.Groups[groupId].GetAsync();
-            if (groupResults is not null)
+            var response = await _http.GetAsync(url);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result =
+                await JsonSerializer.DeserializeAsync<GraphValueResponse<GroupModel>>(responseStream,
+                    CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                allResults.Add(groupResults);
+                return result.Value.ToList();
             }
+        }
+        catch
+        {
+            return null;
         }
 
         return allResults;

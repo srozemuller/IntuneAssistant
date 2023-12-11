@@ -1,483 +1,358 @@
+using System.Text.Json;
+using IntuneAssistant.Constants;
+using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
-using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class AssignmentsService : IAssignmentsService
 {
+    private readonly HttpClient _http = new();
     public async Task<List<AssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var configPolResults = await graphClient.DeviceManagement.ConfigurationPolicies.GetAsync(
-                requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.Filter = null;
-                    requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-                });
-            foreach (var policy in configPolResults.Value)
+            var response = await _http.GetAsync(GraphUrls.ConfigurationPoliciesUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                List<DeviceManagementConfigurationPolicyAssignment> configurationAssignments = null;
-                if (group is null)
+                foreach (var resource in result.Value)
                 {
-                    if (policy.Assignments != null) configurationAssignments = policy.Assignments.ToList();
-                }
-                else
-                {
-                    string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                    if (policy.Assignments != null)
-                        configurationAssignments = policy.Assignments.Where(a =>
-                            group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                }
-
-                foreach (var assignment in configurationAssignments)
-                {
-                    GroupAssignmentTarget groupTarget = null;
-                    if (assignment.Target is GroupAssignmentTarget scriptGroup)
+                    if (group is null)
                     {
-                        groupTarget = scriptGroup;
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var configurationPolicyAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                            results.Add(configurationPolicyAssigment);
+                        }
                     }
-
-                    var configAssignmentInfo = AssignmentModelExtensions.ToAssignmentModel(null, groupTarget, policy.Id,
-                        policy.ToString(), policy.Name);
-                    results.Add(configAssignmentInfo);
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var configurationPolicyAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                            results.Add(configurationPolicyAssigment);
+                        }
                 }
             }
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
-
         return results;
     }
 
     public async Task<List<AssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var scriptsResults = await graphClient.DeviceManagement.DeviceManagementScripts.GetAsync(requestConfiguration =>
+            var response = await _http.GetAsync(GraphUrls.DeviceManagementScriptsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                requestConfiguration.QueryParameters.Filter = null;
-                requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-            });
-            if (scriptsResults?.Value?.Count > 0)
-            {
-                foreach (var script in scriptsResults.Value)
+                foreach (var resource in result.Value)
                 {
-                    List<DeviceManagementScriptAssignment> scriptAssignments = null;
                     if (group is null)
                     {
-                        if (script.Assignments != null) scriptAssignments = script.Assignments.ToList();
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var deviceManagementScriptAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.DeviceManagementScript);
+                            results.Add(deviceManagementScriptAssigment);
+                        }
                     }
                     else
-                    {
-                        string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                        if (script.Assignments != null)
-                            scriptAssignments = script.Assignments.Where(a =>
-                                group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                    }
-
-                    if (scriptAssignments != null)
-                        foreach (var scriptAssignment in scriptAssignments)
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            GroupAssignmentTarget groupTarget = null;
-                            if (scriptAssignment.Target is GroupAssignmentTarget scriptGroup)
-                            {
-                                groupTarget = scriptGroup;
-                            }
-
-                            if (script.Id != null)
-                            {
-                                var scriptAssignmentInfo = AssignmentModelExtensions.ToAssignmentModel(null, groupTarget,
-                                    script.Id,
-                                    script.ToString(), script.DisplayName);
-                                results.Add(scriptAssignmentInfo);
-                            }
+                            var deviceManagementScriptAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.DeviceManagementScript);
+                            results.Add(deviceManagementScriptAssigment);
                         }
                 }
             }
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching script assignments: " + ex.ToMessage());
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
-
         return results;
     }
 
     public async Task<List<AssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var healthScriptResults = await graphClient.DeviceManagement.DeviceHealthScripts.GetAsync(requestConfiguration =>
+            var response = await _http.GetAsync(GraphUrls.DeviceHealthScriptsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                requestConfiguration.QueryParameters.Filter = null;
-                requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-            });
-            if (healthScriptResults?.Value?.Count > 0)
-            {
-                foreach (var script in healthScriptResults.Value)
+                foreach (var resource in result.Value)
                 {
-                    List<DeviceHealthScriptAssignment> scriptAssignments = null;
                     if (group is null)
                     {
-                        if (script.Assignments != null) scriptAssignments = script.Assignments.ToList();
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var healthScriptAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.DeviceHealthScript);
+                            results.Add(healthScriptAssigment);
+                        }
                     }
                     else
-                    {
-                        string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                        if (script.Assignments != null)
-                            scriptAssignments = script.Assignments.Where(a =>
-                                group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                    }
-
-                    if (scriptAssignments != null)
-                        foreach (var scriptAssignment in scriptAssignments)
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            GroupAssignmentTarget groupTarget = null;
-                            if (scriptAssignment.Target is GroupAssignmentTarget scriptGroup)
-                            {
-                                groupTarget = scriptGroup;
-                            }
-
-                            if (script.Id != null)
-                            {
-                                var healthScriptAssignmentInfo = AssignmentModelExtensions.ToAssignmentModel(null,
-                                    groupTarget,
-                                    script.Id, script.ToString(), script.DisplayName);
-                                results.Add(healthScriptAssignmentInfo);
-                            }
+                            var healthScriptAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.DeviceHealthScript);
+                            results.Add(healthScriptAssigment);
                         }
                 }
             }
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching autopilot policies: " + ex.ToMessage());
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
-
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, Group? group)
+    public async Task<List<AssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var autopilotResults = await graphClient.DeviceManagement.WindowsAutopilotDeploymentProfiles.GetAsync(
-                requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.Filter = null;
-                    requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-                });
-            if (autopilotResults?.Value?.Count > 0)
+            var response = await _http.GetAsync(GraphUrls.WindowsAutopilotDeploymentProfilesUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                foreach (var autopilotProfile in autopilotResults.Value)
+                foreach (var resource in result.Value)
                 {
-                    List<WindowsAutopilotDeploymentProfileAssignment> autoPilotAssignments = null;
                     if (group is null)
                     {
-                        if (autopilotProfile.Assignments != null) autoPilotAssignments = autopilotProfile.Assignments.ToList();
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var autoPilotAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.WindowsAutopilotDeploymentProfile);
+                            results.Add(autoPilotAssigment);
+                        }
                     }
                     else
-                    {
-                        string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                        if (autopilotProfile.Assignments != null)
-                            autoPilotAssignments = autopilotProfile.Assignments.Where(a =>
-                                group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                    }
-
-                    if (autoPilotAssignments != null)
-                        foreach (var autoPilotAssignment in autoPilotAssignments)
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            GroupAssignmentTarget groupTarget = null;
-                            if (autoPilotAssignment.Target is GroupAssignmentTarget pilotGroup)
-                            {
-                                groupTarget = pilotGroup;
-                            }
-
-                            if (autopilotProfile.Id != null)
-                            {
-                                var autopilotAssignmentInfo = AssignmentModelExtensions.ToAssignmentModel(null, groupTarget,
-                                    autopilotProfile.Id, autopilotProfile.ToString(), autopilotProfile.DisplayName);
-                                results.Add(autopilotAssignmentInfo);
-                            }
+                            var autoPilotAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.WindowsAutopilotDeploymentProfile);
+                            results.Add(autoPilotAssigment);
                         }
                 }
             }
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching autopilot policies: " + ex.ToMessage());
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
-
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, Group? group)
+    public async Task<List<AssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var mobileAppResults = await graphClient.DeviceAppManagement.MobileApps.GetAsync(requestConfiguration =>
+            var response = await _http.GetAsync(GraphUrls.MobileAppsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                requestConfiguration.QueryParameters.Filter = null;
-                requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-            });
-            if (mobileAppResults?.Value?.Count > 0)
-            {
-                foreach (var mobileApp in mobileAppResults.Value)
+                foreach (var resource in result.Value)
                 {
-                    List<MobileAppAssignment> mobileAppAssignments = null;
                     if (group is null)
                     {
-                        if (mobileApp.Assignments != null) mobileAppAssignments = mobileApp.Assignments.ToList();
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var mobileAppAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.MobileApp);
+                            results.Add(mobileAppAssigment);
+                        }
                     }
                     else
-                    {
-                        string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                        if (mobileApp.Assignments != null)
-                            mobileAppAssignments = mobileApp.Assignments.Where(a =>
-                                group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                    }
-
-                    if (mobileAppAssignments != null)
-                        foreach (var appAssignment in mobileAppAssignments)
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            GroupAssignmentTarget groupTarget = null;
-                            if (appAssignment.Target is GroupAssignmentTarget appGroup)
-                            {
-                                groupTarget = appGroup;
-                            }
-
-                            if (mobileApp.Id != null)
-                            {
-                                var mobileAppAssignmentInfo = AssignmentModelExtensions.ToAssignmentModel(null, groupTarget,
-                                    mobileApp.Id, mobileApp.ToString(), mobileApp.DisplayName);
-                                results.Add(mobileAppAssignmentInfo);
-                            }
+                            var mobileAppAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.MobileApp);
+                            results.Add(mobileAppAssigment);
                         }
                 }
             }
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching mobile app assignments: " + ex.ToMessage());
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
-
         return results;
     }
 
     public async Task<List<AssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(
-        string accessToken, Group? group)
+        string accessToken, GroupModel? group)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var targetAppConfigResults = await graphClient.DeviceAppManagement.TargetedManagedAppConfigurations.GetAsync(
-                requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.Filter = null;
-                    requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-                });
-            if (targetAppConfigResults?.Value?.Count > 0)
+            var response = await _http.GetAsync(GraphUrls.TargetedManagedAppConfigurationsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                foreach (var targetApp in targetAppConfigResults.Value)
+                foreach (var resource in result.Value)
                 {
-                    List<TargetedManagedAppPolicyAssignment> targetAppAssignments = null;
                     if (group is null)
                     {
-                        if (targetApp.Assignments != null) targetAppAssignments = targetApp.Assignments.ToList();
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var targetedAppAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.AppConfigurationPolicy);
+                            results.Add(targetedAppAssigment);
+                        }
                     }
                     else
-                    {
-                        string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                        if (targetApp.Assignments != null)
-                            targetAppAssignments = targetApp.Assignments.Where(a =>
-                                group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                    }
-
-                    if (targetAppAssignments == null) continue;
-                    foreach (var targetAppAssignment in targetAppAssignments)
-                    {
-                        GroupAssignmentTarget groupTarget = null;
-                        if (targetAppAssignment.Target is GroupAssignmentTarget targetAppGroup)
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            groupTarget = targetAppGroup;
+                            var targetedAppAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.AppConfigurationPolicy);
+                            results.Add(targetedAppAssigment);
                         }
-
-                        if (targetApp.Id != null)
-                        {
-                            var targetAppConfigAssignmentInfo = AssignmentModelExtensions.ToAssignmentModel(
-                                null, groupTarget, targetApp.Id, targetApp.ToString(),
-                                targetApp.DisplayName);
-                            results.Add(targetAppConfigAssignmentInfo);
-                        }
-                    }
                 }
             }
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching autopilot policies: " + ex.ToMessage());
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
-
         return results;
     }
 
     public async Task<List<AssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         var results = new List<AssignmentsModel>();
         try
         {
-            AssignmentsModel assignmentInfo = null;
-            var windowsAppProtectionResults = await graphClient.DeviceAppManagement.WindowsManagedAppProtections.GetAsync(
-                requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.Filter = null;
-                    requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-                });
-            if (windowsAppProtectionResults?.Value?.Count > 0)
+            try
             {
-                foreach (var appProtection in windowsAppProtectionResults.Value)
+                var response = await _http.GetAsync(GraphUrls.WindowsManagedAppProtectionsUrl);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+                if (result?.Value is not null)
                 {
-                    List<TargetedManagedAppPolicyAssignment> appProtectionAssignments = null;
-                    if (group is null)
+                    foreach (var resource in result.Value)
                     {
-                        if (appProtection.Assignments != null) appProtectionAssignments = appProtection.Assignments.ToList();
-                    }
-                    else
-                    {
-                        string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                        if (appProtection.Assignments != null)
-                            appProtectionAssignments = appProtection.Assignments.Where(a =>
-                                group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                    }
-
-                    if (appProtectionAssignments != null)
-                        foreach (var scriptAssignment in appProtectionAssignments)
+                        if (group is null)
                         {
-                            GroupAssignmentTarget groupTarget = null;
-                            if (scriptAssignment.Target is GroupAssignmentTarget scriptGroup)
+                            foreach (var assignment in resource.Assignments)
                             {
-                                groupTarget = scriptGroup;
+                                var appProtectionAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.WindowsManagedAppProtection);
+                                results.Add(appProtectionAssigment);
                             }
-
-                            if (appProtection.Id != null)
-                                assignmentInfo = AssignmentModelExtensions.ToAssignmentModel(null, groupTarget,
-                                    appProtection.Id, appProtection.ToString(), appProtection.DisplayName
-                                );
-                            if (assignmentInfo != null) results.Add(assignmentInfo);
                         }
+                        else
+                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                            {
+                                var appProtectionAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.WindowsManagedAppProtection);
+                                results.Add(appProtectionAssigment);
+                            }
+                    }
                 }
+            }
+            catch (ODataError ex)
+            {
+                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+                return null;
             }
 
             // iOS app protection
-            var iosAppProtectionResults = await graphClient.DeviceAppManagement.IosManagedAppProtections.GetAsync(
-                requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.Filter = null;
-                    requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-                });
-            if (iosAppProtectionResults?.Value?.Count > 0)
+            try
             {
-                foreach (var iosApp in iosAppProtectionResults.Value)
+                var response = await _http.GetAsync(GraphUrls.IosManagedAppProtectionsUrl);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+                if (result?.Value is not null)
                 {
-                    List<TargetedManagedAppPolicyAssignment> iosAppProtectionAssignments = null;
-                    if (group is null)
+                    foreach (var resource in result.Value)
                     {
-                        if (iosApp.Assignments != null) iosAppProtectionAssignments = iosApp.Assignments.ToList();
-                    }
-                    else
-                    {
-                        string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                        if (iosApp.Assignments != null)
-                            iosAppProtectionAssignments = iosApp.Assignments.Where(a =>
-                                group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                    }
-                    if (iosAppProtectionAssignments?.Count > 0)
-                    {
-                        foreach (var iosAppAssignment in iosAppProtectionAssignments)
+                        if (group is null)
                         {
-                            GroupAssignmentTarget groupTarget = null;
-                            if (iosAppAssignment?.Target is GroupAssignmentTarget scriptGroup)
+                            foreach (var assignment in resource.Assignments)
                             {
-                                groupTarget = scriptGroup;
+                                var iosAppAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
+                                results.Add(iosAppAssigment);
                             }
-
-                            if (iosAppAssignment?.Id != null)
-                                assignmentInfo = AssignmentModelExtensions.ToAssignmentModel(null, groupTarget,
-                                    iosAppAssignment?.Id, iosAppAssignment?.ToString(), iosApp.DisplayName
-                                );
-                            if (assignmentInfo != null) results.Add(assignmentInfo);
                         }
+                        else
+                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                            {
+                                var iosAppAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
+                                results.Add(iosAppAssigment);
+                            }
                     }
                 }
             }
+            catch (ODataError ex)
+            {
+                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+                return null;
+            }
 
             // Android app protection
-            var androidAppProtectionResults = await graphClient.DeviceAppManagement.AndroidManagedAppProtections.GetAsync(
-                requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.Filter = null;
-                    requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-                });
-            if (androidAppProtectionResults.Value.Count > 0)
+            try
             {
-                foreach (var androidApp in androidAppProtectionResults.Value)
+                var response = await _http.GetAsync(GraphUrls.AndroidManagedAppProtectionsUrl);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+                if (result?.Value is not null)
                 {
-                    List<TargetedManagedAppPolicyAssignment> androidAppProtectionAssignments = null;
-                    if (group is null)
+                    foreach (var resource in result.Value)
                     {
-                        if (androidApp.Assignments != null) androidAppProtectionAssignments = androidApp.Assignments.ToList();
-                    }
-                    else
-                    {
-                        string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                        if (androidApp.Assignments != null)
-                            androidAppProtectionAssignments = androidApp.Assignments.Where(a =>
-                                group.Id != null && a.Id != null && a.Target?.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                    }
-
-                    if (androidAppProtectionAssignments != null)
-                        foreach (var androidAppAssigment in androidAppProtectionAssignments)
+                        if (group is null)
                         {
-                            GroupAssignmentTarget androidGroupTarget = null;
-                            if (androidAppAssigment.Target is GroupAssignmentTarget androidGroup)
+                            foreach (var assignment in resource.Assignments)
                             {
-                                androidGroupTarget = androidGroup;
+                                var androidAppAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.AndroidManagedAppProtection);
+                                results.Add(androidAppAssigment);
                             }
-
-                            if (androidAppAssigment.Id != null)
-                                assignmentInfo = AssignmentModelExtensions.ToAssignmentModel(null, androidGroupTarget,
-                                    androidAppAssigment.Id, androidAppAssigment.ToString(), androidApp.DisplayName);
-                            if (assignmentInfo != null) results.Add(assignmentInfo);
                         }
+                        else
+                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                            {
+                                var androidAppAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.AndroidManagedAppProtection);
+                                results.Add(androidAppAssigment);
+                            }
+                    }
                 }
+            }
+            catch (ODataError ex)
+            {
+                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+                return null;
             }
         }
         catch (ODataError ex)
@@ -490,63 +365,160 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<AssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken,
-        Group? group)
+        GroupModel? group)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var polResults = await graphClient.DeviceManagement.DeviceCompliancePolicies.GetAsync(
-                requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.Filter = null;
-                    requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-                });
-            List<DeviceCompliancePolicy> policiesWithGroupAssignments = polResults.Value.Where(r =>
-                r.Assignments != null).ToList();
-
-            foreach (var policy in policiesWithGroupAssignments)
+            var response = await _http.GetAsync(GraphUrls.CompliancePoliciesUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                List<DeviceCompliancePolicyAssignment> complianceAssignments;
-                if (group is null)
+                foreach (var resource in result.Value)
                 {
-                    complianceAssignments = policy.Assignments.ToList();
-                }
-                else
-                {
-                    string groupOdataType = "#microsoft.graph.groupAssignmentTarget";
-                    complianceAssignments = policy.Assignments.Where(a =>
-                        a.Target.OdataType == groupOdataType && a.Id.Contains(group.Id)).ToList();
-                }
-
-                foreach (var assignment in complianceAssignments)
-                {
-                    DeviceAndAppManagementAssignmentTarget deviceTarget = null;
-                    GroupAssignmentTarget groupTarget = null;
-                    if (assignment.Target is DeviceAndAppManagementAssignmentTarget target)
+                    if (group is null)
                     {
-                        deviceTarget = target;
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var compliancePolicyAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.CompliancePolicy);
+                            results.Add(compliancePolicyAssigment);
+                        }
                     }
-
-                    if (assignment.Target is GroupAssignmentTarget groupAssignment)
-                    {
-                        groupTarget = groupAssignment;
-                    }
-
-                    var complianceAssignmentInfo = AssignmentModelExtensions.ToAssignmentModel(deviceTarget,
-                        groupTarget, policy.Id,
-                        policy.ToString(), policy.DisplayName);
-                    results.Add(complianceAssignmentInfo);
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var compliancePolicyAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.CompliancePolicy);
+                            results.Add(compliancePolicyAssigment);
+                        }
                 }
-
             }
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching compliance policies: " + ex.ToMessage());
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
+        return results;
+    }
 
+    public async Task<List<AssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,
+        GroupModel? group)
+    {
+        var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.UpdateRingsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var updateRingAssignmentInfo = assignment.ToAssignmentModel(resource, ResourceTypes.UpdateRingConfiguration);
+                            results.Add(updateRingAssignmentInfo);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var updateRingAssignmentInfo = assignment.ToAssignmentModel(resource, ResourceTypes.UpdateRingConfiguration);
+                            results.Add(updateRingAssignmentInfo);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<AssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.WindowsFeatureUpdatesUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var featureUpdateAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.WindowsFeatureUpdate);
+                            results.Add(featureUpdateAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var updateRingAssignmentInfo = assignment.ToAssignmentModel(resource, ResourceTypes.WindowsFeatureUpdate);
+                            results.Add(updateRingAssignmentInfo);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<AssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    {
+       var results = new List<AssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.WindowsDriverUpdatesUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var driverUpdateAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.WindowsDriverUpdate);
+                            results.Add(driverUpdateAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var updateRingAssignmentInfo = assignment.ToAssignmentModel(resource, ResourceTypes.WindowsDriverUpdate);
+                            results.Add(updateRingAssignmentInfo);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            return null;
+        }
         return results;
     }
 }

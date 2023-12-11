@@ -75,7 +75,7 @@ public sealed class IdentityHelperService : IIdentityHelperService
 
             try
             {
-                result = await app.AcquireTokenInteractive(AppConfiguration.GRAPH_INTERACTIVE_SCOPE).WithPrompt(Prompt.Consent).WithExtraScopesToConsent(AppConfiguration.GRAPH_INTERACTIVE_SCOPE).ExecuteAsync();
+                result = await app.AcquireTokenInteractive(AppConfiguration.GRAPH_INTERACTIVE_SCOPE).WithExtraScopesToConsent(AppConfiguration.GRAPH_INTERACTIVE_SCOPE).ExecuteAsync();
             }
             catch (MsalException msalException)
             {
