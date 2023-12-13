@@ -63,26 +63,33 @@ public sealed class GroupInformationService : IGroupInformationService
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        var groupIdsInString = "(" + string.Join(",", groupIds.Select(x => $"'{x}'")) + ")";
-        var url = $"{GraphUrls.GroupsUrl}&$filter=id in {groupIdsInString}";
         var allResults = new List<GroupModel>();
-        try
+
+        // In a search filter there is a max of 15 operators. In the case there are more groups, loop through the list with a max of 15
+        while (groupIds.Count > 0)
         {
-            var response = await _http.GetAsync(url);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<GroupModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            if (result?.Value is not null)
+            var currentIds = groupIds.Take(15).ToList();
+            var currentIdsInString = "(" + string.Join(",", currentIds.Select(x => $"'{x}'")) + ")";
+            var url = $"{GraphUrls.GroupsUrl}&$filter=id in {currentIdsInString}";
+            try
             {
-                return result.Value.ToList();
+                var response = await _http.GetAsync(url);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result =
+                    await JsonSerializer.DeserializeAsync<GraphValueResponse<GroupModel>>(responseStream,
+                        CustomJsonOptions.Default());
+
+                groupIds = groupIds.Skip(15).ToList();
+                if (result?.Value is not null)
+                {
+                    allResults.AddRange(result.Value);
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
-        catch
-        {
-            return null;
-        }
-
         return allResults;
         }
 }
