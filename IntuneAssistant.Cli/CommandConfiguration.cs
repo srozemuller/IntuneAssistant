@@ -23,6 +23,8 @@ public static class CommandConfiguration
     // devices
     public const string DevicesCommandName = "devices";
     public const string DevicesCommandDescription = "Retrieve a list of all devices from Intune";
+    public const string DevicesListCommandName = "list";
+    public const string DevicesListCommandDescription = "Retrieve a list of all devices from Intune";
     public const string DevicesWindowsFilterName = "--include-windows";
     public const string DevicesWindowsFilterDescription = "Retrieves all Windows devices from Intune";
     public const string DevicesMacOsFilterName = "--include-macos";
@@ -50,6 +52,9 @@ public static class CommandConfiguration
     public const string ConfigurationPolicyCommandName = "configuration";
     public const string ConfigurationPolicyCommandDescription = "Gives you options to select a specific configuration policy from Intune";
     
+
+    
+
     // compliance policies
     public const string CompliancePolicyCommandName = "compliance";
     public const string CompliantPolicyCommandDescription = "Gives you options to select a specific compliance policy from Intune";    
@@ -81,7 +86,18 @@ public static class CommandConfiguration
     public const string DeviceOsBuildOverviewCommandName = "osbuild";
     public const string DeviceOsBuildOverviewCommandDescription = "Shows the devices OS build overview";  
 
-    // arguments
+    // generic subcommands
+    public const string ListCommandName = "list";
+    public const string ListCommandDescription = "Gives you a list of all resources in the specific context";
+    
+    public const string ExportCommandName = "export";
+    public const string ExportCommandDescription = "Export the resources content in the specific context";
+    
+    // global arguments
+    public static readonly string[] OutputFlags = new[] { "-o", "-output" };
+    public const string OutputFlagsDescription = "Option to output the content into a specific type";
+    
+    // specific arguments
     public const string ExportCsvArg = "--export-csv";
     public const string ExportCsvArgDescription = "Exports the content to a csv file";
     public const string RemoveArg = "--remove";
@@ -92,4 +108,6 @@ public static class CommandConfiguration
     public const string IdArgDescription = "The unique id of the item in Intune";
     public const string ForceArg = "--force";
     public const string ForceArgDescription = "Forces an action in Intune";
+    public const string ExportPathArg = "--export-path";
+    public const string ExportPathArgDescription = "Forces an action in Intune"; 
 }

@@ -1,36 +1,50 @@
-using System.Text;
+using Newtonsoft.Json;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
-using IntuneAssistant.Models.Options;
-using Microsoft.Graph.Beta.Models;
+using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
-using Microsoft.IdentityModel.Tokens;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class ConfigurationPolicyService : IConfigurationPolicyService
 {
-    public async Task<List<DeviceManagementConfigurationPolicy>?> GetConfigurationPoliciesListAsync(string accessToken, bool assignmentFilter)
+    private readonly HttpClient _http = new();
+    public async Task<List<ConfigurationPolicyModel>?> GetConfigurationPoliciesListAsync(string accessToken)
     {
-        var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-        var results = new List<DeviceManagementConfigurationPolicy>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<ConfigurationPolicyModel>();
         try
         {
-            var result = await graphClient.DeviceManagement.ConfigurationPolicies.GetAsync(requestConfiguration =>
-            {
-                requestConfiguration.QueryParameters.Filter = null;
-                requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-            });
+            var nextUrl = GraphUrls.ConfigurationPoliciesUrl;
 
-            if (result?.Value != null)
-                if (assignmentFilter)
+            while (nextUrl is not null)
+            {
+                try
                 {
-                    results.AddRange(result.Value.Where(r=> r.Assignments.IsNullOrEmpty()));
-                }
-                else
-                {
+                    var response = await _http.GetAsync(nextUrl);
+                    var responseStream = await response.Content.ReadAsStreamAsync();
+
+                    using var sr = new StreamReader(responseStream);
+                    // Read the stream to a string
+                    var content = await sr.ReadToEndAsync();
+
+                    // Deserialize the string to your model
+                    var result = JsonConvert.DeserializeObject<GraphValueResponse<ConfigurationPolicyModel>>(content);
+                    if (result?.Value is null)
+                    {
+                        nextUrl = null;
+                        continue;
+                    }
                     results.AddRange(result.Value);
+                    nextUrl = result.ODataNextLink;
                 }
+                catch (HttpRequestException e)
+                {
+                    nextUrl = null;
+                }
+            }
         }
         catch (ODataError ex)
         {

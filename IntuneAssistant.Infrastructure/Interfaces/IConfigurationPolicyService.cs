@@ -1,8 +1,9 @@
-using Microsoft.Graph.Beta.Models;
+using IntuneAssistant.Models;
 
 namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IConfigurationPolicyService
 {
-    Task<List<DeviceManagementConfigurationPolicy>?> GetConfigurationPoliciesListAsync(string accessToken, bool assignmentFilter);
+    Task<List<ConfigurationPolicyModel>?> GetConfigurationPoliciesListAsync(string accessToken);
+
 }
