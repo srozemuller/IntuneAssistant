@@ -1,7 +1,9 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using IntuneAssistant.Enums;
 
 namespace IntuneAssistant.Extensions;
-
 
 /// <summary>
 /// Extension methods for <see cref="string"/>.
@@ -40,5 +42,42 @@ public static class StringExtensions
         string pattern = $"{Regex.Escape(pattern1)}(.*?){Regex.Escape(pattern2)}";
         var match = Regex.Match(input, pattern);
         return match.Groups[1].Value;
+    }
+}
+
+public static class ODataTypeExtensions
+{
+    public static string ToHumanReadableString(this AssignmentODataTypes odataType)
+    {
+        switch (odataType)
+        {
+            case AssignmentODataTypes.AllLicensedUsersAssignmentTarget:
+                return "All Licensed Users";
+            case AssignmentODataTypes.AllDevicesAssignmentTarget:
+                return "All Devices";
+            // Add other cases as needed
+            case AssignmentODataTypes.GroupAssignmentTarget:
+                return "Group";
+            default:
+                throw new ArgumentOutOfRangeException(nameof(odataType), odataType, null);
+        }
+    }
+}
+public class ODataTypeConverter : JsonConverter<AssignmentODataTypes>
+{
+    public override AssignmentODataTypes Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var value = reader.GetString();
+        value = value.Replace("#microsoft.graph.", "");
+        value = string.Concat(value.Select(x => Char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).TrimStart('_');
+        value = value.Replace("_", "");
+        return Enum.Parse<AssignmentODataTypes>(value, true);
+    }
+
+    public override void Write(Utf8JsonWriter writer, AssignmentODataTypes value, JsonSerializerOptions options)
+    {
+        var stringValue = value.ToString();
+        stringValue = "#microsoft.graph." + string.Concat(stringValue.Select(x => char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).TrimStart('_').ToLower();
+        writer.WriteStringValue(stringValue);
     }
 }

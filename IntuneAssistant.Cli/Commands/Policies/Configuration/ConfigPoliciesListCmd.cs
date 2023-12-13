@@ -1,4 +1,5 @@
 using System.CommandLine;
+using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
@@ -6,11 +7,11 @@ using Microsoft.Graph.Beta.Models;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
-namespace IntuneAssistant.Cli.Commands.Policies;
+namespace IntuneAssistant.Cli.Commands.Policies.Configuration;
 
-public class ConfigurationPoliciesCmd : Command<FetchConfigurationPoliciesCommandOptions,FetchConfigurationPoliciesCommandHandler>
+public class ConfigPoliciesListCmd : Command<FetchConfigurationPoliciesCommandOptions,FetchConfigurationPoliciesCommandHandler>
 {
-    public ConfigurationPoliciesCmd() : base(CommandConfiguration.ConfigurationPolicyCommandName, CommandConfiguration.ConfigurationPolicyCommandDescription)
+    public ConfigPoliciesListCmd() : base(CommandConfiguration.ListCommandName, CommandConfiguration.ListCommandDescription)
     {
         AddOption(new Option<string>(CommandConfiguration.IdArg, CommandConfiguration.IdArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
@@ -50,11 +51,11 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
         // Microsoft Graph
         // Implementation of shared service from infrastructure comes here
-        var allCompliancePoliciesResults = new List<DeviceManagementConfigurationPolicy>();
+        var allCompliancePoliciesResults = new List<ConfigurationPolicyModel>();
         // Show progress spinner while fetching data
         await AnsiConsole.Status().StartAsync("Fetching configuration policies from Intune", async _ =>
         {
-            allCompliancePoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken, false);
+            allCompliancePoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
         });
 
         if (exportCsv)
@@ -71,33 +72,26 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
         foreach (var policy in allCompliancePoliciesResults)
         {
             var assignmentTypes = new List<string>();
-            string policyType;
+            string policyType = String.Empty;
             var assignmentInfo = new AssignmentInfoModel();
-            if (policy.TemplateReference.TemplateFamily is not null)
-            {
-                policyType = policy.TemplateReference.TemplateFamily.Value.ToString();
-            }
-            else
-            {
-                policyType = policy.TemplateReference.ToString();
-            }
+            
             if (policy.Assignments.IsNullOrEmpty())
             {
                 assignmentTypes.Add("None");
             }
             else
             {
-                foreach (var assignment  in policy.Assignments)
+                foreach (var assignment in policy.Assignments)
                 {
-                    assignmentInfo = AssignmentInfoModelExtensions.ToAssignmentInfoModel(assignment.Target);
-                    assignmentTypes.Add($"{assignmentInfo.AssignmentType} ({assignmentInfo.FilterType})");
+                    
+                    assignmentTypes.Add($"{assignment.Target} ({assignment.Target.DeviceAndAppManagementAssignmentFilterType})");
                 }   
             }
             table.AddRow(
                 policy.Id,
                 policy.Name,
                 assignmentInfo.IsAssigned.ToString(),
-                policyType,
+                ResourceTypes.ConfigurationPolicy.ToString(),
                 string.Join(",",assignmentTypes)
             );
         }

@@ -24,3 +24,10 @@ public enum ResourceTypes
     WindowsFeatureUpdate,
     WindowsDriverUpdate
 }
+
+public enum AssignmentODataTypes
+{
+    AllDevicesAssignmentTarget,
+    GroupAssignmentTarget,
+    AllLicensedUsersAssignmentTarget
+}

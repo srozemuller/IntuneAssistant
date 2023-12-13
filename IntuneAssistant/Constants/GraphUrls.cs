@@ -9,7 +9,7 @@ public class GraphUrls
         $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceConfigurations?$filter=isof(%27microsoft.graph.windowsUpdateForBusinessConfiguration%27)&$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string CompliancePoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceCompliancePolicies?$expand=assignments($select=id,target)&$select=id,displayname,description";
     
-    public const string ConfigurationPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies?$expand=assignments($select=id,target)&$select=id,displayname,description";
+    public const string ConfigurationPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies?$expand=assignments($select=id,target),settings";
     public const string DeviceHealthScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceHealthScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string DeviceManagementScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceManagementScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string WindowsAutopilotDeploymentProfilesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsAutopilotDeploymentProfiles?$expand=assignments($select=id,target)&$select=id,displayname,description";
