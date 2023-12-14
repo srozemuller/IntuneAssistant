@@ -16,12 +16,10 @@ public class ConfigPoliciesExportCmd : Command<ExportConfigurationPoliciesComman
     }
 }
 
-
 public class ExportConfigurationPoliciesCommandOptions : ICommandOptions
 {
     public string ExportPath { get; set; } = string.Empty;
 }
-
 
 public class ExportConfigurationPoliciesCommandHandler : ICommandOptionsHandler<ExportConfigurationPoliciesCommandOptions>
 {
@@ -49,11 +47,11 @@ public class ExportConfigurationPoliciesCommandHandler : ICommandOptionsHandler<
             return -1;
         }
         
-        var allCompliancePoliciesResults = new List<ConfigurationPolicyModel>();
+        var allConfigurationPoliciesResults = new List<ConfigurationPolicyModel>();
         // Show progress spinner while fetching data
-        await AnsiConsole.Status().StartAsync("Fetching configuration policies from Intune", async _ =>
+        await AnsiConsole.Status().StartAsync("Fetching configuration policies from Intune to export", async _ =>
         {
-            allCompliancePoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
+            allConfigurationPoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
         });
         
         var fullExportPath = $"{exportPath}/{AppConfiguration.CONFIGPOLICY_OUTPUTPREFIX}";
@@ -61,14 +59,9 @@ public class ExportConfigurationPoliciesCommandHandler : ICommandOptionsHandler<
         {
             Directory.CreateDirectory(fullExportPath);
         }
-        foreach (var policy in allCompliancePoliciesResults)
+        foreach (var policy in allConfigurationPoliciesResults)
         {
-            policy.CreatedDateTime = null;
-            policy.LastModifiedDateTime = null;
-            policy.Id = null;
-
             var policyString = JsonConvert.SerializeObject(policy,JsonSettings.Default());
-
             await File.WriteAllTextAsync($"{fullExportPath}/{policy.Name}.json", policyString);
         }
 
