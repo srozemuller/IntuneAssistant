@@ -63,7 +63,6 @@ public class ImportConfigurationPoliciesCommandHandler : ICommandOptionsHandler<
                 {
                     var response =
                         await _configurationPolicyService.CreateConfigurationPolicyAsync(accessToken, result);
-                    AnsiConsole.Write($"Status is {response}");
                     return response;
                 }
             }
