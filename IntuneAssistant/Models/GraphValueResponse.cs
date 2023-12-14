@@ -1,11 +1,10 @@
-using System.Text.Json.Serialization;
 using IntuneAssistant.Extensions;
-using Microsoft.Graph.Beta.Models.Networkaccess;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Text.Json;
 
 namespace IntuneAssistant.Models;
-using System.Text.Json;
+
 
 public sealed record GraphValueResponse<T>
 {
@@ -30,7 +29,6 @@ public static class CustomJsonOptions
         };
 
         options.Converters.Add(new ODataTypeConverter());
-
         return options;
 
     }
@@ -41,7 +39,8 @@ public class JsonSettings
     public static JsonSerializerSettings Default() {
         var settings = new JsonSerializerSettings
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
         };
         return settings;
     }

@@ -1,22 +1,22 @@
 using IntuneAssistant.Models;
-using Microsoft.Graph.Beta.Models;
 
 namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IAssignmentsService
 {
-    Task<List<AssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string accessToken, GroupModel? group);
-    Task<List<AssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken, GroupModel? group);
-    Task<List<AssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
-    Task<List<AssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
-    Task<List<AssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
-    Task<List<AssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
-    Task<List<AssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
-    Task<List<AssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken, GroupModel? group);
-    Task<List<AssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,
+    Task<List<CustomAssignmentsModel>> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
+        GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies);
+    Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,
         GroupModel? group);
-    Task<List<AssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken,
+    Task<List<CustomAssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken,
         GroupModel? group);
-    Task<List<AssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken,
+    Task<List<CustomAssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken,
         GroupModel? group);
 }

@@ -93,6 +93,9 @@ public static class CommandConfiguration
     public const string ExportCommandName = "export";
     public const string ExportCommandDescription = "Export the resources content in the specific context";
     
+    public const string ImportCommandName = "import";
+    public const string ImportCommandDescription = "Export the resources content in the specific context";
+    
     // global arguments
     public static readonly string[] OutputFlags = new[] { "-o", "-output" };
     public const string OutputFlagsDescription = "Option to output the content into a specific type";
@@ -109,5 +112,9 @@ public static class CommandConfiguration
     public const string ForceArg = "--force";
     public const string ForceArgDescription = "Forces an action in Intune";
     public const string ExportPathArg = "--export-path";
-    public const string ExportPathArgDescription = "Forces an action in Intune"; 
+    public const string ExportPathArgDescription = "The path to export the configuration to";
+    public const string ImportPathArg = "--import-path";
+    public const string ImportPathArgDescription = "The path from where to import the configuration from"; 
+    public const string ImportFileArg = "--import-file";
+    public const string ImportFileArgDescription = "The file from where to import the configuration from"; 
 }

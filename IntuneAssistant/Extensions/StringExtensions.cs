@@ -47,16 +47,16 @@ public static class StringExtensions
 
 public static class ODataTypeExtensions
 {
-    public static string ToHumanReadableString(this AssignmentODataTypes odataType)
+    public static string ToHumanReadableString(this string odataType)
     {
         switch (odataType)
         {
-            case AssignmentODataTypes.AllLicensedUsersAssignmentTarget:
+            case "#microsoft.graph.allLicensedUsersAssignmentTarget":
                 return "All Licensed Users";
-            case AssignmentODataTypes.AllDevicesAssignmentTarget:
+            case "#microsoft.graph.allDevicesAssignmentTarget":
                 return "All Devices";
             // Add other cases as needed
-            case AssignmentODataTypes.GroupAssignmentTarget:
+            case "#microsoft.graph.groupAssignmentTarget":
                 return "Group";
             default:
                 throw new ArgumentOutOfRangeException(nameof(odataType), odataType, null);
@@ -69,7 +69,7 @@ public class ODataTypeConverter : JsonConverter<AssignmentODataTypes>
     {
         var value = reader.GetString();
         value = value.Replace("#microsoft.graph.", "");
-        value = string.Concat(value.Select(x => Char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).TrimStart('_');
+        value = string.Concat(value.Select(x => Char.IsUpper(x) ? "_" + x : x.ToString())).TrimStart('_');
         value = value.Replace("_", "");
         return Enum.Parse<AssignmentODataTypes>(value, true);
     }

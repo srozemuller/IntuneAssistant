@@ -5,56 +5,58 @@ using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class AssignmentsService : IAssignmentsService
 {
     private readonly HttpClient _http = new();
-    public async Task<List<AssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
-        GroupModel? group)
+    public Task<List<CustomAssignmentsModel>> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
+        GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var response = await _http.GetAsync(GraphUrls.ConfigurationPoliciesUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
-            if (result?.Value is not null)
-            {
-                foreach (var resource in result.Value)
+                foreach (var policy in configurationPolicies)
                 {
+                    if (policy.Assignments.IsNullOrEmpty())
+                    {
+                        continue;
+                    }
                     if (group is null)
                     {
-                        foreach (var assignment in resource.Assignments)
+                        foreach (var assignment in policy.Assignments)
                         {
-                            var configurationPolicyAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                            var configurationPolicyAssigment = assignment.ToCustomAssignmentsModel<string>(ResourceTypes.ConfigurationPolicy.ToString(),
+                                    policy.Name, policy.Id);
                             results.Add(configurationPolicyAssigment);
                         }
                     }
                     else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                    {
+                        foreach (var assignment in policy.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            var configurationPolicyAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                            var configurationPolicyAssigment = assignment.ToCustomAssignmentsModel<string>(ResourceTypes.ConfigurationPolicy.ToString(),policy.Name, policy.Id);
                             results.Add(configurationPolicyAssigment);
                         }
+                    }
                 }
-            }
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-            return null;
+            return Task.FromResult<List<CustomAssignmentsModel>>(null!);
         }
-        return results;
+        return Task.FromResult(results);
     }
 
-    public async Task<List<AssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken,
         GroupModel? group)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
@@ -91,10 +93,10 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken,
         GroupModel? group)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
@@ -131,9 +133,9 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
@@ -170,9 +172,9 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
@@ -209,10 +211,10 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(
+    public async Task<List<CustomAssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(
         string accessToken, GroupModel? group)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
@@ -249,12 +251,12 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken,
         GroupModel? group)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         try
         {
             try
@@ -364,10 +366,10 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken,
         GroupModel? group)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
@@ -404,10 +406,10 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,
         GroupModel? group)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
@@ -444,9 +446,9 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
-        var results = new List<AssignmentsModel>();
+        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
@@ -483,9 +485,9 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<AssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
     {
-       var results = new List<AssignmentsModel>();
+       var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try

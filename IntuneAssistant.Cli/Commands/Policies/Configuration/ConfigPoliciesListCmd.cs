@@ -72,7 +72,6 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
         foreach (var policy in allCompliancePoliciesResults)
         {
             var assignmentTypes = new List<string>();
-            string policyType = String.Empty;
             var assignmentInfo = new AssignmentInfoModel();
             
             if (policy.Assignments.IsNullOrEmpty())
@@ -83,8 +82,8 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
             {
                 foreach (var assignment in policy.Assignments)
                 {
-                    
-                    assignmentTypes.Add($"{assignment.Target} ({assignment.Target.DeviceAndAppManagementAssignmentFilterType})");
+                    var type = assignment.Target.OdataType.ToHumanReadableString(); 
+                    assignmentTypes.Add($"{type} ({assignment.Target.DeviceAndAppManagementAssignmentFilterType})");
                 }   
             }
             table.AddRow(

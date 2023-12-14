@@ -24,17 +24,21 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
 
     private readonly IAssignmentsService _assignmentsService;
     private readonly IIdentityHelperService _identityHelperService;
+    private readonly IConfigurationPolicyService _configurationPolicyService;
+    
 
-    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService)
+    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService)
     {
         _assignmentsService = assignmentsService;
         _identityHelperService = identityHelperService;
+        _configurationPolicyService = configurationPolicyService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
-        var allResults = new List<AssignmentsModel>();
+        var allResults = new List<CustomAssignmentsModel>();
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
+        var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
@@ -50,7 +54,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                         {
                             allResults.AddRange(complianceResults);
                         }
-                        var configurationResults = await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null);
+                        var configurationResults = await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null,configPolicies);
                         if (configurationResults is not null)
                         {
                             allResults.AddRange(configurationResults);

@@ -1,20 +1,24 @@
 using System.Text.Json.Serialization;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
-using IntuneAssistant.Helpers;
-using Microsoft.Graph.Beta.Models;
-using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+
 namespace IntuneAssistant.Models;
 
+public interface IAssignment
+{
+    string Id { get; set; }
+    Target Target { get; set; }
+}
 
-public class AssignmentsModel
+public class CustomAssignmentsModel
 {
     public string ResourceType { get; set; } = String.Empty;
     public string AssignmentType { get; init; } = String.Empty;
     public bool IsAssigned { get; set; } = false;
     public string TargetId { get; set; } = String.Empty;
     public string TargetName { get; set; } = String.Empty;
-    public string ResourceId { get; set; } = String.Empty;
+    public string? ResourceId { get; set; } = String.Empty;
     public string ResourceName { get; set; } = String.Empty;
     public string FilterId { get; set; } = String.Empty;
     public string FilterType { get; set; } = "None";
@@ -22,6 +26,7 @@ public class AssignmentsModel
 public class Target
 {
     [JsonPropertyName("@odata.type")]
+    [JsonProperty("@odata.type")]
     public string OdataType { get; set; }
 
     public string? DeviceAndAppManagementAssignmentFilterId { get; set; }
@@ -42,7 +47,6 @@ public class AssignmentsResponseModel
 
     public string Id { get; set; }
     public string DisplayName { get; set; }
-    public string Description { get; set; }
 
     [JsonPropertyName("assignments@odata.context")]
     public string AssignmentsOdataContext { get; set; }
@@ -52,7 +56,7 @@ public class AssignmentsResponseModel
 
 public static class AssignmentModelExtensions
 {
-    public static AssignmentsModel ToAssignmentModel(this Assignment assignment, AssignmentsResponseModel assigmentResponseModel, Enums.ResourceTypes resourceType)
+    public static CustomAssignmentsModel ToAssignmentModel(this Assignment assignment, AssignmentsResponseModel assigmentResponseModel, Enums.ResourceTypes resourceType)
     {
         string targetId = String.Empty;
         string pattern2 = "AssignmentTarget";
@@ -63,8 +67,6 @@ public static class AssignmentModelExtensions
         {
             filterId = assignment.Target.DeviceAndAppManagementAssignmentFilterId;
         }
-
-        string filterType = String.Empty;
         if (assignmentType.StartsWith(AppConfiguration.STRINGTOREMOVE))
         {
             assignmentType = StringExtensions.GetStringBetweenTwoStrings(assignment.Target.OdataType, AppConfiguration.STRINGTOREMOVE, pattern2);
@@ -73,7 +75,7 @@ public static class AssignmentModelExtensions
         {
             targetId = assignment.Target.GroupId;
         }
-        return new AssignmentsModel
+        return new CustomAssignmentsModel
         {
             AssignmentType = assignmentType,
             IsAssigned = isAssigned,
