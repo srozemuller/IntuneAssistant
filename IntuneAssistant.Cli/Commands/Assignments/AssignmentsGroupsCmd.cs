@@ -32,12 +32,14 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     private readonly IGroupInformationService _groupInformationService;
     private readonly IIdentityHelperService _identityHelperService;
     private readonly IConfigurationPolicyService _configurationPolicyService;
-    public FetchAssignmentsGroupCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService)
+    private readonly ICompliancePoliciesService _compliancePoliciesService;
+    public FetchAssignmentsGroupCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService)
     {
         _assignmentsService = assignmentsService;
         _groupInformationService = groupInformationService;
         _identityHelperService = identityHelperService;
         _configurationPolicyService = configurationPolicyService;
+        _compliancePoliciesService = compliancePoliciesService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsGroupCommandOptions options)
     {
@@ -92,11 +94,14 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         $"Fetching compliance policy assignments based on specific group ({groupInfo.DisplayName}) from Intune",
                         async _ =>
                         {
-                            var results = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken,
-                                    groupInfo);
-                            if (results is not null)
+                            var compliancePolicies = await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+                            if (compliancePolicies != null)
                             {
-                                allResults.AddRange(results);
+                                var results = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, groupInfo, compliancePolicies);
+                                if (results is not null)
+                                {
+                                    allResults.AddRange(results);
+                                }
                             }
                         });
                 await AnsiConsole.Status().SpinnerStyle(Color.Orange1)
@@ -220,17 +225,22 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                     $"Fetching group assignments overview from Intune",
                     async _ =>
                     {
-                        var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null);
-                        if (complianceResults is not null)
+                        var compliancePolicies = await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+                        if (compliancePolicies is not null)
                         {
+                            var complianceResults =
+                                await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, compliancePolicies);
                             allResults.AddRange(complianceResults.Where(r => r.AssignmentType == "group"));
                         }
+
                         var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
                         if (configPolicies is not null)
                         {
-                            var configurationResults = await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null,configPolicies);
+                            var configurationResults = await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null, configPolicies);
                             allResults.AddRange(configurationResults.Where(r => r.AssignmentType == "group"));
                         }
+                        
+                        
                         var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
                         if (deviceScriptsResults is not null)
                         {

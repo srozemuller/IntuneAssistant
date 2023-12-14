@@ -16,8 +16,6 @@ public sealed class AssignmentsService : IAssignmentsService
         GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies)
     {
         var results = new List<CustomAssignmentsModel>();
-        _http.DefaultRequestHeaders.Clear();
-        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
                 foreach (var policy in configurationPolicies)
@@ -366,44 +364,43 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetCompliancePoliciesAssignmentsListAsync(string accessToken,
-        GroupModel? group)
+    public Task<List<CustomAssignmentsModel>> GetCompliancePoliciesAssignmentsListAsync(string accessToken,
+        GroupModel? group, List<CompliancePolicy> compliancePolicies)
     {
         var results = new List<CustomAssignmentsModel>();
-        _http.DefaultRequestHeaders.Clear();
-        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var response = await _http.GetAsync(GraphUrls.CompliancePoliciesUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
-            if (result?.Value is not null)
+            foreach (var policy in compliancePolicies)
             {
-                foreach (var resource in result.Value)
+                if (policy.Assignments.IsNullOrEmpty())
                 {
-                    if (group is null)
+                    continue;
+                }
+                if (group is null)
+                {
+                    foreach (var assignment in policy.Assignments)
                     {
-                        foreach (var assignment in resource.Assignments)
-                        {
-                            var compliancePolicyAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.CompliancePolicy);
-                            results.Add(compliancePolicyAssigment);
-                        }
+                        var compliancePolicyAssigment = assignment.ToCustomAssignmentsModel<string>(ResourceTypes.CompliancePolicy.ToString(),
+                            policy.DisplayName, policy.Id);
+                        results.Add(compliancePolicyAssigment);
                     }
-                    else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                        {
-                            var compliancePolicyAssigment = assignment.ToAssignmentModel(resource, ResourceTypes.CompliancePolicy);
-                            results.Add(compliancePolicyAssigment);
-                        }
+                }
+                else
+                {
+                    foreach (var assignment in policy.Assignments.Where(g => g.Target.GroupId == group.Id))
+                    {
+                        var compliancePolicyAssigment = assignment.ToCustomAssignmentsModel<string>(ResourceTypes.ConfigurationPolicy.ToString(),policy.DisplayName, policy.Id);
+                        results.Add(compliancePolicyAssigment);
+                    }
                 }
             }
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-            return null;
+            return Task.FromResult<List<CustomAssignmentsModel>>(null!);
         }
-        return results;
+        return Task.FromResult(results);
     }
 
     public async Task<List<CustomAssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,

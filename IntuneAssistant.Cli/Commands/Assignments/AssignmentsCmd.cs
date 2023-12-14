@@ -25,20 +25,21 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     private readonly IAssignmentsService _assignmentsService;
     private readonly IIdentityHelperService _identityHelperService;
     private readonly IConfigurationPolicyService _configurationPolicyService;
+    private readonly ICompliancePoliciesService _compliancePoliciesService;
     
 
-    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService)
+    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService)
     {
         _assignmentsService = assignmentsService;
         _identityHelperService = identityHelperService;
         _configurationPolicyService = configurationPolicyService;
+        _compliancePoliciesService = compliancePoliciesService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsCommandOptions options)
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var allResults = new List<CustomAssignmentsModel>();
         var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
-        var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
         if (string.IsNullOrWhiteSpace(accessToken))
         {
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
@@ -49,16 +50,24 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 $"Fetching global assignments overview from Intune",
                 async _ =>
                 {
-                        var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null);
+                    var compliancePolicies =
+                        await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+                        var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, compliancePolicies);
                         if (complianceResults is not null)
                         {
                             allResults.AddRange(complianceResults);
                         }
-                        var configurationResults = await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null,configPolicies);
-                        if (configurationResults is not null)
+                        
+                        // Configuration Policies
+                        var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
+                        if (configPolicies is not null)
                         {
+                            var configurationResults =
+                                await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null,
+                                    configPolicies);
                             allResults.AddRange(configurationResults);
                         }
+
                         var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
                         if (deviceScriptsResults is not null)
                         {
