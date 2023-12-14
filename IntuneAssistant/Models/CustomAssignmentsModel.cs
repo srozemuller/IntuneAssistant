@@ -67,8 +67,6 @@ public static class AssignmentModelExtensions
         {
             filterId = assignment.Target.DeviceAndAppManagementAssignmentFilterId;
         }
-
-        string filterType = String.Empty;
         if (assignmentType.StartsWith(AppConfiguration.STRINGTOREMOVE))
         {
             assignmentType = StringExtensions.GetStringBetweenTwoStrings(assignment.Target.OdataType, AppConfiguration.STRINGTOREMOVE, pattern2);
