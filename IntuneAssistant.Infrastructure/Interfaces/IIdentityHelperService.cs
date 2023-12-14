@@ -10,5 +10,5 @@ public interface IIdentityHelperService
     Task<string?> GetAccessTokenWithClientCredential(string? tenantId, string? clientId, string? clientSecret);
     Task LogoutAsync();
 
-    Task<string> GetCurrentUserContext();
+    Task<List<IAccount>> GetCurrentUserContext();
 }

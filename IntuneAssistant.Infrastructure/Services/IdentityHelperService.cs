@@ -3,8 +3,10 @@ using Azure.Identity;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Graph.Beta;
+using Microsoft.Graph.Beta.Models;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
+using Spectre.Console;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
@@ -125,5 +127,18 @@ public sealed class IdentityHelperService : IIdentityHelperService
             accounts = await app.GetAccountsAsync();
             accountList = accounts.ToList();
         }
+    }
+
+    public async Task<List<IAccount>> GetCurrentUserContext()
+    {
+        var app = await GetDefaultClientApplication();
+        var accounts = await app.GetAccountsAsync();
+        var accountList = accounts.ToList();
+
+        while (accountList.Any())
+        {
+            return accountList;
+        }
+        return accountList;
     }
 }
