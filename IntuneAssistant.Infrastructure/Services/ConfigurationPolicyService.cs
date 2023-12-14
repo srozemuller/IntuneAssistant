@@ -59,23 +59,30 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-
         try
         {
             var nextUrl = GraphUrls.ConfigurationPoliciesUrl;
             var json = JsonConvert.SerializeObject(configurationPolicy, JsonSettings.Default());
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _http.PostAsync(nextUrl, content);
-            var status = (int)response.StatusCode;
-            return status;
-        }
-        catch (ODataError e)
-        {
-            AnsiConsole.WriteLine("An exception has occurred while creating configuration policy: " + e.ToMessage());
+            if (response.IsSuccessStatusCode)
+            {
+                AnsiConsole.MarkupLine($"[green]Imported {configurationPolicy.Name} success, status code: {response.StatusCode}[/]");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("Request failed, status code: " + response.StatusCode);
+            }
         }
         catch (HttpRequestException e)
         {
-            AnsiConsole.WriteLine("An exception has occurred while creating configuration policy: " + e.ToMessage());
+            AnsiConsole.MarkupLine("\nException Caught!");
+            AnsiConsole.MarkupLine("Message :{0} ", e.Message);
+        }
+        catch (Exception e)
+        {
+            AnsiConsole.MarkupLine("\nGeneral Exception Caught!");
+            AnsiConsole.MarkupLine("Message :{0} ", e.Message);
         }
         return 0;
     }

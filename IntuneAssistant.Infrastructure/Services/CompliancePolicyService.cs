@@ -1,44 +1,57 @@
-using System.Text;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
-using IntuneAssistant.Models.Options;
-using Microsoft.Graph.Beta.DeviceManagement.Reports.GetComplianceSettingsReport;
+using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
-using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class CompliancePolicyService : ICompliancePoliciesService
 {
-    public async Task<List<DeviceCompliancePolicy>?> GetCompliancePoliciesListAsync(string accessToken, bool assignmentFilter)
+    private readonly HttpClient _http = new();
+ 
+    public async Task<List<CompliancePolicy>?> GetCompliancePoliciesListAsync(string accessToken)
     {
-            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-            var results = new List<DeviceCompliancePolicy>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            var results = new List<CompliancePolicy>();
             try
             {
-                var result = await graphClient.DeviceManagement.DeviceCompliancePolicies.GetAsync(requestConfiguration =>
+                var nextUrl = GraphUrls.CompliancePoliciesUrl;
+                while (nextUrl is not null)
                 {
-                    requestConfiguration.QueryParameters.Filter = null;
-                    requestConfiguration.QueryParameters.Expand = new[] { "assignments" };
-                });
+                    try
+                    {
+                        var response = await _http.GetAsync(nextUrl);
+                        var responseStream = await response.Content.ReadAsStreamAsync();
 
-                if (result?.Value != null)
-                    if (assignmentFilter)
-                    {
-                        results.AddRange(result.Value.Where(r=> r.Assignments.IsNullOrEmpty()));
-                    }
-                    else
-                    {
+                        using var sr = new StreamReader(responseStream);
+                        // Read the stream to a string
+                        var content = await sr.ReadToEndAsync();
+
+                        // Deserialize the string to your model
+                        var result = JsonConvert.DeserializeObject<GraphValueResponse<CompliancePolicy>>(content);
+                        if (result?.Value is null)
+                        {
+                            nextUrl = null;
+                            continue;
+                        }
                         results.AddRange(result.Value);
+                        nextUrl = result.ODataNextLink;
                     }
+                    catch (HttpRequestException e)
+                    {
+                        nextUrl = null;
+                    }
+                }
             }
             catch (ODataError ex)
             {
-                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+                Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
                 return null;
             }
-
             return results;
     }
 
