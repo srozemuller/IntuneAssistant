@@ -8,6 +8,9 @@ public static class CommandConfiguration
     public const string AuthCommandName = "auth";
     public const string AuthCommandDescription = "Authentication options";
 
+    public const string AuthShowCommandName = "show";
+    public const string AuthShowCommandDescription = "Shows the current logged in user information";
+    
     // auth login
     public const string AuthLoginCommandName = "login";
     public const string AuthLoginCommandDescription = "Authenticate with Azure AD";

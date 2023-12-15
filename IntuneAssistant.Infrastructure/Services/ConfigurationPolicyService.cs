@@ -59,7 +59,6 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-
         try
         {
             var nextUrl = GraphUrls.ConfigurationPoliciesUrl;
