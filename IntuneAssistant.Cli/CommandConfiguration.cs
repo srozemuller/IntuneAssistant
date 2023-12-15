@@ -116,5 +116,7 @@ public static class CommandConfiguration
     public const string ImportPathArg = "--import-path";
     public const string ImportPathArgDescription = "The path from where to import the configuration from"; 
     public const string ImportFileArg = "--import-file";
-    public const string ImportFileArgDescription = "The file from where to import the configuration from"; 
+    public const string ImportFileArgDescription = "The file from where to import the configuration from";
+    public const string SelectFilesArg = "--select-files";
+    public const string SelectFilesArgDescription = "This argument gives you the abillity to select files"; 
 }

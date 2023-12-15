@@ -27,7 +27,7 @@
       <PackageReference Include="Azure.Identity" Version="1.10.2" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
       <PackageReference Include="Microsoft.Identity.Client" Version="4.57.0" />
-      <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.26" />
+      <PackageReference Include="Spectre.Console" Version="0.48.0" />
       <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
         <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>

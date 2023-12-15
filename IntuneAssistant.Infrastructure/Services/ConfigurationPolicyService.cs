@@ -66,17 +66,30 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
             var json = JsonConvert.SerializeObject(configurationPolicy, JsonSettings.Default());
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _http.PostAsync(nextUrl, content);
-            var status = (int)response.StatusCode;
-            return status;
-        }
-        catch (ODataError e)
-        {
-            AnsiConsole.WriteLine("An exception has occurred while creating configuration policy: " + e.ToMessage());
+            if(response.IsSuccessStatusCode)
+            {
+                AnsiConsole.MarkupLine($"[green]{configurationPolicy.Name} import was successful[/]");
+            }
+            else
+            {
+                AnsiConsole.WriteLine($"[red]Request failed for {configurationPolicy.Name}: {response.StatusCode}[/]");
+                var message = await response.Content.ReadAsStringAsync();
+                var jObject = Newtonsoft.Json.Linq.JObject.Parse(message);
+                var innerErrorMessage = jObject["error"]?["innerError"]?["message"]?.ToString();
+                AnsiConsole.WriteLine($"[red]Error message: {innerErrorMessage}[/]");
+            }
         }
         catch (HttpRequestException e)
         {
-            AnsiConsole.WriteLine("An exception has occurred while creating configuration policy: " + e.ToMessage());
+            AnsiConsole.WriteLine("\nException Caught!");
+            AnsiConsole.WriteLine("Message :{0} ", e.Message);
         }
+        catch (Exception e)
+        {
+            AnsiConsole.WriteLine("\nException Caught!");
+            AnsiConsole.WriteLine("Message :{0} ", e.Message);
+        }
+
         return 0;
     }
 }

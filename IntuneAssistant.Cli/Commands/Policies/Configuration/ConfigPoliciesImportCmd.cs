@@ -1,4 +1,5 @@
 using System.CommandLine;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,8 @@ public class ConfigPoliciesImportCmd : Command<ImportConfigurationPoliciesComman
     {
         AddOption(new Option<string>(CommandConfiguration.ImportPathArg, CommandConfiguration.ImportPathArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ImportFileArg, CommandConfiguration.ImportFileArgDescription));
+        AddOption(new Option<bool>(CommandConfiguration.SelectFilesArg, CommandConfiguration.SelectFilesArgDescription));
+        AddOption(new Option<bool>(CommandConfiguration.ForceArg, CommandConfiguration.ForceArgDescription));
     }
 }
 
@@ -20,6 +23,8 @@ public class ImportConfigurationPoliciesCommandOptions : ICommandOptions
 {
     public string ImportPath { get; set; } = string.Empty;
     public string ImportFile { get; set; } = string.Empty;
+    public bool SelectFiles { get; set; } = false;
+    public bool Force { get; set; } = false;
 }
 
 
@@ -47,6 +52,8 @@ public class ImportConfigurationPoliciesCommandHandler : ICommandOptionsHandler<
         {
             var importPath = options.ImportPath;
             var importFile = options.ImportFile;
+            var selectFilesProvided = options.SelectFiles;
+            var forceProvided = options.Force;
             if (!importFile.IsNullOrEmpty())
             {
                 string filePath = $@"{importFile}";
@@ -63,13 +70,68 @@ public class ImportConfigurationPoliciesCommandHandler : ICommandOptionsHandler<
                 {
                     var response =
                         await _configurationPolicyService.CreateConfigurationPolicyAsync(accessToken, result);
-                    return response;
+                    
+                    return 0;
                 }
+            }
+
+            if (!importPath.IsNullOrEmpty() && selectFilesProvided )
+            {
+                string[] fileNames = Directory.GetFiles(importPath).OrderBy(f => f).ToArray();
+
+                var selectedFiles = AnsiConsole.Prompt(
+                    new MultiSelectionPrompt<string>()
+                        .Title("Which [green]files[/] do you want to select form import?")
+                        .NotRequired() // Not required to select a file
+                        .PageSize(AppConfiguration.FILES_PAGESIZE)
+                        .MoreChoicesText("[grey](Move up and down to reveal more files)[/]")
+                        .InstructionsText(
+                            "[grey](Press [blue]<space>[/] to toggle a file, " + 
+                            "[green]<enter>[/] to accept)[/]")
+                        .AddChoices(fileNames));
+                foreach (var file in selectedFiles)
+                {
+                    string content = await File.ReadAllTextAsync(file);
+                    var result = JsonConvert.DeserializeObject<ConfigurationPolicyModel>(content);
+                    if (result is not null)
+                    {
+                        await _configurationPolicyService.CreateConfigurationPolicyAsync(accessToken, result);
+                    }
+                }
+                return 0;
             }
 
             if (!importPath.IsNullOrEmpty())
             {
-
+                if (!forceProvided)
+                {
+                    ConsoleKey input;
+                    do {
+                        AnsiConsole.MarkupLine($"[red]Are you sure to import all JSON files from folder {importPath}?[/]");
+                        AnsiConsole.MarkupLine($"[yellow]HINT: Use --force to skip this message[/]");
+                        input = Console.ReadKey().Key;
+                        switch (input)
+                        {
+                            case ConsoleKey.Y:
+                                string[] fileNames = Directory.GetFiles(importPath).OrderBy(f => f).ToArray();
+                                foreach (var file in fileNames)
+                                {
+                                    string content = await File.ReadAllTextAsync(file);
+                                    var result = JsonConvert.DeserializeObject<ConfigurationPolicyModel>(content);
+                                    if (result is not null)
+                                    {
+                                        await _configurationPolicyService.CreateConfigurationPolicyAsync(accessToken, result);
+                                    }
+                                }
+                                break;
+                            case ConsoleKey.N:
+                                break;
+                            default:
+                                AnsiConsole.MarkupLine("[red]Invalid input. Please press y or n.[/]");
+                                break;
+                        }
+                    } while (input != ConsoleKey.Y && input != ConsoleKey.N);
+                }
             }
         }
         catch (Exception ex)
