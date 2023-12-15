@@ -65,25 +65,30 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
             var json = JsonConvert.SerializeObject(configurationPolicy, JsonSettings.Default());
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _http.PostAsync(nextUrl, content);
-            if (response.IsSuccessStatusCode)
+            if(response.IsSuccessStatusCode)
             {
-                AnsiConsole.MarkupLine($"[green]Imported {configurationPolicy.Name} success, status code: {response.StatusCode}[/]");
+                AnsiConsole.MarkupLine($"[green]{configurationPolicy.Name} import was successful[/]");
             }
             else
             {
-                AnsiConsole.MarkupLine("Request failed, status code: " + response.StatusCode);
+                AnsiConsole.WriteLine($"[red]Request failed for {configurationPolicy.Name}: {response.StatusCode}[/]");
+                var message = await response.Content.ReadAsStringAsync();
+                var jObject = Newtonsoft.Json.Linq.JObject.Parse(message);
+                var innerErrorMessage = jObject["error"]?["innerError"]?["message"]?.ToString();
+                AnsiConsole.WriteLine($"[red]Error message: {innerErrorMessage}[/]");
             }
         }
         catch (HttpRequestException e)
         {
-            AnsiConsole.MarkupLine("\nException Caught!");
-            AnsiConsole.MarkupLine("Message :{0} ", e.Message);
+            AnsiConsole.WriteLine("\nException Caught!");
+            AnsiConsole.WriteLine("Message :{0} ", e.Message);
         }
         catch (Exception e)
         {
-            AnsiConsole.MarkupLine("\nGeneral Exception Caught!");
-            AnsiConsole.MarkupLine("Message :{0} ", e.Message);
+            AnsiConsole.WriteLine("\nException Caught!");
+            AnsiConsole.WriteLine("Message :{0} ", e.Message);
         }
+
         return 0;
     }
 }

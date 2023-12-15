@@ -14,6 +14,7 @@ public static class AppConfiguration
     public const string CONFIGPOLICY_OUTPUTPREFIX = $"{Branding.LegalName}/ConfigurationPolicies";
     public const string DEFAULT_OUTPUT = "table";
     public const string STRINGTOREMOVE = "#microsoft.graph.";
+    public const int FILES_PAGESIZE = 25;
     public static readonly string[] GRAPH_INTERACTIVE_SCOPE = {
         "Group.Read.All",
         "DeviceManagementConfiguration.ReadWrite.All",
