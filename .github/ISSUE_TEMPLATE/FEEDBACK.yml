@@ -1,0 +1,30 @@
+name: Feedback
+description: Provide your feedback about our project
+title: "📝[Feedback]: "
+labels: [feedback, needs-triage]
+assignees:
+  - 
+
+body:
+  - type: markdown✏️
+    attributes:
+      value: |
+        Thanks for taking the time to share your feedback. Please provide the following details:
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can I get in touch with you?
+      placeholder: Enter your contact details
+    validations:
+      required: false
+
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Feedback
+      description: What would you like to share with me?
+      placeholder: Enter your feedback here...
+    validations:
+      required: true
