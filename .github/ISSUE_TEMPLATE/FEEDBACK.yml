@@ -1,6 +1,6 @@
 name: Feedback
 description: Provide your feedback about our project
-title: "📝[Feedback]: "
+title: "📝 [Feedback]: "
 labels: [feedback, needs-triage]
 assignees:
   - srozemuller
