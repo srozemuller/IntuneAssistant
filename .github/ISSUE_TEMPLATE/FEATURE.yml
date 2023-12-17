@@ -10,7 +10,14 @@ body:
     attributes:
       value: |
         Thanks for taking the time to suggest a new feature. Please provide the following details:
-
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
   - type: input
     id: feature
     attributes:
