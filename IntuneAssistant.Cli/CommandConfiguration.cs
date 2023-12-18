@@ -100,8 +100,10 @@ public static class CommandConfiguration
     public const string ImportCommandDescription = "Export the resources content in the specific context";
     
     // global arguments
-    public static readonly string[] OutputFlags = new[] { "-o", "-output" };
+    public static readonly string[] OutputFlags = { "-o", "-output" };
     public const string OutputFlagsDescription = "Option to output the content into a specific type";
+    public static readonly string[] InteractiveArg = {"-i", "-interactive"};
+    public const string InteractiveArgDescription = "This argument gives you the abillity to use the CLI interactivily"; 
     
     // specific arguments
     public const string ExportCsvArg = "--export-csv";
@@ -120,6 +122,4 @@ public static class CommandConfiguration
     public const string ImportPathArgDescription = "The path from where to import the configuration from"; 
     public const string ImportFileArg = "--import-file";
     public const string ImportFileArgDescription = "The file from where to import the configuration from";
-    public const string SelectFilesArg = "--select-files";
-    public const string SelectFilesArgDescription = "This argument gives you the abillity to select files"; 
 }
