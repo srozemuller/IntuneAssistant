@@ -88,7 +88,7 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
             }
             table.AddRow(
                 policy.Id,
-                policy.Name,
+                policy.Name.EscapeMarkup(),
                 assignmentInfo.IsAssigned.ToString(),
                 ResourceTypes.ConfigurationPolicy.ToString(),
                 string.Join(",",assignmentTypes)

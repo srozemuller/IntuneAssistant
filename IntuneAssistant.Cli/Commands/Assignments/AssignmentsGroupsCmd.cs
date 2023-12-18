@@ -305,9 +305,9 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         table.AddRow(
                             filter.ResourceType,
                             filter.ResourceId,
-                            filter.ResourceName,
+                            filter.ResourceName.EscapeMarkup(),
                             filter.TargetId,
-                            filter.TargetName,
+                            filter.TargetName.EscapeMarkup(),
                             filter.FilterId,
                             filter.FilterType
                         );
