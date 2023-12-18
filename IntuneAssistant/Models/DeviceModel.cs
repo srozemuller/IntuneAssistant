@@ -5,10 +5,11 @@ public sealed record DeviceModel
 {
     public Guid Id { get; init; } = Guid.Empty;
     public string DeviceName { get; init; } = string.Empty;
-    public string Status { get; init; } = string.Empty;
+    public string ComplianceState { get; init; } = string.Empty;
     public DateTimeOffset LastSyncDateTime { get; init; } = DateTime.Now;
     public string OsVersion { get; init; } = String.Empty;
-
+    public string SerialNumber { get; set; } = String.Empty;
+    public string OperatingSystem { get; set; } = String.Empty;
 }
 
 public static class DeviceModelExtensions
@@ -20,9 +21,11 @@ public static class DeviceModelExtensions
         {
             Id = isParsed ? parsedId : Guid.Empty,
             DeviceName = device.DeviceName,
-            Status = device.ComplianceState.ToString(),
+            ComplianceState = device.ComplianceState.ToString(),
             LastSyncDateTime = device.LastSyncDateTime.GetValueOrDefault(),
-            OsVersion = device.OsVersion
+            OsVersion = device.OsVersion,
+            SerialNumber = device.SerialNumber,
+            OperatingSystem = device.OperatingSystem
         };
     }
 }

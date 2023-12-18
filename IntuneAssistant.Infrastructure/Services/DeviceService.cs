@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using System.Text.Json;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
@@ -7,10 +9,12 @@ using Microsoft.Graph;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 
+
 namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class DeviceService : IDeviceService
 {
+    private readonly HttpClient _http = new();
     public async Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string accessToken, string? filter)
     {
         try
@@ -110,10 +114,15 @@ public sealed class DeviceService : IDeviceService
 
         return results;
     }
-    public async Task<List<OsBuildModel>> GetDevicesOsVersionsOverviewAsync(string accessToken, DeviceFilterOptions? filterOptions)
+    public async Task<GraphValueResponse<OsBuildModel?>?> GetDevicesOsVersionsOverviewAsync(string accessToken,
+        DeviceFilterOptions? filterOptions)
     {
+        string url = GraphUrls.ManagedDevicesUrl;
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        
         filterOptions ??= new DeviceFilterOptions();
-
+        var results = new List<OsBuildModel>();
         var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var sb = new StringBuilder();
 
@@ -160,18 +169,10 @@ public sealed class DeviceService : IDeviceService
 
         try
         {
-            var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync(requestConfiguration =>
-            {
-                requestConfiguration.QueryParameters.Filter = filter;
-            });
-    
-            var groupedDevices = result.Value.GroupBy(d => new { d.OsVersion, d.OperatingSystem }).Select(g => new OsBuildModel()
-            {
-                OS = g.Key.OperatingSystem,
-                OsVersion = g.Key.OsVersion,
-                Count = g.Count()
-            }).ToList();
-            return groupedDevices;
+            var response = await _http.GetAsync(url);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<OsBuildModel?>>(responseStream, CustomJsonOptions.Default());
+            return result;
         }
         catch (ODataError ex)
         {

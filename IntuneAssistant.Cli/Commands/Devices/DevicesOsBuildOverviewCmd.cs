@@ -1,8 +1,10 @@
 using System.CommandLine;
+using IntuneAssistant.Constants;
+using IntuneAssistant.Enums;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Options;
-using Microsoft.Graph.Beta.Models;
+using Newtonsoft.Json;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Devices;
@@ -27,6 +29,8 @@ public class FetchDevicesOsBuildOverviewCommandOptions : ICommandOptions
     public bool IncludeMacOs { get; set; } = false;
     public bool IncludeIos { get; set; } = false;
     public bool IncludeAndroid { get; set; } = false;
+    
+    public string Output { get; set; } = String.Empty;
 }
 
 public class FetchDevicesOsBuildOverviewCommandHandler : ICommandOptionsHandler<FetchDevicesOsBuildOverviewCommandOptions>
@@ -49,13 +53,13 @@ public class FetchDevicesOsBuildOverviewCommandHandler : ICommandOptionsHandler<
                 return -1;
         }
 
-        var table = new Table();
-        table.Collapse();
-        table.AddColumn("OS");
-        table.AddColumn("Build");
-        table.AddColumn("Total");
+        if (string.IsNullOrEmpty(options.Output))
+        {
+            // If not, set it to the default value
+            options.Output = AppConfiguration.DEFAULT_OUTPUT;
+        }
 
-        var devices = new List<OsBuildModel>();
+        var devices = new GraphValueResponse<OsBuildModel?>();
         var deviceFilterOptions = new DeviceFilterOptions
         {
             IncludeWindows = options.IncludeWindows,
@@ -71,22 +75,48 @@ public class FetchDevicesOsBuildOverviewCommandHandler : ICommandOptionsHandler<
                 devices = await _deviceService.GetDevicesOsVersionsOverviewAsync(accessToken, deviceFilterOptions);
             });
 
-        if (devices?.Count == 0)
+        if (devices is null)
         {
-            AnsiConsole.MarkupLine("No devices matched the specified filter");
-            return 0;
+            AnsiConsole.MarkupLine("No devices found!");
+            return -1;
         }
 
-        foreach (var device in devices)
+        var groupedDevices = devices.Value?.GroupBy(d => new { d.OsVersion, d.OperatingSystem }).Select(g => new OsBuildModel()
         {
-            table.AddRow(
-                device.OS,
-                device.OsVersion,
-                device.Count.ToString()
-                );
-        }
+            OperatingSystem = g.Key.OperatingSystem,
+            OsVersion = g.Key.OsVersion,
+            Count = g.Count()
+        }).ToList();
 
-        AnsiConsole.Write(table);
+        if (!Enum.TryParse(options.Output, true, out FixedOptions outputOption)) return 0;
+        switch (outputOption)
+        {
+            case FixedOptions.table:
+            {
+                var table = new Table();
+                table.Collapse();
+                table.AddColumn("OS");
+                table.AddColumn("Build");
+                table.AddColumn("Total");
+                if (groupedDevices != null)
+                    foreach (var device in groupedDevices)
+                    {
+                        table.AddRow(
+                            device.OperatingSystem,
+                            device.OsVersion,
+                            device.Count.ToString()
+                        );
+                    }
+                AnsiConsole.Write(table);
+                break;
+            }
+            case FixedOptions.json:
+            {
+                string groupedDevicesString = JsonConvert.SerializeObject(groupedDevices);
+                AnsiConsole.WriteLine(groupedDevicesString);
+                break;
+            }
+        }
         return 0;
     }
 }

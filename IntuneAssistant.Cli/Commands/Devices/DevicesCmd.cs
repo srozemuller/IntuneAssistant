@@ -6,12 +6,16 @@ public static class DevicesCmd
 {
     public static Command New()
     {
-        var devicesCommand = new ManagedDevicesCmd();
-        var devicesDuplicateCommand = new DeviceDuplicateCmd();
-        var devicesOsBuildOverview = new DevicesOsBuildOverviewCmd();
 
-        devicesCommand.AddCommand(devicesDuplicateCommand);
-        devicesCommand.AddCommand(devicesOsBuildOverview);
+        var devicesCommand = new Command(CommandConfiguration.DevicesCommandName,
+            CommandConfiguration.DevicesCommandDescription);
+        var globalOption = new Option<Enums.FixedOptions?>(CommandConfiguration.OutputFlags,
+            CommandConfiguration.OutputFlagsDescription);
+        devicesCommand.AddGlobalOption(globalOption);
+
+        devicesCommand.AddCommand(new ManagedDevicesCmd());
+        devicesCommand.AddCommand(new DeviceDuplicateCmd());
+        devicesCommand.AddCommand(new DevicesOsBuildOverviewCmd());
 
         return devicesCommand;
     }

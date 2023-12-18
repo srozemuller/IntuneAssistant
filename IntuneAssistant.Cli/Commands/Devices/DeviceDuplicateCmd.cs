@@ -96,7 +96,7 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
             table.AddRow(
                 device.Id.ToString(),
                 device.DeviceName,
-                device.Status,
+                device.ComplianceState,
                 device.LastSyncDateTime.ToString(),
                 device.OsVersion
             );
