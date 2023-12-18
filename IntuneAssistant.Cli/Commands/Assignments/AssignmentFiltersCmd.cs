@@ -63,8 +63,8 @@ public class FetchFiltersCommandHandler : ICommandOptionsHandler<FetchFiltersCom
             {
                 table.AddRow(
                     filter.Id,
-                    filter.DisplayName,
-                    filter.Rule
+                    filter.DisplayName.EscapeMarkup(),
+                    filter.Rule.EscapeMarkup()
                 );
 
             }

@@ -135,7 +135,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 table.AddRow(
                     filter.ResourceType,
                     filter.ResourceId,
-                    filter.ResourceName,
+                    filter.ResourceName.EscapeMarkup(),
                     filter.AssignmentType,
                     filter.FilterId,
                     filter.FilterType
