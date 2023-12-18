@@ -36,6 +36,11 @@
       <ProjectReference Include="..\IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj" PrivateAssets="all" />
       <ProjectReference Include="..\IntuneAssistant\IntuneAssistant.csproj" PrivateAssets="all" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Commands\Apps\" />
+      <Folder Include="Commands\AutoPilot\Devices\" />
+    </ItemGroup>
     <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
         <ItemGroup>
             <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />

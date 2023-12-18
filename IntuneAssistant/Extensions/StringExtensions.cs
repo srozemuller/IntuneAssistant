@@ -43,6 +43,14 @@ public static class StringExtensions
         var match = Regex.Match(input, pattern);
         return match.Groups[1].Value;
     }
+    
+    public static string ConvertToSelectString(this string input)
+    {
+        return string.Join(", ", input.Split(',')
+            .Select(s => s.Trim())
+            .Select(s => char.ToLowerInvariant(s[0]) + s.Substring(1)));
+    }
+
 }
 
 public static class ODataTypeExtensions

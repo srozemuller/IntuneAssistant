@@ -22,7 +22,9 @@ public class GraphUrls
     public const string WindowsFeatureUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsFeatureUpdateProfiles?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string WindowsDriverUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsDriverUpdateProfiles?$expand=assignments($select=id,target)&$select=id,displayname,description";
 
-    
+    public const string WindowsAutopilotDeploymentProfiles = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsAutopilotDeploymentProfiles";
+
+
         
     
 }

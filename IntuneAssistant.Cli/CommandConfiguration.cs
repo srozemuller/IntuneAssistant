@@ -21,7 +21,7 @@ public static class CommandConfiguration
 
     // show
     public const string ShowCommandName = "show";
-    public const string ShowCommandDescription = "Give you all show options";
+    public const string ShowCommandDescription = "Gets the resource's details in the specific context.";
     
     // devices
     public const string DevicesCommandName = "devices";
@@ -43,6 +43,12 @@ public static class CommandConfiguration
     public const string DevicesDuplicatesCommandName = "duplicates";
     public const string DevicesDuplicatesCommandDescription = "Retrieve a list of all duplicate devices from Intune";
     
+    // autopilot deployment profiles
+    public const string AutoPilotCommandName = "autopilot";
+    public const string AutoPilotCommandDescription = "Gives you options to select a specific deployment profiles from Intune";
+    public const string DevicesDeploymentProfilesCommandName = "deploymentprofiles";
+    public const string DevicesDeploymentProfilesCommandDescription = "Gives you options to select a specific deployment profiles from Intune";
+
     // policies
     public const string PoliciesCommandName = "policies";
     public const string PoliciesCommandDescription = "Retrieve a list of all policies from Intune";
@@ -100,8 +106,10 @@ public static class CommandConfiguration
     public const string ImportCommandDescription = "Export the resources content in the specific context";
     
     // global arguments
-    public static readonly string[] OutputFlags = new[] { "-o", "-output" };
+    public static readonly string[] OutputFlags = { "-o", "-output" };
     public const string OutputFlagsDescription = "Option to output the content into a specific type";
+    public static readonly string[] SelectFlags = { "-s", "-select" };
+    public const string SelectDescription = "Option to select colums for output.";
     
     // specific arguments
     public const string ExportCsvArg = "--export-csv";
@@ -112,6 +120,8 @@ public static class CommandConfiguration
     public const string NonAssignedArgDescription = "Retrieve a list of all non-assigned compliance policies from Intune";
     public const string IdArg = "--id";
     public const string IdArgDescription = "The unique id of the item in Intune";
+    public const string NameArg = "--name";
+    public const string NameArgDescription = "The name of the resource Intune";
     public const string ForceArg = "--force";
     public const string ForceArgDescription = "Forces an action in Intune";
     public const string ExportPathArg = "--export-path";
@@ -120,6 +130,6 @@ public static class CommandConfiguration
     public const string ImportPathArgDescription = "The path from where to import the configuration from"; 
     public const string ImportFileArg = "--import-file";
     public const string ImportFileArgDescription = "The file from where to import the configuration from";
-    public const string SelectFilesArg = "--select-files";
-    public const string SelectFilesArgDescription = "This argument gives you the abillity to select files"; 
+    public static readonly string[] InteractiveArg = { "-i", "-interactive" };
+    public const string InteractiveArgDescription = "This argument gives you a structured interactive menu"; 
 }
