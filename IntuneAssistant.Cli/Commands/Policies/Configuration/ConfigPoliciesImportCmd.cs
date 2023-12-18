@@ -14,7 +14,7 @@ public class ConfigPoliciesImportCmd : Command<ImportConfigurationPoliciesComman
     {
         AddOption(new Option<string>(CommandConfiguration.ImportPathArg, CommandConfiguration.ImportPathArgDescription));
         AddOption(new Option<string>(CommandConfiguration.ImportFileArg, CommandConfiguration.ImportFileArgDescription));
-        AddOption(new Option<bool>(CommandConfiguration.SelectFilesArg, CommandConfiguration.SelectFilesArgDescription));
+        AddOption(new Option<bool>(CommandConfiguration.InteractiveArg, CommandConfiguration.InteractiveArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.ForceArg, CommandConfiguration.ForceArgDescription));
     }
 }
