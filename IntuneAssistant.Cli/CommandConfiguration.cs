@@ -56,7 +56,17 @@ public static class CommandConfiguration
     public const string ConfigurationPolicyCommandDescription = "Gives you options to select a specific configuration policy from Intune";
     
 
+    // applications
+    public const string AppsCommandName = "apps";
+    public const string AppsCommandDescription = "Retrieves apps from Intune.";
+    public const string AppDependenciesCommandName = "dependencies";
+    public const string AppDependenciesCommandDescription = "Searches for appliation dependencies in Intune.";
     
+    // application dependencies arguments
+    public const string TreeViewArg = "--tree-view";
+    public const string TreeViewArgDescription = "Outputs an overview in tree format.";
+    public const string ApplicationNameArg = "--application-name";
+    public const string AppliationNameArgDescription = "Retrieves all dependencies based on a specific application name";
 
     // compliance policies
     public const string CompliancePolicyCommandName = "compliance";
