@@ -177,7 +177,7 @@ public sealed class AssignmentsService : IAssignmentsService
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
-            var response = await _http.GetAsync(GraphUrls.MobileAppsUrl);
+            var response = await _http.GetAsync($"{GraphUrls.MobileAppsUrl}?$expand=assignments($select=id,target)&$select=id,displayname,description");
             var responseStream = await response.Content.ReadAsStreamAsync();
             var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
             if (result?.Value is not null)
