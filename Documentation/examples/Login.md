@@ -3,7 +3,7 @@
 ### Login with user interactive
 
 ```sh
-intuneClie auth login
+intuneCli auth login
 ```
 
 ### Show current context
