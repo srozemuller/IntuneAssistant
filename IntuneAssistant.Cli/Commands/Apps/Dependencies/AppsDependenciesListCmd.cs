@@ -98,7 +98,6 @@ public class FetchAppDependenciesCommandHandler : ICommandOptionsHandler<FetchAp
         table.AddColumn("Depends On");
         table.AddColumn("DependsOn App Type");
         table.AddColumn("Auto Install");
-        var applicationName = options.ApplicationName;
         foreach (var app in appDependencies.Where(a=> a.AppDisplayName.Contains(options.ApplicationName)).ToList())
         {
             table.AddRow(
