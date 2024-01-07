@@ -26,14 +26,15 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     private readonly IIdentityHelperService _identityHelperService;
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly ICompliancePoliciesService _compliancePoliciesService;
-    
+    private readonly IAssignmentFiltersService _assignmentFiltersService;
 
-    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService)
+    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentsFilterService)
     {
         _assignmentsService = assignmentsService;
         _identityHelperService = identityHelperService;
         _configurationPolicyService = configurationPolicyService;
         _compliancePoliciesService = compliancePoliciesService;
+        _assignmentFiltersService = assignmentsFilterService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsCommandOptions options)
     {
@@ -120,6 +121,8 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
 
         if (allResults.Count > 0)
         {
+            var allFiltersInfo =
+                await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
             
             var table = new Table();
             table.Collapse();
@@ -128,10 +131,13 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             table.AddColumn("ResourceId");
             table.AddColumn("ResourceName");
             table.AddColumn("AssignmentType");
-            table.AddColumn("FilterId");
+            table.AddColumn("FilterName");
             table.AddColumn("FilterType");
             foreach (var filter in allResults)
             {
+                var filterInfo = allFiltersInfo?.Find(g => g?.Id == filter.FilterId);
+                string filterFriendly = filterInfo?.DisplayName ?? "No filter";
+                filter.FilterId = filterFriendly;
                 table.AddRow(
                     filter.ResourceType,
                     filter.ResourceId,
