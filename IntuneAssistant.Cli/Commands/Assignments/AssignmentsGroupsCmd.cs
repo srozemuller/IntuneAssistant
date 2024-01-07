@@ -33,13 +33,15 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     private readonly IIdentityHelperService _identityHelperService;
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly ICompliancePoliciesService _compliancePoliciesService;
-    public FetchAssignmentsGroupCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService)
+    private readonly IAssignmentFiltersService _assignmentFiltersService;
+    public FetchAssignmentsGroupCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentFiltersService)
     {
         _assignmentsService = assignmentsService;
         _groupInformationService = groupInformationService;
         _identityHelperService = identityHelperService;
         _configurationPolicyService = configurationPolicyService;
         _compliancePoliciesService = compliancePoliciesService;
+        _assignmentFiltersService = assignmentFiltersService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsGroupCommandOptions options)
     {
@@ -58,7 +60,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         table.AddColumn("ResourceName");
         table.AddColumn("TargetId");
         table.AddColumn("TargetName");
-        table.AddColumn("FilterId");
+        table.AddColumn("FilterName");
         table.AddColumn("FilterType");
         
         if (string.IsNullOrWhiteSpace(accessToken))
@@ -194,11 +196,16 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         });
                 if (allResults.Count > 0)
                 {
+                    var allFiltersInfo =
+                        await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
                     foreach (var filter in allResults)
                     {
                         string targetFriendly = groupInfo.DisplayName ?? "No target found";
                         // Adding the target name to the all results object. This is for exporting later.
                         filter.TargetName = targetFriendly;
+                        var filterInfo = allFiltersInfo?.Find(g => g?.Id == filter.FilterId);
+                        string filterFriendly = filterInfo?.DisplayName ?? "No filter";
+                        filter.FilterId = filterFriendly;
                         table.AddRow(
                             filter.ResourceType,
                             filter.ResourceId,
@@ -291,17 +298,22 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
             {
                 var uniqueGroupIds = allResults.DistinctBy(d => d.TargetId).Select(t => t.TargetId)
                     .ToList();
-                
                 // Search in every group assignment for unique group ID values. For every group ID, search for group information. 
-                {
+                
                     var allGroupsInfo =
                         await _groupInformationService.GetGroupInformationByIdsCollectionListAsync(accessToken,
                             uniqueGroupIds);
+                    var allFiltersInfo =
+                        await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
+                    
                     foreach (var filter in allResults)
                     {
                         var target = allGroupsInfo.Find(g => g?.Id == filter.TargetId);
                         string targetFriendly = target?.DisplayName ?? "No target found";
                         filter.TargetName = targetFriendly;
+                        var filterInfo = allFiltersInfo?.Find(g => g?.Id == filter.FilterId);
+                        string filterFriendly = filterInfo?.DisplayName ?? "No filter";
+                        filter.FilterId = filterFriendly;
                         table.AddRow(
                             filter.ResourceType,
                             filter.ResourceId,
@@ -319,7 +331,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         AnsiConsole.Write($"File stored at location {fileLocation}");
                     }
                     return 0;
-                }
             }
         }
         AnsiConsole.MarkupLine($"[yellow]No assignments found in Intune.[/]");

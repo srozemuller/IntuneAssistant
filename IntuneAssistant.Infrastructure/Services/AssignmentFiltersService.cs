@@ -1,7 +1,9 @@
 using System.Text.Json;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Responses;
+using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.DeviceManagement.EvaluateAssignmentFilter;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
@@ -11,6 +13,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class AssignmentFiltersService : IAssignmentFiltersService
 {
+    private readonly HttpClient _http = new();
     public async Task<List<DeviceAndAppManagementAssignmentFilter>?> GetAssignmentFiltersListAsync(string accessToken)
     {
             var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
@@ -50,7 +53,7 @@ public sealed class AssignmentFiltersService : IAssignmentFiltersService
             return null;
         }
     }
-    
+
     public async Task<AssignmentFiltersDeviceEvaluationResponse> GetAssignmentFilterDeviceListAsync(
         string accessToken, string filterId)
     { 
