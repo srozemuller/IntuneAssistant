@@ -1,5 +1,6 @@
 using System.CommandLine;
 using IntuneAssistant.Infrastructure.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Assignments;
@@ -32,6 +33,12 @@ public class FetchDevicesByFilterCommandHandler : ICommandOptionsHandler<FetchDe
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var filterId = options.Id;
+        var filterIdNotProvided = options.Id.IsNullOrEmpty();
+        if (filterIdNotProvided)
+        {
+            AnsiConsole.MarkupLine("[red]Please provide a filter ID using the argument --id[/]");
+            return -1;
+        }
         var table = new Table();
         if (string.IsNullOrWhiteSpace(accessToken))
         {
