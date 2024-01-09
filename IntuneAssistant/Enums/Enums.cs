@@ -1,12 +1,12 @@
 namespace IntuneAssistant.Enums;
 
 
-    public enum FixedOptions
-    {
-        table,
-        json,
-        csv,
-    }
+public enum FixedOptions
+{
+    table,
+    json,
+    csv,
+}
 
 public enum ResourceTypes
 {
@@ -22,7 +22,8 @@ public enum ResourceTypes
     IosManagedAppProtection,
     AndroidManagedAppProtection,
     WindowsFeatureUpdate,
-    WindowsDriverUpdate
+    WindowsDriverUpdate,
+    MacOsShellScript
 }
 
 public enum AssignmentODataTypes
@@ -31,3 +32,6 @@ public enum AssignmentODataTypes
     GroupAssignmentTarget,
     AllLicensedUsersAssignmentTarget
 }
+
+
+%20eq%20%27d1174162-1dd2-4976-affc-6667049ab0ae%27%20or%20templateId%20eq%20%27a239407c-698d-4ef8-b314-e3ae409204b8%27

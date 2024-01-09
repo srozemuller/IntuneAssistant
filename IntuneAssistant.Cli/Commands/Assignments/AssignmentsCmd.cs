@@ -117,6 +117,12 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                         {
                             allResults.AddRange(driverUpdateResults);
                         }
+                        var macOsShellScriptResults =
+                            await _assignmentsService.GetMacOsShellScriptsAssignmentListAsync(accessToken, null);
+                        if (macOsShellScriptResults is not null)
+                        {
+                            allResults.AddRange(macOsShellScriptResults);
+                        }
                 });
 
         if (allResults.Count > 0)

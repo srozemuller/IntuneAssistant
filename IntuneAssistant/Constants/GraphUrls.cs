@@ -21,7 +21,9 @@ public class GraphUrls
     public const string AndroidManagedAppProtectionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceAppManagement/androidManagedAppProtections?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string WindowsFeatureUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsFeatureUpdateProfiles?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string WindowsDriverUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsDriverUpdateProfiles?$expand=assignments($select=id,target)&$select=id,displayname,description";
-    
+    public const string MacOsShellScripts = $"{AppConfiguration.GRAPH_URL}deviceManagement/deviceShellScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";
+
+
     public const string AssignmentFiltersUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/assignmentFilters?$select=id,CreatedDateTime,LastModifiedDateTime,DisplayName,Description,Platform,Rule,AssignmentFilterManagementType";
     
 }

@@ -520,5 +520,44 @@ public sealed class AssignmentsService : IAssignmentsService
         }
         return results;
     }
+
+    public async Task<List<CustomAssignmentsModel>?> GetMacOsShellScriptsAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.MacOsShellScripts);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var macosShellScriptAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.MacOsShellScript);
+                            results.Add(macosShellScriptAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var macosShellScriptAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.MacOsShellScript);
+                            results.Add(macosShellScriptAssignment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching macOS shell script assignments: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
 }
     

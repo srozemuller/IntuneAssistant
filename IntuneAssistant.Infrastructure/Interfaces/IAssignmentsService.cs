@@ -20,4 +20,6 @@ public interface IAssignmentsService
         GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken,
         GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetMacOsShellScriptsAssignmentListAsync(string accessToken,
+        GroupModel? group);
 }
