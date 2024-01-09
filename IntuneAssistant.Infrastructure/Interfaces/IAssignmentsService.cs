@@ -22,4 +22,6 @@ public interface IAssignmentsService
         GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetMacOsShellScriptsAssignmentListAsync(string accessToken,
         GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetDiskEncryptionAssignmentListAsync(string accessToken,
+        GroupModel? group);
 }

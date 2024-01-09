@@ -58,7 +58,6 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                         {
                             allResults.AddRange(complianceResults);
                         }
-                        
                         // Configuration Policies
                         var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
                         if (configPolicies is not null)
@@ -122,6 +121,12 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                         if (macOsShellScriptResults is not null)
                         {
                             allResults.AddRange(macOsShellScriptResults);
+                        }
+                        var diskEncyrptionResults =
+                            await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, null);
+                        if (diskEncyrptionResults is not null)
+                        {
+                            allResults.AddRange(diskEncyrptionResults);
                         }
                 });
 

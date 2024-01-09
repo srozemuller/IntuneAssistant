@@ -17,7 +17,6 @@ public sealed record GraphValueResponse<T>
     public IEnumerable<T>? Value { get; set; }
 }
 
-
 public static class CustomJsonOptions
 {
     public static JsonSerializerOptions Default()

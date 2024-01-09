@@ -173,7 +173,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         });
                 await AnsiConsole.Status().SpinnerStyle(Color.Orange1)
                     .StartAsync(
-                        $"Fetching application configuration assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        $"Fetching targeted app configuration assignments based on specific group ({groupInfo.DisplayName}) from Intune",
                         async _ =>
                         {
                             var results = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(
@@ -189,6 +189,17 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         async _ =>
                         {
                             var results = await _assignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, groupInfo);
+                            if (results is not null)
+                            {
+                                allResults.AddRange(results);
+                            }
+                        });
+                await AnsiConsole.Status().SpinnerStyle(Color.Orange1)
+                    .StartAsync(
+                        $"Fetching disk encryption policy assignments based on specific group ({groupInfo.DisplayName}) from Intune",
+                        async _ =>
+                        {
+                            var results = await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, groupInfo);
                             if (results is not null)
                             {
                                 allResults.AddRange(results);
@@ -239,15 +250,12 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                                 await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, compliancePolicies);
                             allResults.AddRange(complianceResults.Where(r => r.AssignmentType == "group"));
                         }
-
                         var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
                         if (configPolicies is not null)
                         {
                             var configurationResults = await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null, configPolicies);
                             allResults.AddRange(configurationResults.Where(r => r.AssignmentType == "group"));
                         }
-                        
-                        
                         var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
                         if (deviceScriptsResults is not null)
                         {
@@ -292,6 +300,11 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         if (windowsDriverUpdateResults is not null)
                         {
                             allResults.AddRange(windowsDriverUpdateResults.Where(r => r.AssignmentType == "group"));
+                        }
+                        var diskEncryptionResults = await _assignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, null);
+                        if (diskEncryptionResults is not null)
+                        {
+                            allResults.AddRange(diskEncryptionResults.Where(r => r.AssignmentType == "group"));
                         }
                     });
             if (allResults.Count > 0)

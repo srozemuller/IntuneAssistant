@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using IntuneAssistant.Constants;
+using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
 using Newtonsoft.Json;
 

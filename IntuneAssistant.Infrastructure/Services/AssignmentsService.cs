@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Enums;
@@ -24,11 +25,16 @@ public sealed class AssignmentsService : IAssignmentsService
                     {
                         continue;
                     }
+                    var resourceType = ResourceTypes.ConfigurationPolicy.ToString();
+                    if (!policy.TemplateReference.TemplateDisplayName.IsNullOrEmpty())
+                    {
+                        resourceType = policy.TemplateReference.TemplateDisplayName;
+                    }
                     if (group is null)
                     {
                         foreach (var assignment in policy.Assignments)
                         {
-                            var configurationPolicyAssigment = assignment.ToCustomAssignmentsModel<string>(ResourceTypes.ConfigurationPolicy.ToString(),
+                            var configurationPolicyAssigment = assignment.ToCustomAssignmentsModel<string>(resourceType,
                                     policy.Name, policy.Id);
                             results.Add(configurationPolicyAssigment);
                         }
@@ -37,7 +43,7 @@ public sealed class AssignmentsService : IAssignmentsService
                     {
                         foreach (var assignment in policy.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            var configurationPolicyAssigment = assignment.ToCustomAssignmentsModel<string>(ResourceTypes.ConfigurationPolicy.ToString(),policy.Name, policy.Id);
+                            var configurationPolicyAssigment = assignment.ToCustomAssignmentsModel<string>(resourceType,policy.Name, policy.Id);
                             results.Add(configurationPolicyAssigment);
                         }
                     }
@@ -389,7 +395,7 @@ public sealed class AssignmentsService : IAssignmentsService
                 {
                     foreach (var assignment in policy.Assignments.Where(g => g.Target.GroupId == group.Id))
                     {
-                        var compliancePolicyAssigment = assignment.ToCustomAssignmentsModel<string>(ResourceTypes.ConfigurationPolicy.ToString(),policy.DisplayName, policy.Id);
+                        var compliancePolicyAssigment = assignment.ToCustomAssignmentsModel<string>(ResourceTypes.CompliancePolicy.ToString(),policy.DisplayName, policy.Id);
                         results.Add(compliancePolicyAssigment);
                     }
                 }
@@ -548,6 +554,49 @@ public sealed class AssignmentsService : IAssignmentsService
                         {
                             var macosShellScriptAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.MacOsShellScript);
                             results.Add(macosShellScriptAssignment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching macOS shell script assignments: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<CustomAssignmentsModel>?> GetDiskEncryptionAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var globalResponse = await _http.GetAsync(GraphUrls.DiskEncryptionPoliciesUrl);
+            var globalResponseStream = await globalResponse.Content.ReadAsStreamAsync();
+            var batchRequestBody = GraphBatchHelper.IntentHelper.CreateOutput(globalResponseStream);
+            var content = new StringContent(batchRequestBody, Encoding.UTF8, "application/json");
+            var diskEncryptionResponse = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL,content);
+            var responseStream = await diskEncryptionResponse.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Responses is not null)
+            {
+                foreach (var resource in result.Responses)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Body.Assignments)
+                        {
+                           var diskEncryptionAssignment = assignment.ToAssignmentModel(resource.Body, ResourceTypes.DiskEncryptionPolicy);
+                           results.Add(diskEncryptionAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Body.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var diskEncryptionAssignment = assignment.ToAssignmentModel(resource.Body, ResourceTypes.DiskEncryptionPolicy);
+                            results.Add(diskEncryptionAssignment);
                         }
                 }
             }
