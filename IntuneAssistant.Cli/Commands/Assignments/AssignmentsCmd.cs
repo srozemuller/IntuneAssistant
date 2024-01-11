@@ -46,88 +46,33 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             AnsiConsole.MarkupLine("Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
             return -1;
         }
+        var fetchTasks = new List<Task<List<CustomAssignmentsModel>?>>
+        {
+            FetchCompliancePoliciesAsync(accessToken),
+            FetchConfigurationPoliciesAsync(accessToken),
+            FetchDeviceScriptsAsync(accessToken),
+            FetchHealthScriptsAsync(accessToken),
+            FetchAutoPilotAssignmentsListAsync(accessToken),
+            FetchAppProtectionAssignmentsListAsync(accessToken),
+            FetchMobileAppAssignmentsListAsync(accessToken),
+            FetchTargetAppAssignmentsListAsync(accessToken),
+            FetchUpdateRingsAssignmentsListAsync(accessToken),
+            FetchFeatureUpdateAssignmentsListAsync(accessToken),
+            FetchDriverUpdateAssignmentsListAsync(accessToken),
+            FetchMacOsScriptAssignmentsListAsync(accessToken),
+            FetchDiskEncryptionAssignmentsListAsync(accessToken)
+        };
         await AnsiConsole.Status().SpinnerStyle(Color.Orange1)
             .StartAsync(
                 $"Fetching global assignments overview from Intune",
                 async _ =>
                 {
-                    var compliancePolicies =
-                        await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
-                        var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, compliancePolicies);
-                        if (complianceResults is not null)
-                        {
-                            allResults.AddRange(complianceResults);
-                        }
-                        // Configuration Policies
-                        var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
-                        if (configPolicies is not null)
-                        {
-                            var configurationResults =
-                                await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null,
-                                    configPolicies);
-                            allResults.AddRange(configurationResults);
-                        }
-
-                        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
-                        if (deviceScriptsResults is not null)
-                        {
-                            allResults.AddRange(deviceScriptsResults);
-                        }
-                        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, null);
-                        if (healthScriptsResults is not null)
-                        {
-                            allResults.AddRange(healthScriptsResults);
-                        }
-                        var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken, null);
-                        if (autoPilotResults is not null)
-                        {
-                            allResults.AddRange(autoPilotResults);
-                        }
-                        var appProtectionResults = await _assignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, null);
-                        if (appProtectionResults is not null)
-                        {
-                            allResults.AddRange(appProtectionResults);
-                        }
-                        var mobileAppResults = await _assignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, null);
-                        if (mobileAppResults is not null)
-                        {
-                            allResults.AddRange(mobileAppResults);
-                        }
-                        var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, null);
-                        if (targetAppResults is not null)
-                        {
-                            allResults.AddRange(targetAppResults);
-                        }
-                        var updateRingResults =
-                            await _assignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, null);
-                        if (updateRingResults is not null)
-                        {
-                            allResults.AddRange(updateRingResults);
-                        }
-                        var featureUpdateResults =
-                            await _assignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(accessToken, null);
-                        if (featureUpdateResults is not null)
-                        {
-                            allResults.AddRange(featureUpdateResults);
-                        }
-                        var driverUpdateResults =
-                            await _assignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, null);
-                        if (driverUpdateResults is not null)
-                        {
-                            allResults.AddRange(driverUpdateResults);
-                        }
-                        var macOsShellScriptResults =
-                            await _assignmentsService.GetMacOsShellScriptsAssignmentListAsync(accessToken, null);
-                        if (macOsShellScriptResults is not null)
-                        {
-                            allResults.AddRange(macOsShellScriptResults);
-                        }
-                        var diskEncyrptionResults =
-                            await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, null);
-                        if (diskEncyrptionResults is not null)
-                        {
-                            allResults.AddRange(diskEncyrptionResults);
-                        }
+                    var results = await Task.WhenAll(fetchTasks);
+                    // Combine the results from all tasks
+                    foreach (var result in results)
+                    {
+                        allResults.AddRange(result);
+                    }
                 });
 
         if (allResults.Count > 0)
@@ -169,4 +114,86 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         AnsiConsole.MarkupLine($"[yellow]No assignments found in Intune.[/]");
         return -1;
     }
+
+    private async Task<List<CustomAssignmentsModel>?> FetchCompliancePoliciesAsync(string accessToken)
+    {
+        var compliancePolicies =
+            await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+        var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, compliancePolicies);
+        return complianceResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchConfigurationPoliciesAsync(string accessToken)
+    {
+        var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
+        var configurationResults = new List<CustomAssignmentsModel>();
+        if (configPolicies is not null)
+        {
+            configurationResults =
+                await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null,
+                    configPolicies);
+        }
+        return configurationResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string accessToken)
+    {
+        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
+        return deviceScriptsResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string accessToken)
+    {
+        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, null);
+        return healthScriptsResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchAutoPilotAssignmentsListAsync(string accessToken)
+    {
+        var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken, null);
+        return autoPilotResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchAppProtectionAssignmentsListAsync(string accessToken)
+    {
+        var appProtectionResults = await _assignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, null);
+        return appProtectionResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string accessToken)
+    {
+        var mobileAppResults = await _assignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, null);
+        return mobileAppResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchTargetAppAssignmentsListAsync(string accessToken)
+    {
+        var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, null);
+        return targetAppResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchUpdateRingsAssignmentsListAsync(string accessToken)
+    {
+        var updateRingResults =
+            await _assignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, null);
+        return updateRingResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchFeatureUpdateAssignmentsListAsync(string accessToken)
+    {
+        var featureUpdateResults =
+            await _assignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(accessToken, null);
+        return featureUpdateResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDriverUpdateAssignmentsListAsync(string accessToken)
+    {
+        var driverUpdateResults =
+            await _assignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, null);
+        return driverUpdateResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchMacOsScriptAssignmentsListAsync(string accessToken)
+    {
+        var macOsShellScriptResults =
+            await _assignmentsService.GetMacOsShellScriptsAssignmentListAsync(accessToken, null);
+        return macOsShellScriptResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDiskEncryptionAssignmentsListAsync(string accessToken)
+    {
+        var diskEncyrptionResults =
+            await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, null);
+        return diskEncyrptionResults;
+    }
+
+
 }

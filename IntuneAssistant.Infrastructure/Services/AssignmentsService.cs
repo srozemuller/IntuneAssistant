@@ -13,7 +13,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class AssignmentsService : IAssignmentsService
 {
     private readonly HttpClient _http = new();
-    public Task<List<CustomAssignmentsModel>> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
+    public Task<List<CustomAssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
         GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies)
     {
         var results = new List<CustomAssignmentsModel>();
