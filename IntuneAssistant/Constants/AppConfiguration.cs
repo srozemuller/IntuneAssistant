@@ -9,7 +9,8 @@ public static class AppConfiguration
     public const string AUTHORITY = "https://login.microsoftonline.com/common";
     public const string CLIENT_ID = "14d82eec-204b-4c2f-b7e8-296a70dab67e";
     public const string REDIRECT_URI = "http://localhost";
-    public const string GRAPH_URL = "https://graph.microsoft.com/beta/";
+    public const string GRAPH_URL = "https://graph.microsoft.com/beta";
+    public const string GRAPH_BATCH_URL = $"{GRAPH_URL}/$batch";
     public static readonly string DEFAULT_FOLDER = Directory.GetCurrentDirectory();
     public const string CONFIGPOLICY_OUTPUTPREFIX = $"{Branding.LegalName}/ConfigurationPolicies";
     public const string DEFAULT_OUTPUT = "table";

@@ -4,7 +4,7 @@ namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IAssignmentsService
 {
-    Task<List<CustomAssignmentsModel>> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
+    Task<List<CustomAssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
         GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies);
     Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
@@ -19,5 +19,9 @@ public interface IAssignmentsService
     Task<List<CustomAssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken,
         GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken,
+        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetMacOsShellScriptsAssignmentListAsync(string accessToken,
+        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetDiskEncryptionAssignmentListAsync(string accessToken,
         GroupModel? group);
 }
