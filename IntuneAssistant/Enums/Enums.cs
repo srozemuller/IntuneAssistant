@@ -24,7 +24,14 @@ public enum ResourceTypes
     WindowsFeatureUpdate,
     WindowsDriverUpdate,
     MacOsShellScript,
-    DiskEncryptionPolicy
+    DiskEncryptionPolicy,
+    MacOsUpdatePolicy,
+    PlatformScripts,
+    ManagedAppPolicy,
+    DevicePlatformRestriction,
+    DeviceLimitRestriction,
+    MacOsCustomAttributes,
+    IosLobAppConfiguration
 }
 
 public enum AssignmentODataTypes
