@@ -215,6 +215,45 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
+    public async Task<List<CustomAssignmentsModel>?> GetManagedApplicationAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.ManagedAppPoliciesUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var managedAppResult = assignment.ToAssignmentModel(resource, ResourceTypes.ManagedAppPolicy);
+                            results.Add(managedAppResult);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var managedAppResult = assignment.ToAssignmentModel(resource, ResourceTypes.ManagedAppPolicy);
+                            results.Add(managedAppResult);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
     public async Task<List<CustomAssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(
         string accessToken, GroupModel? group)
     {
@@ -604,6 +643,240 @@ public sealed class AssignmentsService : IAssignmentsService
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching macOS shell script assignments: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<CustomAssignmentsModel>?> GetUpdatesForMacAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+            var results = new List<CustomAssignmentsModel>();
+            _http.DefaultRequestHeaders.Clear();
+            _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            try
+            {
+                var response = await _http.GetAsync(GraphUrls.UpdatePolciesForMacUrl);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+                if (result?.Value is not null)
+                {
+                    foreach (var resource in result.Value)
+                    {
+                        if (group is null)
+                        {
+                            foreach (var assignment in resource.Assignments)
+                            {
+                                var updateForMacAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.MacOsUpdatePolicy);
+                                results.Add(updateForMacAssignment);
+                            }
+                        }
+                        else
+                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                            {
+                                var updateForMacAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.MacOsUpdatePolicy);
+                                results.Add(updateForMacAssignment);
+                            }
+                    }
+                }
+            }
+            catch (ODataError ex)
+            {
+                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+                return null;
+            }
+            return results;
+        }
+
+    public async Task<List<CustomAssignmentsModel>?> GetPlatformScriptsAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.PlatformScriptsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var platformScriptAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.PlatformScripts);
+                            results.Add(platformScriptAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var platformScriptAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.PlatformScripts);
+                            results.Add(platformScriptAssignment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching macOS shell script assignments: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<CustomAssignmentsModel>?> GetDevicePlatformRestrictionsAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.DevicePlatformRestrictionsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var enrollmentRestrictionsAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.DevicePlatformRestriction);
+                            results.Add(enrollmentRestrictionsAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var enrollmentRestrictionsAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.DevicePlatformRestriction);
+                            results.Add(enrollmentRestrictionsAssignment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching device platform restriction assignments: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<CustomAssignmentsModel>?> GetDeviceLimitRestrictionsAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.DeviceLimitRestrictionsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var limitRestrictionsAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.DeviceLimitRestriction);
+                            results.Add(limitRestrictionsAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var limitRestrictionsAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.DeviceLimitRestriction);
+                            results.Add(limitRestrictionsAssignment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching device platform restriction assignments: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<CustomAssignmentsModel>?> GetMacOsCustomAttributesAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.MacOsCustomAttributesScripts);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var macOsCustomAttributesAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.MacOsCustomAttributes);
+                            results.Add(macOsCustomAttributesAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var macOsCustomAttributesAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.MacOsCustomAttributes);
+                            results.Add(macOsCustomAttributesAssignment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching macOS custom attributes assignments: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<CustomAssignmentsModel>?> GetIosLobAppProvisioningAssignmentListAsync(string accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.IosLobAppProvisioningUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var iosLobAppAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.IosLobAppConfiguration);
+                            results.Add(iosLobAppAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var iosLobAppAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.IosLobAppConfiguration);
+                            results.Add(iosLobAppAssignment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching iOS Lob apps assignments: " + ex.ToMessage());
             return null;
         }
         return results;

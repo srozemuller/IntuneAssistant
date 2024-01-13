@@ -10,6 +10,7 @@ public interface IAssignmentsService
     Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetManagedApplicationAssignmentListAsync(string accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>> GetCompliancePoliciesAssignmentsListAsync(string accessToken, GroupModel? group,
@@ -23,5 +24,17 @@ public interface IAssignmentsService
     Task<List<CustomAssignmentsModel>?> GetMacOsShellScriptsAssignmentListAsync(string accessToken,
         GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetDiskEncryptionAssignmentListAsync(string accessToken,
+        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetUpdatesForMacAssignmentListAsync(string accessToken,
+        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetPlatformScriptsAssignmentListAsync(string accessToken,
+        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetDevicePlatformRestrictionsAssignmentListAsync(string accessToken,
+        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetDeviceLimitRestrictionsAssignmentListAsync(string accessToken,
+        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetMacOsCustomAttributesAssignmentListAsync(string accessToken,
+        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetIosLobAppProvisioningAssignmentListAsync(string accessToken,
         GroupModel? group);
 }
