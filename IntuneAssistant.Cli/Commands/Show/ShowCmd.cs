@@ -11,6 +11,9 @@ public static class ShowCmd
     {
         var showCommand = new Command(CommandConfiguration.ShowCommandName, CommandConfiguration.ShowCommandDescription);
 
+        var globalOption = new Option<string>(CommandConfiguration.PaginationFlag,
+            CommandConfiguration.PaginationFlagsDescription);
+        showCommand.AddGlobalOption(globalOption);
         var showAssignmentFiltersCommand = new AssignmentFiltersCmd();
         var showAssigmentFilterEvaluationCommand = new AssignmentFilterDeviceEvaluationCmd();
         showAssignmentFiltersCommand.AddCommand(showAssigmentFilterEvaluationCommand);

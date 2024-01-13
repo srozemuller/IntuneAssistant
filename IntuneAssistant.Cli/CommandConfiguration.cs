@@ -112,6 +112,8 @@ public static class CommandConfiguration
     // global arguments
     public static readonly string[] OutputFlags = new[] { "-o", "-output" };
     public const string OutputFlagsDescription = "Option to output the content into a specific type";
+    public static readonly string[] PaginationFlag = new[] { "-page-size" };
+    public const string PaginationFlagsDescription = "Option to output the content into pages, give a number of rows";
     
     // specific arguments
     public const string ExportCsvArg = "--export-csv";
