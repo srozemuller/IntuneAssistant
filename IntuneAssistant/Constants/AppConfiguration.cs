@@ -16,6 +16,8 @@ public static class AppConfiguration
     public const string DEFAULT_OUTPUT = "table";
     public const string STRINGTOREMOVE = "#microsoft.graph.";
     public const int FILES_PAGESIZE = 25;
+    public const int TABLE_PAGESIZE = 25;
+    public const string TABLE_PAGE_SCROLLINFO = "Use LEFT or RIGHT arrow to select page, use ESC to exit.";
     public static readonly string[] GRAPH_INTERACTIVE_SCOPE = {
         "Group.Read.All",
         "DeviceManagementConfiguration.ReadWrite.All",
