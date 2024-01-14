@@ -3,6 +3,7 @@ using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using IntuneAssistant.Extensions;
+using Microsoft.Graph.Beta.Models;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Assignments;
@@ -42,9 +43,10 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var allResults = new List<CustomAssignmentsModel>();
-        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
+        var exportCsvProvided = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var pageSizeProvided = !string.IsNullOrEmpty(options.PageSize);
         var pageSize = AppConfiguration.TABLE_PAGESIZE;
+        var allFiltersInfo = new List<DeviceAndAppManagementAssignmentFilter>();
         if (pageSizeProvided && int.TryParse(options.PageSize, out int pageSizeResult))
         {
             pageSize = pageSizeResult;
@@ -89,95 +91,97 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                         allResults.AddRange(result);
                     }
                 });
-
         if (allResults.Count > 0)
         {
-            var allFiltersInfo =
+            allFiltersInfo =
                 await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
-            var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","AssignmentType","FilterId","FilterType" };
-            // Create a table with dynamic columns
-            var table = new Table();
-            table.Collapse();
-            table.Border = TableBorder.Rounded;
-            // Add columns to your table dynamically based on the properties of the data type
-            foreach (var columnName in selectedColumns)
+            foreach (var result in allResults)
             {
-                table.AddColumn(new TableColumn(columnName));
+                var filterInfo = allFiltersInfo?.Find(g => g?.Id == result.FilterId);
+                result.FilterId = filterInfo?.DisplayName ?? "No filter";
             }
+        }
 
-            // Populate the table with data
-            foreach (var item in allResults)
-            {
-                var filterInfo = allFiltersInfo?.Find(g => g?.Id == item.FilterId);
-                string filterFriendly = filterInfo?.DisplayName ?? "No filter";
-                table.AddRow(
-                    item.ResourceType,
-                    item.ResourceName.EscapeMarkup(),
-                    item.ResourceId,
-                    item.AssignmentType,
-                    filterFriendly,
-                    item.FilterType
-                );
-            }
-            var currentPage = 0;
-            var totalPages = (int)Math.Ceiling((double)allResults.Count / pageSize);
-
-            do
-            {
-                // Display the current page
-                var startIdx = currentPage * pageSize;
-                var endIdx = Math.Min((currentPage + 1) * pageSize, allResults.Count);
-                var currentPageRows = table.Rows.Skip(startIdx).Take(endIdx - startIdx).ToList();
-                var currentPageTable = new Table();
-
-                // Add columns to the current page table
-                foreach (var columnName in selectedColumns)
-                {
-                    currentPageTable.AddColumn(new TableColumn(columnName));
-                }
-                foreach (var row in currentPageRows)
-                {
-                    currentPageTable.AddRow(row);
-                }
-                AnsiConsole.Render(currentPageTable);
-
-                // Show page information
-                AnsiConsole.WriteLine($"Page {currentPage + 1} of {totalPages}");
-                if (pageSize > allResults.Count)
-                {
-                    AnsiConsole.WriteLine("End of page");
-                    break; // Exit the loop if the page size is bigger than the total count. If all results fits on one page, no ESC is needed
-                }
-                AnsiConsole.WriteLine($"{AppConfiguration.TABLE_PAGE_SCROLLINFO}");
-                // Ask the user to go to the next page, previous page, or exit
-                var key = Console.ReadKey(true).Key;
-
-                if (key == ConsoleKey.RightArrow && currentPage < totalPages - 1)
-                {
-                    currentPage++;
-                }
-                else if (key == ConsoleKey.LeftArrow && currentPage > 0)
-                {
-                    currentPage--;
-                }
-                else if (key == ConsoleKey.Escape)
-                {
-                    break; // Exit the loop
-                }
-                // Clear the console for the next iteration
-                AnsiConsole.Console.Clear();
-            } while (true);
-            
-            if (exportCsv)
-            {
-                var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
-                AnsiConsole.Write($"File stored at location {fileLocation}");
-            }
+        if (exportCsvProvided)
+        {
+            var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
+            AnsiConsole.Write($"File stored at location {fileLocation}");
             return 0;
         }
-        AnsiConsole.MarkupLine($"[yellow]No assignments found in Intune.[/]");
-        return -1;
-    }
+        
+        var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","AssignmentType","FilterId","FilterType" };
+        // Create a table with dynamic columns
+        var table = new Table();
+        table.Collapse();
+        table.Border = TableBorder.Rounded;
+        // Add columns to your table dynamically based on the properties of the data type
+        foreach (var columnName in selectedColumns)
+        {
+            table.AddColumn(new TableColumn(columnName));
+        }
+
+        // Populate the table with data
+        foreach (var item in allResults)
+        {
+            table.AddRow(
+                item.ResourceType,
+                item.ResourceName.EscapeMarkup(),
+                item.ResourceId,
+                item.AssignmentType,
+                item.FilterId,
+                item.FilterType
+            );
+        }
+        var currentPage = 0;
+        var totalPages = (int)Math.Ceiling((double)allResults.Count / pageSize);
+
+        do
+        {
+            // Display the current page
+            var startIdx = currentPage * pageSize;
+            var endIdx = Math.Min((currentPage + 1) * pageSize, allResults.Count);
+            var currentPageRows = table.Rows.Skip(startIdx).Take(endIdx - startIdx).ToList();
+            var currentPageTable = new Table();
+
+            // Add columns to the current page table
+            foreach (var columnName in selectedColumns)
+            {
+                currentPageTable.AddColumn(new TableColumn(columnName));
+            }
+            foreach (var row in currentPageRows)
+            {
+                currentPageTable.AddRow(row);
+            }
+            AnsiConsole.Render(currentPageTable);
+
+            // Show page information
+            AnsiConsole.WriteLine($"Page {currentPage + 1} of {totalPages}");
+            if (pageSize > allResults.Count)
+            {
+                AnsiConsole.WriteLine("End of page");
+                break; // Exit the loop if the page size is bigger than the total count. If all results fits on one page, no ESC is needed
+            }
+            AnsiConsole.WriteLine($"{AppConfiguration.TABLE_PAGE_SCROLLINFO}");
+            // Ask the user to go to the next page, previous page, or exit
+            var key = Console.ReadKey(true).Key;
+
+            if (key == ConsoleKey.RightArrow && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else if (key == ConsoleKey.LeftArrow && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key == ConsoleKey.Escape)
+            {
+                break; // Exit the loop
+            }
+            // Clear the console for the next iteration
+            AnsiConsole.Console.Clear();
+        } while (true);
+        return 0;
+        }
 
     private async Task<List<CustomAssignmentsModel>?> FetchCompliancePoliciesAsync(string accessToken)
     {

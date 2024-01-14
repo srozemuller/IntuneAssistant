@@ -62,7 +62,6 @@ public static class AssignmentModelExtensions
         string targetId = String.Empty;
         string pattern2 = "AssignmentTarget";
         string assignmentType = assignment.Target.OdataType;
-        bool isAssigned = false;
         string filterId = "No filter";
         if (assignment.Target.DeviceAndAppManagementAssignmentFilterId is not null)
         {
@@ -79,7 +78,6 @@ public static class AssignmentModelExtensions
         return new CustomAssignmentsModel
         {
             AssignmentType = assignmentType,
-            IsAssigned = isAssigned,
             ResourceType = resourceType.ToString(),
             ResourceId = assigmentResponseModel.Id,
             TargetId = targetId,
