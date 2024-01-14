@@ -7,7 +7,6 @@ using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Assignments;
 
-
 public class AssignmentsGroupCmd : Command<FetchAssignmentsGroupCommandOptions, FetchAssignmentsGroupCommandHandler>
 {
     public AssignmentsGroupCmd() : base(CommandConfiguration.AssignmentsGroupsCommandName, CommandConfiguration.AssignmentsGroupsCommandDescription)
@@ -48,7 +47,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     {
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var allResults = new List<CustomAssignmentsModel>();
-        var exportCsv = !string.IsNullOrWhiteSpace(options.ExportCsv);
+        var exportCsvProvided = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var groupIdProvided = !string.IsNullOrWhiteSpace(options.GroupId);
         var groupNameProvided = !string.IsNullOrWhiteSpace(options.GroupName);
         var groupInfo = new GroupModel();
@@ -116,14 +115,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         }
         if (allResults.Any(r => r.AssignmentType == "group"))
         {
-            var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","TargetId","TargetName","FilterId","FilterType" };
-            var table = new Table();
-            table.Collapse();
-            table.Border = TableBorder.Rounded;
-            foreach (var columnName in selectedColumns)
-            {
-                table.AddColumn(new TableColumn(columnName));
-            }
             allResults = allResults.Where(r => r.AssignmentType == "group").ToList();
             var allFiltersInfo =
                 await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
@@ -133,32 +124,49 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
             var allGroupsInfo =
                 await _groupInformationService.GetGroupInformationByIdsCollectionListAsync(accessToken,
                     uniqueGroupIds);
-
-            foreach (var filter in allResults)
+            foreach (var result in allResults)
             {
                 if (groupIdProvided || groupNameProvided)
                 {
                     string targetFriendly = groupInfo.DisplayName ?? "No target found";
-                    filter.TargetName = targetFriendly;
+                    result.TargetName = targetFriendly;
                 }
                 else
                 {
                     // Adding the target name to the all results object. This is for exporting later.
-                    var target = allGroupsInfo.Find(g => g?.Id == filter.TargetId);
+                    var target = allGroupsInfo.Find(g => g?.Id == result.TargetId);
                     string targetFriendly = target?.DisplayName ?? "No target found";
-                    filter.TargetName = targetFriendly;
+                    result.TargetName = targetFriendly;
                 }
-                var filterInfo = allFiltersInfo?.Find(g => g?.Id == filter.FilterId);
+                var filterInfo = allFiltersInfo?.Find(g => g?.Id == result.FilterId);
                 string filterFriendly = filterInfo?.DisplayName ?? "No filter";
-                filter.FilterId = filterFriendly;
+                result.FilterId = filterFriendly;
+            }
+            if (exportCsvProvided)
+            {
+                var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
+                AnsiConsole.Write($"File stored at location {fileLocation}");
+                return 0;
+            }
+            var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","TargetId","TargetName","FilterId","FilterType" };
+            var table = new Table();
+            table.Collapse();
+            table.Border = TableBorder.Rounded;
+            foreach (var columnName in selectedColumns)
+            {
+                table.AddColumn(new TableColumn(columnName));
+            }
+
+            foreach (var result in allResults)
+            {
                 table.AddRow(
-                    filter.ResourceType,
-                    filter.ResourceId,
-                    filter.ResourceName.EscapeMarkup(),
-                    filter.TargetId,
-                    filter.TargetName.EscapeMarkup(),
-                    filter.FilterId,
-                    filter.FilterType
+                    result.ResourceType,
+                    result.ResourceId,
+                    result.ResourceName.EscapeMarkup(),
+                    result.TargetId,
+                    result.TargetName.EscapeMarkup(),
+                    result.FilterId,
+                    result.FilterType
                 );
             }
             var currentPage = 0;
@@ -209,11 +217,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                 // Clear the console for the next iteration
                 AnsiConsole.Console.Clear();
             } while (true);
-            if (exportCsv)
-            {
-                var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
-                AnsiConsole.Write($"File stored at location {fileLocation}");
-            }
             return 0;
         }
         AnsiConsole.MarkupLine($"[yellow]No assignments found in Intune.[/]");
