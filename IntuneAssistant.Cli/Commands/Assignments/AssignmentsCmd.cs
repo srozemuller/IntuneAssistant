@@ -1,11 +1,9 @@
 using System.CommandLine;
-using System.Reflection;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using IntuneAssistant.Extensions;
 using Spectre.Console;
-using Spectre.Console.Rendering;
 
 namespace IntuneAssistant.Cli.Commands.Assignments;
 

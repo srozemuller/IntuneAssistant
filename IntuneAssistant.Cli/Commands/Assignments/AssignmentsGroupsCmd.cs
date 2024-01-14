@@ -3,7 +3,6 @@ using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
-using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Assignments;
