@@ -1,0 +1,36 @@
+name: Documentation Update
+description: Use this form to suggest a documentation update
+title: "🪲[Documentation]: "
+labels: ["documentation"]
+assignees:
+  - srozemuller
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to provide a suggestion for the documenation page (https://intunecli.wiki). Please provide the following details:
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: true
+  - type: textarea
+    id: url
+    attributes:
+      label: url
+      description: If it is an existing page, please provide url
+      placeholder: https://intunecli.wiki/xxx
+    validations:
+      required: false
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestion
+      description: What would you suggest for the documentation page
+      placeholder: Enter your suggestion here...
+    validations:
+      required: true
