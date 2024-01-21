@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using System.Reflection;
 using IntuneAssistant.Cli.Middleware;
 using IntuneAssistant.Cli.Commands;
 using IntuneAssistant.Constants;
@@ -32,10 +33,11 @@ var builder = new CommandLineBuilder(rootCommand)
 if (args.Contains("--help") || args.Contains("-h") || args.Contains("-?"))
 {
     AnsiConsole.MarkupLine(
-        $"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - [underline darkorange]{Branding.Builder}[/]");
+        $"\nCopyright {DateTime.Now.Year.ToString()} (c) {Branding.LegalName} CLI - Version: [underline darkorange]{Branding.Version}[/] - [underline darkorange]{Branding.Builder}[/]");
     AnsiConsole.MarkupLine($"[darkorange]{Ascii.INTUNE_ASSISTANT_ASCII}[/]");
     AnsiConsole.MarkupLine(
-        "\n[grey]Refer to the [darkorange link=https://rozemuller.com/intuneCli]rozemuller.com/intuneCli[/] for more information about the command-line usage.\n[/]");
+        "\n[grey]Refer to the [underline darkorange link=https://intuneCli.wiki]intunecli.wiki[/] for more information about the command-line usage.[/]");
+    AnsiConsole.MarkupLine(
+        "\n[grey]Go to [underline darkorange link=https://rozemuller.com]rozemuller.com[/] for more blogs and other usages referring the IntuneCLI.\n[/]");
 }
-
 return builder.Build().Invoke(args);
