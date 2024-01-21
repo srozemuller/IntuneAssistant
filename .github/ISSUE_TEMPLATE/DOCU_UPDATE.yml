@@ -1,6 +1,6 @@
 name: Documentation Update
 description: Use this form to suggest a documentation update
-title: "🪲[Documentation]: "
+title: "📝[Documentation]: "
 labels: ["documentation"]
 assignees:
   - srozemuller
