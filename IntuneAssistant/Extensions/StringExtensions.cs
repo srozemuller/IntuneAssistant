@@ -55,9 +55,10 @@ public static class ODataTypeExtensions
                 return "All Licensed Users";
             case "#microsoft.graph.allDevicesAssignmentTarget":
                 return "All Devices";
-            // Add other cases as needed
             case "#microsoft.graph.groupAssignmentTarget":
                 return "Group";
+            case "#microsoft.graph.exclusionGroupAssignmentTarget":
+                return "Group Exclude";
             default:
                 throw new ArgumentOutOfRangeException(nameof(odataType), odataType, null);
         }

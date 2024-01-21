@@ -68,7 +68,7 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
         table.AddColumn("DeviceName");
         table.AddColumn("Assigned");
         table.AddColumn("PolicyType");
-        table.AddColumn("AssignmentTarget");
+        table.AddColumn("AssignmentTarget (filter)");
         foreach (var policy in allCompliancePoliciesResults)
         {
             var assignmentTypes = new List<string>();
