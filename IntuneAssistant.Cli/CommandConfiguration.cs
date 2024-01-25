@@ -97,7 +97,21 @@ public static class CommandConfiguration
     
     // device OS overview
     public const string DeviceOsBuildOverviewCommandName = "osbuild";
-    public const string DeviceOsBuildOverviewCommandDescription = "Shows the devices OS build overview";  
+    public const string DeviceOsBuildOverviewCommandDescription = "Shows the devices OS build overview"; 
+    
+    // Tenant Information
+    public const string TenantCommandName = "tenant";
+    public const string TenantCommandDescription = "Gives you commands to retreive Intune tenant information";
+
+    // All commands considering Intune tenant information
+    /// RoleDefinitions
+    
+    public const string RoleDefinitionsCmdName = "roles";
+    public const string RoleDefinitionsDescription = "Go to the Intune roles context";
+
+    public const string RoleDefinitionsListCmdName = "list";
+    public const string RoleDefinitionsListDescription = "Gives you a list of all resources in the specific context";
+
 
     // generic subcommands
     public const string ListCommandName = "list";

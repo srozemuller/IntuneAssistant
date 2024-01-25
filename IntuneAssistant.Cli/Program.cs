@@ -28,6 +28,7 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<IAssignmentsService, AssignmentsService>();
     services.AddScoped<IGroupInformationService, GroupInformationService>();
     services.AddScoped<IAppsService, AppsService>();
+    services.AddScoped<ITenantInformationService, TenantInformationService>();
 });
 
 if (args.Contains("--help") || args.Contains("-h") || args.Contains("-?"))

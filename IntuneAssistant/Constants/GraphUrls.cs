@@ -36,5 +36,6 @@ public class GraphUrls
     public const string DiskEncryptionPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/intents?$filter=templateId%20eq%20%27d1174162-1dd2-4976-affc-6667049ab0ae%27%20or%20templateId%20eq%20%27a239407c-698d-4ef8-b314-e3ae409204b8%27&$expand=assignments($select=id,target)";
 
     public const string AssignmentFiltersUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/assignmentFilters?$select=id,CreatedDateTime,LastModifiedDateTime,DisplayName,Description,Platform,Rule,AssignmentFilterManagementType";
-    
+
+    public const string RoleDefinitionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/roleDefinitions?$select=id,displayname,description,isBuiltIn";
 }

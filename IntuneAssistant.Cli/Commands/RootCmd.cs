@@ -17,6 +17,7 @@ public static class RootCmd
         rootCommand.AddCommand(DevicesCmd.New());
         rootCommand.AddCommand(PoliciesCmd.New());
         rootCommand.AddCommand(ShowCmd.New());
+        rootCommand.AddCommand(TenantInformationCmd.New());
         
         return rootCommand;
     }
