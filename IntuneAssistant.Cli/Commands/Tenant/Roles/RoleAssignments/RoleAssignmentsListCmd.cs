@@ -1,5 +1,4 @@
 using System.CommandLine;
-using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
