@@ -1,11 +1,10 @@
 using System.CommandLine;
-using IntuneAssistant.Cli.Commands.Apps;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Spectre.Console;
 
-namespace IntuneAssistant.Cli.Commands.Tenant.RoleDefinitions;
+namespace IntuneAssistant.Cli.Commands.Tenant.Roles.RoleDefinitions;
 
 
 public class RolesListCmd : Command<FetchRolesListCommandOptions, FetchRolesListCommandHandler>

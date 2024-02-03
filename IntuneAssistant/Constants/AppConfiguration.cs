@@ -20,6 +20,7 @@ public static class AppConfiguration
     public const string TABLE_PAGE_SCROLLINFO = "Use LEFT or RIGHT arrow to select page, use ESC to exit.";
     public static readonly string[] GRAPH_INTERACTIVE_SCOPE = {
         "Group.Read.All",
+        "Directory.Read.All",
         "DeviceManagementConfiguration.ReadWrite.All",
         "DeviceManagementServiceConfig.ReadWrite.All",
         "DeviceManagementApps.ReadWrite.All",

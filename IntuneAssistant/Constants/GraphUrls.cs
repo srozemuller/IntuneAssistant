@@ -3,6 +3,8 @@ namespace IntuneAssistant.Constants;
 public class GraphUrls
 {
     public const string GroupsUrl = $"{AppConfiguration.GRAPH_URL}/groups?$select=id,displayname,Description,CreatedDateTime";
+    public const string GetByIdsUrl = $"{AppConfiguration.GRAPH_URL}/directoryObjects/getByIds?$select=displayName,id";
+    
     public const string ManagedDevicesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/managedDevices?$select=id,deviceName,ComplianceState,LastSyncDateTime,OsVersion,SerialNumber,OperatingSystem";
 
     public const string UpdateRingsUrl =

@@ -49,13 +49,14 @@ public static class ODataTypeExtensions
 {
     public static string ToHumanReadableString(this string odataType)
     {
-        switch (odataType)
+        switch (odataType.ToLowerInvariant())
         {
             case "#microsoft.graph.allLicensedUsersAssignmentTarget":
                 return "All Licensed Users";
             case "#microsoft.graph.allDevicesAssignmentTarget":
                 return "All Devices";
             case "#microsoft.graph.groupAssignmentTarget":
+            case "#microsoft.graph.group":
                 return "Group";
             case "#microsoft.graph.exclusionGroupAssignmentTarget":
                 return "Group Exclude";
@@ -64,6 +65,32 @@ public static class ODataTypeExtensions
         }
     }
 }
+
+public static class ODataContext
+{
+    public static string FetchIdFromContext(this string odataContext)
+    {
+        // Define the regular expression pattern
+        string pattern = @"'([^']+)'";
+
+        // Create a Regex object
+        Regex regex = new Regex(pattern);
+
+        // Match the pattern in the URL
+        Match match = regex.Match(odataContext);
+
+        // Check if a match is found
+        if (match.Success)
+        {
+            // Extract and return the ID from the matched group
+            return match.Groups[1].Value;
+        }
+
+        // Return null if no match is found
+        return null;
+    }
+}
+
 public class ODataTypeConverter : JsonConverter<AssignmentODataTypes>
 {
     public override AssignmentODataTypes Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

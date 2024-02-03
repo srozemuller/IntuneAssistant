@@ -66,7 +66,7 @@ public static class CommandConfiguration
     public const string TreeViewArg = "--tree-view";
     public const string TreeViewArgDescription = "Outputs an overview in tree format.";
     public const string ApplicationNameArg = "--application-name";
-    public const string AppliationNameArgDescription = "Retrieves all dependencies based on a specific application name";
+    public const string ApplicationNameArgDescription = "Retrieves all dependencies based on a specific application name";
 
     // compliance policies
     public const string CompliancePolicyCommandName = "compliance";
@@ -106,9 +106,15 @@ public static class CommandConfiguration
     // All commands considering Intune tenant information
     /// RoleDefinitions
     
-    public const string RoleDefinitionsCmdName = "roles";
-    public const string RoleDefinitionsDescription = "Go to the Intune roles context";
+    public const string RolesCmdName = "roles";
+    public const string RolesCmdDescription = "Go to the Intune role context";
+    
+    public const string RoleDefinitionsCmdName = "definitions";
+    public const string RoleDefinitionsDescription = "Go to the Intune role definitions context";
 
+    public const string RoleAssignmentsCmdName = "assignments";
+    public const string RoleAssignmentsCmdDescription = "Go to the Intune roles assignments context";
+    
     public const string RoleDefinitionsListCmdName = "list";
     public const string RoleDefinitionsListDescription = "Gives you a list of all resources in the specific context";
 
