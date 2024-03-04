@@ -1,6 +1,8 @@
 using System.CommandLine;
+using System.Text;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
+using IntuneAssistant.Extensions.HTML;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Spectre.Console;
@@ -14,6 +16,9 @@ public class AssignmentsGroupCmd : Command<FetchAssignmentsGroupCommandOptions, 
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<string>(CommandConfiguration.AssignmentsGroupIdCommandName, CommandConfiguration.AssignmentsGroupIdCommandDescription));
         AddOption(new Option<string>(CommandConfiguration.AssignmentsGroupNameCommandName, CommandConfiguration.AssignmentsGroupNameCommandDescription));
+        var outputOption = new Option<string>(CommandConfiguration.OutputFlags, CommandConfiguration.OutputFlagsDescription);
+        outputOption.AddAlias("-o");
+        AddOption(outputOption);
     }
 }
 
@@ -23,6 +28,14 @@ public class FetchAssignmentsGroupCommandOptions : ICommandOptions
     public string GroupId { get; set; } = string.Empty;
     public string GroupName { get; set; } = string.Empty;
     public string PageSize { get; set; }
+    private readonly string[] _validOutputs = { "table", "json", "csv", "html" };
+    private const string DEFAULT_OUTPUT = "table";
+    private string _output = DEFAULT_OUTPUT;
+    public string Output
+    {
+        get { return _output; }
+        set { _output = _validOutputs.Contains(value) ? value : DEFAULT_OUTPUT; }
+    }
 }
 
 public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchAssignmentsGroupCommandOptions>
@@ -148,6 +161,18 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                 AnsiConsole.Write($"File stored at location {fileLocation}");
                 return 0;
             }
+            switch (options.Output)
+            {
+                case "html":
+                    var bodySb = new StringBuilder();
+                    bodySb.Append(HtmlTemplateHelper.GenerateAssignmentsByGroupOverview(allResults));
+
+                    var htmlTemplate =
+                        HtmlTemplateHelper.CreateHtmlPage(_identityHelperService.GetCurrentUserContext().Result.FirstOrDefault().HomeAccountId.TenantId,
+                            bodySb.ToString());
+                    File.WriteAllText("report.html",htmlTemplate);
+                    break;
+            }
             var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","TargetId","TargetName","FilterId","FilterType" };
             var table = new Table();
             table.Collapse();
@@ -254,7 +279,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         // Process the results if needed
         // For example, you can concatenate all the lists into a single list
         var allModels = results.Where(x => x != null).SelectMany(x => x).ToList();
-
+       
         return allModels;
     }
     

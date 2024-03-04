@@ -66,7 +66,7 @@ public static class CommandConfiguration
     public const string TreeViewArg = "--tree-view";
     public const string TreeViewArgDescription = "Outputs an overview in tree format.";
     public const string ApplicationNameArg = "--application-name";
-    public const string AppliationNameArgDescription = "Retrieves all dependencies based on a specific application name";
+    public const string ApplicationNameArgDescription = "Retrieves all dependencies based on a specific application name";
 
     // compliance policies
     public const string CompliancePolicyCommandName = "compliance";
@@ -97,7 +97,27 @@ public static class CommandConfiguration
     
     // device OS overview
     public const string DeviceOsBuildOverviewCommandName = "osbuild";
-    public const string DeviceOsBuildOverviewCommandDescription = "Shows the devices OS build overview";  
+    public const string DeviceOsBuildOverviewCommandDescription = "Shows the devices OS build overview"; 
+    
+    // Tenant Information
+    public const string TenantCommandName = "tenant";
+    public const string TenantCommandDescription = "Gives you commands to retreive Intune tenant information";
+
+    // All commands considering Intune tenant information
+    /// RoleDefinitions
+    
+    public const string RolesCmdName = "roles";
+    public const string RolesCmdDescription = "Go to the Intune role context";
+    
+    public const string RoleDefinitionsCmdName = "definitions";
+    public const string RoleDefinitionsDescription = "Go to the Intune role definitions context";
+
+    public const string RoleAssignmentsCmdName = "assignments";
+    public const string RoleAssignmentsCmdDescription = "Go to the Intune roles assignments context";
+    
+    public const string RoleDefinitionsListCmdName = "list";
+    public const string RoleDefinitionsListDescription = "Gives you a list of all resources in the specific context";
+
 
     // generic subcommands
     public const string ListCommandName = "list";
@@ -110,8 +130,8 @@ public static class CommandConfiguration
     public const string ImportCommandDescription = "Export the resources content in the specific context";
     
     // global arguments
-    public static readonly string[] OutputFlags = new[] { "-o", "-output" };
-    public const string OutputFlagsDescription = "Option to output the content into a specific type";
+    public static readonly string[] OutputFlags = new[] { "--output" };
+    public const string OutputFlagsDescription = "Configure the output format (table, json, csv, html)";
     public static readonly string[] PaginationFlag = new[] { "-page-size" };
     public const string PaginationFlagsDescription = "Option to output the content into pages, give a number of rows";
     

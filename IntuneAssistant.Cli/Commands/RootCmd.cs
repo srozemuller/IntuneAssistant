@@ -4,6 +4,8 @@ using IntuneAssistant.Cli.Commands.Auth;
 using IntuneAssistant.Cli.Commands.Devices;
 using IntuneAssistant.Cli.Commands.Policies;
 using IntuneAssistant.Cli.Commands.Show;
+using IntuneAssistant.Cli.Commands.Tenant;
+
 namespace IntuneAssistant.Cli.Commands;
 
 public static class RootCmd
@@ -17,6 +19,7 @@ public static class RootCmd
         rootCommand.AddCommand(DevicesCmd.New());
         rootCommand.AddCommand(PoliciesCmd.New());
         rootCommand.AddCommand(ShowCmd.New());
+        rootCommand.AddCommand(TenantInformationCmd.New());
         
         return rootCommand;
     }

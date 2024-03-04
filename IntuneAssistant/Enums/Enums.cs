@@ -1,11 +1,12 @@
 namespace IntuneAssistant.Enums;
 
 
-public enum FixedOptions
+public enum OutputOptions
 {
     table,
     json,
     csv,
+    html
 }
 
 public enum ResourceTypes

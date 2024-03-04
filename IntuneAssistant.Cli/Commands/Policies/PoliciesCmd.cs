@@ -12,7 +12,9 @@ public static class PoliciesCmd
             CommandConfiguration.PoliciesCommandDescription);
         var globalOption = new Option<Enums.FixedOptions?>(CommandConfiguration.OutputFlags,
             CommandConfiguration.OutputFlagsDescription);
+        var nonAssignedOptions = new Option<bool>(CommandConfiguration.NonAssignedArg, CommandConfiguration.NonAssignedArgDescription);
         policiesCommand.AddGlobalOption(globalOption);
+        policiesCommand.AddGlobalOption(nonAssignedOptions);
         
         policiesCommand.AddCommand(ConfigurationPoliciesCmd.New());
 

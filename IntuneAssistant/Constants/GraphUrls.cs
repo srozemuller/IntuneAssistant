@@ -3,6 +3,8 @@ namespace IntuneAssistant.Constants;
 public class GraphUrls
 {
     public const string GroupsUrl = $"{AppConfiguration.GRAPH_URL}/groups?$select=id,displayname,Description,CreatedDateTime";
+    public const string GetByIdsUrl = $"{AppConfiguration.GRAPH_URL}/directoryObjects/getByIds?$select=displayName,id";
+    
     public const string ManagedDevicesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/managedDevices?$select=id,deviceName,ComplianceState,LastSyncDateTime,OsVersion,SerialNumber,OperatingSystem";
 
     public const string UpdateRingsUrl =
@@ -36,5 +38,6 @@ public class GraphUrls
     public const string DiskEncryptionPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/intents?$filter=templateId%20eq%20%27d1174162-1dd2-4976-affc-6667049ab0ae%27%20or%20templateId%20eq%20%27a239407c-698d-4ef8-b314-e3ae409204b8%27&$expand=assignments($select=id,target)";
 
     public const string AssignmentFiltersUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/assignmentFilters?$select=id,CreatedDateTime,LastModifiedDateTime,DisplayName,Description,Platform,Rule,AssignmentFilterManagementType";
-    
+
+    public const string RoleDefinitionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/roleDefinitions?$select=id,displayname,description,isBuiltIn";
 }

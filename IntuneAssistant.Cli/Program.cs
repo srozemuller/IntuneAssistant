@@ -4,10 +4,12 @@ using System.CommandLine.Parsing;
 using System.Reflection;
 using IntuneAssistant.Cli.Middleware;
 using IntuneAssistant.Cli.Commands;
+using IntuneAssistant.Cli.Commands.Assignments;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Spectre.Console;
 
 var rootCommand = RootCmd.New();
@@ -28,6 +30,8 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<IAssignmentsService, AssignmentsService>();
     services.AddScoped<IGroupInformationService, GroupInformationService>();
     services.AddScoped<IAppsService, AppsService>();
+    services.AddScoped<ITenantInformationService, TenantInformationService>();
+    services.AddScoped<IGlobalGraphService, GlobalGraphService>();
 });
 
 if (args.Contains("--help") || args.Contains("-h") || args.Contains("-?"))

@@ -20,11 +20,14 @@ public static class AppConfiguration
     public const string TABLE_PAGE_SCROLLINFO = "Use LEFT or RIGHT arrow to select page, use ESC to exit.";
     public static readonly string[] GRAPH_INTERACTIVE_SCOPE = {
         "Group.Read.All",
+        "Directory.Read.All",
         "DeviceManagementConfiguration.ReadWrite.All",
         "DeviceManagementServiceConfig.ReadWrite.All",
-        "DeviceManagementApps.ReadWrite.All"
+        "DeviceManagementApps.ReadWrite.All",
+        "DeviceManagementRBAC.Read.All"
     };
     public const string DEFAULT_EXPORTFILENAME = $"IntuneAssistant_export";
+    public const string HTML_EXPORTFILELOCATION = $"IntuneAssistant_export.html";
     
     // Cache settings
     public const string CACHE_FILE_NAME = "msal-cache.plaintext";
