@@ -25,7 +25,7 @@ public class FetchConfigurationPoliciesCommandOptions : ICommandOptions
     public string ExportCsv { get; set; } = string.Empty;
     public string Id { get; set; } = string.Empty;
     public bool DeviceStatus { get; set; } = false;
-    
+    public bool NonAssigned { get; set; } = false;
 }
 
 
@@ -57,26 +57,33 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
         {
             allCompliancePoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
         });
-
-        if (exportCsv)
-        {
-            ExportData.ExportCsv(allCompliancePoliciesResults,options.ExportCsv);
-        }
+        
         var table = new Table();
         table.Collapse();
         table.AddColumn("Id");
         table.AddColumn("DeviceName");
         table.AddColumn("Assigned");
         table.AddColumn("PolicyType");
+
         table.AddColumn("AssignmentTarget (filter)");
+        table.AddColumn("AssignmentTarget");
+        if (options.NonAssigned)
+        {
+            allCompliancePoliciesResults = allCompliancePoliciesResults.Where(obj => obj.Assignments == null || !obj.Assignments.Any()).ToList();
+        }
+        if (exportCsv)
+        {
+            ExportData.ExportCsv(allCompliancePoliciesResults,options.ExportCsv);
+        }
         foreach (var policy in allCompliancePoliciesResults)
         {
             var assignmentTypes = new List<string>();
-            var assignmentInfo = new AssignmentInfoModel();
+            var isAssigned = true;
             
             if (policy.Assignments.IsNullOrEmpty())
             {
                 assignmentTypes.Add("None");
+                isAssigned = false;
             }
             else
             {
@@ -86,10 +93,11 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
                     assignmentTypes.Add($"{type} ({assignment.Target.DeviceAndAppManagementAssignmentFilterType})");
                 }   
             }
+
             table.AddRow(
                 policy.Id,
                 policy.Name.EscapeMarkup(),
-                assignmentInfo.IsAssigned.ToString(),
+                isAssigned.ToString(),
                 ResourceTypes.ConfigurationPolicy.ToString(),
                 string.Join(",",assignmentTypes)
             );
