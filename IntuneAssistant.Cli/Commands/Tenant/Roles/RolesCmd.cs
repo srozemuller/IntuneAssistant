@@ -10,7 +10,7 @@ public static class RolesCmd
     {
         var rolesCommand = new Command(CommandConfiguration.RolesCmdName,
             CommandConfiguration.RolesCmdDescription);
-        var globalOption = new Option<Enums.FixedOptions?>(CommandConfiguration.OutputFlags,
+        var globalOption = new Option<Enums.OutputOptions?>(CommandConfiguration.OutputFlags,
             CommandConfiguration.OutputFlagsDescription);
         rolesCommand.AddGlobalOption(globalOption);
         

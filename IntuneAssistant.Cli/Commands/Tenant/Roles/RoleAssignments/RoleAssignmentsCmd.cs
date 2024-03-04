@@ -8,7 +8,7 @@ public static class RoleAssignmentsCmd
     {
         var roleAssignmentsCommand = new Command(CommandConfiguration.RoleAssignmentsCmdName,
             CommandConfiguration.RoleAssignmentsCmdDescription);
-        var globalOption = new Option<Enums.FixedOptions?>(CommandConfiguration.OutputFlags,
+        var globalOption = new Option<Enums.OutputOptions?>(CommandConfiguration.OutputFlags,
             CommandConfiguration.OutputFlagsDescription);
         roleAssignmentsCommand.AddGlobalOption(globalOption);
         

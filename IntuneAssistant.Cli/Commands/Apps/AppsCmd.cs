@@ -10,7 +10,7 @@ public static class AppsCmd
 
         var appsCommand = new Command(CommandConfiguration.AppsCommandName,
             CommandConfiguration.AppsCommandDescription);
-        var globalOption = new Option<Enums.FixedOptions?>(CommandConfiguration.OutputFlags,
+        var globalOption = new Option<Enums.OutputOptions?>(CommandConfiguration.OutputFlags,
             CommandConfiguration.OutputFlagsDescription);
         appsCommand.AddGlobalOption(globalOption);
         

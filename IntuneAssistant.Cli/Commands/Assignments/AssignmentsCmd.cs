@@ -1,8 +1,10 @@
 using System.CommandLine;
+using System.Text;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using IntuneAssistant.Extensions;
+using IntuneAssistant.Extensions.HTML;
 using Microsoft.Graph.Beta.Models;
 using Spectre.Console;
 
@@ -12,7 +14,10 @@ public class AssignmentsCmd : Command<FetchAssignmentsCommandOptions, FetchAssig
 {
     public AssignmentsCmd() : base(CommandConfiguration.AssignmentsCommandName, CommandConfiguration.AssignmentsCommandDescription)
     {
-        AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription)); 
+        var outputOption = new Option<string>(CommandConfiguration.OutputFlags, CommandConfiguration.OutputFlagsDescription);
+        outputOption.AddAlias("-o");
+        AddOption(outputOption);
     }
 }
 
@@ -20,6 +25,14 @@ public class FetchAssignmentsCommandOptions : ICommandOptions
 {
     public string ExportCsv { get; set; } = string.Empty;
     public string PageSize { get; set; }
+    private readonly string[] _validOutputs = { "table", "json", "csv", "html" };
+    private const string DEFAULT_OUTPUT = "table";
+    private string _output = DEFAULT_OUTPUT;
+    public string Output
+    {
+        get { return _output; }
+        set { _output = _validOutputs.Contains(value) ? value : DEFAULT_OUTPUT; }
+    }
 }
 
 public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssignmentsCommandOptions>
@@ -107,6 +120,19 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
             AnsiConsole.Write($"File stored at location {fileLocation}");
             return 0;
+        }
+        
+        switch (options.Output)
+        {
+            case "html":
+                var bodySb = new StringBuilder();
+                bodySb.Append(HtmlTemplateHelper.GenerateAssignmentsOverview(allResults));
+
+                var htmlTemplate =
+                    HtmlTemplateHelper.CreateHtmlPage(_identityHelperService.GetCurrentUserContext().Result.FirstOrDefault().HomeAccountId.TenantId,
+                        bodySb.ToString());
+                File.WriteAllText("report.html",htmlTemplate);
+                break;
         }
         
         var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","AssignmentType","FilterId","FilterType" };

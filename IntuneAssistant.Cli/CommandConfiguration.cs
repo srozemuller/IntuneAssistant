@@ -130,8 +130,8 @@ public static class CommandConfiguration
     public const string ImportCommandDescription = "Export the resources content in the specific context";
     
     // global arguments
-    public static readonly string[] OutputFlags = new[] { "-o", "-output" };
-    public const string OutputFlagsDescription = "Option to output the content into a specific type";
+    public static readonly string[] OutputFlags = new[] { "--output" };
+    public const string OutputFlagsDescription = "Configure the output format (table, json, csv, html)";
     public static readonly string[] PaginationFlag = new[] { "-page-size" };
     public const string PaginationFlagsDescription = "Option to output the content into pages, give a number of rows";
     

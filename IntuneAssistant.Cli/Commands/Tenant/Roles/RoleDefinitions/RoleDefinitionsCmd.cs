@@ -8,7 +8,7 @@ public static class RoleDefinitionsCmd
     {
         var roleDefinitionsCommand = new Command(CommandConfiguration.RoleDefinitionsCmdName,
             CommandConfiguration.RoleDefinitionsDescription);
-        var globalOption = new Option<Enums.FixedOptions?>(CommandConfiguration.OutputFlags,
+        var globalOption = new Option<Enums.OutputOptions?>(CommandConfiguration.OutputFlags,
             CommandConfiguration.OutputFlagsDescription);
         roleDefinitionsCommand.AddGlobalOption(globalOption);
 

@@ -27,6 +27,7 @@ public static class AppConfiguration
         "DeviceManagementRBAC.Read.All"
     };
     public const string DEFAULT_EXPORTFILENAME = $"IntuneAssistant_export";
+    public const string HTML_EXPORTFILELOCATION = $"IntuneAssistant_export.html";
     
     // Cache settings
     public const string CACHE_FILE_NAME = "msal-cache.plaintext";
