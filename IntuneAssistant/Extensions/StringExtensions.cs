@@ -49,7 +49,7 @@ public static class ODataTypeExtensions
 {
     public static string ToHumanReadableString(this string odataType)
     {
-        switch (odataType.ToLowerInvariant())
+        switch (odataType)
         {
             case "#microsoft.graph.allLicensedUsersAssignmentTarget":
                 return "All Licensed Users";

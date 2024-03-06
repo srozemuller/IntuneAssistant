@@ -23,8 +23,6 @@ public class ConfigPoliciesListCmd : Command<FetchConfigurationPoliciesCommandOp
 public class FetchConfigurationPoliciesCommandOptions : ICommandOptions
 {
     public string ExportCsv { get; set; } = string.Empty;
-    public string Id { get; set; } = string.Empty;
-    public bool DeviceStatus { get; set; } = false;
     public bool NonAssigned { get; set; } = false;
 }
 
@@ -89,8 +87,11 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
             {
                 foreach (var assignment in policy.Assignments)
                 {
-                    var type = assignment.Target.OdataType.ToHumanReadableString(); 
-                    assignmentTypes.Add($"{type} ({assignment.Target.DeviceAndAppManagementAssignmentFilterType})");
+                    if (assignment.Target.OdataType.Length > 0)
+                    {
+                        var type = assignment.Target.OdataType.ToHumanReadableString();
+                        assignmentTypes.Add($"{type} ({assignment.Target.DeviceAndAppManagementAssignmentFilterType})");
+                    }
                 }   
             }
 

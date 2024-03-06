@@ -13,8 +13,8 @@ public class GraphUrls
         $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceConfigurations?$expand=assignments($select=id,target)&$select=id,displayname,description";
 
     public const string CompliancePoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceCompliancePolicies?$expand=assignments($select=id,target)";
-    
-    public const string ConfigurationPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies?$expand=assignments($select=id,target),settings&$top=100";
+    public const string ConfigurationPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies";
+    public const string ConfigurationPoliciesAssignmentsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies?$expand=assignments($select=id,target),settings&$top=1000";
     public const string DeviceHealthScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceHealthScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string PlatformScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceManagementScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";
 

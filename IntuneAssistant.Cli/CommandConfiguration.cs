@@ -46,14 +46,21 @@ public static class CommandConfiguration
     // policies
     public const string PoliciesCommandName = "policies";
     public const string PoliciesCommandDescription = "Retrieve a list of all policies from Intune";
+    public const string PoliciesSettingsCommandName = "settings";
+    public const string PoliciesSettingsCommandDescription = "Retrieve all settings from a policy from Intune";
     public const string PoliciesConfigurationFilterName = "--include-configuration";
     public const string PoliciesConfigurationFilterDescription = "Retrieves all configuration policies from Intune";
     public const string PoliciesComplianceFilterName = "--include-compliance";
     public const string PoliciesComplianceFilterDescription = "Retrieves all compliance policies from Intune";
+    public const string PoliciesSearchSettingName = "--search-setting";
+    public const string PoliciesSearchSettingDescription = "Searches for a specific setting";
+    public const string PoliciesSearchValueName = "--search-value";
+    public const string PoliciesSearchValueDescription = "Searches for a specific value in a setting";
 
     // configuration policies
     public const string ConfigurationPolicyCommandName = "configuration";
     public const string ConfigurationPolicyCommandDescription = "Gives you options to select a specific configuration policy from Intune";
+    
     
 
     // applications
