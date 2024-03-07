@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace IntuneAssistant.Models;
 
-public class CompliancePolicy
+public class CompliancePolicyModel
 {
     [JsonProperty("@odata.type")]
     public string OdataType { get; set; }

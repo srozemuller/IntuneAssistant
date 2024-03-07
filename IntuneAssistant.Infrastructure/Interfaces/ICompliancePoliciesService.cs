@@ -5,6 +5,6 @@ namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface ICompliancePoliciesService
 {
-    Task<List<CompliancePolicy>?> GetCompliancePoliciesListAsync(string accessToken);
+    Task<List<CompliancePolicyModel>?> GetCompliancePoliciesListAsync(string accessToken);
     Task<DeviceComplianceDeviceStatusCollectionResponse> GetCompliancePolicyDeviceStatusAsync(string accessToken, string policyId);
 }

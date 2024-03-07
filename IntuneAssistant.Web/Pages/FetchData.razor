@@ -1,0 +1,49 @@
+﻿@page "/fetchdata"
+@using IntuneAssistant.Infrastructure.Interfaces
+@using IntuneAssistant.Models
+@inject ICompliancePoliciesService CompliancePoliciesService
+@inject IIdentityHelperService IdentityHelperService
+
+<PageTitle>Compliance Policy overview</PageTitle>
+
+<h1>Compliance Policy overview</h1>
+
+<p>A list of all compliance policies in the Intune environment</p>
+
+@if (compliancePolicies == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var policy in compliancePolicies)
+            {
+                <tr>
+                    <td>@policy.DisplayName</td>
+                    <td>@policy.Id</td>
+                    <td>@policy.CreatedDateTime</td>
+                    <td>@policy.LastModifiedDateTime</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<CompliancePolicyModel>? compliancePolicies;
+    protected override async Task OnInitializedAsync()
+    {
+        var accessToken = await IdentityHelperService.GetAccessTokenSilentOrInteractiveAsync();
+        compliancePolicies = await CompliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+    }
+}

@@ -410,7 +410,7 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public Task<List<CustomAssignmentsModel>> GetCompliancePoliciesAssignmentsListAsync(string accessToken,
-        GroupModel? group, List<CompliancePolicy> compliancePolicies)
+        GroupModel? group, List<CompliancePolicyModel> compliancePolicies)
     {
         var results = new List<CustomAssignmentsModel>();
         try
