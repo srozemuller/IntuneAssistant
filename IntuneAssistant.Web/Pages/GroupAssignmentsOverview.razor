@@ -1,0 +1,248 @@
+﻿@page "/group-assignments"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using IntuneAssistant.Infrastructure.Interfaces
+@using IntuneAssistant.Models
+@using Microsoft.Graph.Beta.Models
+@using Microsoft.IdentityModel.Tokens
+@inject IAssignmentsService AssignmentsService
+@inject IAssignmentFiltersService AssignmentFilterService
+@inject IGroupInformationService GroupInformationService
+@inject ICompliancePoliciesService CompliancePoliciesService
+@inject IConfigurationPolicyService ConfigurationPolicyService
+@inject IAccessTokenProvider AccessTokenProvider
+
+
+<PageTitle>Group Assignments Overview</PageTitle>
+
+<h1>Group Assignments Overview</h1>
+
+@if (!_accessToken.IsNullOrEmpty())
+{
+    @if (_assignments.Any(r => r.AssignmentType == "group"))
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Resource Type</th>
+                    <th>Resource Name</th>
+                    <th>Resource Id</th>
+                    <th>Target Id</th>
+                    <th>Target Name</th>
+                    <th>Filter Id</th>
+                    <th>Filter Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var assignment in _assignments)
+                {
+                    // Adding the target name to the all results object. This is for exporting later.
+                    var target = allGroupsInfo.Find(g => g?.Id == assignment.TargetId);
+                    string targetFriendly = target?.DisplayName ?? "No target found";
+                    assignment.TargetName = targetFriendly;
+                    var filterInfo = allFiltersInfo?.Find(g => g.Id == assignment.FilterId);
+                    string filterFriendly = filterInfo?.DisplayName ?? "No filter";
+                    assignment.FilterId = filterFriendly;
+                    <tr>
+                        <td>@assignment.ResourceType</td>
+                        <td>@assignment.ResourceName</td>
+                        <td>@assignment.ResourceId</td>
+                        <td>@assignment.AssignmentType</td>
+                        <td>@targetFriendly</td>
+                        <td>@assignment.FilterId</td>
+                        <td>@filterFriendly</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p><em>No group assignments found</em></p>
+    }
+
+}
+@code {
+    private string _accessToken;
+    List<CustomAssignmentsModel>? _assignments = new();
+    List<DeviceAndAppManagementAssignmentFilter>? allFiltersInfo;
+    List<GroupModel>? allGroupsInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tokenResult = await AccessTokenProvider.RequestAccessToken();
+        if (tokenResult.TryGetToken(out var token))
+        {
+            _accessToken = token.Value;
+            
+            // Start tasks concurrently and wait for all to complete
+            var fetchCompliancePoliciesAsync = FetchCompliancePoliciesAsync(_accessToken, null);
+            var fetchConfigurationPoliciesAsync = FetchConfigurationPoliciesAsync(_accessToken, null);
+
+            // Start tasks concurrently and wait for all to complete
+            var results = await Task.WhenAll(fetchCompliancePoliciesAsync,fetchConfigurationPoliciesAsync);
+            foreach (var result in results)
+            {
+                _assignments.AddRange(result);
+            }
+
+            // Search in every group assignment for unique group ID values. For every group ID, search for group information.
+            if (_assignments.Any(r => r.AssignmentType == "group"))
+            {
+                allFiltersInfo = await GetAssignmentFiltersListAsync();
+                var uniqueGroupIds = _assignments.DistinctBy(d => d.TargetId).Select(t => t.TargetId)
+                    .ToList();
+                // Search in every group assignment for unique group ID values. For every group ID, search for group information.
+                allGroupsInfo =
+                    await GroupInformationService.GetGroupInformationByIdsCollectionListAsync(_accessToken,
+                        uniqueGroupIds);
+                
+            }
+        }
+        else
+        {
+            // Handle token retrieval failure
+            // This could occur if the user is not authenticated
+            // or if there's an issue with token retrieval
+            // You can implement your error handling logic here
+            _accessToken = "Token retrieval failed";
+        }
+    }
+
+    private async Task<List<DeviceAndAppManagementAssignmentFilter>?> GetAssignmentFiltersListAsync()
+    {
+        allFiltersInfo = await AssignmentFilterService.GetAssignmentFiltersListAsync(_accessToken);
+        return allFiltersInfo;
+    }
+
+    private async Task<List<GroupModel>?> GetGroupInformationListAsync()
+    {
+        var uniqueGroupIds = _assignments.DistinctBy(d => d.TargetId).Select(t => t.TargetId)
+            .ToList();
+    // Search in every group assignment for unique group ID values. For every group ID, search for group information.
+        allGroupsInfo =
+            await GroupInformationService.GetGroupInformationByIdsCollectionListAsync(_accessToken,
+                uniqueGroupIds);
+        return allGroupsInfo;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchCompliancePoliciesAsync(string accessToken, GroupModel? groupInfo)
+    {
+        var compliancePolicies =
+            await CompliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+        var complianceResults = await AssignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, groupInfo, compliancePolicies);
+        return complianceResults.Where(r => r.AssignmentType == "group").ToList();
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchConfigurationPoliciesAsync(string accessToken, GroupModel groupInfo)
+    {
+        var configPolicies = await ConfigurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
+        var configurationResults = new List<CustomAssignmentsModel>();
+        if (configPolicies is not null)
+        {
+            configurationResults =
+                await AssignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, groupInfo,
+                    configPolicies);
+        }
+        return configurationResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string accessToken, GroupModel groupInfo)
+    {
+        var deviceScriptsResults = await AssignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, groupInfo);
+        return deviceScriptsResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string accessToken, GroupModel groupInfo)
+    {
+        var healthScriptsResults = await AssignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, groupInfo);
+        return healthScriptsResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchAutoPilotAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var autoPilotResults = await AssignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken, groupInfo);
+        return autoPilotResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchAppProtectionAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var appProtectionResults = await AssignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, groupInfo);
+        return appProtectionResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var mobileAppResults = await AssignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, groupInfo);
+        return mobileAppResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchTargetAppAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var targetAppResults = await AssignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, groupInfo);
+        return targetAppResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchUpdateRingsAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var updateRingResults =
+            await AssignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, groupInfo);
+        return updateRingResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchFeatureUpdateAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var featureUpdateResults =
+            await AssignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(accessToken, groupInfo);
+        return featureUpdateResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDriverUpdateAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var driverUpdateResults =
+            await AssignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, groupInfo);
+        return driverUpdateResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchMacOsScriptAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var macOsShellScriptResults =
+            await AssignmentsService.GetMacOsShellScriptsAssignmentListAsync(accessToken, groupInfo);
+        return macOsShellScriptResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDiskEncryptionAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var diskEncyrptionResults =
+            await AssignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, groupInfo);
+        return diskEncyrptionResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchUpdatePoliciesForMacAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var updatesForMacResults =
+            await AssignmentsService.GetUpdatesForMacAssignmentListAsync(accessToken, groupInfo);
+        return updatesForMacResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchPlatformScriptAssignmentsListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var updatesForMacResults =
+            await AssignmentsService.GetPlatformScriptsAssignmentListAsync(accessToken, groupInfo);
+        return updatesForMacResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var managedAppResults =
+            await AssignmentsService.GetManagedApplicationAssignmentListAsync(accessToken, groupInfo);
+        return managedAppResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceEnrollmentRestrictionsAssignmentListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var platformRestrictionResults =
+            await AssignmentsService.GetDevicePlatformRestrictionsAssignmentListAsync(accessToken, groupInfo);
+        return platformRestrictionResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceLimitRestrictionsAssignmentListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var limitRestrictionResults =
+            await AssignmentsService.GetDeviceLimitRestrictionsAssignmentListAsync(accessToken, groupInfo);
+        return limitRestrictionResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchMacOsCustomAttributesAssignmentListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var macOsCustomAttributesAssignmentResults =
+            await AssignmentsService.GetMacOsCustomAttributesAssignmentListAsync(accessToken, groupInfo);
+        return macOsCustomAttributesAssignmentResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchIosLobAppProvisioningAssignmentListAsync(string accessToken, GroupModel groupInfo)
+    {
+        var iosLobAppProvisioningAssignmentResults =
+            await AssignmentsService.GetIosLobAppProvisioningAssignmentListAsync(accessToken, groupInfo);
+        return iosLobAppProvisioningAssignmentResults;
+    }
+}

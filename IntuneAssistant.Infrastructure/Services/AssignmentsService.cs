@@ -8,7 +8,7 @@ using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 using Microsoft.IdentityModel.Tokens;
 
-namespace IntuneAssistant.Cli.Commands.Assignments;
+namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class AssignmentsService : IAssignmentsService
 {

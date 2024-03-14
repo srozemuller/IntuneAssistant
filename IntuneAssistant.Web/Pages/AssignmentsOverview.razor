@@ -1,0 +1,121 @@
+﻿@page "/assignments-overview"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using IntuneAssistant.Infrastructure.Interfaces
+@using IntuneAssistant.Models
+@using Microsoft.Graph.Beta.Models
+@using Microsoft.IdentityModel.Tokens
+@inject IAssignmentsService AssignmentsService
+@inject ICompliancePoliciesService CompliancePoliciesService
+@inject IConfigurationPolicyService ConfigurationPolicyService
+@inject IAccessTokenProvider AccessTokenProvider
+
+
+<PageTitle>Global Assignments Overview</PageTitle>
+
+<h1>Global Assignments Overview</h1>
+
+@if (!_accessToken.IsNullOrEmpty())
+{
+    @if (_assignments == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Resource Type</th>
+                    <th>Resource Name</th>
+                    <th>Assignment Type</th>
+                    <th>Filter Id</th>
+                    <th>Filter Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var assignment in _assignments)
+                {
+                    <tr>
+                        <td>@assignment.ResourceType</td>
+                        <td>@assignment.ResourceName</td>
+                        <td>@assignment.AssignmentType</td>
+                         <td>@assignment.FilterId</td>
+                         <td>@assignment.FilterType</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+@code {
+    private string _accessToken;
+    List<CustomAssignmentsModel>? _assignments = new();
+    List<CompliancePolicyModel>? _compliancePolicies;
+    List<ConfigurationPolicyModel>? _configurationPolicies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tokenResult = await AccessTokenProvider.RequestAccessToken();
+        if (tokenResult.TryGetToken(out var token))
+        {
+            _accessToken = token.Value;
+            var fetchCompliancePoliciesAsync = FetchCompliancePoliciesAsync(_accessToken);
+            var fetchConfigurationPoliciesAsync = FetchConfigurationPoliciesAsync(_accessToken);
+
+    // Start tasks concurrently and wait for all to complete
+            await Task.WhenAll(fetchCompliancePoliciesAsync,fetchConfigurationPoliciesAsync);
+        }
+        else
+        {
+    // Handle token retrieval failure
+    // This could occur if the user is not authenticated
+    // or if there's an issue with token retrieval
+    // You can implement your error handling logic here
+            _accessToken = "Token retrieval failed";
+        }
+    }
+    private async Task FetchConfigurationPoliciesAsync(string accessToken)
+    {
+        try
+        {
+            // Fetch compliance policies using your service
+       
+            _configurationPolicies = await ConfigurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
+            if (_configurationPolicies is not null)
+            {
+                var policyAssignments = await AssignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null, _configurationPolicies);
+                foreach (var policy in policyAssignments)
+                {
+                    _assignments.Add(policy);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+    // Handle any errors that occur during policy retrieval
+            Console.WriteLine($"Error fetching compliance policies: {ex.Message}");
+        }
+    }
+    private async Task FetchCompliancePoliciesAsync(string accessToken)
+    {
+        try
+        {
+    // Fetch compliance policies using your service
+            _compliancePolicies = await CompliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+            if (_compliancePolicies is not null)
+            {
+                var policyAssignments = await AssignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, _compliancePolicies);
+                foreach (var policy in policyAssignments)
+                {
+                    _assignments.Add(policy);
+                }
+        
+            }
+        }
+        catch (Exception ex)
+        {
+    // Handle any errors that occur during policy retrieval
+            Console.WriteLine($"Error fetching compliance policies: {ex.Message}");
+        }
+    }
+}
