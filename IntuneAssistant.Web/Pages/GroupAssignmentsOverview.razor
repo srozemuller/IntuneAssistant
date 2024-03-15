@@ -15,96 +15,87 @@
 <PageTitle>Group Assignments Overview</PageTitle>
 
 <h1>Group Assignments Overview</h1>
-
-@if (!_accessToken.IsNullOrEmpty())
-{
-    @if (_assignments.Any(r => r.AssignmentType == "group"))
-    {
+<SpinLoader IsLoading="IsLoading" Spinner="SpinnerType.Wave">
+</SpinLoader>
         <table class="table">
             <thead>
-                <tr>
-                    <th>Resource Type</th>
-                    <th>Resource Name</th>
-                    <th>Resource Id</th>
-                    <th>Target Id</th>
-                    <th>Target Name</th>
-                    <th>Filter Id</th>
-                    <th>Filter Name</th>
-                </tr>
+            <tr>
+                <th>Resource Type</th>
+                <th>Resource Name</th>
+                <th>Resource Id</th>
+                <th>Target Id</th>
+                <th>Target Name</th>
+                <th>Filter Type</th>
+                <th>Filter Name</th>
+            </tr>
             </thead>
             <tbody>
-                @foreach (var assignment in _assignments)
-                {
-                    // Adding the target name to the all results object. This is for exporting later.
-                    var target = allGroupsInfo.Find(g => g?.Id == assignment.TargetId);
-                    string targetFriendly = target?.DisplayName ?? "No target found";
-                    assignment.TargetName = targetFriendly;
-                    var filterInfo = allFiltersInfo?.Find(g => g.Id == assignment.FilterId);
-                    string filterFriendly = filterInfo?.DisplayName ?? "No filter";
-                    assignment.FilterId = filterFriendly;
-                    <tr>
-                        <td>@assignment.ResourceType</td>
-                        <td>@assignment.ResourceName</td>
-                        <td>@assignment.ResourceId</td>
-                        <td>@assignment.AssignmentType</td>
-                        <td>@targetFriendly</td>
-                        <td>@assignment.FilterId</td>
-                        <td>@filterFriendly</td>
-                    </tr>
-                }
+            @foreach (var assignment in _assignments)
+            {
+                var filterInfo = allFiltersInfo?.Find(g => g.Id == assignment.FilterId);
+                assignment.FilterId = filterInfo?.DisplayName ?? "No filter";
+   
+                var target = allGroupsInfo.Find(g => g?.Id == assignment.TargetId);
+                string targetFriendly = target?.DisplayName ?? "No target found";
+                assignment.TargetName = targetFriendly;
+                   
+                <tr>
+                    <td>@assignment.ResourceType</td>
+                    <td>@assignment.ResourceName</td>
+                    <td>@assignment.ResourceId</td>
+                    <td>@target.Id</td>
+                    <td>@targetFriendly</td>
+                    <td>@assignment.FilterId</td>
+                    <td>@assignment.FilterType</td>
+                </tr>
+            }
             </tbody>
         </table>
-    }
-    else
-    {
-        <p><em>No group assignments found</em></p>
-    }
 
-}
 @code {
     private string _accessToken;
     List<CustomAssignmentsModel>? _assignments = new();
     List<DeviceAndAppManagementAssignmentFilter>? allFiltersInfo;
-    List<GroupModel>? allGroupsInfo;
+    List<GroupModel> allGroupsInfo;
+    bool IsLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        var tokenResult = await AccessTokenProvider.RequestAccessToken();
-        if (tokenResult.TryGetToken(out var token))
+        try
         {
-            _accessToken = token.Value;
-            
-            // Start tasks concurrently and wait for all to complete
-            var fetchCompliancePoliciesAsync = FetchCompliancePoliciesAsync(_accessToken, null);
-            var fetchConfigurationPoliciesAsync = FetchConfigurationPoliciesAsync(_accessToken, null);
-
-            // Start tasks concurrently and wait for all to complete
-            var results = await Task.WhenAll(fetchCompliancePoliciesAsync,fetchConfigurationPoliciesAsync);
-            foreach (var result in results)
+            var tokenResult = await AccessTokenProvider.RequestAccessToken();
+            if (tokenResult.TryGetToken(out var token))
             {
-                _assignments.AddRange(result);
-            }
+                _accessToken = token.Value;
 
-            // Search in every group assignment for unique group ID values. For every group ID, search for group information.
-            if (_assignments.Any(r => r.AssignmentType == "group"))
-            {
-                allFiltersInfo = await GetAssignmentFiltersListAsync();
-                var uniqueGroupIds = _assignments.DistinctBy(d => d.TargetId).Select(t => t.TargetId)
-                    .ToList();
-                // Search in every group assignment for unique group ID values. For every group ID, search for group information.
-                allGroupsInfo =
-                    await GroupInformationService.GetGroupInformationByIdsCollectionListAsync(_accessToken,
-                        uniqueGroupIds);
+                var fetchCompliancePoliciesAsync = FetchCompliancePoliciesAsync(_accessToken, null);
+                var fetchConfigurationPoliciesAsync = FetchConfigurationPoliciesAsync(_accessToken, null);
+         
+                var results = await Task.WhenAll(fetchCompliancePoliciesAsync, fetchConfigurationPoliciesAsync);
                 
+                foreach (var result in results.SelectMany(r => r).Where(a => a.AssignmentType == "group"))
+                {
+                    _assignments.Add(result);
+                }
+                allGroupsInfo = await GetGroupInformationListAsync();
+                Console.WriteLine(allGroupsInfo.Count);
+                IsLoading = false;
+                StateHasChanged();
+    // Search in every group assignment for unique group ID values. For every group ID, search for group information.
             }
-        }
-        else
-        {
+            else
+            {
             // Handle token retrieval failure
             // This could occur if the user is not authenticated
             // or if there's an issue with token retrieval
             // You can implement your error handling logic here
-            _accessToken = "Token retrieval failed";
+                _accessToken = "Token retrieval failed";
+            }
+        }
+        catch (PlatformNotSupportedException ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
         }
     }
 
@@ -119,9 +110,10 @@
         var uniqueGroupIds = _assignments.DistinctBy(d => d.TargetId).Select(t => t.TargetId)
             .ToList();
     // Search in every group assignment for unique group ID values. For every group ID, search for group information.
-        allGroupsInfo =
+        var allGroupsInfo =
             await GroupInformationService.GetGroupInformationByIdsCollectionListAsync(_accessToken,
                 uniqueGroupIds);
+        Console.WriteLine($"Got {_assignments.Count}");
         return allGroupsInfo;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchCompliancePoliciesAsync(string accessToken, GroupModel? groupInfo)
