@@ -14,14 +14,14 @@
 
 <h1>Global Assignments Overview</h1>
 
-@if (!_accessToken.IsNullOrEmpty())
+@if (_accessToken.IsNullOrEmpty())
 {
-    @if (_assignments == null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
+    <p>No token found, you need to <a href="/authentication/login">log in </a>first</p>
+}
+else
+{
+    <SpinLoader IsLoading="IsLoading" Spinner="SpinnerType.Wave">
+    </SpinLoader>
         <table class="table">
             <thead>
                 <tr>
@@ -45,14 +45,14 @@
                 }
             </tbody>
         </table>
-    }
 }
 @code {
     private string _accessToken;
     List<CustomAssignmentsModel>? _assignments = new();
     List<CompliancePolicyModel>? _compliancePolicies;
     List<ConfigurationPolicyModel>? _configurationPolicies;
-
+    bool IsLoading = true;
+    
     protected override async Task OnInitializedAsync()
     {
         var tokenResult = await AccessTokenProvider.RequestAccessToken();
@@ -64,6 +64,8 @@
 
     // Start tasks concurrently and wait for all to complete
             await Task.WhenAll(fetchCompliancePoliciesAsync,fetchConfigurationPoliciesAsync);
+            IsLoading = false;
+            StateHasChanged();
         }
         else
         {
@@ -71,7 +73,7 @@
     // This could occur if the user is not authenticated
     // or if there's an issue with token retrieval
     // You can implement your error handling logic here
-            _accessToken = "Token retrieval failed";
+            _accessToken = null;
         }
     }
     private async Task FetchConfigurationPoliciesAsync(string accessToken)

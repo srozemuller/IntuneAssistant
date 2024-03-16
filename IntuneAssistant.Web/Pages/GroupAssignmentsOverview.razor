@@ -15,42 +15,52 @@
 <PageTitle>Group Assignments Overview</PageTitle>
 
 <h1>Group Assignments Overview</h1>
+<div class="form-group">
+    <input class="form-control" type="text" placeholder="Filter..."
+           @bind="Filter"
+           @bind:event="oninput">
+</div>
 <SpinLoader IsLoading="IsLoading" Spinner="SpinnerType.Wave">
 </SpinLoader>
-        <table class="table">
-            <thead>
+    <button @onclick="PreviousPage" disabled="@(_currentPage == 1)">Previous</button>
+    <button @onclick="NextPage" disabled="@(_currentPage == TotalPages)">Next</button>
+    <p>Page @_currentPage of @TotalPages</p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Resource Type</th>
+            <th>Resource Name</th>
+            <th>Resource Id</th>
+            <th>Target Id</th>
+            <th>Target Name</th>
+            <th>Filter Type</th>
+            <th>Filter Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var assignment in PagedAssignments)
+        {
+            
+            if (!IsVisible(assignment))
+                continue;
+            var filterInfo = allFiltersInfo?.Find(g => g.Id == assignment.FilterId);
+            assignment.FilterId = filterInfo?.DisplayName ?? "No filter";
+            var target = allGroupsInfo.Find(g => g?.Id == assignment.TargetId);
+            string targetFriendly = target?.DisplayName ?? "No target found";
+            assignment.TargetName = targetFriendly;
             <tr>
-                <th>Resource Type</th>
-                <th>Resource Name</th>
-                <th>Resource Id</th>
-                <th>Target Id</th>
-                <th>Target Name</th>
-                <th>Filter Type</th>
-                <th>Filter Name</th>
+                <td>@assignment.ResourceType</td>
+                <td>@assignment.ResourceName</td>
+                <td>@assignment.ResourceId</td>
+                <td>@target.Id</td>
+                <td>@targetFriendly</td>
+                <td>@assignment.FilterId</td>
+                <td>@assignment.FilterType</td>
             </tr>
-            </thead>
-            <tbody>
-            @foreach (var assignment in _assignments)
-            {
-                var filterInfo = allFiltersInfo?.Find(g => g.Id == assignment.FilterId);
-                assignment.FilterId = filterInfo?.DisplayName ?? "No filter";
-   
-                var target = allGroupsInfo.Find(g => g?.Id == assignment.TargetId);
-                string targetFriendly = target?.DisplayName ?? "No target found";
-                assignment.TargetName = targetFriendly;
-                   
-                <tr>
-                    <td>@assignment.ResourceType</td>
-                    <td>@assignment.ResourceName</td>
-                    <td>@assignment.ResourceId</td>
-                    <td>@target.Id</td>
-                    <td>@targetFriendly</td>
-                    <td>@assignment.FilterId</td>
-                    <td>@assignment.FilterType</td>
-                </tr>
-            }
-            </tbody>
-        </table>
+        }
+        </tbody>
+    </table>
+
 
 @code {
     private string _accessToken;
@@ -58,7 +68,49 @@
     List<DeviceAndAppManagementAssignmentFilter>? allFiltersInfo;
     List<GroupModel> allGroupsInfo;
     bool IsLoading = true;
+    public string Filter { get; set; }
+    public bool IsVisible(CustomAssignmentsModel assignment)
+    {
+        if (string.IsNullOrEmpty(Filter))
+            return true;
 
+        if (assignment.ResourceType.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.ResourceName.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.ResourceId.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.TargetName.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.FilterId.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.FilterType.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        return false;
+    }
+    private int _currentPage = 1;
+    private int _itemsPerPage = 10;
+
+    private int TotalPages => (_assignments.Count + _itemsPerPage - 1) / _itemsPerPage;
+
+    private List<CustomAssignmentsModel> PagedAssignments => _assignments
+        .Where(assignment => IsVisible(assignment))  // Apply the filter before paginating
+        .Skip((_currentPage - 1) * _itemsPerPage)
+        .Take(_itemsPerPage)
+        .ToList();
+
+    private void NextPage()
+    {
+        if (_currentPage < TotalPages)
+        {
+            _currentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+        }
+    }
+    
     protected override async Task OnInitializedAsync()
     {
         try
@@ -70,26 +122,25 @@
 
                 var fetchCompliancePoliciesAsync = FetchCompliancePoliciesAsync(_accessToken, null);
                 var fetchConfigurationPoliciesAsync = FetchConfigurationPoliciesAsync(_accessToken, null);
-         
+
                 var results = await Task.WhenAll(fetchCompliancePoliciesAsync, fetchConfigurationPoliciesAsync);
-                
+
                 foreach (var result in results.SelectMany(r => r).Where(a => a.AssignmentType == "group"))
                 {
                     _assignments.Add(result);
                 }
                 allGroupsInfo = await GetGroupInformationListAsync();
-                Console.WriteLine(allGroupsInfo.Count);
                 IsLoading = false;
                 StateHasChanged();
     // Search in every group assignment for unique group ID values. For every group ID, search for group information.
             }
             else
             {
-            // Handle token retrieval failure
-            // This could occur if the user is not authenticated
-            // or if there's an issue with token retrieval
-            // You can implement your error handling logic here
-                _accessToken = "Token retrieval failed";
+    // Handle token retrieval failure
+    // This could occur if the user is not authenticated
+    // or if there's an issue with token retrieval
+    // You can implement your error handling logic here
+                _accessToken = null;
             }
         }
         catch (PlatformNotSupportedException ex)
@@ -99,6 +150,12 @@
         }
     }
 
+    private void Search()
+    {
+    // Implement your search logic here
+    // You can use _searchTerm to get the value of the search field
+    }
+    
     private async Task<List<DeviceAndAppManagementAssignmentFilter>?> GetAssignmentFiltersListAsync()
     {
         allFiltersInfo = await AssignmentFilterService.GetAssignmentFiltersListAsync(_accessToken);
@@ -116,6 +173,7 @@
         Console.WriteLine($"Got {_assignments.Count}");
         return allGroupsInfo;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchCompliancePoliciesAsync(string accessToken, GroupModel? groupInfo)
     {
         var compliancePolicies =
@@ -123,6 +181,7 @@
         var complianceResults = await AssignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, groupInfo, compliancePolicies);
         return complianceResults.Where(r => r.AssignmentType == "group").ToList();
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchConfigurationPoliciesAsync(string accessToken, GroupModel groupInfo)
     {
         var configPolicies = await ConfigurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
@@ -135,106 +194,125 @@
         }
         return configurationResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string accessToken, GroupModel groupInfo)
     {
         var deviceScriptsResults = await AssignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, groupInfo);
         return deviceScriptsResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string accessToken, GroupModel groupInfo)
     {
         var healthScriptsResults = await AssignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, groupInfo);
         return healthScriptsResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchAutoPilotAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var autoPilotResults = await AssignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken, groupInfo);
         return autoPilotResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchAppProtectionAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var appProtectionResults = await AssignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, groupInfo);
         return appProtectionResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var mobileAppResults = await AssignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, groupInfo);
         return mobileAppResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchTargetAppAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var targetAppResults = await AssignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, groupInfo);
         return targetAppResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchUpdateRingsAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var updateRingResults =
             await AssignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, groupInfo);
         return updateRingResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchFeatureUpdateAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var featureUpdateResults =
             await AssignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(accessToken, groupInfo);
         return featureUpdateResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchDriverUpdateAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var driverUpdateResults =
             await AssignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, groupInfo);
         return driverUpdateResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchMacOsScriptAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var macOsShellScriptResults =
             await AssignmentsService.GetMacOsShellScriptsAssignmentListAsync(accessToken, groupInfo);
         return macOsShellScriptResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchDiskEncryptionAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var diskEncyrptionResults =
             await AssignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, groupInfo);
         return diskEncyrptionResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchUpdatePoliciesForMacAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var updatesForMacResults =
             await AssignmentsService.GetUpdatesForMacAssignmentListAsync(accessToken, groupInfo);
         return updatesForMacResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchPlatformScriptAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var updatesForMacResults =
             await AssignmentsService.GetPlatformScriptsAssignmentListAsync(accessToken, groupInfo);
         return updatesForMacResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string accessToken, GroupModel groupInfo)
     {
         var managedAppResults =
             await AssignmentsService.GetManagedApplicationAssignmentListAsync(accessToken, groupInfo);
         return managedAppResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceEnrollmentRestrictionsAssignmentListAsync(string accessToken, GroupModel groupInfo)
     {
         var platformRestrictionResults =
             await AssignmentsService.GetDevicePlatformRestrictionsAssignmentListAsync(accessToken, groupInfo);
         return platformRestrictionResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceLimitRestrictionsAssignmentListAsync(string accessToken, GroupModel groupInfo)
     {
         var limitRestrictionResults =
             await AssignmentsService.GetDeviceLimitRestrictionsAssignmentListAsync(accessToken, groupInfo);
         return limitRestrictionResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchMacOsCustomAttributesAssignmentListAsync(string accessToken, GroupModel groupInfo)
     {
         var macOsCustomAttributesAssignmentResults =
             await AssignmentsService.GetMacOsCustomAttributesAssignmentListAsync(accessToken, groupInfo);
         return macOsCustomAttributesAssignmentResults;
     }
+
     private async Task<List<CustomAssignmentsModel>?> FetchIosLobAppProvisioningAssignmentListAsync(string accessToken, GroupModel groupInfo)
     {
         var iosLobAppProvisioningAssignmentResults =
             await AssignmentsService.GetIosLobAppProvisioningAssignmentListAsync(accessToken, groupInfo);
         return iosLobAppProvisioningAssignmentResults;
     }
+
 }
