@@ -1,27 +1,31 @@
 ﻿@page "/assignments-overview"
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using IntuneAssistant.Infrastructure.Interfaces
 @using IntuneAssistant.Models
-@using Microsoft.Graph.Beta.Models
 @using Microsoft.IdentityModel.Tokens
 @inject IAssignmentsService AssignmentsService
 @inject ICompliancePoliciesService CompliancePoliciesService
 @inject IConfigurationPolicyService ConfigurationPolicyService
-@inject IAccessTokenProvider AccessTokenProvider
-
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <PageTitle>Global Assignments Overview</PageTitle>
 
 <h1>Global Assignments Overview</h1>
-
+<div class="form-group">
+    <input class="form-control" type="text" placeholder="Filter..."
+           @bind="Filter"
+           @bind:event="oninput">
+</div>
 @if (_accessToken.IsNullOrEmpty())
 {
-    <p>No token found, you need to <a href="/authentication/login">log in </a>first</p>
+    <p>Loading...</p>
 }
 else
 {
     <SpinLoader IsLoading="IsLoading" Spinner="SpinnerType.Wave">
     </SpinLoader>
+    <button @onclick="PreviousPage" disabled="@(_currentPage == 1)">Previous</button>
+    <button @onclick="NextPage" disabled="@(_currentPage == TotalPages)">Next</button>
+    <p>Page @_currentPage of @TotalPages</p>
         <table class="table">
             <thead>
                 <tr>
@@ -33,7 +37,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var assignment in _assignments)
+                @foreach (var assignment in PagedAssignments)
                 {
                     <tr>
                         <td>@assignment.ResourceType</td>
@@ -47,18 +51,59 @@ else
         </table>
 }
 @code {
-    private string _accessToken;
+    public string _accessToken;
     List<CustomAssignmentsModel>? _assignments = new();
     List<CompliancePolicyModel>? _compliancePolicies;
     List<ConfigurationPolicyModel>? _configurationPolicies;
     bool IsLoading = true;
+    public string Filter { get; set; }
+    public bool IsVisible(CustomAssignmentsModel assignment)
+    {
+        if (string.IsNullOrEmpty(Filter))
+            return true;
+
+        if (assignment.ResourceType.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.ResourceName.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.ResourceId.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.TargetName.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.FilterId.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
+            assignment.FilterType.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        return false;
+    }
+    private int _currentPage = 1;
+    private int _itemsPerPage = 10;
+
+    private int TotalPages => (_assignments.Count + _itemsPerPage - 1) / _itemsPerPage;
+
+    private List<CustomAssignmentsModel> PagedAssignments => _assignments
+        .Where(assignment => IsVisible(assignment))  // Apply the filter before paginating
+        .Skip((_currentPage - 1) * _itemsPerPage)
+        .Take(_itemsPerPage)
+        .ToList();
+
+    private void NextPage()
+    {
+        if (_currentPage < TotalPages)
+        {
+            _currentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+        }
+    }
     
     protected override async Task OnInitializedAsync()
     {
-        var tokenResult = await AccessTokenProvider.RequestAccessToken();
-        if (tokenResult.TryGetToken(out var token))
+        _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
+        if (!_accessToken.IsNullOrEmpty())
         {
-            _accessToken = token.Value;
             var fetchCompliancePoliciesAsync = FetchCompliancePoliciesAsync(_accessToken);
             var fetchConfigurationPoliciesAsync = FetchConfigurationPoliciesAsync(_accessToken);
 
@@ -73,7 +118,7 @@ else
     // This could occur if the user is not authenticated
     // or if there's an issue with token retrieval
     // You can implement your error handling logic here
-            _accessToken = null;
+            Console.WriteLine("Token retrieval failed");
         }
     }
     private async Task FetchConfigurationPoliciesAsync(string accessToken)

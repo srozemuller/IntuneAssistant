@@ -1,5 +1,4 @@
 ﻿@page "/group-assignments"
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using IntuneAssistant.Infrastructure.Interfaces
 @using IntuneAssistant.Models
 @using Microsoft.Graph.Beta.Models
@@ -9,8 +8,7 @@
 @inject IGroupInformationService GroupInformationService
 @inject ICompliancePoliciesService CompliancePoliciesService
 @inject IConfigurationPolicyService ConfigurationPolicyService
-@inject IAccessTokenProvider AccessTokenProvider
-
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <PageTitle>Group Assignments Overview</PageTitle>
 
@@ -40,11 +38,10 @@
         <tbody>
         @foreach (var assignment in PagedAssignments)
         {
-            
             if (!IsVisible(assignment))
                 continue;
             var filterInfo = allFiltersInfo?.Find(g => g.Id == assignment.FilterId);
-            assignment.FilterId = filterInfo?.DisplayName ?? "No filter";
+            var filterName = filterInfo?.DisplayName ?? "No filter";
             var target = allGroupsInfo.Find(g => g?.Id == assignment.TargetId);
             string targetFriendly = target?.DisplayName ?? "No target found";
             assignment.TargetName = targetFriendly;
@@ -54,8 +51,8 @@
                 <td>@assignment.ResourceId</td>
                 <td>@target.Id</td>
                 <td>@targetFriendly</td>
-                <td>@assignment.FilterId</td>
                 <td>@assignment.FilterType</td>
+                <td>@assignment.FilterId</td>
             </tr>
         }
         </tbody>
@@ -63,11 +60,12 @@
 
 
 @code {
-    private string _accessToken;
+    public string _accessToken;
     List<CustomAssignmentsModel>? _assignments = new();
     List<DeviceAndAppManagementAssignmentFilter>? allFiltersInfo;
     List<GroupModel> allGroupsInfo;
     bool IsLoading = true;
+
     public string Filter { get; set; }
     public bool IsVisible(CustomAssignmentsModel assignment)
     {
@@ -84,6 +82,7 @@
         
         return false;
     }
+    
     private int _currentPage = 1;
     private int _itemsPerPage = 10;
 
@@ -110,15 +109,16 @@
             _currentPage--;
         }
     }
+   
     
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var tokenResult = await AccessTokenProvider.RequestAccessToken();
-            if (tokenResult.TryGetToken(out var token))
+
+            _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
+            if (!_accessToken.IsNullOrEmpty())
             {
-                _accessToken = token.Value;
 
                 var fetchCompliancePoliciesAsync = FetchCompliancePoliciesAsync(_accessToken, null);
                 var fetchConfigurationPoliciesAsync = FetchConfigurationPoliciesAsync(_accessToken, null);
@@ -149,12 +149,7 @@
             Console.WriteLine(ex.StackTrace);
         }
     }
-
-    private void Search()
-    {
-    // Implement your search logic here
-    // You can use _searchTerm to get the value of the search field
-    }
+    
     
     private async Task<List<DeviceAndAppManagementAssignmentFilter>?> GetAssignmentFiltersListAsync()
     {
