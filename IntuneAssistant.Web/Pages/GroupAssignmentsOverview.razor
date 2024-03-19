@@ -10,32 +10,25 @@
 @inject IConfigurationPolicyService ConfigurationPolicyService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
-<PageTitle>Group Assignments Overview</PageTitle>
-
-<h1>Group Assignments Overview</h1>
-<div class="form-group">
-    <input class="form-control" type="text" placeholder="Filter..."
-           @bind="Filter"
-           @bind:event="oninput">
-</div>
-<SpinLoader IsLoading="IsLoading" Spinner="SpinnerType.Wave">
-</SpinLoader>
-    <button @onclick="PreviousPage" disabled="@(_currentPage == 1)">Previous</button>
-    <button @onclick="NextPage" disabled="@(_currentPage == TotalPages)">Next</button>
-    <p>Page @_currentPage of @TotalPages</p>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Resource Type</th>
-            <th>Resource Name</th>
-            <th>Resource Id</th>
-            <th>Target Id</th>
-            <th>Target Name</th>
-            <th>Filter Type</th>
-            <th>Filter Name</th>
-        </tr>
-        </thead>
-        <tbody>
+<MudText Typo="Typo.h3">Group Assignments Overview</MudText>
+<MudTextField Label="Filter..." @bind-Value="Filter" @bind-Value:event="oninput" Variant="Variant.Outlined" Class="my-3" />
+<MudProgressCircular Indeterminate="IsLoading" />
+<MudButton OnClick="PreviousPage" Disabled="@(_currentPage == 1)">Previous</MudButton>
+<MudButton OnClick="NextPage" Disabled="@(_currentPage == TotalPages)">Next</MudButton>
+<MudText>Page @_currentPage of @TotalPages</MudText>
+<MudTable T="CustomAssignmentsModel">
+    <MudThead>
+        <MudTr>
+            <MudTh>Resource Type</MudTh>
+            <MudTh>Resource Name</MudTh>
+            <MudTh>Resource Id</MudTh>
+            <MudTh>Target Id</MudTh>
+            <MudTh>Target Name</MudTh>
+            <MudTh>Filter Type</MudTh>
+            <MudTh>Filter Name</MudTh>
+        </MudTr>
+    </MudThead>
+    <MudTbody>
         @foreach (var assignment in PagedAssignments)
         {
             if (!IsVisible(assignment))
@@ -45,19 +38,18 @@
             var target = allGroupsInfo.Find(g => g?.Id == assignment.TargetId);
             string targetFriendly = target?.DisplayName ?? "No target found";
             assignment.TargetName = targetFriendly;
-            <tr>
-                <td>@assignment.ResourceType</td>
-                <td>@assignment.ResourceName</td>
-                <td>@assignment.ResourceId</td>
-                <td>@target.Id</td>
-                <td>@targetFriendly</td>
-                <td>@assignment.FilterType</td>
-                <td>@assignment.FilterId</td>
-            </tr>
+            <MudTr>
+                <MudTd>@assignment.ResourceType</MudTd>
+                <MudTd>@assignment.ResourceName</MudTd>
+                <MudTd>@assignment.ResourceId</MudTd>
+                <MudTd>@target.Id</MudTd>
+                <MudTd>@targetFriendly</MudTd>
+                <MudTd>@assignment.FilterType</MudTd>
+                <MudTd>@assignment.FilterId</MudTd>
+            </MudTr>
         }
-        </tbody>
-    </table>
-
+    </MudTbody>
+</MudTable>
 
 @code {
     public string _accessToken;
@@ -88,12 +80,28 @@
 
     private int TotalPages => (_assignments.Count + _itemsPerPage - 1) / _itemsPerPage;
 
-    private List<CustomAssignmentsModel> PagedAssignments => _assignments
-        .Where(assignment => IsVisible(assignment))  // Apply the filter before paginating
-        .Skip((_currentPage - 1) * _itemsPerPage)
-        .Take(_itemsPerPage)
-        .ToList();
+   
+    private List<CustomAssignmentsModel> PagedAssignments
+    {
+        get
+        {
+            var assignments = _assignments
+                .Where(assignment => IsVisible(assignment))  // Apply the filter before paginating
+                .Skip((_currentPage - 1) * _itemsPerPage)
+                .Take(_itemsPerPage)
+                .ToList();
 
+    // Log the number of assignments and the first few items for debugging
+            Console.WriteLine($"Number of assignments: {assignments.Count}");
+            foreach (var assignment in assignments.Take(5))
+            {
+                Console.WriteLine($"Assignment: {assignment.ResourceType}, {assignment.ResourceName}, {assignment.ResourceId}");
+            }
+
+            return assignments;
+        }
+    }
+    
     private void NextPage()
     {
         if (_currentPage < TotalPages)

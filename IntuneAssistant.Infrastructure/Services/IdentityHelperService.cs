@@ -3,10 +3,9 @@ using Azure.Identity;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Graph.Beta;
-using Microsoft.Graph.Beta.Models;
+
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
-using Spectre.Console;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
@@ -45,6 +44,7 @@ public sealed class IdentityHelperService : IIdentityHelperService
             .CreateWithApplicationOptions(pcaOptions)
             .WithAuthority(AppConfiguration.AUTHORITY)
             .WithRedirectUri(AppConfiguration.REDIRECT_URI)
+            .WithParentActivityOrWindow(() => this)
             .Build();
 
         var cacheHelper = await MsalCacheHelper.CreateAsync(storageProperties);
