@@ -7,6 +7,7 @@ using Microsoft.Graph.Beta.Models;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Spectre.Console;
+using Process = System.Diagnostics.Process;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
@@ -77,7 +78,12 @@ public sealed class IdentityHelperService : IIdentityHelperService
 
             try
             {
-                result = await app.AcquireTokenInteractive(AppConfiguration.GRAPH_INTERACTIVE_SCOPE).WithExtraScopesToConsent(AppConfiguration.GRAPH_INTERACTIVE_SCOPE).ExecuteAsync();
+                result = await app.
+                    AcquireTokenInteractive(AppConfiguration.GRAPH_INTERACTIVE_SCOPE)
+                    .WithExtraScopesToConsent(AppConfiguration.GRAPH_INTERACTIVE_SCOPE)
+                    .WithSystemWebViewOptions(new SystemWebViewOptions { OpenBrowserAsync = OpenBrowserAsync })
+                    .WithUseEmbeddedWebView(true)
+                    .ExecuteAsync();
             }
             catch (MsalException msalException)
             {
@@ -140,5 +146,15 @@ public sealed class IdentityHelperService : IIdentityHelperService
             return accountList;
         }
         return accountList;
+    }
+    
+    private async Task OpenBrowserAsync(Uri uri)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = uri.ToString(),
+            UseShellExecute = true
+        };
+        Process.Start(psi);
     }
 }
