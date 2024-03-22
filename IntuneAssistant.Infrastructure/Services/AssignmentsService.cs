@@ -13,7 +13,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class AssignmentsService : IAssignmentsService
 {
     private readonly HttpClient _http = new();
-    public Task<List<CustomAssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string accessToken,
+    public Task<List<CustomAssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string? accessToken,
         GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies)
     {
         var results = new List<CustomAssignmentsModel>();
@@ -57,7 +57,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return Task.FromResult(results);
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string? accessToken,
         GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
@@ -97,7 +97,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string? accessToken,
         GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
@@ -137,7 +137,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -176,7 +176,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -215,7 +215,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetManagedApplicationAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetManagedApplicationAssignmentListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -255,7 +255,7 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<CustomAssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(
-        string accessToken, GroupModel? group)
+        string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -294,7 +294,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string? accessToken,
         GroupModel? group)
     {
         _http.DefaultRequestHeaders.Clear();
@@ -409,7 +409,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public Task<List<CustomAssignmentsModel>> GetCompliancePoliciesAssignmentsListAsync(string accessToken,
+    public Task<List<CustomAssignmentsModel>> GetCompliancePoliciesAssignmentsListAsync(string? accessToken,
         GroupModel? group, List<CompliancePolicyModel> compliancePolicies)
     {
         var results = new List<CustomAssignmentsModel>();
@@ -448,7 +448,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return Task.FromResult(results);
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string? accessToken,
         GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
@@ -488,7 +488,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -527,7 +527,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string? accessToken, GroupModel? group)
     {
        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -566,7 +566,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetMacOsShellScriptsAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetMacOsShellScriptsAssignmentListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -605,7 +605,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetDiskEncryptionAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetDiskEncryptionAssignmentListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -648,7 +648,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetUpdatesForMacAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetUpdatesForMacAssignmentListAsync(string? accessToken, GroupModel? group)
     {
             var results = new List<CustomAssignmentsModel>();
             _http.DefaultRequestHeaders.Clear();
@@ -687,7 +687,7 @@ public sealed class AssignmentsService : IAssignmentsService
             return results;
         }
 
-    public async Task<List<CustomAssignmentsModel>?> GetPlatformScriptsAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetPlatformScriptsAssignmentListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -726,7 +726,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetDevicePlatformRestrictionsAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetDevicePlatformRestrictionsAssignmentListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -765,7 +765,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetDeviceLimitRestrictionsAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetDeviceLimitRestrictionsAssignmentListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -804,7 +804,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetMacOsCustomAttributesAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetMacOsCustomAttributesAssignmentListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -843,7 +843,7 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetIosLobAppProvisioningAssignmentListAsync(string accessToken, GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetIosLobAppProvisioningAssignmentListAsync(string? accessToken, GroupModel? group)
     {
         var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -860,6 +860,51 @@ public sealed class AssignmentsService : IAssignmentsService
                     if (group is null)
                     {
                         foreach (var assignment in resource.Assignments)
+                        {
+                            var iosLobAppAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.IosLobAppConfiguration);
+                            results.Add(iosLobAppAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var iosLobAppAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.IosLobAppConfiguration);
+                            results.Add(iosLobAppAssignment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching iOS Lob apps assignments: " + ex.ToMessage());
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<CustomAssignmentsModel>?> GetAllAssignmentsByGroupAsync(string? accessToken, GroupModel? group)
+    {
+        var results = new List<CustomAssignmentsModel>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        try
+        {
+            List<string> urlList = new List<string>
+            {
+                "/deviceManagement/configurationPolicies?$expand=assignments($select=id,target),settings&$top=1000"
+            };
+            var batchRequestBody = GraphBatchHelper.IntentHelper.CreateUrlListBatchOutput(urlList);
+            var content = new StringContent(batchRequestBody, Encoding.UTF8, "application/json");
+            var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result = await JsonSerializer.DeserializeAsync<GraphBatchResponse<AssignmentsResponseModel>>(responseStream, CustomJsonOptions.Default());
+            if (result?.Responses is not null)
+            {
+                foreach (var resource in result.Responses)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments.Select(x => x))
                         {
                             var iosLobAppAssignment = assignment.ToAssignmentModel(resource, ResourceTypes.IosLobAppConfiguration);
                             results.Add(iosLobAppAssignment);

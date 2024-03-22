@@ -2,115 +2,111 @@
 @using IntuneAssistant.Infrastructure.Interfaces
 @using IntuneAssistant.Models
 @using Microsoft.IdentityModel.Tokens
+@using IntuneAssistant.Constants
+@using IntuneAssistant.Web.Helpers
+@using Microsoft.Extensions.Caching.Memory
 @inject IAssignmentsService AssignmentsService
 @inject ICompliancePoliciesService CompliancePoliciesService
 @inject IConfigurationPolicyService ConfigurationPolicyService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
-
+@inject NavigationManager NavigationManager
+@inject IMemoryCache Cache
 <PageTitle>Global Assignments Overview</PageTitle>
 
 <h1>Global Assignments Overview</h1>
-<div class="form-group">
-    <input class="form-control" type="text" placeholder="Filter..."
-           @bind="Filter"
-           @bind:event="oninput">
-</div>
-@if (_accessToken.IsNullOrEmpty())
-{
-    <p>Loading...</p>
-}
-else
-{
-    <SpinLoader IsLoading="IsLoading" Spinner="SpinnerType.Wave">
-    </SpinLoader>
-    <button @onclick="PreviousPage" disabled="@(_currentPage == 1)">Previous</button>
-    <button @onclick="NextPage" disabled="@(_currentPage == TotalPages)">Next</button>
-    <p>Page @_currentPage of @TotalPages</p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Resource Type</th>
-                    <th>Resource Name</th>
-                    <th>Assignment Type</th>
-                    <th>Filter Id</th>
-                    <th>Filter Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var assignment in PagedAssignments)
-                {
-                    <tr>
-                        <td>@assignment.ResourceType</td>
-                        <td>@assignment.ResourceName</td>
-                        <td>@assignment.AssignmentType</td>
-                         <td>@assignment.FilterId</td>
-                         <td>@assignment.FilterType</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-}
+<MudTable Items="@_assignments" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" Striped="@_striped" LoadingProgressColor="Color.Success" Filter="new Func<CustomAssignmentsModel, bool>(Filter)">
+    <ToolBarContent>
+        <MudSpacer/>
+        <MudTextField @bind-Value="searchString" Placeholder="Search & hit enter" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Resource Type</MudTh>
+        <MudTh>Resource Name</MudTh>
+        <MudTh>Assignment Type</MudTh>
+        <MudTh>Filter Type</MudTh>
+        <MudTh>Filter Name</MudTh>
+    </HeaderContent>
+    <LoadingContent>
+        <MudText Typo="Typo.body2" Class="mt-4 mud-text-secondary">Loading Data...</MudText>
+    </LoadingContent>
+    <RowTemplate>
+        <MudTd>@context.ResourceType</MudTd>
+        <MudTd>@context.ResourceName</MudTd>
+        <MudTd>@context.AssignmentType</MudTd>
+        <MudTd>@context.FilterType</MudTd>
+        <MudTd>@context.FilterId</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
+
 @code {
-    public string _accessToken;
+    public string? _accessToken;
     List<CustomAssignmentsModel>? _assignments = new();
     List<CompliancePolicyModel>? _compliancePolicies;
     List<ConfigurationPolicyModel>? _configurationPolicies;
-    bool IsLoading = true;
-    public string Filter { get; set; }
-    public bool IsVisible(CustomAssignmentsModel assignment)
+    private readonly bool _striped = true;
+    private bool _loading = true;
+    public string searchString { get; set; }
+    private bool Filter(CustomAssignmentsModel assignment) => IsVisible(assignment, searchString);
+
+    public bool IsVisible(CustomAssignmentsModel assignment, string searchString)
     {
-        if (string.IsNullOrEmpty(Filter))
+        if (string.IsNullOrEmpty(searchString))
             return true;
 
-        if (assignment.ResourceType.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
-            assignment.ResourceName.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
-            assignment.ResourceId.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
-            assignment.TargetName.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
-            assignment.FilterId.Contains(Filter, StringComparison.OrdinalIgnoreCase) ||
-            assignment.FilterType.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+        if (assignment.ResourceType.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            assignment.ResourceName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            assignment.ResourceId.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            assignment.TargetName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            assignment.FilterId.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            assignment.FilterType.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
             return true;
-        
+
         return false;
     }
-    private int _currentPage = 1;
-    private int _itemsPerPage = 10;
 
-    private int TotalPages => (_assignments.Count + _itemsPerPage - 1) / _itemsPerPage;
-
-    private List<CustomAssignmentsModel> PagedAssignments => _assignments
-        .Where(assignment => IsVisible(assignment))  // Apply the filter before paginating
-        .Skip((_currentPage - 1) * _itemsPerPage)
-        .Take(_itemsPerPage)
-        .ToList();
-
-    private void NextPage()
-    {
-        if (_currentPage < TotalPages)
-        {
-            _currentPage++;
-        }
-    }
-
-    private void PreviousPage()
-    {
-        if (_currentPage > 1)
-        {
-            _currentPage--;
-        }
-    }
-    
     protected override async Task OnInitializedAsync()
     {
         _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
-        if (!_accessToken.IsNullOrEmpty())
-        {
-            var fetchCompliancePoliciesAsync = FetchCompliancePoliciesAsync(_accessToken);
-            var fetchConfigurationPoliciesAsync = FetchConfigurationPoliciesAsync(_accessToken);
 
-    // Start tasks concurrently and wait for all to complete
-            await Task.WhenAll(fetchCompliancePoliciesAsync,fetchConfigurationPoliciesAsync);
-            IsLoading = false;
-            StateHasChanged();
+        if (_assignments.IsNullOrEmpty() && TokenHelper.TokenIsValid(_accessToken))
+        {
+            var configurationPolicies = await ConfigurationPolicyService.GetConfigurationPoliciesListAsync(_accessToken);
+            var compliancePolicies = await CompliancePoliciesService.GetCompliancePoliciesListAsync(_accessToken);
+
+
+            var fetchTasks = new List<Task<List<CustomAssignmentsModel>?>>
+            {
+                AssignmentsService.GetConfigurationPolicyAssignmentsListAsync(_accessToken, null, configurationPolicies),
+                AssignmentsService.GetCompliancePoliciesAssignmentsListAsync(_accessToken, null, compliancePolicies),
+                AssignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(_accessToken, null),
+                AssignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(_accessToken, null),
+                AssignmentsService.GetAutoPilotAssignmentsByGroupListAsync(_accessToken, null),
+                AssignmentsService.GetMobileAppAssignmentsByGroupListAsync(_accessToken, null),
+                AssignmentsService.GetManagedApplicationAssignmentListAsync(_accessToken, null),
+                AssignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(_accessToken, null),
+                AssignmentsService.GetAppProtectionAssignmentsByGroupListAsync(_accessToken, null),
+                AssignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(_accessToken, null),
+                AssignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(_accessToken, null),
+                AssignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(_accessToken, null),
+                AssignmentsService.GetMacOsShellScriptsAssignmentListAsync(_accessToken, null),
+                AssignmentsService.GetDiskEncryptionAssignmentListAsync(_accessToken, null),
+                AssignmentsService.GetUpdatesForMacAssignmentListAsync(_accessToken, null),
+                AssignmentsService.GetPlatformScriptsAssignmentListAsync(_accessToken, null),
+                AssignmentsService.GetDevicePlatformRestrictionsAssignmentListAsync(_accessToken, null),
+                AssignmentsService.GetDeviceLimitRestrictionsAssignmentListAsync(_accessToken, null),
+                AssignmentsService.GetMacOsCustomAttributesAssignmentListAsync(_accessToken, null),
+                AssignmentsService.GetIosLobAppProvisioningAssignmentListAsync(_accessToken, null),
+            };
+
+            var results = await Task.WhenAll(fetchTasks);
+            foreach (var result in results.SelectMany(x => x))
+            {
+                _assignments.Add(result);
+            }
+            _loading = false;
         }
         else
         {
@@ -119,50 +115,8 @@ else
     // or if there's an issue with token retrieval
     // You can implement your error handling logic here
             Console.WriteLine("Token retrieval failed");
+            NavigationManager.NavigateTo(WebAppConfiguration.LOGIN_URL);
         }
     }
-    private async Task FetchConfigurationPoliciesAsync(string accessToken)
-    {
-        try
-        {
-            // Fetch compliance policies using your service
-       
-            _configurationPolicies = await ConfigurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
-            if (_configurationPolicies is not null)
-            {
-                var policyAssignments = await AssignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null, _configurationPolicies);
-                foreach (var policy in policyAssignments)
-                {
-                    _assignments.Add(policy);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-    // Handle any errors that occur during policy retrieval
-            Console.WriteLine($"Error fetching compliance policies: {ex.Message}");
-        }
-    }
-    private async Task FetchCompliancePoliciesAsync(string accessToken)
-    {
-        try
-        {
-    // Fetch compliance policies using your service
-            _compliancePolicies = await CompliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
-            if (_compliancePolicies is not null)
-            {
-                var policyAssignments = await AssignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, _compliancePolicies);
-                foreach (var policy in policyAssignments)
-                {
-                    _assignments.Add(policy);
-                }
-        
-            }
-        }
-        catch (Exception ex)
-        {
-    // Handle any errors that occur during policy retrieval
-            Console.WriteLine($"Error fetching compliance policies: {ex.Message}");
-        }
-    }
+
 }

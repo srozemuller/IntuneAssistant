@@ -12,7 +12,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class ConfigurationPolicyService : IConfigurationPolicyService
 {
     private readonly HttpClient _http = new();
-    public async Task<List<ConfigurationPolicyModel>?> GetConfigurationPoliciesListAsync(string accessToken)
+    public async Task<List<ConfigurationPolicyModel>?> GetConfigurationPoliciesListAsync(string? accessToken)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -56,7 +56,7 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
     }
 
     
-    public async Task<List<CustomPolicySettingsModel>?> GetConfigurationPoliciesSettingsListAsync(string accessToken, string policyId)
+    public async Task<List<CustomPolicySettingsModel>?> GetConfigurationPoliciesSettingsListAsync(string? accessToken, string policyId)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -99,7 +99,7 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
     }
     
 
-    public async Task<int> CreateConfigurationPolicyAsync(string accessToken, ConfigurationPolicyModel configurationPolicy)
+    public async Task<int> CreateConfigurationPolicyAsync(string? accessToken, ConfigurationPolicyModel configurationPolicy)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");

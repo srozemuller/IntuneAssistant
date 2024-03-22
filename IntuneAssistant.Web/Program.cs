@@ -1,5 +1,6 @@
 
 using Blazored.LocalStorage;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Services;
 using Microsoft.AspNetCore.Components.Web;
@@ -14,6 +15,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
 builder.Services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
 builder.Services.AddScoped<IAssignmentsService, AssignmentsService>();
@@ -23,8 +25,10 @@ builder.Services.AddMsalAuthentication(options =>
 {
     options.ProviderOptions.Cache.CacheLocation = "localStorage";
     builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
-    options.ProviderOptions.DefaultAccessTokenScopes.Add("DeviceManagementApps.Read.All");
-    options.ProviderOptions.DefaultAccessTokenScopes.Add("Group.Read.All");
+    foreach (var scope in AppConfiguration.GRAPH_INTERACTIVE_SCOPE)
+    {
+        options.ProviderOptions.DefaultAccessTokenScopes.Add(scope);
+    }
 });
 
 await builder.Build().RunAsync();

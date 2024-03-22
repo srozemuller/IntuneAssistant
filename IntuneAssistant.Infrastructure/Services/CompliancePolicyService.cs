@@ -12,7 +12,7 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
 {
     private readonly HttpClient _http = new();
  
-    public async Task<List<CompliancePolicyModel>?> GetCompliancePoliciesListAsync(string accessToken)
+    public async Task<List<CompliancePolicyModel>?> GetCompliancePoliciesListAsync(string? accessToken)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -55,7 +55,7 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
             return results;
     }
 
-    public async Task<DeviceComplianceDeviceStatusCollectionResponse> GetCompliancePolicyDeviceStatusAsync(string accessToken, string policyId)
+    public async Task<DeviceComplianceDeviceStatusCollectionResponse> GetCompliancePolicyDeviceStatusAsync(string? accessToken, string policyId)
     {
         try
         {

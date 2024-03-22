@@ -11,7 +11,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class TenantInformationService : ITenantInformationService
 {
     private readonly HttpClient _http = new();
-    public async Task<List<RoleDefinitionModel>?> GetRoleDefinitionsListAsync(string accessToken)
+    public async Task<List<RoleDefinitionModel>?> GetRoleDefinitionsListAsync(string? accessToken)
     {
         var results = new List<RoleDefinitionModel>();
         _http.DefaultRequestHeaders.Clear();
@@ -55,7 +55,7 @@ public sealed class TenantInformationService : ITenantInformationService
         return results;
     }
 
-    public async Task<List<RoleAssignmentModel>?> GetRoleAssignmentsListAsync(string accessToken, List<RoleDefinitionModel> roles)
+    public async Task<List<RoleAssignmentModel>?> GetRoleAssignmentsListAsync(string? accessToken, List<RoleDefinitionModel> roles)
     {
         var results = new List<RoleAssignmentModel>();
         _http.DefaultRequestHeaders.Clear();

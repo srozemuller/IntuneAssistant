@@ -59,7 +59,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         var exportCsvProvided = !string.IsNullOrWhiteSpace(options.ExportCsv);
         var pageSizeProvided = !string.IsNullOrEmpty(options.PageSize);
         var pageSize = AppConfiguration.TABLE_PAGESIZE;
-        var allFiltersInfo = new List<DeviceAndAppManagementAssignmentFilter>();
+        var allFiltersInfo = new List<AssignmentFiltersModel>();
         if (pageSizeProvided && int.TryParse(options.PageSize, out int pageSizeResult))
         {
             pageSize = pageSizeResult;
@@ -209,14 +209,14 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         return 0;
         }
 
-    private async Task<List<CustomAssignmentsModel>?> FetchCompliancePoliciesAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchCompliancePoliciesAsync(string? accessToken)
     {
         var compliancePolicies =
             await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
         var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, compliancePolicies);
         return complianceResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchConfigurationPoliciesAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchConfigurationPoliciesAsync(string? accessToken)
     {
         var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
         var configurationResults = new List<CustomAssignmentsModel>();
@@ -228,103 +228,103 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         }
         return configurationResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string? accessToken)
     {
         var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
         return deviceScriptsResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string? accessToken)
     {
         var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, null);
         return healthScriptsResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchAutoPilotAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchAutoPilotAssignmentsListAsync(string? accessToken)
     {
         var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken, null);
         return autoPilotResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchAppProtectionAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchAppProtectionAssignmentsListAsync(string? accessToken)
     {
         var appProtectionResults = await _assignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, null);
         return appProtectionResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string? accessToken)
     {
         var mobileAppResults = await _assignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, null);
         return mobileAppResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchTargetAppAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchTargetAppAssignmentsListAsync(string? accessToken)
     {
         var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, null);
         return targetAppResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchUpdateRingsAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchUpdateRingsAssignmentsListAsync(string? accessToken)
     {
         var updateRingResults =
             await _assignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, null);
         return updateRingResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchFeatureUpdateAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchFeatureUpdateAssignmentsListAsync(string? accessToken)
     {
         var featureUpdateResults =
             await _assignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(accessToken, null);
         return featureUpdateResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchDriverUpdateAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchDriverUpdateAssignmentsListAsync(string? accessToken)
     {
         var driverUpdateResults =
             await _assignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, null);
         return driverUpdateResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchMacOsScriptAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchMacOsScriptAssignmentsListAsync(string? accessToken)
     {
         var macOsShellScriptResults =
             await _assignmentsService.GetMacOsShellScriptsAssignmentListAsync(accessToken, null);
         return macOsShellScriptResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchDiskEncryptionAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchDiskEncryptionAssignmentsListAsync(string? accessToken)
     {
         var diskEncyrptionResults =
             await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, null);
         return diskEncyrptionResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchUpdatePoliciesForMacAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchUpdatePoliciesForMacAssignmentsListAsync(string? accessToken)
     {
         var updatesForMacResults =
             await _assignmentsService.GetUpdatesForMacAssignmentListAsync(accessToken, null);
         return updatesForMacResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchPlatformScriptAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchPlatformScriptAssignmentsListAsync(string? accessToken)
     {
         var updatesForMacResults =
             await _assignmentsService.GetPlatformScriptsAssignmentListAsync(accessToken, null);
         return updatesForMacResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string? accessToken)
     {
         var managedAppResults =
             await _assignmentsService.GetManagedApplicationAssignmentListAsync(accessToken, null);
         return managedAppResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchDeviceEnrollmentRestrictionsAssignmentListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceEnrollmentRestrictionsAssignmentListAsync(string? accessToken)
     {
         var platformRestrictionResults =
             await _assignmentsService.GetDevicePlatformRestrictionsAssignmentListAsync(accessToken, null);
         return platformRestrictionResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchDeviceLimitRestrictionsAssignmentListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceLimitRestrictionsAssignmentListAsync(string? accessToken)
     {
         var limitRestrictionResults =
             await _assignmentsService.GetDeviceLimitRestrictionsAssignmentListAsync(accessToken, null);
         return limitRestrictionResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchMacOsCustomAttributesAssignmentListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchMacOsCustomAttributesAssignmentListAsync(string? accessToken)
     {
         var macOsCustomAttributesAssignmentResults =
             await _assignmentsService.GetMacOsCustomAttributesAssignmentListAsync(accessToken, null);
         return macOsCustomAttributesAssignmentResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchIosLobAppProvisioningAssignmentListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchIosLobAppProvisioningAssignmentListAsync(string? accessToken)
     {
         var iosLobAppProvisioningAssignmentResults =
             await _assignmentsService.GetIosLobAppProvisioningAssignmentListAsync(accessToken, null);

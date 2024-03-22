@@ -57,7 +57,7 @@ public sealed class IdentityHelperService : IIdentityHelperService
     /// Gets an access token silently or interactively.
     /// </summary>
     /// <returns>An access token or null.</returns>
-    public async Task<string> GetAccessTokenSilentOrInteractiveAsync()
+    public async Task<string?> GetAccessTokenSilentOrInteractiveAsync()
     {
         AuthenticationResult? result = null;
 
@@ -141,4 +141,5 @@ public sealed class IdentityHelperService : IIdentityHelperService
         }
         return accountList;
     }
+    
 }
