@@ -6,6 +6,7 @@
 @using IntuneAssistant.Web.Helpers
 @using Microsoft.Extensions.Caching.Memory
 @inject IAssignmentsService AssignmentsService
+@inject IAssignmentFiltersService AssignmentFilterService
 @inject ICompliancePoliciesService CompliancePoliciesService
 @inject IConfigurationPolicyService ConfigurationPolicyService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
@@ -44,6 +45,7 @@
 @code {
     public string? _accessToken;
     List<CustomAssignmentsModel>? _assignments = new();
+    List<AssignmentFiltersModel>? allFiltersInfo;
     List<CompliancePolicyModel>? _compliancePolicies;
     List<ConfigurationPolicyModel>? _configurationPolicies;
     private readonly bool _striped = true;
@@ -100,10 +102,13 @@
                 AssignmentsService.GetMacOsCustomAttributesAssignmentListAsync(_accessToken, null),
                 AssignmentsService.GetIosLobAppProvisioningAssignmentListAsync(_accessToken, null),
             };
-
+            allFiltersInfo = await AssignmentFilterService.GetAssignmentFiltersListAsync(_accessToken);
             var results = await Task.WhenAll(fetchTasks);
             foreach (var result in results.SelectMany(x => x))
             {
+                var filterInfo = allFiltersInfo?.Find(g => g.Id == result.FilterId);
+                var filterName = filterInfo?.DisplayName ?? "No filter";
+                result.FilterId = filterName;
                 _assignments.Add(result);
             }
             _loading = false;
