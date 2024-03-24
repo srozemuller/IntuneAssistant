@@ -56,14 +56,14 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
     }
 
     
-    public async Task<List<CustomPolicySettingsModel>?> GetConfigurationPoliciesSettingsListAsync(string? accessToken, string policyId)
+    public async Task<List<CustomPolicySettingsModel>?> GetConfigurationPoliciesSettingsListAsync(string? accessToken, ConfigurationPolicyModel policy)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         var results = new List<CustomPolicySettingsModel>();
         try
         {
-            var nextUrl = $"{GraphUrls.ConfigurationPoliciesUrl}('{policyId}')/settings?$expand=settingDefinitions&top=1000";
+            var nextUrl = $"{GraphUrls.ConfigurationPoliciesUrl}('{policy.Id}')/settings?$expand=settingDefinitions&top=1000";
 
             try
             {
@@ -80,7 +80,7 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                 {
                     foreach (var value in result.Value)
                     {
-                        var policySettings = value.ToPolicySettingsModel(policyId);
+                        var policySettings = value.ToPolicySettingsModel(policy);
                         results.Add(policySettings);
                     }
                 }

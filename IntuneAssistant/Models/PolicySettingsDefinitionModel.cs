@@ -6,9 +6,9 @@ public class CustomPolicySettingsModel
 {
     public string Id { get; set; }
     public string PolicyId { get; set; }
+    public string PolicyName { get; set; }
     public string SettingName { get; set; }
     public string SettingValue { get; set; }
-    public List<ChildSettingInstance> ChildSettings { get; set; }
     public List<ChildInfoObject> ChildSettingInfo { get; set; }
     public SettingDefinition[] SettingDefinitions { get; set; }
     
@@ -25,7 +25,7 @@ public class ChildInfoObject
     [JsonProperty("@odata.type")]
     public string odatatype { get; set; }
     public string Name { get; set; }
-    public string Value { get; set; }
+    public string? Value { get; set; }
     
 }
 
@@ -96,8 +96,8 @@ public class Applicability
 
 public class Occurrence
 {
-    public int minDeviceOccurrence { get; set; }
-    public int maxDeviceOccurrence { get; set; }
+    public string minDeviceOccurrence { get; set; }
+    public string maxDeviceOccurrence { get; set; }
 }
 
 public class Option
@@ -151,13 +151,12 @@ public class ChildChoiceSettingValue
 
 public static class PolicySettingsModelExtensions
 {
-    public static CustomPolicySettingsModel ToPolicySettingsModel(this PolicySettingsDefinitionModel policySettings, string policyId)
+    public static CustomPolicySettingsModel ToPolicySettingsModel(this PolicySettingsDefinitionModel policySettings, ConfigurationPolicyModel policy)
     {
         var settingDefinition =
             policySettings.settingDefinitions.FirstOrDefault(sd => policySettings.settingInstance.settingDefinitionId == sd.id);
         var settingValue = "Not Configured";
-        var childSettingName = "Not Configured";
-        IEnumerable<ChildSettingInstance> childSettings = new List<ChildSettingInstance>();
+        IEnumerable<ChildSettingInstance> childSettings;
         var childSettingsInfo = new List<ChildInfoObject>();
         if (policySettings.settingInstance.groupSettingCollectionValue is not null)
         {
@@ -170,40 +169,35 @@ public static class PolicySettingsModelExtensions
                 .Select(x => x.displayName)
                 .FirstOrDefault();
             childSettings = policySettings.settingInstance.choiceSettingValue.children;
-            if (childSettings is not null)
+            if (childSettings.Any())
             {
                 foreach (var childSetting in childSettings)
                 {
-                    var childSettingValue = "Not Configured";
-                    if (childSetting.simpleSettingValue is not null)
-                    {
-                        childSettingValue = childSetting.simpleSettingValue.value;
-                    }
-                    else
-                    {
-                        childSettingValue = policySettings.settingDefinitions.SelectMany(s => s.options).Where(o => o.itemId == childSetting.choiceSettingValue.value).Select(v => v.displayName).FirstOrDefault().ToString();
-                    }
-                    var childName = policySettings.settingDefinitions.FirstOrDefault(s => s.id == childSetting.settingDefinitionId).displayName;
-                    var ChildInfo = new ChildInfoObject
+                    var childSettingValue = childSetting.simpleSettingValue.value;
+                    var childName = policySettings.settingDefinitions.FirstOrDefault(s => s.id == childSetting.settingDefinitionId)?.displayName;
+                    childName = string.IsNullOrEmpty(childName) ? "-" : childName;
+                    childSettingValue = string.IsNullOrEmpty(childSettingValue) ? "-" : childSettingValue;
+                    var childInfo = new ChildInfoObject
                     {
                         odatatype = childSetting.odatatype,
                         Name = childName,
                         Value = childSettingValue
                     };
-                    childSettingsInfo.Add(ChildInfo);
+                    childSettingsInfo.Add(childInfo);
                 }
             }
         }
         else
         {
             settingValue = policySettings.settingInstance.SimpleSettingValue?.value;
-            childSettings = new List<ChildSettingInstance>();
+            childSettingsInfo = new List<ChildInfoObject>();
         }
 
         return new CustomPolicySettingsModel
         {
             Id = settingDefinition.id,
-            PolicyId =  policyId,
+            PolicyId =  policy.Id,
+            PolicyName = policy.Name,
             SettingName = settingDefinition.displayName,
             SettingValue = settingValue,
             ChildSettingInfo = childSettingsInfo,
