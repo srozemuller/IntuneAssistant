@@ -5,7 +5,7 @@ namespace IntuneAssistant.Extensions;
 
 public static class AssignmentInformationExtension
 {
-    public static CustomAssignmentsModel ToCustomAssignmentsModel<T>(this IAssignment assignment, string resourceType, string resourceName, string resourceId)
+    public static CustomAssignmentsModel ToCustomAssignmentsModel<T>(this IAssignment assignment, string resourceType, string? resourceName, string resourceId)
     {
         string targetId = String.Empty;
         string pattern2 = "AssignmentTarget";

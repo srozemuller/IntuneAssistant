@@ -11,7 +11,7 @@ public class CompliancePolicyModel
     public DateTime CreatedDateTime { get; set; }
     public string Description { get; set; }
     public DateTime LastModifiedDateTime { get; set; }
-    public string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
     public List<string> ValidOperatingSystemBuildRanges { get; set; }
     [JsonProperty("assignments@odata.context")]
     public string AssignmentsOdataContext { get; set; }
