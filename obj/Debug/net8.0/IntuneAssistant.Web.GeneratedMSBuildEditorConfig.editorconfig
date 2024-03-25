@@ -1,0 +1,71 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = IntuneAssistant.Web
+build_property.RootNamespace = IntuneAssistant.Web
+build_property.ProjectDir = /Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web
+build_property._RazorSourceGeneratorDebug = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Layout/LoginDisplay.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L0xvZ2luRGlzcGxheS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Layout/RedirectToLogin.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L1JlZGlyZWN0VG9Mb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Pages/AssignmentsOverview.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQXNzaWdubWVudHNPdmVydmlldy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Pages/Authentication.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQXV0aGVudGljYXRpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Pages/GroupAssignmentsOverview.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvR3JvdXBBc3NpZ25tZW50c092ZXJ2aWV3LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Pages/PolicySettingsOverview.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUG9saWN5U2V0dGluZ3NPdmVydmlldy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Pages/Weather.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV2VhdGhlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L01haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-xuwl1ic4vj
+
+[/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L05hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-plh0qu5nga

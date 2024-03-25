@@ -1,0 +1,121 @@
+﻿@page "/policy-settings-overview"
+@using IntuneAssistant.Infrastructure.Interfaces
+@using IntuneAssistant.Models
+@using Microsoft.IdentityModel.Tokens
+@using IntuneAssistant.Constants
+@using IntuneAssistant.Web.Helpers
+@inject ICompliancePoliciesService CompliancePoliciesService
+@inject IConfigurationPolicyService ConfigurationPolicyService
+
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+
+<PageTitle>Policy Settings Overview</PageTitle>
+
+<h1>Policy Settings Overview</h1>
+<MudTable Items="@_settingsOverview" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" Striped="@_striped" LoadingProgressColor="Color.Success" Filter="new Func<CustomPolicySettingsModel, bool>(Filter)">
+    <ToolBarContent>
+        <MudSpacer/>
+        <MudTextField @bind-Value="searchString" Placeholder="Search & hit enter" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Policy Name</MudTh>
+        <MudTh>Main Setting Name</MudTh>
+        <MudTh>Main Setting Value</MudTh>
+        <MudTh>Child Setting Name</MudTh>
+        <MudTh>Child Setting Value</MudTh>
+    </HeaderContent>
+    <LoadingContent>
+        <MudText Typo="Typo.body2" Class="mt-4 mud-text-secondary">Loading Data...</MudText>
+    </LoadingContent>
+    <RowTemplate>
+        <MudTd>@context.PolicyName</MudTd>
+        <MudTd>@context.SettingName</MudTd>
+        <MudTd>@context.SettingValue</MudTd>
+        <MudTd>
+            @foreach (var childSetting in context.ChildSettingInfo)
+            {
+                <MudText>@childSetting.Name</MudText>
+                <br/>
+            }
+        </MudTd>
+        <MudTd>
+            @foreach (var childSetting in context.ChildSettingInfo)
+            {
+                <MudText>@childSetting.Value</MudText>
+                <br/>
+            }
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
+
+@code {
+    public string? _accessToken;
+    List<CustomPolicySettingsModel>? _settingsOverview = new();
+    List<CompliancePolicyModel>? _compliancePolicies;
+    List<ConfigurationPolicyModel>? _configurationPolicies;
+    private readonly bool _striped = true;
+    private bool _loading = true;
+    public string searchString { get; set; }
+    private bool Filter(CustomPolicySettingsModel setting) => IsVisible(setting, searchString);
+
+    public bool IsVisible(CustomPolicySettingsModel setting, string searchString)
+    {
+        if (string.IsNullOrEmpty(searchString))
+            return true;
+
+        if (setting.PolicyName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            setting.SettingName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            (setting?.SettingValue != null && setting.SettingValue.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))
+            return true;
+        
+        if (setting?.ChildSettingInfo != null && setting.ChildSettingInfo.Any(childSetting => childSetting.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) || childSetting.Value.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))
+            return true;
+
+        return false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
+
+        if (_settingsOverview.IsNullOrEmpty() && TokenHelper.TokenIsValid(_accessToken))
+        {
+            var configurationPolicies = await ConfigurationPolicyService.GetConfigurationPoliciesListAsync(_accessToken);
+            if (configurationPolicies != null)
+                foreach (var policy in configurationPolicies)
+                {
+                    var configurationPoliciesSettingsResults = await ConfigurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, policy);
+
+                    if (configurationPoliciesSettingsResults is not null)
+                    {
+                        foreach (var setting in configurationPoliciesSettingsResults)
+                        {
+                            var settingName = setting.SettingName;
+                            var settingValue = setting.SettingValue;
+                            _settingsOverview.Add(new CustomPolicySettingsModel
+                            {
+                                PolicyName = setting.PolicyName,
+                                SettingName = settingName,
+                                SettingValue = settingValue,
+                                ChildSettingInfo = setting.ChildSettingInfo
+                            });
+                        }
+                    }
+                }
+            _loading = false;
+        }
+        else
+        {
+    // Handle token retrieval failure
+    // This could occur if the user is not authenticated
+    // or if there's an issue with token retrieval
+    // You can implement your error handling logic here
+            Console.WriteLine("Token retrieval failed");
+            NavigationManager.NavigateTo(WebAppConfiguration.LOGIN_URL);
+        }
+    }
+}
