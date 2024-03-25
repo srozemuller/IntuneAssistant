@@ -68,7 +68,11 @@
             return true;
 
         if (setting.PolicyName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
-            setting.SettingName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+            setting.SettingName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            (setting?.SettingValue != null && setting.SettingValue.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))
+            return true;
+        
+        if (setting?.ChildSettingInfo != null && setting.ChildSettingInfo.Any(childSetting => childSetting.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) || childSetting.Value.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))
             return true;
 
         return false;
@@ -90,7 +94,6 @@
                     {
                         foreach (var setting in configurationPoliciesSettingsResults)
                         {
-                            var policyName = configurationPolicies.FirstOrDefault(x => x.Id == setting.PolicyId)?.Name;
                             var settingName = setting.SettingName;
                             var settingValue = setting.SettingValue;
                             _settingsOverview.Add(new CustomPolicySettingsModel
