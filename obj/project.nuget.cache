@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1rWnAlhKZi91vEY8bjuJfq8Z+94ExoNS2QQR+BBpRzN889Q1SlokoZ6ufph0KnEKOrdXw/tGNaNzEYiAuWSqYA==",
+  "dgSpecHash": "QK/6IRC6ciFtmGI7j8zxvrppFpbJ5Br4q5xtPPc/ymuGdxk1j9ci0i7YIOFmWO5uvTm+3JNkcE4Jvthkqvjy0w==",
   "success": true,
-  "projectFilePath": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/IntuneAssistant.Web.csproj",
+  "projectFilePath": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/IntuneAssistant.Web.csproj",
   "expectedPackageFiles": [
     "/Users/srozemuller/.nuget/packages/azure.core/1.37.0/azure.core.1.37.0.nupkg.sha512",
     "/Users/srozemuller/.nuget/packages/azure.identity/1.10.4/azure.identity.1.10.4.nupkg.sha512",

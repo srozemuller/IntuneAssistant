@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/IntuneAssistant.Web.csproj": {}
+    "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/IntuneAssistant.Web.csproj": {}
   },
   "projects": {
     "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Infrastructure/IntuneAssistant.Infrastructure.csproj": {
@@ -112,14 +112,14 @@
         }
       }
     },
-    "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/IntuneAssistant.Web.csproj": {
+    "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/IntuneAssistant.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/IntuneAssistant.Web.csproj",
+        "projectUniqueName": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/IntuneAssistant.Web.csproj",
         "projectName": "IntuneAssistant.Web",
-        "projectPath": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/IntuneAssistant.Web.csproj",
+        "projectPath": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/IntuneAssistant.Web.csproj",
         "packagesPath": "/Users/srozemuller/.nuget/packages/",
-        "outputPath": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/obj/",
+        "outputPath": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/srozemuller/.nuget/NuGet/NuGet.Config"
