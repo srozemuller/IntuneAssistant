@@ -2,4 +2,5 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/srozemuller/.nuget/packages/microsoft.extensions.dependencyinjection/8.0.0-rc.2.23479.6/lib/net7.0/Microsoft.Extensions.DependencyInjection.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
+	
 	</wpf:ResourceDictionary>
