@@ -6,8 +6,8 @@ namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IDeviceService
 {
-    Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string accessToken, string? filter);
-    Task<List<ManagedDevice>?> GetNonCompliantManagedDevicesListAsync(string accessToken);
-    Task<List<ManagedDevice>?> GetFilteredDevicesListAsync(string accessToken, DeviceFilterOptions? filterOptions);
-    Task<List<OsBuildModel>> GetDevicesOsVersionsOverviewAsync(string accessToken, DeviceFilterOptions? filterOptions);
+    Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string? accessToken, string? filter);
+    Task<List<ManagedDevice>?> GetNonCompliantManagedDevicesListAsync(string? accessToken);
+    Task<List<ManagedDevice>?> GetFilteredDevicesListAsync(string? accessToken, DeviceFilterOptions? filterOptions);
+    Task<List<OsBuildModel>> GetDevicesOsVersionsOverviewAsync(string? accessToken, DeviceFilterOptions? filterOptions);
 }

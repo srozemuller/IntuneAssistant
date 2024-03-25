@@ -12,11 +12,11 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
 {
     private readonly HttpClient _http = new();
  
-    public async Task<List<CompliancePolicy>?> GetCompliancePoliciesListAsync(string accessToken)
+    public async Task<List<CompliancePolicyModel>?> GetCompliancePoliciesListAsync(string? accessToken)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-            var results = new List<CompliancePolicy>();
+            var results = new List<CompliancePolicyModel>();
             try
             {
                 var nextUrl = GraphUrls.CompliancePoliciesUrl;
@@ -32,7 +32,7 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
                         var content = await sr.ReadToEndAsync();
 
                         // Deserialize the string to your model
-                        var result = JsonConvert.DeserializeObject<GraphValueResponse<CompliancePolicy>>(content);
+                        var result = JsonConvert.DeserializeObject<GraphValueResponse<CompliancePolicyModel>>(content);
                         if (result?.Value is null)
                         {
                             nextUrl = null;
@@ -55,7 +55,7 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
             return results;
     }
 
-    public async Task<DeviceComplianceDeviceStatusCollectionResponse> GetCompliancePolicyDeviceStatusAsync(string accessToken, string policyId)
+    public async Task<DeviceComplianceDeviceStatusCollectionResponse> GetCompliancePolicyDeviceStatusAsync(string? accessToken, string policyId)
     {
         try
         {

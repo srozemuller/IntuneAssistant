@@ -13,6 +13,7 @@ public static class ConfigurationPoliciesCmd
             configPoliciesCommand.AddCommand(new ConfigPoliciesListCmd());
             configPoliciesCommand.AddCommand(new ConfigPoliciesExportCmd());
             configPoliciesCommand.AddCommand(new ConfigPoliciesImportCmd());
+            configPoliciesCommand.AddCommand(new ConfigPoliciesSettingsListCmd());
             return configPoliciesCommand;
         }
     }

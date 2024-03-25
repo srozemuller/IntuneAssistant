@@ -20,7 +20,7 @@ public class CustomAssignmentsModel
     public string TargetId { get; set; } = String.Empty;
     public string TargetName { get; set; } = String.Empty;
     public string? ResourceId { get; set; } = String.Empty;
-    public string ResourceName { get; set; } = String.Empty;
+    public string? ResourceName { get; set; } = String.Empty;
     public string FilterId { get; set; } = String.Empty;
     public string FilterType { get; set; } = "None";
 }

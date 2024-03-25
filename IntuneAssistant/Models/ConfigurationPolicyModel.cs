@@ -7,7 +7,7 @@ public class ConfigurationPolicyModel
     public string CreationSource { get; set; }
     public string Description { get; set; }
     public DateTime? LastModifiedDateTime { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
     public string Platforms { get; set; }
     public object PriorityMetaData { get; set; }
     public List<string> RoleScopeTagIds { get; set; }

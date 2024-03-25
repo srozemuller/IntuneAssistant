@@ -10,7 +10,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class AppsService : IAppsService
 {
     private readonly HttpClient _http = new();
-    public async Task<List<WindowsLobAppModel>?> GetWindowsLobAppsListAsync(string accessToken)
+    public async Task<List<WindowsLobAppModel>?> GetWindowsLobAppsListAsync(string? accessToken)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -136,7 +136,7 @@ public sealed class AppsService : IAppsService
         return result;
     }
 
-    public async Task<List<MobileAppDependencyModel>?> GetAppDependenciesListAsync(string accessToken)
+    public async Task<List<MobileAppDependencyModel>?> GetAppDependenciesListAsync(string? accessToken)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");

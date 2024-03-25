@@ -19,7 +19,7 @@ public class DeviceDuplicateServices : IDeviceDuplicateService
         _logger = logger;
     }
 
-    public async Task<List<ManagedDevice>?> GetDuplicateDevicesListAsync(string accessToken, DeviceFilterOptions? filterOptions, ExportOptions? exportOptions  )
+    public async Task<List<ManagedDevice>?> GetDuplicateDevicesListAsync(string? accessToken, DeviceFilterOptions? filterOptions, ExportOptions? exportOptions  )
     {
         try
         {
@@ -105,7 +105,7 @@ public class DeviceDuplicateServices : IDeviceDuplicateService
     }
 
     
-    public async Task<List<ManagedDevice>?> RemoveDuplicateDevicesAsync(string accessToken)
+    public async Task<List<ManagedDevice>?> RemoveDuplicateDevicesAsync(string? accessToken)
     {
         try
         {

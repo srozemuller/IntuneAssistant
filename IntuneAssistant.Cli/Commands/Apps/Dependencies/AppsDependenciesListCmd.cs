@@ -13,7 +13,7 @@ public class AppsDependenciesListCmd : Command<FetchAppDependenciesCommandOption
     {
         AddOption(new Option<string>(CommandConfiguration.ExportCsvArg, CommandConfiguration.ExportCsvArgDescription));
         AddOption(new Option<bool>(CommandConfiguration.TreeViewArg, CommandConfiguration.TreeViewArgDescription));
-        AddOption(new Option<string>(CommandConfiguration.ApplicationNameArg, CommandConfiguration.AppliationNameArgDescription));
+        AddOption(new Option<string>(CommandConfiguration.ApplicationNameArg, CommandConfiguration.ApplicationNameArgDescription));
     }
 }
 

@@ -49,7 +49,7 @@ public class FetchFiltersCommandHandler : ICommandOptionsHandler<FetchFiltersCom
         }
         else
         {
-            results = await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
+            //results = await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
         }
 
         if (results is not null)
