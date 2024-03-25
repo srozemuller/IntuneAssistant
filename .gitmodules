@@ -1,0 +1,3 @@
+[submodule "IntuneAssistantWeb"]
+	path = IntuneAssistantWeb
+	url = https://github.com/srozemuller/IntuneAssistantWeb
