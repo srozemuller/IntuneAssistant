@@ -1,3 +1,4 @@
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace IntuneAssistant.Models;
@@ -119,7 +120,7 @@ public class Dependedonby
 
 public class ChildSettingInstance
 {
-    public string odatatype { get; set; }
+    [JsonProperty("@odata.type")] public string odatatype { get; set; }
     public string settingDefinitionId { get; set; }
     public object settingInstanceTemplateReference { get; set; }
     public SimpleSettingValue simpleSettingValue { get; set; }
@@ -148,18 +149,91 @@ public static class PolicySettingsModelExtensions
         var settingDefinition =
             policySettings.settingDefinitions.FirstOrDefault(sd => policySettings.settingInstance.settingDefinitionId == sd.id);
         var settingValue = "Not Configured";
-        IEnumerable<ChildSettingInstance> childSettings = new List<ChildSettingInstance>();
-        if (policySettings.settingInstance.groupSettingCollectionValue is not null)
+        var childSettingName = "Not xConfigured";
+        var readableChildValue = "-";
+        var childSettingsInfo = new List<ChildInfoObject>();
+        if (policySettings.settingInstance.odatatype ==
+            "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance")
         {
-            childSettings = policySettings.settingInstance.groupSettingCollectionValue.SelectMany(x => x.children);
+            settingDefinition = policySettings.settingDefinitions.FirstOrDefault(sd =>
+                policySettings.settingInstance.settingDefinitionId == sd.rootDefinitionId);
+            foreach (var childSetting in policySettings.settingInstance.groupSettingCollectionValue.SelectMany(x =>
+                         x.children))
+            {
+                var correctChildDefinition =
+                    policySettings.settingDefinitions.Where(d => d.id == childSetting.settingDefinitionId);
+                var settingDefinitions = correctChildDefinition.ToList();
+                childSettingName = settingDefinitions.Where(i => i.id == childSetting.settingDefinitionId)
+                    .Select(x => x.displayName).FirstOrDefault();
+                if (childSettingName.IsNullOrEmpty())
+                {
+                    childSettingName = settingDefinitions.Where(i => i.id == childSetting.settingDefinitionId)
+                        .Select(x => x.id).FirstOrDefault();
+                }
+
+                if (childSetting.odatatype == "#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance")
+                {
+                    readableChildValue = childSetting.simpleSettingValue.value;
+                }
+                else if (childSetting.odatatype ==
+                         "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance")
+                {
+                    Console.WriteLine($"-->{childSetting.choiceSettingValue.value}");
+                    readableChildValue = settingDefinitions.SelectMany(d => d.options)
+                        .Where(o => o.itemId == childSetting.choiceSettingValue.value).Select(x => x.displayName)
+                        .FirstOrDefault();
+                }
+
+                var childInfo = new ChildInfoObject
+                {
+                    odatatype = childSetting.odatatype,
+                    Name = childSettingName,
+                    Value = readableChildValue
+                };
+                childSettingsInfo.Add(childInfo);
+            }
         }
-        if (policySettings.settingInstance.choiceSettingValue is not null)
+        else if (policySettings.settingInstance.choiceSettingValue is not null)
         {
             settingValue = settingDefinition.options.Select(o => o)
                 .Where(v => v.itemId == policySettings.settingInstance.choiceSettingValue.value)
                 .Select(x => x.displayName)
                 .FirstOrDefault();
-            childSettings = policySettings.settingInstance.choiceSettingValue.children;
+            if (policySettings.settingInstance.choiceSettingValue.children.Any())
+            {
+                foreach (var childSetting in policySettings.settingInstance.choiceSettingValue.children)
+                {
+                    var correctChildDefinition =
+                        policySettings.settingDefinitions.Where(d => d.id == childSetting.settingDefinitionId);
+                    var settingDefinitions = correctChildDefinition.ToList();
+                    childSettingName = settingDefinitions.Where(i => i.id == childSetting.settingDefinitionId)
+                        .Select(x => x.displayName).FirstOrDefault();
+                    if (childSettingName.IsNullOrEmpty())
+                    {
+                        childSettingName = settingDefinitions.Where(i => i.id == childSetting.settingDefinitionId)
+                            .Select(x => x.name).FirstOrDefault();
+                    }
+                    if (childSetting.odatatype == "#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance")
+                    {
+                        readableChildValue = childSetting.simpleSettingValue.value;
+                    }
+                    else if (childSetting.odatatype ==
+                             "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance")
+                    {
+                        readableChildValue = settingDefinitions.SelectMany(x => x.options)
+                            .Where(o => o.itemId == childSetting.choiceSettingValue.value).Select(x => x.displayName)
+                            .FirstOrDefault();
+                    }
+
+                    var childInfo = new ChildInfoObject
+                    {
+                        odatatype = childSetting.odatatype,
+                        Name = childSettingName,
+                        Value = readableChildValue
+                    };
+                    childSettingsInfo.Add(childInfo);
+                }
+            }
         }
         else
         {
