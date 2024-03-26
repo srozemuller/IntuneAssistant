@@ -35,14 +35,14 @@
         <MudTd>
             @foreach (var childSetting in context.ChildSettingInfo)
             {
-                <MudText>@childSetting.Name</MudText>
+                @childSetting.Name
                 <br/>
             }
         </MudTd>
         <MudTd>
             @foreach (var childSetting in context.ChildSettingInfo)
             {
-                <MudText>@childSetting.Value</MudText>
+                @childSetting.Value
                 <br/>
             }
         </MudTd>
