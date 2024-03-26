@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "IntuneAssistant.Web",
   "resources": {
-    "hash": "sha256-CVPgSTALpoJjVybQnljVtTAYE6lSQr3YU6mFN2cbO9w=",
+    "hash": "sha256-V2mk74iZmFVZGGYPA75JOymu1fbxe3FcFke413+qQlM=",
     "jsModuleNative": {
       "dotnet.native.8.0.2.bws02egm00.js": "sha256-gPMK16QWoJSTxorlZJqcVtbBRTniIQWlLsJN2O4cJHg="
     },
@@ -263,14 +263,14 @@
       "mscorlib.wasm": "sha256-OH3kXneWqQMz6CUSo6POZqIeMqn9+5RR+IgHn5TnIwA=",
       "netstandard.wasm": "sha256-ZOswxXEbR2TmqjpbaBEdgr85Bv1NC4GwOwoJ+oxXM3M=",
       "System.Private.CoreLib.wasm": "sha256-I2w0iHf5nvSQyF1YE1VbgdTzmmz6a4OE6J7vo5wFa/4=",
-      "IntuneAssistant.wasm": "sha256-ipXmahjM2nRlww7s/rUB7V5VThCBG+baHEPBaoWyPkw=",
-      "IntuneAssistant.Infrastructure.wasm": "sha256-+u08gKLKPCYP0oBtluKpoeFTKR/CK3LfTiI4GU9/P3A=",
-      "IntuneAssistant.Web.wasm": "sha256-A0XH2bXFHPG4Vj9jG6+pZTC39WkjVon+8kzNWuj3VXM="
+      "IntuneAssistant.wasm": "sha256-z1BOwqNL/oeZZ4C5BxUjnTqn9IvOnFIVIjWYSWnyF9E=",
+      "IntuneAssistant.Infrastructure.wasm": "sha256-2I+if0tL3zygpCoG63SW32ROKxh7h15IOOZ9KhokQV4=",
+      "IntuneAssistant.Web.wasm": "sha256-0wJcMoOh1k6QN8nZpLId7LlAbaH92CVjNBuS6BBPjSU="
     },
     "pdb": {
-      "IntuneAssistant.Infrastructure.pdb": "sha256-JV4zpcrssr3LQwmgaeFudF2VcNAIGFHpOeK/hL029Qs=",
-      "IntuneAssistant.pdb": "sha256-MLbghpe9rjUU4Vc9OmOezGxCpMtP1lA3poXBOK//uoI=",
-      "IntuneAssistant.Web.pdb": "sha256-vkoOzOY/MThx6EFY2qH1FCKDitiR5ULmGDBDb/JGElg="
+      "IntuneAssistant.Infrastructure.pdb": "sha256-p85q+Kp/iGvE6UpHwRxQbgSYnUkj8Ifhl8L+6SyHd2g=",
+      "IntuneAssistant.pdb": "sha256-oecy/iPG6Qbku8fzwaduEI2Q1TU9Xn1AAJRKtTrAT0Y=",
+      "IntuneAssistant.Web.pdb": "sha256-hy81u1hDe/wk74vG4Jg+nuVU5wNEOBIlP5vXoXeDisM="
     },
     "satelliteResources": {
       "cs": {
