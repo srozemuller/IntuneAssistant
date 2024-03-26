@@ -1,2 +1,0 @@
-/var/folders/g2/4rmwfv6j69lg25v6g8wfk4800000gp/T/rider-publish16164875462510941222/appsettings.json
-/var/folders/g2/4rmwfv6j69lg25v6g8wfk4800000gp/T/rider-publish16164875462510941222/web.config

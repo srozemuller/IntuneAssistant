@@ -1,51 +1,51 @@
 {
   "Files": [
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/bin/Debug/net8.0/wwwroot/_framework/blazor.webassembly.js",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/bin/Debug/net8.0/wwwroot/_framework/blazor.webassembly.js",
       "PackagePath": "staticwebassets/_framework/blazor.webassembly.js"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/obj/Debug/net8.0/compressed/d8kpsc9zmr.gz",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/obj/Debug/net8.0/compressed/d8kpsc9zmr.gz",
       "PackagePath": "staticwebassets/_framework/blazor.webassembly.js.gz"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/obj/Debug/net8.0/scopedcss/bundle/IntuneAssistant.Web.styles.css",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/obj/Debug/net8.0/scopedcss/bundle/IntuneAssistant.Web.styles.css",
       "PackagePath": "staticwebassets/IntuneAssistant.Web.styles.css"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/appsettings.json",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/appsettings.json",
       "PackagePath": "staticwebassets/appsettings.json"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/css/app.css",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/css/app.css",
       "PackagePath": "staticwebassets/css/app.css"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/css/bootstrap/bootstrap.min.css",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/css/bootstrap/bootstrap.min.css",
       "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/css/bootstrap/bootstrap.min.css.map",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/css/bootstrap/bootstrap.min.css.map",
       "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css.map"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/favicon.png",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/favicon.png",
       "PackagePath": "staticwebassets/favicon.png"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/icon-192.png",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/icon-192.png",
       "PackagePath": "staticwebassets/icon-192.png"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/index.html",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/index.html",
       "PackagePath": "staticwebassets/index.html"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/js/utils.js",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/js/utils.js",
       "PackagePath": "staticwebassets/js/utils.js"
     },
     {
-      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.WebModule/wwwroot/sample-data/weather.json",
+      "Id": "/Users/srozemuller/repos/IntuneAssistant/IntuneAssistant.Web/wwwroot/sample-data/weather.json",
       "PackagePath": "staticwebassets/sample-data/weather.json"
     },
     {
