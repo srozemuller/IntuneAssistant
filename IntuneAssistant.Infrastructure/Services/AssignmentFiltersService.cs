@@ -14,30 +14,30 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class AssignmentFiltersService : IAssignmentFiltersService
 {
     private readonly HttpClient _http = new();
-    public async Task<List<DeviceAndAppManagementAssignmentFilter>?> GetAssignmentFiltersListAsync(string accessToken)
+    public async Task<List<AssignmentFiltersModel>?> GetAssignmentFiltersListAsync(string? accessToken)
     {
-            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-            var results = new List<DeviceAndAppManagementAssignmentFilter>();
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            var results = new List<AssignmentFiltersModel>();
             try
             {
-                var result = await graphClient.DeviceManagement.AssignmentFilters.GetAsync(requestConfiguration =>
+                var url = GraphUrls.AssignmentFiltersUrl;
+                var response = await _http.GetAsync(url);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentFiltersModel>>(responseStream, CustomJsonOptions.Default());
+                if (result?.Value is not null)
                 {
-                    requestConfiguration.QueryParameters.Filter = null;
-                });
-
-                if (result?.Value != null)
-                    results.AddRange(result.Value);
-                    
+                    return result.Value.ToList();
+                }
             }
-            catch (ODataError ex)
+            catch
             {
-                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
                 return null;
             }
             return results;
     }
 
-    public async Task<DeviceAndAppManagementAssignmentFilter?> GetAssignmentFilterInfoAsync(string accessToken, string filterId)
+    public async Task<DeviceAndAppManagementAssignmentFilter?> GetAssignmentFilterInfoAsync(string? accessToken, string filterId)
     {
         var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var result = new DeviceAndAppManagementAssignmentFilter();
@@ -55,7 +55,7 @@ public sealed class AssignmentFiltersService : IAssignmentFiltersService
     }
 
     public async Task<AssignmentFiltersDeviceEvaluationResponse> GetAssignmentFilterDeviceListAsync(
-        string accessToken, string filterId)
+        string? accessToken, string filterId)
     { 
         var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
         var filterInfo = await GetAssignmentFilterInfoAsync(accessToken, filterId);

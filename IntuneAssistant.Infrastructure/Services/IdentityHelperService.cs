@@ -3,10 +3,9 @@ using Azure.Identity;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.Graph.Beta;
-using Microsoft.Graph.Beta.Models;
+
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
-using Spectre.Console;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
@@ -45,6 +44,7 @@ public sealed class IdentityHelperService : IIdentityHelperService
             .CreateWithApplicationOptions(pcaOptions)
             .WithAuthority(AppConfiguration.AUTHORITY)
             .WithRedirectUri(AppConfiguration.REDIRECT_URI)
+            .WithParentActivityOrWindow(() => this)
             .Build();
 
         var cacheHelper = await MsalCacheHelper.CreateAsync(storageProperties);
@@ -57,7 +57,7 @@ public sealed class IdentityHelperService : IIdentityHelperService
     /// Gets an access token silently or interactively.
     /// </summary>
     /// <returns>An access token or null.</returns>
-    public async Task<string> GetAccessTokenSilentOrInteractiveAsync()
+    public async Task<string?> GetAccessTokenSilentOrInteractiveAsync()
     {
         AuthenticationResult? result = null;
 
@@ -141,4 +141,5 @@ public sealed class IdentityHelperService : IIdentityHelperService
         }
         return accountList;
     }
+    
 }

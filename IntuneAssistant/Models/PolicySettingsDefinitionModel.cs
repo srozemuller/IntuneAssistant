@@ -5,14 +5,13 @@ namespace IntuneAssistant.Models;
 
 public class CustomPolicySettingsModel
 {
-    public string PolicyName { get; set; }
     public string Id { get; set; }
+    public string PolicyId { get; set; }
+    public string PolicyName { get; set; }
     public string SettingName { get; set; }
     public string SettingValue { get; set; }
-    public List<ChildSettingInstance> ChildSettings { get; set; }
-    
+    public List<ChildInfoObject> ChildSettingInfo { get; set; }
     public SettingDefinition[] SettingDefinitions { get; set; }
-    
 }
 
 public class PolicySettingsDefinitionModel
@@ -21,6 +20,12 @@ public class PolicySettingsDefinitionModel
     public SettingDefinition[] settingDefinitions { get; set; }
 }
 
+public class ChildInfoObject
+{
+    [JsonProperty("@odata.type")] public string odatatype { get; set; }
+    public string Name { get; set; }
+    public string? Value { get; set; }
+}
 
 public class Settinginstance
 {
@@ -29,7 +34,7 @@ public class Settinginstance
     public object settingInstanceTemplateReference { get; set; }
     public ChoiceSettingvalue? choiceSettingValue { get; set; }
     public List<GroupSettingCollectionValue>? groupSettingCollectionValue { get; set; }
-    
+
     public SimpleSettingValue? SimpleSettingValue { get; set; }
 }
 
@@ -89,8 +94,8 @@ public class Applicability
 
 public class Occurrence
 {
-    public int minDeviceOccurrence { get; set; }
-    public int maxDeviceOccurrence { get; set; }
+    public string minDeviceOccurrence { get; set; }
+    public string maxDeviceOccurrence { get; set; }
 }
 
 public class Option
@@ -141,13 +146,14 @@ public class ChildChoiceSettingValue
     public List<object> children { get; set; }
 }
 
-
 public static class PolicySettingsModelExtensions
 {
-    public static CustomPolicySettingsModel ToPolicySettingsModel(this PolicySettingsDefinitionModel policySettings, string policyId)
+    public static CustomPolicySettingsModel ToPolicySettingsModel(this PolicySettingsDefinitionModel policySettings,
+        ConfigurationPolicyModel policy)
     {
         var settingDefinition =
-            policySettings.settingDefinitions.FirstOrDefault(sd => policySettings.settingInstance.settingDefinitionId == sd.id);
+            policySettings.settingDefinitions.FirstOrDefault(sd =>
+                policySettings.settingInstance.settingDefinitionId == sd.id);
         var settingValue = "Not Configured";
         var childSettingName = "Not xConfigured";
         var readableChildValue = "-";
@@ -195,7 +201,7 @@ public static class PolicySettingsModelExtensions
         }
         else if (policySettings.settingInstance.choiceSettingValue is not null)
         {
-            settingValue = settingDefinition.options.Select(o => o)
+            settingValue = settingDefinition?.options.Select(o => o)
                 .Where(v => v.itemId == policySettings.settingInstance.choiceSettingValue.value)
                 .Select(x => x.displayName)
                 .FirstOrDefault();
@@ -237,15 +243,18 @@ public static class PolicySettingsModelExtensions
         }
         else
         {
-            settingValue = policySettings.settingInstance.SimpleSettingValue.value;
+            settingValue = policySettings.settingInstance.SimpleSettingValue?.value;
+            childSettingsInfo = new List<ChildInfoObject>();
         }
 
         return new CustomPolicySettingsModel
         {
-            Id = policyId,
+            Id = settingDefinition.id,
+            PolicyId = policy.Id,
+            PolicyName = policy.Name,
             SettingName = settingDefinition.displayName,
             SettingValue = settingValue,
-            ChildSettings = childSettings.ToList(),
+            ChildSettingInfo = childSettingsInfo,
             SettingDefinitions = policySettings.settingDefinitions
         };
     }

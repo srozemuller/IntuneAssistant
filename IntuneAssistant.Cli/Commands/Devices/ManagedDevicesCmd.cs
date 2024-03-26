@@ -34,7 +34,7 @@ public class FetchManagedDevicesCommandOptions : ICommandOptions
     
 
     // TODO: Remove temporary argument
-    public string Token { get; set; } = string.Empty;
+    public string? Token { get; set; } = string.Empty;
 }
 
 public class FetchManagedDevicesCommandHandler : ICommandOptionsHandler<FetchManagedDevicesCommandOptions>

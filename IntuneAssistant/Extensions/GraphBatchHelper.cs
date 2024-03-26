@@ -34,9 +34,27 @@ public class GraphBatchHelper
                         outputObject.requests.Add(request);
                     }
                 }
-
                 return JsonConvert.SerializeObject(outputObject, Formatting.Indented);
             }
+        }
+        public static string CreateUrlListBatchOutput(List <string> urlList)
+        {
+            var outputObject = new
+            {
+                requests = new List<object>()
+            };
+            int requestId = 1;
+            foreach (var urlValue in urlList)
+            {
+                var request = new
+                {
+                    id = requestId++,
+                    method = "GET",
+                    url = urlValue
+                };
+                outputObject.requests.Add(request);
+            }
+            return JsonConvert.SerializeObject(outputObject, Formatting.Indented);
         }
     }
     public static class RoleDefinitionsBatchHelper

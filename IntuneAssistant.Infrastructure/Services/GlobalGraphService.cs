@@ -13,7 +13,7 @@ public sealed class GlobalGraphService : IGlobalGraphService
 {
     private readonly HttpClient _http = new();
     
-    public async Task<List<DirectoryObjectsModel>?> GetDirectoryObjectsByIdListAsync(string accessToken, List<object> ids)
+    public async Task<List<DirectoryObjectsModel>?> GetDirectoryObjectsByIdListAsync(string? accessToken, List<object> ids)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");

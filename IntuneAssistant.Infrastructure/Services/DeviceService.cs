@@ -11,7 +11,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class DeviceService : IDeviceService
 {
-    public async Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string accessToken, string? filter)
+    public async Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string? accessToken, string? filter)
     {
         try
         {
@@ -27,7 +27,7 @@ public sealed class DeviceService : IDeviceService
         }
     }
 
-    public async Task<List<ManagedDevice>?> GetNonCompliantManagedDevicesListAsync(string accessToken)
+    public async Task<List<ManagedDevice>?> GetNonCompliantManagedDevicesListAsync(string? accessToken)
     {
         try
         {
@@ -43,7 +43,7 @@ public sealed class DeviceService : IDeviceService
         }
     }
 
-    public async Task<List<ManagedDevice>?> GetFilteredDevicesListAsync(string accessToken, DeviceFilterOptions? filterOptions)
+    public async Task<List<ManagedDevice>?> GetFilteredDevicesListAsync(string? accessToken, DeviceFilterOptions? filterOptions)
     {
         filterOptions ??= new DeviceFilterOptions();
 
@@ -110,7 +110,7 @@ public sealed class DeviceService : IDeviceService
 
         return results;
     }
-    public async Task<List<OsBuildModel>> GetDevicesOsVersionsOverviewAsync(string accessToken, DeviceFilterOptions? filterOptions)
+    public async Task<List<OsBuildModel>> GetDevicesOsVersionsOverviewAsync(string? accessToken, DeviceFilterOptions? filterOptions)
     {
         filterOptions ??= new DeviceFilterOptions();
 
