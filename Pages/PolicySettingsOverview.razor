@@ -13,7 +13,7 @@
 <PageTitle>Policy Settings Overview</PageTitle>
 
 <h1>Policy Settings Overview</h1>
-<MudTable Items="@_settingsOverview" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" Striped="@_striped" LoadingProgressColor="Color.Success" Filter="new Func<CustomPolicySettingsModel, bool>(Filter)">
+<MudTable Items="@_settingsOverview" FixedHeader="true" Height="@(true ?"400px":"")" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" Striped="@_striped" LoadingProgressColor="Color.Success" Filter="new Func<CustomPolicySettingsModel, bool>(Filter)">
     <ToolBarContent>
         <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search & hit enter" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -68,7 +68,7 @@
             return true;
 
         if (setting.PolicyName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
-            setting.SettingName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
+            (setting?.SettingValue != null && setting.SettingName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)) ||
             (setting?.SettingValue != null && setting.SettingValue.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))
             return true;
         
