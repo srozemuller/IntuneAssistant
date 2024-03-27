@@ -184,7 +184,6 @@ public static class PolicySettingsModelExtensions
                 else if (childSetting.odatatype ==
                          "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance")
                 {
-                    Console.WriteLine($"-->{childSetting.choiceSettingValue.value}");
                     readableChildValue = settingDefinitions.SelectMany(d => d.options)
                         .Where(o => o.itemId == childSetting.choiceSettingValue.value).Select(x => x.displayName)
                         .FirstOrDefault();
