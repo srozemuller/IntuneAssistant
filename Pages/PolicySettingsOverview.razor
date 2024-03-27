@@ -13,7 +13,7 @@
 <PageTitle>Policy Settings Overview</PageTitle>
 
 <h1>Policy Settings Overview</h1>
-<MudTable Items="@_settingsOverview" FixedHeader="true" Height="@(true ?"400px":"")" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" Striped="@_striped" LoadingProgressColor="Color.Success" Filter="new Func<CustomPolicySettingsModel, bool>(Filter)">
+<MudTable Items="@_settingsOverview" FixedHeader="true" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" Striped="@_striped" LoadingProgressColor="Color.Success" Filter="new Func<CustomPolicySettingsModel, bool>(Filter)">
     <ToolBarContent>
         <MudSpacer/>
         <MudTextField @bind-Value="searchString" Placeholder="Search & hit enter" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>

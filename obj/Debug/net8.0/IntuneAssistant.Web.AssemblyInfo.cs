@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IntuneAssistant.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f930ab095abbc90baa5d17c84d9f4a20f722404")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a5db284ef677ca989adbb4aa26b968569990f042")]
 [assembly: System.Reflection.AssemblyProductAttribute("IntuneAssistant.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IntuneAssistant.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
