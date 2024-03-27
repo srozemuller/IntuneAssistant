@@ -13,6 +13,7 @@
         <Authors>Sander Rozemuller</Authors>
         <Description>This CLI helps you managing Intune environments</Description>
         <PackageProjectUrl>https://github.com/srozemuller/IntuneAssistant</PackageProjectUrl>
+        <PackageVersion>2.0.0</PackageVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/srozemuller/IntuneAssistant</RepositoryUrl>
         <PackageTags>Microsoft Intune</PackageTags>
