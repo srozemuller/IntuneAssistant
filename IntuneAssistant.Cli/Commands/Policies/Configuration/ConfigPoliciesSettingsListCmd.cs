@@ -1,6 +1,7 @@
 using System.CommandLine;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
+using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Policies.Configuration;
@@ -43,9 +44,9 @@ public class
 
     public async Task<int> HandleAsync(FetchConfigurationPoliciesSettingsListCommandOptions options)
     {
-        var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
+        var _accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var searchValueProvided = !string.IsNullOrEmpty(options.SearchValue);
-        if (string.IsNullOrWhiteSpace(accessToken))
+        if (string.IsNullOrWhiteSpace(_accessToken))
         {
             AnsiConsole.MarkupLine(
                 "Unable to query Microsoft Intune without a valid access token. Please run the 'auth login' command to authenticate or pass a valid access token with the --token argument");
@@ -65,52 +66,53 @@ public class
         // Show progress spinner while fetching data
         await AnsiConsole.Status().StartAsync("Fetching configuration policies from Intune", async _ =>
         {
-            var configurationPolicies =
-                await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
+            var configurationPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(_accessToken);
             if (configurationPolicies != null)
                 foreach (var policy in configurationPolicies)
                 {
-                    
-                    var configurationPoliciesSettingsResults =
-                        await _configurationPolicyService.GetConfigurationPoliciesSettingsListAsync(accessToken,
-                            policy);
+                    var configurationPoliciesSettingsResults = await _configurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, policy);
+
                     if (configurationPoliciesSettingsResults is not null)
                     {
                         foreach (var setting in configurationPoliciesSettingsResults)
                         {
-                            string settingValue = null;
-                            if (setting.ChildSettingInfo.Any())
+                            var settingName = setting.SettingName;
+                            var settingValue = setting.SettingValue;
+                            _settingsOverview.Add(new CustomPolicySettingsModel
                             {
-                                foreach (var childSetting in setting.ChildSettingInfo)
-                                {
-                                    var policyName = configurationPolicies.FirstOrDefault(x => x.Id == setting.PolicyId)
-                                        ?.Name;
-                                    var settingName = setting.SettingName;
-                                    settingValue = setting.SettingValue;
-                                    _settingsOverview.Add(new CustomPolicySettingsModel
-                                    {
-                                        PolicyId = policyName,
-                                        SettingName = settingName,
-                                        SettingValue = settingValue,
-                                        ChildSettingInfo = setting.ChildSettingInfo
-                                    });
-                                }
-                            }
-
-                            if (settingValue is not null)
-                            {
-                                table.AddRow(
-                                    configurationPolicies.Where(i => i.Id == policy.Id).Select(x => x.Name)
-                                        .FirstOrDefault().EscapeMarkup(),
-                                    setting.SettingName.EscapeMarkup(),
-                                    setting.SettingValue.EscapeMarkup(),
-                                    string.Join(Environment.NewLine, setting.ChildSettingInfo.ToString()).EscapeMarkup(),
-                                    string.Join(Environment.NewLine, setting.ChildSettingInfo.ToString()).EscapeMarkup()
-                                );
-                            }
+                                PolicyName = setting.PolicyName,
+                                SettingName = settingName,
+                                SettingValue = settingValue,
+                                ChildSettingInfo = setting.ChildSettingInfo
+                            });
                         }
                     }
                 }
+            if (_settingsOverview.Any())
+            {
+                // If a search value is provided, filter the _settingsOverview list
+                if (searchValueProvided)
+                {
+                    _settingsOverview = _settingsOverview.Where(s => 
+                        (!string.IsNullOrEmpty(s.SettingName) && s.SettingName.ToLowerInvariant().Contains(options.SearchValue.ToLowerInvariant())) || 
+                        (!string.IsNullOrEmpty(s.SettingName) && s.SettingName.ToLowerInvariant().Contains(options.SearchValue.ToLowerInvariant())) || 
+                        (!string.IsNullOrEmpty(s.ChildSettingInfo.Select(n => n.Name).ToString()) && s.ChildSettingInfo.Select(n => n.Name.ToString().ToLowerInvariant()).Contains(options.SearchValue.ToLowerInvariant())) || 
+                        (!string.IsNullOrEmpty(s.ChildSettingInfo.Select(v => v.Value).ToString()) && s.ChildSettingInfo.Select(v => v.Value?.ToString().ToLowerInvariant()).Contains(options.SearchValue.ToLowerInvariant()))
+                    ).ToList();
+                }
+                foreach (var setting in _settingsOverview)
+                {
+                    var childSettingsName = setting.ChildSettingInfo.Select(n => n.Name);
+                    var childSettingsValue = setting.ChildSettingInfo.Select(n => n.Value);
+                    table.AddRow(
+                        setting.PolicyName.EscapeMarkup(),
+                        setting.SettingName.EscapeMarkup(),
+                        setting.SettingValue.EscapeMarkup(),
+                        string.Join("\n", childSettingsName).EscapeMarkup(),
+                        string.Join("\n", childSettingsValue).EscapeMarkup()
+                    );
+                }
+            }
         });
         AnsiConsole.Write(table);
         return 0;
