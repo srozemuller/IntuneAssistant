@@ -1,9 +1,10 @@
 using System.Text;
+using IntuneAssistant.Extensions;
 using IntuneAssistant.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IntuneAssistant.Extensions;
+namespace IntuneAssistant.Helpers;
 
 public class GraphBatchHelper
 {
@@ -90,7 +91,7 @@ public class GraphBatchHelper
     }
     public static class RoleAssignmentsBatchHelper
     {
-        public static string CreateOutput(List<InnerResponseForRoleAssignments<RoleAssignmentModel>> roleAssignmentsList)
+        public static string CreateOutput(List<InnerResponseForAssignments<RoleAssignmentModel>> roleAssignmentsList)
         {
 
             var outputObject = new
@@ -117,4 +118,42 @@ public class GraphBatchHelper
                 return JsonConvert.SerializeObject(outputObject, Formatting.Indented);
             }
         }
+    
+    public static List<List<T>> ChunkList<T>(List<T> items, int chunkSize)
+    {
+        var list = new List<List<T>>();
+        for (int i = 0; i < items.Count; i += chunkSize)
+        {
+            list.Add(items.GetRange(i, Math.Min(chunkSize, items.Count - i)));
+        }
+        return list;
+    }
+    
+    public static List<string> CreateUrlListBatchOutput(List<string> urlList)
+    {
+        var chunks = ChunkList(urlList, 20);
+        var outputJsonStrings = new List<string>();
+
+        foreach (var chunk in chunks)
+        {
+            var outputObject = new
+            {
+                requests = new List<object>()
+            };
+
+            int requestId = 1;
+            foreach (var urlValue in chunk)
+            {
+                var request = new
+                {
+                    id = requestId++,
+                    method = "GET",
+                    url = urlValue
+                };
+                outputObject.requests.Add(request);
+            }
+            outputJsonStrings.Add(JsonConvert.SerializeObject(outputObject));
+        }
+        return outputJsonStrings;
+    }
 }

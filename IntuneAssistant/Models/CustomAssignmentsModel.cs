@@ -2,6 +2,8 @@ using System.Text.Json.Serialization;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
+using IntuneAssistant.Helpers;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace IntuneAssistant.Models;
@@ -9,7 +11,10 @@ namespace IntuneAssistant.Models;
 public interface IAssignment
 {
     string Id { get; set; }
+    string SourceId { get; set; }
     Target Target { get; set; }
+    
+    
 }
 
 public class CustomAssignmentsModel
@@ -38,6 +43,7 @@ public class Target
 public class Assignment
 {
     public string Id { get; set; }
+    public string SourceId { get; set; }
     public Target Target { get; set; }
 }
 
@@ -63,6 +69,12 @@ public static class AssignmentModelExtensions
         string pattern2 = "AssignmentTarget";
         string assignmentType = assignment.Target.OdataType;
         string filterId = "No filter";
+        bool assigned = !assignment.Target.OdataType.IsNullOrEmpty();
+        var resourceTypeString = ResourceHelper.GetResourceTypeFromOdata(assigmentResponseModel.OdataType);
+        if (resourceTypeString.IsNullOrEmpty())
+        {
+            resourceTypeString = resourceType.GetDescription();
+        }
         if (assignment.Target.DeviceAndAppManagementAssignmentFilterId is not null)
         {
             filterId = assignment.Target.DeviceAndAppManagementAssignmentFilterId;
@@ -78,7 +90,8 @@ public static class AssignmentModelExtensions
         return new CustomAssignmentsModel
         {
             AssignmentType = assignmentType,
-            ResourceType = resourceType.ToString(),
+            IsAssigned = assigned,
+            ResourceType = resourceTypeString,
             ResourceId = assigmentResponseModel.Id,
             TargetId = targetId,
             ResourceName = assigmentResponseModel.DisplayName,
@@ -86,4 +99,5 @@ public static class AssignmentModelExtensions
             FilterType = assignment.Target.DeviceAndAppManagementAssignmentFilterType
         };
     }
+    
 } 
