@@ -35,6 +35,7 @@ public class TemplateReference
 public class ConfigPolicyAssignment : IAssignment
 {
     public string Id { get; set; }
+    public string SourceId { get; set; }
     public Target Target { get; set; }
 }
 

@@ -19,7 +19,7 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
         var results = new List<ConfigurationPolicyModel>();
         try
         {
-            var nextUrl = GraphUrls.ConfigurationPoliciesAssignmentsUrl;
+            var nextUrl = GraphUrls.ConfigurationPoliciesUrl;
             while (nextUrl is not null)
             {
                 try

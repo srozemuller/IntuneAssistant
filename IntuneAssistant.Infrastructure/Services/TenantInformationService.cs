@@ -1,6 +1,7 @@
 using System.Text;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
+using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
@@ -72,7 +73,7 @@ public sealed class TenantInformationService : ITenantInformationService
             var responseStreamContent = await sr.ReadToEndAsync();
 
             // Deserialize the string to your model
-            var result = JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseForRoleAssignments<RoleAssignmentModel>>>(responseStreamContent);
+            var result = JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseForAssignments<RoleAssignmentModel>>>(responseStreamContent);
             if (result?.Responses is not null)
             {
                 var roleAssignmentsRequestBody = GraphBatchHelper.RoleAssignmentsBatchHelper.CreateOutput(result.Responses);

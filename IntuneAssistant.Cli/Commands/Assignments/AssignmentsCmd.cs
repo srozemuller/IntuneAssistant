@@ -213,19 +213,23 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     {
         var compliancePolicies =
             await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+        if (compliancePolicies is null)
+        {
+            return null;
+        }
         var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, compliancePolicies);
         return complianceResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchConfigurationPoliciesAsync(string? accessToken)
     {
         var configPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
-        var configurationResults = new List<CustomAssignmentsModel>();
-        if (configPolicies is not null)
+        if (configPolicies is null)
         {
-            configurationResults =
-                await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null,
-                    configPolicies);
+            return null;
         }
+        var configurationResults =
+            await _assignmentsService.GetConfigurationPolicyAssignmentsListAsync(accessToken, null,
+                configPolicies);
         return configurationResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string? accessToken)
