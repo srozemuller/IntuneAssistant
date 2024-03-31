@@ -71,7 +71,7 @@
             (setting?.SettingValue != null && setting.SettingName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)) ||
             (setting?.SettingValue != null && setting.SettingValue.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))
             return true;
-        
+
         if (setting?.ChildSettingInfo != null && setting.ChildSettingInfo.Any(childSetting => childSetting.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) || childSetting.Value.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))
             return true;
 
@@ -86,36 +86,37 @@
         {
             var configurationPolicies = await ConfigurationPolicyService.GetConfigurationPoliciesListAsync(_accessToken);
             if (configurationPolicies != null)
-                foreach (var policy in configurationPolicies)
-                {
-                    var configurationPoliciesSettingsResults = await ConfigurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, policy);
+            {
+                var configurationPoliciesSettingsResults = await ConfigurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, configurationPolicies);
 
-                    if (configurationPoliciesSettingsResults is not null)
+                if (configurationPoliciesSettingsResults is not null)
+                {
+                    foreach (var setting in configurationPoliciesSettingsResults)
                     {
-                        foreach (var setting in configurationPoliciesSettingsResults)
+                        var settingName = setting.SettingName;
+                        var settingValue = setting.SettingValue;
+                        _settingsOverview.Add(new CustomPolicySettingsModel
                         {
-                            var settingName = setting.SettingName;
-                            var settingValue = setting.SettingValue;
-                            _settingsOverview.Add(new CustomPolicySettingsModel
-                            {
-                                PolicyName = setting.PolicyName,
-                                SettingName = settingName,
-                                SettingValue = settingValue,
-                                ChildSettingInfo = setting.ChildSettingInfo
-                            });
-                        }
+                            PolicyName = setting.PolicyName,
+                            SettingName = settingName,
+                            SettingValue = settingValue,
+                            ChildSettingInfo = setting.ChildSettingInfo
+                        });
                     }
                 }
+            }
             _loading = false;
         }
-        else
-        {
+    else
+
+    {
     // Handle token retrieval failure
     // This could occur if the user is not authenticated
     // or if there's an issue with token retrieval
     // You can implement your error handling logic here
-            Console.WriteLine("Token retrieval failed");
-            NavigationManager.NavigateTo(WebAppConfiguration.LOGIN_URL);
-        }
+        Console.WriteLine("Token retrieval failed");
+        NavigationManager.NavigateTo(WebAppConfiguration.LOGIN_URL);
     }
+}
+
 }
