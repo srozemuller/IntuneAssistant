@@ -94,8 +94,8 @@ public class Applicability
 
 public class Occurrence
 {
-    public string minDeviceOccurrence { get; set; }
-    public string maxDeviceOccurrence { get; set; }
+    public int minDeviceOccurrence { get; set; }
+    public int maxDeviceOccurrence { get; set; }
 }
 
 public class Option

@@ -67,10 +67,16 @@ public class
         await AnsiConsole.Status().StartAsync("Fetching configuration policies from Intune", async _ =>
         {
             var configurationPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(_accessToken);
+
             if (configurationPolicies != null)
+            {
+                var configurationPoliciesSettingsResults =
+                    await _configurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken,
+                        configurationPolicies);
+
                 foreach (var policy in configurationPolicies)
                 {
-                    var configurationPoliciesSettingsResults = await _configurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, policy);
+                    //var configurationPoliciesSettingsResults = await _configurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, policy);
 
                     if (configurationPoliciesSettingsResults is not null)
                     {
@@ -88,6 +94,8 @@ public class
                         }
                     }
                 }
+            }
+
             if (_settingsOverview.Any())
             {
                 // If a search value is provided, filter the _settingsOverview list
