@@ -48,7 +48,7 @@ public class BatchResponseForAssignments<T>
 public class InnerResponseForAssignments<T>
 {
     [JsonProperty("id")]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     [JsonProperty("status")]
     public int Status { get; set; }

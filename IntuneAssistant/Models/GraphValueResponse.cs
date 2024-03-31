@@ -25,9 +25,7 @@ public static class CustomJsonOptions
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
-            NumberHandling = JsonNumberHandling.WriteAsString
-            
+            PropertyNameCaseInsensitive = true
         };
 
         options.Converters.Add(new ODataTypeConverter());

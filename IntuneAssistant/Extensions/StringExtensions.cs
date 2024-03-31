@@ -85,7 +85,6 @@ public static class ODataContext
             // Extract and return the ID from the matched group
             return match.Groups[1].Value;
         }
-
         // Return null if no match is found
         return null;
     }
