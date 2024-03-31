@@ -2,6 +2,7 @@ using System.Text;
 using Newtonsoft.Json;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
+using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
@@ -12,6 +13,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class ConfigurationPolicyService : IConfigurationPolicyService
 {
     private readonly HttpClient _http = new();
+
     public async Task<List<ConfigurationPolicyModel>?> GetConfigurationPoliciesListAsync(string? accessToken)
     {
         _http.DefaultRequestHeaders.Clear();
@@ -26,18 +28,18 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                 {
                     var response = await _http.GetAsync(nextUrl);
                     var responseStream = await response.Content.ReadAsStreamAsync();
-
                     using var sr = new StreamReader(responseStream);
                     // Read the stream to a string
                     var content = await sr.ReadToEndAsync();
-
                     // Deserialize the string to your model
+                    //var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<ConfigurationPolicyModel>>(responseStream, CustomJsonOptions.Default());
                     var result = JsonConvert.DeserializeObject<GraphValueResponse<ConfigurationPolicyModel>>(content);
-                    if (result?.Value is null)
+                    if (result is null)
                     {
                         nextUrl = null;
                         continue;
                     }
+
                     results.AddRange(result.Value);
                     nextUrl = result.ODataNextLink;
                 }
@@ -52,42 +54,52 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
             Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
             return null;
         }
+
         return results;
     }
 
-    
-    public async Task<List<CustomPolicySettingsModel>?> GetConfigurationPoliciesSettingsListAsync(string? accessToken, ConfigurationPolicyModel policy)
+
+    public async Task<List<CustomPolicySettingsModel>?> GetConfigurationPoliciesSettingsListAsync(string? accessToken,
+        List<ConfigurationPolicyModel> configurationPolicies)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         var results = new List<CustomPolicySettingsModel>();
         try
         {
-            var nextUrl = $"{GraphUrls.ConfigurationPoliciesUrl}('{policy.Id}')/settings?$expand=settingDefinitions&top=1000";
-
-            try
+            var urlList = new List<string>();
+            foreach (var policy in configurationPolicies)
             {
-                var response = await _http.GetAsync(nextUrl);
-                var responseStream = await response.Content.ReadAsStreamAsync();
+                var policyUrl =
+                    $"/deviceManagement/configurationPolicies('{policy.Id}')/settings?$expand=settingDefinitions&top=1000";
+                urlList.Add(policyUrl);
+            }
 
+            var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
+            foreach (var requestBody in batchRequestBody)
+            {
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+                var responseStream = await response.Content.ReadAsStreamAsync();
                 using var sr = new StreamReader(responseStream);
                 // Read the stream to a string
-                var content = await sr.ReadToEndAsync();
-
-                // Deserialize the string to your model
-                var result = JsonConvert.DeserializeObject<GraphValueResponse<PolicySettingsDefinitionModel>>(content);
-                if (result?.Value is not null)
+                var stringContent = await sr.ReadToEndAsync();
+                var result =
+                    JsonConvert
+                        .DeserializeObject<
+                            GraphBatchResponse<InnerResponseForAssignments<PolicySettingsDefinitionModel>>>(
+                            stringContent, JsonSettings.Default());
+                var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
+                foreach (var assignmentResponse in responsesWithValue.Select(r => r).ToList())
                 {
-                    foreach (var value in result.Value)
+                    string n = assignmentResponse.Body.ODataContext.FetchIdFromContext();
+                    var sourcePolicy = configurationPolicies.FirstOrDefault(p => p.Id == n);
+                    foreach (var setting in assignmentResponse.Body.Value)
                     {
-                        var policySettings = value.ToPolicySettingsModel(policy);
+                        var policySettings = setting.ToPolicySettingsModel(sourcePolicy);
                         results.Add(policySettings);
                     }
                 }
-            }
-            catch (HttpRequestException e)
-            {
-
             }
         }
         catch (ODataError ex)
@@ -95,21 +107,23 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
             Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
             return null;
         }
+
         return results;
     }
-    
 
-    public async Task<int> CreateConfigurationPolicyAsync(string? accessToken, ConfigurationPolicyModel configurationPolicy)
+
+    public async Task<int> CreateConfigurationPolicyAsync(string? accessToken,
+        ConfigurationPolicyModel configurationPolicy)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         try
         {
             var nextUrl = GraphUrls.ConfigurationPoliciesAssignmentsUrl;
-            var json = JsonConvert.SerializeObject(configurationPolicy, JsonSettings.Default());
+            var json = JsonConvert.SerializeObject(configurationPolicy);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _http.PostAsync(nextUrl, content);
-            if(response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 AnsiConsole.MarkupLine($"[green]{configurationPolicy.Name} import was successful[/]");
             }

@@ -20,6 +20,18 @@ public class InnerResponseForAssignments
     public AssignmentsResponseModel Body { get; set; }
 }
 
+public class InnerResponseForSettings<T>
+{
+    [JsonProperty("id")]
+    public string Id { get; set; }
+
+    [JsonProperty("status")]
+    public int Status { get; set; }
+
+    [JsonProperty("body")]
+    public InnerResponseBodyRoleAssignmentsBody<T> Body { get; set; }
+}
+
 public class BatchResponseForAssignments<T>
 {
     [JsonProperty("id")]

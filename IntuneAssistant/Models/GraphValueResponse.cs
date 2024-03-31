@@ -2,6 +2,7 @@ using IntuneAssistant.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace IntuneAssistant.Models;
 
@@ -24,7 +25,7 @@ public static class CustomJsonOptions
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
+            PropertyNameCaseInsensitive = true
         };
 
         options.Converters.Add(new ODataTypeConverter());
