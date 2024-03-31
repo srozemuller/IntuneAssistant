@@ -86,11 +86,9 @@
         {
             var configurationPolicies = await ConfigurationPolicyService.GetConfigurationPoliciesListAsync(_accessToken);
             if (configurationPolicies != null)
-                foreach (var policy in configurationPolicies)
-                {
-                    var configurationPoliciesSettingsResults = await ConfigurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, policy);
-
-                    if (configurationPoliciesSettingsResults is not null)
+            {
+                var configurationPoliciesSettingsResults = await ConfigurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, configurationPolicies);
+                if (configurationPoliciesSettingsResults is not null)
                     {
                         foreach (var setting in configurationPoliciesSettingsResults)
                         {
@@ -105,8 +103,8 @@
                             });
                         }
                     }
-                }
-            _loading = false;
+                _loading = false;
+            }
         }
         else
         {
