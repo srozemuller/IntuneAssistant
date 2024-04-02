@@ -1,11 +1,12 @@
-using System.Data;
-using Spectre.Console;
 using System.Text;
 using IntuneAssistant.Constants;
+using IntuneAssistant.Models;
+using IntuneAssistant.Models.XLS;
+using Microsoft.JSInterop;
 
 namespace IntuneAssistant.Extensions;
 
-public static class ExportData
+public class ExportData
 {
     public static string ExportCsv<T>(List<T>? genericList, string fileName)
     {
@@ -47,5 +48,35 @@ public static class ExportData
             sw.Close();
         }
         return finalPath;
+    }
+    
+    public async Task GenerateAssignmentsOverviewXLSAsync(IJSRuntime js, 
+        List<CustomAssignmentsModel> data, 
+        string filename = "export.xlsx")
+    {
+        var assignments = new AssignmentsXlsModel();
+        var XLSStream = assignments.Global(data.ToArray());
+
+        await js.InvokeVoidAsync("BlazorDownloadFile", filename, XLSStream);
+    }
+    
+    public async Task GenerateGroupAssignmentsOverviewXlsAsync(IJSRuntime js, 
+        List<CustomAssignmentsModel> data, 
+        string filename = "export.xlsx")
+    {
+        var assignments = new AssignmentsXlsModel();
+        var XLSStream = assignments.Group(data.ToArray());
+
+        await js.InvokeVoidAsync("BlazorDownloadFile", filename, XLSStream);
+    }
+    
+    public async Task GeneratePolicySettingsOverviewXlsAsync(IJSRuntime js, 
+        List<CustomPolicySettingsModel> data, 
+        string filename = "export.xlsx")
+    {
+        var assignments = new PolicySettingsXlsModel();
+        var XLSStream = assignments.Global(data.ToArray());
+
+        await js.InvokeVoidAsync("BlazorDownloadFile", filename, XLSStream);
     }
 }
