@@ -7,6 +7,7 @@ using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
@@ -41,6 +42,23 @@ public sealed class AssignmentsService : IAssignmentsService
                             responseStream,
                             CustomJsonOptions.Default());
                 var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
+                var responsesWithNoValue = result.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
+                foreach (var nonAssigned in responsesWithNoValue)
+                {
+                    var policyId = nonAssigned.Body.ODataContext.FetchIdFromContext();
+                    var sourcePolicy = configurationPolicies.FirstOrDefault(p =>
+                        nonAssigned != null &&
+                        p.Id == policyId);
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                    {
+                        Id = sourcePolicy?.Id,
+                        DisplayName = sourcePolicy?.Name,
+                        Assignments = new List<Assignment>()
+                    };
+                    var configurationPolicyAssignment =
+                        resource.Assignments.FirstOrDefault().ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                    results.Add(configurationPolicyAssignment);
+                }
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
                     var sourcePolicy = configurationPolicies.FirstOrDefault(p =>
@@ -165,17 +183,17 @@ public sealed class AssignmentsService : IAssignmentsService
                     {
                         foreach (var assignment in resource.Assignments)
                         {
-                            var configurationPolicyAssignment =
+                            var DeviceConfigurationAssignment =
                                 assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
-                            results.Add(configurationPolicyAssignment);
+                            results.Add(DeviceConfigurationAssignment);
                         }
                     }
                     else
                         foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            var configurationPolicyAssignment =
+                            var DeviceConfigurationAssignment =
                                 assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
-                            results.Add(configurationPolicyAssignment);
+                            results.Add(DeviceConfigurationAssignment);
                         }
                 }
             }

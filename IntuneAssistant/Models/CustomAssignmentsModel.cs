@@ -58,45 +58,58 @@ public class AssignmentsResponseModel
     [JsonPropertyName("assignments@odata.context")]
     public string AssignmentsOdataContext { get; set; }
 
-    public List<Assignment> Assignments { get; set; }
+    public List<Assignment>? Assignments { get; set; }
 }
 
 public static class AssignmentModelExtensions
 {
-    public static CustomAssignmentsModel ToAssignmentModel(this Assignment assignment, AssignmentsResponseModel assigmentResponseModel, Enums.ResourceTypes resourceType)
+    public static CustomAssignmentsModel ToAssignmentModel(this Assignment? assignment, AssignmentsResponseModel? assigmentResponseModel, Enums.ResourceTypes resourceType)
     {
         string targetId = String.Empty;
         string pattern2 = "AssignmentTarget";
-        string assignmentType = assignment.Target.OdataType;
+        var assignmentType = String.Empty;
+        bool assigned = false;
         string filterId = "No filter";
-        bool assigned = !assignment.Target.OdataType.IsNullOrEmpty();
-        var resourceTypeString = ResourceHelper.GetResourceTypeFromOdata(assigmentResponseModel.OdataType);
-        if (resourceTypeString.IsNullOrEmpty())
+        string filterType = "None";
+        var resourceTypeString = "Unknown resource type";
+
+        if (assignment is null)
         {
-            resourceTypeString = resourceType.GetDescription();
+            assignmentType = "No assignment";
         }
-        if (assignment.Target.DeviceAndAppManagementAssignmentFilterId is not null)
+        else
         {
-            filterId = assignment.Target.DeviceAndAppManagementAssignmentFilterId;
+            filterType = assignment.Target.DeviceAndAppManagementAssignmentFilterType;
+            if (assignment.Id.IsNullOrEmpty())
+            {
+                assignmentType = assignment.Target.OdataType;
+            }
+            if (assignment.Target.DeviceAndAppManagementAssignmentFilterId is not null)
+            {
+                filterId = assignment.Target.DeviceAndAppManagementAssignmentFilterId;
+            }
+            if (assignment.Target.OdataType.StartsWith(AppConfiguration.STRINGTOREMOVE))
+            {
+                assignmentType = StringExtensions.GetStringBetweenTwoStrings(assignment.Target.OdataType, AppConfiguration.STRINGTOREMOVE, pattern2);
+            }
+            if (assignment.Target.GroupId is not null)
+            {
+                targetId = assignment.Target.GroupId;
+            }
+            assigned = !assignment.Target.OdataType.IsNullOrEmpty();
         }
-        if (assignmentType.StartsWith(AppConfiguration.STRINGTOREMOVE))
-        {
-            assignmentType = StringExtensions.GetStringBetweenTwoStrings(assignment.Target.OdataType, AppConfiguration.STRINGTOREMOVE, pattern2);
-        }
-        if (assignment.Target.GroupId is not null)
-        {
-            targetId = assignment.Target.GroupId;
-        }
+
+        
         return new CustomAssignmentsModel
         {
             AssignmentType = assignmentType,
             IsAssigned = assigned,
-            ResourceType = resourceTypeString,
+            ResourceType = resourceType.GetDescription(),
             ResourceId = assigmentResponseModel.Id,
             TargetId = targetId,
             ResourceName = assigmentResponseModel.DisplayName,
             FilterId = filterId,
-            FilterType = assignment.Target.DeviceAndAppManagementAssignmentFilterType
+            FilterType = filterType
         };
     }
     

@@ -137,7 +137,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 break;
         }
         
-        var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","AssignmentType","FilterId","FilterType" };
+        var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","IsAssigned","AssignmentType","FilterId","FilterType" };
         // Create a table with dynamic columns
         var table = new Table();
         table.Collapse();
@@ -155,6 +155,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 item.ResourceType,
                 item.ResourceName.EscapeMarkup(),
                 item.ResourceId,
+                item.IsAssigned ? "Assigned" : "Not Assigned",
                 item.AssignmentType,
                 item.FilterId,
                 item.FilterType
