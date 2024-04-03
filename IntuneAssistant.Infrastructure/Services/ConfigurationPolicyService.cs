@@ -58,6 +58,50 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
         return results;
     }
 
+    public async Task<List<DeviceConfigurationModel>?> GetDeviceConfigurationsListAsync(string? accessToken)
+    {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<DeviceConfigurationModel>();
+        try
+        {
+            var nextUrl = GraphUrls.DeviceConfigurationsUrl;
+            while (nextUrl is not null)
+            {
+                try
+                {
+                    var response = await _http.GetAsync(nextUrl);
+                    var responseStream = await response.Content.ReadAsStreamAsync();
+                    using var sr = new StreamReader(responseStream);
+                    // Read the stream to a string
+                    var content = await sr.ReadToEndAsync();
+                    // Deserialize the string to your model
+                    //var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<ConfigurationPolicyModel>>(responseStream, CustomJsonOptions.Default());
+                    var result = JsonConvert.DeserializeObject<GraphValueResponse<DeviceConfigurationModel>>(content);
+                    if (result is null)
+                    {
+                        nextUrl = null;
+                        continue;
+                    }
+
+                    results.AddRange(result.Value);
+                    nextUrl = result.ODataNextLink;
+                }
+                catch (HttpRequestException e)
+                {
+                    nextUrl = null;
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
+            return null;
+        }
+
+        return results;
+    }
+
 
     public async Task<List<CustomPolicySettingsModel>?> GetConfigurationPoliciesSettingsListAsync(string? accessToken,
         List<ConfigurationPolicyModel> configurationPolicies)

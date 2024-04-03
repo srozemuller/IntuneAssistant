@@ -73,6 +73,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         {
             FetchCompliancePoliciesAsync(accessToken),
             FetchConfigurationPoliciesAsync(accessToken),
+            FetchDeviceConfigurationsAsync(accessToken),
             FetchDeviceScriptsAsync(accessToken),
             FetchHealthScriptsAsync(accessToken),
             FetchAutoPilotAssignmentsListAsync(accessToken),
@@ -219,6 +220,17 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         }
         var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, null, compliancePolicies);
         return complianceResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceConfigurationsAsync(string? accessToken)
+    {
+        var deviceConfigurations =
+            await _configurationPolicyService.GetDeviceConfigurationsListAsync(accessToken);
+        if (deviceConfigurations is null)
+        {
+            return null;
+        }
+        var deviceConfigurationsResults = await _assignmentsService.GetDeviceConfigurationsAssignmentsListAsync(accessToken, null, deviceConfigurations);
+        return deviceConfigurationsResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchConfigurationPoliciesAsync(string? accessToken)
     {
