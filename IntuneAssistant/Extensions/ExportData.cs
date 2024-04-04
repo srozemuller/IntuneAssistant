@@ -50,13 +50,14 @@ public class ExportData
         return finalPath;
     }
     
-    public async Task GenerateAssignmentsOverviewXLSAsync(IJSRuntime js, 
+    public async Task GetGenerateAssignmentsOverviewXlsAsync(IJSRuntime? js, 
         List<CustomAssignmentsModel> data, 
         string filename = "export.xlsx")
     {
         var assignments = new AssignmentsXlsModel();
         var XLSStream = assignments.Global(data.ToArray());
-
+        
+        if (js is null) return;
         await js.InvokeVoidAsync("BlazorDownloadFile", filename, XLSStream);
     }
     

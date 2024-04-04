@@ -43,3 +43,9 @@ public static class AppConfiguration
     public static readonly KeyValuePair<string, string> LinuxKeyRingAttr1 = new("Version", "1");
     public static readonly KeyValuePair<string, string> LinuxKeyRingAttr2 = new("ProductGroup", "MyApps");
 }
+
+public static class ExcelConfiguration
+{
+    public const string AUTHOR = "Intune Assistant";
+    public const string TITLE = "Intune Export";
+}
