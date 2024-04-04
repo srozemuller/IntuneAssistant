@@ -155,7 +155,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 item.ResourceType,
                 item.ResourceName.EscapeMarkup(),
                 item.ResourceId,
-                item.IsAssigned ? "Assigned" : "Not Assigned",
+                item.IsAssigned.ToString(),
                 item.AssignmentType,
                 item.FilterId,
                 item.FilterType

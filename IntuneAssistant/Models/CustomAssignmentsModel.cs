@@ -88,9 +88,9 @@ public static class AssignmentModelExtensions
             {
                 filterId = assignment.Target.DeviceAndAppManagementAssignmentFilterId;
             }
-            if (assignment.Target.OdataType.StartsWith(AppConfiguration.STRINGTOREMOVE))
+            if (assignment.Target.OdataType is not null)
             {
-                assignmentType = StringExtensions.GetStringBetweenTwoStrings(assignment.Target.OdataType, AppConfiguration.STRINGTOREMOVE, pattern2);
+                assignmentType = ResourceHelper.GetAssignmentTypeFromOdata(assignment.Target.OdataType);
             }
             if (assignment.Target.GroupId is not null)
             {
