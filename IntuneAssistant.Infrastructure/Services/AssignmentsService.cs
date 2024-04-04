@@ -110,6 +110,7 @@ public sealed class AssignmentsService : IAssignmentsService
             var result =
                 await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
                     CustomJsonOptions.Default());
+            
             if (result?.Value is not null)
             {
                 foreach (var resource in result.Value)
@@ -167,6 +168,23 @@ public sealed class AssignmentsService : IAssignmentsService
                         .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
                             responseStream,
                             CustomJsonOptions.Default());
+                var responsesWithNoValue = result.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
+                foreach (var nonAssigned in responsesWithNoValue)
+                {
+                    var policyId = nonAssigned.Body.ODataContext.FetchIdFromContext();
+                    var sourcePolicy = configurations.FirstOrDefault(p =>
+                        nonAssigned != null &&
+                        p.Id == policyId);
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                    {
+                        Id = sourcePolicy?.Id,
+                        DisplayName = sourcePolicy?.DisplayName,
+                        Assignments = new List<Assignment>()
+                    };
+                    var configurationsAssignment =
+                        resource.Assignments.FirstOrDefault().ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                    results.Add(configurationsAssignment);
+                }
                 var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
@@ -232,6 +250,23 @@ public sealed class AssignmentsService : IAssignmentsService
                         .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
                             responseStream,
                             CustomJsonOptions.Default());
+                var responsesWithNoValue = result.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
+                foreach (var nonAssigned in responsesWithNoValue)
+                {
+                    var policyId = nonAssigned.Body.ODataContext.FetchIdFromContext();
+                    var sourcePolicy = groupPolicies.FirstOrDefault(p =>
+                        nonAssigned != null &&
+                        p.Id == policyId);
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                    {
+                        Id = sourcePolicy?.Id,
+                        DisplayName = sourcePolicy?.DisplayName,
+                        Assignments = new List<Assignment>()
+                    };
+                    var assignmentResponse =
+                        resource.Assignments.FirstOrDefault().ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                    results.Add(assignmentResponse);
+                }
                 var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
@@ -657,6 +692,23 @@ public sealed class AssignmentsService : IAssignmentsService
                         .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
                             responseStream,
                             CustomJsonOptions.Default());
+                var responsesWithNoValue = result.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
+                foreach (var nonAssigned in responsesWithNoValue)
+                {
+                    var policyId = nonAssigned.Body.ODataContext.FetchIdFromContext();
+                    var sourcePolicy = compliancePolicies.FirstOrDefault(p =>
+                        nonAssigned != null &&
+                        p.Id == policyId);
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                    {
+                        Id = sourcePolicy?.Id,
+                        DisplayName = sourcePolicy?.DisplayName,
+                        Assignments = new List<Assignment>()
+                    };
+                    var assignmentResponse =
+                        resource.Assignments.FirstOrDefault().ToAssignmentModel(resource, ResourceTypes.WindowsCompliancePolicy);
+                    results.Add(assignmentResponse);
+                }
                 var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
