@@ -46,8 +46,9 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     private readonly IIdentityHelperService _identityHelperService;
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly ICompliancePoliciesService _compliancePoliciesService;
+    private readonly IDeviceScriptsService _deviceScriptsService;
     private readonly IAssignmentFiltersService _assignmentFiltersService;
-    public FetchAssignmentsGroupCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentFiltersService)
+    public FetchAssignmentsGroupCommandHandler(IDeviceScriptsService deviceScriptsService, IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentFiltersService)
     {
         _assignmentsService = assignmentsService;
         _groupInformationService = groupInformationService;
@@ -55,6 +56,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         _configurationPolicyService = configurationPolicyService;
         _compliancePoliciesService = compliancePoliciesService;
         _assignmentFiltersService = assignmentFiltersService;
+        _deviceScriptsService = deviceScriptsService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsGroupCommandOptions options)
     {
@@ -304,7 +306,12 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     }
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string? accessToken, GroupModel groupInfo)
     {
-        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, groupInfo);
+        var deviceScripts = await _deviceScriptsService.GetDeviceScriptsListAsync(accessToken);
+        if (deviceScripts is null)
+        {
+            return null;
+        }
+        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, groupInfo, deviceScripts);
         return deviceScriptsResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string? accessToken, GroupModel groupInfo)

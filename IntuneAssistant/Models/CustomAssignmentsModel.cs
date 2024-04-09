@@ -52,8 +52,8 @@ public class AssignmentsResponseModel
     [JsonPropertyName("@odata.type")]
     public string OdataType { get; set; }
 
-    public string Id { get; set; }
-    public string DisplayName { get; set; }
+    public string? Id { get; set; }
+    public string? DisplayName { get; set; }
 
     [JsonPropertyName("assignments@odata.context")]
     public string AssignmentsOdataContext { get; set; }

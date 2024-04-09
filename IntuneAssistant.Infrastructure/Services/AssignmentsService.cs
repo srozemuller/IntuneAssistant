@@ -41,24 +41,26 @@ public sealed class AssignmentsService : IAssignmentsService
                         .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
                             responseStream,
                             CustomJsonOptions.Default());
-                var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
-                var responsesWithNoValue = result.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
-                foreach (var nonAssigned in responsesWithNoValue)
-                {
-                    var policyId = nonAssigned.Body.ODataContext.FetchIdFromContext();
-                    var sourcePolicy = configurationPolicies.FirstOrDefault(p =>
-                        nonAssigned != null &&
-                        p.Id == policyId);
-                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                var responsesWithValue = result?.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).ToList();
+                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
+                if (responsesWithNoValue != null)
+                    foreach (var nonAssigned in responsesWithNoValue)
                     {
-                        Id = sourcePolicy?.Id,
-                        DisplayName = sourcePolicy?.Name,
-                        Assignments = new List<Assignment>()
-                    };
-                    var configurationPolicyAssignment =
-                        resource.Assignments.FirstOrDefault().ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
-                    results.Add(configurationPolicyAssignment);
-                }
+                        var policyId = nonAssigned.Body.ODataContext.FetchIdFromContext();
+                        var sourcePolicy = configurationPolicies.FirstOrDefault(p =>
+                            p.Id == policyId);
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = sourcePolicy?.Id,
+                            DisplayName = sourcePolicy?.Name,
+                            Assignments = new List<Assignment>()
+                        };
+                        var configurationPolicyAssignment =
+                            resource.Assignments.FirstOrDefault()
+                                .ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                        results.Add(configurationPolicyAssignment);
+                    }
+
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
                     var sourcePolicy = configurationPolicies.FirstOrDefault(p =>
@@ -98,50 +100,172 @@ public sealed class AssignmentsService : IAssignmentsService
     }
 
     public async Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string? accessToken,
-        GroupModel? group)
+        GroupModel? group, List<DeviceScriptsModel> deviceScripts)
     {
-        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<CustomAssignmentsModel>();
         try
         {
-            var response = await _http.GetAsync(GraphUrls.DeviceManagementScriptsUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            
-            if (result?.Value is not null)
+            var urlList = new List<string>();
+            foreach (var script in deviceScripts)
             {
-                foreach (var resource in result.Value)
+                var scriptUrl =
+                    $"/deviceManagement/deviceManagementScripts('{script.Id}')?$expand=assignments";
+                urlList.Add(scriptUrl);
+            }
+            var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
+            foreach (var requestBody in batchRequestBody)
+            {
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result =
+                    await JsonSerializer
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
+                            responseStream,
+                            CustomJsonOptions.Default());
+                var responsesWithValue = result?.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).ToList();
+                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
+                if (responsesWithNoValue != null)
+                    foreach (var nonAssigned in responsesWithNoValue)
+                    {
+                        var policyId = nonAssigned.Body.ODataContext.FetchIdFromContext();
+                        var sourceScript = deviceScripts.FirstOrDefault(p =>
+                            p.Id == policyId);
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = sourceScript?.Id,
+                            DisplayName = sourceScript?.DisplayName,
+                            Assignments = new List<Assignment>()
+                        };
+                        var configurationPolicyAssignment =
+                            resource.Assignments.FirstOrDefault()
+                                .ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                        results.Add(configurationPolicyAssignment);
+                    }
+
+                foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
+                    var sourcePolicy = deviceScripts.FirstOrDefault(p =>
+                        assignmentResponse != null &&
+                        p.Id == assignmentResponse.Select(a => a.SourceId).FirstOrDefault());
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                    {
+                        Id = sourcePolicy?.Id,
+                        DisplayName = sourcePolicy?.DisplayName,
+                        Assignments = assignmentResponse.Select(a => a).ToList()
+                    };
                     if (group is null)
                     {
                         foreach (var assignment in resource.Assignments)
                         {
-                            var deviceManagementScriptAssigment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.DeviceManagementScript);
-                            results.Add(deviceManagementScriptAssigment);
+                            var configurationPolicyAssignment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                            results.Add(configurationPolicyAssignment);
                         }
                     }
                     else
                         foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
-                            var deviceManagementScriptAssigment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.DeviceManagementScript);
-                            results.Add(deviceManagementScriptAssigment);
+                            var configurationPolicyAssignment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                            results.Add(configurationPolicyAssignment);
                         }
                 }
             }
+            return results;
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-            return null;
         }
-
-        return results;
+        return null;
     }
+
+    public async Task<List<CustomAssignmentsModel>?> GetDeviceShellScriptsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceScriptsModel> deviceShellScripts)
+    {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<CustomAssignmentsModel>();
+        try
+        {
+            var urlList = new List<string>();
+            foreach (var script in deviceShellScripts)
+            {
+                var scriptUrl =
+                    $"/deviceManagement/deviceShellScripts('{script.Id}')?$expand=assignments";
+                urlList.Add(scriptUrl);
+            }
+            var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
+            foreach (var requestBody in batchRequestBody)
+            {
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result =
+                    await JsonSerializer
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
+                            responseStream,
+                            CustomJsonOptions.Default());
+                var responsesWithValue = result?.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).ToList();
+                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
+                if (responsesWithNoValue != null)
+                    foreach (var nonAssigned in responsesWithNoValue)
+                    {
+                        var policyId = nonAssigned.Body.ODataContext.FetchIdFromContext();
+                        var sourceScript = deviceShellScripts.FirstOrDefault(p =>
+                            p.Id == policyId);
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = sourceScript?.Id,
+                            DisplayName = sourceScript?.DisplayName,
+                            Assignments = new List<Assignment>()
+                        };
+                        var configurationPolicyAssignment =
+                            resource.Assignments.FirstOrDefault()
+                                .ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                        results.Add(configurationPolicyAssignment);
+                    }
+
+                foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
+                {
+                    var sourcePolicy = deviceShellScripts.FirstOrDefault(p =>
+                        assignmentResponse != null &&
+                        p.Id == assignmentResponse.Select(a => a.SourceId).FirstOrDefault());
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                    {
+                        Id = sourcePolicy?.Id,
+                        DisplayName = sourcePolicy?.DisplayName,
+                        Assignments = assignmentResponse.Select(a => a).ToList()
+                    };
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var configurationPolicyAssignment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                            results.Add(configurationPolicyAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var configurationPolicyAssignment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                            results.Add(configurationPolicyAssignment);
+                        }
+                }
+            }
+            return results;
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+        }
+        return null;
+    }
+
     public async Task<List<CustomAssignmentsModel>?> GetDeviceConfigurationsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceConfigurationModel> configurations)
     {
         _http.DefaultRequestHeaders.Clear();

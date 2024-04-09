@@ -44,8 +44,9 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     private readonly ICompliancePoliciesService _compliancePoliciesService;
     private readonly IAssignmentFiltersService _assignmentFiltersService;
     private readonly IGroupInformationService _groupInformationService;
+    private readonly IDeviceScriptsService _deviceScriptsService;
 
-    public FetchAssignmentsCommandHandler(IGroupInformationService groupInformationService, IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentsFilterService)
+    public FetchAssignmentsCommandHandler(IDeviceScriptsService deviceScriptsService, IGroupInformationService groupInformationService, IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentsFilterService)
     {
         _assignmentsService = assignmentsService;
         _identityHelperService = identityHelperService;
@@ -53,6 +54,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         _compliancePoliciesService = compliancePoliciesService;
         _assignmentFiltersService = assignmentsFilterService;
         _groupInformationService = groupInformationService;
+        _deviceScriptsService = deviceScriptsService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsCommandOptions options)
     {
@@ -75,6 +77,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         {
             FetchCompliancePoliciesAsync(accessToken),
             FetchConfigurationPoliciesAsync(accessToken),
+            FetchDeviceShellScriptsAsync(accessToken),
             FetchDeviceConfigurationsAsync(accessToken),
             FetchGroupPolicyConfigurationsAsync(accessToken),
             FetchDeviceScriptsAsync(accessToken),
@@ -268,7 +271,22 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     }
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string? accessToken)
     {
-        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
+        var deviceScripts = await _deviceScriptsService.GetDeviceScriptsListAsync(accessToken);
+        if (deviceScripts is null)
+        {
+            return null;
+        }
+        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null, deviceScripts);
+        return deviceScriptsResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceShellScriptsAsync(string? accessToken)
+    {
+        var deviceShellScripts = await _deviceScriptsService.GetDeviceScriptsListAsync(accessToken);
+        if (deviceShellScripts is null)
+        {
+            return null;
+        }
+        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null, deviceShellScripts);
         return deviceScriptsResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string? accessToken)
