@@ -15,6 +15,8 @@ public enum ResourceTypes
 {
     [Description("Update Ring Configuration")]
     UpdateRingConfiguration,
+    [Description("Group Policy Configurations")]
+    GroupPolicyConfiguration,
     [Description("Windows Compliance Policy")]
     WindowsCompliancePolicy,
     [Description("iOS Compliance Policy")]
@@ -47,8 +49,6 @@ public enum ResourceTypes
     MacOsShellScript,
     [Description("Disk Encryption Policy")]
     DiskEncryptionPolicy,
-    [Description("macOS Update Policy")]
-    MacOsUpdatePolicy,
     [Description("Platform Scripts")]
     PlatformScripts,
     [Description("Managed Application Policy")]
@@ -81,6 +81,7 @@ public enum ResourceTypes
     DeviceEnrollmentPlatformRestrictionsConfiguration,
     [Description("Device Enrollment Limit Configuration")]
     DeviceEnrollmentLimitConfiguration,
+    
     [Description("User")]
     User,
     [Description("Device")]
