@@ -37,6 +37,15 @@ public static class ResourceHelper
                 return ResourceTypes.DeviceEnrollmentPlatformRestrictionsConfiguration.GetDescription();
             case "#microsoft.graph.deviceEnrollmentLimitConfiguration" :    
                 return ResourceTypes.DeviceEnrollmentLimitConfiguration.GetDescription();
+            case "#microsoft.graph.windows10GeneralConfiguration" :
+                return "Windows 10 General Configuration";
+            case "#microsoft.graph.windowsWifiConfiguration" :
+                return "Windows Wifi Configuration";
+            case "#microsoft.graph.windows10EndpointProtectionConfiguration" :
+                return "Windows 10 Endpoint Protection Configuration";
+            case "#microsoft.graph.windowsDeliveryOptimizationConfiguration" :
+                return "Windows Delivery Optimization Configuration";
+            
             case "#microsoft.graph.user" :    
                 return ResourceTypes.User.GetDescription();
             case "#microsoft.graph.device" :    
