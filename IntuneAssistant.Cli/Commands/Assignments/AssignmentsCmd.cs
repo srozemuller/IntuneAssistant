@@ -78,26 +78,26 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             FetchCompliancePoliciesAsync(accessToken),
             FetchConfigurationPoliciesAsync(accessToken),
             FetchDeviceShellScriptsAsync(accessToken),
+            
             FetchDeviceConfigurationsAsync(accessToken),
-            FetchGroupPolicyConfigurationsAsync(accessToken),
-            FetchDeviceScriptsAsync(accessToken),
-            FetchHealthScriptsAsync(accessToken),
-            FetchAutoPilotAssignmentsListAsync(accessToken),
-            FetchAppProtectionAssignmentsListAsync(accessToken),
-            FetchMobileAppAssignmentsListAsync(accessToken),
-            FetchTargetAppAssignmentsListAsync(accessToken),
-            FetchUpdateRingsAssignmentsListAsync(accessToken),
-            FetchFeatureUpdateAssignmentsListAsync(accessToken),
-            FetchDriverUpdateAssignmentsListAsync(accessToken),
-            FetchMacOsScriptAssignmentsListAsync(accessToken),
-            FetchDiskEncryptionAssignmentsListAsync(accessToken),
-            FetchUpdatePoliciesForMacAssignmentsListAsync(accessToken),
-            FetchPlatformScriptAssignmentsListAsync(accessToken),
-            FetchManagedAppPolicyAssignmentListAsync(accessToken),
-            FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken),
-            FetchDeviceLimitRestrictionsAssignmentListAsync(accessToken),
-            FetchMacOsCustomAttributesAssignmentListAsync(accessToken),
-            FetchIosLobAppProvisioningAssignmentListAsync(accessToken)
+             FetchGroupPolicyConfigurationsAsync(accessToken),
+             FetchDeviceScriptsAsync(accessToken),
+             FetchHealthScriptsAsync(accessToken),
+             FetchAutoPilotAssignmentsListAsync(accessToken),
+             FetchAppProtectionAssignmentsListAsync(accessToken),
+             FetchMobileAppAssignmentsListAsync(accessToken),
+             FetchTargetAppAssignmentsListAsync(accessToken),
+             FetchUpdateRingsAssignmentsListAsync(accessToken),
+             FetchFeatureUpdateAssignmentsListAsync(accessToken),
+             FetchDriverUpdateAssignmentsListAsync(accessToken),
+             FetchMacOsScriptAssignmentsListAsync(accessToken),
+             FetchDiskEncryptionAssignmentsListAsync(accessToken),
+             FetchPlatformScriptAssignmentsListAsync(accessToken),
+             FetchManagedAppPolicyAssignmentListAsync(accessToken),
+             FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken),
+             FetchDeviceLimitRestrictionsAssignmentListAsync(accessToken),
+             FetchMacOsCustomAttributesAssignmentListAsync(accessToken),
+             FetchIosLobAppProvisioningAssignmentListAsync(accessToken)
         };
         await AnsiConsole.Status().SpinnerStyle(Color.Orange1)
             .StartAsync(
@@ -343,12 +343,6 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         var diskEncyrptionResults =
             await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, null);
         return diskEncyrptionResults;
-    }
-    private async Task<List<CustomAssignmentsModel>?> FetchUpdatePoliciesForMacAssignmentsListAsync(string? accessToken)
-    {
-        var updatesForMacResults =
-            await _assignmentsService.GetUpdatesForMacAssignmentListAsync(accessToken, null);
-        return updatesForMacResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchPlatformScriptAssignmentsListAsync(string? accessToken)
     {
