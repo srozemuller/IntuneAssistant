@@ -267,7 +267,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
             FetchDriverUpdateAssignmentsListAsync(accessToken, groupInfo),
             FetchMacOsScriptAssignmentsListAsync(accessToken, groupInfo),
             FetchDiskEncryptionAssignmentsListAsync(accessToken, groupInfo),
-            FetchUpdatePoliciesForMacAssignmentsListAsync(accessToken, groupInfo),
             FetchPlatformScriptAssignmentsListAsync(accessToken, groupInfo),
             FetchManagedAppPolicyAssignmentListAsync(accessToken, groupInfo),
             FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken, groupInfo),
@@ -369,12 +368,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         var diskEncyrptionResults =
             await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, groupInfo);
         return diskEncyrptionResults;
-    }
-    private async Task<List<CustomAssignmentsModel>?> FetchUpdatePoliciesForMacAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
-    {
-        var updatesForMacResults =
-            await _assignmentsService.GetUpdatesForMacAssignmentListAsync(accessToken, groupInfo);
-        return updatesForMacResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchPlatformScriptAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
     {
