@@ -1,4 +1,6 @@
 using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace IntuneAssistant.Models;
 
@@ -72,6 +74,7 @@ public class RoleAssignmentsDetails<T>
 public class InnerResponseBodyRoleAssignmentsBody<T>
 {
     [JsonProperty("@odata.context")]
+    [JsonPropertyName("@odata.context")]
     public string ODataContext { get; set; }
 
     [JsonProperty("@odata.count")]

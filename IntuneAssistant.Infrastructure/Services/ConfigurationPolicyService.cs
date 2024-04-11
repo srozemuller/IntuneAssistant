@@ -32,7 +32,6 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                     // Read the stream to a string
                     var content = await sr.ReadToEndAsync();
                     // Deserialize the string to your model
-                    //var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<ConfigurationPolicyModel>>(responseStream, CustomJsonOptions.Default());
                     var result = JsonConvert.DeserializeObject<GraphValueResponse<ConfigurationPolicyModel>>(content);
                     if (result is null)
                     {

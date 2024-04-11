@@ -32,6 +32,7 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<IAppsService, AppsService>();
     services.AddScoped<ITenantInformationService, TenantInformationService>();
     services.AddScoped<IGlobalGraphService, GlobalGraphService>();
+    services.AddScoped<IDeviceScriptsService, DeviceScriptService>();
 });
 
 if (args.Contains("--help") || args.Contains("-h") || args.Contains("-?"))

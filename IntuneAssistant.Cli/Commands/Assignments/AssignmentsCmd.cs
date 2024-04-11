@@ -5,7 +5,7 @@ using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Extensions.HTML;
-using Microsoft.Graph.Beta.Models;
+using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Assignments;
@@ -43,14 +43,18 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly ICompliancePoliciesService _compliancePoliciesService;
     private readonly IAssignmentFiltersService _assignmentFiltersService;
+    private readonly IGroupInformationService _groupInformationService;
+    private readonly IDeviceScriptsService _deviceScriptsService;
 
-    public FetchAssignmentsCommandHandler(IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentsFilterService)
+    public FetchAssignmentsCommandHandler(IDeviceScriptsService deviceScriptsService, IGroupInformationService groupInformationService, IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService,IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentsFilterService)
     {
         _assignmentsService = assignmentsService;
         _identityHelperService = identityHelperService;
         _configurationPolicyService = configurationPolicyService;
         _compliancePoliciesService = compliancePoliciesService;
         _assignmentFiltersService = assignmentsFilterService;
+        _groupInformationService = groupInformationService;
+        _deviceScriptsService = deviceScriptsService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsCommandOptions options)
     {
@@ -73,6 +77,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         {
             FetchCompliancePoliciesAsync(accessToken),
             FetchConfigurationPoliciesAsync(accessToken),
+            FetchDeviceShellScriptsAsync(accessToken),
             FetchDeviceConfigurationsAsync(accessToken),
             FetchGroupPolicyConfigurationsAsync(accessToken),
             FetchDeviceScriptsAsync(accessToken),
@@ -110,8 +115,14 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         {
             allFiltersInfo =
                 await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
+            var uniqueGroupIds = allResults.DistinctBy(d => d.TargetId).Where(v => !v.TargetId.IsNullOrEmpty()).Select(g => g.TargetId).ToList();
+            var allGroupsInfo = await _groupInformationService.GetGroupInformationByIdsCollectionListAsync(accessToken,
+                    uniqueGroupIds);
             foreach (var result in allResults)
             {
+                var target = allGroupsInfo.Find(g => g?.Id == result.TargetId);
+                string targetFriendly = target?.DisplayName ?? "-";
+                result.TargetName = targetFriendly;
                 var filterInfo = allFiltersInfo?.Find(g => g?.Id == result.FilterId);
                 result.FilterId = filterInfo?.DisplayName ?? "No filter";
             }
@@ -119,7 +130,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
 
         if (exportCsvProvided)
         {
-            var fileLocation = ExportData.ExportCsv(allResults, options.ExportCsv);
+            var fileLocation =   ExportData.ExportCsv(allResults, options.ExportCsv);
             AnsiConsole.Write($"File stored at location {fileLocation}");
             return 0;
         }
@@ -137,7 +148,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 break;
         }
         
-        var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","AssignmentType","FilterId","FilterType" };
+        var selectedColumns = new List<string> { "ResourceType","ResourceName", "ResourceId","IsAssigned","AssignmentType","TargetName","FilterId","FilterType" };
         // Create a table with dynamic columns
         var table = new Table();
         table.Collapse();
@@ -155,7 +166,9 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 item.ResourceType,
                 item.ResourceName.EscapeMarkup(),
                 item.ResourceId,
+                item.IsAssigned.ToString(),
                 item.AssignmentType,
+                item.TargetName,
                 item.FilterId,
                 item.FilterType
             );
@@ -258,7 +271,22 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     }
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string? accessToken)
     {
-        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null);
+        var deviceScripts = await _deviceScriptsService.GetDeviceScriptsListAsync(accessToken);
+        if (deviceScripts is null)
+        {
+            return null;
+        }
+        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null, deviceScripts);
+        return deviceScriptsResults;
+    }
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceShellScriptsAsync(string? accessToken)
+    {
+        var deviceShellScripts = await _deviceScriptsService.GetDeviceScriptsListAsync(accessToken);
+        if (deviceShellScripts is null)
+        {
+            return null;
+        }
+        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null, deviceShellScripts);
         return deviceScriptsResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string? accessToken)

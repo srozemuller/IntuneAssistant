@@ -45,4 +45,21 @@ public static class ResourceHelper
                 return odataString;
         }
     }
+    
+    public static string GetAssignmentTypeFromOdata (string odataString)
+    {
+        switch (odataString)
+        {
+            case "#microsoft.graph.allDevicesAssignmentTarget":
+                return AssignmentODataTypes.AllDevicesAssignmentTarget.GetDescription();
+            case "#microsoft.graph.groupAssignmentTarget":
+                return AssignmentODataTypes.GroupAssignmentTarget.GetDescription();
+            case "#microsoft.graph.allLicensedUsersAssignmentTarget" :
+                return AssignmentODataTypes.AllLicensedUsersAssignmentTarget.GetDescription();
+            case "#microsoft.graph.exclusionGroupAssignmentTarget":
+                return AssignmentODataTypes.GroupExcludeAssignmentTarget.GetDescription();
+            default:
+                return odataString;
+        }
+    }
 }

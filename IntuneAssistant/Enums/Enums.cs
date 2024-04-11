@@ -89,7 +89,12 @@ public enum ResourceTypes
 
 public enum AssignmentODataTypes
 {
+    [Description("All Devices (Intune)")]
     AllDevicesAssignmentTarget,
+    [Description("Entra ID Group")]
     GroupAssignmentTarget,
-    AllLicensedUsersAssignmentTarget
+    [Description("All Users (Intune)")]
+    AllLicensedUsersAssignmentTarget,
+    [Description("Entra ID Group Exclude")]
+    GroupExcludeAssignmentTarget
 }

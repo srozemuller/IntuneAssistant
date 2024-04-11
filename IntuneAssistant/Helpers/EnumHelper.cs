@@ -21,7 +21,6 @@ public static class EnumHelper
                 }
             }
         }
-
         return enumValue.ToString();
     }
 }
