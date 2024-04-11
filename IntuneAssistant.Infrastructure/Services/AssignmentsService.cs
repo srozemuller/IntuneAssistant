@@ -6,6 +6,7 @@ using IntuneAssistant.Extensions;
 using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Group;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 
 namespace IntuneAssistant.Infrastructure.Services;

@@ -80,7 +80,11 @@ public enum ResourceTypes
     [Description("Device Enrollment Platform Restrictions Configuration")]
     DeviceEnrollmentPlatformRestrictionsConfiguration,
     [Description("Device Enrollment Limit Configuration")]
-    DeviceEnrollmentLimitConfiguration
+    DeviceEnrollmentLimitConfiguration,
+    [Description("User")]
+    User,
+    [Description("Device")]
+    Device,
 }
 
 public enum AssignmentODataTypes

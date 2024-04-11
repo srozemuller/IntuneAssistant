@@ -5,6 +5,7 @@ using IntuneAssistant.Extensions;
 using IntuneAssistant.Extensions.HTML;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Group;
 using Spectre.Console;
 
 namespace IntuneAssistant.Cli.Commands.Assignments;

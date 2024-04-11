@@ -1,4 +1,4 @@
-namespace IntuneAssistant.Models;
+namespace IntuneAssistant.Models.Group;
 
 public sealed record GroupModel
 {
