@@ -1,6 +1,6 @@
 namespace IntuneAssistant.Models.Assignments;
 
-public class ScriptsAssignmentsModel
+public class ResourceAssignmentsModel
 {
     public string ODataContext { get; set; }
     public string Id { get; set; }

@@ -23,7 +23,7 @@ public class InnerResponseForAssignments
 }
 
 
-public class InnerResponseForScripts
+public class InnerResponseBodyOnly
 {
     [JsonProperty("id")]
     public string Id { get; set; }
@@ -32,7 +32,7 @@ public class InnerResponseForScripts
     public int Status { get; set; }
 
     [JsonProperty("body")]
-    public ScriptsAssignmentsModel Body { get; set; }
+    public ResourceAssignmentsModel Body { get; set; }
 }
 
 public class InnerResponseForSettings<T>

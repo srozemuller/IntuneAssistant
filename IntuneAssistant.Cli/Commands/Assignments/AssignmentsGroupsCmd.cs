@@ -43,21 +43,25 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
 {
 
     private readonly IAssignmentsService _assignmentsService;
+    private readonly IAppsService _appsService;
     private readonly IGroupInformationService _groupInformationService;
     private readonly IIdentityHelperService _identityHelperService;
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly ICompliancePoliciesService _compliancePoliciesService;
     private readonly IDeviceScriptsService _deviceScriptsService;
     private readonly IAssignmentFiltersService _assignmentFiltersService;
-    public FetchAssignmentsGroupCommandHandler(IDeviceScriptsService deviceScriptsService, IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentFiltersService)
+    private readonly IAutoPilotService _autoPilotService;
+    public FetchAssignmentsGroupCommandHandler(IAppsService appsService, IAutoPilotService autoPilotService, IDeviceScriptsService deviceScriptsService, IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentFiltersService)
     {
         _assignmentsService = assignmentsService;
+        _appsService = appsService;
         _groupInformationService = groupInformationService;
         _identityHelperService = identityHelperService;
         _configurationPolicyService = configurationPolicyService;
         _compliancePoliciesService = compliancePoliciesService;
         _assignmentFiltersService = assignmentFiltersService;
         _deviceScriptsService = deviceScriptsService;
+        _autoPilotService = autoPilotService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsGroupCommandOptions options)
     {
@@ -259,16 +263,14 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
             FetchDeviceScriptsAsync(accessToken, groupInfo),
             FetchHealthScriptsAsync(accessToken, groupInfo),
             FetchAutoPilotAssignmentsListAsync(accessToken, groupInfo),
-            FetchAppProtectionAssignmentsListAsync(accessToken, groupInfo),
+            FetchWindowsAppProtectionAssignmentsListAsync(accessToken, groupInfo),
             FetchMobileAppAssignmentsListAsync(accessToken, groupInfo),
             FetchTargetAppAssignmentsListAsync(accessToken, groupInfo),
             FetchUpdateRingsAssignmentsListAsync(accessToken, groupInfo),
             FetchFeatureUpdateAssignmentsListAsync(accessToken, groupInfo),
             FetchDriverUpdateAssignmentsListAsync(accessToken, groupInfo),
-            FetchMacOsScriptAssignmentsListAsync(accessToken, groupInfo),
             FetchDiskEncryptionAssignmentsListAsync(accessToken, groupInfo),
             FetchUpdatePoliciesForMacAssignmentsListAsync(accessToken, groupInfo),
-            FetchPlatformScriptAssignmentsListAsync(accessToken, groupInfo),
             FetchManagedAppPolicyAssignmentListAsync(accessToken, groupInfo),
             FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken, groupInfo),
             FetchDeviceLimitRestrictionsAssignmentListAsync(accessToken, groupInfo),
@@ -322,17 +324,27 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         {
             return null;
         }
-        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, groupInfo, healthScripts);
+        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsListAsync(accessToken, groupInfo, healthScripts);
         return healthScriptsResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchAutoPilotAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
     {
-        var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsByGroupListAsync(accessToken, groupInfo);
+        var autopilotProfiles = await _autoPilotService.GetWindowsAutopilotDeploymentProfilesListAsync(accessToken);
+        if (autopilotProfiles is null)
+        {
+            return null;
+        }
+        var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsListAsync(accessToken, groupInfo, autopilotProfiles);
         return autoPilotResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchAppProtectionAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
+    private async Task<List<CustomAssignmentsModel>?> FetchWindowsAppProtectionAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
     {
-        var appProtectionResults = await _assignmentsService.GetAppProtectionAssignmentsByGroupListAsync(accessToken, groupInfo);
+        var windowsAppProtections = await _appsService.GetWindowsManagedAppProtectionsListAsync(accessToken);
+        if (windowsAppProtections is null)
+        {
+            return null;
+        }
+        var appProtectionResults = await _assignmentsService.GetWindowsAppProtectionAssignmentsListAsync(accessToken, groupInfo, windowsAppProtections);
         return appProtectionResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
@@ -363,12 +375,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
             await _assignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, groupInfo);
         return driverUpdateResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchMacOsScriptAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
-    {
-        var macOsShellScriptResults =
-            await _assignmentsService.GetMacOsShellScriptsAssignmentListAsync(accessToken, groupInfo);
-        return macOsShellScriptResults;
-    }
     private async Task<List<CustomAssignmentsModel>?> FetchDiskEncryptionAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
     {
         var diskEncyrptionResults =
@@ -379,12 +385,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     {
         var updatesForMacResults =
             await _assignmentsService.GetUpdatesForMacAssignmentListAsync(accessToken, groupInfo);
-        return updatesForMacResults;
-    }
-    private async Task<List<CustomAssignmentsModel>?> FetchPlatformScriptAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
-    {
-        var updatesForMacResults =
-            await _assignmentsService.GetPlatformScriptsAssignmentListAsync(accessToken, groupInfo);
         return updatesForMacResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string? accessToken, GroupModel groupInfo)

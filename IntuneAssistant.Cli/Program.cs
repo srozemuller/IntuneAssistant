@@ -30,6 +30,7 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<IAssignmentsService, AssignmentsService>();
     services.AddScoped<IGroupInformationService, GroupInformationService>();
     services.AddScoped<IAppsService, AppsService>();
+    services.AddScoped<IAutoPilotService, AutopilotService>();
     services.AddScoped<ITenantInformationService, TenantInformationService>();
     services.AddScoped<IGlobalGraphService, GlobalGraphService>();
     services.AddScoped<IDeviceScriptsService, DeviceScriptService>();

@@ -6,6 +6,8 @@ using IntuneAssistant.Extensions;
 using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Apps;
+using IntuneAssistant.Models.AutoPilot;
 using IntuneAssistant.Models.Scripts;
 using IntuneAssistant.Models.Group;
 using Microsoft.Graph.Beta.Models.ODataErrors;
@@ -16,8 +18,9 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class AssignmentsService : IAssignmentsService
 {
     private readonly HttpClient _http = new();
+
     public async Task<List<CustomAssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string? accessToken,
-        GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies)
+        GroupModel? group, List<ConfigurationPolicyModel>? configurationPolicies)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -43,7 +46,8 @@ public sealed class AssignmentsService : IAssignmentsService
                         .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
                             responseStream,
                             CustomJsonOptions.Default());
-                var responsesWithValue = result?.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).ToList();
+                var responsesWithValue =
+                    result?.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).ToList();
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
                 if (responsesWithNoValue != null)
                     foreach (var nonAssigned in responsesWithNoValue)
@@ -92,14 +96,17 @@ public sealed class AssignmentsService : IAssignmentsService
                         }
                 }
             }
+
             return results;
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
         }
+
         return null;
     }
+
     public async Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string? accessToken,
         GroupModel? group, List<DeviceManagementScriptsModel> deviceScripts)
     {
@@ -115,6 +122,7 @@ public sealed class AssignmentsService : IAssignmentsService
                     $"/deviceManagement/deviceManagementScripts('{script.Id}')?$expand=assignments";
                 urlList.Add(scriptUrl);
             }
+
             var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
             foreach (var requestBody in batchRequestBody)
             {
@@ -123,21 +131,21 @@ public sealed class AssignmentsService : IAssignmentsService
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 var result =
                     await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseForScripts>>(
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
                             responseStream,
                             CustomJsonOptions.Default());
-                var responsesWithValue = result?.Responses.Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body).ToList();
-                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty()).Select(b => b.Body);
+                var responsesWithValue = result?.Responses
+                    .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
+                    .ToList();
+                var responsesWithNoValue =
+                    result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty()).Select(b => b.Body);
                 if (responsesWithNoValue != null)
                     foreach (var nonAssigned in responsesWithNoValue)
                     {
-                        var policyId = nonAssigned.Id;
-                        var sourcePolicy = deviceScripts.FirstOrDefault(p =>
-                            p.Id == policyId);
                         AssignmentsResponseModel resource = new AssignmentsResponseModel
                         {
-                            Id = sourcePolicy?.Id,
-                            DisplayName = sourcePolicy?.DisplayName,
+                            Id = nonAssigned?.Id,
+                            DisplayName = nonAssigned?.DisplayName,
                             Assignments = new List<Assignment>()
                         };
                         var configurationPolicyAssignment =
@@ -174,16 +182,19 @@ public sealed class AssignmentsService : IAssignmentsService
                         }
                 }
             }
+
             return results;
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
         }
+
         return null;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetDeviceShellScriptsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceHealthScriptModel> deviceShellScripts)
+    public async Task<List<CustomAssignmentsModel>?> GetDeviceShellScriptsAssignmentsListAsync(string? accessToken,
+        GroupModel? group, List<DeviceShellScriptModel> deviceShellScripts)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -197,6 +208,7 @@ public sealed class AssignmentsService : IAssignmentsService
                     $"/deviceManagement/deviceShellScripts('{script.Id}')?$expand=assignments";
                 urlList.Add(scriptUrl);
             }
+
             var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
             foreach (var requestBody in batchRequestBody)
             {
@@ -205,11 +217,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 var result =
                     await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
                             responseStream,
                             CustomJsonOptions.Default());
-                var responsesWithValue = result?.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).ToList();
-                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
+                var responsesWithValue = result?.Responses
+                    .Where(r => r.Body.Assignments != null && r.Body.Assignments.Any()).ToList();
+                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty()).ToList();
                 if (responsesWithNoValue != null)
                     foreach (var nonAssigned in responsesWithNoValue)
                     {
@@ -228,23 +241,22 @@ public sealed class AssignmentsService : IAssignmentsService
                         results.Add(configurationPolicyAssignment);
                     }
 
-                foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
+                foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body))
                 {
                     var sourcePolicy = deviceShellScripts.FirstOrDefault(p =>
-                        assignmentResponse != null &&
-                        p.Id == assignmentResponse.Select(a => a.SourceId).FirstOrDefault());
+                        p.Id == assignmentResponse.Id);
                     AssignmentsResponseModel resource = new AssignmentsResponseModel
                     {
                         Id = sourcePolicy?.Id,
                         DisplayName = sourcePolicy?.DisplayName,
-                        Assignments = assignmentResponse.Select(a => a).ToList()
+                        Assignments = assignmentResponse.Assignments.ToList()
                     };
                     if (group is null)
                     {
                         foreach (var assignment in resource.Assignments)
                         {
                             var configurationPolicyAssignment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                                assignment.ToAssignmentModel(resource, ResourceTypes.MacOsShellScript);
                             results.Add(configurationPolicyAssignment);
                         }
                     }
@@ -252,21 +264,24 @@ public sealed class AssignmentsService : IAssignmentsService
                         foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
                         {
                             var configurationPolicyAssignment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                                assignment.ToAssignmentModel(resource, ResourceTypes.MacOsShellScript);
                             results.Add(configurationPolicyAssignment);
                         }
                 }
             }
+
             return results;
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
         }
+
         return null;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetDeviceConfigurationsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceConfigurationModel> configurations)
+    public async Task<List<CustomAssignmentsModel>?> GetDeviceConfigurationsAssignmentsListAsync(string? accessToken,
+        GroupModel? group, List<DeviceConfigurationModel> configurations)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -306,9 +321,11 @@ public sealed class AssignmentsService : IAssignmentsService
                         Assignments = new List<Assignment>()
                     };
                     var configurationsAssignment =
-                        resource.Assignments.FirstOrDefault().ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                        resource.Assignments.FirstOrDefault()
+                            .ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
                     results.Add(configurationsAssignment);
                 }
+
                 var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
@@ -339,18 +356,21 @@ public sealed class AssignmentsService : IAssignmentsService
                         }
                 }
             }
+
             return results;
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
         }
+
         return null;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetGroupPolicyConfigurationsAssignmentsListAsync(string? accessToken, GroupModel? group, List<GroupPolicyConfigurationModel> groupPolicies)
+    public async Task<List<CustomAssignmentsModel>?> GetGroupPolicyConfigurationsAssignmentsListAsync(
+        string? accessToken, GroupModel? group, List<GroupPolicyConfigurationModel> groupPolicies)
     {
-         _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         var results = new List<CustomAssignmentsModel>();
         try
@@ -388,9 +408,11 @@ public sealed class AssignmentsService : IAssignmentsService
                         Assignments = new List<Assignment>()
                     };
                     var assignmentResponse =
-                        resource.Assignments.FirstOrDefault().ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
+                        resource.Assignments.FirstOrDefault()
+                            .ToAssignmentModel(resource, ResourceTypes.ConfigurationPolicy);
                     results.Add(assignmentResponse);
                 }
+
                 var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
@@ -404,6 +426,7 @@ public sealed class AssignmentsService : IAssignmentsService
                             assignmentResponse != null &&
                             p.Id == sourceId.FirstOrDefault());
                     }
+
                     AssignmentsResponseModel resource = new AssignmentsResponseModel
                     {
                         Id = sourcePolicy?.Id,
@@ -428,16 +451,18 @@ public sealed class AssignmentsService : IAssignmentsService
                         }
                 }
             }
+
             return results;
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
         }
+
         return null;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string? accessToken,
+    public async Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsListAsync(string? accessToken,
         GroupModel? group, List<DeviceHealthScriptsModel> healthScripts)
     {
         var results = new List<CustomAssignmentsModel>();
@@ -452,6 +477,7 @@ public sealed class AssignmentsService : IAssignmentsService
                     $"/deviceManagement/deviceHealthScripts('{script.Id}')?$expand=assignments";
                 urlList.Add(scriptUrl);
             }
+
             var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
             foreach (var requestBody in batchRequestBody)
             {
@@ -460,11 +486,14 @@ public sealed class AssignmentsService : IAssignmentsService
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 var result =
                     await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseForScripts>>(
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
                             responseStream,
                             CustomJsonOptions.Default());
-                var responsesWithValue = result?.Responses.Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body).ToList();
-                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty()).Select(b => b.Body);
+                var responsesWithValue = result?.Responses
+                    .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
+                    .ToList();
+                var responsesWithNoValue =
+                    result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty()).Select(b => b.Body);
                 if (responsesWithNoValue != null)
                     foreach (var nonAssigned in responsesWithNoValue)
                     {
@@ -511,6 +540,7 @@ public sealed class AssignmentsService : IAssignmentsService
                         }
                 }
             }
+
             return results;
         }
         catch (ODataError ex)
@@ -518,53 +548,93 @@ public sealed class AssignmentsService : IAssignmentsService
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
-
-        return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string? accessToken,
-        GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsListAsync(string? accessToken,
+        GroupModel? group, List<WindowsAutopilotDeploymentProfileModel>? profiles)
     {
-        var results = new List<CustomAssignmentsModel>();
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<CustomAssignmentsModel>();
         try
         {
-            var response = await _http.GetAsync(GraphUrls.WindowsAutopilotDeploymentProfilesUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            if (result?.Value is not null)
-            {
-                foreach (var resource in result.Value)
+            var urlList = new List<string>();
+            if (profiles != null)
+                foreach (var profile in profiles)
                 {
-                    if (group is null)
-                    {
-                        foreach (var assignment in resource.Assignments)
-                        {
-                            var autoPilotAssigment = assignment.ToAssignmentModel(resource,
-                                ResourceTypes.WindowsAutopilotDeploymentProfile);
-                            results.Add(autoPilotAssigment);
-                        }
-                    }
-                    else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                        {
-                            var autoPilotAssigment = assignment.ToAssignmentModel(resource,
-                                ResourceTypes.WindowsAutopilotDeploymentProfile);
-                            results.Add(autoPilotAssigment);
-                        }
+                    var profileUrl =
+                        $"/deviceManagement/windowsAutopilotDeploymentProfiles('{profile.Id}')?$expand=assignments";
+                    urlList.Add(profileUrl);
                 }
+
+            var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
+            foreach (var requestBody in batchRequestBody)
+            {
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result =
+                    await JsonSerializer
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
+                            responseStream,
+                            CustomJsonOptions.Default());
+                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
+                    .Select(v => v.Body).ToList();
+                if (responsesWithNoValue != null)
+                    foreach (var nonAssigned in responsesWithNoValue)
+                    {
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = nonAssigned.Id,
+                            DisplayName = nonAssigned.DisplayName,
+                            Assignments = new List<Assignment>()
+                        };
+                        var assignmentResponse =
+                            resource.Assignments.FirstOrDefault().ToAssignmentModel(resource,
+                                ResourceTypes.WindowsAutopilotDeploymentProfile);
+                        results.Add(assignmentResponse);
+                    }
+
+                var responsesWithValue = result?.Responses.Where(r => r.Body.Assignments.Any()).ToList();
+                if (responsesWithValue != null)
+                    foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body))
+                    {
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = assignmentResponse.Id,
+                            OdataType = assignmentResponse.ODataContext,
+                            DisplayName = assignmentResponse.DisplayName,
+                            Assignments = assignmentResponse.Assignments.ToList()
+                        };
+                        if (group is null)
+                        {
+                            foreach (var assignment in resource.Assignments)
+                            {
+                                var configurationPolicyAssignment =
+                                    assignment.ToAssignmentModel(resource,
+                                        ResourceTypes.WindowsAutopilotDeploymentProfile);
+                                results.Add(configurationPolicyAssignment);
+                            }
+                        }
+                        else
+                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                            {
+                                var configurationPolicyAssignment =
+                                    assignment.ToAssignmentModel(resource,
+                                        ResourceTypes.WindowsAutopilotDeploymentProfile);
+                                results.Add(configurationPolicyAssignment);
+                            }
+                    }
             }
+
+            return results;
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-            return null;
         }
 
-        return results;
+        return null;
     }
 
     public async Task<List<CustomAssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string? accessToken,
@@ -702,127 +772,150 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetAppProtectionAssignmentsByGroupListAsync(string? accessToken,
-        GroupModel? group)
+    public async Task<List<CustomAssignmentsModel>?> GetWindowsAppProtectionAssignmentsListAsync(string? accessToken,
+        GroupModel? group, List<WindowsManagedAppProtectionsModel>? windowsManagedAppProtections)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         var results = new List<CustomAssignmentsModel>();
         try
         {
-            try
+            var urlList = new List<string>();
+            foreach (var app in windowsManagedAppProtections)
             {
-                var response = await _http.GetAsync(GraphUrls.WindowsManagedAppProtectionsUrl);
-                var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                        CustomJsonOptions.Default());
-                if (result?.Value is not null)
-                {
-                    foreach (var resource in result.Value)
-                    {
-                        if (group is null)
-                        {
-                            foreach (var assignment in resource.Assignments)
-                            {
-                                var appProtectionAssigment = assignment.ToAssignmentModel(resource,
-                                    ResourceTypes.WindowsManagedAppProtection);
-                                results.Add(appProtectionAssigment);
-                            }
-                        }
-                        else
-                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                            {
-                                var appProtectionAssigment = assignment.ToAssignmentModel(resource,
-                                    ResourceTypes.WindowsManagedAppProtection);
-                                results.Add(appProtectionAssigment);
-                            }
-                    }
-                }
-            }
-            catch (ODataError ex)
-            {
-                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-                return null;
+                var appUrl =
+                    $"/deviceAppManagement/windowsManagedAppProtections('{app.Id}')?$expand=assignments";
+                urlList.Add(appUrl);
             }
 
-            // iOS app protection
-            try
+            var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
+            foreach (var requestBody in batchRequestBody)
             {
-                var response = await _http.GetAsync(GraphUrls.IosManagedAppProtectionsUrl);
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 var result =
-                    await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                        CustomJsonOptions.Default());
-                if (result?.Value is not null)
+                    await JsonSerializer
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
+                            responseStream,
+                            CustomJsonOptions.Default());
+                var responsesWithNoValue = result.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
+                    .Select(v => v.Body).ToList();
+                foreach (var nonAssigned in responsesWithNoValue)
                 {
-                    foreach (var resource in result.Value)
-                    {
-                        if (group is null)
-                        {
-                            foreach (var assignment in resource.Assignments)
-                            {
-                                var iosAppAssigment =
-                                    assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
-                                results.Add(iosAppAssigment);
-                            }
-                        }
-                        else
-                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                            {
-                                var iosAppAssigment =
-                                    assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
-                                results.Add(iosAppAssigment);
-                            }
-                    }
-                }
-            }
-            catch (ODataError ex)
-            {
-                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-                return null;
-            }
 
-            // Android app protection
-            try
-            {
-                var response = await _http.GetAsync(GraphUrls.AndroidManagedAppProtectionsUrl);
-                var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                        CustomJsonOptions.Default());
-                if (result?.Value is not null)
-                {
-                    foreach (var resource in result.Value)
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
                     {
-                        if (group is null)
+                        Id = nonAssigned?.Id,
+                        DisplayName = nonAssigned?.DisplayName,
+                        Assignments = new List<Assignment>()
+                    };
+                    var configurationsAssignment =
+                        resource.Assignments.FirstOrDefault()
+                            .ToAssignmentModel(resource, ResourceTypes.WindowsManagedAppProtection);
+                    results.Add(configurationsAssignment);
+                }
+
+                var responsesWithValue = result.Responses.Where(r => r.Body.Assignments.Any()).Select(v => v.Body).ToList();
+                foreach (var assignmentResponse in responsesWithValue.Select(r => r))
+                {
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                    {
+                        Id = assignmentResponse.Id,
+                        DisplayName = assignmentResponse?.DisplayName,
+                        Assignments = assignmentResponse.Assignments.ToList()
+                    };
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
                         {
-                            foreach (var assignment in resource.Assignments)
-                            {
-                                var androidAppAssigment = assignment.ToAssignmentModel(resource,
-                                    ResourceTypes.AndroidManagedAppProtection);
-                                results.Add(androidAppAssigment);
-                            }
+                            var DeviceConfigurationAssignment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.WindowsManagedAppProtection);
+                            results.Add(DeviceConfigurationAssignment);
                         }
-                        else
-                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                            {
-                                var androidAppAssigment = assignment.ToAssignmentModel(resource,
-                                    ResourceTypes.AndroidManagedAppProtection);
-                                results.Add(androidAppAssigment);
-                            }
                     }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var DeviceConfigurationAssignment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.WindowsManagedAppProtection);
+                            results.Add(DeviceConfigurationAssignment);
+                        }
                 }
             }
-            catch (ODataError ex)
+        }
+        catch {}
+        // iOS app protection
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.IosManagedAppProtectionsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result =
+                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
+                    CustomJsonOptions.Default());
+            if (result?.Value is not null)
             {
-                Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-                return null;
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var iosAppAssigment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
+                            results.Add(iosAppAssigment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var iosAppAssigment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
+                            results.Add(iosAppAssigment);
+                        }
+                }
             }
         }
         catch (ODataError ex)
         {
-            Console.WriteLine("An exception has occurred while fetching autopilot policies: " + ex.ToMessage());
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            return null;
+        }
+
+        // Android app protection
+        try
+        {
+            var response = await _http.GetAsync(GraphUrls.AndroidManagedAppProtectionsUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var result =
+                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
+                    CustomJsonOptions.Default());
+            if (result?.Value is not null)
+            {
+                foreach (var resource in result.Value)
+                {
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var androidAppAssigment = assignment.ToAssignmentModel(resource,
+                                ResourceTypes.AndroidManagedAppProtection);
+                            results.Add(androidAppAssigment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var androidAppAssigment = assignment.ToAssignmentModel(resource,
+                                ResourceTypes.AndroidManagedAppProtection);
+                            results.Add(androidAppAssigment);
+                        }
+                }
+            }
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
 
@@ -870,9 +963,11 @@ public sealed class AssignmentsService : IAssignmentsService
                         Assignments = new List<Assignment>()
                     };
                     var assignmentResponse =
-                        resource.Assignments.FirstOrDefault().ToAssignmentModel(resource, ResourceTypes.WindowsCompliancePolicy);
+                        resource.Assignments.FirstOrDefault()
+                            .ToAssignmentModel(resource, ResourceTypes.WindowsCompliancePolicy);
                     results.Add(assignmentResponse);
                 }
+
                 var responsesWithValue = result.Responses.Where(r => r.Body.Value.Any()).ToList();
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r.Body.Value))
                 {
@@ -904,12 +999,14 @@ public sealed class AssignmentsService : IAssignmentsService
                         }
                 }
             }
+
             return results;
         }
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
         }
+
         return null;
     }
 
@@ -1048,52 +1145,6 @@ public sealed class AssignmentsService : IAssignmentsService
         return results;
     }
 
-    public async Task<List<CustomAssignmentsModel>?> GetMacOsShellScriptsAssignmentListAsync(string? accessToken,
-        GroupModel? group)
-    {
-        var results = new List<CustomAssignmentsModel>();
-        _http.DefaultRequestHeaders.Clear();
-        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        try
-        {
-            var response = await _http.GetAsync(GraphUrls.MacOsShellScripts);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            if (result?.Value is not null)
-            {
-                foreach (var resource in result.Value)
-                {
-                    if (group is null)
-                    {
-                        foreach (var assignment in resource.Assignments)
-                        {
-                            var macosShellScriptAssignment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.MacOsShellScript);
-                            results.Add(macosShellScriptAssignment);
-                        }
-                    }
-                    else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                        {
-                            var macosShellScriptAssignment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.MacOsShellScript);
-                            results.Add(macosShellScriptAssignment);
-                        }
-                }
-            }
-        }
-        catch (ODataError ex)
-        {
-            Console.WriteLine("An exception has occurred while fetching macOS shell script assignments: " +
-                              ex.ToMessage());
-            return null;
-        }
-
-        return results;
-    }
-
     public async Task<List<CustomAssignmentsModel>?> GetDiskEncryptionAssignmentListAsync(string? accessToken,
         GroupModel? group)
     {
@@ -1183,52 +1234,6 @@ public sealed class AssignmentsService : IAssignmentsService
         catch (ODataError ex)
         {
             Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-            return null;
-        }
-
-        return results;
-    }
-
-    public async Task<List<CustomAssignmentsModel>?> GetPlatformScriptsAssignmentListAsync(string? accessToken,
-        GroupModel? group)
-    {
-        var results = new List<CustomAssignmentsModel>();
-        _http.DefaultRequestHeaders.Clear();
-        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        try
-        {
-            var response = await _http.GetAsync(GraphUrls.PlatformScriptsUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            if (result?.Value is not null)
-            {
-                foreach (var resource in result.Value)
-                {
-                    if (group is null)
-                    {
-                        foreach (var assignment in resource.Assignments)
-                        {
-                            var platformScriptAssignment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.PlatformScripts);
-                            results.Add(platformScriptAssignment);
-                        }
-                    }
-                    else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                        {
-                            var platformScriptAssignment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.PlatformScripts);
-                            results.Add(platformScriptAssignment);
-                        }
-                }
-            }
-        }
-        catch (ODataError ex)
-        {
-            Console.WriteLine("An exception has occurred while fetching macOS shell script assignments: " +
-                              ex.ToMessage());
             return null;
         }
 

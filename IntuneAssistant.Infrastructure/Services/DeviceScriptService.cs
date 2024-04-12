@@ -53,14 +53,14 @@ public sealed class DeviceScriptService : IDeviceScriptsService
         return results;
     }
 
-    public async Task<List<DeviceHealthScriptModel>?> GetDeviceShellScriptsListAsync(string? accessToken)
+    public async Task<List<DeviceShellScriptModel>?> GetDeviceShellScriptsListAsync(string? accessToken)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        var results = new List<DeviceHealthScriptModel>();
+        var results = new List<DeviceShellScriptModel>();
         try
         {
-            var nextUrl = GraphUrls.DeviceManagementScriptsUrl;
+            var nextUrl = GraphUrls.DeviceShellScriptUrl;
             while (nextUrl is not null)
             {
                 try
@@ -71,7 +71,7 @@ public sealed class DeviceScriptService : IDeviceScriptsService
                     // Read the stream to a string
                     var content = await sr.ReadToEndAsync();
                     // Deserialize the string to your model
-                    var result = JsonConvert.DeserializeObject<GraphValueResponse<DeviceHealthScriptModel>>(content);
+                    var result = JsonConvert.DeserializeObject<GraphValueResponse<DeviceShellScriptModel>>(content);
                     if (result is null)
                     {
                         nextUrl = null;

@@ -1,6 +1,7 @@
 using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Group;
 using Microsoft.IdentityModel.Tokens;
 
 
