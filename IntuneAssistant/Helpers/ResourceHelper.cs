@@ -37,6 +37,10 @@ public static class ResourceHelper
                 return ResourceTypes.DeviceEnrollmentPlatformRestrictionsConfiguration.GetDescription();
             case "#microsoft.graph.deviceEnrollmentLimitConfiguration" :    
                 return ResourceTypes.DeviceEnrollmentLimitConfiguration.GetDescription();
+            case "#microsoft.graph.user" :    
+                return ResourceTypes.User.GetDescription();
+            case "#microsoft.graph.device" :    
+                return ResourceTypes.Device.GetDescription();
             default:
                 return odataString;
         }

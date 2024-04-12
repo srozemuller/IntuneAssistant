@@ -7,6 +7,7 @@ using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Scripts;
+using IntuneAssistant.Models.Group;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 using Microsoft.IdentityModel.Tokens;
 

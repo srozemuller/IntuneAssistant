@@ -1,5 +1,6 @@
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Scripts;
+using IntuneAssistant.Models.Group;
 
 namespace IntuneAssistant.Infrastructure.Interfaces;
 

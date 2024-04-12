@@ -1,7 +1,8 @@
-using System.Text.Json;
+using Newtonsoft.Json;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Group;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
@@ -17,10 +18,14 @@ public sealed class GroupInformationService : IGroupInformationService
         var results = new GroupModel();
         try
         {
-            var url = $"{GraphUrls.GroupsUrl}&$filter=id eq '{groupId}'";
+            var url = $"{GraphUrls.GroupsUrl}?$select=id,displayname,Description,CreatedDateTime&$filter=id eq '{groupId}'";
             var response = await _http.GetAsync(url);
             var responseStream = await response.Content.ReadAsStreamAsync();
-            var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<GroupModel>>(responseStream, CustomJsonOptions.Default());
+            using var sr = new StreamReader(responseStream);
+            // Read the stream to a string
+            var content = await sr.ReadToEndAsync();
+            // Deserialize the string to your model
+            var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupModel>>(content);
             if (result?.Value is not null)
             {
                 return result.Value.FirstOrDefault();
@@ -37,18 +42,51 @@ public sealed class GroupInformationService : IGroupInformationService
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        var url = $"{GraphUrls.GroupsUrl}&$filter=displayName eq '{groupName}'";
+        var url = $"{GraphUrls.GroupsUrl}?$select=id,displayname,Description,CreatedDateTime&$filter=displayName eq '{groupName}'";
         var results = new GroupModel();
         try
         {
             var response = await _http.GetAsync(url);
             var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<GroupModel>>(responseStream,
-                    CustomJsonOptions.Default());
+            using var sr = new StreamReader(responseStream);
+            // Read the stream to a string
+            var content = await sr.ReadToEndAsync();
+            // Deserialize the string to your model
+            var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupModel>>(content);
             if (result?.Value is not null)
             {
                 return result.Value.FirstOrDefault();
+            }
+        }
+        catch (Exception exception)
+        {
+            return null;
+        }
+        return results;
+    }
+
+    public async Task<List<GroupMemberModel>?> GetGroupMembersListByGroupIdAsync(string? accessToken, string groupId)
+    {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var url = $"{GraphUrls.GroupsUrl}('{groupId}')/members";
+        var results = new List<GroupMemberModel>();
+        try
+        {
+            var response = await _http.GetAsync(url);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            using var sr = new StreamReader(responseStream);
+            // Read the stream to a string
+            var content = await sr.ReadToEndAsync();
+            // Deserialize the string to your model
+            var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupMemberModel>>(content);
+            if (result?.Value is not null)
+            {
+                foreach (var member in result.Value)
+                {
+                     var newMember = member.ToGroupMemberModel();
+                    results.Add(newMember);
+                }
             }
         }
         catch (Exception exception)
@@ -70,14 +108,16 @@ public sealed class GroupInformationService : IGroupInformationService
         {
             var currentIds = groupIds.Take(15).ToList();
             var currentIdsInString = "(" + string.Join(",", currentIds.Select(x => $"'{x}'")) + ")";
-            var url = $"{GraphUrls.GroupsUrl}&$filter=id in {currentIdsInString}";
+            var url = $"{GraphUrls.GroupsUrl}?$select=id,displayname,Description,CreatedDateTime&$filter=id in {currentIdsInString}";
             try
             {
                 var response = await _http.GetAsync(url);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer.DeserializeAsync<GraphValueResponse<GroupModel>>(responseStream,
-                        CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                // Read the stream to a string
+                var content = await sr.ReadToEndAsync();
+                // Deserialize the string to your model
+                var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupModel>>(content);
 
                 groupIds = groupIds.Skip(15).ToList();
                 if (result?.Value is not null)
