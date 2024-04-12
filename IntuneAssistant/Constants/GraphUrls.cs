@@ -17,10 +17,10 @@ public class GraphUrls
     public const string DeviceConfigurationsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceConfigurations";
     public const string GroupPolicyConfigurationsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/groupPolicyConfigurations";
     public const string ConfigurationPoliciesAssignmentsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies?$expand=assignments($select=id,target),settings&$top=1000";
-    public const string DeviceHealthScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceHealthScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";
+    public const string DeviceHealthScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceHealthScripts";
     public const string PlatformScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceManagementScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";
 
-    public const string DeviceManagementScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceManagementScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";
+    public const string DeviceManagementScriptsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceManagementScripts";
     public const string WindowsAutopilotDeploymentProfilesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsAutopilotDeploymentProfiles?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string DevicePlatformRestrictionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceEnrollmentConfigurations?$expand=assignments($select=id,target)&$select=id,displayname,description&$filter=deviceEnrollmentConfigurationType%20eq%20%27SinglePlatformRestriction%27";
     public const string DeviceLimitRestrictionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceEnrollmentConfigurations?$expand=assignments($select=id,target)&$select=id,displayname,description&$filter=deviceEnrollmentConfigurationType%20eq%20%27Limit%27";

@@ -1,4 +1,5 @@
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Scripts;
 
 namespace IntuneAssistant.Infrastructure.Interfaces;
 
@@ -6,12 +7,12 @@ public interface IAssignmentsService
 {
     Task<List<CustomAssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string? accessToken,
         GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies);
-    Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceScriptsModel> deviceScripts);
-    Task<List<CustomAssignmentsModel>?> GetDeviceShellScriptsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceScriptsModel> deviceShellScripts);
+    Task<List<CustomAssignmentsModel>?> GetDeviceManagementScriptsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceManagementScriptsModel> deviceScripts);
+    Task<List<CustomAssignmentsModel>?> GetDeviceShellScriptsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceHealthScriptModel> deviceShellScripts);
 
     Task<List<CustomAssignmentsModel>?> GetDeviceConfigurationsAssignmentsListAsync(string? accessToken, GroupModel? group, List<DeviceConfigurationModel> configurations);
     Task<List<CustomAssignmentsModel>?> GetGroupPolicyConfigurationsAssignmentsListAsync(string? accessToken, GroupModel? group, List<GroupPolicyConfigurationModel> groupPolicies);
-    Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string? accessToken, GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetHealthScriptsAssignmentsByGroupListAsync(string? accessToken, GroupModel? group, List<DeviceHealthScriptsModel> healthScripts);
     Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsByGroupListAsync(string? accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetMobileAppAssignmentsByGroupListAsync(string? accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetManagedApplicationAssignmentListAsync(string? accessToken, GroupModel? group);

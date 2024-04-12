@@ -5,6 +5,7 @@ using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Extensions.HTML;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
@@ -77,27 +78,27 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         {
             FetchCompliancePoliciesAsync(accessToken),
             FetchConfigurationPoliciesAsync(accessToken),
-            FetchDeviceShellScriptsAsync(accessToken),
-            FetchDeviceConfigurationsAsync(accessToken),
-            FetchGroupPolicyConfigurationsAsync(accessToken),
-            FetchDeviceScriptsAsync(accessToken),
+            // FetchDeviceShellScriptsAsync(accessToken),
+            FetchDeviceConfigurationsAsync(accessToken), 
+            FetchGroupPolicyConfigurationsAsync(accessToken), 
+            FetchDeviceManagementScriptsAsync(accessToken),
             FetchHealthScriptsAsync(accessToken),
-            FetchAutoPilotAssignmentsListAsync(accessToken),
-            FetchAppProtectionAssignmentsListAsync(accessToken),
-            FetchMobileAppAssignmentsListAsync(accessToken),
-            FetchTargetAppAssignmentsListAsync(accessToken),
-            FetchUpdateRingsAssignmentsListAsync(accessToken),
-            FetchFeatureUpdateAssignmentsListAsync(accessToken),
-            FetchDriverUpdateAssignmentsListAsync(accessToken),
-            FetchMacOsScriptAssignmentsListAsync(accessToken),
-            FetchDiskEncryptionAssignmentsListAsync(accessToken),
-            FetchUpdatePoliciesForMacAssignmentsListAsync(accessToken),
-            FetchPlatformScriptAssignmentsListAsync(accessToken),
-            FetchManagedAppPolicyAssignmentListAsync(accessToken),
-            FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken),
-            FetchDeviceLimitRestrictionsAssignmentListAsync(accessToken),
-            FetchMacOsCustomAttributesAssignmentListAsync(accessToken),
-            FetchIosLobAppProvisioningAssignmentListAsync(accessToken)
+            // FetchAutoPilotAssignmentsListAsync(accessToken),
+            // FetchAppProtectionAssignmentsListAsync(accessToken),
+            // FetchMobileAppAssignmentsListAsync(accessToken),
+            // FetchTargetAppAssignmentsListAsync(accessToken),
+            // FetchUpdateRingsAssignmentsListAsync(accessToken),
+            // FetchFeatureUpdateAssignmentsListAsync(accessToken),
+            // FetchDriverUpdateAssignmentsListAsync(accessToken),
+            // FetchMacOsScriptAssignmentsListAsync(accessToken),
+            // FetchDiskEncryptionAssignmentsListAsync(accessToken),
+            // FetchUpdatePoliciesForMacAssignmentsListAsync(accessToken),
+            // FetchPlatformScriptAssignmentsListAsync(accessToken),
+            // FetchManagedAppPolicyAssignmentListAsync(accessToken),
+            // FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken),
+            // FetchDeviceLimitRestrictionsAssignmentListAsync(accessToken),
+            // FetchMacOsCustomAttributesAssignmentListAsync(accessToken),
+            // FetchIosLobAppProvisioningAssignmentListAsync(accessToken)
         };
         await AnsiConsole.Status().SpinnerStyle(Color.Orange1)
             .StartAsync(
@@ -163,7 +164,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         foreach (var item in allResults)
         {
             table.AddRow(
-                item.ResourceType,
+                item.ResourceType.EscapeMarkup(),
                 item.ResourceName.EscapeMarkup(),
                 item.ResourceId,
                 item.IsAssigned.ToString(),
@@ -269,19 +270,19 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                 configPolicies);
         return configurationResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string? accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchDeviceManagementScriptsAsync(string? accessToken)
     {
-        var deviceScripts = await _deviceScriptsService.GetDeviceScriptsListAsync(accessToken);
-        if (deviceScripts is null)
+        var deviceManagementScripts = await _deviceScriptsService.GetDeviceManagementScriptsListAsync(accessToken);
+        if (deviceManagementScripts is null)
         {
             return null;
         }
-        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null, deviceScripts);
+        var deviceScriptsResults = await _assignmentsService.GetDeviceManagementScriptsAssignmentsListAsync(accessToken, null, deviceManagementScripts);
         return deviceScriptsResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceShellScriptsAsync(string? accessToken)
     {
-        var deviceShellScripts = await _deviceScriptsService.GetDeviceScriptsListAsync(accessToken);
+        var deviceShellScripts = await _deviceScriptsService.GetDeviceManagementScriptsListAsync(accessToken);
         if (deviceShellScripts is null)
         {
             return null;
@@ -291,7 +292,12 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     }
     private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string? accessToken)
     {
-        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, null);
+        var healthScripts = await _deviceScriptsService.GetDeviceHealthScriptsListAsync(accessToken);
+        if (healthScripts is null)
+        {
+            return null;
+        }
+        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, null, healthScripts);
         return healthScriptsResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchAutoPilotAssignmentsListAsync(string? accessToken)

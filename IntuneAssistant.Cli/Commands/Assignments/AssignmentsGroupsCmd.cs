@@ -306,7 +306,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     }
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceScriptsAsync(string? accessToken, GroupModel groupInfo)
     {
-        var deviceScripts = await _deviceScriptsService.GetDeviceScriptsListAsync(accessToken);
+        var deviceScripts = await _deviceScriptsService.GetDeviceManagementScriptsListAsync(accessToken);
         if (deviceScripts is null)
         {
             return null;
@@ -316,7 +316,12 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     }
     private async Task<List<CustomAssignmentsModel>?> FetchHealthScriptsAsync(string? accessToken, GroupModel groupInfo)
     {
-        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, groupInfo);
+        var healthScripts = await _deviceScriptsService.GetDeviceHealthScriptsListAsync(accessToken);
+        if (healthScripts is null)
+        {
+            return null;
+        }
+        var healthScriptsResults = await _assignmentsService.GetHealthScriptsAssignmentsByGroupListAsync(accessToken, groupInfo, healthScripts);
         return healthScriptsResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchAutoPilotAssignmentsListAsync(string? accessToken, GroupModel groupInfo)

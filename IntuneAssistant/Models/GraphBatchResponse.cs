@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
-using System.Text.Json;
 using System.Text.Json.Serialization;
+using IntuneAssistant.Models.Assignments;
 
 namespace IntuneAssistant.Models;
 
@@ -20,6 +20,19 @@ public class InnerResponseForAssignments
 
     [JsonProperty("body")]
     public AssignmentsResponseModel Body { get; set; }
+}
+
+
+public class InnerResponseForScripts
+{
+    [JsonProperty("id")]
+    public string Id { get; set; }
+
+    [JsonProperty("status")]
+    public int Status { get; set; }
+
+    [JsonProperty("body")]
+    public ScriptsAssignmentsModel Body { get; set; }
 }
 
 public class InnerResponseForSettings<T>
