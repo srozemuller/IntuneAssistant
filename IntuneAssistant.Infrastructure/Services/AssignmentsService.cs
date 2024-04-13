@@ -647,7 +647,7 @@ public sealed class AssignmentsService : IAssignmentsService
         {
             var response =
                 await _http.GetAsync(
-                    $"{GraphUrls.MobileAppsUrl}?$expand=assignments($select=id,target)&$select=id,displayname,description");
+                    $"{GraphUrls.MobileAppsUrl}?$expand=assignments");
             var responseStream = await response.Content.ReadAsStreamAsync();
             var result =
                 await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
@@ -803,7 +803,6 @@ public sealed class AssignmentsService : IAssignmentsService
                     .Select(v => v.Body).ToList();
                 foreach (var nonAssigned in responsesWithNoValue)
                 {
-
                     AssignmentsResponseModel resource = new AssignmentsResponseModel
                     {
                         Id = nonAssigned?.Id,
@@ -816,7 +815,8 @@ public sealed class AssignmentsService : IAssignmentsService
                     results.Add(configurationsAssignment);
                 }
 
-                var responsesWithValue = result.Responses.Where(r => r.Body.Assignments.Any()).Select(v => v.Body).ToList();
+                var responsesWithValue =
+                    result.Responses.Where(r => r.Body.Assignments.Any()).Select(v => v.Body).ToList();
                 foreach (var assignmentResponse in responsesWithValue.Select(r => r))
                 {
                     AssignmentsResponseModel resource = new AssignmentsResponseModel
@@ -843,83 +843,178 @@ public sealed class AssignmentsService : IAssignmentsService
                         }
                 }
             }
+
+            return results;
         }
-        catch {}
-        // iOS app protection
-        try
+        catch
         {
-            var response = await _http.GetAsync(GraphUrls.IosManagedAppProtectionsUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            if (result?.Value is not null)
-            {
-                foreach (var resource in result.Value)
-                {
-                    if (group is null)
-                    {
-                        foreach (var assignment in resource.Assignments)
-                        {
-                            var iosAppAssigment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
-                            results.Add(iosAppAssigment);
-                        }
-                    }
-                    else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                        {
-                            var iosAppAssigment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
-                            results.Add(iosAppAssigment);
-                        }
-                }
-            }
-        }
-        catch (ODataError ex)
-        {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
+    }
 
-        // Android app protection
+    public async Task<List<CustomAssignmentsModel>?> GetIosAppProtectionAssignmentsListAsync(string? accessToken,
+        GroupModel? group, List<IosAppProtectionModel>? iosAppProtections)
+    {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<CustomAssignmentsModel>();
         try
         {
-            var response = await _http.GetAsync(GraphUrls.AndroidManagedAppProtectionsUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            if (result?.Value is not null)
+            var urlList = new List<string>();
+            foreach (var app in iosAppProtections)
             {
-                foreach (var resource in result.Value)
-                {
-                    if (group is null)
-                    {
-                        foreach (var assignment in resource.Assignments)
-                        {
-                            var androidAppAssigment = assignment.ToAssignmentModel(resource,
-                                ResourceTypes.AndroidManagedAppProtection);
-                            results.Add(androidAppAssigment);
-                        }
-                    }
-                    else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                        {
-                            var androidAppAssigment = assignment.ToAssignmentModel(resource,
-                                ResourceTypes.AndroidManagedAppProtection);
-                            results.Add(androidAppAssigment);
-                        }
-                }
+                var appUrl =
+                    $"/deviceAppManagement/iosManagedAppProtections('{app.Id}')?$expand=assignments";
+                urlList.Add(appUrl);
             }
+
+            var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
+            foreach (var requestBody in batchRequestBody)
+            {
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result =
+                    await JsonSerializer
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
+                            responseStream,
+                            CustomJsonOptions.Default());
+                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
+                    .Select(v => v.Body).ToList();
+                if (responsesWithNoValue != null)
+                    foreach (var nonAssigned in responsesWithNoValue)
+                    {
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = nonAssigned.Id,
+                            DisplayName = nonAssigned.DisplayName,
+                            Assignments = new List<Assignment>()
+                        };
+                        var configurationsAssignment =
+                            resource.Assignments.FirstOrDefault()
+                                .ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
+                        results.Add(configurationsAssignment);
+                    }
+
+                var responsesWithValue =
+                    result?.Responses.Where(r => r.Body.Assignments.Any()).Select(v => v.Body).ToList();
+                if (responsesWithValue != null)
+                    foreach (var assignmentResponse in responsesWithValue.Select(r => r))
+                    {
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = assignmentResponse.Id,
+                            DisplayName = assignmentResponse.DisplayName,
+                            Assignments = assignmentResponse.Assignments.ToList()
+                        };
+                        if (group is null)
+                        {
+                            foreach (var assignment in resource.Assignments)
+                            {
+                                var resourceAssignment =
+                                    assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
+                                results.Add(resourceAssignment);
+                            }
+                        }
+                        else
+                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                            {
+                                var resourceAssignment =
+                                    assignment.ToAssignmentModel(resource, ResourceTypes.IosManagedAppProtection);
+                                results.Add(resourceAssignment);
+                            }
+                    }
+            }
+
+            return results;
         }
-        catch (ODataError ex)
+        catch
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
+    }
 
-        return results;
+    public async Task<List<CustomAssignmentsModel>?> GetAndroidAppProtectionAssignmentsListAsync(string? accessToken,
+        GroupModel? group, List<AndroidAppProtectionModel>? androidAppProtections)
+    {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<CustomAssignmentsModel>();
+        try
+        {
+            var urlList = new List<string>();
+            if (androidAppProtections != null)
+                foreach (var app in androidAppProtections)
+                {
+                    var appUrl =
+                        $"/deviceAppManagement/androidManagedAppProtections('{app.Id}')?$expand=assignments";
+                    urlList.Add(appUrl);
+                }
+
+            var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
+            foreach (var requestBody in batchRequestBody)
+            {
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var result =
+                    await JsonSerializer
+                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
+                            responseStream,
+                            CustomJsonOptions.Default());
+                var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
+                    .Select(v => v.Body).ToList();
+                if (responsesWithNoValue != null)
+                    foreach (var nonAssigned in responsesWithNoValue)
+                    {
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = nonAssigned.Id,
+                            DisplayName = nonAssigned.DisplayName,
+                            Assignments = new List<Assignment>()
+                        };
+                        var configurationsAssignment =
+                            resource.Assignments.FirstOrDefault()
+                                .ToAssignmentModel(resource, ResourceTypes.AndroidManagedAppProtection);
+                        results.Add(configurationsAssignment);
+                    }
+
+                var responsesWithValue =
+                    result?.Responses.Where(r => r.Body.Assignments.Any()).Select(v => v.Body).ToList();
+                if (responsesWithValue != null)
+                    foreach (var assignmentResponse in responsesWithValue.Select(r => r))
+                    {
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = assignmentResponse.Id,
+                            DisplayName = assignmentResponse.DisplayName,
+                            Assignments = assignmentResponse.Assignments.ToList()
+                        };
+                        if (group is null)
+                        {
+                            foreach (var assignment in resource.Assignments)
+                            {
+                                var resourceAssignment =
+                                    assignment.ToAssignmentModel(resource, ResourceTypes.AndroidManagedAppProtection);
+                                results.Add(resourceAssignment);
+                            }
+                        }
+                        else
+                            foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                            {
+                                var resourceAssignment =
+                                    assignment.ToAssignmentModel(resource, ResourceTypes.AndroidManagedAppProtection);
+                                results.Add(resourceAssignment);
+                            }
+                    }
+            }
+
+            return results;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public async Task<List<CustomAssignmentsModel>> GetCompliancePoliciesAssignmentsListAsync(string? accessToken,
@@ -1009,52 +1104,7 @@ public sealed class AssignmentsService : IAssignmentsService
 
         return null;
     }
-
-    public async Task<List<CustomAssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string? accessToken,
-        GroupModel? group)
-    {
-        var results = new List<CustomAssignmentsModel>();
-        _http.DefaultRequestHeaders.Clear();
-        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        try
-        {
-            var response = await _http.GetAsync(GraphUrls.UpdateRingsUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            if (result?.Value is not null)
-            {
-                foreach (var resource in result.Value)
-                {
-                    if (group is null)
-                    {
-                        foreach (var assignment in resource.Assignments)
-                        {
-                            var updateRingAssignmentInfo =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.UpdateRingConfiguration);
-                            results.Add(updateRingAssignmentInfo);
-                        }
-                    }
-                    else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                        {
-                            var updateRingAssignmentInfo =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.UpdateRingConfiguration);
-                            results.Add(updateRingAssignmentInfo);
-                        }
-                }
-            }
-        }
-        catch (ODataError ex)
-        {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-            return null;
-        }
-
-        return results;
-    }
-
+    
     public async Task<List<CustomAssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string? accessToken,
         GroupModel? group)
     {
@@ -1189,51 +1239,6 @@ public sealed class AssignmentsService : IAssignmentsService
         {
             Console.WriteLine("An exception has occurred while fetching macOS shell script assignments: " +
                               ex.ToMessage());
-            return null;
-        }
-
-        return results;
-    }
-
-    public async Task<List<CustomAssignmentsModel>?> GetUpdatesForMacAssignmentListAsync(string? accessToken,
-        GroupModel? group)
-    {
-        var results = new List<CustomAssignmentsModel>();
-        _http.DefaultRequestHeaders.Clear();
-        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        try
-        {
-            var response = await _http.GetAsync(GraphUrls.UpdatePoliciesForMacUrl);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
-            if (result?.Value is not null)
-            {
-                foreach (var resource in result.Value)
-                {
-                    if (group is null)
-                    {
-                        foreach (var assignment in resource.Assignments)
-                        {
-                            var updateForMacAssignment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.MacOsUpdatePolicy);
-                            results.Add(updateForMacAssignment);
-                        }
-                    }
-                    else
-                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
-                        {
-                            var updateForMacAssignment =
-                                assignment.ToAssignmentModel(resource, ResourceTypes.MacOsUpdatePolicy);
-                            results.Add(updateForMacAssignment);
-                        }
-                }
-            }
-        }
-        catch (ODataError ex)
-        {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
             return null;
         }
 

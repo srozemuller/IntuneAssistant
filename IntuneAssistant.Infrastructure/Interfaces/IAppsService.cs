@@ -13,4 +13,6 @@ public interface IAppsService
     Task<List<MobileAppDependencyModel>?> GetAppDependenciesListAsync(string? accessToken);
     Task<List<MobileAppDependencyModel>?> GetAppDependenciesByAppNameAsync(string accessToken, string applicationDisplayName);
     Task<List<WindowsManagedAppProtectionsModel>?> GetWindowsManagedAppProtectionsListAsync(string accessToken);
+    Task<List<IosAppProtectionModel>?> GetIosAppProtectionsListAsync(string accessToken);
+    Task<List<AndroidAppProtectionModel>?> GetAndroidAppProtectionsListAsync(string accessToken);
 }

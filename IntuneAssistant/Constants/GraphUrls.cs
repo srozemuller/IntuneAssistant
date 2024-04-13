@@ -5,13 +5,6 @@ public class GraphUrls
     public const string GroupsUrl = $"{AppConfiguration.GRAPH_URL}/groups";
     public const string GetByIdsUrl = $"{AppConfiguration.GRAPH_URL}/directoryObjects/getByIds?$select=displayName,id";
     
-    public const string ManagedDevicesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/managedDevices?$select=id,deviceName,ComplianceState,LastSyncDateTime,OsVersion,SerialNumber,OperatingSystem";
-
-    public const string UpdateRingsUrl =
-        $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceConfigurations?$filter=isof(%27microsoft.graph.windowsUpdateForBusinessConfiguration%27)&$expand=assignments($select=id,target)&$select=id,displayname,description";
-    public const string UpdatePoliciesForMacUrl =
-        $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceConfigurations?$expand=assignments($select=id,target)&$select=id,displayname,description";
-
     public const string CompliancePoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceCompliancePolicies";
     public const string ConfigurationPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies";
     public const string DeviceConfigurationsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceConfigurations";
@@ -36,8 +29,8 @@ public class GraphUrls
 
     public const string WindowsManagedAppProtectionsUrl =
         $"{AppConfiguration.GRAPH_URL}/deviceAppManagement/windowsManagedAppProtections";
-    public const string IosManagedAppProtectionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceAppManagement/iosManagedAppProtections?$expand=assignments($select=id,target)&$select=id,displayname,description";
-    public const string AndroidManagedAppProtectionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceAppManagement/androidManagedAppProtections?$expand=assignments($select=id,target)&$select=id,displayname,description";
+    public const string IosManagedAppProtectionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceAppManagement/iosManagedAppProtections";
+    public const string AndroidManagedAppProtectionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceAppManagement/androidManagedAppProtections";
     public const string WindowsFeatureUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsFeatureUpdateProfiles?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string WindowsDriverUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsDriverUpdateProfiles?$expand=assignments($select=id,target)&$select=id,displayname,description";
     public const string MacOsCustomAttributesScripts = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceCustomAttributeShellScripts?$expand=assignments($select=id,target)&$select=id,displayname,description";

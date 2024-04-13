@@ -266,11 +266,9 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
             FetchWindowsAppProtectionAssignmentsListAsync(accessToken, groupInfo),
             FetchMobileAppAssignmentsListAsync(accessToken, groupInfo),
             FetchTargetAppAssignmentsListAsync(accessToken, groupInfo),
-            FetchUpdateRingsAssignmentsListAsync(accessToken, groupInfo),
             FetchFeatureUpdateAssignmentsListAsync(accessToken, groupInfo),
             FetchDriverUpdateAssignmentsListAsync(accessToken, groupInfo),
             FetchDiskEncryptionAssignmentsListAsync(accessToken, groupInfo),
-            FetchUpdatePoliciesForMacAssignmentsListAsync(accessToken, groupInfo),
             FetchManagedAppPolicyAssignmentListAsync(accessToken, groupInfo),
             FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken, groupInfo),
             FetchDeviceLimitRestrictionsAssignmentListAsync(accessToken, groupInfo),
@@ -357,12 +355,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, groupInfo);
         return targetAppResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchUpdateRingsAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
-    {
-        var updateRingResults =
-            await _assignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, groupInfo);
-        return updateRingResults;
-    }
+
     private async Task<List<CustomAssignmentsModel>?> FetchFeatureUpdateAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
     {
         var featureUpdateResults =
@@ -380,12 +373,6 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         var diskEncyrptionResults =
             await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, groupInfo);
         return diskEncyrptionResults;
-    }
-    private async Task<List<CustomAssignmentsModel>?> FetchUpdatePoliciesForMacAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
-    {
-        var updatesForMacResults =
-            await _assignmentsService.GetUpdatesForMacAssignmentListAsync(accessToken, groupInfo);
-        return updatesForMacResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string? accessToken, GroupModel groupInfo)
     {

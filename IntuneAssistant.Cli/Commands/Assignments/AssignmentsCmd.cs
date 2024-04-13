@@ -87,14 +87,14 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             FetchDeviceManagementScriptsAsync(accessToken),
             FetchHealthScriptsAsync(accessToken),
             FetchAutoPilotAssignmentsListAsync(accessToken),
-            FetchAppProtectionAssignmentsListAsync(accessToken),
+            FetchWindowsAppProtectionAssignmentsListAsync(accessToken),
+            FetchIosAppProtectionAssignmentsListAsync(accessToken),
+            FetchAndroidAppProtectionAssignmentsListAsync(accessToken),
             // FetchMobileAppAssignmentsListAsync(accessToken),
             // FetchTargetAppAssignmentsListAsync(accessToken),
-            // FetchUpdateRingsAssignmentsListAsync(accessToken),
             // FetchFeatureUpdateAssignmentsListAsync(accessToken),
             // FetchDriverUpdateAssignmentsListAsync(accessToken),
             // FetchDiskEncryptionAssignmentsListAsync(accessToken),
-            // FetchUpdatePoliciesForMacAssignmentsListAsync(accessToken),
             // FetchManagedAppPolicyAssignmentListAsync(accessToken),
             // FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken),
             // FetchDeviceLimitRestrictionsAssignmentListAsync(accessToken),
@@ -110,7 +110,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                     // Combine the results from all tasks
                     foreach (var result in results)
                     {
-                        allResults.AddRange(result);
+                        if (result != null) allResults.AddRange(result);
                     }
                 });
         if (allResults.Count > 0)
@@ -122,7 +122,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
                     uniqueGroupIds);
             foreach (var result in allResults)
             {
-                var target = allGroupsInfo.Find(g => g?.Id == result.TargetId);
+                var target = allGroupsInfo.Find(g => g.Id == result.TargetId);
                 string targetFriendly = target?.DisplayName ?? "-";
                 result.TargetName = targetFriendly;
                 var filterInfo = allFiltersInfo?.Find(g => g?.Id == result.FilterId);
@@ -312,7 +312,7 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsListAsync(accessToken, null, autopilotProfiles);
         return autoPilotResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchAppProtectionAssignmentsListAsync(string accessToken)
+    private async Task<List<CustomAssignmentsModel>?> FetchWindowsAppProtectionAssignmentsListAsync(string accessToken)
     {
         var windowsAppProtections = await _appsService.GetWindowsManagedAppProtectionsListAsync(accessToken);
         if (windowsAppProtections is null)
@@ -322,6 +322,29 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         var appProtectionResults = await _assignmentsService.GetWindowsAppProtectionAssignmentsListAsync(accessToken, null, windowsAppProtections);
         return appProtectionResults;
     }
+    
+    private async Task<List<CustomAssignmentsModel>?> FetchIosAppProtectionAssignmentsListAsync(string accessToken)
+    {
+        var iosAppProtections = await _appsService.GetIosAppProtectionsListAsync(accessToken);
+        if (iosAppProtections is null)
+        {
+            return null;
+        }
+        var appProtectionResults = await _assignmentsService.GetIosAppProtectionAssignmentsListAsync(accessToken, null, iosAppProtections);
+        return appProtectionResults;
+    }
+    
+    private async Task<List<CustomAssignmentsModel>?> FetchAndroidAppProtectionAssignmentsListAsync(string accessToken)
+    {
+        var androidAppProtections = await _appsService.GetAndroidAppProtectionsListAsync(accessToken);
+        if (androidAppProtections is null)
+        {
+            return null;
+        }
+        var appProtectionResults = await _assignmentsService.GetAndroidAppProtectionAssignmentsListAsync(accessToken, null, androidAppProtections);
+        return appProtectionResults;
+    }
+    
     private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string? accessToken)
     {
         var mobileAppResults = await _assignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, null);
@@ -331,12 +354,6 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
     {
         var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, null);
         return targetAppResults;
-    }
-    private async Task<List<CustomAssignmentsModel>?> FetchUpdateRingsAssignmentsListAsync(string? accessToken)
-    {
-        var updateRingResults =
-            await _assignmentsService.GetUpdateRingsAssignmentsByGroupListAsync(accessToken, null);
-        return updateRingResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchFeatureUpdateAssignmentsListAsync(string? accessToken)
     {
@@ -355,12 +372,6 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
         var diskEncyrptionResults =
             await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, null);
         return diskEncyrptionResults;
-    }
-    private async Task<List<CustomAssignmentsModel>?> FetchUpdatePoliciesForMacAssignmentsListAsync(string? accessToken)
-    {
-        var updatesForMacResults =
-            await _assignmentsService.GetUpdatesForMacAssignmentListAsync(accessToken, null);
-        return updatesForMacResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string? accessToken)
     {

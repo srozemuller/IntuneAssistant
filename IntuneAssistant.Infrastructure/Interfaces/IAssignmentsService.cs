@@ -20,17 +20,17 @@ public interface IAssignmentsService
     Task<List<CustomAssignmentsModel>?> GetManagedApplicationAssignmentListAsync(string? accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(string? accessToken, GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetWindowsAppProtectionAssignmentsListAsync(string? accessToken, GroupModel? group, List<WindowsManagedAppProtectionsModel>? windowsManagedAppProtections);
+    
+    Task<List<CustomAssignmentsModel>?> GetIosAppProtectionAssignmentsListAsync(string? accessToken, GroupModel? group, List<IosAppProtectionModel>? iosAppProtections);
+    Task<List<CustomAssignmentsModel>?> GetAndroidAppProtectionAssignmentsListAsync(string? accessToken, GroupModel? group, List<AndroidAppProtectionModel>? androidAppProtections);
+    
     Task<List<CustomAssignmentsModel>> GetCompliancePoliciesAssignmentsListAsync(string? accessToken, GroupModel? group,
         List<CompliancePolicyModel> compliancePolicies);
-    Task<List<CustomAssignmentsModel>?> GetUpdateRingsAssignmentsByGroupListAsync(string? accessToken,
-        GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetFeatureUpdatesAssignmentsByGroupListAsync(string? accessToken,
         GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsByGroupListAsync(string? accessToken,
         GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetDiskEncryptionAssignmentListAsync(string? accessToken,
-        GroupModel? group);
-    Task<List<CustomAssignmentsModel>?> GetUpdatesForMacAssignmentListAsync(string? accessToken,
         GroupModel? group);
     Task<List<CustomAssignmentsModel>?> GetDevicePlatformRestrictionsAssignmentListAsync(string? accessToken,
         GroupModel? group);
