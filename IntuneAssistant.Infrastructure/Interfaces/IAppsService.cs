@@ -1,5 +1,6 @@
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Apps;
+using IntuneAssistant.Models.Assignments;
 
 namespace IntuneAssistant.Infrastructure.Interfaces;
 
@@ -13,6 +14,7 @@ public interface IAppsService
     Task<List<ManagedAppConfigurationModel>?> GetTargetedManagedAppConfigurationsListAsync(string accessToken);
     Task<WindowsLobAppModel?> GetAppByNameAsync(string accessToken, string applicationName);
     
+    Task<List<ResourceAssignmentsModel>?> GetIosLobAppProvisioningAssignmentsListAsync(string accessToken);
     Task<List<MobileAppDependencyModel>?> GetAppDependenciesListAsync(string? accessToken);
     Task<List<MobileAppDependencyModel>?> GetAppDependenciesByAppNameAsync(string accessToken, string applicationDisplayName);
     Task<List<WindowsManagedAppProtectionsModel>?> GetWindowsManagedAppProtectionsListAsync(string accessToken);

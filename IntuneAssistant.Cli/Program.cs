@@ -1,15 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
-using System.Reflection;
 using IntuneAssistant.Cli.Middleware;
 using IntuneAssistant.Cli.Commands;
-using IntuneAssistant.Cli.Commands.Assignments;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Spectre.Console;
 
 var rootCommand = RootCmd.New();

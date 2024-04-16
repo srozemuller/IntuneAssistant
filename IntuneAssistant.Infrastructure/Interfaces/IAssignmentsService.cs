@@ -1,5 +1,7 @@
+using IntuneAssistant.Helpers;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Apps;
+using IntuneAssistant.Models.Assignments;
 using IntuneAssistant.Models.AutoPilot;
 using IntuneAssistant.Models.Scripts;
 using IntuneAssistant.Models.Group;
@@ -20,7 +22,7 @@ public interface IAssignmentsService
     Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsListAsync(string? accessToken, GroupModel? group, List<WindowsAutopilotDeploymentProfileModel>? profiles);
     Task<List<CustomAssignmentsModel>?> GetMobileAppAssignmentsListAsync(string? accessToken, GroupModel? group, List<DefaultMobileAppModel> mobileApps);
     Task<List<CustomAssignmentsModel>?> GetManagedApplicationAssignmentListAsync(string? accessToken, GroupModel? group);
-    Task<List<CustomAssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsByGroupListAsync(string? accessToken, GroupModel? group, List<ManagedAppConfigurationModel> appConfigurations);
+    Task<List<CustomAssignmentsModel>?> GetTargetedAppConfigurationsAssignmentsListAsync(string? accessToken, GroupModel? group, List<ManagedAppConfigurationModel> appConfigurations);
     Task<List<CustomAssignmentsModel>?> GetWindowsAppProtectionAssignmentsListAsync(string? accessToken, GroupModel? group, List<WindowsManagedAppProtectionsModel>? windowsManagedAppProtections);
     
     Task<List<CustomAssignmentsModel>?> GetIosAppProtectionAssignmentsListAsync(string? accessToken, GroupModel? group, List<IosAppProtectionModel>? iosAppProtections);
@@ -34,12 +36,10 @@ public interface IAssignmentsService
         GroupModel? group, List<WindowsDriverUpdatesModel> windowsDriverUpdatesProfiles);
     Task<List<CustomAssignmentsModel>?> GetIntentsAssignmentListAsync(string? accessToken,
         GroupModel? group, List<IntentsModel> intents);
-    Task<List<CustomAssignmentsModel>?> GetDevicePlatformRestrictionsAssignmentListAsync(string? accessToken,
-        GroupModel? group);
-    Task<List<CustomAssignmentsModel>?> GetDeviceLimitRestrictionsAssignmentListAsync(string? accessToken,
-        GroupModel? group);
+    Task<List<CustomAssignmentsModel>?> GetDeviceEnrollmentAssignmentListAsync(string? accessToken,
+        GroupModel? group, List<ResourceAssignmentsModel> resources);
     Task<List<CustomAssignmentsModel>?> GetMacOsCustomAttributesAssignmentListAsync(string? accessToken,
-        GroupModel? group);
+        GroupModel? group, List<ResourceAssignmentsModel> resources);
     Task<List<CustomAssignmentsModel>?> GetIosLobAppProvisioningAssignmentListAsync(string? accessToken,
-        GroupModel? group);
+        GroupModel? group, List<ResourceAssignmentsModel> resources);
 }
