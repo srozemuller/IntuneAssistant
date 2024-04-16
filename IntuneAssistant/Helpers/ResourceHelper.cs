@@ -37,6 +37,27 @@ public static class ResourceHelper
                 return ResourceTypes.DeviceEnrollmentPlatformRestrictionsConfiguration.GetDescription();
             case "#microsoft.graph.deviceEnrollmentLimitConfiguration" :    
                 return ResourceTypes.DeviceEnrollmentLimitConfiguration.GetDescription();
+            case "#microsoft.graph.user" :    
+                return ResourceTypes.User.GetDescription();
+            case "#microsoft.graph.device" :    
+                return ResourceTypes.Device.GetDescription();
+            default:
+                return odataString;
+        }
+    }
+    
+    public static string GetAssignmentTypeFromOdata (string odataString)
+    {
+        switch (odataString)
+        {
+            case "#microsoft.graph.allDevicesAssignmentTarget":
+                return AssignmentODataTypes.AllDevicesAssignmentTarget.GetDescription();
+            case "#microsoft.graph.groupAssignmentTarget":
+                return AssignmentODataTypes.GroupAssignmentTarget.GetDescription();
+            case "#microsoft.graph.allLicensedUsersAssignmentTarget" :
+                return AssignmentODataTypes.AllLicensedUsersAssignmentTarget.GetDescription();
+            case "#microsoft.graph.exclusionGroupAssignmentTarget":
+                return AssignmentODataTypes.GroupExcludeAssignmentTarget.GetDescription();
             default:
                 return odataString;
         }

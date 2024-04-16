@@ -24,4 +24,9 @@
       <ProjectReference Include="..\IntuneAssistant\IntuneAssistant.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Interfaces\DeviceEnrollment\" />
+      <Folder Include="Services\DeviceEnrollment\" />
+    </ItemGroup>
+
 </Project>
