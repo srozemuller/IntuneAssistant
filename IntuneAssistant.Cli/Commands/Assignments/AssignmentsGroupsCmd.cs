@@ -46,22 +46,26 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     private readonly IAppsService _appsService;
     private readonly IGroupInformationService _groupInformationService;
     private readonly IIdentityHelperService _identityHelperService;
+    private readonly IIntentsService _intentService;
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly ICompliancePoliciesService _compliancePoliciesService;
     private readonly IDeviceScriptsService _deviceScriptsService;
     private readonly IAssignmentFiltersService _assignmentFiltersService;
     private readonly IAutoPilotService _autoPilotService;
-    public FetchAssignmentsGroupCommandHandler(IAppsService appsService, IAutoPilotService autoPilotService, IDeviceScriptsService deviceScriptsService, IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentFiltersService)
+    private readonly IUpdatesService _updatesService;
+    public FetchAssignmentsGroupCommandHandler(IIntentsService intentService, IUpdatesService updatesService, IAppsService appsService, IAutoPilotService autoPilotService, IDeviceScriptsService deviceScriptsService, IIdentityHelperService identityHelperService, IAssignmentsService assignmentsService, IGroupInformationService groupInformationService, IConfigurationPolicyService configurationPolicyService, ICompliancePoliciesService compliancePoliciesService, IAssignmentFiltersService assignmentFiltersService)
     {
         _assignmentsService = assignmentsService;
         _appsService = appsService;
         _groupInformationService = groupInformationService;
         _identityHelperService = identityHelperService;
+        _intentService = intentService;
         _configurationPolicyService = configurationPolicyService;
         _compliancePoliciesService = compliancePoliciesService;
         _assignmentFiltersService = assignmentFiltersService;
         _deviceScriptsService = deviceScriptsService;
         _autoPilotService = autoPilotService;
+        _updatesService = updatesService;
     }
     public async Task<int> HandleAsync(FetchAssignmentsGroupCommandOptions options)
     {
@@ -290,6 +294,10 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
     {
         var compliancePolicies =
             await _compliancePoliciesService.GetCompliancePoliciesListAsync(accessToken);
+        if (compliancePolicies is null)
+        {
+            return null;
+        }
         var complianceResults = await _assignmentsService.GetCompliancePoliciesAssignmentsListAsync(accessToken, groupInfo, compliancePolicies);
         return complianceResults.Where(r => r.AssignmentType == "group").ToList();
     }
@@ -335,7 +343,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         var autoPilotResults = await _assignmentsService.GetAutoPilotAssignmentsListAsync(accessToken, groupInfo, autopilotProfiles);
         return autoPilotResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchWindowsAppProtectionAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
+    private async Task<List<CustomAssignmentsModel>?> FetchWindowsAppProtectionAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
         var windowsAppProtections = await _appsService.GetWindowsManagedAppProtectionsListAsync(accessToken);
         if (windowsAppProtections is null)
@@ -345,34 +353,59 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         var appProtectionResults = await _assignmentsService.GetWindowsAppProtectionAssignmentsListAsync(accessToken, groupInfo, windowsAppProtections);
         return appProtectionResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
+    private async Task<List<CustomAssignmentsModel>?> FetchMobileAppAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
-        var mobileAppResults = await _assignmentsService.GetMobileAppAssignmentsByGroupListAsync(accessToken, groupInfo);
+        var mobileApps = await _appsService.GetMobileAppsListAsync(accessToken);
+        if (mobileApps is null)
+        {
+            return null;
+        }
+        var mobileAppResults = await _assignmentsService.GetMobileAppAssignmentsListAsync(accessToken, groupInfo, mobileApps);
         return mobileAppResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchTargetAppAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
+    private async Task<List<CustomAssignmentsModel>?> FetchTargetAppAssignmentsListAsync(string accessToken, GroupModel groupInfo)
     {
-        var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, groupInfo);
+        var appConfigurations = await _appsService.GetTargetedManagedAppConfigurationsListAsync(accessToken);
+        if (appConfigurations is null)
+        {
+            return null;
+        }
+        var targetAppResults = await _assignmentsService.GetTargetedAppConfigurationsAssignmentsByGroupListAsync(accessToken, groupInfo, appConfigurations);
         return targetAppResults;
     }
 
     private async Task<List<CustomAssignmentsModel>?> FetchFeatureUpdateAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
     {
+        var featureUpdateProfiles = await _updatesService.GetWindowsFeatureUpdatesListAsync(accessToken);
+        if (featureUpdateProfiles is null)
+        {
+            return null;
+        }
         var featureUpdateResults =
-            await _assignmentsService.GetFeatureUpdatesAssignmentsByGroupListAsync(accessToken, groupInfo);
+            await _assignmentsService.GetWindowsFeatureUpdatesAssignmentsListAsync(accessToken, groupInfo, featureUpdateProfiles);
         return featureUpdateResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchDriverUpdateAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
     {
+        var windowsDriverUpdates = await _updatesService.GetWindowsDriversUpdatesListAsync(accessToken);
+        if (windowsDriverUpdates is null)
+        {
+            return null;
+        }
         var driverUpdateResults =
-            await _assignmentsService.GetWindowsDriverUpdatesAssignmentsByGroupListAsync(accessToken, groupInfo);
+            await _assignmentsService.GetWindowsDriverUpdatesAssignmentsListAsync(accessToken, groupInfo, windowsDriverUpdates);
         return driverUpdateResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchDiskEncryptionAssignmentsListAsync(string? accessToken, GroupModel groupInfo)
     {
-        var diskEncyrptionResults =
-            await _assignmentsService.GetDiskEncryptionAssignmentListAsync(accessToken, groupInfo);
-        return diskEncyrptionResults;
+        var diskEncryptionProfiles = await _intentService.GetDiskEncryptionPoliciesListAsync(accessToken);
+        if (diskEncryptionProfiles is null)
+        {
+            return null;
+        }
+        var diskEncryptionResults =
+            await _assignmentsService.GetIntentsAssignmentListAsync(accessToken, groupInfo, diskEncryptionProfiles);
+        return diskEncryptionResults;
     }
     private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string? accessToken, GroupModel groupInfo)
     {

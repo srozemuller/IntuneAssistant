@@ -63,7 +63,7 @@ public class AssignmentsResponseModel
 
 public static class AssignmentModelExtensions
 {
-    public static CustomAssignmentsModel ToAssignmentModel(this Assignment? assignment, AssignmentsResponseModel? assigmentResponseModel, Enums.ResourceTypes resourceType)
+    public static CustomAssignmentsModel ToAssignmentModel(this Assignment? assignment, AssignmentsResponseModel? assigmentResponseModel, ResourceTypes resourceType)
     {
         string targetId = String.Empty;
         string pattern2 = "AssignmentTarget";

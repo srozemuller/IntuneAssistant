@@ -8,6 +8,9 @@ public interface IAppsService
     Task<List<WindowsLobAppModel>?> GetWindowsLobAppsListAsync(string? accessToken);
     Task<WindowsLobAppModel> GetAppByIdAsync(string accessToken, string applicationId);
     
+    Task<List<DefaultMobileAppModel>?> GetMobileAppsListAsync(string accessToken);
+    
+    Task<List<ManagedAppConfigurationModel>?> GetTargetedManagedAppConfigurationsListAsync(string accessToken);
     Task<WindowsLobAppModel?> GetAppByNameAsync(string accessToken, string applicationName);
     
     Task<List<MobileAppDependencyModel>?> GetAppDependenciesListAsync(string? accessToken);
