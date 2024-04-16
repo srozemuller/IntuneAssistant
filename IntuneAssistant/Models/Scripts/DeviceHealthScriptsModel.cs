@@ -1,8 +1,12 @@
-namespace IntuneAssistant.Models;
+using Newtonsoft.Json;
 
-public class DeviceHealthScriptModel
+
+namespace IntuneAssistant.Models.Scripts;
+
+public class DeviceHealthScriptsModel
 {
-    public string ODataContext { get; set; }
+    [JsonProperty("@odata.context")]
+    public string OdataContext { get; set; }
     public string Id { get; set; }
     public string Publisher { get; set; }
     public string Version { get; set; }
@@ -21,6 +25,4 @@ public class DeviceHealthScriptModel
     public string DeviceHealthScriptType { get; set; }
     public List<string> DetectionScriptParameters { get; set; }
     public List<string> RemediationScriptParameters { get; set; }
-    public string AssignmentsODataContext { get; set; }
-    public List<Assignment>? Assignments { get; set; }
 }
