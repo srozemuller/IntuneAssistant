@@ -1,7 +1,9 @@
 using System.CommandLine;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Infrastructure.Interfaces.Devices;
 using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Devices;
 using IntuneAssistant.Models.Options;
 using Spectre.Console;
 
@@ -35,18 +37,18 @@ public class FetchDeviceDuplicateCommandOptions : ICommandOptions
 
 public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDeviceDuplicateCommandOptions>
 {
-    private readonly IDeviceDuplicateService _deviceDuplicateService;
+    private readonly IDeviceService _deviceService;
 
-    public FetchDeviceDuplicateCommandHandler(IDeviceDuplicateService deviceDuplicateService)
+    public FetchDeviceDuplicateCommandHandler(IDeviceService deviceService)
     {
-        _deviceDuplicateService = deviceDuplicateService;
+        _deviceService = deviceService;
     }
 
     public async Task<int> HandleAsync(FetchDeviceDuplicateCommandOptions options)
     {
 
         var removeProvided = options.Remove;
-        var forceProviced = options.Force;
+        var forceProvided = options.Force;
         var accessToken = await new IdentityHelperService().GetAccessTokenSilentOrInteractiveAsync();
         if (string.IsNullOrWhiteSpace(accessToken))
         {
@@ -73,7 +75,7 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
             .StartAsync("Fetching duplicate devices from Intune", async _ =>
             {
 
-                    var allDeviceResults = await _deviceDuplicateService.GetDuplicateDevicesListAsync(accessToken, deviceFilterOptions, exportOptions);
+                    var allDeviceResults = await _deviceService.GetDuplicateDevicesListAsync(accessToken, deviceFilterOptions, exportOptions);
                     if (allDeviceResults is not null)
                     {
                         devices.AddRange(allDeviceResults.Select(x => x.ToDeviceModel()));
@@ -101,9 +103,9 @@ public class FetchDeviceDuplicateCommandHandler : ICommandOptionsHandler<FetchDe
                 device.OsVersion
             );
         AnsiConsole.Write(table);
-        if (removeProvided && forceProviced)
+        if (removeProvided && forceProvided)
         {
-            await _deviceDuplicateService.RemoveDuplicateDevicesAsync(accessToken);
+            await _deviceService.RemoveDuplicateDevicesAsync(accessToken);
         }
 
         if (removeProvided)

@@ -1,11 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.CommandLine.Builder;
+﻿using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using IntuneAssistant.Cli.Middleware;
 using IntuneAssistant.Cli.Commands;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Infrastructure.Interfaces.Devices;
 using IntuneAssistant.Infrastructure.Services;
+using IntuneAssistant.Infrastructure.Services.Devices;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 
@@ -20,7 +21,6 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddLogging();
     services.AddSingleton<IIdentityHelperService, IdentityHelperService>();
     services.AddScoped<IDeviceService, DeviceService>();
-    services.AddScoped<IDeviceDuplicateService, DeviceDuplicateServices>();
     services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
     services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
     services.AddScoped<IAssignmentFiltersService, AssignmentFiltersService>();

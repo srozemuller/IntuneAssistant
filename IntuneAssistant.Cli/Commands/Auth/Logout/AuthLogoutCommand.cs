@@ -18,7 +18,7 @@ public sealed class AuthLogoutCommandHandler : ICommandOptionsHandler<AuthLogout
 {
     private readonly IIdentityHelperService _identityHelperService;
 
-    public AuthLogoutCommandHandler(IIdentityHelperService identityHelperService, IDeviceService deviceService)
+    public AuthLogoutCommandHandler(IIdentityHelperService identityHelperService)
     {
         _identityHelperService = identityHelperService;
     }

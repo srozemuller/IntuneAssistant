@@ -1,14 +1,16 @@
 using Microsoft.Graph.Beta.Models;
-namespace IntuneAssistant.Models;
 
-public sealed record DeviceModel
+namespace IntuneAssistant.Models.Devices;
+
+public class DeviceModel
 {
     public Guid Id { get; init; } = Guid.Empty;
     public string DeviceName { get; init; } = string.Empty;
     public string Status { get; init; } = string.Empty;
     public DateTimeOffset LastSyncDateTime { get; init; } = DateTime.Now;
     public string OsVersion { get; init; } = String.Empty;
-
+    public string ComplianceState { get; init; } = string.Empty;
+    public string UserDisplayName { get; init; } = string.Empty;
 }
 
 public static class DeviceModelExtensions
@@ -22,7 +24,9 @@ public static class DeviceModelExtensions
             DeviceName = device.DeviceName,
             Status = device.ComplianceState.ToString(),
             LastSyncDateTime = device.LastSyncDateTime.GetValueOrDefault(),
-            OsVersion = device.OsVersion
+            OsVersion = device.OsVersion,
+            UserDisplayName = device.UserDisplayName,
+            ComplianceState = device.ComplianceState.ToString()
         };
     }
 }
