@@ -1,30 +1,62 @@
 ﻿using System.Text;
+using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Devices;
 using IntuneAssistant.Models.Options;
-using Microsoft.Graph;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.Graph.Beta.Models.ODataErrors;
+using Newtonsoft.Json;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class DeviceService : IDeviceService
+
 {
-    public async Task<List<ManagedDevice>?> GetManagedDevicesListAsync(string? accessToken, string? filter)
+    private readonly HttpClient _http = new();
+    public async Task<List<DeviceModel>?> GetManagedDevicesListAsync(string? accessToken, string? filter)
     {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<DeviceModel>();
         try
         {
-            // Create a new instance of GraphServiceClient with the DeviceCodeCredential and scopes
-            var graphClient = new GraphClient(accessToken).GetAuthenticatedGraphClient();
-            var result = await graphClient.DeviceManagement.ManagedDevices.GetAsync();
-            return result?.Value;
+            var nextUrl = GraphUrls.ManagedDevicesUrl;
+            while (nextUrl is not null)
+            {
+                try
+                {
+                    var response = await _http.GetAsync(nextUrl);
+                    var responseStream = await response.Content.ReadAsStreamAsync();
+                    using var sr = new StreamReader(responseStream);
+                    // Read the stream to a string
+                    var content = await sr.ReadToEndAsync();
+                    // Deserialize the string to your model
+                    var result = JsonConvert.DeserializeObject<GraphValueResponse<DeviceModel>>(content);
+                    if (result is null)
+                    {
+                        nextUrl = null;
+                        continue;
+                    }
+
+                    if (result.Value != null) results.AddRange(result.Value);
+                    nextUrl = result.ODataNextLink;
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine("An exception has occurred while fetching configuration policies: " + e.ToMessage());
+                    nextUrl = null;
+                }
+            }
         }
-        catch (ServiceException e)
+        catch (ODataError ex)
         {
-            Console.WriteLine(e.Message);
-            throw;
+            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
+            return null;
         }
+
+        return results;
     }
 
     public async Task<List<ManagedDevice>?> GetNonCompliantManagedDevicesListAsync(string? accessToken)

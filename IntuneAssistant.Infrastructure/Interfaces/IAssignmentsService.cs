@@ -3,6 +3,7 @@ using IntuneAssistant.Models;
 using IntuneAssistant.Models.Apps;
 using IntuneAssistant.Models.Assignments;
 using IntuneAssistant.Models.AutoPilot;
+using IntuneAssistant.Models.Devices;
 using IntuneAssistant.Models.Scripts;
 using IntuneAssistant.Models.Group;
 using IntuneAssistant.Models.Intents;

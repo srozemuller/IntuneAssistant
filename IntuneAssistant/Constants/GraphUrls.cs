@@ -5,6 +5,11 @@ public class GraphUrls
     public const string GroupsUrl = $"{AppConfiguration.GRAPH_URL}/groups";
     public const string GetByIdsUrl = $"{AppConfiguration.GRAPH_URL}/directoryObjects/getByIds?$select=displayName,id";
     
+    // Devices
+    public const string ManagedDevicesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/managedDevices";
+    
+    
+    
     public const string CompliancePoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceCompliancePolicies";
     public const string ConfigurationPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies";
     public const string DeviceConfigurationsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceConfigurations";

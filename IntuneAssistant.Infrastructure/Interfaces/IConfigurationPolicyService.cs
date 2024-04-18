@@ -1,4 +1,5 @@
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Devices;
 
 namespace IntuneAssistant.Infrastructure.Interfaces;
 
