@@ -1,6 +1,7 @@
 using System.Text;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Devices;
 using IntuneAssistant.Models.XLS;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.JSInterop;
@@ -63,7 +64,7 @@ public class ExportData
     }
     
     public async Task GenerateDevicesOverviewXlsAsync(IJSRuntime? js, 
-        List<ManagedDevice> data, 
+        List<DeviceModel> data, 
         string filename = "export.xlsx")
     {
         var devices = new DevicesXlsModel();

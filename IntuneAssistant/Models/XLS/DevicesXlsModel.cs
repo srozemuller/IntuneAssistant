@@ -1,11 +1,12 @@
 using IntuneAssistant.Helpers;
+using IntuneAssistant.Models.Devices;
 using Microsoft.Graph.Beta.Models;
 
 namespace IntuneAssistant.Models.XLS;
 
 public class DevicesXlsModel
 {
-    public byte[] Global(ManagedDevice[] data)
+    public byte[] Global(DeviceModel[] data)
     {
 
         var wb = XlsHelper.CreateXls();
