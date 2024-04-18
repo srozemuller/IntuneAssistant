@@ -45,7 +45,10 @@ public static class ResourceHelper
                 return "Windows 10 Endpoint Protection Configuration";
             case "#microsoft.graph.windowsDeliveryOptimizationConfiguration" :
                 return "Windows Delivery Optimization Configuration";
-            
+            case "#microsoft.graph.managedAndroidStoreApp" :
+                return "Managed Android Store App";
+            case "#microsoft.graph.managedIOSStoreApp" :
+                return "Managed IOS Store App";
             case "#microsoft.graph.user" :    
                 return ResourceTypes.User.GetDescription();
             case "#microsoft.graph.device" :    

@@ -2,6 +2,7 @@ using System.CommandLine;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Models;
+using IntuneAssistant.Models.Devices;
 using IntuneAssistant.Models.Options;
 using Spectre.Console;
 

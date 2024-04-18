@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace IntuneAssistant.Models;
+namespace IntuneAssistant.Models.Devices;
 
 public class DeviceConfigurationModel
 {

@@ -400,19 +400,6 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             await _assignmentsService.GetIntentsAssignmentListAsync(accessToken, null, diskEncryptionProfiles);
         return diskEncryptionResults;
     }
-    private async Task<List<CustomAssignmentsModel>?> FetchPlatformScriptAssignmentsListAsync(string? accessToken)
-    {
-        var updatesForMacResults =
-            await _assignmentsService.GetPlatformScriptsAssignmentListAsync(accessToken, null);
-        return updatesForMacResults;
-    }
-    private async Task<List<CustomAssignmentsModel>?> FetchManagedAppPolicyAssignmentListAsync(string? accessToken)
-    {
-        var managedAppResults =
-            await _assignmentsService.GetManagedApplicationAssignmentListAsync(accessToken, null);
-        return managedAppResults;
-    }
-    private async Task<List<CustomAssignmentsModel>?> FetchDeviceEnrollmentRestrictionsAssignmentListAsync(string? accessToken)
 
     private async Task<List<CustomAssignmentsModel>?> FetchDeviceEnrollmentRestrictionsAssignmentListAsync(string accessToken)
     {
