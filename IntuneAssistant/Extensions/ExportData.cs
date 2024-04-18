@@ -2,6 +2,7 @@ using System.Text;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.XLS;
+using Microsoft.Graph.Beta.Models;
 using Microsoft.JSInterop;
 
 namespace IntuneAssistant.Extensions;
@@ -56,6 +57,17 @@ public class ExportData
     {
         var assignments = new AssignmentsXlsModel();
         var XLSStream = assignments.Global(data.ToArray());
+        
+        if (js is null) return;
+        await js.InvokeVoidAsync("BlazorDownloadFile", filename, XLSStream);
+    }
+    
+    public async Task GenerateDevicesOverviewXlsAsync(IJSRuntime? js, 
+        List<ManagedDevice> data, 
+        string filename = "export.xlsx")
+    {
+        var devices = new DevicesXlsModel();
+        var XLSStream = devices.Global(data.ToArray());
         
         if (js is null) return;
         await js.InvokeVoidAsync("BlazorDownloadFile", filename, XLSStream);

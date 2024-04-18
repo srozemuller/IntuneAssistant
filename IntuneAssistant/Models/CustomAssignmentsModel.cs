@@ -63,16 +63,13 @@ public class AssignmentsResponseModel
 
 public static class AssignmentModelExtensions
 {
-    public static CustomAssignmentsModel ToAssignmentModel(this Assignment? assignment, AssignmentsResponseModel? assigmentResponseModel, ResourceTypes resourceType)
+    public static CustomAssignmentsModel ToAssignmentModel(this Assignment? assignment, AssignmentsResponseModel? assigmentResponseModel, string resourceType)
     {
-        string targetId = String.Empty;
-        string pattern2 = "AssignmentTarget";
+        var targetId = String.Empty;
         var assignmentType = String.Empty;
-        bool assigned = false;
-        string filterId = "No filter";
-        string filterType = "None";
-        var resourceTypeString = "Unknown resource type";
-
+        var assigned = false;
+        var filterId = "No filter";
+        var filterType = "None";
         if (assignment is null)
         {
             assignmentType = "No assignment";
@@ -104,7 +101,7 @@ public static class AssignmentModelExtensions
         {
             AssignmentType = assignmentType,
             IsAssigned = assigned,
-            ResourceType = resourceType.GetDescription(),
+            ResourceType = resourceType,
             ResourceId = assigmentResponseModel.Id,
             TargetId = targetId,
             ResourceName = assigmentResponseModel.DisplayName,

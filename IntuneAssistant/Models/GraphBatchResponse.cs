@@ -89,6 +89,10 @@ public class InnerResponseBodyRoleAssignmentsBody<T>
     [JsonProperty("@odata.context")]
     [JsonPropertyName("@odata.context")]
     public string ODataContext { get; set; }
+    
+    [JsonProperty("assignments@odata.context")]
+    [JsonPropertyName("assignments@odata.context")]
+    public string AssignmentsOdataContext { get; set; }
 
     [JsonProperty("@odata.count")]
     public int ODataCount { get; set; }

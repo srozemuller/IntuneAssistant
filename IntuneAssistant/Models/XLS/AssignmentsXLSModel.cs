@@ -2,6 +2,7 @@ using IntuneAssistant.Helpers;
 
 namespace IntuneAssistant.Models.XLS;
 
+
 public class AssignmentsXlsModel
 {
     public byte[] Global(CustomAssignmentsModel[] data)

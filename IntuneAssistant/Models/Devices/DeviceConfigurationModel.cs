@@ -1,9 +1,11 @@
 using Newtonsoft.Json;
 
-namespace IntuneAssistant.Models;
+namespace IntuneAssistant.Models.Devices;
 
 public class DeviceConfigurationModel
 {
+    [JsonProperty("@odata.type")]
+    public string OdataType { get; set; }
     public DateTime? CreatedDateTime { get; set; }
     public string CreationSource { get; set; }
     public string Description { get; set; }

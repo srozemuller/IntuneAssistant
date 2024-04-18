@@ -1,7 +1,8 @@
 using Microsoft.Graph.Beta.Models;
-namespace IntuneAssistant.Models;
 
-public sealed record DeviceModel
+namespace IntuneAssistant.Models.Devices;
+
+public class DeviceModel
 {
     public Guid Id { get; init; } = Guid.Empty;
     public string DeviceName { get; init; } = string.Empty;
