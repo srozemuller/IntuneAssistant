@@ -36,7 +36,7 @@ public sealed class AppsService : IAppsService
                     var content = await sr.ReadToEndAsync();
 
                     // Deserialize the string to your model
-                    var result = JsonConvert.DeserializeObject<GraphValueResponse<WindowsLobAppModel>>(content);
+                    var result = JsonConvert.DeserializeObject<GraphValueResponse<WindowsLobAppModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -82,7 +82,7 @@ public sealed class AppsService : IAppsService
                     var content = await sr.ReadToEndAsync();
 
                     // Deserialize the string to your model
-                    result = JsonConvert.DeserializeObject<WindowsLobAppModel>(content);
+                    result = JsonConvert.DeserializeObject<WindowsLobAppModel>(content, JsonSettings.Default());
                     if (result is null)
                     {
                         nextUrl = null;
@@ -125,7 +125,7 @@ public sealed class AppsService : IAppsService
 
                     // Deserialize the string to your model
                     var result =
-                        JsonConvert.DeserializeObject<GraphValueResponse<DefaultMobileAppModel>>(content);
+                        JsonConvert.DeserializeObject<GraphValueResponse<DefaultMobileAppModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -171,7 +171,7 @@ public sealed class AppsService : IAppsService
 
                     // Deserialize the string to your model
                     var result =
-                        JsonConvert.DeserializeObject<GraphValueResponse<ManagedAppConfigurationModel>>(content);
+                        JsonConvert.DeserializeObject<GraphValueResponse<ManagedAppConfigurationModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -216,7 +216,7 @@ public sealed class AppsService : IAppsService
                     var content = await sr.ReadToEndAsync();
 
                     // Deserialize the string to your model
-                    result = JsonConvert.DeserializeObject<WindowsLobAppModel>(content);
+                    result = JsonConvert.DeserializeObject<WindowsLobAppModel>(content, JsonSettings.Default());
                     if (result is null)
                     {
                         nextUrl = null;
@@ -259,7 +259,7 @@ public sealed class AppsService : IAppsService
 
                     // Deserialize the string to your model
                     var result =
-                        JsonConvert.DeserializeObject<GraphValueResponse<ResourceAssignmentsModel>>(content);
+                        JsonConvert.DeserializeObject<GraphValueResponse<ResourceAssignmentsModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -306,7 +306,7 @@ public sealed class AppsService : IAppsService
                     var content = await sr.ReadToEndAsync();
 
                     // Deserialize the string to your model
-                    var result = JsonConvert.DeserializeObject<GraphValueResponse<WindowsLobAppModel>>(content);
+                    var result = JsonConvert.DeserializeObject<GraphValueResponse<WindowsLobAppModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -336,7 +336,7 @@ public sealed class AppsService : IAppsService
                     var content = await sr.ReadToEndAsync();
                     // Deserialize the string to your model
                     var dependencies =
-                        JsonConvert.DeserializeObject<GraphValueResponse<MobileAppDependencyResponseModel>>(content);
+                        JsonConvert.DeserializeObject<GraphValueResponse<MobileAppDependencyResponseModel>>(content, JsonSettings.Default());
                     if (dependencies?.Value is null)
                     {
                         nextUrl = null;
@@ -386,7 +386,7 @@ public sealed class AppsService : IAppsService
                     var content = await sr.ReadToEndAsync();
 
                     // Deserialize the string to your model
-                    var result = JsonConvert.DeserializeObject<GraphValueResponse<WindowsLobAppModel>>(content);
+                    var result = JsonConvert.DeserializeObject<GraphValueResponse<WindowsLobAppModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -410,7 +410,7 @@ public sealed class AppsService : IAppsService
                     // Deserialize the string to your model
                     var dependencies =
                         JsonConvert.DeserializeObject<GraphValueResponse<MobileAppDependencyResponseModel>>(
-                            dependenciesContent);
+                            dependenciesContent, JsonSettings.Default());
                     if (dependencies?.Value is null)
                     {
                         nextUrl = null;
@@ -460,7 +460,7 @@ public sealed class AppsService : IAppsService
 
                     // Deserialize the string to your model
                     var result =
-                        JsonConvert.DeserializeObject<GraphValueResponse<WindowsManagedAppProtectionsModel>>(content);
+                        JsonConvert.DeserializeObject<GraphValueResponse<WindowsManagedAppProtectionsModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -507,7 +507,7 @@ public sealed class AppsService : IAppsService
 
                     // Deserialize the string to your model
                     var result =
-                        JsonConvert.DeserializeObject<GraphValueResponse<IosAppProtectionModel>>(content);
+                        JsonConvert.DeserializeObject<GraphValueResponse<IosAppProtectionModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -553,7 +553,7 @@ public sealed class AppsService : IAppsService
 
                     // Deserialize the string to your model
                     var result =
-                        JsonConvert.DeserializeObject<GraphValueResponse<AndroidAppProtectionModel>>(content);
+                        JsonConvert.DeserializeObject<GraphValueResponse<AndroidAppProtectionModel>>(content, JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
