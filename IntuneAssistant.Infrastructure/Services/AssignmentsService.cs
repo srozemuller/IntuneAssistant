@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
@@ -16,6 +15,8 @@ using IntuneAssistant.Models.Intents;
 using IntuneAssistant.Models.Updates;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
@@ -45,11 +46,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue =
                     result?.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).ToList();
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
@@ -150,11 +152,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments.Count > 0).Select(b => b.Body)
                     .ToList();
@@ -239,11 +242,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments.Any()).ToList();
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty()).ToList();
@@ -327,11 +331,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
                 foreach (var nonAssigned in responsesWithNoValue)
                 {
@@ -415,11 +420,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
                 foreach (var nonAssigned in responsesWithNoValue)
                 {
@@ -512,11 +518,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
                     .ToList();
@@ -601,11 +608,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
                     .Select(v => v.Body).ToList();
                 if (responsesWithNoValue != null)
@@ -688,11 +696,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
                     .Select(v => v.Body).ToList();
                 if (responsesWithNoValue != null)
@@ -763,9 +772,12 @@ public sealed class AssignmentsService : IAssignmentsService
         {
             var response = await _http.GetAsync(GraphUrls.ManagedAppPoliciesUrl);
             var responseStream = await response.Content.ReadAsStreamAsync();
-            var result =
-                await JsonSerializer.DeserializeAsync<GraphValueResponse<AssignmentsResponseModel>>(responseStream,
-                    CustomJsonOptions.Default());
+            using var sr = new StreamReader(responseStream);
+            var contentString = await sr.ReadToEndAsync();
+            var result = 
+                JsonConvert.DeserializeObject<GraphValueResponse<AssignmentsResponseModel>>(
+                    contentString,
+                    JsonSettings.Default())!;
             if (result?.Value is not null)
             {
                 foreach (var resource in result.Value)
@@ -821,11 +833,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
                     .Select(v => v.Body).ToList();
                 if (responsesWithNoValue != null)
@@ -907,11 +920,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
                     .Select(v => v.Body).ToList();
                 foreach (var nonAssigned in responsesWithNoValue)
@@ -987,11 +1001,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
                     .Select(v => v.Body).ToList();
                 if (responsesWithNoValue != null)
@@ -1072,11 +1087,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty())
                     .Select(v => v.Body).ToList();
                 if (responsesWithNoValue != null)
@@ -1156,11 +1172,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseForAssignments<Assignment>>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithNoValue = result.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
                 foreach (var nonAssigned in responsesWithNoValue)
                 {
@@ -1245,11 +1262,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments.Count > 0).Select(b => b.Body)
                     .ToList();
@@ -1329,11 +1347,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
                     .ToList();
@@ -1415,11 +1434,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
                     .ToList();
@@ -1501,11 +1521,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
                     .ToList();
@@ -1588,11 +1609,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
                     .ToList();
@@ -1674,11 +1696,12 @@ public sealed class AssignmentsService : IAssignmentsService
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
                 var responseStream = await response.Content.ReadAsStreamAsync();
-                var result =
-                    await JsonSerializer
-                        .DeserializeAsync<GraphBatchResponse<InnerResponseBodyOnly>>(
-                            responseStream,
-                            CustomJsonOptions.Default());
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
                 var responsesWithValue = result?.Responses
                     .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
                     .ToList();
