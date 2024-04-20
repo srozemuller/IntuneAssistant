@@ -108,7 +108,7 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
         var results = new ConfigurationPolicyModel();
         try
         {
-            var nextUrl = $"{GraphUrls.ConfigurationPoliciesUrl}('{policyId}')?$expand=assignments";
+            var nextUrl = $"{GraphUrls.ConfigurationPoliciesUrl}('{policyId}')?$expand=assignments,settings($expand=settingDefinitions)";
             while (nextUrl is not null)
             {
                 try
@@ -125,7 +125,6 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                         nextUrl = null;
                         continue;
                     }
-
                     return result;
                 }
                 catch (HttpRequestException e)
