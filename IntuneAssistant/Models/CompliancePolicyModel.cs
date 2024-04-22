@@ -12,10 +12,17 @@ public class CompliancePolicyModel
     public string Description { get; set; }
     public DateTime LastModifiedDateTime { get; set; }
     public string? DisplayName { get; set; }
-    public List<string> ValidOperatingSystemBuildRanges { get; set; }
+    public List<OSBuildRanges> ValidOperatingSystemBuildRanges { get; set; }
     [JsonProperty("assignments@odata.context")]
     public string AssignmentsOdataContext { get; set; }
     public List<CompliancePolicyAssignment> Assignments { get; set; }
+}
+
+public class OSBuildRanges
+{
+    public string Description { get; set; }
+    public string LowestVersion { get; set; }
+    public string HighestVersion { get; set; }
 }
 
 public class CompliancePolicyAssignment : IAssignment

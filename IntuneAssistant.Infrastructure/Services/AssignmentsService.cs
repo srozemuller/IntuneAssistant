@@ -1089,6 +1089,7 @@ public sealed class AssignmentsService : IAssignmentsService
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 using var sr = new StreamReader(responseStream);
                 var contentString = await sr.ReadToEndAsync();
+                Console.WriteLine(contentString);
                 var result = 
                     JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
                         contentString,
