@@ -74,26 +74,7 @@ public class
                     await _configurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken,
                         configurationPolicies);
 
-                foreach (var policy in configurationPolicies)
-                {
-                    //var configurationPoliciesSettingsResults = await _configurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken, policy);
-
-                    if (configurationPoliciesSettingsResults is not null)
-                    {
-                        foreach (var setting in configurationPoliciesSettingsResults)
-                        {
-                            var settingName = setting.SettingName;
-                            var settingValue = setting.SettingValue;
-                            _settingsOverview.Add(new CustomPolicySettingsModel
-                            {
-                                PolicyName = setting.PolicyName,
-                                SettingName = settingName,
-                                SettingValue = settingValue,
-                                ChildSettingInfo = setting.ChildSettingInfo
-                            });
-                        }
-                    }
-                }
+                _settingsOverview.AddRange(from policy in configurationPolicies where configurationPoliciesSettingsResults is not null from setting in configurationPoliciesSettingsResults let settingName = setting.SettingName let settingValue = setting.SettingValue select new CustomPolicySettingsModel { PolicyName = setting.PolicyName, SettingName = settingName, SettingValue = settingValue, ChildSettingInfo = setting.ChildSettingInfo });
             }
 
             if (_settingsOverview.Any())

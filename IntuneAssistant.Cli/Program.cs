@@ -5,9 +5,16 @@ using IntuneAssistant.Cli.Commands;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Interfaces.Devices;
+using IntuneAssistant.Infrastructure.Interfaces.Logging;
 using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Infrastructure.Services.Devices;
+using IntuneAssistant.Infrastructure.Services.LoggingServices;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
+using Microsoft.IdentityModel.Abstractions;
 using Spectre.Console;
 
 var rootCommand = RootCmd.New();
@@ -18,9 +25,16 @@ var builder = new CommandLineBuilder(rootCommand)
     .UseDependencyInjection(services =>
 {
     services.AddSingleton(new HttpClient());
-    services.AddLogging();
     services.AddSingleton<IIdentityHelperService, IdentityHelperService>();
+    services.AddSingleton<ILogger, Logger<Program>>();
+    services.AddSingleton<TelemetryClient>(serviceProvider =>
+    {
+        var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+        telemetryConfiguration.InstrumentationKey = AppConfiguration.APPINSIGHTS_INSTRUMENTATIONKEY;
+        return new TelemetryClient(telemetryConfiguration);
+    });
     services.AddScoped<IDeviceService, DeviceService>();
+    services.AddScoped<IApplicationInsightsService, CliApplicationInsightsService>();
     services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
     services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
     services.AddScoped<IAssignmentFiltersService, AssignmentFiltersService>();
@@ -33,6 +47,12 @@ var builder = new CommandLineBuilder(rootCommand)
     services.AddScoped<IDeviceScriptsService, DeviceScriptService>();
     services.AddScoped<IIntentsService, IntentsService>();
     services.AddScoped<IUpdatesService, UpdatesService>();
+
+    services.AddLogging(loggingBuilder =>
+    {
+        loggingBuilder.AddApplicationInsights(AppConfiguration.APPINSIGHTS_INSTRUMENTATIONKEY);
+        loggingBuilder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Warning);
+    });
 });
 
 if (args.Contains("--help") || args.Contains("-h") || args.Contains("-?"))

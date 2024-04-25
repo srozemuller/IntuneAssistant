@@ -3,6 +3,7 @@ using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Beta.Models;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
@@ -32,11 +33,13 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
 
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly IIdentityHelperService _identityHelperService;
+    private readonly ILogger _logger;
 
-    public FetchConfigurationPoliciesCommandHandler(IConfigurationPolicyService configurationPoliciesService, IIdentityHelperService identityHelperService)
+    public FetchConfigurationPoliciesCommandHandler(ILogger logger, IConfigurationPolicyService configurationPoliciesService, IIdentityHelperService identityHelperService)
     {
         _configurationPolicyService = configurationPoliciesService;
         _identityHelperService = identityHelperService;
+        _logger = logger;
     }
     public async Task<int> HandleAsync(FetchConfigurationPoliciesCommandOptions options)
     {
@@ -55,7 +58,13 @@ public class FetchConfigurationPoliciesCommandHandler : ICommandOptionsHandler<F
         {
             allCompliancePoliciesResults = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
         });
-        
+        if (allCompliancePoliciesResults.IsNullOrEmpty())
+        {
+            AnsiConsole.MarkupLine("No configuration policies found in Intune");
+            _logger.LogError("No configuration policies found in Intune");
+
+            return 0;
+        }
         var table = new Table();
         table.Collapse();
         table.AddColumn("Id");

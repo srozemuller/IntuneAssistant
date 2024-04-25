@@ -4,6 +4,7 @@ using IntuneAssistant.Enums;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Infrastructure.Interfaces.Logging;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Apps;
 using IntuneAssistant.Models.Assignments;
@@ -13,17 +14,26 @@ using IntuneAssistant.Models.Scripts;
 using IntuneAssistant.Models.Group;
 using IntuneAssistant.Models.Intents;
 using IntuneAssistant.Models.Updates;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 public sealed class AssignmentsService : IAssignmentsService
 {
     private readonly HttpClient _http = new();
+    private readonly ILogger<AssignmentsService> _logger;
+    private readonly IApplicationInsightsService _applicationInsightsService;
 
+    public AssignmentsService(ILogger<AssignmentsService> logger,
+        IApplicationInsightsService applicationInsightsService)
+    {
+        _logger = logger;
+        _applicationInsightsService = applicationInsightsService;
+    }
+    
     public async Task<List<CustomAssignmentsModel>?> GetConfigurationPolicyAssignmentsListAsync(string? accessToken,
         GroupModel? group, List<ConfigurationPolicyModel> configurationPolicies)
     {
@@ -45,6 +55,12 @@ public sealed class AssignmentsService : IAssignmentsService
             {
                 var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"Error: {response.StatusCode}");
+                    throw new HttpRequestException(
+                        $"Request to {AppConfiguration.GRAPH_BATCH_URL}, with content {content} failed with status code {response.StatusCode}");
+                }
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 using var sr = new StreamReader(responseStream);
                 var contentString = await sr.ReadToEndAsync();
@@ -53,7 +69,7 @@ public sealed class AssignmentsService : IAssignmentsService
                         contentString,
                         JsonSettings.Default())!;
                 var responsesWithValue =
-                    result?.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).ToList();
+                    result.Responses.Where(r => r.Body.Value != null && r.Body.Value.Any()).Where(v => v.Status == 200).ToList();
                 var responsesWithNoValue = result?.Responses.Where(r => r.Body.Value.IsNullOrEmpty()).ToList();
                 if (responsesWithNoValue != null)
                     foreach (var nonAssigned in responsesWithNoValue)
@@ -122,9 +138,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -212,9 +254,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -301,9 +369,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -390,9 +484,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -488,9 +608,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -578,11 +724,38 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
         }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
+        }
+
+        return null;
     }
 
     public async Task<List<CustomAssignmentsModel>?> GetAutoPilotAssignmentsListAsync(string? accessToken,
@@ -665,9 +838,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -754,9 +953,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -801,10 +1026,35 @@ public sealed class AssignmentsService : IAssignmentsService
                 }
             }
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return results;
@@ -890,9 +1140,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -973,10 +1249,38 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch
+        catch (HttpRequestException e)
         {
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
         }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
+        }
+
+        return null;
     }
 
     public async Task<List<CustomAssignmentsModel>?> GetIosAppProtectionAssignmentsListAsync(string? accessToken,
@@ -1058,10 +1362,38 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch
+        catch (HttpRequestException e)
         {
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
         }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
+        }
+
+        return null;
     }
 
     public async Task<List<CustomAssignmentsModel>?> GetAndroidAppProtectionAssignmentsListAsync(string? accessToken,
@@ -1089,6 +1421,7 @@ public sealed class AssignmentsService : IAssignmentsService
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 using var sr = new StreamReader(responseStream);
                 var contentString = await sr.ReadToEndAsync();
+                Console.WriteLine(contentString);
                 var result = 
                     JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
                         contentString,
@@ -1144,10 +1477,38 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch
+        catch (HttpRequestException e)
         {
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
         }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
+        }
+
+        return null;
     }
 
     public async Task<List<CustomAssignmentsModel>> GetCompliancePoliciesAssignmentsListAsync(string? accessToken,
@@ -1232,9 +1593,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -1317,9 +1704,35 @@ public sealed class AssignmentsService : IAssignmentsService
                 }
             }
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return results;
@@ -1404,9 +1817,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -1491,9 +1930,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -1579,9 +2044,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -1666,9 +2157,35 @@ public sealed class AssignmentsService : IAssignmentsService
 
             return results;
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching devices: " + ex.ToMessage());
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return null;
@@ -1751,10 +2268,35 @@ public sealed class AssignmentsService : IAssignmentsService
                 }
             }
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching iOS Lob apps assignments: " + ex.ToMessage());
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return results;

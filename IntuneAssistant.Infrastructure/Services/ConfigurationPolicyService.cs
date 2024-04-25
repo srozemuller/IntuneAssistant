@@ -4,8 +4,10 @@ using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
 using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Infrastructure.Interfaces.Logging;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Devices;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Beta.Models.ODataErrors;
 using Spectre.Console;
 
@@ -14,46 +16,85 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class ConfigurationPolicyService : IConfigurationPolicyService
 {
     private readonly HttpClient _http = new();
+    private readonly ILogger<ConfigurationPolicyService> _logger;
+    private readonly IApplicationInsightsService _applicationInsightsService;
+
+    public ConfigurationPolicyService(ILogger<ConfigurationPolicyService> logger,
+        IApplicationInsightsService applicationInsightsService)
+    {
+        _logger = logger;
+        _applicationInsightsService = applicationInsightsService;
+    }
 
     public async Task<List<ConfigurationPolicyModel>?> GetConfigurationPoliciesListAsync(string? accessToken)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         var results = new List<ConfigurationPolicyModel>();
-        try
+        _logger.LogInformation("Getting configuration policies list");
+        var nextUrl = $"{GraphUrls.ConfigurationPoliciesUrl}?expand=assignments";
+        while (nextUrl is not null)
         {
-            var nextUrl = GraphUrls.ConfigurationPoliciesUrl;
-            while (nextUrl is not null)
+            try
             {
-                try
+                var response = await _http.GetAsync(nextUrl);
+                // Ensure we got a successful response
+                if (!response.IsSuccessStatusCode)
                 {
-                    var response = await _http.GetAsync(nextUrl);
-                    var responseStream = await response.Content.ReadAsStreamAsync();
-                    using var sr = new StreamReader(responseStream);
-                    // Read the stream to a string
-                    var content = await sr.ReadToEndAsync();
-                    // Deserialize the string to your model
-                    var result = JsonConvert.DeserializeObject<GraphValueResponse<ConfigurationPolicyModel>>(content);
-                    if (result is null)
-                    {
-                        nextUrl = null;
-                        continue;
-                    }
-
-                    results.AddRange(result.Value);
-                    nextUrl = result.ODataNextLink;
+                    Console.WriteLine($"Error: {response.StatusCode}");
+                    throw new HttpRequestException(
+                        $"Request to {nextUrl} failed with status code {response.StatusCode}");
                 }
-                catch (HttpRequestException e)
+
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                using var sr = new StreamReader(responseStream);
+                // Read the stream to a string
+                var content = await sr.ReadToEndAsync();
+                // Deserialize the string to your model
+                var result = JsonConvert.DeserializeObject<GraphValueResponse<ConfigurationPolicyModel>>(content);
+
+                if (result is null)
                 {
                     nextUrl = null;
+                    continue;
                 }
+
+                if (result.Value != null) results.AddRange(result.Value);
+                nextUrl = result.ODataNextLink;
+            }
+            catch (HttpRequestException e)
+            {
+                // Handle HttpRequestException (a subclass of IOException)
+                _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+                // Send the error details to Application Insights
+                var customException = new ExceptionHelper.CustomException(e.Message, nextUrl, e.StackTrace);
+
+                // Send the custom exception details to Application Insights
+                await _applicationInsightsService.TrackExceptionAsync(customException);
+                await _applicationInsightsService.TrackTraceAsync(customException);
+                Console.WriteLine($"Request error: {customException}");
+                nextUrl = null;
+            }
+            catch (TaskCanceledException e)
+            {
+                // Handle timeouts (TaskCanceledException is thrown when the request times out)
+                Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                    ? "Request was canceled."
+                    : "Request timed out.");
+                _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+            }
+            catch (Exception e)
+            {
+                // Handle other exceptions
+                Console.WriteLine($"An error occurred: {e.Message}");
+                var jsonException = new ExceptionHelper.CustomJsonException(e.Message, nextUrl, e.StackTrace);
+                    
+                await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+                await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+                _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
             }
         }
-        catch (ODataError ex)
-        {
-            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
-            return null;
-        }
+
 
         return results;
     }
@@ -63,9 +104,9 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         var results = new List<DeviceConfigurationModel>();
+        var nextUrl = GraphUrls.DeviceConfigurationsUrl;
         try
         {
-            var nextUrl = GraphUrls.DeviceConfigurationsUrl;
             while (nextUrl is not null)
             {
                 try
@@ -76,7 +117,6 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                     // Read the stream to a string
                     var content = await sr.ReadToEndAsync();
                     // Deserialize the string to your model
-                    //var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<ConfigurationPolicyModel>>(responseStream, CustomJsonOptions.Default());
                     var result = JsonConvert.DeserializeObject<GraphValueResponse<DeviceConfigurationModel>>(content);
                     if (result is null)
                     {
@@ -93,11 +133,108 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                 }
             }
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, nextUrl, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
         }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, nextUrl, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
+        }
+
+        return results;
+    }
+
+    public async Task<ConfigurationPolicyModel>? GetConfigurationPolicyByIdAsync(string? accessToken, string policyId)
+    {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new ConfigurationPolicyModel();
+        var nextUrl =
+            $"{GraphUrls.ConfigurationPoliciesUrl}('{policyId}')?$expand=assignments,settings($expand=settingDefinitions)";
+        try
+        {
+            while (nextUrl is not null)
+            {
+                var response = await _http.GetAsync(nextUrl);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"Error: {response.StatusCode}");
+                    throw new HttpRequestException(
+                        $"Request to {nextUrl} failed with status code {response.StatusCode}");
+                }
+
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                using var sr = new StreamReader(responseStream);
+                // Read the stream to a string
+                var content = await sr.ReadToEndAsync();
+
+                    // Deserialize the string to your model
+                    var result = JsonConvert.DeserializeObject<ConfigurationPolicyModel>(content);
+                    if (result is null)
+                    {
+                        nextUrl = null;
+                        continue;
+                    }
+
+                    return result;
+
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, nextUrl, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+            nextUrl = null;
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, nextUrl, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
+        }
+
         return results;
     }
 
@@ -106,21 +243,20 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         var results = new List<GroupPolicyConfigurationModel>();
+        var nextUrl = GraphUrls.GroupPolicyConfigurationsUrl;
         try
         {
-            var nextUrl = GraphUrls.GroupPolicyConfigurationsUrl;
             while (nextUrl is not null)
             {
-                try
-                {
-                    var response = await _http.GetAsync(nextUrl);
+                var response = await _http.GetAsync(nextUrl);
                     var responseStream = await response.Content.ReadAsStreamAsync();
                     using var sr = new StreamReader(responseStream);
                     // Read the stream to a string
                     var content = await sr.ReadToEndAsync();
                     // Deserialize the string to your model
                     //var result = await JsonSerializer.DeserializeAsync<GraphValueResponse<ConfigurationPolicyModel>>(responseStream, CustomJsonOptions.Default());
-                    var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupPolicyConfigurationModel>>(content);
+                    var result =
+                        JsonConvert.DeserializeObject<GraphValueResponse<GroupPolicyConfigurationModel>>(content);
                     if (result is null)
                     {
                         nextUrl = null;
@@ -129,18 +265,40 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
 
                     results.AddRange(result.Value);
                     nextUrl = result.ODataNextLink;
-                }
-                catch (HttpRequestException e)
-                {
-                    nextUrl = null;
-                }
+
             }
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, nextUrl, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
         }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, nextUrl, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
+        }
+
         return results;
     }
 
@@ -188,10 +346,35 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                 }
             }
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return results;
@@ -203,9 +386,10 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var nextUrl = GraphUrls.ConfigurationPoliciesAssignmentsUrl;
         try
         {
-            var nextUrl = GraphUrls.ConfigurationPoliciesAssignmentsUrl;
+
             var json = JsonConvert.SerializeObject(configurationPolicy);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _http.PostAsync(nextUrl, content);
@@ -224,13 +408,33 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
         }
         catch (HttpRequestException e)
         {
-            AnsiConsole.WriteLine("\nException Caught!");
-            AnsiConsole.WriteLine("Message :{0} ", e.Message);
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, nextUrl, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
         }
         catch (Exception e)
         {
-            AnsiConsole.WriteLine("\nException Caught!");
-            AnsiConsole.WriteLine("Message :{0} ", e.Message);
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, nextUrl, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return 0;

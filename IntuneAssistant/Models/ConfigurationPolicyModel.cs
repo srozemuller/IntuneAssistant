@@ -21,7 +21,7 @@ public class ConfigurationPolicyModel
     public List<ConfigPolicyAssignment> Assignments { get; set; }
     [JsonProperty("settings@odata.context")]
     public string SettingsOdataContext { get; set; }
-    public List<Setting> Settings { get; set; }
+    public List<PolicySettingsDefinitionModel> Settings { get; set; }
 }
 
 public class TemplateReference

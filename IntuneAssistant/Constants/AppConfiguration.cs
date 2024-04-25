@@ -7,6 +7,7 @@ public static class AppConfiguration
 {
     // App settings
     public const string AUTHORITY = "https://login.microsoftonline.com/common";
+    public const string APPINSIGHTS_INSTRUMENTATIONKEY = "c0a76058-da5a-4977-a298-a186b0bc95f7";
     public const string CLIENT_ID = "14d82eec-204b-4c2f-b7e8-296a70dab67e";
     public const string REDIRECT_URI = "http://localhost";
     public const string GRAPH_URL = "https://graph.microsoft.com/beta";
