@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using IntuneAssistant.Constants;
 using IntuneAssistant.Extensions;
+using IntuneAssistant.Helpers;
 using IntuneAssistant.Infrastructure.Interfaces.Devices;
+using IntuneAssistant.Infrastructure.Interfaces.Logging;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Devices;
 using IntuneAssistant.Models.Options;
@@ -17,11 +19,14 @@ public sealed class DeviceService : IDeviceService
 
 {
     private readonly HttpClient _http = new();
-    
     private readonly ILogger<DeviceService> _logger;
-    public DeviceService(ILogger<DeviceService> logger)
+    private readonly IApplicationInsightsService _applicationInsightsService;
+
+    public DeviceService(ILogger<DeviceService> logger,
+        IApplicationInsightsService applicationInsightsService)
     {
         _logger = logger;
+        _applicationInsightsService = applicationInsightsService;
     }
     public async Task<List<DeviceModel>?> GetManagedDevicesListAsync(string? accessToken, string? filter)
     {
@@ -58,10 +63,35 @@ public sealed class DeviceService : IDeviceService
                 }
             }
         }
-        catch (ODataError ex)
+        catch (HttpRequestException e)
         {
-            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
-            return null;
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
 
         return results;
