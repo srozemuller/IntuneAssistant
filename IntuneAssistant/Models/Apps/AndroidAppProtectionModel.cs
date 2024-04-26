@@ -87,11 +87,16 @@ public class AndroidAppProtectionModel
     public string MessagingRedirectAppPackageId { get; set; }
     public string MessagingRedirectAppDisplayName { get; set; }
     public List<ExemptedAppPackage> ExemptedAppPackages { get; set; }
-    public List<string> ApprovedKeyboards { get; set; }
+    public List<ApprovedKeyboards> ApprovedKeyboards { get; set; }
     public List<Assignment> Assignments { get; set; }
 }
 
 public class ExemptedAppPackage
+{
+    public string Name { get; set; }
+    public string Value { get; set; }
+}
+public class ApprovedKeyboards
 {
     public string Name { get; set; }
     public string Value { get; set; }
