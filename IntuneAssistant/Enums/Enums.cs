@@ -81,11 +81,32 @@ public enum ResourceTypes
     DeviceEnrollmentPlatformRestrictionsConfiguration,
     [Description("Device Enrollment Limit Configuration")]
     DeviceEnrollmentLimitConfiguration,
-    
+    [Description("iOS Custom Configuration")]
+    IosCustomConfiguration,
+    [Description("iOS General Configuration")]
+    IosGeneralConfiguration,
+    [Description("macOS Custom Configuration")]
+    MacOsCustomConfiguration,
+    [Description("Windows Identity Protection Configuration")]
+    WindowsIdentityProtectionConfiguration,
+    [Description("macOS Extensions Configuration")]
+    MacOsExtensionsConfiguration,
+    [Description("Windows Kiosk Configuration")]
+    WindowsKioskConfiguration,
+    [Description("Android Work Profile General Device Configuration")]
+    AndroidWorkProfileGeneralDeviceConfiguration,
+    [Description("iOS Device Features Configuration")]
+    IosDeviceFeaturesConfiguration,
+    [Description("iOS General Device Configuration")]
+    IosGeneralDeviceConfiguration,
+    [Description("Shared PC Configuration")]
+    SharedPcConfiguration,
     [Description("User")]
     User,
     [Description("Device")]
     Device,
+    [Description("iOS Device Feature Configuration")]
+    IosDeviceFeatureConfiguration,
 }
 
 public enum AssignmentODataTypes
