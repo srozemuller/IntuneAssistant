@@ -74,6 +74,17 @@ public class ExportData
         await js.InvokeVoidAsync("BlazorDownloadFile", filename, XLSStream);
     }
     
+    public async Task GenerateConfigurationPolicyXlsAsync(IJSRuntime? js, 
+        ConfigurationPolicyModel policy, List<CustomAssignmentsModel> assignment, List<CustomPolicySettingsModel> settings, 
+        string filename = "export.xlsx")
+    {
+        var policyXls = new ConfigurationPolicyXlsModel();
+        var XLSStream = policyXls.Global(policy, assignment, settings);
+        
+        if (js is null) return;
+        await js.InvokeVoidAsync("BlazorDownloadFile", filename, XLSStream);
+    }
+    
     public async Task GenerateGroupAssignmentsOverviewXlsAsync(IJSRuntime js, 
         List<CustomAssignmentsModel> data, 
         string filename = "export.xlsx")
