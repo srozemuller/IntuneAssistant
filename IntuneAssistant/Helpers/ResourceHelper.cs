@@ -59,6 +59,10 @@ public static class ResourceHelper
                 return ResourceTypes.MacOsCustomConfiguration.GetDescription();
             case "#microsoft.graph.androidWorkProfileGeneralDeviceConfiguration":
                 return ResourceTypes.AndroidWorkProfileGeneralDeviceConfiguration.GetDescription();
+            case "#microsoft.graph.macOSDeviceFeaturesConfiguration":
+                return ResourceTypes.MacOsDeviceFeaturesConfiguration.GetDescription();
+            case "#microsoft.graph.macOSEndpointProtectionConfiguration":
+                return ResourceTypes.MacOsEndpointProtectionConfiguration.GetDescription();
             case "#microsoft.graph.windowsDefenderAdvancedThreatProtectionConfiguration":
                 return ResourceTypes.WindowsDefenderAdvancedThreatProtectionConfiguration.GetDescription();
             case "#microsoft.graph.windows10GeneralConfiguration" :
