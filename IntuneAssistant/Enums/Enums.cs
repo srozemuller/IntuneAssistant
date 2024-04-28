@@ -45,6 +45,8 @@ public enum ResourceTypes
     WindowsFeatureUpdate,
     [Description("Windows Driver Update")]
     WindowsDriverUpdate,
+    [Description("Windows Quality Update")]
+    WindowsQualityUpdate,
     [Description("macOS Shell Script")]
     MacOsShellScript,
     [Description("Disk Encryption Policy")]

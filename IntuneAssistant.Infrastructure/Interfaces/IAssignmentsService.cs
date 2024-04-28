@@ -35,6 +35,8 @@ public interface IAssignmentsService
         GroupModel? group, List<WindowsFeatureUpdatesModel> windowsFeatureUpdatesProfiles);
     Task<List<CustomAssignmentsModel>?> GetWindowsDriverUpdatesAssignmentsListAsync(string? accessToken,
         GroupModel? group, List<WindowsDriverUpdatesModel> windowsDriverUpdatesProfiles);
+    Task<List<CustomAssignmentsModel>?> GetWindowsQualityUpdatesAssignmentsListAsync(string? accessToken,
+        GroupModel? group, List<WindowsQualityUpdateModel> windowsQualityUpdates);
     Task<List<CustomAssignmentsModel>?> GetIntentsAssignmentListAsync(string? accessToken,
         GroupModel? group, List<IntentsModel> intents);
     Task<List<CustomAssignmentsModel>?> GetDeviceEnrollmentAssignmentListAsync(string? accessToken,

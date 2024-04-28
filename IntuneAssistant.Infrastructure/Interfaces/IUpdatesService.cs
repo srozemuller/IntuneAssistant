@@ -9,4 +9,5 @@ public interface IUpdatesService
 {
     Task<List<WindowsFeatureUpdatesModel>?> GetWindowsFeatureUpdatesListAsync(string? accessToken);
     Task<List<WindowsDriverUpdatesModel>?> GetWindowsDriversUpdatesListAsync(string? accessToken);
+    Task<List<WindowsQualityUpdateModel>?> GetWindowsQualityUpdatesListAsync(string? accessToken);
 }
