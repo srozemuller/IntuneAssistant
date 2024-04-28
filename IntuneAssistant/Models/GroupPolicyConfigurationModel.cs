@@ -14,5 +14,4 @@ public class GroupPolicyConfigurationModel
     [JsonProperty("assignments@odata.context")]
     public string AssignmentsOdataContext { get; set; }
     public List<ConfigPolicyAssignment> Assignments { get; set; }
-
 }

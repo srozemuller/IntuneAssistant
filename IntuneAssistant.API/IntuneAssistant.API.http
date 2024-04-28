@@ -1,0 +1,6 @@
+@IntuneAssistant.API_HostAddress = http://localhost:5213
+
+GET {{IntuneAssistant.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

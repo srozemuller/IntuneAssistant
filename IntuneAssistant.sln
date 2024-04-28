@@ -6,6 +6,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuneAssistant.Cli", "Intu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuneAssistant.Infrastructure", "IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj", "{B7F7DBC2-AEA9-4D64-A9C3-9D1A2A6F33AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuneAssistant.API", "IntuneAssistant.API\IntuneAssistant.API.csproj", "{79ECC698-BCED-47B4-80C0-888E50F04084}"
+	ProjectSection(ProjectDependencies) = postProject
+		{754E00B9-3C3D-4C61-BC18-D873BAD30527} = {754E00B9-3C3D-4C61-BC18-D873BAD30527}
+		{B7F7DBC2-AEA9-4D64-A9C3-9D1A2A6F33AC} = {B7F7DBC2-AEA9-4D64-A9C3-9D1A2A6F33AC}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,5 +34,9 @@ Global
 		{7FAE066A-39A7-446D-B531-58EA5861BDA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FAE066A-39A7-446D-B531-58EA5861BDA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FAE066A-39A7-446D-B531-58EA5861BDA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79ECC698-BCED-47B4-80C0-888E50F04084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79ECC698-BCED-47B4-80C0-888E50F04084}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79ECC698-BCED-47B4-80C0-888E50F04084}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79ECC698-BCED-47B4-80C0-888E50F04084}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
