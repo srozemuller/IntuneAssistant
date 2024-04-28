@@ -15,7 +15,7 @@ public enum ResourceTypes
 {
     [Description("Update Ring Configuration")]
     UpdateRingConfiguration,
-    [Description("Group Policy Configurations")]
+    [Description("Administrative Templates")]
     GroupPolicyConfiguration,
     [Description("Windows Compliance Policy")]
     WindowsCompliancePolicy,
@@ -59,6 +59,8 @@ public enum ResourceTypes
     DeviceLimitRestriction,
     [Description("macOS Custom Attributes")]
     MacOsCustomAttributes,
+    [Description("Windows Defender ATP Configuration")]
+    WindowsDefenderAdvancedThreatProtectionConfiguration,
     [Description("iOS LineOfBusiness Application Configuration")]
     IosLobAppConfiguration,
     [Description("Windows 32 LOB Application")]

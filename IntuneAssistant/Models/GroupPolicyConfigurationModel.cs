@@ -4,6 +4,8 @@ namespace IntuneAssistant.Models;
 
 public class GroupPolicyConfigurationModel
 {
+    [JsonProperty("@odata.type")]
+    public string OdataType { get; set; }
     public DateTime? CreatedDateTime { get; set; }
     public string Description { get; set; }
     public DateTime? LastModifiedDateTime { get; set; }
