@@ -55,6 +55,10 @@ public enum ResourceTypes
     PlatformScripts,
     [Description("Managed Application Policy")]
     ManagedAppPolicy,
+    [Description("Mac OS Device Features Configuration")]
+    MacOsDeviceFeaturesConfiguration,
+    [Description("Mac OS Endpoint Protection Configuration")]
+    MacOsEndpointProtectionConfiguration,
     [Description("Device Platform Restriction")]
     DevicePlatformRestriction,
     [Description("Device Limit Restriction")]
@@ -77,7 +81,7 @@ public enum ResourceTypes
     Windows10CustomConfiguration,
     [Description("iOS Update Configuration")]
     IosUpdateConfiguration,
-    [Description("macOS Software Update Configuration")]
+    [Description("MacOS Software Update Configuration")]
     MacOsSoftwareUpdateConfiguration,
     [Description("Windows Health Monitoring Configuration")]
     WindowsHealthMonitoringConfiguration,
@@ -89,11 +93,11 @@ public enum ResourceTypes
     IosCustomConfiguration,
     [Description("iOS General Configuration")]
     IosGeneralConfiguration,
-    [Description("macOS Custom Configuration")]
+    [Description("MacOS Custom Configuration")]
     MacOsCustomConfiguration,
     [Description("Windows Identity Protection Configuration")]
     WindowsIdentityProtectionConfiguration,
-    [Description("macOS Extensions Configuration")]
+    [Description("MacOS Extensions Configuration")]
     MacOsExtensionsConfiguration,
     [Description("Windows Kiosk Configuration")]
     WindowsKioskConfiguration,
