@@ -1852,6 +1852,118 @@ public sealed class AssignmentsService : IAssignmentsService
         return null;
     }
 
+    public async Task<List<CustomAssignmentsModel>?> GetWindowsQualityUpdatesAssignmentsListAsync(string? accessToken, GroupModel? group, List<WindowsQualityUpdateModel> windowsQualityUpdates)
+    {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var results = new List<CustomAssignmentsModel>();
+        try
+        {
+            var urlList = new List<string>();
+            foreach (var profile in windowsQualityUpdates)
+            {
+                var policyUrl =
+                    $"/deviceManagement/windowsQualityUpdateProfiles('{profile.Id}')?$expand=assignments";
+                urlList.Add(policyUrl);
+            }
+
+            var batchRequestBody = GraphBatchHelper.CreateUrlListBatchOutput(urlList);
+            foreach (var requestBody in batchRequestBody)
+            {
+                var content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(AppConfiguration.GRAPH_BATCH_URL, content);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                using var sr = new StreamReader(responseStream);
+                var contentString = await sr.ReadToEndAsync();
+                var result = 
+                    JsonConvert.DeserializeObject<GraphBatchResponse<InnerResponseBodyOnly>>(
+                        contentString,
+                        JsonSettings.Default())!;
+                var responsesWithValue = result?.Responses
+                    .Where(r => r.Body.Assignments != null && r.Body.Assignments.Count > 0).Select(b => b.Body)
+                    .ToList();
+                var responsesWithNoValue =
+                    result?.Responses.Where(r => r.Body.Assignments.IsNullOrEmpty()).Select(b => b.Body);
+                if (responsesWithNoValue != null)
+                    foreach (var nonAssigned in responsesWithNoValue)
+                    {
+                        AssignmentsResponseModel resource = new AssignmentsResponseModel
+                        {
+                            Id = nonAssigned?.Id,
+                            DisplayName = nonAssigned?.DisplayName,
+                            Assignments = new List<Assignment>()
+                        };
+                        var configurationPolicyAssignment =
+                            resource.Assignments.FirstOrDefault()
+                                .ToAssignmentModel(resource, ResourceTypes.WindowsQualityUpdate.GetDescription());
+                        results.Add(configurationPolicyAssignment);
+                    }
+
+                foreach (var assignmentResponse in responsesWithValue.Select(r => r))
+                {
+                    var sourcePolicy = windowsQualityUpdates.FirstOrDefault(p =>
+                        p.Id == assignmentResponse.Id);
+                    AssignmentsResponseModel resource = new AssignmentsResponseModel
+                    {
+                        Id = sourcePolicy?.Id,
+                        DisplayName = sourcePolicy?.DisplayName,
+                        Assignments = assignmentResponse.Assignments.ToList()
+                    };
+                    if (group is null)
+                    {
+                        foreach (var assignment in resource.Assignments)
+                        {
+                            var qualityUpdateAssignment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.WindowsQualityUpdate.GetDescription());
+                            results.Add(qualityUpdateAssignment);
+                        }
+                    }
+                    else
+                        foreach (var assignment in resource.Assignments.Where(g => g.Target.GroupId == group.Id))
+                        {
+                            var qualityUpdateAssignment =
+                                assignment.ToAssignmentModel(resource, ResourceTypes.WindowsQualityUpdate.GetDescription());
+                            results.Add(qualityUpdateAssignment);
+                        }
+                }
+            }
+
+            return results;
+        }
+        catch (HttpRequestException e)
+        {
+            // Handle HttpRequestException (a subclass of IOException)
+            _logger.LogError("Error: {ResponseStatusCode}", e.Message);
+            // Send the error details to Application Insights
+            var customException = new ExceptionHelper.CustomException(e.Message, null, e.StackTrace);
+
+            // Send the custom exception details to Application Insights
+            await _applicationInsightsService.TrackExceptionAsync(customException);
+            await _applicationInsightsService.TrackTraceAsync(customException);
+            Console.WriteLine($"Request error: {customException}");
+        }
+        catch (TaskCanceledException e)
+        {
+            // Handle timeouts (TaskCanceledException is thrown when the request times out)
+            Console.WriteLine(e.CancellationToken.IsCancellationRequested
+                ? "Request was canceled."
+                : "Request timed out.");
+            _logger.LogError("Error: {ResponseStatusCode}", e.CancellationToken.IsCancellationRequested);
+        }
+        catch (Exception e)
+        {
+            // Handle other exceptions
+            Console.WriteLine($"An error occurred: {e.Message}");
+            var jsonException = new ExceptionHelper.CustomJsonException(e.Message, null, e.StackTrace);
+                    
+            await _applicationInsightsService.TrackJsonExceptionAsync(jsonException);
+            await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
+            _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
+        }
+
+        return null;
+    }
+
     public async Task<List<CustomAssignmentsModel>?> GetIntentsAssignmentListAsync(string? accessToken,
         GroupModel? group, List<IntentsModel> intents)
     {
