@@ -553,6 +553,7 @@ public sealed class AssignmentsService : IAssignmentsService
                     var sourcePolicy = groupPolicies.FirstOrDefault(p =>
                         nonAssigned != null &&
                         p.Id == policyId);
+                    var resourceType = ResourceTypes.GroupPolicyConfiguration.GetDescription();
                     AssignmentsResponseModel resource = new AssignmentsResponseModel
                     {
                         Id = sourcePolicy?.Id,
@@ -561,7 +562,7 @@ public sealed class AssignmentsService : IAssignmentsService
                     };
                     var assignmentResponse =
                         resource.Assignments.FirstOrDefault().ToAssignmentModel(resource,
-                            ResourceTypes.GroupPolicyConfiguration.ToString());
+                            resourceType);
                     results.Add(assignmentResponse);
                 }
 
@@ -571,6 +572,7 @@ public sealed class AssignmentsService : IAssignmentsService
                     var sourcePolicy = groupPolicies.FirstOrDefault(p =>
                         assignmentResponse != null &&
                         p.Id == assignmentResponse.Select(a => a.SourceId).FirstOrDefault());
+                    var resourceType = ResourceHelper.GetResourceTypeFromOdata(sourcePolicy.OdataType);
                     if (sourcePolicy is null)
                     {
                         var sourceId = assignmentResponse.Select(a => a.Id.Split('_')[0]);
@@ -591,7 +593,7 @@ public sealed class AssignmentsService : IAssignmentsService
                         {
                             var configurationPolicyAssignment =
                                 assignment.ToAssignmentModel(resource,
-                                    ResourceTypes.GroupPolicyConfiguration.ToString());
+                                    resourceType);
                             results.Add(configurationPolicyAssignment);
                         }
                     }
@@ -600,7 +602,7 @@ public sealed class AssignmentsService : IAssignmentsService
                         {
                             var configurationPolicyAssignment =
                                 assignment.ToAssignmentModel(resource,
-                                    ResourceTypes.GroupPolicyConfiguration.ToString());
+                                    resourceType);
                             results.Add(configurationPolicyAssignment);
                         }
                 }
