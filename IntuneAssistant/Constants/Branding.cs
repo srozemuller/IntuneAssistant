@@ -6,7 +6,7 @@ public static class Branding
     public const string LegalName = "IntuneCli";
     public const string Builder = "rozemuller.com";
     public const string VersionMajor = "2";
-    public const string VersionMinor = "0";
+    public const string VersionMinor = "1";
     public const string VersionPatch = "0";
     public const string VersionBuild = "0";
     public const string Version = $"{VersionMajor}.{VersionMinor}.{VersionPatch}";
