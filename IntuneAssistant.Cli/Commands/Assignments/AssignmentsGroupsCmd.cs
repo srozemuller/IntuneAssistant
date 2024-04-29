@@ -137,9 +137,8 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
                         }
                     });
         }
-        if (allResults.Any(r => r.AssignmentType == "group"))
+        if (allResults.Count > 0)
         {
-            allResults = allResults.Where(r => r.AssignmentType == "group").ToList();
             var allFiltersInfo =
                 await _assignmentFiltersService.GetAssignmentFiltersListAsync(accessToken);
             var uniqueGroupIds = allResults.DistinctBy(d => d.TargetId).Select(t => t.TargetId)
@@ -284,7 +283,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
 
         // Process the results if needed
         // For example, you can concatenate all the lists into a single list
-        var allModels = results.Where(x => x != null).SelectMany(x => x).ToList();
+        var allModels = results.Where(x => x != null).SelectMany(x => x).Where(a => a.AssignmentType == "Entra ID Group").ToList();
        
         return allModels;
     }
