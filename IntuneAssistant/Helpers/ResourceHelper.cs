@@ -81,6 +81,8 @@ public static class ResourceHelper
                 return ResourceTypes.User.GetDescription();
             case "#microsoft.graph.device" :    
                 return ResourceTypes.Device.GetDescription();
+            case "#microsoft.graph.group" :
+                return ResourceTypes.Group.GetDescription();
             default:
                 return odataString;
         }
