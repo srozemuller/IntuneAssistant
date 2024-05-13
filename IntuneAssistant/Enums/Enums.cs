@@ -113,6 +113,8 @@ public enum ResourceTypes
     User,
     [Description("Device")]
     Device,
+    [Description("Group")]
+    Group,
     [Description("iOS Device Feature Configuration")]
     IosDeviceFeatureConfiguration,
 }
