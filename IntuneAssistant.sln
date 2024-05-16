@@ -7,6 +7,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuneAssistant.Infrastructure", "IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj", "{B7F7DBC2-AEA9-4D64-A9C3-9D1A2A6F33AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuneAssistant.Api", "IntuneAssistant.Api\IntuneAssistant.Api.csproj", "{C5195705-5032-4B0D-B33D-96200BF2756C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B7F7DBC2-AEA9-4D64-A9C3-9D1A2A6F33AC} = {B7F7DBC2-AEA9-4D64-A9C3-9D1A2A6F33AC}
+		{754E00B9-3C3D-4C61-BC18-D873BAD30527} = {754E00B9-3C3D-4C61-BC18-D873BAD30527}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

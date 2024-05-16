@@ -1,5 +1,10 @@
+using IntuneAssistant.Infrastructure.Interfaces;
+using IntuneAssistant.Infrastructure.Interfaces.Logging;
+using IntuneAssistant.Infrastructure.Services;
+using IntuneAssistant.Infrastructure.Services.LoggingServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Abstractions;
 using Microsoft.Identity.Web.Resource;
@@ -7,9 +12,13 @@ using Microsoft.Identity.Web.Resource;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
-builder.Services.AddAuthorization();
+builder.Services.AddControllers(); 
+builder.Services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
+builder.Services.AddScoped<IApplicationInsightsService, CliApplicationInsightsService>();
+
+// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+// builder.Services.AddAuthorization();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,7 +34,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+//app.UseAuthentication();
 var scopeRequiredByApi = app.Configuration["AzureAd:Scopes"] ?? "";
 var summaries = new[]
 {
@@ -34,7 +43,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", (HttpContext httpContext) =>
     {
-        httpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
+        //httpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
 
         var forecast = Enumerable.Range(1, 5).Select(index =>
                 new WeatherForecast
@@ -47,8 +56,10 @@ app.MapGet("/weatherforecast", (HttpContext httpContext) =>
         return forecast;
     })
     .WithName("GetWeatherForecast")
-    .WithOpenApi()
-    .RequireAuthorization();
+    .WithOpenApi();
+    //.RequireAuthorization();
+app.UseRouting();
+app.MapControllers();
 
 app.Run();
 
