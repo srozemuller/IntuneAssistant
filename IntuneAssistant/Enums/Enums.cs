@@ -15,7 +15,7 @@ public enum ResourceTypes
 {
     [Description("Update Ring Configuration")]
     UpdateRingConfiguration,
-    [Description("Group Policy Configurations")]
+    [Description("Administrative Templates")]
     GroupPolicyConfiguration,
     [Description("Windows Compliance Policy")]
     WindowsCompliancePolicy,
@@ -45,6 +45,8 @@ public enum ResourceTypes
     WindowsFeatureUpdate,
     [Description("Windows Driver Update")]
     WindowsDriverUpdate,
+    [Description("Windows Quality Update")]
+    WindowsQualityUpdate,
     [Description("macOS Shell Script")]
     MacOsShellScript,
     [Description("Disk Encryption Policy")]
@@ -53,12 +55,18 @@ public enum ResourceTypes
     PlatformScripts,
     [Description("Managed Application Policy")]
     ManagedAppPolicy,
+    [Description("Mac OS Device Features Configuration")]
+    MacOsDeviceFeaturesConfiguration,
+    [Description("Mac OS Endpoint Protection Configuration")]
+    MacOsEndpointProtectionConfiguration,
     [Description("Device Platform Restriction")]
     DevicePlatformRestriction,
     [Description("Device Limit Restriction")]
     DeviceLimitRestriction,
     [Description("macOS Custom Attributes")]
     MacOsCustomAttributes,
+    [Description("Windows Defender ATP Configuration")]
+    WindowsDefenderAdvancedThreatProtectionConfiguration,
     [Description("iOS LineOfBusiness Application Configuration")]
     IosLobAppConfiguration,
     [Description("Windows 32 LOB Application")]
@@ -73,7 +81,7 @@ public enum ResourceTypes
     Windows10CustomConfiguration,
     [Description("iOS Update Configuration")]
     IosUpdateConfiguration,
-    [Description("macOS Software Update Configuration")]
+    [Description("MacOS Software Update Configuration")]
     MacOsSoftwareUpdateConfiguration,
     [Description("Windows Health Monitoring Configuration")]
     WindowsHealthMonitoringConfiguration,
@@ -81,11 +89,34 @@ public enum ResourceTypes
     DeviceEnrollmentPlatformRestrictionsConfiguration,
     [Description("Device Enrollment Limit Configuration")]
     DeviceEnrollmentLimitConfiguration,
-    
+    [Description("iOS Custom Configuration")]
+    IosCustomConfiguration,
+    [Description("iOS General Configuration")]
+    IosGeneralConfiguration,
+    [Description("MacOS Custom Configuration")]
+    MacOsCustomConfiguration,
+    [Description("Windows Identity Protection Configuration")]
+    WindowsIdentityProtectionConfiguration,
+    [Description("MacOS Extensions Configuration")]
+    MacOsExtensionsConfiguration,
+    [Description("Windows Kiosk Configuration")]
+    WindowsKioskConfiguration,
+    [Description("Android Work Profile General Device Configuration")]
+    AndroidWorkProfileGeneralDeviceConfiguration,
+    [Description("iOS Device Features Configuration")]
+    IosDeviceFeaturesConfiguration,
+    [Description("iOS General Device Configuration")]
+    IosGeneralDeviceConfiguration,
+    [Description("Shared PC Configuration")]
+    SharedPcConfiguration,
     [Description("User")]
     User,
     [Description("Device")]
     Device,
+    [Description("Group")]
+    Group,
+    [Description("iOS Device Feature Configuration")]
+    IosDeviceFeatureConfiguration,
 }
 
 public enum AssignmentODataTypes

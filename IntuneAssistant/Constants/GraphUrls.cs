@@ -41,6 +41,7 @@ public class GraphUrls
     public const string AndroidManagedAppProtectionsUrl = $"{AppConfiguration.GRAPH_URL}/deviceAppManagement/androidManagedAppProtections";
     public const string WindowsFeatureUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsFeatureUpdateProfiles";
     public const string WindowsDriverUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsDriverUpdateProfiles";
+    public const string WindowsQualityUpdatesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/windowsQualityUpdateProfiles";
     public const string MacOsCustomAttributesScripts = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceCustomAttributeShellScripts";
 
     public const string IntentsProfilesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/intents";

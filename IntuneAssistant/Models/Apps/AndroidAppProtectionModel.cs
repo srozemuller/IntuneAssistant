@@ -6,7 +6,7 @@ public class AndroidAppProtectionModel
     public string Description { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public DateTime LastModifiedDateTime { get; set; }
-    public List<string> RoleScopeTagIds { get; set; }
+    public List<object> RoleScopeTagIds { get; set; }
     public string Id { get; set; }
     public string Version { get; set; }
     public string PeriodOfflineBeforeAccessCheck { get; set; }
@@ -66,7 +66,7 @@ public class AndroidAppProtectionModel
     public string MinimumWarningCompanyPortalVersion { get; set; }
     public string MinimumWipeCompanyPortalVersion { get; set; }
     public bool KeyboardsRestricted { get; set; }
-    public List<string> AllowedAndroidDeviceModels { get; set; }
+    public List<KeyPairModel> AllowedAndroidDeviceModels { get; set; }
     public string AppActionIfAndroidDeviceModelNotAllowed { get; set; }
     public string CustomDialerAppPackageId { get; set; }
     public string CustomDialerAppDisplayName { get; set; }
@@ -86,12 +86,12 @@ public class AndroidAppProtectionModel
     public bool FingerprintAndBiometricEnabled { get; set; }
     public string MessagingRedirectAppPackageId { get; set; }
     public string MessagingRedirectAppDisplayName { get; set; }
-    public List<ExemptedAppPackage> ExemptedAppPackages { get; set; }
-    public List<string> ApprovedKeyboards { get; set; }
+    public List<KeyPairModel> ExemptedAppPackages { get; set; }
+    public List<KeyPairModel> ApprovedKeyboards { get; set; }
     public List<Assignment> Assignments { get; set; }
 }
 
-public class ExemptedAppPackage
+public class KeyPairModel
 {
     public string Name { get; set; }
     public string Value { get; set; }

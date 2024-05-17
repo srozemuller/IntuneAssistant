@@ -37,6 +37,34 @@ public static class ResourceHelper
                 return ResourceTypes.DeviceEnrollmentPlatformRestrictionsConfiguration.GetDescription();
             case "#microsoft.graph.deviceEnrollmentLimitConfiguration" :    
                 return ResourceTypes.DeviceEnrollmentLimitConfiguration.GetDescription();
+            case "#microsoft.graph.iosDeviceFeatureConfiguration":
+                return ResourceTypes.IosDeviceFeatureConfiguration.GetDescription();
+            case "#microsoft.graph.iosCustomConfiguration":
+                return ResourceTypes.IosCustomConfiguration.GetDescription();
+            case "#microsoft.graph.iosGeneralConfiguration":
+                return ResourceTypes.IosCustomConfiguration.GetDescription();
+            case "#microsoft.graph.iosGeneralDeviceConfiguration":
+                return ResourceTypes.IosGeneralDeviceConfiguration.GetDescription();
+            case "#microsoft.graph.iosDeviceFeaturesConfiguration":
+                return ResourceTypes.IosDeviceFeaturesConfiguration.GetDescription();
+            case "#microsoft.graph.windowsIdentityProtectionConfiguration":
+                return ResourceTypes.WindowsIdentityProtectionConfiguration.GetDescription();
+            case "#microsoft.graph.macOSExtensionsConfiguration":
+                return ResourceTypes.MacOsExtensionsConfiguration.GetDescription();
+            case "#microsoft.graph.sharedPCConfiguration":
+                return ResourceTypes.SharedPcConfiguration.GetDescription();
+            case "#microsoft.graph.windowsKioskConfiguration":
+                return ResourceTypes.WindowsKioskConfiguration.GetDescription();
+            case "#microsoft.graph.macOSCustomConfiguration":
+                return ResourceTypes.MacOsCustomConfiguration.GetDescription();
+            case "#microsoft.graph.androidWorkProfileGeneralDeviceConfiguration":
+                return ResourceTypes.AndroidWorkProfileGeneralDeviceConfiguration.GetDescription();
+            case "#microsoft.graph.macOSDeviceFeaturesConfiguration":
+                return ResourceTypes.MacOsDeviceFeaturesConfiguration.GetDescription();
+            case "#microsoft.graph.macOSEndpointProtectionConfiguration":
+                return ResourceTypes.MacOsEndpointProtectionConfiguration.GetDescription();
+            case "#microsoft.graph.windowsDefenderAdvancedThreatProtectionConfiguration":
+                return ResourceTypes.WindowsDefenderAdvancedThreatProtectionConfiguration.GetDescription();
             case "#microsoft.graph.windows10GeneralConfiguration" :
                 return "Windows 10 General Configuration";
             case "#microsoft.graph.windowsWifiConfiguration" :
@@ -53,6 +81,8 @@ public static class ResourceHelper
                 return ResourceTypes.User.GetDescription();
             case "#microsoft.graph.device" :    
                 return ResourceTypes.Device.GetDescription();
+            case "#microsoft.graph.group" :
+                return ResourceTypes.Group.GetDescription();
             default:
                 return odataString;
         }

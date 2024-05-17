@@ -101,7 +101,8 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             FetchDiskEncryptionAssignmentsListAsync(accessToken),
             FetchDeviceEnrollmentRestrictionsAssignmentListAsync(accessToken),
             FetchMacOsCustomAttributesAssignmentListAsync(accessToken),
-            FetchIosLobAppProvisioningAssignmentListAsync(accessToken)
+            FetchIosLobAppProvisioningAssignmentListAsync(accessToken),
+            FetchQualityUpdateAssignmentsListAsync(accessToken)
         };
         await AnsiConsole.Status().SpinnerStyle(Color.Orange1)
             .StartAsync(
@@ -437,4 +438,18 @@ public class FetchAssignmentsCommandHandler : ICommandOptionsHandler<FetchAssign
             await _assignmentsService.GetIosLobAppProvisioningAssignmentListAsync(accessToken, null, iosLobAppProvisioningAssignments);
         return iosLobAppProvisioningAssignmentResults;
     }
+    private async Task<List<CustomAssignmentsModel>?> FetchQualityUpdateAssignmentsListAsync(string accessToken)
+    {
+        var qualityUpdates =
+            await _updatesService.GetWindowsQualityUpdatesListAsync(accessToken);
+        if (qualityUpdates is null)
+        {
+            return null;
+        }
+        var qualityUpdatesAssignmentResults =
+            await _assignmentsService.GetWindowsQualityUpdatesAssignmentsListAsync(accessToken, null, qualityUpdates);
+        return qualityUpdatesAssignmentResults;
+    }
+    
+    
 }

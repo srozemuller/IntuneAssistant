@@ -31,7 +31,6 @@ public sealed class CompliancePolicyService : ICompliancePoliciesService
                         // Read the stream to a string
                         
                         var content = await sr.ReadToEndAsync();
-                        Console.WriteLine("JSON Response: " + content);
                         // Deserialize the string to your model
                         var result = JsonConvert.DeserializeObject<GraphValueResponse<CompliancePolicyModel>>(content);
                         if (result?.Value is null)
