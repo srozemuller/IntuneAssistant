@@ -2,23 +2,28 @@ using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Interfaces.Logging;
 using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Infrastructure.Services.LoggingServices;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Abstractions;
-using Microsoft.Identity.Web.Resource;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers(); 
+builder.Services.AddControllers();
 builder.Services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
 builder.Services.AddScoped<IApplicationInsightsService, CliApplicationInsightsService>();
 
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
-// builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Audience = "api://b0533a36-0d90-4634-9f08-99a50b78b477";
+        options.Authority = "https://login.microsoftonline.com/common";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false // TODO: Validate that only allowed tenants can access API
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -34,7 +39,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-//app.UseAuthentication();
+
 var scopeRequiredByApi = app.Configuration["AzureAd:Scopes"] ?? "";
 var summaries = new[]
 {
@@ -56,10 +61,14 @@ app.MapGet("/weatherforecast", (HttpContext httpContext) =>
         return forecast;
     })
     .WithName("GetWeatherForecast")
-    .WithOpenApi();
-    //.RequireAuthorization();
+    .WithOpenApi()
+    .RequireAuthorization();
+
+app.UseAuthentication();
+
 app.UseRouting();
 app.MapControllers();
+app.UseAuthorization();
 
 app.Run();
 

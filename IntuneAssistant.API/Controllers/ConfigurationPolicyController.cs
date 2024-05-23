@@ -1,17 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using IntuneAssistant.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace IntuneAssistant.Api.Controllers;
 
 [ApiController]
+[Authorize(Roles = "IntuneAdministrator")]
 [Route("api/v1/policies/configuration")]
 public sealed class ConfigurationPolicyController : ControllerBase
 {
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly ILogger<ConfigurationPolicyController> _logger;
-  
-    public ConfigurationPolicyController(ILogger<ConfigurationPolicyController> logger,IConfigurationPolicyService configurationPolicyService)
+
+    public ConfigurationPolicyController(ILogger<ConfigurationPolicyController> logger,
+        IConfigurationPolicyService configurationPolicyService)
     {
         _logger = logger;
         _configurationPolicyService = configurationPolicyService;
@@ -22,17 +25,24 @@ public sealed class ConfigurationPolicyController : ControllerBase
     [ProducesResponseType(401)]
     [HttpGet(Name = "GetConfigurationPolicyList")]
     public async Task<ActionResult> Get()
-    { var accessToken = "eyJ0eXAiOiJKV1QiLCJub25jZSI6IlNZOUtZS00yQW84cWRwZ3F0ZnNQMHdLWmRvanEtZ25uVDFjZkhSemp6UXMiLCJhbGciOiJSUzI1NiIsIng1dCI6IkwxS2ZLRklfam5YYndXYzIyeFp4dzFzVUhIMCIsImtpZCI6IkwxS2ZLRklfam5YYndXYzIyeFp4dzFzVUhIMCJ9.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kOWU3YmFkOS1hZTY4LTRhNzEtOWM5Mi04NTA4MTI4MTM0YTIvIiwiaWF0IjoxNzE1ODY4MzE4LCJuYmYiOjE3MTU4NjgzMTgsImV4cCI6MTcxNTg3MjIxOCwiYWlvIjoiRTJOZ1lLZ0xhdnlkb3F5dGMySmJ3M1dYcnRaT0FBPT0iLCJhcHBfZGlzcGxheW5hbWUiOiJQb3N0bWFuQXBwIiwiYXBwaWQiOiJkODI1ZjM5My1hYjJmLTQzMGMtYjQ3ZS0wMWYyNDI5NzJiZGYiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kOWU3YmFkOS1hZTY4LTRhNzEtOWM5Mi04NTA4MTI4MTM0YTIvIiwiaWR0eXAiOiJhcHAiLCJvaWQiOiJmZDYxODM1ZS1hZTdiLTQ5ZTktOWU0Yi03NDM2MWEyMTU4MjYiLCJyaCI6IjAuQVhRQTJicm4yV2l1Y1VxY2tvVUlFb0Uwb2dNQUFBQUFBQUFBd0FBQUFBQUFBQUIwQUFBLiIsInJvbGVzIjpbIkRldmljZU1hbmFnZW1lbnRNYW5hZ2VkRGV2aWNlcy5SZWFkLkFsbCIsIlJvbGVNYW5hZ2VtZW50LlJlYWRXcml0ZS5FeGNoYW5nZSIsIkRldmljZS5SZWFkV3JpdGUuQWxsIiwiVXNlci5SZWFkV3JpdGUuQWxsIiwiUHJpdmlsZWdlZEFjY2Vzcy5SZWFkLkF6dXJlQUQiLCJHcm91cC5SZWFkLkFsbCIsIldpbmRvd3NVcGRhdGVzLlJlYWRXcml0ZS5BbGwiLCJHcm91cC5SZWFkV3JpdGUuQWxsIiwiRGlyZWN0b3J5LlJlYWQuQWxsIiwiUHJpdmlsZWdlZEFjY2Vzcy5SZWFkLkF6dXJlUmVzb3VyY2VzIiwiRGV2aWNlTWFuYWdlbWVudFNlcnZpY2VDb25maWcuUmVhZFdyaXRlLkFsbCIsIkRldmljZU1hbmFnZW1lbnRSQkFDLlJlYWQuQWxsIiwiRGV2aWNlTWFuYWdlbWVudENvbmZpZ3VyYXRpb24uUmVhZC5BbGwiLCJBcHBSb2xlQXNzaWdubWVudC5SZWFkV3JpdGUuQWxsIiwiRGV2aWNlTWFuYWdlbWVudE1hbmFnZWREZXZpY2VzLlJlYWRXcml0ZS5BbGwiLCJSb2xlTWFuYWdlbWVudC5SZWFkV3JpdGUuRGlyZWN0b3J5IiwiR3JvdXBNZW1iZXIuUmVhZFdyaXRlLkFsbCIsIkRldmljZU1hbmFnZW1lbnRDb25maWd1cmF0aW9uLlJlYWRXcml0ZS5BbGwiLCJEZXZpY2VNYW5hZ2VtZW50TWFuYWdlZERldmljZXMuUHJpdmlsZWdlZE9wZXJhdGlvbnMuQWxsIiwiRGV2aWNlTWFuYWdlbWVudEFwcHMuUmVhZFdyaXRlLkFsbCJdLCJzdWIiOiJmZDYxODM1ZS1hZTdiLTQ5ZTktOWU0Yi03NDM2MWEyMTU4MjYiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiRVUiLCJ0aWQiOiJkOWU3YmFkOS1hZTY4LTRhNzEtOWM5Mi04NTA4MTI4MTM0YTIiLCJ1dGkiOiJWbFNvVHdHVUxVZWFfeUhFMUFlQUFBIiwidmVyIjoiMS4wIiwid2lkcyI6WyI0YTVkOGY2NS00MWRhLTRkZTQtODk2OC1lMDM1YjY1MzM5Y2YiLCIzYTJjNjJkYi01MzE4LTQyMGQtOGQ3NC0yM2FmZmVlNWQ5ZDUiLCIwOTk3YTFkMC0wZDFkLTRhY2ItYjQwOC1kNWNhNzMxMjFlOTAiXSwieG1zX3RjZHQiOjE2MDE2MjI2MjksInhtc190ZGJyIjoiRVUifQ.P-X4Lh24MPe4-HK50vEO4hisRH9xHx_NEeUzL1AO2BlmN9XIwkGkYOrfgNPYyzOy9QrzBq8AKTLbzFRlZqOp1-SqYTwg0nlGKTZktZc7GX5ozPSra5nnt4d48nEhdtKd1rYXUtKKOPPMlJNSoA1n9tkqbaAYIkoMTIovCzZExLX-8Ghi3ad5A7K37HBWTUZyvW5X5SUvHkwpYL6bblNzHH3aXDPXd-C08fhYE_X-zI9lzjf2kvtHbyAZOXL701CyCyrWq2oA12sTOub-FQXeCnlPKCwO2FlcgSvuxnikKSXZKerpAlrIDx0cOlWFKBUZ0cMtuCN-dpHMob1FgWhVHg";
-       var configurationPolicies = await _configurationPolicyService.GetDeviceConfigurationsListAsync(accessToken);
-       if (configurationPolicies is null)
-       {
-           return NotFound("No configuration policies found");
-       }
-       else
-       {
-           return Ok(configurationPolicies);
-       }
+    {
+        var userClaims = HttpContext.User.Claims;
+        // Use the userClaims to authorize the user's actions
+
+        if (!HttpContext.Request.Headers.TryGetValue("Authorization", out var extractedToken))
+        {
+            return Unauthorized("No Authorization Header is present. Request is not authorized");
+        }
+
+        var accessToken = extractedToken.ToString().Substring("Bearer ".Length).Trim();
+        var configurationPolicies = await _configurationPolicyService.GetDeviceConfigurationsListAsync(accessToken);
+        if (configurationPolicies is null)
+        {
+            return NotFound("No configuration policies found");
+        }
+        else
+        {
+            return Ok(configurationPolicies);
+        }
     }
-
-
 }
