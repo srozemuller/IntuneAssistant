@@ -3,7 +3,8 @@ using IntuneAssistant.Infrastructure.Interfaces.Logging;
 using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Infrastructure.Services.LoggingServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Identity.Web;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,16 +13,10 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
 builder.Services.AddScoped<IApplicationInsightsService, CliApplicationInsightsService>();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Audience = "api://b0533a36-0d90-4634-9f08-99a50b78b477";
-        options.Authority = "https://login.microsoftonline.com/common";
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false // TODO: Validate that only allowed tenants can access API
-        };
-    });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)  
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))  
+    .EnableTokenAcquisitionToCallDownstreamApi()
+    .AddInMemoryTokenCaches();  
 
 builder.Services.AddAuthorization();
 

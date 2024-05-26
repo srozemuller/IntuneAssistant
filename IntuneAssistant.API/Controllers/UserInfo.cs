@@ -5,7 +5,6 @@ using System.Linq;
 namespace IntuneAssistant.Api.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "GlobalAdministrator")]
     [Route("api/v1/userinfo")]
     public class UserInfoController : ControllerBase
     {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace IntuneAssistant.Api.Controllers;
 
 [ApiController]
-[Authorize(Roles = "IntuneAdministrator")]
+[Authorize]
 [Route("api/v1/policies/configuration")]
 public sealed class ConfigurationPolicyController : ControllerBase
 {
@@ -35,6 +35,8 @@ public sealed class ConfigurationPolicyController : ControllerBase
         }
 
         var accessToken = extractedToken.ToString().Substring("Bearer ".Length).Trim();
+        _logger.LogInformation("Access token: {accessToken}", accessToken);
+        
         var configurationPolicies = await _configurationPolicyService.GetDeviceConfigurationsListAsync(accessToken);
         if (configurationPolicies is null)
         {

@@ -23,9 +23,9 @@ public static class AppConfiguration
         "Group.Read.All",
         "Directory.Read.All",
         "DeviceManagementManagedDevices.Read.All",
-        "DeviceManagementConfiguration.ReadWrite.All",
-        "DeviceManagementServiceConfig.ReadWrite.All",
-        "DeviceManagementApps.ReadWrite.All",
+        "DeviceManagementConfiguration.Read.All",
+        "DeviceManagementServiceConfig.Read.All",
+        "DeviceManagementApps.Read.All",
         "DeviceManagementRBAC.Read.All"
     };
     public const string DEFAULT_EXPORTFILENAME = $"IntuneAssistant_export";
