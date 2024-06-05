@@ -11,14 +11,38 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
+builder.Services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
+builder.Services.AddScoped<IAppsService, AppsService>();
+builder.Services.AddScoped<IDeviceScriptsService, DeviceScriptService>();
+builder.Services.AddScoped<IAutoPilotService, AutoPilotService>();
+builder.Services.AddScoped<IUpdatesService, UpdatesService>();
+builder.Services.AddScoped<IIntentsService, IntentsService>();
+builder.Services.AddScoped<IAssignmentsService, AssignmentsService>();
+builder.Services.AddScoped<IAssignmentFiltersService, AssignmentFiltersService>();
+builder.Services.AddScoped<IGroupInformationService, GroupInformationService>();
+
 builder.Services.AddScoped<IApplicationInsightsService, CliApplicationInsightsService>();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)  
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))  
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))
     .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddInMemoryTokenCaches();  
+    .AddDownstreamWebApi("GraphApi", builder.Configuration.GetSection("GraphApi"))
+    .AddInMemoryTokenCaches();
 
 builder.Services.AddAuthorization();
+var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(name: myAllowSpecificOrigins,
+            builder =>
+            {
+                builder.WithOrigins("https://localhost:7074", "https://localhost:7224")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -34,40 +58,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var scopeRequiredByApi = app.Configuration["AzureAd:Scopes"] ?? "";
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-    {
-        //httpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
-
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi()
-    .RequireAuthorization();
-
-app.UseAuthentication();
-
+app.UseStaticFiles();
 app.UseRouting();
-app.MapControllers();
+
+app.UseCors(myAllowSpecificOrigins);
+
 app.UseAuthorization();
 
-app.Run();
+app.MapControllers();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+app.Run();
