@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using IntuneAssistant.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
 
-
-namespace IntuneAssistant.Api.Controllers;
+namespace IntuneAssistant.Api.Controllers.Policies;
 
 [ApiController]
 [Authorize]
@@ -12,12 +12,13 @@ public sealed class ConfigurationPolicyController : ControllerBase
 {
     private readonly IConfigurationPolicyService _configurationPolicyService;
     private readonly ILogger<ConfigurationPolicyController> _logger;
-
+    private readonly ITokenAcquisition _tokenAcquisition;
     public ConfigurationPolicyController(ILogger<ConfigurationPolicyController> logger,
-        IConfigurationPolicyService configurationPolicyService)
+        IConfigurationPolicyService configurationPolicyService, ITokenAcquisition tokenAcquisition)
     {
         _logger = logger;
         _configurationPolicyService = configurationPolicyService;
+        _tokenAcquisition = tokenAcquisition;
     }
 
     [ProducesResponseType(201)]
@@ -26,18 +27,16 @@ public sealed class ConfigurationPolicyController : ControllerBase
     [HttpGet(Name = "GetConfigurationPolicyList")]
     public async Task<ActionResult> Get()
     {
-        var userClaims = HttpContext.User.Claims;
-        // Use the userClaims to authorize the user's actions
-
+        string[] scopes = new []{"DeviceManagementConfiguration.Read.All"};
+        var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
         if (!HttpContext.Request.Headers.TryGetValue("Authorization", out var extractedToken))
         {
             return Unauthorized("No Authorization Header is present. Request is not authorized");
         }
-
-        var accessToken = extractedToken.ToString().Substring("Bearer ".Length).Trim();
+        
         _logger.LogInformation("Access token: {accessToken}", accessToken);
         
-        var configurationPolicies = await _configurationPolicyService.GetDeviceConfigurationsListAsync(accessToken);
+        var configurationPolicies = await _configurationPolicyService.GetConfigurationPoliciesListAsync(accessToken);
         if (configurationPolicies is null)
         {
             return NotFound("No configuration policies found");
