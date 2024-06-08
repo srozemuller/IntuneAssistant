@@ -3,19 +3,20 @@ using IntuneAssistant.Constants;
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Models;
 using IntuneAssistant.Models.Group;
+using IntuneAssistant.Models.Users;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
 
-public sealed class GroupInformationService : IGroupInformationService
+public sealed class UserInformationService : IUserInformationService
 {
     private readonly HttpClient _http = new();
-    public async Task<GroupModel?> GetGroupInformationByIdAsync(string? accessToken, Guid groupId)
+    public async Task<UserModel?> GetUserInformationByIdAsync(string? accessToken, Guid groupId)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         
-        var results = new GroupModel();
+        var results = new UserModel();
         try
         {
             var url = $"{GraphUrls.GroupsUrl}?$select=id,displayname,Description,CreatedDateTime&$filter=id eq '{groupId}'";
@@ -25,7 +26,7 @@ public sealed class GroupInformationService : IGroupInformationService
             // Read the stream to a string
             var content = await sr.ReadToEndAsync();
             // Deserialize the string to your model
-            var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupModel>>(content);
+            var result = JsonConvert.DeserializeObject<GraphValueResponse<UserModel>>(content);
             if (result?.Value is not null)
             {
                 return result.Value.FirstOrDefault();
@@ -38,12 +39,12 @@ public sealed class GroupInformationService : IGroupInformationService
         return results;
     }
 
-    public async Task<GroupModel?> GetGroupInformationByNameAsync(string? accessToken, string groupName)
+    public async Task<UserModel?> GetUserInformationByNameAsync(string? accessToken, string userName)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        var url = $"{GraphUrls.GroupsUrl}?$select=id,displayname,Description,CreatedDateTime&$filter=displayName eq '{groupName}'";
-        var results = new GroupModel();
+        var url = $"{GraphUrls.GroupsUrl}?$select=id,displayname,Description,CreatedDateTime&$filter=displayName eq '{userName}'";
+        var results = new UserModel();
         try
         {
             var response = await _http.GetAsync(url);
@@ -52,7 +53,7 @@ public sealed class GroupInformationService : IGroupInformationService
             // Read the stream to a string
             var content = await sr.ReadToEndAsync();
             // Deserialize the string to your model
-            var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupModel>>(content);
+            var result = JsonConvert.DeserializeObject<GraphValueResponse<UserModel>>(content);
             if (result?.Value is not null)
             {
                 return result.Value.FirstOrDefault();
@@ -65,50 +66,19 @@ public sealed class GroupInformationService : IGroupInformationService
         return results;
     }
 
-    public async Task<List<GroupMemberModel>?> GetGroupMembersListByGroupIdAsync(string? accessToken, Guid groupId)
+    public async Task<List<UserModel>> GetUserInformationByIdsCollectionListAsync(string? accessToken,
+        List<string> userIds)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        var url = $"{GraphUrls.GroupsUrl}('{groupId}')/members";
-        var results = new List<GroupMemberModel>();
-        try
-        {
-            var response = await _http.GetAsync(url);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            using var sr = new StreamReader(responseStream);
-            // Read the stream to a string
-            var content = await sr.ReadToEndAsync();
-            // Deserialize the string to your model
-            var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupMemberModel>>(content);
-            if (result?.Value is not null)
-            {
-                foreach (var member in result.Value)
-                {
-                     var newMember = member.ToGroupMemberModel();
-                    results.Add(newMember);
-                }
-            }
-        }
-        catch (Exception exception)
-        {
-            return null;
-        }
-        return results;
-    }
-
-    public async Task<List<GroupModel>> GetGroupInformationByIdsCollectionListAsync(string? accessToken,
-        List<string> groupIds)
-    {
-        _http.DefaultRequestHeaders.Clear();
-        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        var allResults = new List<GroupModel>();
+        var allResults = new List<UserModel>();
 
         // In a search filter there is a max of 15 operators. In the case there are more groups, loop through the list with a max of 15
-        while (groupIds.Count > 0)
+        while (userIds.Count > 0)
         {
-            var currentIds = groupIds.Take(15).ToList();
+            var currentIds = userIds.Take(15).ToList();
             var currentIdsInString = "(" + string.Join(",", currentIds.Select(x => $"'{x}'")) + ")";
-            var url = $"{GraphUrls.GroupsUrl}?$select=id,displayname,Description,CreatedDateTime&$filter=id in {currentIdsInString}";
+            var url = $"{GraphUrls.UsersUrl}?$select=id,displayname&$filter=id in {currentIdsInString}";
             try
             {
                 var response = await _http.GetAsync(url);
@@ -117,9 +87,9 @@ public sealed class GroupInformationService : IGroupInformationService
                 // Read the stream to a string
                 var content = await sr.ReadToEndAsync();
                 // Deserialize the string to your model
-                var result = JsonConvert.DeserializeObject<GraphValueResponse<GroupModel>>(content);
+                var result = JsonConvert.DeserializeObject<GraphValueResponse<UserModel>>(content);
 
-                groupIds = groupIds.Skip(15).ToList();
+                userIds = userIds.Skip(15).ToList();
                 if (result?.Value is not null)
                 {
                     allResults.AddRange(result.Value);

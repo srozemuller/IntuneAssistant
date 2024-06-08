@@ -436,7 +436,6 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
             await _applicationInsightsService.TrackJsonTraceAsync(jsonException);
             _logger.LogError("Error: {ResponseStatusCode}", e.InnerException);
         }
-
         return 0;
     }
 }

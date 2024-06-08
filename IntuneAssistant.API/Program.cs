@@ -1,7 +1,9 @@
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Interfaces.Logging;
+using IntuneAssistant.Infrastructure.Interfaces.Policies.CA;
 using IntuneAssistant.Infrastructure.Services;
 using IntuneAssistant.Infrastructure.Services.LoggingServices;
+using IntuneAssistant.Infrastructure.Services.Policies.Ca;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 
@@ -10,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<ICaPolicyService, CaPolicyService>();
 builder.Services.AddScoped<IConfigurationPolicyService, ConfigurationPolicyService>();
 builder.Services.AddScoped<ICompliancePoliciesService, CompliancePolicyService>();
 builder.Services.AddScoped<IAppsService, AppsService>();
@@ -20,6 +23,8 @@ builder.Services.AddScoped<IIntentsService, IntentsService>();
 builder.Services.AddScoped<IAssignmentsService, AssignmentsService>();
 builder.Services.AddScoped<IAssignmentFiltersService, AssignmentFiltersService>();
 builder.Services.AddScoped<IGroupInformationService, GroupInformationService>();
+builder.Services.AddScoped<IUserInformationService, UserInformationService>();
+
 
 builder.Services.AddScoped<IApplicationInsightsService, CliApplicationInsightsService>();
 

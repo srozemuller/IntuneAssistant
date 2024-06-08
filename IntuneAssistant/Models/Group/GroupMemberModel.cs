@@ -7,7 +7,7 @@ public class GroupMemberModel
 {
     [JsonProperty ("@odata.type")]
     public string ODataType { get; set; }
-    public string Id { get; init; } = String.Empty;
+    public Guid Id { get; init; } = Guid.Empty;
     public bool AccountEnabled { get; set; }
     public string DisplayName { get; set; } = String.Empty;
     public string CreatedDateTime { get; set; } = String.Empty;
