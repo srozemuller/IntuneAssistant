@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace IntuneAssistant.Infrastructure.Services;
 
-public sealed class AutopilotService : IAutoPilotService
+public sealed class AutoPilotService : IAutoPilotService
 {
     private readonly HttpClient _http = new();
     public async Task<List<WindowsAutopilotDeploymentProfileModel>?> GetWindowsAutopilotDeploymentProfilesListAsync(string? accessToken)

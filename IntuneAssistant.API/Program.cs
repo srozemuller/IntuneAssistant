@@ -25,6 +25,7 @@ builder.Services.AddScoped<IAssignmentFiltersService, AssignmentFiltersService>(
 builder.Services.AddScoped<IGroupInformationService, GroupInformationService>();
 builder.Services.AddScoped<IUserInformationService, UserInformationService>();
 
+
 builder.Services.AddScoped<IApplicationInsightsService, CliApplicationInsightsService>();
 
 builder.Services

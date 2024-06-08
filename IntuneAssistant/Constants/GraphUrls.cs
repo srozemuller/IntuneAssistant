@@ -3,13 +3,15 @@ namespace IntuneAssistant.Constants;
 public class GraphUrls
 {
     public const string GroupsUrl = $"{AppConfiguration.GRAPH_URL}/groups";
+    public const string UsersUrl = $"{AppConfiguration.GRAPH_URL}/users";
     public const string GetByIdsUrl = $"{AppConfiguration.GRAPH_URL}/directoryObjects/getByIds?$select=displayName,id";
     
     // Devices
     public const string ManagedDevicesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/managedDevices";
     
     
-    
+    // Policies
+    public const string CaPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/identity/conditionalAccess/policies";
     public const string CompliancePoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceCompliancePolicies";
     public const string ConfigurationPoliciesUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/configurationPolicies";
     public const string DeviceConfigurationsUrl = $"{AppConfiguration.GRAPH_URL}/deviceManagement/deviceConfigurations";
