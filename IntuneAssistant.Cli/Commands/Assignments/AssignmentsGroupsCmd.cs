@@ -26,7 +26,7 @@ public class AssignmentsGroupCmd : Command<FetchAssignmentsGroupCommandOptions, 
 public class FetchAssignmentsGroupCommandOptions : ICommandOptions
 {
     public string ExportCsv { get; set; } = string.Empty;
-    public string GroupId { get; set; } = string.Empty;
+    public Guid GroupId { get; set; }
     public string GroupName { get; set; } = string.Empty;
     public string PageSize { get; set; }
     private readonly string[] _validOutputs = { "table", "json", "csv", "html" };
@@ -72,7 +72,7 @@ public class FetchAssignmentsGroupCommandHandler : ICommandOptionsHandler<FetchA
         var accessToken = await _identityHelperService.GetAccessTokenSilentOrInteractiveAsync();
         var allResults = new List<CustomAssignmentsModel>();
         var exportCsvProvided = !string.IsNullOrWhiteSpace(options.ExportCsv);
-        var groupIdProvided = !string.IsNullOrWhiteSpace(options.GroupId);
+        var groupIdProvided = options.GroupId != Guid.Empty;
         var groupNameProvided = !string.IsNullOrWhiteSpace(options.GroupName);
         var groupInfo = new GroupModel();
         var pageSizeProvided = !string.IsNullOrEmpty(options.PageSize);

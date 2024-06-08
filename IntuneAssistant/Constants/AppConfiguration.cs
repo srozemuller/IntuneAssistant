@@ -22,6 +22,7 @@ public static class AppConfiguration
     public static readonly string[] GRAPH_INTERACTIVE_SCOPE = {
         "Group.Read.All",
         "Directory.Read.All",
+        "Policy.Read.All",
         "DeviceManagementManagedDevices.Read.All",
         "DeviceManagementConfiguration.ReadWrite.All",
         "DeviceManagementServiceConfig.ReadWrite.All",

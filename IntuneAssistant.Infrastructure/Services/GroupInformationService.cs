@@ -10,7 +10,7 @@ namespace IntuneAssistant.Infrastructure.Services;
 public sealed class GroupInformationService : IGroupInformationService
 {
     private readonly HttpClient _http = new();
-    public async Task<GroupModel?> GetGroupInformationByIdAsync(string? accessToken, string groupId)
+    public async Task<GroupModel?> GetGroupInformationByIdAsync(string? accessToken, Guid groupId)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -65,7 +65,7 @@ public sealed class GroupInformationService : IGroupInformationService
         return results;
     }
 
-    public async Task<List<GroupMemberModel>?> GetGroupMembersListByGroupIdAsync(string? accessToken, string groupId)
+    public async Task<List<GroupMemberModel>?> GetGroupMembersListByGroupIdAsync(string? accessToken, Guid groupId)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");

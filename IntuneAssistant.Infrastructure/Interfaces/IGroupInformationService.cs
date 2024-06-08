@@ -6,8 +6,8 @@ namespace IntuneAssistant.Infrastructure.Interfaces;
 
 public interface IGroupInformationService
 {
-    Task<GroupModel?> GetGroupInformationByIdAsync(string? accessToken, string groupId);
+    Task<GroupModel?> GetGroupInformationByIdAsync(string? accessToken, Guid groupId);
     Task<GroupModel?> GetGroupInformationByNameAsync(string? accessToken, string groupName);
-    Task<List<GroupMemberModel>?> GetGroupMembersListByGroupIdAsync(string? accessToken, string groupId);
+    Task<List<GroupMemberModel>?> GetGroupMembersListByGroupIdAsync(string? accessToken, Guid groupId);
     Task<List<GroupModel>> GetGroupInformationByIdsCollectionListAsync(string? accessToken, List<string> groupIds);
 }
