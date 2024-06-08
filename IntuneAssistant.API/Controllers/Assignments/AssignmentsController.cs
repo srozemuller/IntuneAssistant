@@ -9,7 +9,7 @@ namespace IntuneAssistant.Api.Controllers.Assignments;
 
 [ApiController]
 [Authorize]
-[Route("api/v1/assignments")]
+[Route("v1/assignments")]
 public sealed class AssignmentsController : ControllerBase
 {
     private readonly IConfigurationPolicyService _configurationPolicyService;
@@ -49,7 +49,7 @@ public sealed class AssignmentsController : ControllerBase
     [HttpGet(Name = "GetAssignmentsList")]
     public async Task<ActionResult> Get()
     {
-        string[] scopes = new[] { "DeviceManagementConfiguration.Read.All", "Group.Read.All" };
+        string[] scopes = new[] { "DeviceManagementConfiguration.Read.All", "Group.Read.All", "Directory.AccessAsUser.All" };
         var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
         if (!HttpContext.Request.Headers.TryGetValue("Authorization", out var extractedToken))
         {
