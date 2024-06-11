@@ -34,7 +34,9 @@ public sealed class CaPolicyService : ICaPolicyService
                     var content = await sr.ReadToEndAsync();
 
                     // Deserialize the string to your model
-                    var result = JsonConvert.DeserializeObject<GraphValueResponse<ConditionalAccessPolicyModel>>(content, JsonSettings.Default());
+                    var result =
+                        JsonConvert.DeserializeObject<GraphValueResponse<ConditionalAccessPolicyModel>>(content,
+                            JsonSettings.Default());
                     if (result?.Value is null)
                     {
                         nextUrl = null;
@@ -57,5 +59,31 @@ public sealed class CaPolicyService : ICaPolicyService
         }
 
         return results;
+    }
+
+    public async Task<ConditionalAccessPolicyModel> GetCaPolicyByIdAsync(string? accessToken, Guid policyId)
+    {
+        _http.DefaultRequestHeaders.Clear();
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var result = new ConditionalAccessPolicyModel();
+        try
+        {
+            var response = await _http.GetAsync($"{GraphUrls.CaPoliciesUrl}/{policyId}");
+            var responseStream = await response.Content.ReadAsStreamAsync();
+
+            using var sr = new StreamReader(responseStream);
+            // Read the stream to a string
+            var content = await sr.ReadToEndAsync();
+
+            // Deserialize the string to your model
+            result = JsonConvert.DeserializeObject<ConditionalAccessPolicyModel>(content, JsonSettings.Default());
+
+            return result;
+        }
+        catch (ODataError ex)
+        {
+            Console.WriteLine("An exception has occurred while fetching configuration policies: " + ex.ToMessage());
+            return null;
+        }
     }
 }

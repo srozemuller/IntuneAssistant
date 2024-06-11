@@ -78,7 +78,7 @@ public sealed class UserInformationService : IUserInformationService
         {
             var currentIds = userIds.Take(15).ToList();
             var currentIdsInString = "(" + string.Join(",", currentIds.Select(x => $"'{x}'")) + ")";
-            var url = $"{GraphUrls.UsersUrl}?$select=id,displayname&$filter=id in {currentIdsInString}";
+            var url = $"{GraphUrls.UsersUrl}?$select=id,displayname,accountEnabled,userType,createdDate,state&$filter=id in {currentIdsInString}";
             try
             {
                 var response = await _http.GetAsync(url);
