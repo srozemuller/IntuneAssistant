@@ -8,4 +8,6 @@ namespace IntuneAssistant.Infrastructure.Interfaces.Policies.CA;
 public interface ICaPolicyService
 {
     Task<List<ConditionalAccessPolicyModel>?> GetCaPoliciesListAsync(string? accessToken);
+    
+    Task<ConditionalAccessPolicyModel> GetCaPolicyByIdAsync(string? accessToken, Guid policyId);
 }

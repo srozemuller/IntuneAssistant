@@ -167,7 +167,7 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
         return results;
     }
 
-    public async Task<ConfigurationPolicyModel>? GetConfigurationPolicyByIdAsync(string? accessToken, string policyId)
+    public async Task<ConfigurationPolicyModel> GetConfigurationPolicyByIdAsync(string? accessToken, string policyId)
     {
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -200,7 +200,6 @@ public sealed class ConfigurationPolicyService : IConfigurationPolicyService
                     }
 
                     return result;
-
             }
         }
         catch (HttpRequestException e)

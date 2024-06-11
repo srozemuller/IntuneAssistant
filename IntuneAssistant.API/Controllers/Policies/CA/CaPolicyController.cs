@@ -1,5 +1,7 @@
 using IntuneAssistant.Infrastructure.Interfaces;
 using IntuneAssistant.Infrastructure.Interfaces.Policies.CA;
+using IntuneAssistant.Models.Group;
+using IntuneAssistant.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
@@ -8,7 +10,7 @@ namespace IntuneAssistant.Api.Controllers.Policies.CA;
 
 [ApiController]
 [Authorize]
-[Route("v1/policies/ca")]
+[Route("v1/policies/ca/{id}")]
 public sealed class CaPolicyController : ControllerBase
 {
     private readonly ICaPolicyService _caPolicyService;
@@ -16,8 +18,10 @@ public sealed class CaPolicyController : ControllerBase
     private readonly IGroupInformationService _groupInformationService;
     private readonly ILogger<CaPolicyController> _logger;
     private readonly ITokenAcquisition _tokenAcquisition;
+
     public CaPolicyController(ILogger<CaPolicyController> logger,
-        ICaPolicyService caPolicyService, ITokenAcquisition tokenAcquisition, IUserInformationService userInformationService, IGroupInformationService groupInformationService)
+        ICaPolicyService caPolicyService, ITokenAcquisition tokenAcquisition,
+        IUserInformationService userInformationService, IGroupInformationService groupInformationService)
     {
         _logger = logger;
         _caPolicyService = caPolicyService;
@@ -29,67 +33,70 @@ public sealed class CaPolicyController : ControllerBase
     [ProducesResponseType(201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    [HttpGet(Name = "PostCaPolicyList")]
-    public async Task<ActionResult> Get()
+    [HttpGet(Name = "GetCaPolicy")]
+    public async Task<ActionResult> Get([FromRoute] string id)
     {
-        string[] scopes = new []{"Policy.Read.All"};
+        string[] scopes = new[] { "Policy.Read.All" };
         var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
         if (!HttpContext.Request.Headers.TryGetValue("Authorization", out var extractedToken))
         {
             return Unauthorized("No Authorization Header is present. Request is not authorized");
         }
-        
+
         _logger.LogInformation("Access token: {accessToken}", accessToken);
-        
-        var caPolicies = await _caPolicyService.GetCaPoliciesListAsync(accessToken);
-        if (caPolicies is null)
+
+        var policy = await _caPolicyService.GetCaPolicyByIdAsync(accessToken, Guid.Parse(id));
+        _logger.LogInformation(policy.DisplayName);
+        if (policy is null)
         {
             return NotFound("No conditional policies found");
         }
+
+        if (policy.Conditions.Users.IncludeUsers.Contains("All"))
+        {
+            UserModel allUser = new UserModel { DisplayName = "All" };
+            policy.Conditions.Users.IncludeUsersReadable = new List<UserModel> { allUser };
+        }
         else
         {
-            foreach (var policy in caPolicies)
+            var includedUserIds = policy.Conditions.Users.IncludeUsers
+                .Where(t => !string.IsNullOrEmpty(t))
+                .ToList();
+            var includedUsers =
+                await _userInformationService.GetUserInformationByIdsCollectionListAsync(accessToken, includedUserIds);
+            var displayNames = new List<UserModel>();
+            foreach (var user in includedUsers.Where(u => !string.IsNullOrEmpty(u.DisplayName)))
             {
-                if (policy.Conditions.Users.IncludeUsers.Contains("All"))
-                {
-                    policy.Conditions.Users.IncludeUsersReadable = new List<string> { "All" };
-                }
-                else
-                {
-                    var includedUserIds = policy.Conditions.Users.IncludeUsers
-                    .Where(t => !string.IsNullOrEmpty(t))
-                    .ToList();
-                    var includedUsers = await _userInformationService.GetUserInformationByIdsCollectionListAsync(accessToken, includedUserIds);
-                    var displayNames = new List<string>();
-                    foreach (var user in includedUsers.Where(u => !string.IsNullOrEmpty(u.DisplayName)))
-                    {
-                        displayNames.Add(user.DisplayName);
-                    }
-                    policy.Conditions.Users.IncludeUsersReadable = displayNames;
-                }
-                
-                var excludedUserIds = policy.Conditions.Users.ExcludeUsers
-                    .Where(t => !string.IsNullOrEmpty(t))
-                    .ToList();
-                var excludedUsers = await _userInformationService.GetUserInformationByIdsCollectionListAsync(accessToken, excludedUserIds);
-                var excludeDisplayNames = new List<string>();
-                foreach (var user in excludedUsers.Where(u => !string.IsNullOrEmpty(u.DisplayName)))
-                {
-                    excludeDisplayNames.Add(user.DisplayName);
-                }
-                policy.Conditions.Users.ExcludeUsersReadable = excludeDisplayNames;
-                var excludedGroupsIds = policy.Conditions.Users.ExcludeGroups
-                    .Where(t => !string.IsNullOrEmpty(t.ToString()))
-                    .ToList();
-                var excludedGroups = await _groupInformationService.GetGroupInformationByIdsCollectionListAsync(accessToken, excludedGroupsIds);
-                var excludeGroupNames = new List<string>();
-                foreach (var group in excludedGroups.Where(u => !string.IsNullOrEmpty(u.DisplayName)))
-                {
-                    excludeGroupNames.Add(group.DisplayName);
-                }
-                policy.Conditions.Users.ExcludeGroupsReadable = excludeGroupNames;
+                displayNames.Add(user);
             }
-            return Ok(caPolicies);
+
+            policy.Conditions.Users.IncludeUsersReadable = displayNames;
         }
+
+        var excludedUserIds = policy.Conditions.Users.ExcludeUsers
+            .Where(t => !string.IsNullOrEmpty(t))
+            .ToList();
+        var excludedUsers =
+            await _userInformationService.GetUserInformationByIdsCollectionListAsync(accessToken, excludedUserIds);
+        var excludeDisplayNames = new List<UserModel>();
+        foreach (var user in excludedUsers.Where(u => !string.IsNullOrEmpty(u.DisplayName)))
+        {
+            excludeDisplayNames.Add(user);
+        }
+
+        policy.Conditions.Users.ExcludeUsersReadable = excludeDisplayNames;
+        var includedGroupsIds = policy.Conditions.Users.IncludeGroups
+            .Where(t => !string.IsNullOrEmpty(t.ToString()))
+            .ToList();
+        var includedGroups =
+            await _groupInformationService.GetGroupInformationByIdsCollectionListAsync(accessToken, includedGroupsIds);
+        policy.Conditions.Users.IncludeGroupsReadable = includedGroups;
+        var excludedGroupsIds = policy.Conditions.Users.ExcludeGroups
+            .Where(t => !string.IsNullOrEmpty(t.ToString()))
+            .ToList();
+        var excludedGroups =
+            await _groupInformationService.GetGroupInformationByIdsCollectionListAsync(accessToken, excludedGroupsIds);
+        policy.Conditions.Users.ExcludeGroupsReadable = excludedGroups;
+        return Ok(policy);
     }
 }
