@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IntuneAssistant\IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\IntuneAssistant.Backend\IntuneAssistant\IntuneAssistant.csproj" />
+    <ProjectReference Include="..\..\IntuneAssistant.Backend\IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -33,7 +33,7 @@
 <br/>
 <MudDataGrid SelectedItems="@selectedItems" T="ConditionalAccessPolicyModel" DragDropColumnReordering="true" Loading="_loading" LoadingProgressColor="Color.Primary" Items="@_resources" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter" Hideable="true">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">All assignments</MudText>
+        <MudText Typo="Typo.h6">All conditional access assignments</MudText>
         <MudSpacer/>
         <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
