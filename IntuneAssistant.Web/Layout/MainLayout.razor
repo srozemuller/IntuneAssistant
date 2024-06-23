@@ -1,0 +1,60 @@
+﻿@using DocumentFormat.OpenXml.Drawing
+@inherits LayoutComponentBase
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_yellowTheme"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+        <LoginDisplay/>
+        <MudSpacer/>
+        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" ThumbIcon="@DarkLightIcon"/>
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/srozemuller/IntuneAssistant" Target="_blank" Color="Color.Inherit" Edge="Edge.End"/>
+        <MudMenu Label="Open Menu" Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit">
+            <MudMenuItem Href="https://intunecli.wiki" target="_blank">About</MudMenuItem>
+        </MudMenu>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Class="content px-4">
+        <NavMenu/>
+        <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Share" Color="Color.Primary" Label="Feedback" Href="https://github.com/srozemuller/IntuneAssistant/issues" Target="_blank"/>
+        @_appVersion
+    </MudDrawer>
+    <MudMainContent Class="content px-4">
+       @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+    string _appVersion = Constants.WebAppConfiguration.APP_VERSION;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme _theme = new();
+    private bool _isDarkMode;
+    private string DarkLightIcon => _isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode;
+
+    MudTheme _yellowTheme = new()
+    {
+        Palette = new PaletteLight()
+        {
+            Primary = "#ffc720",
+            Secondary = Colors.Green.Accent4,
+            AppbarBackground = Colors.Amber.Lighten1,
+            ActionDefault = Colors.Amber.Lighten1,
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = Colors.Amber.Darken1,
+            TextPrimary = Colors.Grey.Lighten5,
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "260px",
+        }
+    };
+
+}

@@ -1,0 +1,267 @@
+﻿@page "/policies/configuration/{policyId}"
+@using IntuneAssistant.Infrastructure.Interfaces
+@using IntuneAssistant.Models
+@inject IDialogService DialogService
+@using IntuneAssistant.Web.Helpers
+@using IntuneAssistant.Web.Constants
+@using IntuneAssistant.Web.Layout.Dialogs
+@using Microsoft.IdentityModel.Tokens
+@using Newtonsoft.Json
+@using System.Text
+
+@using IntuneAssistant.Extensions
+
+@inject IConfigurationPolicyService ConfigurationPolicyService
+@inject IAssignmentsService AssignmentsService
+@inject IGroupInformationService GroupInformationService
+@inject IAssignmentFiltersService AssignmentFilterService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+
+
+@inject IJSRuntime js
+<PageTitle>Configuration Policy @_configurationPolicy.Name</PageTitle>
+
+
+<MudText Typo="Typo.h5">Configuration Policy @_configurationPolicy.Name
+    <MudProgressCircular Color="Color.Primary" Indeterminate="_loading" Class="loading-circle" /></MudText>
+<br/>
+<MudPaper Elevation="25">
+    <MudToolBar>
+        <MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" @onclick="@GoBack" Title="Return"/>
+        <MudIconButton Icon="@Icons.Material.Outlined.ImportExport" @onclick="@ClickExportXLS" Title="Export to CSV"/>
+        <MudIconButton Icon="@Icons.Material.Outlined.Refresh" @onclick="@RefreshData" Title="Refresh Data"/>
+        <MudIconButton Icon="@Icons.Material.Outlined.Download" @onclick="@DownloadResource" Title="Download" />
+        <MudSpacer />
+    </MudToolBar>
+</MudPaper>
+<br/>
+<MudGrid>
+    <MudItem xs="12">
+        <MudPaper Class="content px-4">
+            <MudText Typo="Typo.h6">General info</MudText>
+            <MudText Align="Align.Left">
+                <b>Name:</b> @_configurationPolicy.Name
+            </MudText>
+            <MudText Align="Align.Left">
+                <b>Description:</b> @_configurationPolicy.Description
+            </MudText>
+            <MudText Align="Align.Left">
+                <b>Plaform:</b> @_configurationPolicy.Platforms
+            </MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12">
+        <MudDataGrid T="CustomAssignmentsModel" DragDropColumnReordering="true" Items="@_assignments" SortMode="SortMode.Multiple" Filterable="true" Hideable="true">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">All assignments</MudText>
+                <MudSpacer/>
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                </MudTextField>
+            </ToolBarContent>
+            <Columns>
+                <SelectColumn T="CustomAssignmentsModel"/>
+                <PropertyColumn Property="x => x.AssignmentType" Title="Assignment Type" Sortable="true" Filterable="true"/>
+                <TemplateColumn Title="Entra ID Group">
+                    <CellTemplate>
+                        @if (context.Item.TargetName != "-")
+                        {
+                            var groupLink = context.Item.TargetId?.ToString() ?? string.Empty;
+                            <MudLink OnClick="@(async () => await GetGroupMembersAndShowDialog(groupLink))">@context.Item.TargetName</MudLink>
+                        }
+                        else
+                        {
+                            <text>@context.Item.TargetName</text>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.FilterId" Title="Filter Name" Sortable="true" Filterable="true"/>
+                <PropertyColumn Property="x => x.FilterType" Title="Filter Type" Sortable="true" Filterable="true"/>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="CustomAssignmentsModel"/>
+            </PagerContent>
+        </MudDataGrid>
+    </MudItem>
+    <MudItem xs="12">
+        <MudDataGrid T="CustomPolicySettingsModel" DragDropColumnReordering="true" Items="@_settings" SortMode="SortMode.Multiple" Filterable="true" Hideable="true">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">All Settings</MudText>
+                <MudSpacer/>
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                </MudTextField>
+            </ToolBarContent>
+            <Columns>
+                <SelectColumn T="CustomPolicySettingsModel"/>
+                <PropertyColumn Property="x => x.SettingName" Title="Setting" Sortable="true" Filterable="true"/>
+                <PropertyColumn Property="x => x.SettingValue" Title="Value" Sortable="true" Filterable="true"/>
+                <TemplateColumn Title="Sub settings">
+                    <CellTemplate>
+                        @foreach (var childSetting in context.Item.ChildSettingInfo)
+                        {
+                            <MudText Typo="Typo.body2" Align="Align.Left">
+                                <b>@childSetting.Name: </b> - @childSetting.Value
+                            </MudText>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="CustomPolicySettingsModel"/>
+            </PagerContent>
+        </MudDataGrid>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+    [Parameter]
+    public string? PolicyId { get; set; }
+
+    private string _searchString;
+    private bool _sortNameByLength;
+
+    private async void ClickExportXLS()
+    {
+
+        var xls = new ExportData();
+        await xls.GenerateConfigurationPolicyXlsAsync(js, _configurationPolicy, _assignments, _settings, "GlobalAssignmentsOverview.xlsx");
+
+    }
+
+
+    public string? _accessToken;
+    ConfigurationPolicyModel _configurationPolicy = new();
+    readonly List<CustomAssignmentsModel> _assignments = new();
+    List<CustomPolicySettingsModel> _settings = new();
+    private readonly bool _striped = true;
+    private bool _loading = true;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchData();
+    }
+
+    private async Task FetchData()
+    {
+        _loading = true;
+        _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
+
+        if (_accessToken != null && TokenHelper.TokenIsValid(_accessToken))
+        {
+            var fetchTasks = new List<Task<ConfigurationPolicyModel>?>
+            {
+                FetchConfigurationPolicies()
+            };
+            var result = await Task.WhenAll(fetchTasks);
+            var assignmentResults = await AssignmentsService.GetConfigurationPolicyAssignmentsListAsync(_accessToken, null, result.Select(p => p).ToList());
+            var allFiltersInfo = await AssignmentFilterService.GetAssignmentFiltersListAsync(_accessToken);
+            if (assignmentResults == null)
+            {
+                _loading = false;
+                return;
+            }
+            var uniqueGroupIds = assignmentResults.Select(r => r).DistinctBy(d => d.TargetId).Select(t => t.TargetId)
+                .Where(t => !t.IsNullOrEmpty())
+                .ToList();
+            var allGroupsInfo =
+                await GroupInformationService.GetGroupInformationByIdsCollectionListAsync(_accessToken,
+                    uniqueGroupIds);
+            foreach (var assignment in assignmentResults.Select(x => x))
+            {
+                var filterInfo = allFiltersInfo?.Find(g => g.Id == assignment.FilterId);
+                var filterName = filterInfo?.DisplayName ?? "No filter";
+                var target = allGroupsInfo.Find(g => g?.Id == assignment.TargetId);
+                var targetFriendly = target?.DisplayName ?? "-";
+                assignment.TargetName = targetFriendly;
+                assignment.FilterId = filterName;
+                _assignments.Add(assignment);
+            }
+            var configurationPoliciesSettingsResults =
+                await ConfigurationPolicyService.GetConfigurationPoliciesSettingsListAsync(_accessToken,
+                    result.ToList());
+
+            _settings.AddRange(from policy in result
+                where configurationPoliciesSettingsResults is not null
+                from setting in configurationPoliciesSettingsResults
+                let settingName = setting.SettingName
+                let settingValue = setting.SettingValue
+                select new CustomPolicySettingsModel { PolicyName = setting.PolicyName, SettingName = settingName, SettingValue = settingValue, ChildSettingInfo = setting.ChildSettingInfo });
+
+            _loading = false;
+            StateHasChanged();
+        }
+        else
+        {
+    // Handle token retrieval failure
+    // This could occur if the user is not authenticated
+    // or if there's an issue with token retrieval
+    // You can implement your error handling logic here
+            Console.WriteLine("Token retrieval failed");
+            NavigationManager.NavigateTo(WebAppConfiguration.LOGIN_URL);
+        }
+    }
+
+    private async Task GetGroupMembersAndShowDialog(string groupId)
+    {
+    // Open a dialog and pass the groupMembers to it
+        var parameters = new DialogParameters();
+        parameters.Add("GroupId", groupId);
+        var options = new DialogOptions
+        {
+            ClassBackground = "my-custom-class",
+            CloseOnEscapeKey = true,
+            DisableBackdropClick = true
+        };
+        await DialogService.ShowAsync<GroupDialogComponent>("", parameters, options);
+    }
+
+    private async Task<ConfigurationPolicyModel> FetchConfigurationPolicies()
+    {
+        try
+        {
+            _configurationPolicy = await ConfigurationPolicyService.GetConfigurationPolicyByIdAsync(_accessToken, PolicyId);
+            var groupPolicies = await ConfigurationPolicyService.GetGroupPolicyConfigurationsListAsync(_accessToken);
+            var deviceConfigurations = await ConfigurationPolicyService.GetDeviceConfigurationsListAsync(_accessToken);
+
+            return _configurationPolicy;
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeVoidAsync("appInsights.trackException", ex);
+
+            return null;
+        }
+    }
+
+    private async Task RefreshData()
+    {
+    // Clear the existing data
+        _configurationPolicy = new ConfigurationPolicyModel();
+
+        await FetchData();
+    }
+    
+    private async Task DownloadResource()
+    {
+
+    // Convert the _configurationPolicy object to a JSON string
+        var policyString = JsonConvert.SerializeObject(_configurationPolicy, JsonSettings.Default());
+
+    // Convert the JSON string to a byte array
+        var policyBytes = Encoding.UTF8.GetBytes(policyString);
+
+    // Create a Blob with the byte array and download it
+        await js.InvokeVoidAsync("downloadFile", $"{_configurationPolicy.Name}.json", policyBytes);  }
+
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/policies/configuration");
+    }
+
+}

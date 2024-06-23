@@ -1,0 +1,107 @@
+@using IntuneAssistant.Models.Group
+@using IntuneAssistant.Infrastructure.Interfaces
+@using IntuneAssistant.Web.Extensions
+@using IntuneAssistant.Constants
+@inject IGroupInformationService GroupInformationService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject IDialogService DialogService
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+
+<MudDialog>
+    <DialogContent>
+        <MudTable Items="@GroupMembers" Loading="_loading" Hover="true" Breakpoint="Breakpoint.Sm" RowsPerPage="25" Filter="new Func<GroupMemberModel, bool>(FilterFunc1)">
+            <ToolBarContent>
+<MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+                <MudSpacer/>
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Immediate="true" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Display Name</MudTh>
+                <MudTh>Enabled</MudTh>
+                <MudTh>Created at</MudTh>
+                <MudTh>Type</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="DisplayName">
+                    @if (context.Type == "Group")
+                    {
+                        <MudLink OnClick="@(async () => await GetGroupMembersAndShowDialog(context.Id, GroupName))">@context.DisplayName</MudLink>
+                    }
+                    else
+                    {
+                        @context.DisplayName
+                    }
+                </MudTd>
+                <MudTd DataLabel="Enabled">
+                    @if (context.Type == "Group")
+                    {
+                        <MudText Typo="Typo.body2">N/A</MudText>
+                    }
+                    else
+                    {
+                        @context.AccountEnabled
+                    }
+
+                </MudTd>
+                <MudTd DataLabel="Created at">@context.CreatedDateTime</MudTd>
+                <MudTd DataLabel="Type">@context.Type</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    private List<GroupMemberModel>? GroupMembers { get; set; }
+
+
+    [Parameter]
+    public Guid GroupId { get; set; }
+    [Parameter]
+    public string GroupName { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private string searchString = "";
+    private bool FilterFunc1(GroupMemberModel member) => FilterFunc(member, searchString);
+
+    public string? _accessToken;
+    private bool FilterFunc(GroupMemberModel member, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (member.DisplayName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
+        Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _accessToken);
+        GroupMembers = await Http.GetFromJsonAsync<List<GroupMemberModel>>($"{IntuneAssistantApiUrls.BASE_APIURL}/v1/groups/{GroupId}/members");
+        _loading = false;
+    }
+
+    private async Task GetGroupMembersAndShowDialog(Guid groupId, string groupName)
+    {
+        await DialogService.ShowGroupMembersDialog(groupId, groupName);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("makeDialogDraggable", "my-custom-class");
+        }
+    }
+
+}

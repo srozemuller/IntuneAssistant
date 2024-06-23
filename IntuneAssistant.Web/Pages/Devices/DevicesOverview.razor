@@ -1,0 +1,132 @@
+﻿@page "/devices/devices-overview"
+@using IntuneAssistant.Infrastructure.Interfaces
+@using IntuneAssistant.Models
+@using Microsoft.IdentityModel.Tokens
+@using IntuneAssistant.Web.Helpers
+@using IntuneAssistant.Extensions
+@using IntuneAssistant.Infrastructure.Interfaces.Devices
+@using IntuneAssistant.Models.Devices
+@using IntuneAssistant.Web.Constants
+@using Microsoft.Graph.Beta.Models
+
+@inject IDeviceService DeviceService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+
+
+
+@inject IJSRuntime js
+<PageTitle>Global Assignments Overview</PageTitle>
+
+<MudText Typo="Typo.h5">Global Assignments Overview</MudText>
+<br/>
+<MudButton Variant="Variant.Filled" Size="Size.Small" StartIcon="@Icons.Material.Filled.ImportExport" @onclick="@ClickExportXLS" Color="Color.Primary">Create XLSX</MudButton>
+<MudButton Variant="Variant.Filled" Size="Size.Small" StartIcon="@Icons.Material.Filled.Refresh" @onclick="@RefreshData" Color="Color.Primary">Refresh Data</MudButton>
+
+<MudDataGrid T="DeviceModel" DragDropColumnReordering="true" Loading="_loading" LoadingProgressColor="Color.Primary" Items="@_devices" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter" Hideable="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">All devices</MudText>
+        <MudSpacer/>
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+        </MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <SelectColumn T="DeviceModel"/>
+        <PropertyColumn Property="x => x.DeviceName" Title="Device Name" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.UserDisplayName" Title="User Display Name" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.ComplianceState" Title="Compliance State" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.OsVersion" Title="Os Version" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.LastSyncDateTime" Title="Last Sync DateTime" Sortable="true" Filterable="true"/>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="DeviceModel"/>
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+
+    private async void ClickExportXLS()
+    {
+        var xls = new ExportData();
+        await xls.GenerateDevicesOverviewXlsAsync(js, _devices, "GlobalAssignmentsOverview.xlsx");
+    }
+
+    private string _searchString;
+    private bool _sortNameByLength;
+
+    // custom sort by name length
+    private Func<DeviceModel, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.DeviceName.Length;
+        else
+            return x.Id;
+    };
+
+    // quick filter - filter globally across multiple columns with the same input
+    private Func<DeviceModel, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.DeviceName.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase))
+            return true;
+
+        if (x.UserDisplayName.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    public string? _accessToken;
+    List<DeviceModel>? _devices = new();
+    private readonly bool _striped = true;
+    private bool _loading = true;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchData();
+    }
+
+    private async Task FetchData()
+    {
+        _loading = true;
+        _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
+
+        if (_accessToken != null && _devices.IsNullOrEmpty() && TokenHelper.TokenIsValid(_accessToken))
+        {
+         
+            
+            var fetchTasks = new List<Task<List<DeviceModel>?>>
+            {
+                DeviceService.GetManagedDevicesListAsync(_accessToken, null)
+            };
+            var results = await Task.WhenAll(fetchTasks);
+            foreach (var result in results.SelectMany(x => x))
+            {
+                _devices.Add(result);
+            }
+            _loading = false;
+        }
+        else
+        {
+    // Handle token retrieval failure
+    // This could occur if the user is not authenticated
+    // or if there's an issue with token retrieval
+    // You can implement your error handling logic here
+            Console.WriteLine("Token retrieval failed");
+            NavigationManager.NavigateTo(WebAppConfiguration.LOGIN_URL);
+        }
+    }
+    
+    private async Task RefreshData()
+    {
+    // Clear the existing data
+        _devices.Clear();
+
+        await FetchData();
+    }
+
+}

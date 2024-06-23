@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intune Assistant</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/dark.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
+    <link rel="icon" type="image/png" href="images/favicon.ico" />
+    <link href="IntuneAssistant.Web.styles.css" rel="stylesheet" />
+    <link href="_content/BlazorPro.Spinkit/spinkit.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">
+    Loading ...
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_content/Microsoft.Authentication.WebAssembly.Msal/AuthenticationService.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="js/openfile.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        window.getBrowserHeight = function() {
+            return window.innerHeight;
+        }
+    </script>
+    <script>
+        let directoryHandle;
+
+        window.saveFile = async (filename, data) => {
+            const options = {
+                types: [
+                    {
+                        description: 'JSON Files',
+                        accept: {
+                            'application/json': ['.json'],
+                        },
+                    },
+                ],
+            };
+
+            if (!directoryHandle) {
+                directoryHandle = await window.showDirectoryPicker();
+            }
+
+            const fileHandle = await directoryHandle.getFileHandle(filename, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(data);
+            await writable.close();
+            return fileHandle.name;
+        }
+        window.downloadFile = function(filename, data) {
+            // Create a Blob with the data
+            var blob = new Blob([data], { type: 'application/octet-stream' });
+
+            // Create an object URL for the Blob
+            var url = URL.createObjectURL(blob);
+
+            // Create a link element
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+
+            // Append the link to the body
+            document.body.appendChild(link);
+
+            // Simulate a click on the link
+            link.click();
+
+            // Remove the link from the body
+            document.body.removeChild(link);
+        }
+    </script>
+
+    <script type="text/javascript">
+        !function(T,l,y){var S=T.location,k="script",D="instrumentationKey",C="ingestionendpoint",I="disableExceptionTracking",E="ai.device.",b="toLowerCase",w="crossOrigin",N="POST",e="appInsightsSDK",t=y.name||"appInsights";(y.name||T[e])&&(T[e]=t);var n=T[t]||function(d){var g=!1,f=!1,m={initialize:!0,queue:[],sv:"5",version:2,config:d};function v(e,t){var n={},a="Browser";return n[E+"id"]=a[b](),n[E+"type"]=a,n["ai.operation.name"]=S&&S.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(m.sv||m.version),{time:function(){var e=new Date;function t(e){var t=""+e;return 1===t.length&&(t="0"+t),t}return e.getUTCFullYear()+"-"+t(1+e.getUTCMonth())+"-"+t(e.getUTCDate())+"T"+t(e.getUTCHours())+":"+t(e.getUTCMinutes())+":"+t(e.getUTCSeconds())+"."+((e.getUTCMilliseconds()/1e3).toFixed(3)+"").slice(2,5)+"Z"}(),iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}}}}var h=d.url||y.src;if(h){function a(e){var t,n,a,i,r,o,s,c,u,p,l;g=!0,m.queue=[],f||(f=!0,t=h,s=function(){var e={},t=d.connectionString;if(t)for(var n=t.split(";"),a=0;a<n.length;a++){var i=n[a].split("=");2===i.length&&(e[i[0][b]()]=i[1])}if(!e[C]){var r=e.endpointsuffix,o=r?e.location:null;e[C]="https://"+(o?o+".":"")+"dc."+(r||"services.visualstudio.com")}return e}(),c=s[D]||d[D]||"",u=s[C],p=u?u+"/v2/track":config.endpointUrl||"https://dc.services.visualstudio.com/v2/track",l=a(c),n=l.data,n.baseType="EventData",n.baseData.name=t,m.onInit&&m.onInit(l),function(e,t){function n(e){var t="Browser";return e&&e.indexOf(t)!==-1}function a(e,t){e[t]=function(){var e=arguments[t];return function(){if(m[e]&&m[e].initialized)return m[e].makeRequest;var t=arguments;return n(t[0])&&m[t[0]]&&m[t[0]].makeRequest?m[t[0]].makeRequest.apply(m[t[0]],t):m.queue.push([t[0],t[1],t[2],t[3]]),m}}(t,arguments)}var i=new XMLHttpRequest;if(i[w]=!0,i.open(N,t),i.setRequestHeader("Content-type","application/json"),i.onreadystatechange=function(){i.readyState===4&&i.onreadystatechange===null&&i.onreadystatechange()},i.onerror=a(i,"onerror"),i.ontimeout=a(i,"ontimeout"),i.send(JSON.stringify(e)),m.queue.length>0)for(var r=0;r<m.queue.length;r++){var o=m.queue[r];m[o[0]]&&m[o[0]].makeRequest.apply(m[o[0]],o.slice(1))}m.queue=[]}(l,p))}function i(e,t){f||setTimeout(function(){!t&&m.core||a(e)},500)}var e=function(){var n=l.createElement(k);n.src=h;var e=y[w];return!e&&""!==e||"undefined"==n[w]||(n[w]=e),n.onload=i,n.onerror=a,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||i(0,t)},n}();y.ld<0?l.getElementsByTagName("head")[0].appendChild(e):setTimeout(function(){l.getElementsByTagName(k)[0].parentNode.appendChild(e)},y.ld||0)}try{m.cookie=l.cookie}catch(p){}function t(e){for(;e.length;)!function(t){m[t]=function(){var e=arguments;g||m.queue.push(function(){m[t].apply(m,e)})}}(e.pop())}var n="track",r="TrackPage",o="TrackEvent";t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+r,"stop"+r,"start"+o,"stop"+o,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","startTrackEvent","stopTrackEvent","startTrackPage","stopTrackPage","flush"]),m.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4};var s=(d.extensionConfig||{}).ApplicationInsightsAnalytics||{};if(!0!==d[I]&&!0!==s[I]){method="onerror",t(["_"+method]);var c=T[method];T[method]=function(e,t,n,a,i){var r=c&&c(e,t,n,a,i);return!0!==r&&m["_"+method]({message:e,url:t,lineNumber:n,columnNumber:a,error:i}),r},d.autoExceptionInstrumented=!0}return m}(y.cfg);(T[t]=n).queue&&0===n.queue.length&&(n.queue.push([n.pageViewId=n.trackPageView(),n.startTrackPage]),n.queue.push([n.flush]),n.queue.length=0)}(window,document,{
+            src: "https://az416426.vo.msecnd.net/scripts/b/ai.2.min.js", // The SDK URL Source
+//name: "appInsights", // Global SDK Instance name
+//ld: 0, // Defines the load delay (in ms) before attempting to load the sdk. -1 = block page load and add to head. (default) = 0ms load after timeout,
+//useXhr: 1, // Use XHR instead of fetch to report failures (if available),
+            crossOrigin: "anonymous", // When supplied this will add the provided value as the cross origin attribute on the script tag
+// onInit: null, // Once the application insights instance has loaded and initialized this method will be called with 1 argument -- the sdk instance (DO NOT ADD anything to the sdk.queue -- As they won't get called)
+            cfg: { // Application Insights Configuration
+                instrumentationKey: "c0a76058-da5a-4977-a298-a186b0bc95f7" // Your Application Insights Instrumentation Key
+                /* ...Other Configuration Options... */
+            }});
+    </script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+</body>
+
+</html>

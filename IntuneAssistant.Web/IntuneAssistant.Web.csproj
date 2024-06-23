@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.17.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IntuneAssistant\IntuneAssistant.Infrastructure\IntuneAssistant.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="IntuneAssistant\global.json" />
+    <_ContentIncludedByDefault Remove="IntuneAssistant\IntuneAssistant.Core\obj\Core.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="IntuneAssistant\IntuneAssistant.Core\obj\IntuneAssistant.Core.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="IntuneAssistant\IntuneAssistant.Core\obj\IntuneAssistant.Utils.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="IntuneAssistant\IntuneAssistant.Core\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="IntuneAssistant\IntuneAssistant.Core\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="IntuneAssistant\IntuneAssistant.Core\obj\Utils.csproj.nuget.dgspec.json" />
+  </ItemGroup>
+
+</Project>

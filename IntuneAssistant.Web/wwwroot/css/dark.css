@@ -1,0 +1,9 @@
+:root {
+    --mud-primary-color-dark: #333333;
+    --mud-secondary-color-dark: #222222;
+    --mud-palette-primary: #212121;
+}
+
+.top-row {
+    background-color: var(--mud-primary-color-dark);
+}

@@ -1,0 +1,195 @@
+﻿@page "/policies/configuration"
+@using IntuneAssistant.Infrastructure.Interfaces
+@using IntuneAssistant.Models
+@using Microsoft.IdentityModel.Tokens
+@using IntuneAssistant.Web.Helpers
+@using IntuneAssistant.Web.Constants
+@using Newtonsoft.Json
+@using System.Text
+@using IntuneAssistant.Constants
+
+
+@inject ICompliancePoliciesService CompliancePoliciesService
+@inject IConfigurationPolicyService ConfigurationPolicyService
+
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+
+@inject IJSRuntime js
+<PageTitle>Configuration Policies Overview</PageTitle>
+
+<MudText Typo="Typo.h5">Configuration Policies Overview</MudText>
+<br/>
+<MudPaper Elevation="25">
+    <MudToolBar>
+        <MudIconButton Icon="@Icons.Material.Outlined.ImportExport" @onclick="@ClickExportXLS" Title="Export to CSV"/>
+        <MudIconButton Icon="@Icons.Material.Outlined.Refresh" @onclick="@RefreshData" Title="Refresh Data"/>
+        <MudIconButton Icon="@Icons.Material.Outlined.Download" @onclick="@DownloadResources" Title="Download" />
+        <MudSpacer />
+    </MudToolBar>
+</MudPaper>
+<br/>
+<MudDataGrid SelectedItems="@selectedItems" T="ConfigurationPolicyModel" DragDropColumnReordering="true" Loading="_loading" LoadingProgressColor="Color.Primary" Items="@_resources" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter" Hideable="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">All assignments</MudText>
+        <MudSpacer/>
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+        </MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <SelectColumn T="ConfigurationPolicyModel"/>
+        <TemplateColumn Title="Name">
+                    <CellTemplate>
+                        @if (context.Item.Id != null)
+                        {
+                            var policyId = context.Item.Id.ToString();
+                            <MudLink OnClick="() => NavigateToPolicy(policyId)">@context.Item.Name</MudLink>
+    
+                        }
+                        else
+                        {
+                            <text>@context.Item.Name</text>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+        <PropertyColumn Property="x => x.Description" Title="Description" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.SettingCount" Title="Total Settings" Sortable="true" Filterable="true"/>
+        <TemplateColumn Title="Assigned">
+            <CellTemplate>
+                @if (context.Item.Assignments != null && context.Item.Assignments.Any())
+                {
+                    <text>Assigned</text>
+                }
+                else
+                {
+                    <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.Warning" Color="Color.Warning"/><text>Not Assigned</text>
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.LastModifiedDateTime" Title="Last Modified DateTime" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.CreatedDateTime" Title="Created DateTime" Sortable="true" Filterable="true"/>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="ConfigurationPolicyModel"/>
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private HashSet<ConfigurationPolicyModel> selectedItems = new();
+
+    private async void ClickExportXLS()
+    {
+    //     var xls = new ExportData();
+    //     await xls.GetGenerateAssignmentsOverviewXlsAsync(js, _resources, "GlobalAssignmentsOverview.xlsx");
+    }
+
+    private string _searchString;
+    private bool _sortNameByLength;
+
+    // custom sort by name length
+    private Func<ConfigurationPolicyModel, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.Name.Length;
+        else
+            return x.Name;
+    };
+    
+
+    // quick filter - filter globally across multiple columns with the same input
+    private Func<ConfigurationPolicyModel, bool> QuickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Name.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase))
+            return true;
+
+        if (x.Description != null && x.Description.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    public string? _accessToken;
+    List<ConfigurationPolicyModel>? _resources = new();
+    private readonly bool _striped = true;
+    private bool _loading = true;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchData();
+    }
+
+    private async Task FetchData()
+    {
+        _loading = true;
+        _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
+
+        if (_accessToken != null && _resources.IsNullOrEmpty() && TokenHelper.TokenIsValid(_accessToken))
+        {
+            var fetchTasks = new List<Task<List<ConfigurationPolicyModel>?>>
+            {
+                FetchConfigurationPolicies()
+            };
+            await Task.WhenAll(fetchTasks);
+
+            _loading = false;
+        }
+        else
+        {
+    // Handle token retrieval failure
+    // This could occur if the user is not authenticated
+    // or if there's an issue with token retrieval
+    // You can implement your error handling logic here
+            Console.WriteLine("Token retrieval failed");
+            NavigationManager.NavigateTo(WebAppConfiguration.LOGIN_URL);
+        }
+    }
+
+    private async Task<List<ConfigurationPolicyModel>?> FetchConfigurationPolicies()
+    {
+        Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _accessToken);
+
+        var configurationPolicies = await Http.GetFromJsonAsync<List<ConfigurationPolicyModel>>($"{IntuneAssistantApiUrls.BASE_APIURL}/v1/policies/configuration");
+        var compliancePolicies = await CompliancePoliciesService.GetCompliancePoliciesListAsync(_accessToken);
+        var groupPolicies = await ConfigurationPolicyService.GetGroupPolicyConfigurationsListAsync(_accessToken);
+        var deviceConfigurations = await ConfigurationPolicyService.GetDeviceConfigurationsListAsync(_accessToken);
+
+        if (configurationPolicies != null) _resources?.AddRange(configurationPolicies);
+        return _resources;
+    }
+
+    private async Task RefreshData()
+    {
+    // Clear the existing data
+        _resources.Clear();
+
+        await FetchData();
+    }
+    
+    private async Task DownloadResources()
+    {
+        foreach (var item in selectedItems)
+        {
+    // Convert the item to a JSON string
+            var jsonString = JsonConvert.SerializeObject(item);
+
+    // Convert the JSON string to a byte array
+            var jsonBytes = Encoding.UTF8.GetBytes(jsonString);
+
+    // Call the JavaScript function to save the file
+            var result = await js.InvokeAsync<string>("saveFile", new object[] { $"{item.Name}.json", jsonBytes });
+            Console.WriteLine(result);
+        }
+    }
+
+    void NavigateToPolicy(string policyId)
+    {
+        var url = $"/policies/configuration/{policyId}";
+        NavigationManager.NavigateTo(url);
+    }
+}

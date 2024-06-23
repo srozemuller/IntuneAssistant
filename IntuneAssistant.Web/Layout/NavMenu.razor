@@ -1,0 +1,29 @@
+﻿<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <MudNavMenu>
+        <MudText Typo="Typo.h5" Class="">Intune Assistant</MudText>
+        <MudNavLink Href="/dashboard" Disabled="true" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+        <MudNavLink Href="/assignments-overview" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.GroupAdd">Assignments Overview</MudNavLink>
+        <MudNavGroup Title="Policies" Icon="@Icons.Material.Filled.Policy">
+            <MudNavLink Href="/policies/configuration" Icon="@Icons.Material.Filled.List">Configuration Policies</MudNavLink>
+            <MudNavLink Href="/policy-settings-overview" Icon="@Icons.Material.Filled.Settings">Settings overview</MudNavLink>
+            <MudNavLink Href="/policies/ca" Icon="@Icons.Material.Filled.Settings">CA Policies</MudNavLink>
+            <MudNavLink Disabled="true" Icon="@Icons.Material.Filled.SettingsSuggest" Href="/policy-conflict-overview">Duplicate settings overview</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Devices" Icon="@Icons.Material.Filled.Devices">
+            <MudNavLink Disabled="true" Icon="@Icons.Material.Filled.Devices" Href="/devices/devices-overview">All Devices</MudNavLink>
+            <MudNavLink Disabled="true" Icon="@Icons.Material.Filled.CopyAll" Href="/device-duplicates">Duplicates</MudNavLink>
+        </MudNavGroup>
+    </MudNavMenu>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+}

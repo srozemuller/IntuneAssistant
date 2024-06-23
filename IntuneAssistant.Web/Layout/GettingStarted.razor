@@ -1,0 +1,48 @@
+@page "/GettingStarted"
+<MudContainer Class="mt-16">
+            <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Welcome</MudText>
+            <MudText Align="Align.Center">Welcome to the Intune Assistant. This tool will help you getting insights in your Microsoft Intune environment.</MudText>
+    <MudText Align="Align.Center">It is just a start of something great. Feel free to use and give feedback.</MudText>
+    <MudGrid Class="mt-8">
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="25" Class="rounded-lg pb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Assignments</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+
+                        <MudCardActions Class="d-flex justify-center">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;" Href="/assignments-overview">Start Now</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="25" Class="rounded-lg pb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Policies</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardActions Class="d-flex justify-center">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;" Href="/policies/configuration">Start Now</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="25" Class="rounded-lg pb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Devices</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardActions Class="d-flex justify-center">
+                            <MudButton Disabled="true" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Large" Style="width:50%;">Start Now</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+@code {
+    
+}

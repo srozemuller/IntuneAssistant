@@ -1,0 +1,158 @@
+﻿@page "/assignments-overview"
+@using IntuneAssistant.Models
+@using Microsoft.IdentityModel.Tokens
+@using IntuneAssistant.Web.Helpers
+@using IntuneAssistant.Extensions
+@using IntuneAssistant.Web.Constants
+@using IntuneAssistant.Web.Extensions
+@using IntuneAssistant.Constants
+
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+@inject HttpClient Http
+
+@inject IJSRuntime js
+<PageTitle>Global Assignments Overview</PageTitle>
+
+<MudText Typo="Typo.h5">Global Assignments Overview</MudText>
+<br/>
+<MudButton Variant="Variant.Filled" Size="Size.Small" StartIcon="@Icons.Material.Filled.ImportExport" @onclick="@ClickExportXLS" Color="Color.Primary">Create XLSX</MudButton>
+<MudButton Variant="Variant.Filled" Size="Size.Small" StartIcon="@Icons.Material.Filled.Refresh" @onclick="@RefreshData" Color="Color.Primary">Refresh Data</MudButton>
+
+<MudDataGrid T="CustomAssignmentsModel" DragDropColumnReordering="true" Loading="_loading" LoadingProgressColor="Color.Primary" Items="@_assignments" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter" Hideable="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">All assignments</MudText>
+        <MudSpacer/>
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+        </MudTextField>
+        
+    </ToolBarContent>
+    <Columns>
+        <SelectColumn T="CustomAssignmentsModel"/>
+        <PropertyColumn Property="x => x.ResourceType" Title="Resource Type" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.ResourceName" Title="Resource Name" SortBy="@_sortBy"/>
+        <PropertyColumn Property="x => x.IsAssigned" Title="Assigned" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.AssignmentType" Title="Assignment Type" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.TargetName" Title="Entra ID Group" Filterable="true">
+            <CellTemplate>
+                @if (context.Item.TargetName != "-")
+                {
+                    Guid groupLink;
+                    if (Guid.TryParse((string)context.Item.TargetId, out groupLink))
+                    {
+                        <MudLink OnClick="@(async () => await GetGroupMembersAndShowDialog(groupLink, context.Item.TargetName))">@context.Item.TargetName</MudLink>
+                    }
+                    else
+                    {
+                        <text>@context.Item.TargetName</text>
+                    }
+                }
+                else
+                {
+                    <text>@context.Item.TargetName</text>
+                }
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.FilterId" Title="Filter ID" Sortable="true" Filterable="true"/>
+        <PropertyColumn Property="x => x.FilterType" Title="Filter Type" Sortable="true" Filterable="true"/>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="CustomAssignmentsModel"/>
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+
+    private async void ClickExportXLS()
+    {
+        var xls = new ExportData();
+        await xls.GetGenerateAssignmentsOverviewXlsAsync(js, _assignments, "GlobalAssignmentsOverview.xlsx");
+    }
+
+    private string _searchString;
+    private bool _sortNameByLength;
+
+    // custom sort by name length
+    private Func<CustomAssignmentsModel, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.ResourceName.Length;
+        else
+            return x.ResourceName;
+    };
+
+    // quick filter - filter globally across multiple columns with the same input
+    private Func<CustomAssignmentsModel, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.ResourceId.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.ResourceName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.TargetName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    public string? _accessToken;
+    List<CustomAssignmentsModel>? _assignments = new();
+    List<AssignmentFiltersModel>? allFiltersInfo;
+    List<CompliancePolicyModel>? _compliancePolicies;
+    List<ConfigurationPolicyModel>? _configurationPolicies;
+    private readonly bool _striped = true;
+    private bool _loading = true;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchData();
+    }
+
+    private async Task FetchData()
+    {
+        _loading = true;
+        _accessToken = await LocalStorage.GetItemAsync<string>("accessToken");
+        var allResults = new List<CustomAssignmentsModel>();
+
+        if (_accessToken != null && _assignments.IsNullOrEmpty() && TokenHelper.TokenIsValid(_accessToken))
+        {
+            Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _accessToken);
+            allResults = await Http.GetFromJsonAsync<List<CustomAssignmentsModel>>($"{IntuneAssistantApiUrls.BASE_APIURL}/v1/assignments");
+            _assignments.AddRange(allResults);
+
+            _loading = false;
+            
+        }
+        else
+        {
+    // Handle token retrieval failure
+    // This could occur if the user is not authenticated
+    // or if there's an issue with token retrieval
+    // You can implement your error handling logic here
+            Console.WriteLine("Token retrieval failed");
+            NavigationManager.NavigateTo(WebAppConfiguration.LOGIN_URL);
+        }
+    }
+
+    private async Task GetGroupMembersAndShowDialog(Guid targetId, string targetName)
+    {
+        await DialogService.ShowGroupMembersDialog(targetId, targetName);
+    }
+
+    private async Task RefreshData()
+    {
+    // Clear the existing data
+        _assignments.Clear();
+
+        await FetchData();
+    }
+
+}
