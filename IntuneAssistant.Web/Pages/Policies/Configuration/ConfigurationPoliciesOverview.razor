@@ -7,10 +7,7 @@
 @using Newtonsoft.Json
 @using System.Text
 @using IntuneAssistant.Constants
-
-
-@inject ICompliancePoliciesService CompliancePoliciesService
-@inject IConfigurationPolicyService ConfigurationPolicyService
+@using IntuneAssistant.Models.Policies
 
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
@@ -155,9 +152,6 @@
         Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _accessToken);
 
         var configurationPolicies = await Http.GetFromJsonAsync<List<ConfigurationPolicyModel>>($"{IntuneAssistantApiUrls.BASE_APIURL}/v1/policies/configuration");
-        var compliancePolicies = await CompliancePoliciesService.GetCompliancePoliciesListAsync(_accessToken);
-        var groupPolicies = await ConfigurationPolicyService.GetGroupPolicyConfigurationsListAsync(_accessToken);
-        var deviceConfigurations = await ConfigurationPolicyService.GetDeviceConfigurationsListAsync(_accessToken);
 
         if (configurationPolicies != null) _resources?.AddRange(configurationPolicies);
         return _resources;

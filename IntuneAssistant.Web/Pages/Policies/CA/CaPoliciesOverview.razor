@@ -4,6 +4,7 @@
 @using IntuneAssistant.Web.Constants
 @using Newtonsoft.Json
 @using System.Text
+@using IntuneAssistant.Constants
 @using IntuneAssistant.Models
 @inject IDialogService DialogService
 @using IntuneAssistant.Models.Policies.CA
@@ -195,7 +196,7 @@
 
         try
         {
-            var response = await Http.GetAsync($"https://localhost:7224/v1/policies/ca");
+            var response = await Http.GetAsync($"{IntuneAssistantApiUrls.BASE_APIURL}/v1/policies/ca");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -259,7 +260,7 @@
     private async Task ConsentApplication()
     {
     // Use JS Interop to open a new window with the consent URL
-        var consentUrl = $"https://login.microsoftonline.com/organizations/adminconsent?client_id=131386a4-d462-4270-ac50-7ebc4685da14&redirect_uri=https://localhost:7074";
+        var consentUrl = $"https://login.microsoftonline.com/organizations/adminconsent?client_id=131386a4-d462-4270-ac50-7ebc4685da14&redirect_uri=https://localhost:7074/authentication/login-callback";
         await js.InvokeVoidAsync("open", consentUrl, "_blank");
     }
     
