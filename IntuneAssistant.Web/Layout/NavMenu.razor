@@ -2,7 +2,11 @@
     <MudNavMenu>
         <MudText Typo="Typo.h5" Class="">Intune Assistant</MudText>
         <MudNavLink Href="/dashboard" Disabled="true" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
-        <MudNavLink Href="/assignments-overview" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.GroupAdd">Assignments Overview</MudNavLink>
+                <MudNavGroup Title="Assignments" Icon="@Icons.Material.Filled.Assignment">
+                    <MudNavLink Disabled="false" Icon="@Icons.Material.Filled.Compare" Href="/upload">Compare</MudNavLink>
+                    <MudNavLink Href="/assignments-overview" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.GroupAdd">Assignments Overview</MudNavLink>
+                </MudNavGroup>
+        
         <MudNavGroup Title="Policies" Icon="@Icons.Material.Filled.Policy">
             <MudNavLink Href="/policies/configuration" Icon="@Icons.Material.Filled.List">Configuration Policies</MudNavLink>
             <MudNavLink Href="/policy-settings-overview" Icon="@Icons.Material.Filled.Settings">Settings overview</MudNavLink>

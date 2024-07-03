@@ -1,0 +1,52 @@
+@page "/upload"
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Headers
+@using System.Net
+@inject HttpClient Http
+
+<h3>Upload CSV File</h3>
+
+<EditForm Model="uploadModel" OnValidSubmit="HandleValidSubmit">
+    <InputFile @bind-Value="uploadModel.File"  OnChange="HandleFileSelected"></InputFile>
+    <button type="submit">Upload</button>
+</EditForm>
+
+@if (uploadModel.File != null)
+{
+    <p>File: @uploadModel.File.Name</p>
+}
+<p>@responseContent</p>
+
+@code {
+    private UploadModel uploadModel = new UploadModel();
+    private string responseContent;
+
+    private class UploadModel
+    {
+        public IBrowserFile File { get; set; }
+    }
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        uploadModel.File = e.File;
+    }
+    private async Task HandleValidSubmit()
+    {
+        if (uploadModel.File != null)
+        {
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(uploadModel.File.OpenReadStream());
+            fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = "file", // The name should match the parameter name in your API
+                FileName = uploadModel.File.Name
+            };
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(uploadModel.File.ContentType);
+            content.Add(fileContent);
+
+            var response = await Http.PostAsync("https://localhost:7224/v1/assignments/compare", content); // Replace "api/endpoint" with your actual API endpoint
+
+    // Handle the response here
+            responseContent = await response.Content.ReadAsStringAsync();
+        }
+    }
+}
