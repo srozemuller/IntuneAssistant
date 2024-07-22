@@ -5,6 +5,7 @@
 @using Newtonsoft.Json
 @using System.Text
 @using IntuneAssistant.Constants
+@using IntuneAssistant.Extensions
 @using IntuneAssistant.Models
 @inject IDialogService DialogService
 @using IntuneAssistant.Models.Policies.CA
@@ -24,6 +25,9 @@
         <MudIconButton Icon="@Icons.Material.Outlined.ImportExport" @onclick="@ClickExportXLS" Title="Export to CSV"/>
         <MudIconButton Icon="@Icons.Material.Outlined.Refresh" @onclick="@RefreshData" Title="Refresh Data"/>
         <MudIconButton Icon="@Icons.Material.Outlined.Download" @onclick="@DownloadResources" Title="Download"/>
+        <MudIconButton Icon="@Icons.Material.Outlined.Toys" @onclick="() => GenerateIdPowerToys(_resources)" Title="IdPowerToys"/>
+
+        
         <MudSpacer/>
     </MudToolBar>
 </MudPaper>
@@ -32,7 +36,7 @@
         <MudAlert Severity="Severity.Error">@_errorMessage</MudAlert>
     }
 <br/>
-<MudDataGrid SelectedItems="@selectedItems" T="ConditionalAccessPolicyModel" DragDropColumnReordering="true" Loading="_loading" LoadingProgressColor="Color.Primary" Items="@_resources" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter" Hideable="true">
+<MudDataGrid SelectOnRowClick="true" SelectedItems="@selectedItems" T="ConditionalAccessPolicyModel" DragDropColumnReordering="true" Loading="_loading" LoadingProgressColor="Color.Primary" Items="@_resources" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter" Hideable="true">
     <ToolBarContent>
         <MudText Typo="Typo.h6">All conditional access assignments</MudText>
         <MudSpacer/>
@@ -80,11 +84,27 @@
         <TemplateColumn Title="Included Users">
             <CellTemplate>
                 @foreach (var user in context.Item.Conditions.Users.IncludeUsersReadable)
-                    {
-                        <MudText>@user.DisplayName</MudText>
-                    }
+                {
+                    <MudText>@user.DisplayName</MudText>
+                }
             </CellTemplate>
         </TemplateColumn>
+        <TemplateColumn Title="Included Groups">
+                    <CellTemplate>
+                        @foreach (var group in context.Item.Conditions.Users.IncludeGroupsReadable)
+                            {
+                                Guid groupLink;
+                                if (Guid.TryParse((string)group.Id, out groupLink))
+                                {
+                                    <MudLink OnClick="@(async () => await GetGroupMembersAndShowDialog(groupLink, group.DisplayName))">@group.DisplayName</MudLink>
+                                }
+                                else
+                                {
+                                    <MudText>@group.DisplayName</MudText>
+                                }
+                            }
+                    </CellTemplate>
+                </TemplateColumn>
         <TemplateColumn Title="Excluded Users">
             <CellTemplate>
                 @foreach (var user in context.Item.Conditions.Users.ExcludeUsersReadable)
@@ -274,5 +294,15 @@
         var url = $"/policies/ca/{policyId}";
         NavigationManager.NavigateTo(url);
     }
-
+    
+    
+    void GenerateIdPowerToys(List<ConditionalAccessPolicyModel>? _resources )
+    {
+        var idPowerToysString = JsonConvert.SerializeObject(_resources,JsonSettings.Default());
+        if (selectedItems != null && selectedItems.Count > 0)
+        {
+            idPowerToysString = JsonConvert.SerializeObject(selectedItems, JsonSettings.Default());
+        }
+        IdPowerToolsExtension.CopyToClipboardAndOpenIdPowerTools(js,idPowerToysString);
+    }
 }
