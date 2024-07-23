@@ -1,34 +1,58 @@
-import { PublicClientApplication } from '@azure/msal-browser';
-import { msalConfig } from '../../authconfig';
+// src/auth/authService.js
+import { msalInstance } from '../../authconfig.js';
 
-const msalInstance = new PublicClientApplication(msalConfig);
+const authService = {
+    isInitialized: false,
 
-let accessToken = ''; // Store the access token globally
-
-// Function to get the access token
-const getAccessToken = async () => {
-    if (!accessToken) {
-        const accounts = msalInstance.getAllAccounts();
-        if (accounts.length > 0) {
-            try {
-                const response = await msalInstance.acquireTokenSilent({
-                    ...msalConfig.auth,
-                    account: accounts[0],
-                });
-                accessToken = response.accessToken;
-            } catch (error) {
-                console.error('Error acquiring access token silently', error);
-                // Fallback to interactive method if silent token acquisition fails
+    async initialize() {
+        try {
+            const initializeMsal = async () => {
                 try {
-                    const response = await msalInstance.acquireTokenPopup(msalConfig.auth);
-                    accessToken = response.accessToken;
-                } catch (popupError) {
-                    console.error('Error acquiring access token through popup', popupError);
+                    await msalInstance.initialize();
+                    console.log('MSAL initialized');
+                    this.isInitialized = true;
+                } catch (error) {
+                    console.error('MSAL initialization error:', error);
                 }
-            }
+            };
+            initializeMsal();
+
+        } catch (error) {
+            console.error('MSAL initialization error:', error);
+            throw error;
         }
+    },
+    async login(loginRequest) {
+        if (!this.isInitialized) {
+            await this.initialize();
+        }
+        try {
+            const loginResponse = await msalInstance.loginPopup(loginRequest);
+            console.log('Login response:', loginResponse);
+            const account = msalInstance.getAllAccounts()[0];
+            if (account) {
+                const tokenResponse = await msalInstance.acquireTokenSilent({
+                    ...loginRequest,
+                    account,
+                });
+                localStorage.setItem('accessToken', tokenResponse.accessToken);
+                return tokenResponse.accessToken;
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            throw error;
+        }
+    },
+    logout: () => {
+        localStorage.removeItem('accessToken');
+        // Additional logout operations can be added here
+    },
+    isLoggedIn: () => {
+        return localStorage.getItem('accessToken') !== null;
+    },
+    getAccessToken: () => {
+        return localStorage.getItem('accessToken');
     }
-    return accessToken;
 };
 
-export { msalInstance, getAccessToken };
+export default authService;

@@ -16,12 +16,12 @@ const menuitems = [
     ],
   },
   {
-    title: "Pricing",
-    path: "/pricing",
+    title: "Policies",
+    path: "/policies/ca",
   },
   {
-    title: "About",
-    path: "/about",
+    title: "Config",
+    path: "/policies/configuration",
   },
   {
     title: "Blog",
@@ -37,6 +37,27 @@ const menuitems = [
     path: "https://astroship-pro.web3templates.com/",
   },
 ];
+
+const handleLogin = async () => {
+  console.log('Login button clicked');
+  try {
+    const loginResponse = await msalInstance.loginPopup(loginRequest);
+    console.log('Login response:', loginResponse);
+    const account = msalInstance.getAllAccounts()[0];
+    if (account) {
+      const tokenResponse = await msalInstance.acquireTokenSilent({
+        ...loginRequest,
+        account,
+      });
+      console.log('Token response:', tokenResponse);
+      setAccessToken(tokenResponse.accessToken);
+      localStorage.setItem('accessToken', tokenResponse.accessToken);
+      window.updateAuthLinks(); // Update navbar links immediately after login
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+  }
+};
 ---
 
 <Container>
@@ -91,9 +112,38 @@ const menuitems = [
     </Astronav>
     <div>
       <div class="hidden lg:flex items-center gap-4">
-        <a href="#">Log in</a>
+        <a href="#" id="login-link">Log in</a>
+        <a href="/logout" id="logoff-link" style="display: none;">Log off</a>
         <Link href="#" size="md">Sign up</Link>
       </div>
     </div>
   </header>
 </Container>
+
+<script>
+  window.updateAuthLinks = () => {
+    const isLoggedIn = localStorage.getItem('accessToken') !== null;
+    const loginLink = document.querySelector('#login-link');
+    const logoffLink = document.querySelector('#logoff-link');
+
+    if (isLoggedIn) {
+      loginLink.style.display = 'none';
+      logoffLink.style.display = 'block';
+    } else {
+      loginLink.style.display = 'block';
+      logoffLink.style.display = 'none';
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    window.updateAuthLinks(); // Call this function to set the initial state of the links
+
+    const logoffLink = document.querySelector('#logoff-link');
+    logoffLink.addEventListener('click', (e) => {
+      e.preventDefault(); // Prevent the default link behavior
+      localStorage.removeItem('accessToken'); // Remove the token from local storage
+      window.updateAuthLinks(); // Update the UI to reflect the logoff state
+      // Redirect to home page or show a logged out message if needed
+    });
+  });
+</script>

@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { PublicClientApplication } from '@azure/msal-browser';
-import { msalConfig, loginRequest } from '../authconfig.js';
+import { msalConfig, loginRequest } from '../../authconfig.js';
 import MUIDataTable from "mui-datatables";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
-const DataTable = () => {
+const Capolicies = () => {
 
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10);
     const [accessToken, setAccessToken] = useState('');
 
     useEffect(() => {
@@ -24,6 +22,17 @@ const DataTable = () => {
             }
         };
         initializeMsal();
+    }, []);
+
+    useEffect(() => {
+        // Access token retrieval
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            setAccessToken(token);
+        } else {
+            // Handle the case where there is no token in local storage
+            console.log('No access token found in local storage.');
+        }
     }, []);
 
     const handleLogin = async () => {
@@ -39,6 +48,7 @@ const DataTable = () => {
                 });
                 console.log('Token response:', tokenResponse);
                 setAccessToken(tokenResponse.accessToken);
+                localStorage.setItem('accessToken', tokenResponse.accessToken);
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -66,11 +76,6 @@ const DataTable = () => {
         }
     }, [accessToken]);
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-    const paginate = pageNumber => setCurrentPage(pageNumber);
 
     if (!accessToken) {
         return <button onClick={handleLogin}>Login with Microsoft</button>;
@@ -125,4 +130,4 @@ const DataTable = () => {
 };
 
 
-export default DataTable;
+export default Capolicies;
