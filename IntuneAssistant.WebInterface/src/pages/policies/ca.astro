@@ -1,0 +1,12 @@
+---
+import Container from "@components/container.astro";
+import Layout from "@layouts/Layout.astro";
+import DataTable from '@components/datatable.jsx';
+---
+
+<Layout title="">
+    <Container>
+
+        <DataTable client:load />
+    </Container>
+</Layout>
