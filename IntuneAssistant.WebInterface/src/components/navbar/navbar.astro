@@ -2,7 +2,8 @@
 import Container from "@components/container.astro";
 import Dropdown from "./dropdown.astro";
 import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
-import ThemeIcon from '../theme/themeMode.astro';
+import { ThemeToggle } from "@components/theme/theme-toggle";
+
 const menuitems = [
   {
     title: "Features",
@@ -16,22 +17,26 @@ const menuitems = [
   },
   {
     title: "Policies",
-    path: "/policies/ca",
+    path: "#",
+    children: [
+      { title: "Conditional Access", path: "/policies/ca" },
+      { title: "Configuration", path: "/policies/configuration" }
+    ],
   },
   {
-    title: "Config",
-    path: "/policies/configuration",
+    title: "Assignments",
+    path: "/assignments/assignments",
   },
   {
-    title: "Blog",
-    path: "/blog",
+    title: "Docs",
+    path: "/content/blog",
   },
   {
     title: "Contact",
     path: "/contact",
   },
   {
-    title: "Pro Version",
+    title: "API",
     badge: true,
     path: "https://astroship-pro.web3templates.com/",
   },
@@ -44,8 +49,8 @@ const menuitems = [
     <Astronav>
       <div class="flex w-full lg:w-auto items-center justify-between">
         <a href="/" class="text-lg"
-          ><span class="font-bold text-slate-800">Astro</span><span
-            class="text-slate-500">ship</span
+          ><span class="font-bold text-slate-800">Intune</span>
+          <span class="accent-yellow-500">Assistant</span
           >
         </a>
         <div class="block lg:hidden">
@@ -73,7 +78,7 @@ const menuitems = [
                       <span> {item.title}</span>
                       {item.badge && (
                         <span class="ml-1 px-2 py-0.5 text-[10px] animate-pulse font-semibold uppercase text-white bg-indigo-600 rounded-full">
-                          New
+                          Soon
                         </span>
                       )}
                     </a>
@@ -90,10 +95,11 @@ const menuitems = [
         <a href="#" id="login-link">Log in</a>
         <span id="user-name" class="hidden"></span>
         <a href="#" id="logout-link" style="display: none;">Log out</a>
+        <ThemeToggle client:load />
       </div>
+
     </div>
   </header>
-  <ThemeIcon />
 </Container>
 
 <script type="module" src="/src/components/navbar/authHandler.js"></script>

@@ -1,8 +1,515 @@
-html.dark {
-    background-color: #0d0950;
-    color: #fff;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400..900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --background-200: 0 0% 98%;
+
+        --foreground: 0 0% 9%;
+
+        --muted: 0 0% 92%;
+        --muted-foreground: 0 0% 40%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 0 0% 9%;
+
+        --border: 0 0% 92%;
+        --input: 0 0% 92%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 0 0% 9%;
+
+        --primary: 0 0% 9%;
+        --primary-foreground: 0 0% 98%;
+
+        --secondary: 0 0% 92%;
+        --secondary-foreground: 0 0% 9%;
+
+        --accent: 0, 0%, 0%, 0.06;
+        --accent-foreground: 0 0% 9%;
+
+        --destructive: 0 100% 50%;
+        --destructive-foreground: 210 40% 98%;
+
+        --ring: 215 20.2% 65.1%;
+
+        --radius: 0.5rem;
+        --ds-shadow-border: 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+        --d: 2500ms;
+        --angle: 90deg;
+        --gradX: 100%;
+        --gradY: 50%;
+        --c1: rgba(168, 239, 255, 1);
+        --c2: rgba(168, 239, 255, 0.1);
+    }
+
+    .dark {
+        --background: 0 0% 4%;
+        --background-200: 0 170% 0%;
+
+        --foreground: 0 0% 93%;
+
+        --muted: 0 0% 12%;
+        --muted-foreground: 0 0% 80%;
+
+        --accent: 0, 0%, 100%, 0.09;
+        --accent-foreground: 0 0% 93%;
+
+        --popover: 0 0% 4%;
+        --popover-foreground: 0 0% 93%;
+
+        --border: 0 0% 12%;
+        --input: 0 0% 12%;
+
+        --card: 0 0% 4%;
+        --card-foreground: 0 0% 93%;
+
+        --primary: 0 0% 93%;
+        --primary-foreground: 222.2 47.4% 1.2%;
+
+        --secondary: 0 0% 12%;
+        --secondary-foreground: 0 0% 93%;
+
+        --destructive: 0 63% 31%;
+        --destructive-foreground: 0 0% 93%;
+
+        --ring: 0 0% 12%;
+
+        --radius: 0.5rem;
+        --ds-shadow-border: 0 0 0 1px hsla(0, 0%, 100%, 0.145);
+    }
 }
 
-.dark .nav-links a {
-    color: #fff;
+@layer base {
+    @font-face {
+        font-family: "Space Grotesk Frontify Light";
+        src: url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-Light.woff2) format("woff2"),
+        url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-Light.woff2) format("woff");
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: "Space Grotesk Frontify Semi Bold";
+        src: url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-SemiBold.woff2) format("woff2"),
+        url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-SemiBold.woff2) format("woff");
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: "Space Grotesk Frontify Regular";
+        src: url("https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-Regular.woff2") format("woff2"),
+        url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-Regular.woff2) format("woff");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: "Space Grotesk Frontify Bold";
+        src: url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-Bold.woff) format("woff2"),
+        url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-Bold.woff) format("woff");
+        font-weight: bold;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: "Space Grotesk Frontify Medium";
+        src: url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-Medium.woff2) format("woff2"),
+        url(https://info.frontify.com/hubfs/raw_assets/public/ppc-test/fonts/SpaceGroteskFrontify-Medium.woff2) format("woff");
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    * {
+        @apply border-border;
+    }
+
+    /* If you want a custom scrollbar - By @diomed */
+    /* * {
+      @apply border-border;
+      --sb-track-color: #ffffff;
+      --sb-thumb-color: #e2e3f1;
+      --sb-size: 10px;
+
+      scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+    }
+
+    ::-webkit-scrollbar {
+      width: var(--sb-size)
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--sb-track-color);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--sb-thumb-color);
+      border-radius: 10px;
+    } */
+
+    html {
+        /* scroll-padding-top: 4rem; */
+        @apply scroll-pt-16 lg:scroll-pt-0;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+
+    :not(pre) > code {
+        @apply relative rounded border px-[0.3rem] py-[0.2rem] font-mono text-sm bg-background text-foreground;
+    }
+}
+
+.text-gradient_indigo-purple {
+    background: linear-gradient(90deg, #6366f1 0%, rgba(168 85 247 / 0.9) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.bg_release_version {
+    background: linear-gradient(
+            25deg,
+            #3a084e,
+            #5b0e81,
+            #bc4c9b,
+            #df7f4f
+    ) !important;
+}
+
+/* Vercel card style */
+.card_border {
+    box-shadow: var(--ds-shadow-border), 0 4px 6px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.15s ease;
+}
+
+.card_border:hover {
+    box-shadow: var(--ds-shadow-border), 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.dark .card_border:hover {
+    box-shadow: 0 0 0 1px white;
+}
+
+/* Custom scrollbar  */
+[data-radix-scroll-area-viewport] {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+[data-radix-scroll-area-viewport]::-webkit-scrollbar {
+    display: none;
+}
+
+.button-special:hover,
+.button-special:focus,
+.button-special:active {
+    background: #ebebeb !important;
+}
+
+.dark .button-special:hover,
+.button-special:focus,
+.button-special:active {
+    background: unset !important;
+}
+
+.button-special-block {
+    position: relative;
+    background: linear-gradient(0deg, #000, #272727);
+    border-radius: var(--radius);
+}
+
+.button-special-block:before,
+.button-special-block:after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: -2px;
+    background: linear-gradient(
+            45deg,
+            #fb0094,
+            #0000ff,
+            #00ff00,
+            #ffff00,
+            #ff0000,
+            #fb0094,
+            #0000ff,
+            #00ff00,
+            #ffff00,
+            #ff0000
+    );
+    background-size: 400%;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    z-index: -1;
+    animation: steam 40s linear infinite;
+    border-radius: var(--radius);
+}
+
+@keyframes steam {
+    0% {
+        background-position: 0 0;
+    }
+    50% {
+        background-position: 400% 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}
+
+.button-special-block:after {
+    filter: blur(50px);
+}
+
+.admonition {
+    background-color: #ddd;
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid;
+    border-left: 5px solid;
+    box-shadow: 2px #000;
+    margin-bottom: 1rem;
+}
+
+.dark .admonition {
+    background-color: #323232;
+}
+
+@keyframes loading-isg-logo-svg-stroke-1 {
+    0% {
+        stroke-dashoffset: 19.5952436386665px;
+        stroke-dasharray: 19.5952436386665px;
+    }
+
+    42% {
+        stroke-dashoffset: 0;
+        stroke-dasharray: 19.5952436386665px;
+    }
+
+    79% {
+        stroke-dashoffset: 0;
+        stroke-dasharray: 19.5952436386665px;
+    }
+
+    100% {
+        stroke-dashoffset: 19.5952436386665px;
+        stroke-dasharray: 19.5952436386665px;
+    }
+}
+
+@keyframes loading-isg-logo-svg-fill-1 {
+    0% {
+        fill: transparent;
+    }
+
+    20% {
+        fill: rgb(233, 221, 154);
+    }
+
+    80% {
+        fill: rgb(233, 221, 154);
+    }
+
+    100% {
+        fill: transparent;
+    }
+}
+
+.loading-isg-logo-svg-elem-1 {
+    -webkit-animation: loading-isg-logo-svg-stroke-1 4s
+    cubic-bezier(0.47, 0, 0.745, 0.715) 4s both infinite,
+    loading-isg-logo-svg-fill-1 4s ease-in-out 1.4s both;
+    animation: loading-isg-logo-svg-stroke-1 4s
+    cubic-bezier(0.47, 0, 0.745, 0.715) 4s both,
+    loading-isg-logo-svg-fill-1 4s ease-in-out 1.4s both;
+    animation-iteration-count: infinite;
+}
+
+@keyframes loading-isg-logo-svg-stroke-2 {
+    0% {
+        stroke-dashoffset: 17.428675681044833px;
+        stroke-dasharray: 17.428675681044833px;
+    }
+
+    20% {
+        stroke-dashoffset: 0;
+        stroke-dasharray: 17.428675681044833px;
+    }
+
+    80% {
+        stroke-dashoffset: 0;
+        stroke-dasharray: 17.428675681044833px;
+    }
+
+    100% {
+        stroke-dashoffset: 17.428675681044833px;
+        stroke-dasharray: 17.428675681044833px;
+    }
+}
+
+@keyframes loading-isg-logo-svg-fill-2 {
+    0% {
+        fill: transparent;
+    }
+
+    20% {
+        fill: rgb(73, 86, 209);
+    }
+
+    80% {
+        fill: rgb(73, 86, 209);
+    }
+
+    100% {
+        fill: transparent;
+    }
+}
+
+.loading-isg-logo-svg-elem-2 {
+    -webkit-animation: loading-isg-logo-svg-stroke-2 4s
+    cubic-bezier(0.47, 0, 0.745, 0.715) 0.12s both,
+    loading-isg-logo-svg-fill-2 4s ease-out 0.9s both;
+    animation: loading-isg-logo-svg-stroke-2 4s
+    cubic-bezier(0.47, 0, 0.745, 0.715) 0.12s both,
+    loading-isg-logo-svg-fill-2 4s ease-out 0.9s both;
+    animation-iteration-count: infinite;
+}
+
+@keyframes loading-isg-logo-svg-stroke-3 {
+    0% {
+        stroke-dashoffset: 10.797401907847497px;
+        stroke-dasharray: 10.797401907847497px;
+    }
+
+    20% {
+        stroke-dashoffset: 0;
+        stroke-dasharray: 10.797401907847497px;
+    }
+
+    80% {
+        stroke-dashoffset: 0;
+        stroke-dasharray: 10.797401907847497px;
+    }
+
+    100% {
+        stroke-dashoffset: 10.797401907847497px;
+        stroke-dasharray: 10.797401907847497px;
+    }
+}
+
+@keyframes loading-isg-logo-svg-fill-3 {
+    0% {
+        fill: transparent;
+    }
+
+    20% {
+        fill: rgb(170, 79, 239);
+    }
+
+    80% {
+        fill: rgb(170, 79, 239);
+    }
+
+    100% {
+        fill: transparent;
+    }
+}
+
+.loading-isg-logo-svg-elem-3 {
+    -webkit-animation: loading-isg-logo-svg-stroke-3 4s
+    cubic-bezier(0.47, 0, 0.745, 0.715) 0.24s both,
+    loading-isg-logo-svg-fill-3 4s ease-in-out 0s both;
+    animation: loading-isg-logo-svg-stroke-3 4s
+    cubic-bezier(0.47, 0, 0.745, 0.715) 0.24s both,
+    loading-isg-logo-svg-fill-3 4s ease-in-out 0s both;
+    animation-iteration-count: infinite;
+}
+
+@keyframes isg-logo-svg-ring-loading {
+    0% {
+        stroke-dashoffset: 0px;
+        stroke-dasharray: 250px;
+    }
+    15% {
+        stroke-dasharray: 20px;
+    }
+    100% {
+        stroke-dashoffset: -500px;
+        stroke-dasharray: 250px;
+    }
+}
+
+.loading-isg-logo-svg-elem-6 {
+    animation-name: isg-logo-svg-ring-loading, animate-svg-fill-6;
+    animation-duration: 5s, 0s;
+    animation-timing-function: ease-out;
+    animation-delay: 0.6s, 1.3s;
+    animation-direction: normal, normal;
+    animation-fill-mode: both, both;
+    animation-play-state: running, running;
+    animation-iteration-count: infinite;
+}
+
+.isg-logo-ring-stop1 {
+    stop-color: #606060;
+    stop-opacity: 0.526;
+}
+
+.isg-logo-ring-stop2 {
+    stop-color: #606060;
+    stop-opacity: 0;
+}
+
+.dark .isg-logo-ring-stop1 {
+    stop-color: white;
+}
+
+.dark .isg-logo-ring-stop2 {
+    stop-color: white;
+}
+
+#sentry-feedback {
+    --border: 1px solid #d4d4d4;
+    --background: rgb(240, 240, 240);
+    --background-hover: rgb(200, 200, 200);
+    --foreground: #161616;
+    --border-radius: var(--radius);
+    --form-border-radius: var(--radius);
+    --submit-background: rgb(170, 79, 239);
+    --submit-background-hover: rgb(136, 50, 201);
+    --submit-border: rgb(170, 79, 239);
+    --submit-outline-focus: rgb(170, 79, 239);
+    --cancel-background-hover: rgb(200, 200, 200);
+}
+
+.dark #sentry-feedback {
+    --border: 1px solid #2c2c2c;
+    --background: rgb(15, 15, 15);
+    --background-hover: rgb(30, 30, 30);
+    --foreground: #EDEDED;
+    --submit-background: rgb(170, 79, 239);
+    --submit-background-hover: rgb(136, 50, 201);
+    --submit-border: rgb(170, 79, 239);
+    --submit-outline-focus: rgb(170, 79, 239);
+    --cancel-background-hover: rgb(30, 30, 30);
+}
+
+.bg-yellow {
+    background-color: #ffc720;
 }

@@ -26,7 +26,7 @@ function updateAuthLinks() {
     const loginLink = document.getElementById('login-link');
     const logoutLink = document.getElementById('logout-link');
     const userNameSpan = document.getElementById('user-name');
-
+    const tenantIdSpan = document.getElementById('tenant-id');
     if (isLoggedIn) {
         const userClaims = authService.getTokenClaims();
         const userName = userClaims ? `Hi, ${userClaims.name}` : '';
