@@ -1,9 +1,8 @@
 ---
 import Container from "@components/container.astro";
-import Link from "@components/ui/link.astro";
 import Dropdown from "./dropdown.astro";
 import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
-
+import ThemeIcon from '../theme/themeMode.astro';
 const menuitems = [
   {
     title: "Features",
@@ -38,26 +37,6 @@ const menuitems = [
   },
 ];
 
-const handleLogin = async () => {
-  console.log('Login button clicked');
-  try {
-    const loginResponse = await msalInstance.loginPopup(loginRequest);
-    console.log('Login response:', loginResponse);
-    const account = msalInstance.getAllAccounts()[0];
-    if (account) {
-      const tokenResponse = await msalInstance.acquireTokenSilent({
-        ...loginRequest,
-        account,
-      });
-      console.log('Token response:', tokenResponse);
-      setAccessToken(tokenResponse.accessToken);
-      localStorage.setItem('accessToken', tokenResponse.accessToken);
-      window.updateAuthLinks(); // Update navbar links immediately after login
-    }
-  } catch (error) {
-    console.error('Login error:', error);
-  }
-};
 ---
 
 <Container>
@@ -104,46 +83,17 @@ const handleLogin = async () => {
             ))
           }
         </ul>
-        <div class="lg:hidden flex items-center mt-3 gap-4">
-          <Link href="#" style="muted" block size="md">Log in</Link>
-          <Link href="#" size="md" block>Sign up</Link>
-        </div>
       </MenuItems>
     </Astronav>
     <div>
       <div class="hidden lg:flex items-center gap-4">
         <a href="#" id="login-link">Log in</a>
-        <a href="/logout" id="logoff-link" style="display: none;">Log off</a>
-        <Link href="#" size="md">Sign up</Link>
+        <span id="user-name" class="hidden"></span>
+        <a href="#" id="logout-link" style="display: none;">Log out</a>
       </div>
     </div>
   </header>
+  <ThemeIcon />
 </Container>
 
-<script>
-  window.updateAuthLinks = () => {
-    const isLoggedIn = localStorage.getItem('accessToken') !== null;
-    const loginLink = document.querySelector('#login-link');
-    const logoffLink = document.querySelector('#logoff-link');
-
-    if (isLoggedIn) {
-      loginLink.style.display = 'none';
-      logoffLink.style.display = 'block';
-    } else {
-      loginLink.style.display = 'block';
-      logoffLink.style.display = 'none';
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    window.updateAuthLinks(); // Call this function to set the initial state of the links
-
-    const logoffLink = document.querySelector('#logoff-link');
-    logoffLink.addEventListener('click', (e) => {
-      e.preventDefault(); // Prevent the default link behavior
-      localStorage.removeItem('accessToken'); // Remove the token from local storage
-      window.updateAuthLinks(); // Update the UI to reflect the logoff state
-      // Redirect to home page or show a logged out message if needed
-    });
-  });
-</script>
+<script type="module" src="/src/components/navbar/authHandler.js"></script>

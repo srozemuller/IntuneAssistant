@@ -1,5 +1,5 @@
 // src/auth/authService.js
-import { msalInstance } from '../../authconfig.js';
+import { msalInstance, loginRequest} from '../../authconfig.js';
 
 const authService = {
     isInitialized: false,
@@ -22,11 +22,17 @@ const authService = {
             throw error;
         }
     },
-    async login(loginRequest) {
+    async login() {
         if (!this.isInitialized) {
             await this.initialize();
         }
         try {
+            // Check if loginRequest and loginRequest.scopes are defined
+            if (!loginRequest || !loginRequest.scopes) {
+                console.error('loginRequest or loginRequest.scopes is undefined');
+                throw new Error('loginRequest or loginRequest.scopes is undefined');
+            }
+            console.log('Requesting scopes:', loginRequest.scopes); // Debugging: Log requested scopes
             const loginResponse = await msalInstance.loginPopup(loginRequest);
             console.log('Login response:', loginResponse);
             const account = msalInstance.getAllAccounts()[0];
@@ -35,6 +41,7 @@ const authService = {
                     ...loginRequest,
                     account,
                 });
+                console.log('Token response:', tokenResponse); // Adjusted to log the entire token response for debugging
                 localStorage.setItem('accessToken', tokenResponse.accessToken);
                 return tokenResponse.accessToken;
             }
@@ -49,6 +56,9 @@ const authService = {
     },
     isLoggedIn: () => {
         return localStorage.getItem('accessToken') !== null;
+    },
+    getTokenClaims: () => {
+        return msalInstance.getAllAccounts()[0];
     },
     getAccessToken: () => {
         return localStorage.getItem('accessToken');
