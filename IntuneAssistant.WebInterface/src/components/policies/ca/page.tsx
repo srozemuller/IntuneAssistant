@@ -38,6 +38,7 @@ export default function DemoPage() {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             const rawData: string = await authDataMiddleware(CA_POLICIES_ENDPOINT);
+            console.log('Raw data:', rawData);
             const parsedData: Policy[] = JSON.parse(rawData);
             const transformedData = parsedData.map((policy: Policy) => ({
                 ...policy,
@@ -47,8 +48,9 @@ export default function DemoPage() {
             setData(transformedData);
         } catch (error) {
             console.error('Error:', error);
-            setError(`Failed to fetch policies. ${(error as Error).message}`);
-            throw error;
+            const errorMessage = `Failed to fetch policies. ${(error as Error).message}`;
+            setError(errorMessage);
+            throw new Error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -57,9 +59,9 @@ export default function DemoPage() {
     useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
-            loading: `Updating alerting status for`,
-            success: `Alerts "enabled" : "disabled"} for . Reload the page to see the changes.`,
-            error: `Failed to update alerting status for ${error} `,
+            loading: `Searching for conditional access policies...`,
+            success: `Conditional access policies fetched successfully`,
+            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
         });
     }, []);
 

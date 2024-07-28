@@ -24,7 +24,7 @@ const authDataMiddleware = async (endpoint) => {
         const response = await axios.get(endpoint, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
-        return response.data;
+        return JSON.stringify(response.data);
     } catch (error) {
         if (error.response && error.response.headers['www-authenticate']) {
             const authHeader = error.response.headers['www-authenticate'];
