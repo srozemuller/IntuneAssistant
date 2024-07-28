@@ -1,17 +1,42 @@
 ---
-import Container from "@components/container.astro";
-import Cta from "@components/cta.astro";
-import Features from "@components/features.astro";
-import Hero from "@components/hero.astro";
-import Logos from "@components/logos.astro";
-import Layout from "@layouts/Layout.astro";
-import Modules from "@components/modules.astro";
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { buttonVariants } from '@/components/ui/button'
 ---
 
-<Layout title="IntuneAssistant">
-  <Container>
-    <Hero />
-    <Features />
-    <Modules />
-  </Container>
-</Layout>
+<BaseLayout
+  title="Astro Shadcn UI Template"
+  description="This template helps you build apps with Astro, Tailwind CSS, and Shadcn UI."
+>
+  <section class="container grid items-center gap-6 pb-8 pt-6 md:py-10">
+    <div class="flex max-w-[980px] flex-col items-start gap-2">
+      <h1
+        class="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl"
+      >
+        Astro Shadcn UI Template <br class="hidden sm:inline" />
+        built with Radix UI and Tailwind CSS.
+      </h1>
+      <p class="max-w-[700px] text-lg text-muted-foreground">
+        Accessible and customizable components that you can copy and paste into
+        your apps. Free. Open Source.
+      </p>
+    </div>
+    <div class="flex gap-4">
+      <a
+        href="https://ui.shadcn.com"
+        target="_blank"
+        rel="noreferrer"
+        class={buttonVariants()}
+      >
+        Documentation
+      </a>
+      <a
+        href="https://github.com/AREA44/astro-shadcn-ui-template"
+        target="_blank"
+        rel="noreferrer"
+        class={buttonVariants({ variant: 'outline' })}
+      >
+        GitHub
+      </a>
+    </div>
+  </section>
+</BaseLayout>

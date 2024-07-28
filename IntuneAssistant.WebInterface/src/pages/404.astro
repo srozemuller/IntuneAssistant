@@ -1,15 +1,21 @@
 ---
-import Container from "@components/container.astro";
-import Layout from "@layouts/Layout.astro";
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+import { buttonVariants } from '@/components/ui/button'
 ---
 
-<Layout title="404 Not Found">
-  <Container>
-    <div class="min-h-[calc(100vh-16rem)] flex items-center justify-center">
-      <div class="mt-16 text-center">
-        <h1 class="text-4xl lg:text-5xl font-bold lg:tracking-tight">404</h1>
-        <p class="text-lg mt-4 text-slate-600">Page not found.</p>
-      </div>
-    </div>
-  </Container>
-</Layout>
+<BaseLayout
+  title="404 - Not Found"
+  description="404 Error — this page was not found"
+>
+  <div class="mt-32 flex flex-col items-center justify-center px-8">
+    <p class="text-sm text-muted-foreground">404</p>
+    <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+      Page not found
+    </h1>
+    <p class="mb-4 leading-7 [&:not(:first-child)]:mt-6">
+      Sorry, we couldn't find the page you're looking for.
+    </p>
+    <a href="/" rel="noreferrer" class={buttonVariants()}> Go back home</a>
+  </div>
+</BaseLayout>
