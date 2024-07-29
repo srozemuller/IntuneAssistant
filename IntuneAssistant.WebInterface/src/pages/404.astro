@@ -1,10 +1,9 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro'
-
+import MainLayout from "@/layouts/main-layout.astro";
 import { buttonVariants } from '@/components/ui/button'
 ---
 
-<BaseLayout
+<MainLayout
   title="404 - Not Found"
   description="404 Error — this page was not found"
 >
@@ -18,4 +17,4 @@ import { buttonVariants } from '@/components/ui/button'
     </p>
     <a href="/" rel="noreferrer" class={buttonVariants()}> Go back home</a>
   </div>
-</BaseLayout>
+</MainLayout>

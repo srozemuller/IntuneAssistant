@@ -1,5 +1,5 @@
 // src/auth/authService.js
-import { msalInstance, loginRequest} from '../../authconfig.js';
+import { msalInstance, loginRequest} from '@/authconfig';
 import {toast} from "sonner";
 
 const authService = {

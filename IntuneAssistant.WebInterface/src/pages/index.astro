@@ -1,72 +1,37 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro'
-import { buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from "@/components/ui/button";
+import MainLayout from "@/layouts/main-layout.astro";
+import { cn } from "@/lib/utils";
+import Integrations from "@/components/sections/integrations.astro";
 ---
 
-<BaseLayout
-  title="Astro Shadcn UI Template"
-  description="This template helps you build apps with Astro, Tailwind CSS, and Shadcn UI."
->
-  <section class="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-    <div class="flex max-w-[480px] flex-col items-start gap-2">
-      <h1
-        class="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl"
-      >
-        Astro Shadcn UI Template <br class="hidden sm:inline" />
-        built with Radix UI and Tailwind CSS.
-      </h1>
-      <p class="max-w-[480px] text-lg text-muted-foreground">
-        Accessible and customizable components that you can copy and paste into
-        your apps. Free. Open Source.
-      </p>
-    </div>
-    <div class="flex gap-4">
-      <a
-        href="https://ui.shadcn.com"
-        target="_blank"
-        rel="noreferrer"
-        class={buttonVariants()}
-      >
-        Documentation
-      </a>
-      <a
-        href="https://github.com/AREA44/astro-shadcn-ui-template"
-        target="_blank"
-        rel="noreferrer"
-        class={buttonVariants({ variant: 'outline' })}
-      >
-        GitHub
-      </a>
-    </div>
-    <div class="flex max-w-[480px] flex-col items-start gap-2">
-      <h1
-          class="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl"
-      >
-        Astro Shadcn UI Template <br class="hidden sm:inline" />
-        built with Radix UI and Tailwind CSS.
-      </h1>
-      <p class="max-w-[700px] text-lg text-muted-foreground">
-        Accessible and customizable components that you can copy and paste into
-        your apps. Free. Open Source.
-      </p>
-    </div>
-    <div class="flex gap-4">
-      <a
-          href="https://ui.shadcn.com"
-          target="_blank"
-          rel="noreferrer"
-          class={buttonVariants()}
-      >
-        Documentation
-      </a>
-      <a
-          href="https://github.com/AREA44/astro-shadcn-ui-template"
-          target="_blank"
-          rel="noreferrer"
-          class={buttonVariants({ variant: 'outline' })}
-      >
-        GitHub
-      </a>
+<MainLayout title="Landing">
+  <section class="flex items-center justify-center space-y-6 pb-12 pt-16 lg:py-28">
+    <div class="flex flex-col md:flex-row items-center gap-5">
+      <div class="flex flex-col items-center gap-5 text-center">
+        <h1 class="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl !leading-[1.1] text-balance">
+          Revolutionize
+        </h1>
+        <h1 class="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl !leading-[1.1] text-balance">
+          Intune Management
+        </h1>
+        <p class="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 text-balance">
+          Intune Assistant empowers administrators to manage Microsoft Intune with unparalleled efficiency.
+          It simplifies scattered, complex data, providing clear insights and streamlined management processes.
+          Elevate your Intune administration to new heights with cutting-edge visualization and analysis.
+        </p>
+
+        <div class="flex justify-center space-x-2 md:space-x-4">
+          <a href="/discover" class={cn(buttonVariants({size: "lg"}))}>
+            Getting started
+          </a>
+          <a href="/docs" class={cn(buttonVariants({size: "lg", variant: "outline"}))}>
+            Documentation
+          </a>
+        </div>
+      </div>
+      <img src=/../src/assets/landing-page.png alt="Landing Page Image" class="w-full h-auto max-w-[42rem] rounded-lg" />
     </div>
   </section>
-</BaseLayout>
+  <Integrations />
+</MainLayout>
