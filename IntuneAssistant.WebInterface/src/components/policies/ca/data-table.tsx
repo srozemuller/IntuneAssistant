@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import {
     type ColumnDef,
@@ -32,11 +30,15 @@ import { type Task } from "@/components/policies/ca/schema"
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    rawData: string
+    fetchData: () => Promise<void>
 }
 
 export function DataTable<TData, TValue>({
                                              columns,
                                              data,
+                                             rawData,
+                                             fetchData,
                                          }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({})
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -66,7 +68,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar table={table} />
+            <DataTableToolbar table={table} rawData={rawData} fetchData={fetchData} />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

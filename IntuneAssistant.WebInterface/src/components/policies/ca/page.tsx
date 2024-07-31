@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
-import { Toolbar } from '@/components/ui/toolbar';
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { CA_POLICIES_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/ca/columns.tsx";
@@ -34,22 +33,6 @@ export default function DemoPage() {
         }
     };
 
-    const handleExport = () => {
-        navigator.clipboard.writeText(rawData).then(() => {
-            toast.success('Data copied to clipboard');
-        }).catch((err) => {
-            toast.error(`Failed to copy data: ${err.message}`);
-        });
-    };
-
-    const handleRefresh = () => {
-        toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
-        });
-    };
-
     useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
@@ -61,8 +44,7 @@ export default function DemoPage() {
 
     return (
         <div className="container max-w-[95%] py-6">
-            <Toolbar onRefresh={handleRefresh} onExport={handleExport}/>
-            <DataTable columns={columns} data={data}/>
+            <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} />
         </div>
     );
 }

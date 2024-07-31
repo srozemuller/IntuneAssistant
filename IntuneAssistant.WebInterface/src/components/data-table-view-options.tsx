@@ -1,3 +1,4 @@
+// src/components/data-table-view-options.tsx
 "use client"
 
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
@@ -33,14 +34,11 @@ export function DataTableViewOptions<TData>({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[150px]">
-                <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                <DropdownMenuLabel>Select columns</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {table
                     .getAllColumns()
-                    .filter(
-                        (column) =>
-                            typeof column.accessorFn !== "undefined" && column.getCanHide()
-                    )
+                    .filter((column) => column.getCanHide())
                     .map((column) => {
                         return (
                             <DropdownMenuCheckboxItem
