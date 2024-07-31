@@ -1,69 +1,149 @@
-// src/components/policies/ca/columns.tsx
-import { type ColumnDef } from "@tanstack/react-table";
-import { AlertCircle, CheckCircle, XCircle } from "lucide-react";
+"use client"
 
-interface User {
-    displayName: string;
-}
+import { type ColumnDef } from "@tanstack/react-table"
+import { CheckCircle, XCircle, TriangleAlert } from "lucide-react"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Checkbox } from "@/components/ui/checkbox"
 
-interface Policy {
-    id: string;
-    displayName: string;
-    state: string;
-    conditions: {
-        users: {
-            includeUsersReadable: User[];
-            excludeUsersReadable: User[];
-        };
-    };
-    grantControls?: {
-        builtInControls?: string[];
-    };
-    includedUsersReadable?: string;
-    excludedUsersReadable?: string;
-    modifiedDateTime: string;
-    createdDateTime: string;
-}
+import { labels, statuses } from "@/components/policies/ca/fixed-values"
+import { type Task } from "@/components/policies/ca/schema"
+import { DataTableColumnHeader } from "@/components/data-table-column-header"
+import { DataTableRowActions } from "@/components/data-table-row-actions"
 
-export const columns: ColumnDef<Policy>[] = [
+export const columns: ColumnDef<Task>[] = [
     {
-        header: 'Display Name',
-        accessorKey: 'displayName',
-        enableColumnFilter: true,
+        id: "select",
+        header: ({ table }) => (
+            <Checkbox
+                checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                aria-label="Select all"
+                className="translate-y-[2px]"
+            />
+        ),
+        cell: ({ row }) => (
+            <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(value) => row.toggleSelected(!!value)}
+                aria-label="Select row"
+                className="translate-y-[2px]"
+            />
+        ),
+        enableSorting: false,
+        enableHiding: false,
     },
     {
-        header: 'State',
-        accessorKey: 'state',
-        enableColumnFilter: true,
-        cell: ({ getValue }) => {
-            const state = getValue<string>();
-            if (state === 'enabled') {
-                return <CheckCircle className="h-5 w-5 text-green-500" />;
-            } else if (state === 'disabled') {
-                return <XCircle className="h-5 w-5 text-red-500" />;
-            } else {
-                return <AlertCircle className="h-5 w-5 text-yellow-500" />;
-            }
+        accessorKey: "displayName",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Display Name" />
+        ),
+        cell: ({ row }) => <div className="w-[150px]">{row.getValue("displayName")}</div>,
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: "state",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="State" />
+        ),
+        cell: ({ row }) => {
+            const state = row.getValue("state")
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            {state === "enabled" ? (
+                                <CheckCircle className="h-5 w-5 text-green-500" />
+                            ) : state === "enabledForReportingButNotEnforced" ? (
+                                <TriangleAlert className="h-5 w-5 text-yellow-500" />
+                            ) : (
+                                <XCircle className="h-5 w-5 text-red-500" />
+                            )}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{row.getValue("state")}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            )
         },
     },
     {
-        header: 'Included Users',
-        accessorKey: 'includedUsersReadable',
-        enableColumnFilter: true,
+        accessorKey: "conditions.users.includeUsersReadable",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Included Users" />
+        ),
+        cell: ({ row }) => {
+            const includedUsers = row.original.conditions?.users?.includeUsersReadable
+            return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
+        },
+        enableSorting: false,
+        enableHiding: false,
     },
     {
-        header: 'Excluded Users',
-        accessorKey: 'excludedUsersReadable',
-        enableColumnFilter: true,
+        accessorKey: "conditions.users.excludeUsersReadable",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Excluded Users" />
+        ),
+        cell: ({ row }) => {
+            const includedUsers = row.original.conditions?.users?.excludeUsersReadable
+            return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
+        },
+        enableSorting: false,
+        enableHiding: false,
     },
     {
-        header: 'Last Modified',
-        accessorKey: 'modifiedDateTime',
-        enableColumnFilter: true,
+        accessorKey: "conditions.users.includeGroupsReadable",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Included Groups" />
+        ),
+        cell: ({ row }) => {
+            const includedUsers = row.original.conditions?.users?.includeGroupsReadable
+            return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
+        },
+        enableSorting: false,
+        enableHiding: false,
     },
     {
-        header: 'Creation Date',
-        accessorKey: 'createdDateTime',
-        enableColumnFilter: true,
+        accessorKey: "conditions.users.excludeGroupsReadable",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Excluded Groups" />
+        ),
+        cell: ({ row }) => {
+            const includedUsers = row.original.conditions?.users?.excludeGroupsReadable
+            return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
+        },
+        enableSorting: false,
+        enableHiding: false,
     },
-];
+    {
+        accessorKey: "createdDateTime",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Created At" />
+        ),
+        cell: ({ row }) => <div className="w-[100]">{row.getValue("createdDateTime")}</div>,
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: "modifiedDateTime",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Modified At" />
+        ),
+        cell: ({ row }) => <div className="w-[100]">{row.getValue("modifiedDateTime")}</div>,
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        id: "actions",
+        cell: ({ row }) => <DataTableRowActions row={row} />,
+    },
+]

@@ -5,32 +5,11 @@ import authDataMiddleware from "@/components/middleware/fetchData";
 import { CA_POLICIES_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/ca/columns.tsx";
 import { toast } from "sonner";
-
-interface User {
-    displayName: string;
-}
-
-interface Policy {
-    id: string;
-    displayName: string;
-    state: string;
-    conditions: {
-        users: {
-            includeUsersReadable: User[];
-            excludeUsersReadable: User[];
-        };
-    };
-    grantControls?: {
-        builtInControls?: string[];
-    };
-    includedUsersReadable?: string;
-    excludedUsersReadable?: string;
-    modifiedDateTime: string;
-    createdDateTime: string;
-}
+import { z } from "zod";
+import { taskSchema, type Task } from "@/components/policies/ca/schema";
 
 export default function DemoPage() {
-    const [data, setData] = useState<Policy[]>([]);
+    const [data, setData] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
@@ -43,13 +22,8 @@ export default function DemoPage() {
             const rawData: string = await authDataMiddleware(CA_POLICIES_ENDPOINT);
             setRawData(rawData);
             console.log('Raw data:', rawData);
-            const parsedData: Policy[] = JSON.parse(rawData);
-            const transformedData = parsedData.map((policy: Policy) => ({
-                ...policy,
-                includedUsersReadable: policy.conditions.users.includeUsersReadable.map((user: User) => user.displayName).join(', '),
-                excludedUsersReadable: policy.conditions.users.excludeUsersReadable.map((user: User) => user.displayName).join(', '),
-            }));
-            setData(transformedData);
+            const parsedData: Task[] = z.array(taskSchema).parse(JSON.parse(rawData));
+            setData(parsedData);
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = `Failed to fetch policies. ${(error as Error).message}`;
@@ -59,6 +33,7 @@ export default function DemoPage() {
             setLoading(false);
         }
     };
+
     const handleExport = () => {
         navigator.clipboard.writeText(rawData).then(() => {
             toast.success('Data copied to clipboard');
@@ -85,9 +60,9 @@ export default function DemoPage() {
     }, []);
 
     return (
-        <div className="container mx-auto py-10">
-            <Toolbar onRefresh={handleRefresh} onExport={handleExport} />
-            <DataTable columns={columns} data={data} />
+        <div className="container max-w-[95%] py-6">
+            <Toolbar onRefresh={handleRefresh} onExport={handleExport}/>
+            <DataTable columns={columns} data={data}/>
         </div>
     );
 }
