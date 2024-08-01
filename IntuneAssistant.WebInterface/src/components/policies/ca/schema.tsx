@@ -19,6 +19,7 @@ export const conditionSchema = z.object({
 });
 
 export const taskSchema = z.object({
+    id: z.string(),
     displayName: z.string(),
     state: z.string(),
     createdDateTime: z.string(),

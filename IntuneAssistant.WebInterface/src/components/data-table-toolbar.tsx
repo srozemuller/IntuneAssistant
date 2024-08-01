@@ -23,12 +23,14 @@ export function DataTableToolbar<TData>({
     const [exportOption, setExportOption] = useState("")
     const [dropdownVisible, setDropdownVisible] = useState(false)
 
-    const handleExport = () => {
+    const handleExport =  (rawData: string)  => {
         const selectedRows = table.getSelectedRowModel().rows
-        const dataToExport = selectedRows.length > 0
-            ? selectedRows.map(row => row.original)
-            : JSON.parse(rawData)
+        const selectedRowIds = selectedRows.map(row => row.original)
+        const parsedRawData = JSON.parse(rawData)
 
+        const dataToExport = parsedRawData.filter((item: any) => selectedRowIds.includes(item.id))
+
+        console.log('Data to export:', dataToExport)
         const dataString = JSON.stringify(dataToExport, null, 2)
         const dataCount = dataToExport.length
         if (dataCount === 0) {
@@ -104,7 +106,7 @@ export function DataTableToolbar<TData>({
                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => {
                                     setExportOption("backup")
-                                    handleExport()
+                                    handleExport(rawData)
                                     setDropdownVisible(false)
                                 }}
                             >
@@ -114,7 +116,7 @@ export function DataTableToolbar<TData>({
                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => {
                                     setExportOption("idpowertools")
-                                    handleExport()
+                                    handleExport(rawData)
                                     setDropdownVisible(false)
                                 }}
                             >

@@ -1,0 +1,103 @@
+---
+import { Icon } from "astro-icon/components";
+import { Badge } from "@/components/ui/badge";
+import { UserPlus, MonitorCog, Settings, MonitorSmartphone, ShieldCheck, SquareStack } from 'lucide-react';
+---
+
+<section id="features" class="bg-background-200 py-8 md:py-12 lg:py-24">
+  <div class="container space-y-6">
+    <div class="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
+      <h2 class="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+        Intune Assistant helps you with ...
+      </h2>
+      <p class="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 balance-text">
+      The Intune Assistant empowers administrators to managem Microsoft Intune with efficiency.
+        If you miss something, please let me know by creating a <a
+          href="https://github.com/srozemuller/IntuneAssistant/issues/new?assignees=&labels=feature&projects=&template=FEATURE.yml&title=%F0%9F%9A%80+%5BFeature+Request%5D%3A+"
+          target="_blank"
+          class="underline underline-offset-4"
+      >
+        feature request
+      </a> 🚀.
+      </p>
+    </div>
+    <div class="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
+      <div class="relative overflow-hidden rounded-lg border bg-background p-2">
+        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
+          <UserPlus size={48} className="size-12"/>
+          <div class="space-y-2">
+            <h3 class="font-bold">Assignments</h3>
+            <p class="text-sm text-muted-foreground">
+              Assignments overview of all your Microsoft Intune assignments.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative overflow-hidden rounded-lg border bg-background p-2"
+      >
+        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
+          <MonitorCog size={48} className="size-12"/>
+          <div class="space-y-2">
+            <h3 class="font-bold">Configuration policies</h3>
+            <p class="text-sm text-muted-foreground mt-3">
+                Overview of all your Microsoft Intune configuration policies.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative overflow-hidden rounded-lg border bg-background p-2"
+      >
+        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
+            <Settings size={48} className="size-12"/>
+          <div class="space-y-2">
+            <h3 class="font-bold">Settings overview</h3>
+            <p class="text-sm text-muted-foreground">
+              A complete overview of all your Microsoft Intune settings.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="relative overflow-hidden rounded-lg border bg-background p-2">
+        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
+          <MonitorSmartphone size={48} className="size-12"/>
+          <div class="space-y-2">
+            <h3 class="font-bold">Devices</h3>
+            <p class="text-sm text-muted-foreground">
+              Devices overview of all your Microsoft Intune devices.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative overflow-hidden rounded-lg border bg-background p-2"
+      >
+        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
+          <shieldCheck size={48} className="size-12"/>
+          <div class="space-y-2">
+            <h3 class="font-bold">Conditional Access</h3>
+            <p class="text-sm text-muted-foreground">
+              Get a complete overview of all your Conditional Access policies and assignments.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative overflow-hidden rounded-lg border bg-background p-2"
+      >
+        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
+          <squareStack size={48} className="size-12"/>
+          <div class="space-y-2">
+            <h3 class="font-bold">Duplicate Settings
+              <Badge variant="secondary" className="ml-1" style={{ paddingTop: '3px' }}>soon</Badge>
+            </h3>
+            <p class="text-sm text-muted-foreground">
+              Get an overview of all your duplicate settings.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
