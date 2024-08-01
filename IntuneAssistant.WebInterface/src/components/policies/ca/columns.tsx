@@ -10,10 +10,9 @@ import {
 } from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
 
-import { labels, statuses } from "@/components/policies/ca/fixed-values"
 import { type Task } from "@/components/policies/ca/schema"
 import { DataTableColumnHeader } from "@/components/data-table-column-header"
-import { DataTableRowActions } from "@/components/data-table-row-actions"
+import { DataTableRowActions } from "@/components/policies/ca/data-table-row-actions.tsx"
 
 export const columns: ColumnDef<Task>[] = [
     {
@@ -37,8 +36,8 @@ export const columns: ColumnDef<Task>[] = [
                 className="translate-y-[2px]"
             />
         ),
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         accessorKey: "displayName",
@@ -46,8 +45,8 @@ export const columns: ColumnDef<Task>[] = [
             <DataTableColumnHeader column={column} title="Display Name" />
         ),
         cell: ({ row }) => <div className="w-[150px]">{row.getValue("displayName")}</div>,
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         accessorKey: "state",
@@ -85,8 +84,8 @@ export const columns: ColumnDef<Task>[] = [
             const includedUsers = row.original.conditions?.users?.includeUsersReadable
             return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
         },
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         accessorKey: "conditions.users.excludeUsersReadable",
@@ -97,8 +96,8 @@ export const columns: ColumnDef<Task>[] = [
             const includedUsers = row.original.conditions?.users?.excludeUsersReadable
             return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
         },
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         accessorKey: "conditions.users.includeGroupsReadable",
@@ -109,8 +108,8 @@ export const columns: ColumnDef<Task>[] = [
             const includedUsers = row.original.conditions?.users?.includeGroupsReadable
             return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
         },
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         accessorKey: "conditions.users.excludeGroupsReadable",
@@ -121,8 +120,8 @@ export const columns: ColumnDef<Task>[] = [
             const includedUsers = row.original.conditions?.users?.excludeGroupsReadable
             return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
         },
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         accessorKey: "createdDateTime",
@@ -130,8 +129,8 @@ export const columns: ColumnDef<Task>[] = [
             <DataTableColumnHeader column={column} title="Created At" />
         ),
         cell: ({ row }) => <div className="w-[100]">{row.getValue("createdDateTime")}</div>,
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         accessorKey: "modifiedDateTime",
@@ -139,8 +138,8 @@ export const columns: ColumnDef<Task>[] = [
             <DataTableColumnHeader column={column} title="Modified At" />
         ),
         cell: ({ row }) => <div className="w-[100]">{row.getValue("modifiedDateTime")}</div>,
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         id: "actions",

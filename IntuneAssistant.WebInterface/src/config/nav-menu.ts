@@ -45,6 +45,11 @@ export const navMenuConfig: NavMenuConfig = {
       title: "Assistant",
       items: [
         {
+          title: "Assignments Overview",
+          href: "/assignments/overview",
+          description: "Information about all assignments"
+        },
+        {
           title: "Configuration Policies",
           href: "/policies/configuration",
           description: "Configuration Policy overview",
