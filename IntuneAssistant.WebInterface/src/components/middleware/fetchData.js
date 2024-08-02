@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authService from '@/components/auth/msalservice';
 
-const authDataMiddleware = async (endpoint) => {
+const authDataMiddleware =  async (endpoint, method = 'GET', body = {}) => {
     let formattedError = '';
     // Ensure MSAL is initialized
     if (!authService.isInitialized) {
@@ -20,10 +20,27 @@ const authDataMiddleware = async (endpoint) => {
 
     // Fetch data using the access token
     try {
+        let response;
         const accessToken = localStorage.getItem('accessToken');
-        const response = await axios.get(endpoint, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        switch (method) {
+            case 'GET':
+                response = await axios.get(endpoint,{
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                });
+                break;
+            case 'POST':
+                console.log(`POST ${body}`);
+                response = await axios.post(endpoint, body, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json"
+                    },
+                });
+                break;
+            // Add more cases for other HTTP methods as needed
+            default:
+                throw new Error(`Unsupported method: ${method}`);
+        }
         return JSON.stringify(response.data);
     } catch (error) {
         if (error.response && error.response.headers['www-authenticate']) {

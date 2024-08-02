@@ -55,6 +55,11 @@ export const navMenuConfig: NavMenuConfig = {
           description: "Configuration Policy overview",
         },
         {
+          title: "Configuration Settings",
+          href: "/policies/configuration/settings",
+          description: "Configuration Settings overview",
+        },
+        {
           title: "Conditional Access Policies",
           href: "/policies/ca",
           description: "Information about Conditional Access Policies"

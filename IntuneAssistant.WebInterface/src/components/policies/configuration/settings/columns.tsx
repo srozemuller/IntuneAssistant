@@ -1,21 +1,12 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { CheckCircle, XCircle, TriangleAlert } from "lucide-react"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
-
-import { labels, statuses } from "@/components/policies/ca/fixed-values"
-import { type Policy } from "@/components/policies/configuration/schema"
+import { type PolicySettings } from "@/components/policies/configuration/settings/schema"
 import { DataTableColumnHeader } from "@/components/data-table-column-header"
-import { DataTableRowActions } from "@/components/policies/configuration/data-table-row-actions.tsx"
 
-export const columns: ColumnDef<Policy>[] = [
+
+export const columns: ColumnDef<PolicySettings>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -41,64 +32,44 @@ export const columns: ColumnDef<Policy>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "name",
+        accessorKey: "policyName",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Name" />
+            <DataTableColumnHeader column={column} title="Policy Name" />
         ),
-        cell: ({ row }) => <div>{row.getValue("name")}</div>,
+        cell: ({ row }) => <div>{row.getValue("policyName")}</div>,
     },
     {
-        accessorKey: "description",
+        accessorKey: "settingName",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Description" />
+            <DataTableColumnHeader column={column} title="Setting Name" />
         ),
-        cell: ({ row }) => <div>{row.getValue("description")}</div>,
+        cell: ({ row }) => <div>{row.getValue("settingName")}</div>,
     },
     {
-        accessorKey: "settingCount",
+        accessorKey: "settingValue",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Setting Count" />
+            <DataTableColumnHeader column={column} title="Setting Value" />
         ),
-        cell: ({ row }) => <div>{row.getValue("settingCount")}</div>,
+        cell: ({ row }) => <div>{row.getValue("settingValue")}</div>,
     },
     {
-        accessorKey: "isAssigned",
+        accessorKey: "childSettingInfo",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Is Assigned" />
+            <DataTableColumnHeader column={column} title="Child Settings" />
         ),
         cell: ({ row }) => {
-            const state = row.getValue("isAssigned")
-            const isAssigned = row.original.assignments.length > 0
+            const childSettings = row.getValue("childSettingInfo") as Array<{ name: string, value: string }>;
             return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger>
-                            {isAssigned ? (
-                                <CheckCircle className="h-5 w-5 text-green-500" />
-                            ) : (
-                                <TriangleAlert className="h-5 w-5 text-yellow-500" />
-                            )}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{isAssigned}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            )
+                <ul className="list-none pl-0">
+                    {childSettings.map((setting, index) => (
+                        <li key={index}>
+                            <strong>- {setting.name}:</strong> {setting.value}
+                        </li>
+                    ))}
+                </ul>
+            );
         },
-    },
-    {
-        accessorKey: "createdDateTime",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Created Date Time" />
-        ),
-        cell: ({ row }) => <div>{row.getValue("createdDateTime")}</div>,
-    },
-    {
-        accessorKey: "lastModifiedDateTime",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Last Modified Date Time" />
-        ),
-        cell: ({ row }) => <div>{row.getValue("lastModifiedDateTime")}</div>,
-    },
+        enableGlobalFilter: true,
+        enableColumnFilter: true
+    }
 ];

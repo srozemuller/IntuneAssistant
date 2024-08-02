@@ -24,8 +24,8 @@ import {
 } from "@/components/ui/table"
 
 import { DataTablePagination } from "@/components/ui/pagination"
-import { DataTableToolbar } from "@/components/policies/configuration/data-table-toolbar.tsx"
-import { type Task } from "@/components/policies/ca/schema"
+import { DataTableToolbar } from "@/components/policies/configuration/settings/data-table-toolbar.tsx"
+
 
 interface DataTableProps<TData, TValue> {
     source: string

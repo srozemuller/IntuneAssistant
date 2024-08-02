@@ -55,6 +55,7 @@
     "@types/file-saver": "^2.0.7",
     "@types/json2csv": "^5.0.7",
     "@types/node": "^20.14.11",
+    "@types/papaparse": "^5.3.14",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "prettier": "^3.3.3",
