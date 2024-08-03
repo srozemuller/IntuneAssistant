@@ -1,4 +1,4 @@
-import authService from './msalservice.js';
+import authService from '../../components/auth/msalservice.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     await authService.initialize(); // Ensure authService is initialized

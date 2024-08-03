@@ -3,8 +3,6 @@ import { buttonVariants } from "@/components/ui/button";
 import MainLayout from "@/layouts/main-layout.astro";
 import { cn } from "@/lib/utils";
 import Integrations from "@/components/sections/integrations.astro";
-import landingImage from "@/images/landing-page.png";
-import { Image } from 'astro:assets';
 ---
 
 <MainLayout title="Landing">
@@ -32,7 +30,7 @@ import { Image } from 'astro:assets';
           </a>
         </div>
       </div>
-      <Image src={landingImage} alt="Logistics" class="w-full h-auto max-w-[42rem] rounded-lg" />
+      <img src=/../src/assets/landing-page.png alt="Landing Page Image" class="w-full h-auto max-w-[42rem] rounded-lg" />
     </div>
   </section>
   <Integrations />

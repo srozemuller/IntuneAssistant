@@ -54,6 +54,7 @@ const {
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
+
 <!-- Dark mode with prevent flickering flash between navigations -->
 <script is:inline>
 const setDarkMode = () => {
@@ -81,5 +82,5 @@ const setDarkMode = () => {
 setDarkMode();
 document.addEventListener("astro:after-swap", setDarkMode);
 </script>
-<script type="module" src="/scripts/authHandler.js"></script>
+
 <ViewTransitions />
