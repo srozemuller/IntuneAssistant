@@ -1,7 +1,0 @@
-[build]
-command = "pnpm install --no-frozen-lockfile && pnpm run build"
-publish = "dist/"
-
-[[edge_functions]]
-path = "/"
-function = "geolocation"
