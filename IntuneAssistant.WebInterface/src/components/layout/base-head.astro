@@ -5,17 +5,17 @@ import authService from '@/components/auth/msalservice.js';
 import { ViewTransitions } from "astro:transitions";
 
 interface Props {
-  title: string;
-  description?: string;
-  image?: string;
+    title: string;
+    description?: string;
+    image?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const {
-  title,
-  description = siteConfig.description,
-  image = "",
+    title,
+    description = siteConfig.description,
+    image = "",
 } = Astro.props;
 ---
 
@@ -27,11 +27,11 @@ const {
 
 <!-- Font preloads -->
 <link
-  rel="preload"
-  href="/fonts/Comfortaa-Regular.ttf"
-  as="font"
-  type="font/ttf"
-  crossorigin
+        rel="preload"
+        href="/fonts/Comfortaa-Regular.ttf"
+        as="font"
+        type="font/ttf"
+        crossorigin
 />
 
 <!-- Canonical URL -->
@@ -39,92 +39,95 @@ const {
 
 <!-- Primary Meta Tags -->
 <title>{title ? `${title} | The modern Intune management tool` : "Intune Assistant"}</title>
-<meta name="title" content={title ? `${title} | Fusion` : "Fusion"} />
-<meta name="description" content={description} />
+    <meta name="title" content={title ? `${title} | Fusion` : "Fusion"} />
+    <meta name="description" content={description} />
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
-<meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.url)} />
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.url)} />
 
-<!-- Dark mode with prevent flickering flash between navigations -->
-<script is:inline>
-const setDarkMode = () => {
-  const theme = (() => {
-    if (
-      typeof localStorage !== "undefined" &&
-      localStorage.getItem("theme")
-    ) {
-      return localStorage.getItem("theme");
-    }
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    }
-    return "light";
-  })();
+    <!-- Dark mode with prevent flickering flash between navigations -->
+    <script is:inline>
+        const setDarkMode = () => {
+            const theme = (() => {
+                if (
+                    typeof localStorage !== "undefined" &&
+                    localStorage.getItem("theme")
+                ) {
+                    return localStorage.getItem("theme");
+                }
+                if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                    return "dark";
+                }
+                return "light";
+            })();
 
-  if (theme === "light") {
-    document.documentElement.classList.remove("dark");
-  } else {
-    document.documentElement.classList.add("dark");
-  }
-  window.localStorage.setItem("theme", theme);
-};
+            if (theme === "light") {
+                document.documentElement.classList.remove("dark");
+            } else {
+                document.documentElement.classList.add("dark");
+            }
+            window.localStorage.setItem("theme", theme);
+        };
 
-setDarkMode();
-document.addEventListener("astro:after-swap", setDarkMode);
-</script>
-<script is:inline>
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        await authService.initialize(); // Ensure authService is initialized
-        updateAuthLinks();
-
-        document.getElementById('login-link').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                await authService.login();
+        setDarkMode();
+        document.addEventListener("astro:after-swap", setDarkMode);
+        </script>
+    <script is:inline>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (authService) {
+                await authService.initialize(); // Ensure authService is initialized
                 updateAuthLinks();
-            } catch (error) {
-                console.error('Login error:', error);
+
+                document.getElementById('login-link').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try {
+                        await authService.login();
+                        updateAuthLinks();
+                    } catch (error) {
+                        console.error('Login error:', error);
+                    }
+                });
+
+                document.getElementById('logout-link').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    authService.logout();
+                    updateAuthLinks();
+                });
+            } else {
+                console.error('authService is not defined');
             }
         });
 
-        document.getElementById('logout-link').addEventListener('click', (e) => {
-            e.preventDefault();
-            authService.logout();
-            updateAuthLinks();
-        });
-    });
+        function updateAuthLinks() {
+            const isLoggedIn = authService.isLoggedIn();
+            const loginLink = document.getElementById('login-link');
+            const logoutLink = document.getElementById('logout-link');
+            const userNameSpan = document.getElementById('user-name');
+            const tenantIdSpan = document.getElementById('tenant-id');
+            if (isLoggedIn) {
+                const userClaims = authService.getTokenClaims();
+                const userName = userClaims ? `Hi, ${userClaims.name}` : '';
+                userNameSpan.textContent = userName; // Set the user's name
+                userNameSpan.style.display = 'inline-block'; // Make the user's name visible
 
-    function updateAuthLinks() {
-        const isLoggedIn = authService.isLoggedIn();
-        const loginLink = document.getElementById('login-link');
-        const logoutLink = document.getElementById('logout-link');
-        const userNameSpan = document.getElementById('user-name');
-        const tenantIdSpan = document.getElementById('tenant-id');
-        if (isLoggedIn) {
-            const userClaims = authService.getTokenClaims();
-            const userName = userClaims ? `Hi, ${userClaims.name}` : '';
-            userNameSpan.textContent = userName; // Set the user's name
-            userNameSpan.style.display = 'inline-block'; // Make the user's name visible
-
-            loginLink.style.display = 'none';
-            logoutLink.style.display = 'block';
-        } else {
-            userNameSpan.style.display = 'none'; // Hide the user's name when logged out
-            loginLink.style.display = 'block';
-            logoutLink.style.display = 'none';
+                loginLink.style.display = 'none';
+                logoutLink.style.display = 'block';
+            } else {
+                userNameSpan.style.display = 'none'; // Hide the user's name when logged out
+                loginLink.style.display = 'block';
+                logoutLink.style.display = 'none';
+            }
         }
-    }
-</script>
-<ViewTransitions />
+        </script>
+    <ViewTransitions />
