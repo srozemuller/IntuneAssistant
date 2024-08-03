@@ -6,11 +6,11 @@ import icon from 'astro-icon';
 // https://astro.build/config
 export default defineConfig({
   site: process.env.CI
-    ? 'https://astro-shadcn-ui-template.vercel.app'
-    : 'http://localhost:4321',
+      ? 'https://astro-shadcn-ui-template.vercel.app'
+      : 'http://localhost:4321',
   integrations: [
     react(),
-      icon(),
+    icon(),
     tailwind({
       applyBaseStyles: false,
     }),
