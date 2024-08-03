@@ -4,7 +4,9 @@
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@/images/*": ["public/images/*"],
+      "@/scripts/*": ["public/scripts/*"],
     },
     "jsx": "react-jsx",
     "jsxImportSource": "react"

@@ -98,3 +98,13 @@ export type InfoLdg = {
   description: string;
   list: InfoList[];
 };
+
+export type Environment = {
+  environment: string;
+  displayName: string;
+  url: string;
+};
+
+export type BlueshiftM365ConsentCardProps = {
+  environments: Environment[];
+};

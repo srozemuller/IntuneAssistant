@@ -1,0 +1,54 @@
+---
+import MainLayout from "@/layouts/main-layout.astro";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+---
+
+<MainLayout title="Onboarded" hideFooter>
+  <div class="flex items-center justify-center h-[calc(100vh-25vh)]">
+    <Card className="w-[400px]">
+      <CardHeader>
+        <CardTitle>Welcome to our universe 🪐</CardTitle>
+        <CardDescription>Congratulations</CardDescription>
+      </CardHeader>
+      <CardContent>
+        You have successfully activated a relationship.
+        This move brings us a step closer to achieving operational excellence.
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        — Fusion Dev Team
+      </CardFooter>
+    </Card>
+  </div>
+</MainLayout>
+
+<script>
+  import confetti from 'canvas-confetti';
+
+  const duration = 15 * 1000;
+  const end = Date.now() + duration;
+  const minWaitMs = 500;
+  const maxWaitMs = 1000;
+
+  (function frame() {
+    confetti({
+      particleCount: 100,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: Math.random(),
+        y: Math.random() - 0.2
+      }
+    });
+
+    if (Date.now() < end) {
+      setTimeout(() => requestAnimationFrame(frame), Math.floor(Math.random() * (maxWaitMs - minWaitMs + 1) + minWaitMs));
+    }
+  }());
+</script>
