@@ -5,6 +5,7 @@ import TailwindIndicator from "@/components/tailwind-indicator.astro";
 import { Toaster } from "../../node_modules/sonner";
 import { cn } from "@/lib/utils";
 // NOTE: work with { Toaster } from "@/components/ui/sonner" but need to update dark theme
+import MsalComponent from "../components/auth/msal";
 
 
 type Props = {
@@ -24,6 +25,7 @@ const { title, description, bodyClass } = Astro.props;
   </head>
   <body class={cn("flex flex-col min-h-screen", bodyClass)}>
     <slot />
+    <MsalComponent client:only="react" />
     <TailwindIndicator />
     <Toaster richColors client:only="react" />
   </body>
