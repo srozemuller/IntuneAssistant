@@ -1,39 +1,40 @@
 import axios from 'axios';
-import authService from '@/auth/msalservice';
+import { msalInstance } from '@/components/auth';
 
-const authDataMiddleware =  async (endpoint, method = 'GET', body = {}) => {
+const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     let formattedError = '';
+
     // Ensure MSAL is initialized
-    if (!authService.isInitialized) {
-        await authService.initialize();
+    await msalInstance.initialize();
+
+    // Fetch access token
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length === 0) {
+        throw new Error('No accounts found. Please log in.');
     }
 
-    authService.getAccessToken()
-        .then(accessToken => {
-            // Use the access token here
-            console.log('Access Token:', accessToken);
-        })
-        .catch(error => {
-            // Handle any errors here
-            console.error('Error fetching access token:', error);
-        });
+    const account = accounts[0];
+    const tokenResponse = await msalInstance.acquireTokenSilent({
+        scopes: ['api://b0533a36-0d90-4634-9f08-99a50b78b477/access_as_user'],
+        account,
+    });
+
+    const accessToken = tokenResponse.accessToken;
 
     // Fetch data using the access token
     try {
         let response;
-        const accessToken = localStorage.getItem('accessToken');
         switch (method) {
             case 'GET':
-                response = await axios.get(endpoint,{
+                response = await axios.get(endpoint, {
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
                 break;
             case 'POST':
-                console.log(`POST ${body}`);
                 response = await axios.post(endpoint, body, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json"
+                        'Content-Type': 'application/json',
                     },
                 });
                 break;
@@ -52,8 +53,7 @@ const authDataMiddleware =  async (endpoint, method = 'GET', body = {}) => {
                 formattedError = 'An error occurred. Please try again.';
             }
         } else {
-            console.log('Error:', error.response.statusText);
-            formattedError = `${ error.response.statusText }, ${ error.response.status } `;
+            formattedError = `${error.response.statusText}, ${error.response.status}`;
         }
         throw new Error(formattedError);
     }

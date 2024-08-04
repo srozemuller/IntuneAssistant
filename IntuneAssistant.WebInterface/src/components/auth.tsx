@@ -14,7 +14,7 @@ const msalConfig: Configuration = {
     },
 };
 
-const msalInstance = new PublicClientApplication(msalConfig);
+export const msalInstance = new PublicClientApplication(msalConfig);
 
 const loginRequest = {
     scopes: ['api://b0533a36-0d90-4634-9f08-99a50b78b477/access_as_user'],
