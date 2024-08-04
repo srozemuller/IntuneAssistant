@@ -1,4 +1,4 @@
-import { msalInstance, loginRequest } from '@/authconfig';
+import { msalInstance, loginRequest } from 'src/authconfig';
 import { toast } from "sonner";
 
 const authService = {

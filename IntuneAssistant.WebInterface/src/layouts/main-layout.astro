@@ -7,6 +7,7 @@ import BaseLayout from "./base-layout.astro";
 import { SheetMobileNav } from "@/components/layout/sheet-mobile-nav";
 import { navMenuConfig } from "@/config/nav-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
+import AuthButton from "@/components/auth"
 import { siteConfig } from "@/config/site";
 import { Icon } from "astro-icon/components";
 
@@ -34,9 +35,7 @@ const { title, description, mainClass, hideFooter } = Astro.props;
     />
 
     <div class="flex items-center gap-x-4" slot="right-header">
-      <a href="#" id="login-link">Log in</a>
-      <span id="user-name" class="hidden"></span>
-      <a href="#" id="logout-link" style="display: none;">Log out</a>
+      <AuthButton client:load />
       <a
         href={siteConfig.links.github}
         target="_blank"

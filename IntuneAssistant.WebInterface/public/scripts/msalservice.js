@@ -1,5 +1,5 @@
 import { msalInstance, loginRequest } from './authconfig.js';
-import { toast } from "../../node_modules/sonner";
+import { toast } from "sonner";
 
 const authService = {
     isInitialized: false,

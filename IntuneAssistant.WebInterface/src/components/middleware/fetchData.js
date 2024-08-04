@@ -1,5 +1,5 @@
 import axios from 'axios';
-import authService from '@/components/auth/msalservice';
+import authService from '@/auth/msalservice';
 
 const authDataMiddleware =  async (endpoint, method = 'GET', body = {}) => {
     let formattedError = '';
