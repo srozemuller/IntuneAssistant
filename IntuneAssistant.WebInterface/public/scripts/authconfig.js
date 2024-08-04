@@ -1,4 +1,4 @@
-import * as msal from '../node_modules/@azure/msal-browser';
+import * as msal from '../../node_modules/@azure/msal-browser';
 const msalConfig = {
     auth: {
         clientId: '131386a4-d462-4270-ac50-7ebc4685da14',
