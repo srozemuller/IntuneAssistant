@@ -1,114 +1,62 @@
-import { useMounted } from "@/hooks/use-mounted";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import * as React from "react"
+import { Moon, Sun } from "lucide-react"
 
-const SunIcon = () => (
-  <motion.svg
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    initial={{ scale: 0.5, opacity: 0, rotate: 90 }}
-    animate={{
-      scale: 1,
-      opacity: 1,
-      rotate: 0,
-      transition: { duration: 0.2, type: "spring", stiffness: 100 },
-    }}
-    exit={{
-      scale: 0.5,
-      opacity: 0,
-      rotate: 90,
-      transition: { duration: 0.2 },
-    }}
-  >
-    <circle cx="12" cy="12" r="5"></circle>
-    <line x1="12" y1="1" x2="12" y2="3"></line>
-    <line x1="12" y1="21" x2="12" y2="23"></line>
-    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-    <line x1="1" y1="12" x2="3" y2="12"></line>
-    <line x1="21" y1="12" x2="23" y2="12"></line>
-    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-  </motion.svg>
-);
-
-const MoonIcon = () => (
-  <motion.svg
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    initial={{ scale: 0.5, opacity: 0, rotate: 90 }}
-    animate={{
-      scale: 1,
-      opacity: 1,
-      rotate: 0,
-      transition: { duration: 0.2, type: "spring", stiffness: 100 },
-    }}
-    exit={{
-      scale: 0.5,
-      opacity: 0,
-      rotate: 90,
-      transition: { duration: 0.2 },
-    }}
-  >
-    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-  </motion.svg>
-);
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState(() => {
-    if (import.meta.env.SSR) {
-      return undefined;
-    }
-    if (localStorage?.getItem("theme")) {
-      return localStorage.getItem("theme");
-    }
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    }
-    return "light";
-  });
+  const [theme, setThemeState] = React.useState<"theme-light" | "dark" | "system">("theme-light")
 
-  const toggleTheme = () => {
-    const t = theme === "light" ? "dark" : "light";
-    localStorage.setItem("theme", t);
-    setTheme(t);
+  const getThemePreference = () => {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme');
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   };
 
-  const mounted = useMounted();
+  React.useEffect(() => {
+    const isDarkMode = document.documentElement.classList.contains("dark")
+    const isDark = getThemePreference() === 'dark';
+    setThemeState(isDark ? "dark" : "theme-light")
+  }, [])
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "light") {
-      root.classList.remove("dark");
-    } else {
-      root.classList.add("dark");
+  React.useEffect(() => {
+    const isDark =
+        theme === "dark" ||
+        (theme === "system" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches)
+    document.documentElement.classList[isDark ? "add" : "remove"]("dark")
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light")
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
     }
-  }, [theme]);
+  }, [theme])
 
-  return mounted ? (
-    <button
-      role="button"
-      onClick={toggleTheme}
-      className="min-h-[40px] block focus:outline-none"
-    >
-      <span className="sr-only">Toggle mode</span>
-      <AnimatePresence initial={false}>
-        {theme !== "dark" ? <SunIcon /> : <MoonIcon />}
-      </AnimatePresence>
-    </button>
-  ) : (
-    <div />
-  );
+  return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="icon">
+            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setThemeState("theme-light")}>
+            Light
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setThemeState("dark")}>
+            Dark
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setThemeState("system")}>
+            System
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+  )
 }

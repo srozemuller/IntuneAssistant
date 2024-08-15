@@ -34,7 +34,7 @@ export const navMenuConfig: NavMenuConfig = {
         },
         {
           title: "Intune Assistant CLI",
-          href: "/docs/cli",
+          href: "/docs/cli/getting-started",
           description: "Information about the Intune Assistant CLI"
         }
       ],
