@@ -7,8 +7,8 @@ export const navMenuConfig: NavMenuConfig = {
       items: [
         {
           title: "About Intune Assistant",
-          href: "/docs/intune-assistant",
-          description: "A landing page for all Intune Assistant documentation",
+          href: "/about",
+          description: "All info about Intune Assistant",
         },
       ]
     }
