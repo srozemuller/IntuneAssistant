@@ -4,6 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import icon from 'astro-icon';
 import starlight from '@astrojs/starlight';
 
+
 // https://astro.build/config
 export default defineConfig({
   site: process.env.CI ? 'https://astro-shadcn-ui-template.vercel.app' : 'http://localhost:4321',
@@ -19,11 +20,8 @@ export default defineConfig({
         github: 'https://github.com/srozemuller/intuneAssistant',
       },
       customCss: [
-        "./src/styles/globals.css",
-        "./src/styles/fonts.css",
-        "./src/styles/starlight-overrides.css",
-        "./src/styles/starlight-extensions.css",
-        "./src/styles/starlight-expressive-code.css",
+        './src/styles/globals.css',
+        './src/styles/starlight-overrides.css',
       ],
       logo: {
         src: "./public/favicon.svg",
@@ -68,7 +66,24 @@ export default defineConfig({
           ],
         },
       ],
+      head: [
+        {
+          tag: 'script',
+          content: `
+            (function() {
+                const getThemePreference = () => {
+                    if (typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme')) {
+                        return localStorage.getItem('starlight-theme');
+                    }
+                    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                };
+                const isDark = getThemePreference() === 'dark';
+                document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            })();
+          `,
+        },
+      ],
     }),
   ],
-
 });

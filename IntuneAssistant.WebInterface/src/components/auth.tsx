@@ -6,7 +6,7 @@ const msalConfig: Configuration = {
     auth: {
         clientId: '131386a4-d462-4270-ac50-7ebc4685da14',
         authority: 'https://login.microsoftonline.com/organizations',
-        redirectUri: typeof window !== 'undefined' ? window.location.origin : '',
+        redirectUri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4321/authentication/login-callback',
     },
     cache: {
         cacheLocation: 'sessionStorage',

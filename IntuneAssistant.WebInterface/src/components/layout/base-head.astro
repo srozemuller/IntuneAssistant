@@ -54,24 +54,32 @@ const {
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={new URL(image, Astro.url)} />
-
-
     <script is:inline>
-        const getThemePreference = () => {
-            if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-                return localStorage.getItem('theme');
-            }
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        };
-        const isDark = getThemePreference() === 'dark';
-        document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+        (function() {
+            const getThemePreference = () => {
+                if (typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme')) {
+                    return localStorage.getItem('starlight-theme');
+                }
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
+            const isDark = getThemePreference() === 'dark';
+            document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        })();
+        </script>
+    <script is:inline>
+        (function() {
+            // Function to log all localStorage key-value pairs
+            const logLocalStorage = () => {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    console.log(`${key}: ${value}`);
+                }
+            };
 
-        if (typeof localStorage !== 'undefined') {
-            const observer = new MutationObserver(() => {
-                const isDark = document.documentElement.classList.contains('dark');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            });
-            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-        }
+            // Call the function to log localStorage values
+            logLocalStorage();
+        })();
         </script>
     <ViewTransitions />

@@ -13,29 +13,37 @@ export function ThemeToggle() {
   const [theme, setThemeState] = React.useState<"theme-light" | "dark" | "system">("theme-light")
 
   const getThemePreference = () => {
-    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-      return localStorage.getItem('theme');
+    if (typeof localStorage !== 'undefined') {
+      const storedTheme = localStorage.getItem('theme') || localStorage.getItem('starlight-theme');
+      if (storedTheme) {
+        return storedTheme;
+      }
     }
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   };
 
-  React.useEffect(() => {
-    const isDarkMode = document.documentElement.classList.contains("dark")
-    const isDark = getThemePreference() === 'dark';
-    setThemeState(isDark ? "dark" : "theme-light")
-  }, [])
+  const updateThemeState = (newTheme: "theme-light" | "dark" | "system") => {
+    setThemeState(newTheme);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('theme', newTheme);
+      localStorage.setItem('starlight-theme', newTheme);
+    }
+  };
 
   React.useEffect(() => {
-    const isDark =
-        theme === "dark" ||
-        (theme === "system" &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches)
-    document.documentElement.classList[isDark ? "add" : "remove"]("dark")
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light")
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
-  }, [theme])
+    const isDark = getThemePreference() === 'dark';
+    setThemeState(isDark ? "dark" : "theme-light");
+
+    const updateDocumentTheme = () => {
+      const isDark =
+          theme === "dark" ||
+          (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.classList[isDark ? "add" : "remove"]("dark");
+      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    };
+
+    updateDocumentTheme();
+  }, [theme]);
 
   return (
       <DropdownMenu>
@@ -47,13 +55,13 @@ export function ThemeToggle() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setThemeState("theme-light")}>
+          <DropdownMenuItem onClick={() => updateThemeState("theme-light")}>
             Light
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setThemeState("dark")}>
+          <DropdownMenuItem onClick={() => updateThemeState("dark")}>
             Dark
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setThemeState("system")}>
+          <DropdownMenuItem onClick={() => updateThemeState("system")}>
             System
           </DropdownMenuItem>
         </DropdownMenuContent>

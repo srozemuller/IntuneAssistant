@@ -1,0 +1,60 @@
+---
+import MainLayout from "@/layouts/main-layout.astro";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+const gifImage = "/images/giphy.gif";
+---
+
+<MainLayout title="Onboarded" hideFooter>
+  <div class="flex items-center justify-center h-[calc(100vh-25vh)]">
+    <Card className="w-[400px] ">
+      <CardHeader>
+        <CardTitle class="text-center">
+          Congratulations
+        </CardTitle>
+        <CardDescription>You have made it!</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div class="flex justify-center">
+          <img src={gifImage} alt="Celebration GIF" />
+        </div>
+        <hr class="border-t border-white my-4" />
+        You have successfully activated Intune Assistant and ready for launch 🚀.
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        — Enjoy!
+      </CardFooter>
+    </Card>
+  </div>
+</MainLayout>
+
+<script>
+  import confetti from 'canvas-confetti';
+
+  const duration = 15 * 1000;
+  const end = Date.now() + duration;
+  const minWaitMs = 500;
+  const maxWaitMs = 1000;
+
+  (function frame() {
+    confetti({
+      particleCount: 100,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: Math.random(),
+        y: Math.random() - 0.2
+      }
+    });
+
+    if (Date.now() < end) {
+      setTimeout(() => requestAnimationFrame(frame), Math.floor(Math.random() * (maxWaitMs - minWaitMs + 1) + minWaitMs));
+    }
+  }());
+</script>

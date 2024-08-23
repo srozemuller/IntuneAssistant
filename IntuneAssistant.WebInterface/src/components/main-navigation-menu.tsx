@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { Icons } from "@/icons";
+import { Rocket } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -34,7 +34,7 @@ export function MainNavigationMenu() {
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                     href="/onboarding"
                   >
-                    <Icons.Logo className="h-6 w-6" />
+                    <Rocket className="h-6 w-6" />
                     <div className="mb-2 mt-4 text-lg font-medium">
                       Onboarding
                     </div>

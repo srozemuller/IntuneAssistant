@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss'
 import { fontFamily } from 'tailwindcss/defaultTheme'
+import starlightPlugin from '@astrojs/starlight-tailwind';
 
 const config = {
   darkMode: ['class'],
@@ -14,6 +15,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Inter", ...fontFamily.sans],
+        heading: ["CalSans Semibold", ...fontFamily.sans],
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -54,9 +59,6 @@ const config = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
-      fontFamily: {
-        sans: ['Inter', ...fontFamily.sans],
-      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
@@ -73,7 +75,11 @@ const config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+      require('tailwindcss-animate'),
+      require('@tailwindcss/typography'),
+      starlightPlugin
+  ],
 } satisfies Config
 
 export default config

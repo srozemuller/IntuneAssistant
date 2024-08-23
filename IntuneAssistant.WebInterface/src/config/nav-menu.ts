@@ -6,20 +6,10 @@ export const navMenuConfig: NavMenuConfig = {
       title: "Getting started",
       items: [
         {
-          title: "Onboarding",
-          href: "/onboarding",
-          description: "Onboard customers onto the Fusion platform."
+          title: "About Intune Assistant",
+          href: "/docs/intune-assistant",
+          description: "A landing page for all Intune Assistant documentation",
         },
-        {
-          title: "Intune Configuration",
-          href: "/intune-config",
-          description: "Show Intune configuration overview"
-        },
-        {
-          title: "Security Configuration",
-          href: "/security-config",
-          description: "Show Security configuration overview"
-        }
       ]
     }
   ],
@@ -28,9 +18,9 @@ export const navMenuConfig: NavMenuConfig = {
       title: "Documentation",
       items: [
         {
-          title: "About Intune Assistant",
-          href: "/docs/intune-assistant",
-          description: "A landing page for all Intune Assistant documentation",
+          title: "Intune Assistant Web",
+          href: "/docs/web/getting-started",
+          description: "Information about the Intune Assistant Web",
         },
         {
           title: "Intune Assistant CLI",
