@@ -48,18 +48,18 @@ export default function ConsentCard({
 
     const fetchUrlAndRedirect = async () => {
         setIsLoading(true);
-
-
+        const state = Math.random().toString(36).substring(2); // Generate a random state
+        console.log(state);
         const apiUrl = `${environments
             .filter((env) => env.environment === selectedEnvironment)
-            .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/status/onboarded`;
+            .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/status/onboarded&state=${state}`;
 
         try {
             const response = await fetch(apiUrl, { method: 'GET' });
             const data = await response.json();
             const consentUrl = data.url;
             console.info(consentUrl);
-            window.location.href = consentUrl;
+            window.open(consentUrl, "_blank", "noreferrer");
         } catch (error) {
             toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please contact support.</a></div>);
             console.error(error);
@@ -93,7 +93,7 @@ export default function ConsentCard({
                     <div className="grid w-full items-center gap-4">
                         <div className="flex flex-col space-y-1.5">
                             <Label htmlFor="name">
-                                Tenant ID <small>(from ME-ID)</small>
+                                Tenant ID <small><a href="https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id#find-your-microsoft-entra-tenant" target="_blank"> (find Tenant ID)</a></small>
                             </Label>
                             <Input
                                 id="name"
@@ -118,7 +118,7 @@ export default function ConsentCard({
                                     </CollapsibleTrigger>
                                 </div>
                                 <CollapsibleContent className="space-y-2">
-                                    <Label htmlFor="framework">Environment</Label>
+                                    <Label htmlFor="framework">License</Label>
                                     <Select
                                         defaultValue={defaultEnvironment.environment}
                                         onValueChange={(e) => setSelectedEnvironment(e)}

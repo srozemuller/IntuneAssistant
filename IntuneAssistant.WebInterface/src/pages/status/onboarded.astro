@@ -7,8 +7,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
+
 const gifImage = "/images/giphy.gif";
+
+// Extract query parameters
+const urlParams = new URLSearchParams(Astro.url.search);
+const error = urlParams.get('error');
+const errorDescription = urlParams.get('error_description');
+
+// Redirect to error page if error parameter is present
+if (error) {
+  Astro.redirect(`/status/error?error=${encodeURIComponent(error)}&error_description=${encodeURIComponent(errorDescription)}`);
+}
 ---
 
 <MainLayout title="Onboarded" hideFooter>
@@ -33,28 +44,3 @@ const gifImage = "/images/giphy.gif";
     </Card>
   </div>
 </MainLayout>
-
-<script>
-  import confetti from 'canvas-confetti';
-
-  const duration = 15 * 1000;
-  const end = Date.now() + duration;
-  const minWaitMs = 500;
-  const maxWaitMs = 1000;
-
-  (function frame() {
-    confetti({
-      particleCount: 100,
-      startVelocity: 30,
-      spread: 360,
-      origin: {
-        x: Math.random(),
-        y: Math.random() - 0.2
-      }
-    });
-
-    if (Date.now() < end) {
-      setTimeout(() => requestAnimationFrame(frame), Math.floor(Math.random() * (maxWaitMs - minWaitMs + 1) + minWaitMs));
-    }
-  }());
-</script>

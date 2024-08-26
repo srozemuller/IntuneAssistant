@@ -1,0 +1,29 @@
+---
+import MainLayout from "@/layouts/main-layout.astro";
+const urlParams = new URLSearchParams(Astro.url.search);
+const error = urlParams.get('error');
+const errorDescription = urlParams.get('error_description');
+---
+
+<MainLayout title="Error" hideFooter>
+  <div class="flex items-center justify-center h-[calc(100vh-25vh)]">
+    <Card className="w-[400px] ">
+      <CardHeader>
+        <CardTitle class="text-center">
+          Error: {error}
+        </CardTitle>
+        <CardDescription>{errorDescription}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div class="flex justify-center">
+          <img src="/images/error.gif" alt="Error GIF" />
+        </div>
+        <hr class="border-t border-white my-4" />
+        <p>There was an issue with your request. Please try again later.</p>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        — Support Team
+      </CardFooter>
+    </Card>
+  </div>
+</MainLayout>
