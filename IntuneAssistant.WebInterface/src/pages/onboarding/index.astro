@@ -23,14 +23,16 @@ const intuneAssistantEnvironments = [
 
 <script>
     if (typeof window !== "undefined") {
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        const tenant = urlParams.get('tenant');
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            const tenant = urlParams.get('tenant');
 
-        if (error) {
-            window.location.href = `/onboarding/${error}`;
-        } else if (tenant) {
-            window.location.href = `/onboarding/onboarded?tenant=${tenant}`;
-        }
+            if (error) {
+                window.location.href = `/onboarding/${error}`;
+            } else if (tenant) {
+                window.location.href = `/onboarding/onboarded?tenant=${tenant}`;
+            }
+        });
     }
 </script>
