@@ -5,7 +5,7 @@ import MainLayout from "@/layouts/main-layout.astro";
 import { Button } from '@/components/ui/button';
 
 
-const { error } = Astro.params;
+let error = '';
 ---
 
 <MainLayout title="Status" mainClass="flex-1 bg-background-200">
@@ -13,9 +13,19 @@ const { error } = Astro.params;
     <h1 class="text-2xl font-semibold mt-10">
       That didn't work. Please try again.
     </h1>
-    <code>{error}</code>
+    <p id="error">Error: {error} </p>
     <a href="/" class="mt-5">
       <Button variant="link">Return to home</Button>
       <a/>
   </div>
 </MainLayout>
+
+<script>
+  if (typeof window !== "undefined") {
+    window.addEventListener('DOMContentLoaded', (event) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get('error') || '';
+      document.getElementById('error').textContent += error;
+    });
+  }
+</script>

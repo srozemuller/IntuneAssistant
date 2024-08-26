@@ -29,7 +29,7 @@ const intuneAssistantEnvironments = [
             const tenant = urlParams.get('tenant');
 
             if (error) {
-                window.location.href = `/onboarding/${error}`;
+                window.location.href = `/onboarding/error?error=${error}`;
             } else if (tenant) {
                 window.location.href = `/onboarding/onboarded?tenant=${tenant}`;
             }
