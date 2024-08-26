@@ -1,6 +1,6 @@
 ---
-import MainLayout from "@/layouts/main-layout.astro";
-import ConsentCard from "@/components/onboarding";
+import MainLayout from "../../layouts/main-layout.astro";
+import ConsentCard from "../../components/onboarding";
 
 // TODO: Retrieve a list of active environments from the API
 const intuneAssistantEnvironments = [
@@ -10,6 +10,7 @@ const intuneAssistantEnvironments = [
         "url": "https://localhost:7224"
     },
 ]
+
 ---
 
 <MainLayout title="Onboarding" mainClass="flex-1 bg-background-200">
@@ -19,3 +20,17 @@ const intuneAssistantEnvironments = [
         </div>
     </div>
 </MainLayout>
+
+<script>
+    if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const tenant = urlParams.get('tenant');
+
+        if (error) {
+            window.location.href = `/onboarding/${error}`;
+        } else if (tenant) {
+            window.location.href = `/onboarding/onboarded?tenant=${tenant}`;
+        }
+    }
+</script>

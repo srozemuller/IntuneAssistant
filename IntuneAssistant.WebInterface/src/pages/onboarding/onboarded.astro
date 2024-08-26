@@ -11,15 +11,7 @@ import {
 
 const gifImage = "/images/giphy.gif";
 
-// Extract query parameters
-const urlParams = new URLSearchParams(Astro.url.search);
-const error = urlParams.get('error');
-const errorDescription = urlParams.get('error_description');
-
-// Redirect to error page if error parameter is present
-if (error) {
-  Astro.redirect(`/status/error?error=${encodeURIComponent(error)}&error_description=${encodeURIComponent(errorDescription)}`);
-}
+let tenant = '';
 ---
 
 <MainLayout title="Onboarded" hideFooter>
@@ -37,6 +29,7 @@ if (error) {
         </div>
         <hr class="border-t border-white my-4" />
         You have successfully activated Intune Assistant and ready for launch 🚀.
+        <p id="tenant-id">Tenant ID: </p>
       </CardContent>
       <CardFooter className="flex justify-between">
         — Enjoy!
@@ -44,3 +37,13 @@ if (error) {
     </Card>
   </div>
 </MainLayout>
+
+<script>
+  if (typeof window !== "undefined") {
+    window.addEventListener('DOMContentLoaded', (event) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tenant = urlParams.get('tenant') || '';
+      document.getElementById('tenant-id').textContent += tenant;
+    });
+  }
+</script>

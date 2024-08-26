@@ -25,19 +25,19 @@ import {
 import { ChevronsUpDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-type BlueshiftEnvironment = {
+type LicenseProperties = {
     environment: string;
     displayName: string;
     url: string;
 };
 
-type BlueshiftM365ConsentCardProps = {
-    environments: BlueshiftEnvironment[];
+type ConsentProperties = {
+    environments: LicenseProperties[];
 };
 
 export default function ConsentCard({
                                         environments,
-                                    }: Readonly<BlueshiftM365ConsentCardProps>) {
+                                    }: Readonly<ConsentProperties>) {
     const defaultEnvironment = environments[0];
     const [selectedEnvironment, setSelectedEnvironment] = React.useState<string>(
         defaultEnvironment.environment
@@ -52,7 +52,7 @@ export default function ConsentCard({
         console.log(state);
         const apiUrl = `${environments
             .filter((env) => env.environment === selectedEnvironment)
-            .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/status/onboarded&state=${state}`;
+            .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&state=${state}`;
 
         try {
             const response = await fetch(apiUrl, { method: 'GET' });
