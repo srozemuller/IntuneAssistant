@@ -3,6 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import MainLayout from "@/layouts/main-layout.astro";
 import { cn } from "@/lib/utils";
 import Integrations from "@/components/sections/integrations.astro";
+import * as React from "react";
 ---
 
 <MainLayout title="Landing">
@@ -22,10 +23,10 @@ import Integrations from "@/components/sections/integrations.astro";
         </p>
 
         <div class="flex justify-center space-x-2 md:space-x-4">
-          <a href="/discover" class={cn(buttonVariants({size: "lg"}))}>
-            Getting started
+          <a href="/onboarding" class={cn(buttonVariants({size: "lg"}))}>
+            Onboard directly
           </a>
-          <a href="/docs" class={cn(buttonVariants({size: "lg", variant: "outline"}))}>
+          <a href="/docs/web" class={cn(buttonVariants({size: "lg", variant: "outline"}))}>
             Documentation
           </a>
         </div>
