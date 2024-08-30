@@ -1,34 +1,14 @@
 import { CheckCircle, XCircle, TriangleAlert } from "lucide-react"
 
-export const labels = [
+export const isAssignedValues = [
     {
-        value: "bug",
-        label: "Bug",
-    },
-    {
-        value: "feature",
-        label: "Feature",
-    },
-    {
-        value: "documentation",
-        label: "Documentation",
-    },
-]
-
-export const statuses = [
-    {
-        value: "enabled",
-        label: "Enabled",
+        value: "Assigned",
+        label: "Assigned",
         icon: CheckCircle,
     },
     {
-        value: "disabled",
-        label: "Disabled",
+        value: "false",
+        label: "Not Assigned",
         icon: XCircle,
-    },
-    {
-        value: "enabledForReportingButNotEnforced",
-        label: "Reporting Only",
-        icon: TriangleAlert,
     }
 ]

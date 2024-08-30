@@ -61,28 +61,32 @@ export const columns: ColumnDef<Policy>[] = [
         cell: ({ row }) => <div>{row.getValue("settingCount")}</div>,
     },
     {
+        id: "isAssigned",
         accessorKey: "isAssigned",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Is Assigned" />
         ),
         cell: ({ row }) => {
-            const state = row.getValue("isAssigned")
-            const isAssigned = row.original.assignments.length > 0
+            const state = row.getValue("isAssigned");
+            const isAssigned = row.original.assignments.length > 0;
+            const assignedValue = isAssigned ? "Assigned" : "Not Assigned";
             return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger>
-                            {isAssigned ? (
-                                <CheckCircle className="h-5 w-5 text-green-500" />
-                            ) : (
-                                <TriangleAlert className="h-5 w-5 text-yellow-500" />
-                            )}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{isAssigned}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+                <div className="flex items-center">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                {isAssigned ? (
+                                    <CheckCircle className="h-5 w-5 text-green-500" />
+                                ) : (
+                                    <TriangleAlert className="h-5 w-5 text-yellow-500" />
+                                )}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{assignedValue}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
             )
         },
     },

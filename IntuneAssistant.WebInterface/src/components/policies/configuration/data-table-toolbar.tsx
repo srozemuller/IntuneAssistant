@@ -1,47 +1,45 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import { statuses } from "@/components/policies/configuration/fixed-values.tsx"
+import {isAssignedValues} from "@/components/policies/configuration/fixed-values.tsx"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { toast } from "sonner"
-import { type Table } from "@tanstack/react-table"
+
 import { useState } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import type { Table } from '@tanstack/react-table';
+import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants.js"
+import { policySchema } from "@/components/policies/configuration/schema.tsx";
 
-interface TData {
-    displayName: string;
-    id: string;
-    name: string;
-    // Add other properties as needed
-}
-
-interface DataTableToolbarProps {
+interface ToolbarProps<TData> {
     table: Table<TData>;
     rawData: string;
     fetchData: () => Promise<void>;
     source: string;
 }
 
-export function DataTableToolbar({
-                                     table,
-                                     rawData,
-                                     fetchData,
-                                     source,
-                                 }: DataTableToolbarProps) {
+interface ExportData {
+    id: string;
+    displayName: string;
+}
+
+
+export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarProps<TData>) {
+
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
     const [dropdownVisible, setDropdownVisible] = useState(false);
 
     const handleExport = (rawData: string) => {
-        const selectedRows = table.getSelectedRowModel().rows;
+        const selectedRows = table.getSelectedRowModel().rows as Array<{ original: ExportData }>;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
 
-        const dataToExport = parsedRawData.filter((item: TData) =>
-            selectedIds.includes(item.id)
-        );
+        const dataToExport = parsedRawData
+            .map((item: ExportData) => policySchema.parse(item))
+            .filter((item: ExportData) => selectedIds.includes(item.id));
 
         const dataString = JSON.stringify(dataToExport, null, 2);
         const dataCount = dataToExport.length;
@@ -53,7 +51,7 @@ export function DataTableToolbar({
 
         if (exportOption === "backup") {
             const zip = new JSZip();
-            dataToExport.forEach((item: TData, index: number) => {
+            dataToExport.forEach((item: ExportData, index: number) => {
                 const fileName = `${item.displayName}.json`;
                 const fileContent = JSON.stringify(item, null, 2);
                 zip.file(fileName, fileContent);
@@ -77,9 +75,9 @@ export function DataTableToolbar({
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
+            loading: `Searching for configuration policies...`,
+            success: `Configuration policies fetched successfully`,
+            error: (err) => `Failed to get configuration policies because: ${err.message}`,
         });
     };
 
@@ -87,18 +85,19 @@ export function DataTableToolbar({
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
-                    placeholder="Filter tasks..."
-                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("name")?.setFilterValue(event.target.value)
-                    }
+                    placeholder={FILTER_PLACEHOLDER}
+                    value={table.getState().globalFilter ?? ""}
+                    onChange={(event) => {
+                        const value = event.target.value;
+                        table.setGlobalFilter(value);
+                    }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
-                {table.getColumn("policyType") && (
+                {table.getColumn("isAssigned") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("policyType")}
-                        title="policyType"
-                        options={statuses}
+                        column={table.getColumn("isAssigned")}
+                        title="State"
+                        options={isAssignedValues}
                     />
                 )}
                 {isFiltered && (

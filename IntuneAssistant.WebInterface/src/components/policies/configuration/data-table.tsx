@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table"
 
 import { DataTablePagination } from "@/components/ui/pagination"
-import { DataTableToolbar } from "@/components/policies/configuration/data-table-toolbar.tsx"
+import { Toolbar } from "@/components/policies/configuration/data-table-toolbar.tsx"
 import { type Task } from "@/components/policies/ca/schema"
 
 interface DataTableProps<TData, TValue> {
@@ -70,7 +70,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar source={source} table={table} rawData={rawData} fetchData={fetchData} />
+            <Toolbar source={source} table={table} rawData={rawData} fetchData={fetchData} />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

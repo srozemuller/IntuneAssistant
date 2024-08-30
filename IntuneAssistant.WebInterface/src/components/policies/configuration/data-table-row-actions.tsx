@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx"
 
-import { labels } from "@/components/policies/configuration/fixed-values.tsx"
+
 import { policySchema } from "@/components/policies/configuration/schema.tsx"
 import {ExternalLink} from "lucide-react";
 

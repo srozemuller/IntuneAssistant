@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { type Task } from "@/components/policies/ca/schema"
 import { DataTableColumnHeader } from "@/components/data-table-column-header"
 import { DataTableRowActions } from "@/components/policies/ca/data-table-row-actions.tsx"
-
+import { statuses } from "@/components/policies/ca/fixed-values"
 export const columns: ColumnDef<Task>[] = [
     {
         id: "select",
@@ -63,33 +63,35 @@ export const columns: ColumnDef<Task>[] = [
         enableHiding: true,
     },
     {
-        accessorKey: "state",
+        accessorKey: 'state',
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="State" />
+            <DataTableColumnHeader column={column} title="Status" />
         ),
         cell: ({ row }) => {
-            const state = row.getValue("state")
+            const status = statuses.find(
+                (status) => status.value === row.getValue('state'),
+            );
+            if (!status) {
+                return undefined;
+            }
+
             return (
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-                            {state === "enabled" ? (
-                                <CheckCircle className="h-5 w-5 text-green-500" />
-                            ) : state === "enabledForReportingButNotEnforced" ? (
-                                <TriangleAlert className="h-5 w-5 text-yellow-500" />
-                            ) : (
-                                <XCircle className="h-5 w-5 text-red-500" />
-                            )}
+                        <div className="flex w-[100px] items-center">
+                            <status.icon className={`h-5 w-5 ${status.color}`}/>
+                        </div>
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>{row.getValue("state")}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
-            )
+            );
         },
-        enableSorting: true,
-        enableHiding: true,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
         id: "excludeUsersReadable",
