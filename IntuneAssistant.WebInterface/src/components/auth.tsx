@@ -76,7 +76,7 @@ const AuthButton: React.FC = () => {
         <div>
             {isLoggedIn ? (
                 <>
-                    <span id="user-name">Hi, {userName}</span>
+                    <span id="user-name">Hi, {userName} </span>
                     <button id="logout-link" onClick={logout}>Logout</button>
                 </>
             ) : (

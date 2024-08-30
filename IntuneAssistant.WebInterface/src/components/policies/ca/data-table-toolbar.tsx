@@ -9,6 +9,7 @@ import { type Table } from "@tanstack/react-table"
 import { useState } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants.js";
 
 interface TData {
     displayName: string;
@@ -43,7 +44,6 @@ export function DataTableToolbar({
             selectedIds.includes(item.id)
         );
 
-        const dataString = JSON.stringify(dataToExport, null, 2);
         const dataCount = dataToExport.length;
         if (dataCount === 0) {
             toast.error("No data to export.");
@@ -87,18 +87,21 @@ export function DataTableToolbar({
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
-                    placeholder="Filter ..."
-                    value={
-                        ((table.getColumn("displayName")?.getFilterValue() as string) ?? "") ||
-                        ((table.getColumn("conditions.users.includeUsersReadable")?.getFilterValue() as string) ?? "")
-                    }
+                    placeholder={FILTER_PLACEHOLDER}
+                    value={table.getState().globalFilter ?? ""}
                     onChange={(event) => {
                         const value = event.target.value;
-                        table.getColumn("displayName")?.setFilterValue(value);
-                        table.getColumn("conditions.users.includeUsersReadable")?.setFilterValue(value);
+                        table.setGlobalFilter(value);
                     }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
+                {table.getColumn("state") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("state")}
+                        title="State"
+                        options={statuses}
+                    />
+                )}
                 {isFiltered && (
                     <Button
                         variant="ghost"

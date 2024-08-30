@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
 
-import { labels, statuses } from "@/components/policies/ca/fixed-values"
 import { type Policy } from "@/components/policies/configuration/schema"
 import { DataTableColumnHeader } from "@/components/data-table-column-header"
 import { DataTableRowActions } from "@/components/policies/configuration/data-table-row-actions.tsx"

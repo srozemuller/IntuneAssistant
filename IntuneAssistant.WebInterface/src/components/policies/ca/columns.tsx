@@ -49,6 +49,20 @@ export const columns: ColumnDef<Task>[] = [
         enableHiding: true,
     },
     {
+        id: "includeUsersReadable",
+        accessorKey: 'includeUsersReadable',
+        accessorFn: (row) => row.conditions?.users.includeUsersReadable?.map(user => user.displayName).join(", ") || "N/A",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Included Users" />
+        ),
+        cell: ({ row }) => {
+            const includedUsers = row.original.conditions?.users?.includeUsersReadable;
+            return includedUsers?.map(user => user.displayName).join(", ") || "N/A";
+        },
+        enableSorting: true,
+        enableHiding: true,
+    },
+    {
         accessorKey: "state",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="State" />
@@ -74,51 +88,47 @@ export const columns: ColumnDef<Task>[] = [
                 </TooltipProvider>
             )
         },
-    },
-    {
-        accessorKey: "conditions.users.includeUsersReadable",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Included Users" />
-        ),
-        cell: ({ row }) => {
-            const includedUsers = row.original.conditions?.users?.includeUsersReadable
-            return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
-        },
         enableSorting: true,
         enableHiding: true,
     },
     {
-        accessorKey: "conditions.users.excludeUsersReadable",
+        id: "excludeUsersReadable",
+        accessorKey: 'excludeUsersReadable',
+        accessorFn: (row) => row.conditions?.users.excludeUsersReadable?.map(user => user.displayName).join(", ") || "N/A",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Excluded Users" />
         ),
         cell: ({ row }) => {
-            const includedUsers = row.original.conditions?.users?.excludeUsersReadable
-            return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
+            const excludedUsers = row.original.conditions?.users?.excludeUsersReadable;
+            return excludedUsers?.map(user => user.displayName).join(", ") || "N/A";
         },
         enableSorting: true,
         enableHiding: true,
     },
     {
-        accessorKey: "conditions.users.includeGroupsReadable",
+        id: "includeGroupsReadable",
+        accessorKey: 'includeGroupsReadable',
+        accessorFn: (row) => row.conditions?.users.includeGroupsReadable?.map(user => user.displayName).join(", ") || "N/A",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Included Groups" />
+            <DataTableColumnHeader column={column} title="Excluded Users" />
         ),
         cell: ({ row }) => {
-            const includedUsers = row.original.conditions?.users?.includeGroupsReadable
-            return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
+            const includedGroups = row.original.conditions?.users?.includeGroupsReadable;
+            return includedGroups?.map(group => group.displayName).join(", ") || "N/A";
         },
         enableSorting: true,
         enableHiding: true,
     },
     {
-        accessorKey: "conditions.users.excludeGroupsReadable",
+        id: "excludeGroupsReadable",
+        accessorKey: 'excludeGroupsReadable',
+        accessorFn: (row) => row.conditions?.users.excludeGroupsReadable?.map(user => user.displayName).join(", ") || "N/A",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Excluded Groups" />
+            <DataTableColumnHeader column={column} title="Excluded Users" />
         ),
         cell: ({ row }) => {
-            const includedUsers = row.original.conditions?.users?.excludeGroupsReadable
-            return includedUsers?.map(user => user.displayName).join(", ") || "N/A"
+            const excludedGroups = row.original.conditions?.users?.excludeGroupsReadable;
+            return excludedGroups?.map(group => group.displayName).join(", ") || "N/A";
         },
         enableSorting: true,
         enableHiding: true,
@@ -144,5 +154,5 @@ export const columns: ColumnDef<Task>[] = [
     {
         id: "actions",
         cell: ({ row }) => <DataTableRowActions row={row} />,
-    },
+    }
 ]

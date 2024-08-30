@@ -18,7 +18,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx"
 
-import { labels } from "@/components/policies/ca/fixed-values.tsx"
+
 import { taskSchema } from "@/components/policies/ca/schema.tsx"
 
 interface DataTableRowActionsProps<TData extends { id: string }> {

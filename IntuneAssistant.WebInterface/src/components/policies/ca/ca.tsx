@@ -26,6 +26,7 @@ export default function DemoPage() {
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = `Failed to fetch policies. ${(error as Error).message}`;
+            toast.error(errorMessage);
             setError(errorMessage);
             throw new Error(errorMessage);
         } finally {
