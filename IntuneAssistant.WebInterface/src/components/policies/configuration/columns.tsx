@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { type Policy } from "@/components/policies/configuration/schema"
 import { DataTableColumnHeader } from "@/components/data-table-column-header"
 import { DataTableRowActions } from "@/components/policies/configuration/data-table-row-actions.tsx"
+import {isAssignedValues} from "@/components/policies/configuration/fixed-values.tsx";
 
 export const columns: ColumnDef<Policy>[] = [
     {
@@ -61,8 +62,7 @@ export const columns: ColumnDef<Policy>[] = [
         cell: ({ row }) => <div>{row.getValue("settingCount")}</div>,
     },
     {
-        id: "isAssigned",
-        accessorKey: "isAssigned",
+        accessorKey: 'isAssigned',
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Is Assigned" />
         ),
@@ -70,25 +70,43 @@ export const columns: ColumnDef<Policy>[] = [
             const state = row.getValue("isAssigned");
             const isAssigned = row.original.assignments.length > 0;
             const assignedValue = isAssigned ? "Assigned" : "Not Assigned";
-            return (
-                <div className="flex items-center">
+
+            const status = isAssignedValues.find(
+                (status) => status.value === assignedValue,
+            );
+            if (!status) {
+                return (
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger>
-                                {isAssigned ? (
-                                    <CheckCircle className="h-5 w-5 text-green-500" />
-                                ) : (
-                                    <TriangleAlert className="h-5 w-5 text-yellow-500" />
-                                )}
+                                <div className="flex w-[100px] items-center">
+                                <CheckCircle/>
+                                </div>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>{assignedValue}</p>
+                                <p>UNKNOWN</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                </div>
-            )
+                );
+            }
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className="flex w-[100px] items-center">
+                                <status.icon className={`h-5 w-5 ${status.color}`}/>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{status.label}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
         },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
         accessorKey: "createdDateTime",

@@ -74,7 +74,6 @@ export const columns: ColumnDef<Task>[] = [
             if (!status) {
                 return undefined;
             }
-
             return (
                 <TooltipProvider>
                     <Tooltip>
