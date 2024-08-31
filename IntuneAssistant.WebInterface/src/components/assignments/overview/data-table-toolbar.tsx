@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import { statuses } from "@/components/assignments/overview/fixed-values.tsx"
+import { isAssignedValues } from "@/components/assignments/overview/fixed-values.tsx"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { Cross2Icon } from "@radix-ui/react-icons"
@@ -10,6 +10,8 @@ import { useState } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
+import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
+
 
 interface TData {
     displayName: string;
@@ -86,13 +88,21 @@ export function DataTableToolbar({
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
-                    placeholder="Filter ..."
-                    value={(table.getColumn("targetName")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("targetName")?.setFilterValue(event.target.value)
-                    }
+                    placeholder={FILTER_PLACEHOLDER}
+                    value={table.getState().globalFilter ?? ""}
+                    onChange={(event) => {
+                        const value = event.target.value;
+                        table.setGlobalFilter(value);
+                    }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
+                {table.getColumn("isAssigned") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("isAssigned")}
+                        title="State"
+                        options={isAssignedValues}
+                    />
+                )}
                 {isFiltered && (
                     <Button
                         variant="ghost"

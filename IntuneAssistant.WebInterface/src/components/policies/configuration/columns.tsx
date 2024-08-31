@@ -67,7 +67,6 @@ export const columns: ColumnDef<Policy>[] = [
             <DataTableColumnHeader column={column} title="Is Assigned" />
         ),
         cell: ({ row }) => {
-            const state = row.getValue("isAssigned");
             const isAssigned = row.original.assignments.length > 0;
             const assignedValue = isAssigned ? "Assigned" : "Not Assigned";
 
@@ -80,29 +79,32 @@ export const columns: ColumnDef<Policy>[] = [
                         <Tooltip>
                             <TooltipTrigger>
                                 <div className="flex w-[100px] items-center">
-                                <CheckCircle/>
+                                    <p>Unknown</p>
                                 </div>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>UNKNOWN</p>
+                                <p>Unknown</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                 );
             }
             return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger>
-                            <div className="flex w-[100px] items-center">
-                                <status.icon className={`h-5 w-5 ${status.color}`}/>
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{status.label}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+                <div>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className="flex w-[100px] items-center">
+                                    <status.icon className={`h-5 w-5 ${status.color}`}/>
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{status.label}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                    <div>{row.getValue("isAssigned")}</div>
+                </div>
             );
         },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call

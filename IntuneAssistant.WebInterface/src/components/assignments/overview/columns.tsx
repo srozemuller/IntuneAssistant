@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 import { type Assignments } from "@/components/assignments/overview/schema"
 import { DataTableColumnHeader } from "@/components/data-table-column-header"
+import {isAssignedValues} from "@/components/assignments/overview/fixed-values.tsx";
 
 
 export const columns: ColumnDef<Assignments>[] = [
@@ -61,24 +62,42 @@ export const columns: ColumnDef<Assignments>[] = [
         ),
         cell: ({ row }) => {
             const state = row.getValue("isAssigned")
-            const isAssigned = row.original.isAssigned
+            const status = isAssignedValues.find(
+                (status) => status.value === row.original.isAssigned,
+            );
+            if (!status) {
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className="flex w-[100px] items-center">
+                                    <CheckCircle/>
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Unknown</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
+            }
             return (
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-                            {isAssigned ? (
-                                <CheckCircle className="h-5 w-5 text-green-500" />
-                            ) : (
-                                <TriangleAlert className="h-5 w-5 text-yellow-500" />
-                            )}
+                            <div className="flex w-[100px] items-center">
+                                <status.icon className={`h-5 w-5 ${status.color}`}/>
+                            </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{isAssigned}</p>
+                            <p>{status.label}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
-            )
+            );
         },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
         accessorKey: "assignmentType",

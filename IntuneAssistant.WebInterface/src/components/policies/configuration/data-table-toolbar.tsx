@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button.tsx"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { toast } from "sonner"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import type { Table } from '@tanstack/react-table';
@@ -31,6 +31,14 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    useEffect(() => {
+        console.log("isAssignedValues:", isAssignedValues);
+        const isAssignedColumn = table.getColumn("isAssigned");
+        if (isAssignedColumn) {
+            console.log("isAssigned column values:", isAssignedColumn.getFacetedUniqueValues());
+        }
+    }, [table]);
+
 
     const handleExport = (rawData: string) => {
         const selectedRows = table.getSelectedRowModel().rows as Array<{ original: ExportData }>;
@@ -93,10 +101,12 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
                     }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
+
                 {table.getColumn("isAssigned") && (
+                    console.log(table.getColumn("isAssigned") ),
                     <DataTableFacetedFilter
                         column={table.getColumn("isAssigned")}
-                        title="State"
+                        title="Is Assigned"
                         options={isAssignedValues}
                     />
                 )}
