@@ -101,9 +101,7 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
                     }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
-
                 {table.getColumn("isAssigned") && (
-                    console.log(table.getColumn("isAssigned") ),
                     <DataTableFacetedFilter
                         column={table.getColumn("isAssigned")}
                         title="Is Assigned"

@@ -62,16 +62,14 @@ export const columns: ColumnDef<Policy>[] = [
         cell: ({ row }) => <div>{row.getValue("settingCount")}</div>,
     },
     {
-        accessorKey: 'isAssigned',
+        accessorKey: "isAssigned",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Is Assigned" />
         ),
         cell: ({ row }) => {
-            const isAssigned = row.original.assignments.length > 0;
-            const assignedValue = isAssigned ? "Assigned" : "Not Assigned";
-
+            const state = row.getValue("isAssigned")
             const status = isAssignedValues.find(
-                (status) => status.value === assignedValue,
+                (status) => status.value === row.original.isAssigned,
             );
             if (!status) {
                 return (
@@ -79,7 +77,7 @@ export const columns: ColumnDef<Policy>[] = [
                         <Tooltip>
                             <TooltipTrigger>
                                 <div className="flex w-[100px] items-center">
-                                    <p>Unknown</p>
+                                    <CheckCircle/>
                                 </div>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -90,21 +88,18 @@ export const columns: ColumnDef<Policy>[] = [
                 );
             }
             return (
-                <div>
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <div className="flex w-[100px] items-center">
-                                    <status.icon className={`h-5 w-5 ${status.color}`}/>
-                                </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{status.label}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                    <div>{row.getValue("isAssigned")}</div>
-                </div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className="flex w-[100px] items-center">
+                                <status.icon className={`h-5 w-5 ${status.color}`}/>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{status.label}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             );
         },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call

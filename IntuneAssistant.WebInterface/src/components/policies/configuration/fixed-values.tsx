@@ -1,16 +1,16 @@
-import { CheckCircle, XCircle, TriangleAlert } from "lucide-react"
+import { CheckCircle, XCircle } from "lucide-react";
 
 export const isAssignedValues = [
     {
-        value: "Assigned",
+        value: true,
         label: "Assigned",
         icon: CheckCircle,
         color: "text-green-500",
     },
     {
-        value: "Not Assigned",
+        value: false,
         label: "Not Assigned",
         icon: XCircle,
         color: "text-red-500",
     }
-]
+];

@@ -47,6 +47,7 @@ export const columns: ColumnDef<Assignments>[] = [
             <DataTableColumnHeader column={column} title="Type" />
         ),
         cell: ({ row }) => <div>{row.getValue("resourceType")}</div>,
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
         accessorKey: "resourceName",
@@ -105,6 +106,7 @@ export const columns: ColumnDef<Assignments>[] = [
             <DataTableColumnHeader column={column} title="Assignment Type" />
         ),
         cell: ({ row }) => <div>{row.getValue("assignmentType")}</div>,
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
         accessorKey: "targetName",

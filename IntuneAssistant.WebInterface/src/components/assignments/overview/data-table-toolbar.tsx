@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import { isAssignedValues } from "@/components/assignments/overview/fixed-values.tsx"
+import {assignmentTypes, isAssignedValues} from "@/components/assignments/overview/fixed-values.tsx"
+import {configurationTypes} from "@/components/constants/policyTypes.ts"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { Cross2Icon } from "@radix-ui/react-icons"
@@ -96,11 +97,25 @@ export function DataTableToolbar({
                     }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
+                {table.getColumn("resourceType") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("resourceType")}
+                        title="Type"
+                        options={configurationTypes}
+                    />
+                )}
                 {table.getColumn("isAssigned") && (
                     <DataTableFacetedFilter
                         column={table.getColumn("isAssigned")}
-                        title="State"
+                        title="Is Assigned"
                         options={isAssignedValues}
+                    />
+                )}
+                {table.getColumn("assignmentType") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("assignmentType")}
+                        title="Assignment Type"
+                        options={assignmentTypes}
                     />
                 )}
                 {isFiltered && (
