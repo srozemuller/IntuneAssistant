@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { type Table } from "@tanstack/react-table"
 import { useState } from "react"
 import { handleExport } from "@/lib/handle-export";
+import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
 
 interface TData {
     displayName: string;
@@ -48,7 +49,7 @@ export function DataTableToolbar({
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
-                    placeholder="Filter settings ..."
+                    placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}
                     onChange={(event) => {
                         const value = event.target.value;

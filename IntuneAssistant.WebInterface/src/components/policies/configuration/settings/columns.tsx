@@ -54,11 +54,19 @@ export const columns: ColumnDef<PolicySettings>[] = [
     },
     {
         accessorKey: "childSettingInfo",
+        accessorFn: (row) => Array.isArray(row.childSettingInfo) ? row.childSettingInfo.map(setting => `${setting.name}: ${setting.value}`).join(", ") : "",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Child Settings" />
         ),
         cell: ({ row }) => {
-            const childSettings = row.getValue("childSettingInfo") as Array<{ name: string, value: string }>;
+            const childSettingsStr = row.getValue("childSettingInfo");
+            if (!childSettingsStr) {
+                return <div>~</div>;
+            }
+            const childSettings = childSettingsStr.split(", ").map(setting => {
+                const [name, value] = setting.split(": ");
+                return { name, value };
+            });
             return (
                 <ul className="list-none pl-0">
                     {childSettings.map((setting, index) => (
