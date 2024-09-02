@@ -33,15 +33,15 @@ export default function DemoPage() {
             setLoading(false);
         }
     };
-    const MyComponent = () => {
-        useEffect(() => {
-            // Trigger the toast message on initial load
-            toast('Page loaded successfully!');
-        }, []);
-    }
-
+    
     useEffect(() => {
-        MyComponent(),
+        const timer = setTimeout(() => {
+            toast.info('your message here')
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, []);
+    useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
             loading: `Searching for conditional access policies...`,
