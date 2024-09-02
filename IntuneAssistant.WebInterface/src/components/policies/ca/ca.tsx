@@ -37,7 +37,7 @@ export default function DemoPage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             toast.info('Waiting for data to load...');
-        }, 100);
+        }, 1000);
         return () => clearTimeout(timer);
     }, []);
 
