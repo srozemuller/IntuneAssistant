@@ -38,17 +38,15 @@ export default function DemoPage() {
             // Trigger the toast message on initial load
             toast('Page loaded successfully!');
         }, []);
-
+    }
 
     useEffect(() => {
-        MyComponent();
-        fetchData();
         toast.promise(fetchData(), {
             loading: `Searching for conditional access policies...`,
             success: `Conditional access policies fetched successfully`,
             error: (err) => `Failed to get conditional access policies because: ${err.message}`,
         });
-
+        fetchData();
     }, []);
 
     return (
@@ -56,5 +54,4 @@ export default function DemoPage() {
             <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="ca"  />
         </div>
     );
-}
 }
