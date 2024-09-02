@@ -35,13 +35,6 @@ export default function DemoPage() {
     };
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            toast.info('Waiting for data to load...');
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, []);
-
-    useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
             loading: `Searching for conditional access policies...`,
