@@ -32,11 +32,16 @@ export default function DemoPage() {
             setLoading(false);
         }
     };
-
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            toast.info('Waiting for data to load...');
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
     useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
-            loading: `Searching for configuration access policies...`,
+            loading: `Searching for configuration  policies...`,
             success: `Configuration policies fetched successfully`,
             error: (err) => `Failed to get configuration policies because: ${err.message}`,
         });

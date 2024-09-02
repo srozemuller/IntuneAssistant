@@ -33,14 +33,14 @@ export default function DemoPage() {
             setLoading(false);
         }
     };
-    
+
     useEffect(() => {
         const timer = setTimeout(() => {
-            toast.info('your message here')
+            toast.info('Waiting for data to load...');
         }, 100);
-
         return () => clearTimeout(timer);
     }, []);
+
     useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
