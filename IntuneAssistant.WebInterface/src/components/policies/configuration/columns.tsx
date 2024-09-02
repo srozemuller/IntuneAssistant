@@ -110,13 +110,21 @@ export const columns: ColumnDef<Policy>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Created Date Time" />
         ),
-        cell: ({ row }) => <div>{row.getValue("createdDateTime")}</div>,
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("createdDateTime"));
+            const formattedDate = date.toLocaleString();
+            return <div>{formattedDate}</div>;
+        },
     },
     {
         accessorKey: "lastModifiedDateTime",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Last Modified Date Time" />
         ),
-        cell: ({ row }) => <div>{row.getValue("lastModifiedDateTime")}</div>,
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("lastModifiedDateTime"));
+            const formattedDate = date.toLocaleString();
+            return <div>{formattedDate}</div>;
+        },
     },
 ];

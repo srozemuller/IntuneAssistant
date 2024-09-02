@@ -139,7 +139,11 @@ export const columns: ColumnDef<Task>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Created At" />
         ),
-        cell: ({ row }) => <div className="w-[100]">{row.getValue("createdDateTime")}</div>,
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("createdDateTime"));
+            const formattedDate = date.toLocaleString();
+            return <div>{formattedDate}</div>;
+        },
         enableSorting: true,
         enableHiding: true,
     },
@@ -148,7 +152,11 @@ export const columns: ColumnDef<Task>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Modified At" />
         ),
-        cell: ({ row }) => <div className="w-[100]">{row.getValue("modifiedDateTime")}</div>,
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("modifiedDateTime"));
+            const formattedDate = date.toLocaleString();
+            return <div>{formattedDate}</div>;
+        },
         enableSorting: true,
         enableHiding: true,
     },
