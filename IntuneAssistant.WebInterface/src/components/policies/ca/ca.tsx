@@ -41,6 +41,7 @@ export default function DemoPage() {
     }
 
     useEffect(() => {
+        MyComponent(),
         fetchData();
         toast.promise(fetchData(), {
             loading: `Searching for conditional access policies...`,
@@ -50,7 +51,6 @@ export default function DemoPage() {
     }, []);
 
     return (
-        MyComponent(),
         <div className="container max-w-[95%] py-6">
             <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="ca"  />
         </div>
