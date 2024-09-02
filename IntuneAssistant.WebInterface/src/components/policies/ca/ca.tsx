@@ -41,12 +41,14 @@ export default function DemoPage() {
 
 
     useEffect(() => {
+        MyComponent();
+        fetchData();
         toast.promise(fetchData(), {
             loading: `Searching for conditional access policies...`,
             success: `Conditional access policies fetched successfully`,
             error: (err) => `Failed to get conditional access policies because: ${err.message}`,
         });
-        fetchData();
+
     }, []);
 
     return (
