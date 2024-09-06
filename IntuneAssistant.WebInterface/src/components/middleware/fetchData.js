@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { msalInstance } from '@/components/auth';
 
+
 const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     let formattedError = '';
 
@@ -10,6 +11,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     // Fetch access token
     const accounts = msalInstance.getAllAccounts();
     if (accounts.length === 0) {
+        await msalInstance.loginPopup();
         throw new Error('No accounts found. Please log in.');
     }
 

@@ -3,7 +3,7 @@ import { DataTable } from './data-table.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
 import {CONFIGURATION_POLICIES_ENDPOINT, POLICY_SETTINGS_ENDPOINT} from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/configuration/settings/columns.tsx";
-import { toast } from "sonner";
+import { Toaster, toast } from 'sonner'
 import { z } from "zod";
 import { settingSchema, type PolicySettings } from "@/components/policies/configuration/settings/schema";
 
@@ -37,13 +37,6 @@ export default function DemoPage() {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            toast.info('Waiting for data to load...');
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, []);
 
     useEffect(() => {
         fetchData();

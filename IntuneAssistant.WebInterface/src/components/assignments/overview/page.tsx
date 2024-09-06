@@ -32,12 +32,6 @@ export default function DemoPage() {
             setLoading(false);
         }
     };
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            toast.info('Waiting for data to load...');
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, []);
 
     useEffect(() => {
         fetchData();

@@ -36,6 +36,8 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
+    "@sentry/astro": "^8.28.0",
+    "@sentry/tracing": "^7.114.0",
     "@tailwindcss/typography": "^0.5.14",
     "@tanstack/react-table": "^8.19.3",
     "astro": "^4.12.2",

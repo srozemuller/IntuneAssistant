@@ -3,7 +3,7 @@ import { DataTable } from './data-table.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { CA_POLICIES_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/ca/columns.tsx";
-import { toast } from "sonner";
+import { toast } from 'sonner';
 import { z } from "zod";
 import { taskSchema, type Task } from "@/components/policies/ca/schema";
 
@@ -26,8 +26,7 @@ export default function DemoPage() {
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = `Failed to fetch policies. ${(error as Error).message}`;
-            toast.error(errorMessage);
-            setError(errorMessage);
+            setError(`${errorMessage}`);
             throw new Error(errorMessage);
         } finally {
             setLoading(false);

@@ -4,7 +4,8 @@ import tailwind from '@astrojs/tailwind';
 import icon from 'astro-icon';
 import starlight from '@astrojs/starlight';
 import netlify from '@astrojs/netlify';
-
+import sentry from "@sentry/astro";
+import { BrowserTracing } from '@sentry/tracing'
 // https://astro.build/config
 export default defineConfig({
   site: process.env.CI ? 'https://astro-shadcn-ui-template.vercel.app' : 'http://localhost:4321',
@@ -13,6 +14,14 @@ export default defineConfig({
     icon(),
     tailwind({
       applyBaseStyles: false
+    }),
+    sentry({
+      dsn: process.env.SENTRY_DSN,
+      sourceMapsUploadOptions: {
+        project: "intuneassistant",
+        authToken: process.env.SENTRY_AUTH_TOKEN
+      },
+      tracesSampleRate: 0.3,
     }),
     starlight({
       title: 'Intune Assistant Docs',
