@@ -9,6 +9,11 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
-  "include": ["./src/env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "./src/env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/onboarding/onboarded.astro"
+  ],
   "exclude": ["dist"]
 }

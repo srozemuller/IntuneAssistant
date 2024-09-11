@@ -1,0 +1,11 @@
+---
+import { buttonVariants } from "@/components/ui/button";
+import MainLayout from "@/layouts/main-layout.astro";
+import { cn } from "@/lib/utils";
+import { Icons } from "@/icons";
+import LoginPage from "@/components/login";
+---
+
+<MainLayout title="CLI">
+    <LoginPage client:load/>
+</MainLayout>

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { ChevronsUpDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import authService from "@/scripts/msalservice";
 
 type LicenseProperties = {
     environment: string;
@@ -48,18 +49,31 @@ export default function ConsentCard({
 
     const fetchUrlAndRedirect = async () => {
         setIsLoading(true);
-        const state = Math.random().toString(36).substring(2); // Generate a random state
-        console.log(state);
-        const apiUrl = `${environments
-            .filter((env) => env.environment === selectedEnvironment)
-            .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&state=${state}`;
 
         try {
+            if (!authService.isLoggedIn()) {
+                await authService.login();
+            }
+
+            const userClaims = authService.getTokenClaims();
+            const preferredUsername = userClaims.username;
+
+            const apiUrl = `${environments
+                .filter((env) => env.environment === selectedEnvironment)
+                .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&userName=${preferredUsername}`;
+
             const response = await fetch(apiUrl, { method: 'GET' });
             const data = await response.json();
             const consentUrl = data.url;
+            const token = data.token;
+            localStorage.setItem('consentToken', token); // Store token in localStorage
+           console.log( localStorage.getItem('consentToken'));
+
+
             console.info(consentUrl);
-            window.open(consentUrl, "_blank", "noreferrer");
+            window.open(`${consentUrl}`, "_blank", "noreferrer"); // Include token in the URL
+
+            setIsLoading(false);
         } catch (error) {
             toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please contact support.</a></div>);
             console.error(error);

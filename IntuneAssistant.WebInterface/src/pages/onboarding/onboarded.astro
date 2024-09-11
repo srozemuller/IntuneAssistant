@@ -39,11 +39,31 @@ let tenant = '';
 </MainLayout>
 
 <script>
+  import axios from 'axios';
+  import { CONSENT_CALLBACK } from '@/components/constants/apiUrls.js';
   if (typeof window !== "undefined") {
     window.addEventListener('DOMContentLoaded', (event) => {
       const urlParams = new URLSearchParams(window.location.search);
       const tenant = urlParams.get('tenant') || '';
       document.getElementById('tenant-id').textContent += tenant;
+
+      const token = localStorage.getItem('consentToken');
+      if (token) {
+        const accessToken = localStorage.getItem('accessToken');
+        // Send request to the API endpoint
+        const callbackUrl = `${CONSENT_CALLBACK}?consentToken=${token}`;
+        axios.get(callbackUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+            .then((response) => {
+              console.log(response.data);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+      }
     });
   }
 </script>

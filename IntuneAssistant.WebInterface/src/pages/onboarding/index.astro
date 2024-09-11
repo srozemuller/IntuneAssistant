@@ -5,7 +5,7 @@ import ConsentCard from "../../components/onboarding";
 // TODO: Retrieve a list of active environments from the API
 const intuneAssistantEnvironments = [
     {
-        "environment": "community",
+        "environment": "1",
         "displayName": "Community (default)",
         "url": "https://api.intuneassistant.cloud"
     },
@@ -27,6 +27,7 @@ const intuneAssistantEnvironments = [
             const urlParams = new URLSearchParams(window.location.search);
             const error = urlParams.get('error');
             const tenant = urlParams.get('tenant');
+            const token = localStorage.getItem('consentToken') || '';
 
             if (error) {
                 window.location.href = `/onboarding/error?error=${error}`;

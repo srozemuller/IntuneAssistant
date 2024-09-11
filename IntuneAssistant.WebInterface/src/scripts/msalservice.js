@@ -1,18 +1,16 @@
+import { PublicClientApplication } from "@azure/msal-browser";
+import { msalInstance, loginRequest } from "@/authconfig";
+
+
 const authService = {
     isInitialized: false,
 
     async initialize() {
         try {
-            const initializeMsal = async () => {
-                try {
-                    await msalInstance.initialize();
-                    console.log('MSAL initialized');
-                    this.isInitialized = true;
-                } catch (error) {
-                    console.error('MSAL initialization error:', error);
-                }
-            };
-            await initializeMsal();
+            console.log('Initializing MSAL...');
+            await msalInstance.initialize();
+            this.isInitialized = true;
+            console.log('MSAL initialized');
         } catch (error) {
             console.error('MSAL initialization error:', error);
             throw error;
