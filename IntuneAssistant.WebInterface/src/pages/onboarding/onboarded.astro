@@ -13,6 +13,41 @@ const gifImage = "/images/giphy.gif";
 
 let tenant = '';
 ---
+<script>
+  import axios from 'axios';
+  import { CONSENT_CALLBACK } from '@/components/constants/apiUrls.js';
+
+  async function fetchData() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tenant = urlParams.get('tenant') || '';
+    document.getElementById('tenant-id').textContent += tenant;
+
+    const token = localStorage.getItem('consentToken');
+    if (token) {
+      const accessToken = localStorage.getItem('accessToken');
+      // Send request to the API endpoint
+      const callbackUrl = `${CONSENT_CALLBACK}?consentToken=${token}`;
+      try {
+        const response = await axios.get(callbackUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  if (typeof window !== "undefined") {
+    window.addEventListener('DOMContentLoaded', async (event) => {
+      await fetchData();
+      // Now the rest of the page can be shown
+      document.getElementById('page-content').style.display = 'block';
+    });
+  }
+</script>
 
 <MainLayout title="Onboarded" hideFooter>
   <div class="flex items-center justify-center h-[calc(100vh-25vh)]">
@@ -37,33 +72,3 @@ let tenant = '';
     </Card>
   </div>
 </MainLayout>
-
-<script>
-  import axios from 'axios';
-  import { CONSENT_CALLBACK } from '@/components/constants/apiUrls.js';
-  if (typeof window !== "undefined") {
-    window.addEventListener('DOMContentLoaded', (event) => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const tenant = urlParams.get('tenant') || '';
-      document.getElementById('tenant-id').textContent += tenant;
-
-      const token = localStorage.getItem('consentToken');
-      if (token) {
-        const accessToken = localStorage.getItem('accessToken');
-        // Send request to the API endpoint
-        const callbackUrl = `${CONSENT_CALLBACK}?consentToken=${token}`;
-        axios.get(callbackUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        })
-            .then((response) => {
-              console.log(response.data);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-      }
-    });
-  }
-</script>
