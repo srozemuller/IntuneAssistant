@@ -111,7 +111,7 @@ export const columns: ColumnDef<Task>[] = [
         accessorKey: 'includeGroupsReadable',
         accessorFn: (row) => row.conditions?.users.includeGroupsReadable?.map(user => user.displayName).join(", ") || "N/A",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Excluded Users" />
+            <DataTableColumnHeader column={column} title="Included Groups" />
         ),
         cell: ({ row }) => {
             const includedGroups = row.original.conditions?.users?.includeGroupsReadable;
@@ -125,7 +125,7 @@ export const columns: ColumnDef<Task>[] = [
         accessorKey: 'excludeGroupsReadable',
         accessorFn: (row) => row.conditions?.users.excludeGroupsReadable?.map(user => user.displayName).join(", ") || "N/A",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Excluded Users" />
+            <DataTableColumnHeader column={column} title="Excluded Groups" />
         ),
         cell: ({ row }) => {
             const excludedGroups = row.original.conditions?.users?.excludeGroupsReadable;
