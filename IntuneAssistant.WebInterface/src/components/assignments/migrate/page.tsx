@@ -1,27 +1,36 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
+import CSVUploader from '@/components/csv-uploader.tsx'; // Import the CSVUploader component
 import authDataMiddleware from "@/components/middleware/fetchData";
-import { ASSIGNMENTS_ENDPOINT } from "@/components/constants/apiUrls.js";
-import { columns } from "@/components/assignments/overview/columns.tsx";
+import { ASSIGNMENTS_MIGRATION_ENDPOINT} from "@/components/constants/apiUrls.js";
+import { columns } from "@/components/assignments/migrate/columns.tsx";
 import { toast } from "sonner";
 import { z } from "zod";
-import { assignmentsSchema, type Assignments } from "@/components/assignments/overview/schema";
+import {
+    assignmentMigrationSchema,
+    type AssignmentsMigrationModel
+} from "@/components/assignments/migrate/schema";
+
+interface MigratePageProps {
+    data: any[];
+}
 
 export default function DemoPage() {
-    const [data, setData] = useState<Assignments[]>([]);
+    const [data, setData] = useState<AssignmentsMigrationModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
+    const [jsonString, setJsonString] = useState<string>(''); // State to hold JSON string
 
     const fetchData = async () => {
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
-            const rawData: string = await authDataMiddleware(ASSIGNMENTS_ENDPOINT);
+            const rawData: string = await authDataMiddleware(ASSIGNMENTS_MIGRATION_ENDPOINT, 'POST', jsonString);
             setRawData(rawData);
             console.log('Raw data:', rawData);
-            const parsedData: Assignments[] = z.array(assignmentsSchema).parse(JSON.parse(rawData));
+            const parsedData: AssignmentsMigrationModel[] = z.array(assignmentMigrationSchema).parse(JSON.parse(rawData));
             setData(parsedData);
         } catch (error) {
             console.error('Error:', error);
@@ -34,17 +43,19 @@ export default function DemoPage() {
     };
 
     useEffect(() => {
-        fetchData();
-        toast.promise(fetchData(), {
-            loading: `Searching for assignments ...`,
-            success: `Assignments fetched successfully`,
-            error: (err) => `Failed to get assignments because: ${err.message}`,
-        });
-    }, []);
+        if (jsonString) {
+            toast.promise(fetchData(), {
+                loading: `Searching for assignments ...`,
+                success: `Assignments fetched successfully`,
+                error: (err) => `Failed to get assignments because: ${err.message}`,
+            });
+        }
+    }, [jsonString]);
 
     return (
         <div className="container max-w-[95%] py-6">
-            <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="assignments"  />
+            <CSVUploader setJsonString={setJsonString} /> {/* Add CSVUploader component */}
+            <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="assignmentsMigration" />
         </div>
     );
 }

@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Papa from 'papaparse';
 
-const CsvUploader: React.FC = () => {
-    const [jsonData, setJsonData] = useState<any[]>([]);
+interface CsvUploaderProps {
+    setJsonString: (jsonString: string) => void;
+}
 
+const CsvUploader: React.FC<CsvUploaderProps> = ({ setJsonString }) => {
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            console.log('File selected:', file);
             Papa.parse(file, {
                 header: true,
                 skipEmptyLines: true,
                 complete: (results) => {
-                    console.log('Parsed results:', results.data);
-                    setJsonData(results.data);
+                    const jsonString = JSON.stringify(results.data);
+                    setJsonString(jsonString);
                 },
             });
         }
@@ -22,7 +23,6 @@ const CsvUploader: React.FC = () => {
     return (
         <div>
             <input type="file" accept=".csv" onChange={handleFileUpload} />
-            <pre>{JSON.stringify(jsonData, null, 2)}</pre>
         </div>
     );
 };

@@ -24,14 +24,13 @@ import {
 } from "@/components/ui/table"
 
 import { DataTablePagination } from "@/components/ui/pagination"
-import { DataTableToolbar } from "@/components/assignments/overview/data-table-toolbar.tsx"
-
+import { DataTableToolbar } from "@/components/assignments/migrate/data-table-toolbar.tsx"
 interface DataTableProps<TData, TValue> {
     source: string
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     rawData: string
-    fetchData: () => Promise<void>
+    fetchData: () => Promise<void>; // Update the type to accept no parameters
 }
 
 export function DataTable<TData, TValue>({

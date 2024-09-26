@@ -1,22 +1,17 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { CheckCircle, TriangleAlert } from "lucide-react"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Checkbox } from "@/components/ui/checkbox"
+import { type AssignmentsMigrationModel } from "@/components/assignments/migrate/schema"
+import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
+import {migrationNeeded} from "@/components/assignments/migrate/fixed-values.tsx";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
+import {CheckCircle} from "lucide-react";
+import {Checkbox} from "@/components/ui/checkbox.tsx";
+import {DataTableRowActions} from "@/components/assignments/migrate/data-table-row-actions.tsx";
 
 
-import { type Assignments } from "@/components/assignments/overview/schema"
-import { DataTableColumnHeader } from "@/components/data-table-column-header"
-import {isAssignedValues} from "@/components/assignments/overview/fixed-values.tsx";
 
-
-export const columns: ColumnDef<Assignments>[] = [
+export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -42,29 +37,46 @@ export const columns: ColumnDef<Assignments>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "resourceType",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Type" />
-        ),
-        cell: ({ row }) => <div>{row.getValue("resourceType")}</div>,
-        filterFn: (row, id, value) => value.includes(row.getValue(id)),
+        accessorKey: 'resourceType',
+        header: 'Policy Type',
     },
     {
-        accessorKey: "resourceName",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Resource Name" />
-        ),
-        cell: ({ row }) => <div>{row.getValue("resourceName")}</div>,
+        accessorKey: 'currentPolicyId',
+        header: 'Current Policy ID',
     },
     {
-        accessorKey: "isAssigned",
+        accessorKey: 'currentPolicyName',
+        header: 'Current Policy Name',
+    },
+    {
+        accessorKey: 'currentPolicyAssignments',
+        header: 'Current Policy Assignments',
+    },
+    {
+        accessorKey: 'replacementPolicyId',
+        header: 'Replacement Policy ID',
+    },
+    {
+        accessorKey: 'replacementPolicyName',
+        header: 'Replacement Policy Name',
+    },
+    {
+        accessorKey: 'replacementPolicyAssignments',
+        header: 'Replacement Policy Assignments',
+        cell: ({ getValue }) => {
+            const assignments = getValue() as (string | null)[];
+            return assignments.join(', ');
+        },
+    },
+    {
+        accessorKey: "isMigrated",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Is Assigned" />
+            <DataTableColumnHeader column={column} title="Is Migrated" />
         ),
         cell: ({ row }) => {
-            const state = row.getValue("isAssigned")
-            const status = isAssignedValues.find(
-                (status) => status.value === row.original.isAssigned,
+            const state = row.getValue("isMigrated")
+            const status = migrationNeeded.find(
+                (status) => status.value === row.original.isMigrated,
             );
             if (!status) {
                 return (
@@ -101,32 +113,7 @@ export const columns: ColumnDef<Assignments>[] = [
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
-        accessorKey: "assignmentType",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Assignment Type" />
-        ),
-        cell: ({ row }) => <div>{row.getValue("assignmentType")}</div>,
-        filterFn: (row, id, value) => value.includes(row.getValue(id)),
+        id: "actions",
+        cell: ({ row }) => <DataTableRowActions row={row} />,
     },
-    {
-        accessorKey: "targetName",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Group" />
-        ),
-        cell: ({ row }) => <div>{row.getValue("targetName")}</div>,
-    },
-    {
-        accessorKey: "filterId",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Filter ID" />
-        ),
-        cell: ({ row }) => <div>{row.getValue("filterId")}</div>,
-    },
-    {
-        accessorKey: "filterType",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Filter Type" />
-        ),
-        cell: ({ row }) => <div>{row.getValue("filterType")}</div>,
-    }
 ];
