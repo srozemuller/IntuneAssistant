@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { type Row } from "@tanstack/react-table";
-import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 import {
     DropdownMenu,
@@ -9,19 +8,23 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip.tsx";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT } from "@/components/constants/apiUrls.js";
 
-interface DataTableRowActionsProps<TData extends { id: string, replacementPolicyId: string }> {
+interface DataTableRowActionsProps<TData extends { id: string, replacementPolicyId: string, isReadyForMigration: string, isMigrated: string, migrationCheckResult?: { sourcePolicyExists: boolean, sourcePolicyIsUnique: boolean, destinationPolicyExists: boolean, destinationPolicyIsUnique: boolean, groupExists: boolean } }> {
     row: Row<TData>
 }
 
-export function DataTableRowActions<TData extends { id: string, replacementPolicyId: string }>({
-                                                                                                   row,
-                                                                                               }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends { id: string, replacementPolicyId: string, isReadyForMigration: string, isMigrated: string, migrationCheckResult?: { sourcePolicyExists: boolean, sourcePolicyIsUnique: boolean, destinationPolicyExists: boolean, destinationPolicyIsUnique: boolean, groupExists: boolean } }>({
+                                                                                                                                                                                                                                                                                                                                       row,
+                                                                                                                                                                                                                                                                                                                                   }: DataTableRowActionsProps<TData>) {
     const [consentUri, setConsentUri] = useState<string | null>(null);
     const task = assignmentMigrationSchema.parse(row.original);
+    const isReadyForMigration = row.original.isReadyForMigration === 'yes';
+    const isMigrated = row.original.isMigrated === 'true';
+    const migrationCheckResult = row.original.migrationCheckResult;
 
     const handleMigrate = async () => {
         try {
@@ -34,6 +37,17 @@ export function DataTableRowActions<TData extends { id: string, replacementPolic
                 window.location.href = error.consentUri; // Redirect to consent URI
             }
         }
+    };
+
+    const getTooltipMessage = () => {
+        if (!migrationCheckResult) return "Migration check result is missing.";
+        const messages = [];
+        if (!migrationCheckResult.sourcePolicyExists) messages.push("Source policy does not exist.");
+        if (!migrationCheckResult.sourcePolicyIsUnique) messages.push("Source policy is not unique.");
+        if (!migrationCheckResult.destinationPolicyExists) messages.push("Destination policy does not exist.");
+        if (!migrationCheckResult.destinationPolicyIsUnique) messages.push("Destination policy is not unique.");
+        if (!migrationCheckResult.groupExists) messages.push("Group does not exist.");
+        return messages.join(" ");
     };
 
     return (
@@ -49,9 +63,22 @@ export function DataTableRowActions<TData extends { id: string, replacementPolic
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
                 <DropdownMenuItem asChild>
-                    <button onClick={handleMigrate}>
-                        Migrate <ExternalLink className="h-3 w-3 ml-3" />
-                    </button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={handleMigrate}
+                                    //disabled={!isReadyForMigration || isMigrated}
+                                    className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
+                                >
+                                    Migrate
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{getTooltipMessage()}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

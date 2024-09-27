@@ -3,7 +3,7 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { type AssignmentsMigrationModel } from "@/components/assignments/migrate/schema"
 import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
-import {migrationNeeded} from "@/components/assignments/migrate/fixed-values.tsx";
+import {migrationNeeded, readyForMigration} from "@/components/assignments/migrate/fixed-values.tsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 import {CheckCircle} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
@@ -42,15 +42,33 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         accessorKey: 'currentPolicyId',
-        header: 'Current Policy ID',
+        header: 'Source Policy ID',
     },
     {
         accessorKey: 'currentPolicyName',
-        header: 'Current Policy Name',
+        header: 'Source Policy Name',
     },
     {
         accessorKey: 'currentPolicyAssignments',
-        header: 'Current Policy Assignments',
+        header: 'Source Policy Assignments',
+        cell: ({ row }) => {
+            const assignments = row.getValue('currentPolicyAssignments') as (string | null)[];
+            const groupToMigrate = row.original.groupToMigrate;
+
+            return (
+                <div>
+                    {assignments.map((assignment, index) => (
+                        <span
+                            key={index}
+                            className={assignment === groupToMigrate ? 'text-primary' : ''}
+                        >
+                        {assignment}
+                            {index < assignments.length - 1 && ', '}
+                    </span>
+                    ))}
+                </div>
+            );
+        },
     },
     {
         accessorKey: 'replacementPolicyId',
@@ -110,6 +128,64 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
             );
         },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    },
+    {
+        accessorKey: "isReadyForMigration",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Ready for Migration" />
+        ),
+        cell: ({ row }) => {
+            const state = row.getValue("isReadyForMigration");
+            const isMigrated = row.original.isMigrated === 'true';
+            const status = readyForMigration.find(
+                (status) => status.value === row.original.isReadyForMigration,
+            );
+            const migrationCheckResult = row.original.migrationCheckResult;
+
+            const getTooltipMessage = () => {
+                if (isMigrated) return "Migration is already done.";
+                if (!migrationCheckResult) return "Migration check result is missing.";
+                const messages = [];
+                if (!migrationCheckResult.sourcePolicyExists) messages.push("Source policy does not exist.");
+                if (!migrationCheckResult.sourcePolicyIsUnique) messages.push("Source policy is not unique.");
+                if (!migrationCheckResult.destinationPolicyExists) messages.push("Destination policy does not exist.");
+                if (!migrationCheckResult.destinationPolicyIsUnique) messages.push("Destination policy is not unique.");
+                if (!migrationCheckResult.groupExists) messages.push("Group does not exist.");
+                return messages.join(" ");
+            };
+
+            if (!status) {
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className={`flex w-[100px] items-center ${isMigrated ? 'text-gray-500' : ''}`}>
+                                    <CheckCircle />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{getTooltipMessage()}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
+            }
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className={`flex w-[100px] items-center ${isMigrated ? 'text-gray-500' : ''}`}>
+                                <status.icon className={`h-5 w-5 ${status.color}`} />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{getTooltipMessage()}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
+        },
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {

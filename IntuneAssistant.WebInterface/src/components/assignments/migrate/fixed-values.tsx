@@ -14,3 +14,18 @@ export const migrationNeeded = [
         color: "text-red-500",
     }
 ]
+
+export const readyForMigration = [
+    {
+        value: true,
+        label: "Yes",
+        icon: CheckCircle,
+        color: "text-green-500",
+    },
+    {
+        value: false,
+        label: "No",
+        icon: TriangleAlert,
+        color: "text-orange-500",
+    }
+]
