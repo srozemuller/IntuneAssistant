@@ -28,13 +28,14 @@ export default function DemoPage() {
                 authDataMiddleware(GROUP_POLICY_SETTINGS_ENDPOINT, 'GET')
             ]);
 
-            const parsedPolicyData = JSON.parse(policyData);
-            const parsedGroupPolicyData = JSON.parse(groupPolicyData);
+            const parsedPolicyData = JSON.parse(policyData?.data);
+            const parsedGroupPolicyData = JSON.parse(groupPolicyData?.data);
 
             const combinedData = [...parsedPolicyData, ...parsedGroupPolicyData];
             setRawData(JSON.stringify(combinedData));
 
             const parsedData: PolicySettings[] = z.array(settingSchema).parse(combinedData);
+
             setData(parsedData);
         } catch (error) {
             console.error('Error:', error);

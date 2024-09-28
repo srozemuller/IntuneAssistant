@@ -18,7 +18,9 @@ export default function DemoPage() {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
-            const rawData: string = await authDataMiddleware(CA_POLICIES_ENDPOINT);
+            const response = await authDataMiddleware(CA_POLICIES_ENDPOINT);
+            const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data); // Ensure rawData is a string
+
             setRawData(rawData);
             console.log('Raw data:', rawData);
             const parsedData: Task[] = z.array(taskSchema).parse(JSON.parse(rawData));
