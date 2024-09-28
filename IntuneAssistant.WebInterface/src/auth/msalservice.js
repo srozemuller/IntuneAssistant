@@ -22,6 +22,10 @@ const authService = {
         }
     },
 
+    isInteractionInProgress() {
+        return this.msalInstance.getInteractionInProgress();
+    },
+
     async login() {
         if (!this.isInitialized) {
             await this.initialize();

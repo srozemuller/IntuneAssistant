@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('login-link').addEventListener('click', async (e) => {
         e.preventDefault();
+        if (authService.isInteractionInProgress()) {
+            console.log('Login interaction is already in progress.');
+            return;
+        }
         try {
             await authService.login();
             updateAuthLinks();

@@ -9,6 +9,11 @@ const intuneAssistantEnvironments = [
         "displayName": "Community (default)",
         "url": "https://api.intuneassistant.cloud"
     },
+    {
+        "environment": "2",
+        "displayName": "Basic",
+        "url": "https://api.intuneassistant.cloud"
+    },
 ]
 
 ---
@@ -25,12 +30,15 @@ const intuneAssistantEnvironments = [
     if (typeof window !== "undefined") {
         window.addEventListener('DOMContentLoaded', (event) => {
             const urlParams = new URLSearchParams(window.location.search);
+            console.log(urlParams.get('error'));
+            console.log(urlParams.get('error_description'));
             const error = urlParams.get('error');
             const tenant = urlParams.get('tenant');
             const token = localStorage.getItem('consentToken') || '';
 
             if (error) {
-                window.location.href = `/onboarding/error?error=${error}`;
+                window.location.href = `/onboarding/error?error=${error}&error_description=${urlParams.get('error_description')}`;
+                console.log(urlParams);
             } else if (tenant) {
                 window.location.href = `/onboarding/onboarded?tenant=${tenant}`;
             }

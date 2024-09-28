@@ -45,7 +45,19 @@ export default function ConsentCard({
     );
     const [isOptionsOpen, setIsOptionsOpen] = React.useState<boolean>(false);
     const [tenantId, setTenantId] = React.useState<string>("");
+    const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        const fetchCurrentTenantId = async () => {
+            if (authService.isLoggedIn()) {
+                const userClaims = authService.getTokenClaims();
+                setCurrentTenantId(userClaims.tenantId); // Assuming 'tid' is the tenant ID claim
+            }
+        };
+
+        fetchCurrentTenantId();
+    }, []);
 
     const fetchUrlAndRedirect = async () => {
         setIsLoading(true);
@@ -106,6 +118,11 @@ export default function ConsentCard({
                 <form>
                     <div className="grid w-full items-center gap-4">
                         <div className="flex flex-col space-y-1.5">
+                            {currentTenantId && (
+                                <div className="text-sm text-gray-500">
+                                    Current Tenant ID: {currentTenantId}
+                                </div>
+                            )}
                             <Label htmlFor="name">
                                 Tenant ID <small><a href="https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id#find-your-microsoft-entra-tenant" target="_blank"> (find Tenant ID)</a></small>
                             </Label>

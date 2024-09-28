@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { msalInstance } from '@/components/auth';
 
-
 const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     let formattedError = '';
+    let consentUri = '';
 
     // Ensure MSAL is initialized
     await msalInstance.initialize();
@@ -16,12 +16,28 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     }
 
     const account = accounts[0];
-    const tokenResponse = await msalInstance.acquireTokenSilent({
-        scopes: ['api://b0533a36-0d90-4634-9f08-99a50b78b477/access_as_user'],
-        account,
-    });
+    let accessToken;
 
-    const accessToken = tokenResponse.accessToken;
+    try {
+        const tokenResponse = await msalInstance.acquireTokenSilent({
+            scopes: ['api://b0533a36-0d90-4634-9f08-99a50b78b477/access_as_user'],
+            account,
+        });
+        accessToken = tokenResponse.accessToken;
+    } catch (error) {
+        console.log("error: ", error);
+        if (error.message && error.message.includes('interaction_required')) {
+            // Token expired or invalid, prompt user to log in again
+            await msalInstance.loginPopup();
+            const tokenResponse = await msalInstance.acquireTokenSilent({
+                scopes: ['api://b0533a36-0d90-4634-9f08-99a50b78b477/access_as_user'],
+                account,
+            });
+            accessToken = tokenResponse.accessToken;
+        } else {
+            throw error;
+        }
+    }
 
     // Fetch data using the access token
     try {
@@ -31,6 +47,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
                 response = await axios.get(endpoint, {
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
+
                 break;
             case 'POST':
                 response = await axios.post(endpoint, body, {
@@ -44,20 +61,35 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
             default:
                 throw new Error(`Unsupported method: ${method}`);
         }
-        return JSON.stringify(response.data);
+        return response; // Return the full response object
     } catch (error) {
-        if (error.response && error.response.headers['www-authenticate']) {
-            const authHeader = error.response.headers['www-authenticate'];
-            const matches = authHeader.match(/error_description="([^"]+)"/);
-            if (matches && matches[1]) {
-                formattedError = matches[1];
+        if (error.response) {
+            console.log('Error response:', error.response);
+            if (error.response.data && error.response.data.message && error.response.data.message.includes("AADSTS65001")) {
+                // Redirect to onboarding page
+                window.location.href = '/onboarding';
+                return;
+            }
+            if (error.response.headers['www-authenticate']) {
+                console.log('Error response headers:', error.response.headers);
+                const authHeader = error.response.headers['www-authenticate'];
+                const matches = authHeader.match(/consentUri="([^"]+)"/);
+                if (matches && matches[1]) {
+                    consentUri = matches[1];
+                }
+                const errorMessage = authHeader.match(/error_description="([^"]+)"/);
+                if (errorMessage && errorMessage[1]) {
+                    formattedError = errorMessage[1];
+                } else {
+                    formattedError = 'An error occurred. Please try again.';
+                }
             } else {
-                formattedError = 'An error occurred. Please try again.';
+                formattedError = `${error.response.statusText}, ${error.response.status}`;
             }
         } else {
-            formattedError = `${error.response.statusText}, ${error.response.status}`;
+            formattedError = error.message || 'An unknown error occurred';
         }
-        throw new Error(formattedError);
+        throw { message: formattedError, consentUri };
     }
 };
 

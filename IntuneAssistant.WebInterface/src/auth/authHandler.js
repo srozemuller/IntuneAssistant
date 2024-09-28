@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('login-link').addEventListener('click', async (e) => {
         e.preventDefault();
+        if (authService.isInteractionInProgress()) {
+            console.log('Login interaction is already in progress.');
+            return;
+        }
         try {
             await authService.login();
             updateAuthLinks();
@@ -29,7 +33,7 @@ function updateAuthLinks() {
     const tenantIdSpan = document.getElementById('tenant-id');
     if (isLoggedIn) {
         const userClaims = authService.getTokenClaims();
-        const userName = userClaims ? `Hi, ${userClaims.name} ` : '';
+        const userName = userClaims ? `Hi, ${userClaims.name}` : '';
         userNameSpan.textContent = userName; // Set the user's name
         userNameSpan.style.display = 'inline-block'; // Make the user's name visible
 
