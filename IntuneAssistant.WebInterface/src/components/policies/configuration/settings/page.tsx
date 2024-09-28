@@ -19,11 +19,15 @@ export default function DemoPage() {
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
             const policyData = await authDataMiddleware(CONFIGURATION_POLICIES_ENDPOINT);
-            const parsedPolicyData = JSON.parse(policyData);
+            const rawPolicyData = typeof policyData.data === 'string' ? policyData.data : JSON.stringify(policyData.data); // Ensure rawData is a string
+
+            const parsedPolicyData = JSON.parse(rawPolicyData);
             const ids = parsedPolicyData.map((policy: { id: string, name: string }) => ({ id: policy.id, name: policy.name }));
             const idsJson = JSON.stringify(ids);
             console.log('Policy IDs:', idsJson);
-            const rawData: string = await authDataMiddleware(POLICY_SETTINGS_ENDPOINT, 'POST', idsJson);
+            const response = await authDataMiddleware(POLICY_SETTINGS_ENDPOINT, 'POST', idsJson);
+            const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data); // Ensure rawData is a string
+
             setRawData(rawData);
             console.log('Raw data:', rawData);
             const parsedData: PolicySettings[] = z.array(settingSchema).parse(JSON.parse(rawData));

@@ -18,7 +18,9 @@ export default function DemoPage() {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
-            const rawData: string = await authDataMiddleware(CONFIGURATION_POLICIES_ENDPOINT);
+            const response = await authDataMiddleware(CONFIGURATION_POLICIES_ENDPOINT);
+            const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data); // Ensure rawData is a string
+
             setRawData(rawData);
             console.log('Raw data:', rawData);
             const parsedData: Policy[] = z.array(policySchema).parse(JSON.parse(rawData));
