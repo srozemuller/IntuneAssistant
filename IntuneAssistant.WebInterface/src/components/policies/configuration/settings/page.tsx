@@ -23,15 +23,19 @@ export default function DemoPage() {
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
 
-            const [policyData, groupPolicyData] = await Promise.all([
+            const [policyResponse, groupPolicyResponse] = await Promise.all([
                 authDataMiddleware(POLICY_SETTINGS_ENDPOINT, 'GET'),
                 authDataMiddleware(GROUP_POLICY_SETTINGS_ENDPOINT, 'GET')
             ]);
 
-            const parsedPolicyData = JSON.parse(policyData?.data);
-            const parsedGroupPolicyData = JSON.parse(groupPolicyData?.data);
+            if (!policyResponse || !groupPolicyResponse) {
+                throw new Error('One or both responses are undefined');
+            }
 
-            const combinedData = [...parsedPolicyData, ...parsedGroupPolicyData];
+            const policyData = typeof policyResponse.data === 'string' ? JSON.parse(policyResponse.data) : policyResponse.data;
+            const groupPolicyData = typeof groupPolicyResponse.data === 'string' ? JSON.parse(groupPolicyResponse.data) : groupPolicyResponse.data;
+
+            const combinedData = [...policyData, ...groupPolicyData];
             setRawData(JSON.stringify(combinedData));
 
             const parsedData: PolicySettings[] = z.array(settingSchema).parse(combinedData);
