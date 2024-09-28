@@ -1,8 +1,9 @@
+// src/components/assignments/migrate/page.tsx
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
-import CSVUploader from '@/components/csv-uploader.tsx'; // Import the CSVUploader component
+import CSVUploader from '@/components/csv-uploader.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
-import { ASSIGNMENTS_MIGRATION_ENDPOINT} from "@/components/constants/apiUrls.js";
+import { ASSIGNMENTS_MIGRATION_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/migrate/columns.tsx";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -20,14 +21,15 @@ export default function DemoPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
-    const [jsonString, setJsonString] = useState<string>(''); // State to hold JSON string
+    const [jsonString, setJsonString] = useState<string>('');
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            setError(''); // Reset the error state to clear previous errors
-            setData([]); // Clear the table data
-            const rawData: string = await authDataMiddleware(ASSIGNMENTS_MIGRATION_ENDPOINT, 'POST', jsonString);
+            setError('');
+            setData([]);
+            const response = await authDataMiddleware(ASSIGNMENTS_MIGRATION_ENDPOINT, 'POST', jsonString);
+            const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data); // Ensure rawData is a string
             setRawData(rawData);
             console.log('Raw data:', rawData);
             const parsedData: AssignmentsMigrationModel[] = z.array(assignmentMigrationSchema).parse(JSON.parse(rawData));
@@ -54,7 +56,7 @@ export default function DemoPage() {
 
     return (
         <div className="container max-w-[95%] py-6">
-            <CSVUploader setJsonString={setJsonString} /> {/* Add CSVUploader component */}
+            <CSVUploader setJsonString={setJsonString} />
             <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="assignmentsMigration" />
         </div>
     );

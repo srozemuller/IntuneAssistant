@@ -47,6 +47,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
                 response = await axios.get(endpoint, {
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
+
                 break;
             case 'POST':
                 response = await axios.post(endpoint, body, {
@@ -60,7 +61,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
             default:
                 throw new Error(`Unsupported method: ${method}`);
         }
-        return JSON.stringify(response.data);
+        return response; // Return the full response object
     } catch (error) {
         if (error.response) {
             console.log('Error response:', error.response);

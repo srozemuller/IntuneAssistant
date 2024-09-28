@@ -1,3 +1,4 @@
+// src/components/assignments/migrate/data-table-row-actions.tsx
 import { useState } from 'react';
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { type Row } from "@tanstack/react-table";
@@ -14,13 +15,16 @@ import authDataMiddleware from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT } from "@/components/constants/apiUrls.js";
 
 interface DataTableRowActionsProps<TData extends { id: string, replacementPolicyId: string, isReadyForMigration: string, isMigrated: string, migrationCheckResult?: { sourcePolicyExists: boolean, sourcePolicyIsUnique: boolean, destinationPolicyExists: boolean, destinationPolicyIsUnique: boolean, groupExists: boolean } }> {
-    row: Row<TData>
+    row: Row<TData>,
+    refreshRow: () => void
 }
 
 export function DataTableRowActions<TData extends { id: string, replacementPolicyId: string, isReadyForMigration: string, isMigrated: string, migrationCheckResult?: { sourcePolicyExists: boolean, sourcePolicyIsUnique: boolean, destinationPolicyExists: boolean, destinationPolicyIsUnique: boolean, groupExists: boolean } }>({
                                                                                                                                                                                                                                                                                                                                        row,
+                                                                                                                                                                                                                                                                                                                                       refreshRow
                                                                                                                                                                                                                                                                                                                                    }: DataTableRowActionsProps<TData>) {
     const [consentUri, setConsentUri] = useState<string | null>(null);
+    const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
     const task = assignmentMigrationSchema.parse(row.original);
     const isReadyForMigration = row.original.isReadyForMigration === 'yes';
     const isMigrated = row.original.isMigrated === 'true';
@@ -28,9 +32,16 @@ export function DataTableRowActions<TData extends { id: string, replacementPolic
 
     const handleMigrate = async () => {
         try {
+            setMigrationStatus('pending');
             const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.replacementPolicyId}`, 'POST', JSON.stringify(task));
-            console.log('Migration successful:', response);
+            if (response.status === 204) {
+                setMigrationStatus('success');
+                refreshRow(); // Refresh the row data
+            } else {
+                setMigrationStatus('failed');
+            }
         } catch (error: any) {
+            setMigrationStatus('failed');
             console.log('Migration failed:', error);
             if (error.consentUri) {
                 setConsentUri(error.consentUri);
@@ -55,7 +66,7 @@ export function DataTableRowActions<TData extends { id: string, replacementPolic
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                    className={`flex h-8 w-8 p-0 data-[state=open]:bg-muted ${migrationStatus === 'success' ? 'bg-green-500' : ''}`}
                 >
                     <DotsHorizontalIcon className="h-4 w-4" />
                     <span className="sr-only">Open menu</span>
@@ -68,7 +79,6 @@ export function DataTableRowActions<TData extends { id: string, replacementPolic
                             <TooltipTrigger asChild>
                                 <button
                                     onClick={handleMigrate}
-                                    //disabled={!isReadyForMigration || isMigrated}
                                     className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
                                 >
                                     Migrate

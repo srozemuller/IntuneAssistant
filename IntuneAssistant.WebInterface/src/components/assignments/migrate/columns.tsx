@@ -25,14 +25,18 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
                 className="translate-y-[2px]"
             />
         ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-                className="translate-y-[2px]"
-            />
-        ),
+        cell: ({ row }) => {
+            const isReadyForMigration = row.original.isReadyForMigration;
+            return (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                    className="translate-y-[2px]"
+                    disabled={!isReadyForMigration}
+                />
+            );
+        },
         enableSorting: false,
         enableHiding: false,
     },
@@ -69,6 +73,10 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
                 </div>
             );
         },
+    },
+    {
+        accessorKey: 'groupToMigrate',
+        header: 'Group to migrate',
     },
     {
         accessorKey: 'replacementPolicyId',
@@ -137,7 +145,7 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
         ),
         cell: ({ row }) => {
             const state = row.getValue("isReadyForMigration");
-            const isMigrated = row.original.isMigrated === 'true';
+            const isMigrated = row.original.isMigrated;
             const status = readyForMigration.find(
                 (status) => status.value === row.original.isReadyForMigration,
             );
