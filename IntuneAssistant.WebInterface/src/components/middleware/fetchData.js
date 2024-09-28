@@ -65,6 +65,11 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     } catch (error) {
         if (error.response) {
             console.log('Error response:', error.response);
+            if (error.response.data && error.response.data.message && error.response.data.message.includes("AADSTS65001")) {
+                // Redirect to onboarding page
+                window.location.href = '/onboarding';
+                return;
+            }
             if (error.response.headers['www-authenticate']) {
                 console.log('Error response headers:', error.response.headers);
                 const authHeader = error.response.headers['www-authenticate'];
