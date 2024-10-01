@@ -197,7 +197,7 @@ export const columns: ColumnDef<Assignments>[] = [
             const [members, setMembers] = useState<UserMember[]>([]);
             const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-            if (assignmentType === "Entra ID Group") {
+            if (assignmentType === "Entra ID Group" || assignmentType === "Entra ID Group Exclude") {
                 return (
                     <>
                         <div
