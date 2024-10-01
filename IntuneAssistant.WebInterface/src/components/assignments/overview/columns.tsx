@@ -1,19 +1,98 @@
-"use client"
+import { useState } from "react";
+import { DataTableColumnHeader } from "@/components/data-table-column-header.tsx";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import authDataMiddleware from "@/components/middleware/fetchData";
+import { CheckCircle } from "lucide-react";
+import { DataTable } from "./data-table-groups.tsx"; // Ensure you have a DataTable component
+import type { ColumnDef } from "@tanstack/react-table";
+import type { Assignments } from "@/components/assignments/overview/schema.tsx";
+import {isAssignedValues, memberType} from "@/components/assignments/overview/fixed-values.tsx";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {GROUPS_ENDPOINT} from "@/components/constants/apiUrls"; // Ensure you have a Dialog component
 
-import { type ColumnDef } from "@tanstack/react-table"
-import { CheckCircle, TriangleAlert } from "lucide-react"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Checkbox } from "@/components/ui/checkbox"
+// Define the UserMember interface
+interface UserMember {
+    id: string;
+    displayName: string;
+    accountEnabled: boolean;
+    type: string;
+}
 
+const fetchGroupMembers = async (id: string, setMembers: React.Dispatch<React.SetStateAction<UserMember[]>>, setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>) => {
+    try {
+        const response = await authDataMiddleware(`${GROUPS_ENDPOINT}/${id}/members`);
+        if (response?.data) {
+            setMembers(response.data);
+            console.log("Group members:", response.data);
+            setIsDialogOpen(true);
+        } else {
+            console.error("No data received from the server.");
+        }
+    } catch (error) {
+        console.error("Failed to fetch group members:", error);
+    }
+};
 
-import { type Assignments } from "@/components/assignments/overview/schema"
-import { DataTableColumnHeader } from "@/components/data-table-column-header"
-import {isAssignedValues} from "@/components/assignments/overview/fixed-values.tsx";
+// Define columns for the DataTable in the dialog
+const memberColumns: ColumnDef<UserMember>[] = [
+    {
+        accessorKey: "displayName",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Display Name" />
+        ),
+        cell: ({ row }) => <div>{row.getValue("displayName")}</div>,
+    },
+    {
+        accessorKey: "accountEnabled",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Enabled" />
+        ),
+        cell: ({ row }) => <div>{row.getValue("accountEnabled")}</div>,
+    },
+    {
+        accessorKey: "type",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Type" />
+        ),
+        cell: ({ row }) => {
+            const state = row.getValue("isAssigned");
+            const status = memberType.find(
+                (status) => status.value === row.original.type,
+            );
+            if (!status) {
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className="flex w-[100px] items-center">
+                                    <CheckCircle />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Unknown</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
+            }
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className="flex w-[100px] items-center">
+                                <status.icon className={`h-5 w-5 ${status.color}`} />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{status.label}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
+        },
+    }
+];
 
 
 export const columns: ColumnDef<Assignments>[] = [
@@ -62,7 +141,7 @@ export const columns: ColumnDef<Assignments>[] = [
             <DataTableColumnHeader column={column} title="Is Assigned" />
         ),
         cell: ({ row }) => {
-            const state = row.getValue("isAssigned")
+            const state = row.getValue("isAssigned");
             const status = isAssignedValues.find(
                 (status) => status.value === row.original.isAssigned,
             );
@@ -72,7 +151,7 @@ export const columns: ColumnDef<Assignments>[] = [
                         <Tooltip>
                             <TooltipTrigger>
                                 <div className="flex w-[100px] items-center">
-                                    <CheckCircle/>
+                                    <CheckCircle />
                                 </div>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -87,7 +166,7 @@ export const columns: ColumnDef<Assignments>[] = [
                     <Tooltip>
                         <TooltipTrigger>
                             <div className="flex w-[100px] items-center">
-                                <status.icon className={`h-5 w-5 ${status.color}`}/>
+                                <status.icon className={`h-5 w-5 ${status.color}`} />
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -97,7 +176,6 @@ export const columns: ColumnDef<Assignments>[] = [
                 </TooltipProvider>
             );
         },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
@@ -113,20 +191,51 @@ export const columns: ColumnDef<Assignments>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Group" />
         ),
-        cell: ({ row }) => <div>{row.getValue("targetName")}</div>,
+        cell: ({ row }) => {
+            const assignmentType = row.getValue("assignmentType");
+            const targetId: string = row.original.targetId; // Access targetId from row.original
+            const [members, setMembers] = useState<UserMember[]>([]);
+            const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+            if (assignmentType === "Entra ID Group") {
+                return (
+                    <>
+                        <div
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() => fetchGroupMembers(targetId, setMembers, setIsDialogOpen)}
+                        >
+                            {row.getValue("targetName")}
+                        </div>
+                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                            <DialogContent className="container max-w-[60%] py-6">
+                                <DialogTitle>Group members</DialogTitle>
+                                <DialogDescription>
+                                    These are the members of the group {row.getValue("targetName")}
+                                </DialogDescription>
+                                <div className="container max-w-[95%] py-6">
+                                    <DataTable columns={memberColumns} data={members}/>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </>
+                );
+            }
+
+            return <div>{row.getValue("targetName")}</div>;
+        },
     },
     {
         accessorKey: "filterId",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Filter ID" />
+        header: ({column}) => (
+            <DataTableColumnHeader column={column} title="Filter ID"/>
         ),
-        cell: ({ row }) => <div>{row.getValue("filterId")}</div>,
+        cell: ({row}) => <div>{row.getValue("filterId")}</div>,
     },
     {
         accessorKey: "filterType",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Filter Type" />
+        header: ({column}) => (
+            <DataTableColumnHeader column={column} title="Filter Type"/>
         ),
-        cell: ({ row }) => <div>{row.getValue("filterType")}</div>,
+        cell: ({row}) => <div>{row.getValue("filterType")}</div>,
     }
 ];

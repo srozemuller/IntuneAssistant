@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle, TriangleAlert } from "lucide-react"
+import { CheckCircle, XCircle, UserCircle, Computer, Users } from "lucide-react"
 
 export const isAssignedValues = [
     {
@@ -12,6 +12,42 @@ export const isAssignedValues = [
         label: "Not Assigned",
         icon: XCircle,
         color: "text-red-500",
+    }
+]
+
+export const accountIsEnabled = [
+    {
+        value: true,
+        label: "Enabled",
+        icon: CheckCircle,
+        color: "text-green-500",
+    },
+    {
+        value: false,
+        label: "Disabled",
+        icon: XCircle,
+        color: "text-red-500",
+    }
+]
+
+export const memberType = [
+    {
+        value: "User",
+        label: "User",
+        icon: UserCircle,
+        color: "text-grey-500",
+    },
+    {
+        value: "Device",
+        label: "Device",
+        icon: Computer,
+        color: "text-grey-500",
+    },
+    {
+        value: "Group",
+        label: "Group",
+        icon: Users,
+        color: "text-grey-500",
     }
 ]
 
