@@ -7,7 +7,7 @@ import { CheckCircle } from "lucide-react";
 import { DataTable } from "./data-table-groups.tsx"; // Ensure you have a DataTable component
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Assignments } from "@/components/assignments/overview/schema.tsx";
-import {isAssignedValues, memberType} from "@/components/assignments/overview/fixed-values.tsx";
+import {accountIsEnabled, isAssignedValues, memberType} from "@/components/assignments/overview/fixed-values.tsx";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {GROUPS_ENDPOINT} from "@/components/constants/apiUrls"; // Ensure you have a Dialog component
 
@@ -48,7 +48,42 @@ const memberColumns: ColumnDef<UserMember>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Enabled" />
         ),
-        cell: ({ row }) => <div>{row.getValue("accountEnabled")}</div>,
+        cell: ({ row }) => {
+            const state = row.getValue("accountEnabled");
+            const status = accountIsEnabled.find(
+                (status) => status.value === row.original.accountEnabled,
+            );
+            if (!status) {
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className="flex w-[100px] items-center">
+                                    <CheckCircle />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Unknown</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
+            }
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className="flex w-[100px] items-center">
+                                <status.icon className={`h-5 w-5 ${status.color}`} />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{status.label}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
+        },
     },
     {
         accessorKey: "type",

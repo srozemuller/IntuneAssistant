@@ -12,6 +12,7 @@ export const POLICIES_ENDPOINT = `${API_BASE_URL}/policies`;
 export const CONFIGURATION_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/configuration`;
 export const CA_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/ca`;
 export const ASSIGNMENTS_ENDPOINT = `${API_BASE_URL}/assignments`;
+export const ASSIGNMENTS_FILTERS_ENDPOINT = `${API_BASE_URL}/assignments/filters`;
 export const POLICY_SETTINGS_ENDPOINT = `${CONFIGURATION_POLICIES_ENDPOINT}/settings`;
 
 export const GROUP_POLICY_SETTINGS_ENDPOINT = `${POLICIES_ENDPOINT}/group/settings`;

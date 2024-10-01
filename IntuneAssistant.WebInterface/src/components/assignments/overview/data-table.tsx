@@ -33,6 +33,7 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     rawData: string
+    rawDataFilters: string
     fetchData: () => Promise<void>
 }
 interface UserMember {
@@ -44,6 +45,7 @@ export function DataTable<TData, TValue>({
                                              columns,
                                              data,
                                              rawData,
+                                             rawDataFilters,
                                              fetchData,
                                              source,
                                          }: DataTableProps<TData, TValue>) {

@@ -1,6 +1,11 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import {accountIsEnabled, assignmentTypes, isAssignedValues} from "@/components/assignments/overview/fixed-values.tsx"
+import {
+    accountIsEnabled,
+    assignmentTypes,
+    isAssignedValues,
+    memberType
+} from "@/components/assignments/overview/fixed-values.tsx"
 import {configurationTypes} from "@/components/constants/policyTypes.ts"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
@@ -18,7 +23,6 @@ interface TData {
     displayName: string;
     id: string;
     name: string;
-    // Add other properties as needed
 }
 
 interface DataTableToolbarProps {
@@ -94,7 +98,7 @@ export function DataTableToolbar({
                     <DataTableFacetedFilter
                         column={table.getColumn("type")}
                         title="Member Type"
-                        options={configurationTypes}
+                        options={memberType}
                     />
                 )}
                 {table.getColumn("accountEnabled") && (
