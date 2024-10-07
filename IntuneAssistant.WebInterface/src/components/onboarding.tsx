@@ -77,7 +77,7 @@ export default function ConsentCard({
             const response = await fetch(apiUrl, { method: 'GET' });
             const data = await response.json();
             const consentUrl = data.url;
-            const token = data.token;
+            const token = data.onboardingToken;
             localStorage.setItem('consentToken', token); // Store token in localStorage
            console.log( localStorage.getItem('consentToken'));
 
