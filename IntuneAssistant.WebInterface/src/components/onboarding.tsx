@@ -72,7 +72,7 @@ export default function ConsentCard({
 
             const apiUrl = `${environments
                 .filter((env) => env.environment === selectedEnvironment)
-                .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&userName=${preferredUsername}&state=onboarding`;
+                .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&userPrincipalName=${preferredUsername}&state=onboarding`;
 
             const response = await fetch(apiUrl, { method: 'GET' });
             const data = await response.json();
