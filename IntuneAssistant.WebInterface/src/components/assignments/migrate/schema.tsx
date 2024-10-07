@@ -8,6 +8,20 @@ const migrationCheckResultSchema = z.object({
     groupExists: z.boolean(),
 });
 
+const targetSchema = z.object({
+    "@odata.type": z.string(),
+    deviceAndAppManagementAssignmentFilterId: z.string().nullable(),
+    deviceAndAppManagementAssignmentFilterType: z.string(),
+    groupId: z.string(),
+});
+
+const originalAssignmentSchema = z.object({
+    id: z.string(),
+    sourceId: z.string(),
+    target: targetSchema,
+});
+
+
 const assignmentMigrationSchema = z.object({
     resourceType: z.string(),
     currentPolicyId: z.string(),
@@ -16,6 +30,7 @@ const assignmentMigrationSchema = z.object({
     assignmentId: z.string(),
     groupToMigrate: z.string(),
     replacementPolicyId: z.string(),
+    originalAssignments: z.array(originalAssignmentSchema),
     replacementPolicyName: z.string(),
     replacementPolicyAssignments: z.array(z.string().nullable()),
     isMigrated: z.boolean(),

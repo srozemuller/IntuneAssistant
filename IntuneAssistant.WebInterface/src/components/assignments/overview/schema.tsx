@@ -7,7 +7,7 @@ const assignmentsSchema = z.object({
     targetId: z.string(),
     targetName: z.string(),
     resourceId: z.string(),
-    resourceName: z.string(),
+    resourceName: z.string().nullable(),
     filterId: z.string(),
     filterType: z.string()
 });

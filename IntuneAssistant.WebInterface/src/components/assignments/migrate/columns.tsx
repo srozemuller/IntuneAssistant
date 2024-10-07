@@ -5,9 +5,10 @@ import { type AssignmentsMigrationModel } from "@/components/assignments/migrate
 import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
 import {migrationNeeded, readyForMigration} from "@/components/assignments/migrate/fixed-values.tsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
-import {CheckCircle} from "lucide-react";
+import {CheckCircle, TriangleAlert} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {DataTableRowActions} from "@/components/assignments/migrate/data-table-row-actions.tsx";
+import {Warning} from "postcss";
 
 
 
@@ -58,6 +59,23 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
         cell: ({ row }) => {
             const assignments = row.getValue('currentPolicyAssignments') as (string | null)[];
             const groupToMigrate = row.original.groupToMigrate;
+
+            if (assignments.length === 0) {
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className="flex w-[100px] items-center">
+                                    <TriangleAlert className={`h-5 w-5 text-orange-500`}/>
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>No assignments, is migration needed?</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
+            }
 
             return (
                 <div>

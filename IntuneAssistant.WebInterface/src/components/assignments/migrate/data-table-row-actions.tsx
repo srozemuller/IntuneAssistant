@@ -13,6 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT } from "@/components/constants/apiUrls.js";
+import {ExternalLink} from "lucide-react";
 
 interface DataTableRowActionsProps<TData extends { id: string, replacementPolicyId: string, isReadyForMigration: string, isMigrated: string, migrationCheckResult?: { sourcePolicyExists: boolean, sourcePolicyIsUnique: boolean, destinationPolicyExists: boolean, destinationPolicyIsUnique: boolean, groupExists: boolean } }> {
     row: Row<TData>,
@@ -36,7 +37,6 @@ export function DataTableRowActions<TData extends { id: string, replacementPolic
             const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.replacementPolicyId}`, 'POST', JSON.stringify(task));
             if (response.status === 204) {
                 setMigrationStatus('success');
-                refreshRow(); // Refresh the row data
             } else {
                 setMigrationStatus('failed');
             }
