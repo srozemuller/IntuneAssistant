@@ -8,8 +8,7 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 import {CheckCircle, TriangleAlert} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {DataTableRowActions} from "@/components/assignments/migrate/data-table-row-actions.tsx";
-import {Warning} from "postcss";
-
+import {useState} from "react";
 
 
 export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
@@ -42,31 +41,31 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: 'resourceType',
+        accessorKey: 'sourcePolicy.policyType',
         header: 'Policy Type',
     },
     {
-        accessorKey: 'currentPolicyId',
+        accessorKey: 'sourcePolicy.id',
         header: 'Source Policy ID',
     },
     {
-        accessorKey: 'currentPolicyName',
+        accessorKey: 'sourcePolicy.name',
         header: 'Source Policy Name',
     },
     {
-        accessorKey: 'currentPolicyAssignments',
+        accessorKey: 'sourcePolicy.assignments',
         header: 'Source Policy Assignments',
         cell: ({ row }) => {
-            const assignments = row.getValue('currentPolicyAssignments') as (string | null)[];
+            const assignments = row.original.sourcePolicyGroups;
             const groupToMigrate = row.original.groupToMigrate;
 
-            if (assignments.length === 0) {
+            if (!assignments || assignments.length === 0) {
                 return (
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger>
                                 <div className="flex w-[100px] items-center">
-                                    <TriangleAlert className={`h-5 w-5 text-orange-500`}/>
+                                    <TriangleAlert className={`h-5 w-5 text-orange-500`} />
                                 </div>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -84,9 +83,9 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
                             key={index}
                             className={assignment === groupToMigrate ? 'text-primary' : ''}
                         >
-                        {assignment}
+                            {assignment}
                             {index < assignments.length - 1 && ', '}
-                    </span>
+                        </span>
                     ))}
                 </div>
             );
@@ -97,19 +96,56 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
         header: 'Group to migrate',
     },
     {
-        accessorKey: 'replacementPolicyId',
+        id: "excludeGroupFromSource",
+        header: "Exclude Group from Source",
+        cell: ({ row }) => {
+            const [isExcluded, setIsExcluded] = useState(row.original.excludeGroupFromSource);
+
+            const handleExcludeChange = (value: boolean) => {
+                setIsExcluded(value);
+                // Update the row's original data if needed
+                row.original.excludeGroupFromSource = value;
+            };
+
+            return (
+                <Checkbox
+                    checked={isExcluded}
+                    onCheckedChange={(value) => handleExcludeChange(!!value)}
+                    aria-label="Exclude group from source"
+                />
+            );
+        },
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: 'destinationPolicy.id',
         header: 'Replacement Policy ID',
     },
     {
-        accessorKey: 'replacementPolicyName',
+        accessorKey: 'destinationPolicy.name',
         header: 'Replacement Policy Name',
     },
     {
-        accessorKey: 'replacementPolicyAssignments',
+        accessorKey: 'destinationPolicy.assignments',
         header: 'Replacement Policy Assignments',
-        cell: ({ getValue }) => {
-            const assignments = getValue() as (string | null)[];
-            return assignments.join(', ');
+        cell: ({ row }) => {
+            const assignments = row.original.destinationPolicyGroups;
+            const groupToMigrate = row.original.groupToMigrate;
+
+            return (
+                <div>
+                    {assignments?.map((assignment, index) => (
+                        <span
+                            key={index}
+                            className={assignment === groupToMigrate ? 'text-primary' : ''}
+                        >
+                            {assignment}
+                            {index < assignments.length - 1 && ', '}
+                        </span>
+                    ))}
+                </div>
+            );
         },
     },
     {

@@ -84,21 +84,28 @@ export function DataTableToolbar<TData>({
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
+            loading: `Searching for policies...`,
+            success: `Migration plan fetched successfully`,
+            error: (err) => `Failed to get migration info because: ${err.message}`,
         });
     };
 
     // Define the jsonString state variable
     const handleMigrate = async () => {
         const selectedRows = table.getSelectedRowModel().rows as Array<{ original: ExportData }>;
+        console.log('Selected rows:', selectedRows); // Log the selected rows to verify their structure
+
         const selectedIds = selectedRows.map(row => row.original.id);
+        console.log('Selected IDs:', selectedIds); // Log the selected IDs to verify the mapping
+
         const parsedRawData = JSON.parse(rawData);
 
         const dataToExport = parsedRawData
-            .map((item: ExportData) => assignmentMigrationSchema.parse(item))
-            .filter((item: ExportData) => selectedIds.includes(item.id));
+            .filter((item: ExportData) => selectedIds.includes(item.id))
+            .map((item: ExportData) => {
+                const selectedRow = selectedRows.find(row => row.original.id === item.id);
+                return selectedRow ? selectedRow.original : item;
+            });
 
         if (dataToExport.length === 0) {
             toast.error("No rows selected for migration.");
@@ -111,7 +118,7 @@ export function DataTableToolbar<TData>({
         try {
             setMigrationStatus('pending');
             const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', dataString);
-            if (response.status === 204) {
+            if (response?.status === 204) {
                 setMigrationStatus('success');
                 toast.success("Selected rows migrated successfully.");
             } else {

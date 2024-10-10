@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
 import CSVUploader from '@/components/csv-uploader.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
-import { ASSIGNMENTS_MIGRATION_ENDPOINT } from "@/components/constants/apiUrls.js";
+import { ASSIGNMENTS_COMPARE_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/migrate/columns.tsx";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import {
     assignmentMigrationSchema,
     type AssignmentsMigrationModel
 } from "@/components/assignments/migrate/schema";
+
 
 interface MigratePageProps {
     data: any[];
@@ -28,11 +29,11 @@ export default function DemoPage() {
             setLoading(true);
             setError('');
             setData([]);
-            const response = await authDataMiddleware(ASSIGNMENTS_MIGRATION_ENDPOINT, 'POST', jsonString);
-            const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data); // Ensure rawData is a string
-            setRawData(rawData);
+            const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString);
+            const rawData = typeof response?.data === 'string' ? JSON.parse(response.data) : response?.data;
+            setRawData(JSON.stringify(rawData, null, 2));
             console.log('Raw data:', rawData);
-            const parsedData: AssignmentsMigrationModel[] = z.array(assignmentMigrationSchema).parse(JSON.parse(rawData));
+            const parsedData: AssignmentsMigrationModel[] = z.array(assignmentMigrationSchema).parse(rawData);
             setData(parsedData);
         } catch (error) {
             console.error('Error:', error);
