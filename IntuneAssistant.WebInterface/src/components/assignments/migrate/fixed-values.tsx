@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle, TriangleAlert } from "lucide-react"
+import {CheckCircle, XCircle, TriangleAlert, CircleSlash, CircleCheck} from "lucide-react"
 
 export const migrationNeeded = [
     {
@@ -26,6 +26,21 @@ export const readyForMigration = [
         value: false,
         label: "No",
         icon: TriangleAlert,
+        color: "text-orange-500",
+    }
+]
+
+export const filterType = [
+    {
+        value: 'include',
+        label: "Include",
+        icon: CircleCheck,
+        color: "text-green-500",
+    },
+    {
+        value: 'exclude',
+        label: "Exclude",
+        icon: CircleSlash,
         color: "text-orange-500",
     }
 ]

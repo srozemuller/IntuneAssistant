@@ -15,7 +15,6 @@ interface TData {
     displayName: string;
     id: string;
     name: string;
-    // Add other properties as needed
 }
 
 interface DataTableToolbarProps {

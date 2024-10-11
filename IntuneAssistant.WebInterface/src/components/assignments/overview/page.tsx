@@ -20,7 +20,7 @@ export default function DemoPage() {
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
             const response = await authDataMiddleware(ASSIGNMENTS_ENDPOINT);
-            const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data); // Ensure rawData is a string
+            const rawData = typeof response?.data === 'string' ? response.data : JSON.stringify(response?.data); // Ensure rawData is a string
 
             const responseFilters = await authDataMiddleware(ASSIGNMENTS_FILTERS_ENDPOINT);
             const rawDataFilters = typeof responseFilters.data === 'string' ? responseFilters.data : JSON.stringify(responseFilters.data); // Ensure rawData is a string

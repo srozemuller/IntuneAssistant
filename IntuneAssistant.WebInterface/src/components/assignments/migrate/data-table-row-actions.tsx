@@ -14,15 +14,50 @@ import { assignmentMigrationSchema } from "@/components/assignments/migrate/sche
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT } from "@/components/constants/apiUrls.js";
 
-interface DataTableRowActionsProps<TData extends { id: string, replacementPolicyId: string, isReadyForMigration: string, isMigrated: string, migrationCheckResult?: { sourcePolicyExists: boolean, sourcePolicyIsUnique: boolean, destinationPolicyExists: boolean, destinationPolicyIsUnique: boolean, groupExists: boolean } }> {
+
+interface DataTableRowActionsProps<TData extends {
+    isReadyForMigration: string,
+    isMigrated: string,
+    migrationCheckResult?: {
+        sourcePolicyExists: boolean,
+        sourcePolicyIsUnique: boolean,
+        destinationPolicyExists: boolean,
+        destinationPolicyIsUnique: boolean,
+        groupExists: boolean
+    },
+    destinationPolicy: {
+        id: string
+    }
+}> {
     row: Row<TData>,
-    refreshRow: () => void
 }
 
-export function DataTableRowActions<TData extends { id: string, replacementPolicyId: string, isReadyForMigration: string, isMigrated: string, migrationCheckResult?: { sourcePolicyExists: boolean, sourcePolicyIsUnique: boolean, destinationPolicyExists: boolean, destinationPolicyIsUnique: boolean, groupExists: boolean } }>({
-                                                                                                                                                                                                                                                                                                                                       row,
-                                                                                                                                                                                                                                                                                                                                       refreshRow
-                                                                                                                                                                                                                                                                                                                                   }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends {
+    isReadyForMigration: string,
+    isMigrated: string,
+    migrationCheckResult?: {
+        sourcePolicyExists: boolean,
+        sourcePolicyIsUnique: boolean,
+        destinationPolicyExists: boolean,
+        destinationPolicyIsUnique: boolean,
+        groupExists: boolean
+    },
+    destinationPolicy: {
+        id: string
+        "@odata.type": string,
+        policyType: string,
+        createdDateTime: string,
+        creationSource: string,
+        description: string,
+        lastModifiedDateTime: string,
+        name: string,
+        settingCount: number,
+        isAssigned: boolean
+    }
+
+}>({
+       row,
+   }: DataTableRowActionsProps<TData>) {
     const [consentUri, setConsentUri] = useState<string | null>(null);
     const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
     const task = assignmentMigrationSchema.parse(row.original);
@@ -33,10 +68,9 @@ export function DataTableRowActions<TData extends { id: string, replacementPolic
     const handleMigrate = async () => {
         try {
             setMigrationStatus('pending');
-            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.replacementPolicyId}`, 'POST', JSON.stringify(task));
-            if (response.status === 204) {
+            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.destinationPolicy.id}`, 'POST', JSON.stringify(task));
+            if (response?.status === 204) {
                 setMigrationStatus('success');
-                refreshRow(); // Refresh the row data
             } else {
                 setMigrationStatus('failed');
             }
