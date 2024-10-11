@@ -36,7 +36,17 @@ const migrationCheckResultSchema = z.object({
     groupExists: z.boolean(),
 });
 
+const assignmentFilterSchema = z.object({
+    id: z.string().nullable(),
+    displayName: z.string().nullable(),
+    description: z.string().nullable(),
+    platform: z.string().nullable(),
+    rule: z.string().nullable(),
+    assignmentFilterManagementType: z.string().nullable(),
+});
+
 const assignmentMigrationSchema = z.object({
+    id: z.string(),
     sourcePolicy: policySchema.nullable(),
     sourcePolicyGroups : z.array(z.string()).nullable(),
     destinationPolicy: policySchema.nullable(),
@@ -45,6 +55,8 @@ const assignmentMigrationSchema = z.object({
     removeGroupFromSource: z.boolean(),
     assignmentId: z.string().nullable(),
     groupToMigrate: z.string(),
+    filterToMigrate: assignmentFilterSchema.nullable(),
+    filterType: z.string().nullable(),
     isMigrated: z.boolean(),
     isReadyForMigration: z.boolean(),
     migrationCheckResult: migrationCheckResultSchema.optional(),

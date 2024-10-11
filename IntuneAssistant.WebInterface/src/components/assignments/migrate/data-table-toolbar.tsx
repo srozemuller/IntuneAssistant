@@ -3,17 +3,22 @@ import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
 import {migrationNeeded, readyForMigration} from "@/components/assignments/migrate/fixed-values.tsx"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
-import { Cross2Icon } from "@radix-ui/react-icons"
+import {CrossIcon} from "lucide-react";
 import { toast } from "sonner"
 import { type Table } from "@tanstack/react-table"
 import { useState } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import Papa from "papaparse";
+
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import {ASSIGNMENTS_MIGRATE_ENDPOINT} from "@/components/constants/apiUrls";
 import {assignmentMigrationSchema} from "@/components/assignments/migrate/schema.tsx";
+
+interface TData {
+    id: string;
+    excludeGroupFromSource: boolean;
+}
 
 interface DataTableToolbarProps<TData> {
     table: Table<TData>;
@@ -22,13 +27,7 @@ interface DataTableToolbarProps<TData> {
     source: string;
 }
 
-interface ExportData {
-    id: string;
-    displayName: string;
-}
-
-
-export function DataTableToolbar<TData>({
+export function DataTableToolbar({
                                      table,
                                      rawData,
                                      fetchData,
@@ -42,15 +41,14 @@ export function DataTableToolbar<TData>({
     const [jsonString, setJsonString] = useState<string | null>(null);
 
     const handleExport = (rawData: string) => {
-        const selectedRows = table.getSelectedRowModel().rows as Array<{ original: ExportData }>;
+        const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
 
-        const dataToExport = parsedRawData
-            .map((item: ExportData) => assignmentMigrationSchema.parse(item))
-            .filter((item: ExportData) => selectedIds.includes(item.id));
+        const dataToExport = parsedRawData.filter((item: TData) =>
+            selectedIds.includes(item.id)
+        );
 
-        const dataString = JSON.stringify(dataToExport, null, 2);
         const dataCount = dataToExport.length;
         if (dataCount === 0) {
             toast.error("No data to export.");
@@ -60,8 +58,8 @@ export function DataTableToolbar<TData>({
 
         if (exportOption === "backup") {
             const zip = new JSZip();
-            dataToExport.forEach((item: ExportData, index: number) => {
-                const fileName = `${item.displayName}.json`;
+            dataToExport.forEach((item: TData, index: number) => {
+                const fileName = `${item.id}.json`;
                 const fileContent = JSON.stringify(item, null, 2);
                 zip.file(fileName, fileContent);
             });
@@ -91,21 +89,22 @@ export function DataTableToolbar<TData>({
     };
 
     // Define the jsonString state variable
-    const handleMigrate = async () => {
-        const selectedRows = table.getSelectedRowModel().rows as Array<{ original: ExportData }>;
-        console.log('Selected rows:', selectedRows); // Log the selected rows to verify their structure
-
+    const handleMigrate = async ( ) => {
+        const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
-        console.log('Selected IDs:', selectedIds); // Log the selected IDs to verify the mapping
-
         const parsedRawData = JSON.parse(rawData);
 
         const dataToExport = parsedRawData
-            .filter((item: ExportData) => selectedIds.includes(item.id))
-            .map((item: ExportData) => {
+            .filter((item: TData) => selectedIds.includes(item.id))
+            .map((item: TData) => {
                 const selectedRow = selectedRows.find(row => row.original.id === item.id);
-                return selectedRow ? selectedRow.original : item;
+                if (selectedRow) {
+                    // Update the excludeGroupFromSource field based on the current state
+                    item.excludeGroupFromSource = selectedRow.original.excludeGroupFromSource;
+                }
+                return item;
             });
+        console.log('Selected rows:', selectedRows); // Log the selected rows to verify their structure
 
         if (dataToExport.length === 0) {
             toast.error("No rows selected for migration.");
@@ -168,7 +167,7 @@ export function DataTableToolbar<TData>({
                         className="h-8 px-2 lg:px-3"
                     >
                         Reset
-                        <Cross2Icon className="ml-2 h-4 w-4" />
+                        <CrossIcon className="ml-2 h-4 w-4" />
                     </Button>
                 )}
             </div>

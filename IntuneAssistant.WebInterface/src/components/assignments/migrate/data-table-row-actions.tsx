@@ -13,8 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT } from "@/components/constants/apiUrls.js";
-import { ExternalLink } from "lucide-react";
-import { z } from "zod";
+
 
 interface DataTableRowActionsProps<TData extends {
     isReadyForMigration: string,

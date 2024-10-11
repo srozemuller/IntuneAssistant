@@ -3,9 +3,9 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { type AssignmentsMigrationModel } from "@/components/assignments/migrate/schema"
 import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
-import {migrationNeeded, readyForMigration} from "@/components/assignments/migrate/fixed-values.tsx";
+import {migrationNeeded, readyForMigration, filterType} from "@/components/assignments/migrate/fixed-values.tsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
-import {CheckCircle, TriangleAlert} from "lucide-react";
+import {CheckCircle, TriangleAlert, BicepsFlexed} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {DataTableRowActions} from "@/components/assignments/migrate/data-table-row-actions.tsx";
 import {useState} from "react";
@@ -45,12 +45,29 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
         header: 'Policy Type',
     },
     {
-        accessorKey: 'sourcePolicy.id',
-        header: 'Source Policy ID',
-    },
-    {
         accessorKey: 'sourcePolicy.name',
         header: 'Source Policy Name',
+        cell: ({ row }) => {
+            const sourcePolicyName = row.original.sourcePolicy?.name;
+            const sourcePolicyId = row.original.sourcePolicy?.id;
+
+            if (!sourcePolicyName) {
+                return <em>Policy does not exist</em>;
+            }
+
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <span>{sourcePolicyName}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{sourcePolicyId}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
+        },
     },
     {
         accessorKey: 'sourcePolicy.assignments',
@@ -97,14 +114,29 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         id: "excludeGroupFromSource",
-        header: "Exclude Group from Source",
+        header: () => (
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <span>Exclude</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Exclude the group from the source policy</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        ),
         cell: ({ row }) => {
-            const [isExcluded, setIsExcluded] = useState(row.original.excludeGroupFromSource);
+            const [isExcluded, setIsExcluded] = useState(true);
+            const [isRemoved, setIsRemoved] = useState(false);
 
             const handleExcludeChange = (value: boolean) => {
                 setIsExcluded(value);
-                // Update the row's original data if needed
                 row.original.excludeGroupFromSource = value;
+                if (value) {
+                    setIsRemoved(false);
+                    row.original.removeGroupFromSource = false;
+                }
             };
 
             return (
@@ -119,12 +151,67 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: 'destinationPolicy.id',
-        header: 'Replacement Policy ID',
+        id: "removeGroupFromSource",
+        header: () => (
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <span>Remove</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Remove the group from the source policy</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        ),
+        cell: ({ row }) => {
+            const [isExcluded, setIsExcluded] = useState(true);
+            const [isRemoved, setIsRemoved] = useState(false);
+
+            const handleRemoveChange = (value: boolean) => {
+                setIsRemoved(value);
+                row.original.removeGroupFromSource = value;
+                if (value) {
+                    setIsExcluded(false);
+                    row.original.excludeGroupFromSource = false;
+                }
+            };
+
+            return (
+                <Checkbox
+                    checked={isRemoved}
+                    onCheckedChange={(value) => handleRemoveChange(!!value)}
+                    aria-label="Remove group from source"
+                />
+            );
+        },
+        enableSorting: false,
+        enableHiding: false,
     },
     {
         accessorKey: 'destinationPolicy.name',
-        header: 'Replacement Policy Name',
+        header: 'Destination policy Name',
+        cell: ({ row }) => {
+            const policyName = row.original.destinationPolicy?.name;
+            const policyId = row.original.destinationPolicy?.id;
+
+            if (!policyName) {
+                return <em>Policy does not exist</em>;
+            }
+
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <span>{policyName}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{policyId}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
+        },
     },
     {
         accessorKey: 'destinationPolicy.assignments',
@@ -145,6 +232,59 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
                         </span>
                     ))}
                 </div>
+            );
+        },
+    },
+    {
+        accessorKey: 'filterToMigrate.displayName',
+        header: 'Filter Name',
+        cell: ({ row }) => {
+            const filterName = row.original.filterToMigrate?.displayName;
+            const filterRule = row.original.filterToMigrate?.rule;
+
+            if (!filterName) {
+                return <em>No filter</em>;
+            }
+
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <span>{filterName}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{filterRule}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
+        },
+    },
+    {
+        accessorKey: 'filterType',
+        header: 'Filter Type',
+        cell: ({ row }) => {
+            const type = row.original.filterType;
+            const filter = filterType.find(f => f.value === type);
+
+            if (!filter) {
+                return <em>Unknown</em>;
+            }
+
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className="flex items-center">
+                                <filter.icon className={`h-5 w-5 ${filter.color}`} />
+                                <span className="ml-2">{filter.label}</span>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{filter.label}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             );
         },
     },
@@ -204,11 +344,11 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
                 (status) => status.value === row.original.isReadyForMigration,
             );
             const migrationCheckResult = row.original.migrationCheckResult;
-
+            const color = isMigrated ? "text-gray-500" : readyForMigration.find(status => status.value === row.original.isReadyForMigration)?.color || "text-default";
             const getTooltipMessage = () => {
-                if (isMigrated) return "Migration is already done.";
                 if (!migrationCheckResult) return "Migration check result is missing.";
                 const messages = [];
+                if (isMigrated) return "Migration is already done.";
                 if (!migrationCheckResult.sourcePolicyExists) messages.push("Source policy does not exist.");
                 if (!migrationCheckResult.sourcePolicyIsUnique) messages.push("Source policy is not unique.");
                 if (!migrationCheckResult.destinationPolicyExists) messages.push("Destination policy does not exist.");
@@ -237,8 +377,8 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-                            <div className={`flex w-[100px] items-center ${isMigrated ? 'text-gray-500' : ''}`}>
-                                <status.icon className={`h-5 w-5 ${status.color}`} />
+                            <div className={`flex w-[100px] items-center ${color}`}>
+                                <status.icon className={`h-5 w-5 ${color}`}/>
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
