@@ -13,11 +13,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT } from "@/components/constants/apiUrls.js";
-
-
 interface DataTableRowActionsProps<TData extends {
-    isReadyForMigration: string,
-    isMigrated: string,
+    id: string,
+    isReadyForMigration: boolean,
+    isMigrated: boolean,
     migrationCheckResult?: {
         sourcePolicyExists: boolean,
         sourcePolicyIsUnique: boolean,
@@ -25,16 +24,38 @@ interface DataTableRowActionsProps<TData extends {
         destinationPolicyIsUnique: boolean,
         groupExists: boolean
     },
+    sourcePolicy: {
+        id: string | null,
+        "odataType": string | null,
+        policyType: string | null,
+        createdDateTime: string,
+        creationSource: string | null,
+        description: string | null,
+        lastModifiedDateTime: string,
+        name: string | null,
+        settingCount: number | null,
+        isAssigned: boolean | null
+    } | null,
     destinationPolicy: {
-        id: string
-    }
+        id: string | null,
+        "odataType": string | null,
+        policyType: string | null,
+        createdDateTime: string,
+        creationSource: string | null,
+        description: string | null,
+        lastModifiedDateTime: string,
+        name: string | null,
+        settingCount: number | null,
+        isAssigned: boolean | null
+    } | null
 }> {
     row: Row<TData>,
 }
 
 export function DataTableRowActions<TData extends {
-    isReadyForMigration: string,
-    isMigrated: string,
+    id: string,
+    isReadyForMigration: boolean,
+    isMigrated: boolean,
     migrationCheckResult?: {
         sourcePolicyExists: boolean,
         sourcePolicyIsUnique: boolean,
@@ -42,33 +63,44 @@ export function DataTableRowActions<TData extends {
         destinationPolicyIsUnique: boolean,
         groupExists: boolean
     },
-    destinationPolicy: {
-        id: string
-        "@odata.type": string,
-        policyType: string,
+    sourcePolicy: {
+        id: string | null,
+        "odataType": string | null,
+        policyType: string | null,
         createdDateTime: string,
-        creationSource: string,
-        description: string,
+        creationSource: string | null,
+        description: string | null,
         lastModifiedDateTime: string,
-        name: string,
-        settingCount: number,
-        isAssigned: boolean
-    }
-
+        name: string | null,
+        settingCount: number | null,
+        isAssigned: boolean | null
+    } | null,
+    destinationPolicy: {
+        id: string | null,
+        "odataType": string | null,
+        policyType: string | null,
+        createdDateTime: string,
+        creationSource: string | null,
+        description: string | null,
+        lastModifiedDateTime: string,
+        name: string | null,
+        settingCount: number | null,
+        isAssigned: boolean | null
+    } | null
 }>({
        row,
    }: DataTableRowActionsProps<TData>) {
     const [consentUri, setConsentUri] = useState<string | null>(null);
     const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
     const task = assignmentMigrationSchema.parse(row.original);
-    const isReadyForMigration = row.original.isReadyForMigration === 'yes';
-    const isMigrated = row.original.isMigrated === 'true';
+    const isReadyForMigration = row.original.isReadyForMigration;
+    const isMigrated = row.original.isMigrated;
     const migrationCheckResult = row.original.migrationCheckResult;
 
     const handleMigrate = async () => {
         try {
             setMigrationStatus('pending');
-            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.destinationPolicy.id}`, 'POST', JSON.stringify(task));
+            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.destinationPolicy?.id}`, 'POST', JSON.stringify(task));
             if (response?.status === 204) {
                 setMigrationStatus('success');
             } else {
