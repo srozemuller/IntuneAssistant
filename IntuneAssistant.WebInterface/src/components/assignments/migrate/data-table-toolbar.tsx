@@ -1,23 +1,28 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import {migrationNeeded, readyForMigration} from "@/components/assignments/migrate/fixed-values.tsx"
+import { migrationNeeded, readyForMigration } from "@/components/assignments/migrate/fixed-values.tsx"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
-import {CrossIcon} from "lucide-react";
+import { CrossIcon } from "lucide-react";
 import { toast } from "sonner"
 import { type Table } from "@tanstack/react-table"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog.tsx"
 
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants";
 import authDataMiddleware from "@/components/middleware/fetchData";
-import {ASSIGNMENTS_MIGRATE_ENDPOINT} from "@/components/constants/apiUrls";
-import {assignmentMigrationSchema} from "@/components/assignments/migrate/schema.tsx";
+import { ASSIGNMENTS_MIGRATE_ENDPOINT } from "@/components/constants/apiUrls";
+import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
+import {z} from "zod";
+import type {policySchema} from "@/components/policies/configuration/schema.tsx";
 
 interface TData {
     id: string;
     excludeGroupFromSource: boolean;
+    sourcePolicy: z.infer<typeof policySchema> | null;
+    destinationPolicy: z.infer<typeof policySchema> | null;
 }
 
 interface DataTableToolbarProps<TData> {
@@ -39,15 +44,41 @@ export function DataTableToolbar({
     const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
     const [consentUri, setConsentUri] = useState<string | null>(null);
     const [jsonString, setJsonString] = useState<string | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedRowCount, setSelectedRowCount] = useState(0);
+
+    useEffect(() => {
+        const selectedRows = table.getSelectedRowModel().rows;
+        setSelectedRowCount(selectedRows.length);
+    }, [table.getSelectedRowModel().rows]);
 
     const handleExport = (rawData: string) => {
         const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
 
-        const dataToExport = parsedRawData.filter((item: TData) =>
-            selectedIds.includes(item.id)
-        );
+
+        const dataToExport = parsedRawData
+            .filter((item: TData) => selectedIds.includes(item.id))
+            .map((item: TData) => {
+                const selectedRow = selectedRows.find(row => row.original.id === item.id);
+                return {
+                    id: selectedRow?.original.id,
+                    sourcePolicy: {
+                        id: selectedRow?.original.sourcePolicy?.id,
+                        name: selectedRow?.original.sourcePolicy?.name,
+                        policyType: selectedRow?.original.sourcePolicy?.policyType,
+                        assignments: selectedRow?.original.sourcePolicy?.assignments || []
+                    },
+                    destinationPolicy: {
+                        id: selectedRow?.original.destinationPolicy?.id,
+                        name: selectedRow?.original.destinationPolicy?.name,
+                        policyType: selectedRow?.original.destinationPolicy?.policyType,
+                        assignments: selectedRow?.original.destinationPolicy?.assignments || []
+                    },
+                };
+            });
+        console.log("Data to export:", dataToExport); // Log data to export
 
         const dataCount = dataToExport.length;
         if (dataCount === 0) {
@@ -56,26 +87,47 @@ export function DataTableToolbar({
         }
         const rowString = dataCount === 1 ? "row" : "rows";
 
+
+
         if (exportOption === "backup") {
             const zip = new JSZip();
-            dataToExport.forEach((item: TData, index: number) => {
-                const fileName = `${item.id}.json`;
-                const fileContent = JSON.stringify(item, null, 2);
-                zip.file(fileName, fileContent);
+            dataToExport.forEach((item: TData) => {
+                if (item.sourcePolicy?.id) {
+                    const sourceFileName = `${item.sourcePolicy.name}_source.json`;
+                    const sourceFileContent = JSON.stringify({
+                        itemId: item.id,
+                        id: item.sourcePolicy.id,
+                        name: item.sourcePolicy.name,
+                        policyType: item.sourcePolicy.policyType,
+                        assignments: item.sourcePolicy.assignments
+                    }, null, 2);
+                    console.log("Adding file to zip:", sourceFileName, sourceFileContent); // Log file details
+                    zip.file(sourceFileName, sourceFileContent);
+                } else {
+                    console.warn(`No source assignments found for item with id: ${item.id}`);
+                }
+                if (item.destinationPolicy?.id) {
+                    const sourceFileName = `${item.destinationPolicy.name}_destination.json`;
+                    const sourceFileContent = JSON.stringify({
+                        itemId: item.id,
+                        id: item.destinationPolicy.id,
+                        name: item.destinationPolicy.name,
+                        policyType: item.destinationPolicy.policyType,
+                        assignments: item.destinationPolicy.assignments
+                    }, null, 2);
+                    console.log("Adding file to zip:", sourceFileName, sourceFileContent); // Log file details
+                    zip.file(sourceFileName, sourceFileContent);
+                } else {
+                    console.warn(`No destination assignments found for item with id: ${item.id}`);
+                }
             });
 
             zip.generateAsync({ type: "blob" }).then((content) => {
                 saveAs(content, `${source}-backup.zip`);
                 toast.success(`Zip file created and downloaded, selected ${dataCount} ${rowString}.`);
             }).catch((err) => {
+                console.error("Failed to create zip file:", err);
                 toast.error(`Failed to create zip file: ${err.message}`);
-            });
-        } else if (exportOption === "idpowertools") {
-            const idPowerToolsData = { value: dataToExport };
-            navigator.clipboard.writeText(JSON.stringify(idPowerToolsData)).then(() => {
-                toast.success(`Data for IDPowerTools copied to clipboard, selected ${dataCount} ${rowString}.`);
-            }).catch((err) => {
-                toast.error(`Failed to copy data: ${err.message}`);
             });
         }
     };
@@ -88,8 +140,13 @@ export function DataTableToolbar({
         });
     };
 
-    // Define the jsonString state variable
-    const handleMigrate = async ( ) => {
+    const handleDownloadTemplate = () => {
+        const csvContent = "CurrentPolicyName,ReplacementPolicyName,GroupName,AssignmentType,FilterName,FilterType\n";
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, "assignment_migration_template.csv");
+    };
+
+    const handleMigrate = async () => {
         const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
@@ -99,12 +156,10 @@ export function DataTableToolbar({
             .map((item: TData) => {
                 const selectedRow = selectedRows.find(row => row.original.id === item.id);
                 if (selectedRow) {
-                    // Update the excludeGroupFromSource field based on the current state
                     item.excludeGroupFromSource = selectedRow.original.excludeGroupFromSource;
                 }
                 return item;
             });
-        console.log('Selected rows:', selectedRows); // Log the selected rows to verify their structure
 
         if (dataToExport.length === 0) {
             toast.error("No rows selected for migration.");
@@ -112,7 +167,6 @@ export function DataTableToolbar({
         }
 
         const dataString = JSON.stringify(dataToExport, null, 2);
-        console.log('Data to migrate:', dataString);
 
         try {
             setMigrationStatus('pending');
@@ -126,12 +180,24 @@ export function DataTableToolbar({
             }
         } catch (error: any) {
             setMigrationStatus('failed');
-            console.log('Migration failed:', error);
             if (error.consentUri) {
                 setConsentUri(error.consentUri);
-                window.location.href = error.consentUri; // Redirect to consent URI
+                window.location.href = error.consentUri;
             }
         }
+    };
+
+    const handleConfirmMigrate = () => {
+        setIsDialogOpen(true);
+    };
+
+    const handleDialogConfirm = () => {
+        setIsDialogOpen(false);
+        handleMigrate();
+    };
+
+    const handleDialogCancel = () => {
+        setIsDialogOpen(false);
     };
 
     return (
@@ -175,8 +241,11 @@ export function DataTableToolbar({
                 <Button onClick={handleRefresh} variant="outline" size="sm">
                     Refresh
                 </Button>
-                <Button onClick={handleMigrate} variant="outline" size="sm">
+                <Button onClick={handleConfirmMigrate} variant="outline" size="sm">
                     Migrate
+                </Button>
+                <Button onClick={handleDownloadTemplate} variant="outline" size="sm">
+                    Migration Template
                 </Button>
                 <div className="relative">
                     <Button variant="outline" size="sm" onClick={() => setDropdownVisible(!dropdownVisible)}>
@@ -210,6 +279,22 @@ export function DataTableToolbar({
                 </div>
                 <DataTableViewOptions table={table} />
             </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Confirm Migration</DialogTitle>
+                    </DialogHeader>
+                    <p>Are you sure you want to migrate the selected {selectedRowCount} row(s)?</p>
+                    <DialogFooter>
+                        <Button onClick={handleDialogCancel} variant="outline">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleDialogConfirm} variant="default">
+                            Confirm
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

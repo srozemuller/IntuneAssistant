@@ -46,7 +46,7 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         accessorKey: 'sourcePolicy.name',
-        header: 'Source Policy Name',
+        header: 'Source Policy',
         cell: ({ row }) => {
             const sourcePolicyName = row.original.sourcePolicy?.name;
             const sourcePolicyId = row.original.sourcePolicy?.id;
@@ -71,7 +71,7 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         accessorKey: 'sourcePolicy.assignments',
-        header: 'Source Policy Assignments',
+        header: 'Assignments',
         cell: ({ row }) => {
             const assignments = row.original.sourcePolicyGroups;
             const groupToMigrate = row.original.groupToMigrate;
@@ -113,76 +113,79 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
         header: 'Group to migrate',
     },
     {
-        id: "excludeGroupFromSource",
-        header: () => (
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger>
-                        <span>Exclude</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Exclude the group from the source policy</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        ),
+        accessorKey: 'assignmentType',
+        header: 'Type',
         cell: ({ row }) => {
-            const [isExcluded, setIsExcluded] = useState(true);
-            const [isRemoved, setIsRemoved] = useState(false);
+            const type = row.original.assignmentType;
+            const filter = filterType.find(f => f.value === type);
 
-            const handleExcludeChange = (value: boolean) => {
-                setIsExcluded(value);
-                row.original.excludeGroupFromSource = value;
-                if (value) {
-                    setIsRemoved(false);
-                    row.original.removeGroupFromSource = false;
-                }
-            };
+            if (!filter) {
+                return <em>Unknown</em>;
+            }
 
             return (
-                <Checkbox
-                    checked={isExcluded}
-                    onCheckedChange={(value) => handleExcludeChange(!!value)}
-                    aria-label="Exclude group from source"
-                />
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className="flex items-center">
+                                <filter.icon className={`h-5 w-5 ${filter.color}`} />
+                                <span className="ml-2">{filter.label}</span>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{filter.label}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             );
         },
-        enableSorting: false,
-        enableHiding: false,
     },
     {
-        id: "removeGroupFromSource",
+        id: "excludeOrRemoveGroup",
         header: () => (
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger>
-                        <span>Remove</span>
+                        <span>Exclude/Remove</span>
                     </TooltipTrigger>
                     <TooltipContent>
-                        <p>Remove the group from the source policy</p>
+                        <p>Select to exclude or remove the group from the source policy</p>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
         ),
         cell: ({ row }) => {
-            const [isExcluded, setIsExcluded] = useState(true);
-            const [isRemoved, setIsRemoved] = useState(false);
+            const [selectedOption, setSelectedOption] = useState<'exclude' | 'remove' | 'none'>('exclude');
 
-            const handleRemoveChange = (value: boolean) => {
-                setIsRemoved(value);
-                row.original.removeGroupFromSource = value;
-                if (value) {
-                    setIsExcluded(false);
-                    row.original.excludeGroupFromSource = false;
-                }
+            const handleOptionChange = (value: 'exclude' | 'remove' | 'none') => {
+                setSelectedOption(value);
+                row.original.excludeGroupFromSource = value === 'exclude';
+                row.original.removeGroupFromSource = value === 'remove';
             };
 
             return (
-                <Checkbox
-                    checked={isRemoved}
-                    onCheckedChange={(value) => handleRemoveChange(!!value)}
-                    aria-label="Remove group from source"
-                />
+                <div className="mr-radio-button">
+                    <label>
+                        <input
+                            type="radio"
+                            name={`excludeOrRemove-${row.id}`}
+                            value="exclude"
+                            checked={selectedOption === 'exclude'}
+                            onChange={() => handleOptionChange('exclude')}
+                        />
+                        Exclude
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            name={`excludeOrRemove-${row.id}`}
+                            value="remove"
+                            checked={selectedOption === 'remove'}
+                            onChange={() => handleOptionChange('remove')}
+                        />
+                        Remove
+                    </label>
+                </div>
             );
         },
         enableSorting: false,
@@ -190,7 +193,7 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         accessorKey: 'destinationPolicy.name',
-        header: 'Destination policy Name',
+        header: 'Destination Policy',
         cell: ({ row }) => {
             const policyName = row.original.destinationPolicy?.name;
             const policyId = row.original.destinationPolicy?.id;
@@ -215,7 +218,7 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         accessorKey: 'destinationPolicy.assignments',
-        header: 'Replacement Policy Assignments',
+        header: 'Assignments',
         cell: ({ row }) => {
             const assignments = row.original.destinationPolicyGroups;
             const groupToMigrate = row.original.groupToMigrate;
@@ -237,7 +240,7 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         accessorKey: 'filterToMigrate.displayName',
-        header: 'Filter Name',
+        header: 'Filter',
         cell: ({ row }) => {
             const filterName = row.original.filterToMigrate?.displayName;
             const filterRule = row.original.filterToMigrate?.rule;
@@ -262,7 +265,7 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         accessorKey: 'filterType',
-        header: 'Filter Type',
+        header: 'Type',
         cell: ({ row }) => {
             const type = row.original.filterType;
             const filter = filterType.find(f => f.value === type);
@@ -354,6 +357,10 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
                 if (!migrationCheckResult.destinationPolicyExists) messages.push("Destination policy does not exist.");
                 if (!migrationCheckResult.destinationPolicyIsUnique) messages.push("Destination policy is not unique.");
                 if (!migrationCheckResult.groupExists) messages.push("Group does not exist.");
+                if (!migrationCheckResult.correctAssignmentTypeProvided) messages.push("Incorrect assignment type provided (must be included or excluded).");
+                if (!migrationCheckResult.filterExist) messages.push("Filter does not exist.");
+                if (!migrationCheckResult.filterIsUnique) messages.push("Filter is not unique.");
+                if (!migrationCheckResult.correctFilterTypeProvided) messages.push("Incorrect filter type provided (must be included or excluded).");
                 return messages.join(" ");
             };
 

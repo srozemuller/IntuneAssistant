@@ -1,6 +1,6 @@
 // src/components/assignments/migrate/data-table-row-actions.tsx
-import { useState } from 'react';
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { useState  } from 'react';
+
 import { type Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -9,10 +9,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip.tsx";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT } from "@/components/constants/apiUrls.js";
+import {MoreHorizontal} from "lucide-react";
+import {DropdownMenuLabel, DropdownMenuSeparator} from "@radix-ui/react-dropdown-menu";
+import {toast} from "sonner";
+
 interface DataTableRowActionsProps<TData extends {
     id: string,
     isReadyForMigration: boolean,
@@ -50,6 +53,8 @@ interface DataTableRowActionsProps<TData extends {
     } | null
 }> {
     row: Row<TData>,
+    onAnimationStart: () => void,
+    onAnimationEnd: () => void,
 }
 
 export function DataTableRowActions<TData extends {
@@ -89,30 +94,62 @@ export function DataTableRowActions<TData extends {
     } | null
 }>({
        row,
+                                          onAnimationStart,
+                                          onAnimationEnd,
    }: DataTableRowActionsProps<TData>) {
     const [consentUri, setConsentUri] = useState<string | null>(null);
     const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
+    const [refreshStatus, setRefreshStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
+    const [isAnimating, setIsAnimating] = useState(false);
     const task = assignmentMigrationSchema.parse(row.original);
     const isReadyForMigration = row.original.isReadyForMigration;
     const isMigrated = row.original.isMigrated;
     const migrationCheckResult = row.original.migrationCheckResult;
 
+
     const handleMigrate = async () => {
         try {
             setMigrationStatus('pending');
+            toast.info('Migration is pending...'); // Show toast message
             const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.destinationPolicy?.id}`, 'POST', JSON.stringify(task));
             if (response?.status === 204) {
                 setMigrationStatus('success');
+                toast.success('Migration successful!'); // Show success toast message
             } else {
                 setMigrationStatus('failed');
+                toast.error('Migration failed!'); // Show error toast message
             }
         } catch (error: any) {
             setMigrationStatus('failed');
+            toast.error('Migration failed!'); // Show error toast message
             console.log('Migration failed:', error);
             if (error.consentUri) {
                 setConsentUri(error.consentUri);
                 window.location.href = error.consentUri; // Redirect to consent URI
             }
+        }
+    };
+
+    const handleRefresh = async () => {
+        try {
+            setRefreshStatus('pending');
+            setIsAnimating(true);
+            // Implement the refresh logic here
+            // For example, re-fetch the data for this specific row
+            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.id}`, 'GET');
+            if (response?.status === 200) {
+                // Update the row data with the new data
+                setRefreshStatus('success');
+                toast.success('Refreshed'); // Show success toast message
+                setTimeout(() => setIsAnimating(false), 1000); // End animation after 1 second
+            } else {
+                setRefreshStatus('failed');
+                setIsAnimating(false);
+            }
+        } catch (error: any) {
+            setRefreshStatus('failed');
+            setIsAnimating(false);
+            console.log('Refresh failed:', error);
         }
     };
 
@@ -128,35 +165,30 @@ export function DataTableRowActions<TData extends {
     };
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    className={`flex h-8 w-8 p-0 data-[state=open]:bg-muted ${migrationStatus === 'success' ? 'bg-green-500' : ''}`}
-                >
-                    <DotsHorizontalIcon className="h-4 w-4" />
-                    <span className="sr-only">Open menu</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem asChild>
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <button
-                                    onClick={handleMigrate}
-                                    className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
-                                >
-                                    Migrate
-                                </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{getTooltipMessage()}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <div className={isAnimating ? 'fade-to-normal' : ''}>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4"/>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem
+                        onClick={handleMigrate}
+                        className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
+                    >
+                        Migrate
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={handleRefresh}
+                        className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
+                    >
+                        Refresh
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
     );
 }

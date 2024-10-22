@@ -34,6 +34,10 @@ const migrationCheckResultSchema = z.object({
     destinationPolicyExists: z.boolean(),
     destinationPolicyIsUnique: z.boolean(),
     groupExists: z.boolean(),
+    correctAssignmentTypeProvided: z.boolean(),
+    filterExist:z.boolean(),
+    filterIsUnique: z.boolean(),
+    correctFilterTypeProvided: z.boolean(),
 });
 
 const assignmentFilterSchema = z.object({
@@ -55,6 +59,7 @@ const assignmentMigrationSchema = z.object({
     removeGroupFromSource: z.boolean(),
     assignmentId: z.string().nullable(),
     groupToMigrate: z.string(),
+    assignmentType: z.string(),
     filterToMigrate: assignmentFilterSchema.nullable(),
     filterType: z.string().nullable(),
     isMigrated: z.boolean(),

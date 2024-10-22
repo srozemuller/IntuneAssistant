@@ -3,7 +3,7 @@ import { DataTable } from './data-table.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
 import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT} from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/overview/columns.tsx";
-import { toast } from "sonner";
+import {toast, Toaster} from "sonner";
 import { z } from "zod";
 import { assignmentsSchema, type Assignments } from "@/components/assignments/overview/schema";
 
@@ -23,7 +23,7 @@ export default function DemoPage() {
             const rawData = typeof response?.data === 'string' ? response.data : JSON.stringify(response?.data); // Ensure rawData is a string
 
             const responseFilters = await authDataMiddleware(ASSIGNMENTS_FILTERS_ENDPOINT);
-            const rawDataFilters = typeof responseFilters.data === 'string' ? responseFilters.data : JSON.stringify(responseFilters.data); // Ensure rawData is a string
+            const rawDataFilters = typeof responseFilters?.data === 'string' ? responseFilters.data : JSON.stringify(responseFilters?.data); // Ensure rawData is a string
 
             setRawData(rawData);
             setRawDataFilters(rawDataFilters);
@@ -51,6 +51,7 @@ export default function DemoPage() {
 
     return (
         <div className="container max-w-[95%] py-6">
+            <Toaster />
             <DataTable columns={columns} data={data} rawData={rawData} rawDataFilters={rawDataFilters} fetchData={fetchData} source="assignments"  />
         </div>
     );

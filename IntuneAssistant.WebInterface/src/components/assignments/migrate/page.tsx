@@ -5,7 +5,7 @@ import CSVUploader from '@/components/csv-uploader.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_COMPARE_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/migrate/columns.tsx";
-import { toast } from "sonner";
+import {toast, Toaster} from "sonner";
 import { z } from "zod";
 import {
     assignmentMigrationSchema,
@@ -57,6 +57,7 @@ export default function DemoPage() {
 
     return (
         <div className="container max-w-[95%] py-6">
+            <Toaster />
             <CSVUploader setJsonString={setJsonString} />
             <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="assignmentsMigration" />
         </div>
