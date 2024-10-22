@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { type policyRestoreModel, policyRestoreSchema } from '@/components/assignments/restore/schema';
 import { DataTable } from '@/components/assignments/restore/data-table.tsx';
 import { columns } from '@/components/assignments/restore/columns.tsx';
+import {Toaster} from "sonner";
 
 export default function UploadPage() {
     const [jsonString, setJsonString] = useState<string>('');
@@ -35,6 +36,7 @@ export default function UploadPage() {
 
     return (
         <div className="container max-w-[95%] py-6">
+            <Toaster />
             <JSONUploader setJsonString={setJsonString} />
             {data.length > 0 && <DataTable columns={columns} data={data} />}
         </div>
