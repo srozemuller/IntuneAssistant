@@ -20,6 +20,7 @@ interface DataTableRowActionsProps<TData extends {
     id: string,
     isReadyForMigration: boolean,
     isMigrated: boolean,
+    groupToMigrate: string,
     migrationCheckResult?: {
         sourcePolicyExists: boolean,
         sourcePolicyIsUnique: boolean,
@@ -59,8 +60,10 @@ interface DataTableRowActionsProps<TData extends {
 
 export function DataTableRowActions<TData extends {
     id: string,
+    assignmentId: string,
     isReadyForMigration: boolean,
     isMigrated: boolean,
+    groupToMigrate: string,
     migrationCheckResult?: {
         sourcePolicyExists: boolean,
         sourcePolicyIsUnique: boolean,
@@ -111,7 +114,19 @@ export function DataTableRowActions<TData extends {
         try {
             setMigrationStatus('pending');
             toast.info('Migration is pending...'); // Show toast message
-            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.destinationPolicy?.id}`, 'POST', JSON.stringify(task));
+
+            // Retrieve the selected group from the column state
+            const selectedGroup = row.original.groupToMigrate;
+            const selectedGroupId = row.original.assignmentId;
+            // Update the task object with the new selected group
+            const updatedTask = {
+                ...task,
+                groupToMigrate: selectedGroup,
+                assignmentId: selectedGroup,
+            };
+
+            // Send the updated task object in the JSON payload
+            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.destinationPolicy?.id}`, 'POST', JSON.stringify(updatedTask));
             if (response?.status === 204) {
                 setMigrationStatus('success');
                 toast.success('Migration successful!'); // Show success toast message

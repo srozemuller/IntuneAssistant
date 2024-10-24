@@ -1,7 +1,11 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import {type AssignmentsMigrationModel, groupsSchema} from "@/components/assignments/migrate/schema"
+import {
+    assignmentMigrationSchema,
+    type AssignmentsMigrationModel,
+    groupsSchema
+} from "@/components/assignments/migrate/schema"
 import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
 import {migrationNeeded, readyForMigration, filterType} from "@/components/assignments/migrate/fixed-values.tsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
@@ -10,7 +14,8 @@ import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {DataTableRowActions} from "@/components/assignments/migrate/data-table-row-actions.tsx";
 import {useEffect, useState} from "react";
 import {z} from "zod";
-import { MultiSelect } from "@/components/multi-select";
+import { SingleSelect } from '@/components/ui/single-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 
 export const columns = (groups: z.infer<typeof groupsSchema>[]): ColumnDef<AssignmentsMigrationModel>[] => [
     {
@@ -211,30 +216,27 @@ export const columns = (groups: z.infer<typeof groupsSchema>[]): ColumnDef<Assig
         accessorKey: 'groupToMigrate',
         header: 'Group to Migrate',
         cell: ({ row }) => {
-            const groupToMigrate = row.getValue('groupToMigrate') as string[];
-            const initialSelectedGroups = groupToMigrate.map((groupName: string) => {
-                const group = groups.find(group => group.displayName === groupName);
-                return group ? group.id : groupName;
+            const groupToMigrate = row.getValue('groupToMigrate') as string;
+            const initialSelectedGroup = groups.find(group => group.displayName === groupToMigrate)?.id || groupToMigrate;
+
+            const [selectedGroup, setSelectedGroup] = useState<{ id: string; createdDateTime: string; description: string; displayName: string; } | null>(() => {
+                const initialGroup = groups.find(group => group.id === initialSelectedGroup);
+                return initialGroup || null;
             });
-            const [selectedGroups, setSelectedGroups] = useState<string[]>(initialSelectedGroups);
-
-
-        console.log('Initial Selected Groups:', initialSelectedGroups); // Log initial selected groups
 
             useEffect(() => {
-                const updatedGroupToMigrate = row.getValue('groupToMigrate') as string[];
-                const updatedSelectedGroups = updatedGroupToMigrate.map((groupName: string) => {
-                    const group = groups.find(group => group.displayName === groupName);
-                    return group ? group.id : groupName;
-                });
-                setSelectedGroups(updatedSelectedGroups);
+                const updatedGroupToMigrate = row.getValue('groupToMigrate') as string;
+                const updatedSelectedGroup = groups.find(group => group.id === updatedGroupToMigrate) || null;
+                setSelectedGroup(updatedSelectedGroup);
             }, [row.getValue('groupToMigrate')]);
 
-
-            const handleGroupChange = (selectedOptions: any) => {
-                const selectedValues = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
-                setSelectedGroups(selectedValues);
-                row.original.groupToMigrate = selectedValues;
+            const handleGroupChange = (selectedOption: string) => {
+                const selectedGroup = groups.find(group => group.id === selectedOption) || null;
+                setSelectedGroup(selectedGroup);
+                row.original.groupToMigrate = selectedOption;
+                const task = assignmentMigrationSchema.parse(row.original);
+                task.groupToMigrate = selectedGroup ? selectedGroup.displayName : selectedOption;
+                task.assignmentId = selectedOption;
             };
 
             const options = groups.map((group) => ({
@@ -242,22 +244,14 @@ export const columns = (groups: z.infer<typeof groupsSchema>[]): ColumnDef<Assig
                 label: group.displayName,
             }));
 
-// Display the selected group display names
-            const selectedGroupDisplayNames = selectedGroups.map((groupId) => {
-                const group = groups.find(group => group.id === groupId);
-                return group ? group.displayName : groupId;
-            });
-            console.log('Selected Group Display Names:', selectedGroupDisplayNames); // Log selected group display names
+
             return (
-                <MultiSelect
+                <SingleSelect
                     options={options}
                     onValueChange={handleGroupChange}
-                    value={selectedGroups}
-                    defaultValue={initialSelectedGroups}
-                    placeholder="Select groups"
-                    variant="inverted"
-                    animation={2}
-                    maxCount={3}
+                    value={selectedGroup}
+                    defaultValue={initialSelectedGroup}
+                    placeholder="Select group"
                 />
             );
         },

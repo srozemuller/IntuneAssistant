@@ -65,7 +65,7 @@ const assignmentMigrationSchema = z.object({
     excludeGroupFromSource: z.boolean(),
     removeGroupFromSource: z.boolean(),
     assignmentId: z.string().nullable(),
-    groupToMigrate: z.union([z.string(), z.array(z.string())]).transform((val) => (Array.isArray(val) ? val : [val])),
+    groupToMigrate: z.string(),
     assignmentType: z.string(),
     filterToMigrate: assignmentFilterSchema.nullable(),
     filterType: z.string().nullable(),
