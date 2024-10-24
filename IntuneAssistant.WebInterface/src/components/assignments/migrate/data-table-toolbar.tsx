@@ -17,6 +17,7 @@ import { ASSIGNMENTS_MIGRATE_ENDPOINT } from "@/components/constants/apiUrls";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
+import {Toaster} from "@/components/ui/sonner.tsx";
 
 interface TData {
     id: string;
@@ -87,8 +88,6 @@ export function DataTableToolbar({
         }
         const rowString = dataCount === 1 ? "row" : "rows";
 
-
-
         if (exportOption === "backup") {
             const zip = new JSZip();
             dataToExport.forEach((item: TData) => {
@@ -136,7 +135,7 @@ export function DataTableToolbar({
         toast.promise(fetchData(), {
             loading: `Searching for policies...`,
             success: `Migration plan fetched successfully`,
-            error: (err) => `Failed to get migration info because: ${err.message}`,
+            error: (err) => `Failed to get migration info because: ${err.message.errors.csvContent}`,
         });
     };
 
@@ -202,6 +201,7 @@ export function DataTableToolbar({
 
     return (
         <div className="flex items-center justify-between">
+            <Toaster />
             <div className="flex flex-1 items-center space-x-2">
                 <Input
                     placeholder={FILTER_PLACEHOLDER}

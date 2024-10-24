@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+const groupsSchema = z.object({
+    id : z.string(),
+    displayName: z.string(),
+    description: z.string(),
+    createdDateTime: z.string(),
+});
+
 const assignmentTargetSchema = z.object({
     "@odata.type": z.string(),
     deviceAndAppManagementAssignmentFilterId: z.string().nullable(),
@@ -58,7 +65,7 @@ const assignmentMigrationSchema = z.object({
     excludeGroupFromSource: z.boolean(),
     removeGroupFromSource: z.boolean(),
     assignmentId: z.string().nullable(),
-    groupToMigrate: z.string(),
+    groupToMigrate: z.union([z.string(), z.array(z.string())]).transform((val) => (Array.isArray(val) ? val : [val])),
     assignmentType: z.string(),
     filterToMigrate: assignmentFilterSchema.nullable(),
     filterType: z.string().nullable(),
@@ -68,4 +75,4 @@ const assignmentMigrationSchema = z.object({
 });
 
 export type AssignmentsMigrationModel = z.infer<typeof assignmentMigrationSchema>;
-export { assignmentMigrationSchema, migrationCheckResultSchema };
+export { assignmentMigrationSchema, migrationCheckResultSchema, groupsSchema };

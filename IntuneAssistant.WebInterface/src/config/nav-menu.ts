@@ -64,8 +64,7 @@ export const navMenuConfig: NavMenuConfig = {
         {
           title: "Migrate policy assignments",
           href: "/assignments/migrate",
-          description: "Migrate policy assignments based on a CSV file",
-          disabled: true
+          description: "Migrate policy assignments based on a CSV file"
         },
         {
           title: "Restore",

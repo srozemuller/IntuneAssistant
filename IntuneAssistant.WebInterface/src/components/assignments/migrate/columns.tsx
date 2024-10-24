@@ -1,17 +1,18 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { type AssignmentsMigrationModel } from "@/components/assignments/migrate/schema"
+import {type AssignmentsMigrationModel, groupsSchema} from "@/components/assignments/migrate/schema"
 import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
 import {migrationNeeded, readyForMigration, filterType} from "@/components/assignments/migrate/fixed-values.tsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 import {CheckCircle, TriangleAlert, BicepsFlexed} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {DataTableRowActions} from "@/components/assignments/migrate/data-table-row-actions.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {z} from "zod";
+import { MultiSelect } from "@/components/multi-select";
 
-
-export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
+export const columns = (groups: z.infer<typeof groupsSchema>[]): ColumnDef<AssignmentsMigrationModel>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -109,38 +110,6 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
         },
     },
     {
-        accessorKey: 'groupToMigrate',
-        header: 'Group to migrate',
-    },
-    {
-        accessorKey: 'assignmentType',
-        header: 'Type',
-        cell: ({ row }) => {
-            const type = row.original.assignmentType;
-            const filter = filterType.find(f => f.value === type);
-
-            if (!filter) {
-                return <em>Unknown</em>;
-            }
-
-            return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger>
-                            <div className="flex items-center">
-                                <filter.icon className={`h-5 w-5 ${filter.color}`} />
-                                <span className="ml-2">{filter.label}</span>
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{filter.label}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            );
-        },
-    },
-    {
         id: "excludeOrRemoveGroup",
         header: () => (
             <TooltipProvider>
@@ -218,7 +187,7 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
     },
     {
         accessorKey: 'destinationPolicy.assignments',
-        header: 'Assignments',
+        header: 'Current Assignments',
         cell: ({ row }) => {
             const assignments = row.original.destinationPolicyGroups;
             const groupToMigrate = row.original.groupToMigrate;
@@ -235,6 +204,89 @@ export const columns: ColumnDef<AssignmentsMigrationModel>[] = [
                         </span>
                     ))}
                 </div>
+            );
+        },
+    },
+    {
+        accessorKey: 'groupToMigrate',
+        header: 'Group to Migrate',
+        cell: ({ row }) => {
+            const groupToMigrate = row.getValue('groupToMigrate') as string[];
+            const initialSelectedGroups = groupToMigrate.map((groupName: string) => {
+                const group = groups.find(group => group.displayName === groupName);
+                return group ? group.id : groupName;
+            });
+            const [selectedGroups, setSelectedGroups] = useState<string[]>(initialSelectedGroups);
+
+
+        console.log('Initial Selected Groups:', initialSelectedGroups); // Log initial selected groups
+
+            useEffect(() => {
+                const updatedGroupToMigrate = row.getValue('groupToMigrate') as string[];
+                const updatedSelectedGroups = updatedGroupToMigrate.map((groupName: string) => {
+                    const group = groups.find(group => group.displayName === groupName);
+                    return group ? group.id : groupName;
+                });
+                setSelectedGroups(updatedSelectedGroups);
+            }, [row.getValue('groupToMigrate')]);
+
+
+            const handleGroupChange = (selectedOptions: any) => {
+                const selectedValues = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
+                setSelectedGroups(selectedValues);
+                row.original.groupToMigrate = selectedValues;
+            };
+
+            const options = groups.map((group) => ({
+                value: group.id,
+                label: group.displayName,
+            }));
+
+// Display the selected group display names
+            const selectedGroupDisplayNames = selectedGroups.map((groupId) => {
+                const group = groups.find(group => group.id === groupId);
+                return group ? group.displayName : groupId;
+            });
+            console.log('Selected Group Display Names:', selectedGroupDisplayNames); // Log selected group display names
+            return (
+                <MultiSelect
+                    options={options}
+                    onValueChange={handleGroupChange}
+                    value={selectedGroups}
+                    defaultValue={initialSelectedGroups}
+                    placeholder="Select groups"
+                    variant="inverted"
+                    animation={2}
+                    maxCount={3}
+                />
+            );
+        },
+    },
+    {
+        accessorKey: 'assignmentType',
+        header: 'Type',
+        cell: ({ row }) => {
+            const type = row.original.assignmentType;
+            const filter = filterType.find(f => f.value === type);
+
+            if (!filter) {
+                return <em>Unknown</em>;
+            }
+
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className="flex items-center">
+                                <filter.icon className={`h-5 w-5 ${filter.color}`} />
+                                <span className="ml-2">{filter.label}</span>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{filter.label}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             );
         },
     },
