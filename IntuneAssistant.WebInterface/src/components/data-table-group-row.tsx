@@ -18,7 +18,7 @@ interface GroupedRowProps {
     assignments: Assignment[];
 }
 
-const GroupedRow: React.FC<GroupedRowProps> = ({ assignments}) => {
+const GroupedRow: React.FC<GroupedRowProps> = ({ assignments }) => {
     if (!assignments || assignments.length === 0) {
         return (
             <TooltipProvider>
@@ -41,7 +41,7 @@ const GroupedRow: React.FC<GroupedRowProps> = ({ assignments}) => {
             {assignments.map((assignment, index) => (
                 <span
                     key={assignment.id}
-                    className= 'text-primary'
+                    className='text-primary'
                 >
                     {assignment.target.groupId}
                     {index < assignments.length - 1 && ', '}

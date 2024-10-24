@@ -74,7 +74,7 @@ export const columns: ColumnDef<policyRestoreModel>[] = [
         header: 'Assignments',
         cell: ({ row }) => {
             const assignments = row.original.assignments;
-            return <GroupedRow assignments={assignments}  />;
+            return <GroupedRow assignments={assignments} />;
         },
     },
     {

@@ -45,7 +45,7 @@ export default function DemoPage() {
         toast.promise(fetchData(), {
             loading: `Searching for assignments ...`,
             success: `Assignments fetched successfully`,
-            error: (err) => `Failed to get assignments because: ${err.message}`,
+            error: (err) => `Failed to get assignments because: ${err.message}, ${err.data}`,
         });
     }, []);
 

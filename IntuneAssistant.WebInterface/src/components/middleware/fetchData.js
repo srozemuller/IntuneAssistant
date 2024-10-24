@@ -84,7 +84,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
                     formattedError = 'An error occurred. Please try again.';
                 }
             } else {
-                formattedError = `${error.response.statusText}, ${error.response.status}`;
+                formattedError = `${error.response.statusText}, ${error.response.status}, ${error.response.data}`;
             }
         } else {
             formattedError = error.message || 'An unknown error occurred';

@@ -5,6 +5,8 @@ export const API_BASE_DEV_URL = 'https://localhost:7224/v1';
 export const API_BASE_URL = process.env.NODE_ENV === 'development' ? API_BASE_DEV_URL : API_BASE_PRD_URL;
 
 export const CONSENT_CALLBACK = `${API_BASE_URL}/consent-callback`;
+export const INTUNEASSISTANT_TENANT_INFO = `${API_BASE_URL}/tenant/license-info`;
+
 
 export const GROUPS_ENDPOINT = `${API_BASE_URL}/groups`;
 

@@ -53,8 +53,26 @@ export const navMenuConfig: NavMenuConfig = {
           title: "Conditional Access Policies",
           href: "/policies/ca",
           description: "Information about Conditional Access Policies"
-        }
+        },
       ],
+    }
+  ],
+  migrationNav: [
+    {
+      title: "Migration",
+      items: [
+        {
+          title: "Migrate policy assignments",
+          href: "/assignments/migrate",
+          description: "Migrate policy assignments based on a CSV file",
+          disabled: true
+        },
+        {
+          title: "Restore",
+          href: "/assignments/restore",
+          description: "Restore assignments based on backup"
+        }
+      ]
     }
   ],
   links: [

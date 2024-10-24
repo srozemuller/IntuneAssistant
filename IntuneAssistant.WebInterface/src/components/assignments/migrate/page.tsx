@@ -39,7 +39,7 @@ export default function DemoPage() {
             console.error('Error:', error);
             const errorMessage = `Failed to assignments. ${(error as Error).message}`;
             setError(errorMessage);
-            throw new Error(errorMessage);
+            throw error; // Re-throw the error to be caught by toast.promise
         } finally {
             setLoading(false);
         }

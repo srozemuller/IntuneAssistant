@@ -51,6 +51,7 @@ export type NavMenuConfig = {
   mainNav: SidebarNavItem[];
   docsNav?: SidebarNavItem[];
   assistantNav?: SidebarNavItem[];
+  migrationNav?: SidebarNavItem[];
   links: MenuItem[];
 };
 
