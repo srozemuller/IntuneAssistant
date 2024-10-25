@@ -16,7 +16,6 @@ import {DataTableRowActions} from "@/components/assignments/migrate/data-table-r
 import {useEffect, useState} from "react";
 import {z} from "zod";
 import { SingleSelect } from '@/components/ui/single-select';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 import {Switch} from "@/components/ui/switch.tsx";
 
 
@@ -273,8 +272,9 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
             const [isGroupSelected, setIsGroupSelected] = useState(!!row.original.groupToMigrate);
 
             useEffect(() => {
+                setIsEnabled(row.original.assignmentType === filterType[0].value);
                 setIsGroupSelected(!!row.original.groupToMigrate);
-            }, [row.original.groupToMigrate]);
+            }, [row.original.assignmentType, row.original.groupToMigrate]);
 
             const handleSwitchChange = (checked: boolean) => {
                 setIsEnabled(checked);

@@ -113,7 +113,6 @@ export default function DemoPage() {
             <Toaster />
             <CSVUploader setJsonString={setJsonString} />
             <DataTable columns={columns(groups, filters)} data={data} rawData={rawData} fetchData={fetchData} source="assignmentsMigration" />
-            <button onClick={handleRefresh}>Refresh</button>
         </div>
     );
 }
