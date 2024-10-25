@@ -1,5 +1,5 @@
 // src/components/assignments/migrate/data-table-row-actions.tsx
-import { useState  } from 'react';
+import {useEffect, useState} from 'react';
 
 import { type Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button.tsx";
@@ -108,7 +108,13 @@ export function DataTableRowActions<TData extends {
     const isReadyForMigration = row.original.isReadyForMigration;
     const isMigrated = row.original.isMigrated;
     const migrationCheckResult = row.original.migrationCheckResult;
+    const [selectedGroup, setSelectedGroup] = useState(row.original.groupToMigrate);
+    const [selectedGroupId, setSelectedGroupId] = useState(row.original.assignmentId);
 
+    useEffect(() => {
+        setSelectedGroup(row.original.groupToMigrate);
+        setSelectedGroupId(row.original.assignmentId);
+    }, [row.original.groupToMigrate, row.original.assignmentId]);
 
     const handleMigrate = async () => {
         try {
@@ -118,11 +124,13 @@ export function DataTableRowActions<TData extends {
             // Retrieve the selected group from the column state
             const selectedGroup = row.original.groupToMigrate;
             const selectedGroupId = row.original.assignmentId;
+            console.log('Selected group:', selectedGroup);
+            console.log('Selected group ID:', selectedGroupId);
             // Update the task object with the new selected group
             const updatedTask = {
                 ...task,
                 groupToMigrate: selectedGroup,
-                assignmentId: selectedGroup,
+                assignmentId: selectedGroupId,
             };
 
             // Send the updated task object in the JSON payload

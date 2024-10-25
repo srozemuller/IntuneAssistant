@@ -4,7 +4,8 @@ import { type ColumnDef } from "@tanstack/react-table"
 import {
     assignmentMigrationSchema,
     type AssignmentsMigrationModel,
-    groupsSchema
+    groupsSchema,
+    assignmentFilterSchema
 } from "@/components/assignments/migrate/schema"
 import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
 import {migrationNeeded, readyForMigration, filterType} from "@/components/assignments/migrate/fixed-values.tsx";
@@ -17,7 +18,8 @@ import {z} from "zod";
 import { SingleSelect } from '@/components/ui/single-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 
-export const columns = (groups: z.infer<typeof groupsSchema>[]): ColumnDef<AssignmentsMigrationModel>[] => [
+
+export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer<typeof assignmentFilterSchema>[]): ColumnDef<AssignmentsMigrationModel>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -217,7 +219,7 @@ export const columns = (groups: z.infer<typeof groupsSchema>[]): ColumnDef<Assig
         header: 'Group to Migrate',
         cell: ({ row }) => {
             const groupToMigrate = row.getValue('groupToMigrate') as string;
-            const initialSelectedGroup = groups.find(group => group.displayName === groupToMigrate)?.id || groupToMigrate;
+            const initialSelectedGroup = groups.find(group => group.displayName === groupToMigrate)?.id;
 
             const [selectedGroup, setSelectedGroup] = useState<{ id: string; createdDateTime: string; description: string; displayName: string; } | null>(() => {
                 const initialGroup = groups.find(group => group.id === initialSelectedGroup);
@@ -233,10 +235,13 @@ export const columns = (groups: z.infer<typeof groupsSchema>[]): ColumnDef<Assig
             const handleGroupChange = (selectedOption: string) => {
                 const selectedGroup = groups.find(group => group.id === selectedOption) || null;
                 setSelectedGroup(selectedGroup);
-                row.original.groupToMigrate = selectedOption;
-                const task = assignmentMigrationSchema.parse(row.original);
-                task.groupToMigrate = selectedGroup ? selectedGroup.displayName : selectedOption;
-                task.assignmentId = selectedOption;
+                if (selectedGroup) {
+                    row.original.groupToMigrate = selectedGroup.displayName;
+                    row.original.assignmentId = selectedGroup.id;
+                    const task = assignmentMigrationSchema.parse(row.original);
+                    task.groupToMigrate = selectedGroup.displayName;
+                    task.assignmentId = selectedGroup.id; // Ensure assignmentId is set to the group's id
+                }
             };
 
             const options = groups.map((group) => ({
@@ -285,27 +290,44 @@ export const columns = (groups: z.infer<typeof groupsSchema>[]): ColumnDef<Assig
         },
     },
     {
-        accessorKey: 'filterToMigrate.displayName',
+        accessorKey: 'filterToMigrate',
         header: 'Filter',
         cell: ({ row }) => {
-            const filterName = row.original.filterToMigrate?.displayName;
-            const filterRule = row.original.filterToMigrate?.rule;
+            const filterToMigrate = row.original.filterToMigrate?.displayName || '';
+            const initialSelectedFilter = filters.find(filter => filter.displayName === filterToMigrate)?.displayName || '';
 
-            if (!filterName) {
-                return <em>No filter</em>;
-            }
+            const [selectedFilter, setSelectedFilter] = useState<string | null>(initialSelectedFilter);
+
+            useEffect(() => {
+                const updatedFilterToMigrate = row.original.filterToMigrate?.displayName || '';
+                const updatedSelectedFilter = filters.find(filter => filter.displayName === updatedFilterToMigrate)?.displayName || '';
+                setSelectedFilter(updatedSelectedFilter);
+            }, [row.original.filterToMigrate?.displayName]);
+
+            const handleFilterChange = (selectedOption: string) => {
+                setSelectedFilter(selectedOption);
+                const task = assignmentMigrationSchema.parse(row.original);
+                if (task.filterToMigrate) {
+                    task.filterToMigrate.displayName = selectedOption;
+                } else {
+                    task.filterToMigrate = { displayName: selectedOption, description: '', platform: '', rule: '', assignmentFilterManagementType: '' };
+                }
+                row.original = task;
+            };
+
+            const options = filters.map((filter) => ({
+                value: filter.displayName,
+                label: filter.displayName,
+            }));
 
             return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger>
-                            <span>{filterName}</span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{filterRule}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+                <SingleSelect
+                    options={options}
+                    onValueChange={handleFilterChange}
+                    value={selectedFilter}
+                    defaultValue={initialSelectedFilter}
+                    placeholder="Select filter"
+                />
             );
         },
     },

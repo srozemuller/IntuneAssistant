@@ -48,12 +48,12 @@ const migrationCheckResultSchema = z.object({
 });
 
 const assignmentFilterSchema = z.object({
-    id: z.string().nullable(),
-    displayName: z.string().nullable(),
-    description: z.string().nullable(),
-    platform: z.string().nullable(),
-    rule: z.string().nullable(),
-    assignmentFilterManagementType: z.string().nullable(),
+    id: z.string(),
+    displayName: z.string(),
+    description: z.string(),
+    platform: z.string(),
+    rule: z.string(),
+    assignmentFilterManagementType: z.string(),
 });
 
 const assignmentMigrationSchema = z.object({
@@ -75,4 +75,5 @@ const assignmentMigrationSchema = z.object({
 });
 
 export type AssignmentsMigrationModel = z.infer<typeof assignmentMigrationSchema>;
-export { assignmentMigrationSchema, migrationCheckResultSchema, groupsSchema };
+export type AssignmentsFiltersModel = z.infer<typeof assignmentFilterSchema>;
+export { assignmentMigrationSchema, migrationCheckResultSchema, groupsSchema, assignmentFilterSchema };
