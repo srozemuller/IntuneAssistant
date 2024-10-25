@@ -32,19 +32,19 @@ export const readyForMigration = [
 
 export const filterType = [
     {
-        value: 'Include',
+        value: 'include',
         label: "Include",
         icon: CircleCheck,
         color: "text-green-500",
     },
     {
-        value: 'Exclude',
+        value: 'exclude',
         label: "Exclude",
         icon: CircleSlash,
         color: "text-orange-500",
     },
     {
-        value: 'NoFilter',
+        value: 'none',
         label: "NoFilter",
         icon: Circle,
         color: "text-gray-500",

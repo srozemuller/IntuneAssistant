@@ -61,10 +61,12 @@ interface DataTableRowActionsProps<TData extends {
 export function DataTableRowActions<TData extends {
     id: string,
     assignmentId: string,
+    assignmentType: string,
     isReadyForMigration: boolean,
     isMigrated: boolean,
     groupToMigrate: string,
     filterToMigrate: { displayName: string, id: string } | null,
+    filterType: string,
     migrationCheckResult?: {
         sourcePolicyExists: boolean,
         sourcePolicyIsUnique: boolean,
@@ -112,12 +114,17 @@ export function DataTableRowActions<TData extends {
     const [selectedGroup, setSelectedGroup] = useState(row.original.groupToMigrate);
     const [selectedGroupId, setSelectedGroupId] = useState(row.original.assignmentId);
     const [selectedFilter, setSelectedFilter] = useState(row.original.filterToMigrate);
+    const [selectedAssignmentType, setSelectedAssignmentType] = useState(row.original.assignmentType);
+    const [selectedFilterType, setSelectedFilterType] = useState(row.original.filterType);
+
 
     useEffect(() => {
         setSelectedGroup(row.original.groupToMigrate);
         setSelectedGroupId(row.original.assignmentId);
         setSelectedFilter(row.original.filterToMigrate);
-    }, [row.original.groupToMigrate, row.original.assignmentId, row.original.filterToMigrate]);
+        setSelectedAssignmentType(row.original.assignmentType);
+        setSelectedFilterType(row.original.filterType);
+    }, [row.original.groupToMigrate, row.original.assignmentId, row.original.filterToMigrate, row.original.assignmentType, row.original.filterType]);
 
 
     const handleMigrate = async () => {
@@ -129,17 +136,18 @@ export function DataTableRowActions<TData extends {
             const selectedGroup = row.original.groupToMigrate;
             const selectedGroupId = row.original.assignmentId;
             const selectedFilter = row.original.filterToMigrate;
+            const selectedAssignmentType = row.original.assignmentType;
+            const selectedFilterType = row.original.filterType;
 
-            console.log('Selected group:', selectedGroup);
-            console.log('Selected group ID:', selectedGroupId);
-            console.log('Selected filter:', selectedFilter); // Log the selected filter
-
+            console.log(selectedFilterType);
             // Update the task object with the new selected group and filter
             const updatedTask = {
                 ...task,
                 groupToMigrate: selectedGroup,
                 assignmentId: selectedGroupId,
                 filterToMigrate: selectedFilter,
+                assignmentType: selectedAssignmentType,
+                filterType: selectedFilterType
             };
 
             // Send the updated task object in the JSON payload

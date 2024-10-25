@@ -17,6 +17,7 @@ import {useEffect, useState} from "react";
 import {z} from "zod";
 import { SingleSelect } from '@/components/ui/single-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
+import {Switch} from "@/components/ui/switch.tsx";
 
 
 export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer<typeof assignmentFilterSchema>[]): ColumnDef<AssignmentsMigrationModel>[] => [
@@ -196,19 +197,22 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         accessorKey: 'destinationPolicy.assignments',
         header: 'Current Assignments',
         cell: ({ row }) => {
-            const assignments = row.original.destinationPolicyGroups;
-            const groupToMigrate = row.original.groupToMigrate;
+            const [assignments, setAssignments] = useState(row.original.destinationPolicyGroups);
+
+            useEffect(() => {
+                setAssignments(row.original.destinationPolicyGroups);
+            }, [row.original.destinationPolicyGroups]);
 
             return (
                 <div>
                     {assignments?.map((assignment, index) => (
                         <span
                             key={index}
-                            className={assignment === groupToMigrate ? 'text-primary' : ''}
+                            className={assignment === row.original.groupToMigrate ? 'text-primary' : ''}
                         >
-                            {assignment}
+                        {assignment}
                             {index < assignments.length - 1 && ', '}
-                        </span>
+                    </span>
                     ))}
                 </div>
             );
@@ -265,24 +269,34 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         accessorKey: 'assignmentType',
         header: 'Type',
         cell: ({ row }) => {
-            const type = row.original.assignmentType;
-            const filter = filterType.find(f => f.value === type);
+            const [isEnabled, setIsEnabled] = useState(row.original.assignmentType === filterType[0].value);
+            const [isGroupSelected, setIsGroupSelected] = useState(!!row.original.groupToMigrate);
 
-            if (!filter) {
-                return <em>Unknown</em>;
-            }
+            useEffect(() => {
+                setIsGroupSelected(!!row.original.groupToMigrate);
+            }, [row.original.groupToMigrate]);
+
+            const handleSwitchChange = (checked: boolean) => {
+                setIsEnabled(checked);
+                row.original.assignmentType = checked ? filterType[0].value : filterType[1].value;
+            };
 
             return (
                 <TooltipProvider>
                     <Tooltip>
-                        <TooltipTrigger>
-                            <div className="flex items-center">
-                                <filter.icon className={`h-5 w-5 ${filter.color}`} />
-                                <span className="ml-2">{filter.label}</span>
+                        <TooltipTrigger asChild>
+                            <div>
+                                <Switch
+                                    checked={isEnabled}
+                                    onCheckedChange={handleSwitchChange}
+                                    className={`custom-switch ${isEnabled ? 'text-green-500' : 'text-red-500'}`}
+                                    style={{ backgroundColor: `rgb(var(${isEnabled ? '--green' : '--red'}) / var(--tw-bg-opacity, 1))` }}
+                                    disabled={!isGroupSelected} // Disable the switch if no group is selected
+                                />
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{filter.label}</p>
+                            <p>{isEnabled ? filterType[0].label : filterType[1].label}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
@@ -337,24 +351,34 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         accessorKey: 'filterType',
         header: 'Type',
         cell: ({ row }) => {
-            const type = row.original.filterType;
-            const filter = filterType.find(f => f.value === type);
+            const [isEnabled, setIsEnabled] = useState(row.original.filterType === filterType[0].value);
+            const [isGroupSelected, setIsGroupSelected] = useState(!!row.original.groupToMigrate);
 
-            if (!filter) {
-                return <em>Unknown</em>;
-            }
+            useEffect(() => {
+                setIsGroupSelected(!!row.original.groupToMigrate);
+            }, [row.original.groupToMigrate]);
+
+            const handleSwitchChange = (checked: boolean) => {
+                setIsEnabled(checked);
+                row.original.filterType = checked ? filterType[0].value : filterType[1].value;
+            };
 
             return (
                 <TooltipProvider>
                     <Tooltip>
-                        <TooltipTrigger>
-                            <div className="flex items-center">
-                                <filter.icon className={`h-5 w-5 ${filter.color}`} />
-                                <span className="ml-2">{filter.label}</span>
+                        <TooltipTrigger asChild>
+                            <div>
+                                <Switch
+                                    checked={isEnabled}
+                                    onCheckedChange={handleSwitchChange}
+                                    className={`custom-switch ${isEnabled ? 'text-green-500' : 'text-red-500'}`}
+                                    style={{ backgroundColor: `rgb(var(${isEnabled ? '--green' : '--red'}) / var(--tw-bg-opacity, 1))` }}
+                                    disabled={!isGroupSelected} // Disable the switch if no group is selected
+                                />
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{filter.label}</p>
+                            <p>{isEnabled ? filterType[0].label : filterType[1].label}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>

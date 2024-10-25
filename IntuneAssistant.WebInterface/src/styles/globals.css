@@ -14,6 +14,7 @@
     --primary-foreground: 26 83.3% 14.1%;
     --secondary: 60 4.8% 95.9%;
     --secondary-foreground: 24 9.8% 10%;
+    --include-foreground: 120 100% 25%;
     --muted: 60 4.8% 95.9%;
     --muted-foreground: 25 5.3% 44.7%;
     --accent: hsla(48, 96%, 53%, 0.87);
@@ -29,6 +30,8 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    --green: 34 197 94;
+    --red: 239 68 68;
   }
 
   .dark {
