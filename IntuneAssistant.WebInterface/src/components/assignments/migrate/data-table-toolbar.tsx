@@ -24,6 +24,8 @@ interface TData {
     excludeGroupFromSource: boolean;
     sourcePolicy: z.infer<typeof policySchema> | null;
     destinationPolicy: z.infer<typeof policySchema> | null;
+    assignmentType: string,
+    filterType: string,
     groupToMigrate: string;
     assignmentId: string;
     filterToMigrate: { displayName: string, id: string } | null,
@@ -147,7 +149,6 @@ export function DataTableToolbar({
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         saveAs(blob, "assignment_migration_template.csv");
     };
-
     const handleMigrate = async () => {
         const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
@@ -162,6 +163,8 @@ export function DataTableToolbar({
                     item.groupToMigrate = selectedRow.original.groupToMigrate;
                     item.assignmentId = selectedRow.original.assignmentId;
                     item.filterToMigrate = selectedRow.original.filterToMigrate;
+                    item.assignmentType = selectedRow.original.assignmentType; // Ensure assignmentType is set
+                    item.filterType = selectedRow.original.filterType;
                     assignmentMigrationSchema.parse(item); // Validate the updated item
                 }
                 return item;
