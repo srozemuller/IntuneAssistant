@@ -24,6 +24,9 @@ interface TData {
     excludeGroupFromSource: boolean;
     sourcePolicy: z.infer<typeof policySchema> | null;
     destinationPolicy: z.infer<typeof policySchema> | null;
+    groupToMigrate: string;
+    assignmentId: string;
+    filterToMigrate: { displayName: string, id: string } | null,
 }
 
 interface DataTableToolbarProps<TData> {
@@ -156,6 +159,10 @@ export function DataTableToolbar({
                 const selectedRow = selectedRows.find(row => row.original.id === item.id);
                 if (selectedRow) {
                     item.excludeGroupFromSource = selectedRow.original.excludeGroupFromSource;
+                    item.groupToMigrate = selectedRow.original.groupToMigrate;
+                    item.assignmentId = selectedRow.original.assignmentId;
+                    item.filterToMigrate = selectedRow.original.filterToMigrate;
+                    assignmentMigrationSchema.parse(item); // Validate the updated item
                 }
                 return item;
             });

@@ -240,7 +240,7 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
                     row.original.assignmentId = selectedGroup.id;
                     const task = assignmentMigrationSchema.parse(row.original);
                     task.groupToMigrate = selectedGroup.displayName;
-                    task.assignmentId = selectedGroup.id; // Ensure assignmentId is set to the group's id
+                    task.assignmentId = selectedGroup.id;
                 }
             };
 
@@ -305,14 +305,16 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
             }, [row.original.filterToMigrate?.displayName]);
 
             const handleFilterChange = (selectedOption: string) => {
-                setSelectedFilter(selectedOption);
-                const task = assignmentMigrationSchema.parse(row.original);
-                if (task.filterToMigrate) {
-                    task.filterToMigrate.displayName = selectedOption;
+                const selectedFilter = filters.find(filter => filter.displayName === selectedOption) || null;
+                setSelectedFilter(selectedFilter?.displayName || null);
+                console.log('Selected filter:', selectedFilter);
+                if (selectedFilter) {
+                    row.original.filterToMigrate = selectedFilter;
+                    console.log('Row original:', row.original);
+                    row.original = assignmentMigrationSchema.parse(row.original);
                 } else {
-                    task.filterToMigrate = { displayName: selectedOption, description: '', platform: '', rule: '', assignmentFilterManagementType: '' };
+                    row.original.filterToMigrate = null;
                 }
-                row.original = task;
             };
 
             const options = filters.map((filter) => ({

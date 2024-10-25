@@ -64,6 +64,7 @@ export function DataTableRowActions<TData extends {
     isReadyForMigration: boolean,
     isMigrated: boolean,
     groupToMigrate: string,
+    filterToMigrate: { displayName: string, id: string } | null,
     migrationCheckResult?: {
         sourcePolicyExists: boolean,
         sourcePolicyIsUnique: boolean,
@@ -110,27 +111,35 @@ export function DataTableRowActions<TData extends {
     const migrationCheckResult = row.original.migrationCheckResult;
     const [selectedGroup, setSelectedGroup] = useState(row.original.groupToMigrate);
     const [selectedGroupId, setSelectedGroupId] = useState(row.original.assignmentId);
+    const [selectedFilter, setSelectedFilter] = useState(row.original.filterToMigrate);
 
     useEffect(() => {
         setSelectedGroup(row.original.groupToMigrate);
         setSelectedGroupId(row.original.assignmentId);
-    }, [row.original.groupToMigrate, row.original.assignmentId]);
+        setSelectedFilter(row.original.filterToMigrate);
+    }, [row.original.groupToMigrate, row.original.assignmentId, row.original.filterToMigrate]);
+
 
     const handleMigrate = async () => {
         try {
             setMigrationStatus('pending');
             toast.info('Migration is pending...'); // Show toast message
 
-            // Retrieve the selected group from the column state
+            // Ensure the latest state values are used
             const selectedGroup = row.original.groupToMigrate;
             const selectedGroupId = row.original.assignmentId;
+            const selectedFilter = row.original.filterToMigrate;
+
             console.log('Selected group:', selectedGroup);
             console.log('Selected group ID:', selectedGroupId);
-            // Update the task object with the new selected group
+            console.log('Selected filter:', selectedFilter); // Log the selected filter
+
+            // Update the task object with the new selected group and filter
             const updatedTask = {
                 ...task,
                 groupToMigrate: selectedGroup,
                 assignmentId: selectedGroupId,
+                filterToMigrate: selectedFilter,
             };
 
             // Send the updated task object in the JSON payload
