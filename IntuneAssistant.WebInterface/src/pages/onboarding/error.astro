@@ -1,0 +1,37 @@
+---
+export const prerender = false
+import { Image } from 'astro:assets';
+import MainLayout from "@/layouts/main-layout.astro";
+import { Button } from '@/components/ui/button';
+
+
+let error = '';
+let error_description = '';
+---
+
+<MainLayout title="Status" mainClass="flex-1 bg-background-200">
+  <div class="flex flex-col items-center justify-center h-[calc(100vh-25vh)]">
+    <h1 class="text-2xl font-semibold mt-10">
+      That didn't work. Please try again.
+    </h1>
+    <p id="error">Error: {error}</p>
+    <a href="/" class="mt-5">
+      <Button variant="link">Return to home</Button>
+      <a/>
+  </div>
+</MainLayout>
+
+<script>
+  if (typeof window !== "undefined") {
+    window.addEventListener('DOMContentLoaded', (event) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      console.log(urlParams.get('error'));
+      console.log(urlParams.get('error_description'));
+      const error = urlParams.get('error') || ',';
+      const error_description = urlParams.get('error_description') || '';
+      document.getElementById('error').textContent += error;
+      document.getElementById('error').textContent += error_description;
+
+    });
+  }
+</script>

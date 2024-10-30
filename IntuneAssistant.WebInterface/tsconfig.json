@@ -1,0 +1,19 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": [
+    "./src/env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/onboarding/onboarded.astro"
+  ],
+  "exclude": ["dist"]
+}

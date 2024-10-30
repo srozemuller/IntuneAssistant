@@ -1,0 +1,85 @@
+---
+import { siteConfig } from "@/config/site";
+import "@/styles/globals.css";
+import { ViewTransitions } from "astro:transitions";
+
+interface Props {
+    title: string;
+    description?: string;
+    image?: string;
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const {
+    title,
+    description = siteConfig.description,
+    image = "",
+} = Astro.props;
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Font preloads -->
+<link
+        rel="preload"
+        href="/fonts/Comfortaa-Regular.ttf"
+        as="font"
+        type="font/ttf"
+        crossorigin
+/>
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Primary Meta Tags -->
+<title>{title ? `${title} | The modern Intune management tool` : "Intune Assistant"}</title>
+    <meta name="title" content={title ? `${title} | The modern Intune management tool ` : "Intune Assistant"} />
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.url)} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.url)} />
+    <script is:inline>
+        (function() {
+            const getThemePreference = () => {
+                if (typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme')) {
+                    return localStorage.getItem('starlight-theme');
+                }
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
+            const isDark = getThemePreference() === 'dark';
+            document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        })();
+        </script>
+    <script is:inline>
+        (function() {
+            // Function to log all localStorage key-value pairs
+            const logLocalStorage = () => {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    console.log(`${key}: ${value}`);
+                }
+            };
+
+            // Call the function to log localStorage values
+            logLocalStorage();
+        })();
+        </script>
+    <ViewTransitions />
