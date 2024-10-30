@@ -26,14 +26,14 @@ import {
 import { DataTablePagination } from "@/components/ui/pagination"
 import { DataTableToolbar } from "@/components/assignments/overview/data-table-toolbar.tsx"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import axios from "axios"
+import type {Filters} from "@/schemas/filters.tsx";
+
 
 interface DataTableProps<TData, TValue> {
     source: string
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     rawData: string
-    rawDataFilters: string
     fetchData: () => Promise<void>
 }
 interface UserMember {
@@ -45,7 +45,7 @@ export function DataTable<TData, TValue>({
                                              columns,
                                              data,
                                              rawData,
-                                             rawDataFilters,
+                                             filters,
                                              fetchData,
                                              source,
                                          }: DataTableProps<TData, TValue>) {
@@ -54,18 +54,8 @@ export function DataTable<TData, TValue>({
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [isDialogOpen, setIsDialogOpen] = React.useState(false)
-// Update the state and fetch function to use the UserMember type
-    const [members, setMembers] = React.useState<UserMember[]>([]);
 
-    const fetchGroupMembers = async (id: string) => {
-        try {
-            const response = await axios.get(`/v1/groups/${id}/members`);
-            setMembers(response.data);
-            setIsDialogOpen(true);
-        } catch (error) {
-            console.error("Failed to fetch group members:", error);
-        }
-    };
+    const [members, setMembers] = React.useState<UserMember[]>([]);
 
     const table = useReactTable({
         data,

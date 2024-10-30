@@ -19,6 +19,7 @@ interface UserMember {
     type: string;
 }
 
+
 const fetchGroupMembers = async (id: string, setMembers: React.Dispatch<React.SetStateAction<UserMember[]>>, setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>) => {
     try {
         const response = await authDataMiddleware(`${GROUPS_ENDPOINT}/${id}/members`);
@@ -260,11 +261,27 @@ export const columns: ColumnDef<Assignments>[] = [
         },
     },
     {
-        accessorKey: "filterId",
-        header: ({column}) => (
-            <DataTableColumnHeader column={column} title="Filter ID"/>
+        accessorKey: "filter.displayName",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Filter" />
         ),
-        cell: ({row}) => <div>{row.getValue("filterId")}</div>,
+        cell: ({ row }) => {
+            const displayName = row.original.filter?.displayName || "No Filter";
+            const rule = row.original.filter?.rule || "No Rule";
+
+            return (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div>{displayName}</div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{rule}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            );
+        },
     },
     {
         accessorKey: "filterType",
