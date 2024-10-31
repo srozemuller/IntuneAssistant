@@ -4,8 +4,10 @@ import MainLayout from "@/layouts/main-layout.astro";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/icons";
 import LoginPage from "@/components/login";
+import {toast, Toaster} from "sonner";
 ---
 
 <MainLayout title="CLI">
+    <Toaster />
     <LoginPage client:load/>
 </MainLayout>
