@@ -12,6 +12,7 @@ import { saveAs } from "file-saver";
 import type { Table } from '@tanstack/react-table';
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants.js"
 import { policySchema } from "@/components/policies/configuration/schema.tsx";
+import {SelectAllButton} from "@/components/button-selectall.tsx";
 
 interface ToolbarProps<TData> {
     table: Table<TData>;
@@ -89,9 +90,15 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
         });
     };
 
+    const handleSelectAllToggle = () => {
+        const allRowsSelected = table.getIsAllRowsSelected();
+        table.toggleAllRowsSelected(!allRowsSelected);
+    };
+
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
+                <SelectAllButton table={table} />
                 <Input
                     placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}

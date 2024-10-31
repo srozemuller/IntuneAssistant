@@ -16,6 +16,7 @@ import { ASSIGNMENTS_MIGRATE_ENDPOINT } from "@/components/constants/apiUrls";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
+import { SelectAllButton } from "@/components/button-selectall.tsx";
 
 // Toast configuration
 import { ToastContainer, toast } from 'react-toastify';
@@ -221,6 +222,7 @@ export function DataTableToolbar({
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
+                <SelectAllButton table={table} />
                 <Input
                     placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}

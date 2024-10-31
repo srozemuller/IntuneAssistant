@@ -9,6 +9,7 @@ import { type Table } from "@tanstack/react-table"
 import { useState } from "react"
 import { handleExport } from "@/lib/handle-export";
 import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
+import {SelectAllButton} from "@/components/button-selectall.tsx";
 
 interface TData {
     displayName: string;
@@ -48,6 +49,7 @@ export function DataTableToolbar({
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
+                <SelectAllButton table={table} />
                 <Input
                     placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}

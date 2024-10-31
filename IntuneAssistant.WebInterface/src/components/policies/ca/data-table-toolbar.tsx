@@ -10,7 +10,7 @@ import { useState } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants.js";
-
+import { SelectAllButton } from "@/components/button-selectall.tsx";
 interface TData {
     displayName: string;
     id: string;
@@ -85,6 +85,7 @@ export function DataTableToolbar({
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
+                <SelectAllButton table={table} />
                 <Input
                     placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}
