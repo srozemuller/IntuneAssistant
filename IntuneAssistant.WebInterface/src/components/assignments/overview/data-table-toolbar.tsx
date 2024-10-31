@@ -12,7 +12,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
-
+import { SelectAllButton } from "@/components/button-selectall.tsx";
 
 interface TData {
     displayName: string;
@@ -87,6 +87,7 @@ export function DataTableToolbar({
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
+                <SelectAllButton table={table} />
                 <Input
                     placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}
