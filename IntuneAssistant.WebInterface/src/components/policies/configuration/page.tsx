@@ -3,16 +3,21 @@ import { DataTable } from './data-table.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { CONFIGURATION_POLICIES_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/configuration/columns.tsx";
-import { toast } from "sonner";
 import { z } from "zod";
 import { policySchema, type Policy } from "@/components/policies/configuration/schema";
-import {Toaster} from "@/components/ui/sonner.tsx";
+// Toast configuration
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+
 
 export default function DemoPage() {
     const [data, setData] = useState<Policy[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
+
+
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -58,15 +63,21 @@ export default function DemoPage() {
     useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
-            loading: `Searching for configuration  policies...`,
-            success: `Configuration policies fetched successfully`,
-            error: (err) => `Failed to get configuration policies because: ${err.message}`,
+            pending: {
+                render:  `Searching for configuration  policies...`,
+            },
+            success: {
+                render: `Configuration policies fetched successfully`,
+            },
+            error:  {
+                render: (errorMessage) => `Failed to get configuration policies because: ${errorMessage}`,
+            }
         });
     }, []);
 
     return (
         <div className="container max-w-[95%] py-6">
-            <Toaster />
+            <ToastContainer autoClose={toastDuration} position={toastPosition}/>
             <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="configuration"  />
         </div>
     );

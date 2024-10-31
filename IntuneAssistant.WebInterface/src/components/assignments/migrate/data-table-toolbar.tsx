@@ -4,7 +4,6 @@ import { migrationNeeded, readyForMigration } from "@/components/assignments/mig
 import { DataTableFacetedFilter } from "./data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { CrossIcon } from "lucide-react";
-import { toast } from "sonner"
 import { type Table } from "@tanstack/react-table"
 import { useState, useEffect } from "react"
 import JSZip from "jszip";
@@ -17,7 +16,11 @@ import { ASSIGNMENTS_MIGRATE_ENDPOINT } from "@/components/constants/apiUrls";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
-import {Toaster} from "@/components/ui/sonner.tsx";
+
+// Toast configuration
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 
 interface TData {
     id: string;
@@ -138,9 +141,15 @@ export function DataTableToolbar({
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
-            loading: `Searching for policies...`,
-            success: `Migration plan fetched successfully`,
-            error: (err) => `Failed to get migration info because: ${err.message.errors.csvContent}`,
+            pending: {
+                render:  `Searching for policies...`,
+            },
+            success: {
+                render: `Policies fetched successfully`,
+            },
+            error:  {
+                render: (errorMessage) => `Failed to get policies because: ${errorMessage}`,
+            }
         });
     };
 
@@ -211,7 +220,6 @@ export function DataTableToolbar({
 
     return (
         <div className="flex items-center justify-between">
-            <Toaster />
             <div className="flex flex-1 items-center space-x-2">
                 <Input
                     placeholder={FILTER_PLACEHOLDER}

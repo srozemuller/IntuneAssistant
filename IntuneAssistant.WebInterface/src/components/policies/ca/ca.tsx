@@ -3,9 +3,14 @@ import { DataTable } from './data-table.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { CA_POLICIES_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/ca/columns.tsx";
-import { toast } from 'sonner';
+
 import { z } from "zod";
 import { taskSchema, type Task } from "@/components/policies/ca/schema";
+
+// Toast configuration
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 
 export default function DemoPage() {
     const [data, setData] = useState<Task[]>([]);
@@ -38,14 +43,21 @@ export default function DemoPage() {
     useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
+            pending: {
+                render:  `Searching for conditional access policies ...`,
+            },
+            success: {
+                render: `Conditional access policies fetched successfully`,
+            },
+            error:  {
+                render: (errorMessage) => `Failed to get conditional access policies because: ${errorMessage}`,
+            }
         });
     }, []);
 
     return (
         <div className="container max-w-[95%] py-6">
+            <ToastContainer autoClose={toastDuration} position={toastPosition}/>
             <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="ca"  />
         </div>
     );

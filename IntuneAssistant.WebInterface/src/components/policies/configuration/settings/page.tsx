@@ -7,9 +7,12 @@ import {
     POLICY_SETTINGS_ENDPOINT
 } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/configuration/settings/columns.tsx";
-import { Toaster, toast } from 'sonner';
 import { z } from "zod";
 import { settingSchema, type PolicySettings } from "@/components/policies/configuration/settings/schema";
+// Toast configuration
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 
 export default function DemoPage() {
     const [data, setData] = useState<PolicySettings[]>([]);
@@ -53,15 +56,21 @@ export default function DemoPage() {
 
     useEffect(() => {
         toast.promise(fetchData(), {
-            loading: `Searching for configuration settings ...`,
-            success: `Configuration policies settings fetched successfully`,
-            error: (err) => `Failed to get configuration policies settings because: ${err.message}`,
+            pending: {
+                render:  `Searching for configuration policy settings ...`,
+            },
+            success: {
+                render: `Configuration policies settings fetched successfully`,
+            },
+            error:  {
+                render: (errorMessage) => `Failed to get configuration policy settings because: ${errorMessage}`,
+            }
         });
     }, []);
 
     return (
         <div className="container max-w-[95%] py-6">
-            <Toaster />
+            <ToastContainer autoClose={toastDuration} position={toastPosition}/>
             <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="configuration-settings" />
         </div>
     );
