@@ -9,7 +9,6 @@ import {
     GROUPS_ENDPOINT
 } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/migrate/columns.tsx";
-import { toast, Toaster } from "sonner";
 import { z } from "zod";
 import {
     assignmentMigrationSchema,
@@ -17,6 +16,11 @@ import {
     groupsSchema
 } from "@/components/assignments/migrate/schema";
 import type {filterSchema} from "@/schemas/filters.tsx";
+
+// Toast configuration
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 
 interface MigratePageProps {
     data: any[];
@@ -93,24 +97,36 @@ export default function DemoPage() {
     useEffect(() => {
         if (jsonString) {
             toast.promise(fetchData(), {
-                loading: `Searching for assignments ...`,
-                success: `Assignments fetched successfully`,
-                error: (err) => `Failed to get assignments because: ${err.message}`,
+                pending: {
+                    render:  `Searching for policies...`,
+                },
+                success: {
+                    render: `Policies fetched successfully`,
+                },
+                error:  {
+                    render: (errorMessage) => `Failed to get policies because: ${errorMessage}`,
+                }
             });
         }
     }, [jsonString]);
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
-            loading: `Searching for assignments...`,
-            success: `Assignments fetched successfully`,
-            error: (err) => `Failed to get assignments because: ${err.message}`,
+            pending: {
+                render:  `Searching for policies...`,
+            },
+            success: {
+                render: `Policies fetched successfully`,
+            },
+            error:  {
+                render: (errorMessage) => `Failed to get policies because: ${errorMessage}`,
+            }
         });
     };
 
     return (
         <div className="container max-w-[95%] py-6">
-            <Toaster />
+            <ToastContainer autoClose={toastDuration} position={toastPosition}/>
             <CSVUploader setJsonString={setJsonString} />
             <DataTable columns={columns(groups, filters)} data={data} rawData={rawData} fetchData={fetchData} source="assignmentsMigration" />
         </div>

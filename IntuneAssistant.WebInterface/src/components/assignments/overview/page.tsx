@@ -3,10 +3,13 @@ import { DataTable } from './data-table.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
 import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT} from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/overview/columns.tsx";
-import {toast, Toaster} from "sonner";
+
 import { z } from "zod";
 import { assignmentsSchema, type Assignments } from "@/components/assignments/overview/schema";
-
+// Toast configuration
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 
 export default function DemoPage() {
     const [data, setData] = useState<Assignments[]>([]);
@@ -43,15 +46,21 @@ export default function DemoPage() {
     useEffect(() => {
         fetchData();
         toast.promise(fetchData(), {
-            loading: `Searching for assignments ...`,
-            success: `Assignments fetched successfully`,
-            error: (err) => `Failed to get assignments because: ${err.message}, ${err.data}`,
+            pending: {
+                render:  `Searching for assignments ...`,
+            },
+            success: {
+                render: `Assignments fetched successfully`,
+            },
+            error:  {
+                render: (errorMessage) => `Failed to get assignments because: ${errorMessage}`,
+            }
         });
     }, []);
 
     return (
         <div className="container max-w-[95%] py-6">
-            <Toaster />
+            <ToastContainer autoClose={toastDuration} position={toastPosition}/>
             <DataTable columns={columns} data={data} rawData={rawData}  fetchData={fetchData} source="assignments"  />
         </div>
     );

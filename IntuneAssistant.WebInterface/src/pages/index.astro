@@ -4,8 +4,9 @@ import MainLayout from "@/layouts/main-layout.astro";
 import { cn } from "@/lib/utils";
 import Integrations from "@/components/sections/integrations.astro";
 import * as React from "react";
+import {toast, Toaster} from "sonner";
 ---
-
+<Toaster />
 <MainLayout title="Landing">
   <section class="flex items-center justify-center space-y-6 pb-12 pt-16 lg:py-28">
     <div class="flex flex-col md:flex-row items-center gap-5">
