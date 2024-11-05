@@ -1,3 +1,4 @@
+// src/components/assignments/overview/data-table.tsx
 import * as React from "react"
 import {
     type ColumnDef,
@@ -27,6 +28,7 @@ import { DataTablePagination } from "@/components/ui/pagination"
 import { DataTableToolbar } from "@/components/assignments/overview/data-table-toolbar.tsx"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import type {Filters} from "@/schemas/filters.tsx";
+import type {GroupModel} from "@/schemas/groupSchema.tsx";
 
 
 interface DataTableProps<TData, TValue> {
@@ -35,6 +37,7 @@ interface DataTableProps<TData, TValue> {
     data: TData[]
     rawData: string
     fetchData: () => Promise<void>
+    groupData: GroupModel[]
 }
 interface UserMember {
     id: string;
@@ -45,9 +48,9 @@ export function DataTable<TData, TValue>({
                                              columns,
                                              data,
                                              rawData,
-                                             filters,
                                              fetchData,
                                              source,
+                                             groupData,
                                          }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({})
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
