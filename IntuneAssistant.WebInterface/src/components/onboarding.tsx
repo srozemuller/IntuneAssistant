@@ -47,6 +47,7 @@ export default function ConsentCard({
     const [tenantId, setTenantId] = React.useState<string>("");
     const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    const [isTenantIdValid, setIsTenantIdValid] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         const fetchCurrentTenantId = async () => {
@@ -58,6 +59,16 @@ export default function ConsentCard({
 
         fetchCurrentTenantId();
     }, []);
+
+    const validateGuid = (guid: string) => {
+        const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        return guidRegex.test(guid);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setIsTenantIdValid(validateGuid(value));
+    };
 
     const fetchUrlAndRedirect = async () => {
         setIsLoading(true);
@@ -79,8 +90,7 @@ export default function ConsentCard({
             const consentUrl = data.url;
             const token = data.onboardingToken;
             localStorage.setItem('consentToken', token); // Store token in localStorage
-           console.log( localStorage.getItem('consentToken'));
-
+            console.log(localStorage.getItem('consentToken'));
 
             console.info(consentUrl);
             window.open(`${consentUrl}`, "_blank", "noreferrer"); // Include token in the URL
@@ -131,7 +141,14 @@ export default function ConsentCard({
                                 placeholder="00000000-0000-0000-0000-000000000000"
                                 maxLength={36}
                                 onChange={(e) => setTenantId(e.target.value)}
+                                onBlur={handleBlur}
+                                className={!isTenantIdValid ? "border-red-500" : ""}
                             />
+                            {!isTenantIdValid && (
+                                <div className="text-red-500 text-sm">
+                                    Please enter a valid Tenant ID.
+                                </div>
+                            )}
                         </div>
                         <div className="flex flex-col space-y-1.5">
                             <Collapsible
@@ -184,7 +201,7 @@ export default function ConsentCard({
                         Please wait
                     </Button>
                 ) : (
-                    <Button onClick={fetchUrlAndRedirect}>Deploy</Button>
+                    <Button onClick={fetchUrlAndRedirect} disabled={!isTenantIdValid}>Deploy</Button>
                 )}
             </CardFooter>
         </Card>
