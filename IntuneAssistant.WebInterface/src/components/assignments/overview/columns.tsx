@@ -59,10 +59,9 @@ const memberColumns: ColumnDef<UserMember>[] = [
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger>
-                                [...]
+
                             </TooltipTrigger>
                             <TooltipContent>
-                                [...]
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -73,7 +72,7 @@ const memberColumns: ColumnDef<UserMember>[] = [
                     <Tooltip>
                         <TooltipTrigger>
                             <div className="flex w-[100px] items-center">
-                                [...]
+                                <status.icon className={`h-5 w-5 ${status.color}`} />
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -234,6 +233,10 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
             const deviceCount = group ? group.members.filter(member => member.type === "Device").length : 0;
             const groupCount = group ? group.members.filter(member => member.type === "Group").length : 0;
 
+            console.log("Group:", group);
+            console.log("User Count:", userCount);
+            console.log("Device Count:", deviceCount);
+            console.log("Group Count:", groupCount);
             if (assignmentType === "Entra ID Group" || assignmentType === "Entra ID Group Exclude") {
                 return (
                     <>
@@ -244,7 +247,7 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
                             {row.getValue("targetName")}
                         </div>
                         <div className="italic text-sm">
-                            {group ? `(${userCount} users / ${deviceCount} devices)` : ""}
+                            {group ? `(${userCount} users / ${deviceCount} devices / ${groupCount} groups)` : ""}
                         </div>
                         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                             <DialogContent className="container max-w-[60%] py-6">
@@ -260,8 +263,12 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
                     </>
                 );
             }
+            return (
+                <div>
+                    {row.getValue("targetName")}
 
-            return <div>{row.getValue("targetName")} {group ? `(${userCount} users / ${deviceCount} devices / ${groupCount} groups)` : ""}</div>;
+                </div>
+            );
         },
     },
     {
