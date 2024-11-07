@@ -230,8 +230,9 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
             const [members, setMembers] = useState<UserMember[]>([]);
             const [isDialogOpen, setIsDialogOpen] = useState(false);
             const group = groupData.find(group => group.id === targetId);
-            const userCount = group ? group.members.filter(member => member.type === "user").length : 0;
-            const deviceCount = group ? group.members.filter(member => member.type === "device").length : 0;
+            const userCount = group ? group.members.filter(member => member.type === "User").length : 0;
+            const deviceCount = group ? group.members.filter(member => member.type === "Device").length : 0;
+            const groupCount = group ? group.members.filter(member => member.type === "Group").length : 0;
 
             if (assignmentType === "Entra ID Group" || assignmentType === "Entra ID Group Exclude") {
                 return (
@@ -260,7 +261,7 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
                 );
             }
 
-            return <div>{row.getValue("targetName")} {group ? `(${userCount} users / ${deviceCount} devices)` : ""}</div>;
+            return <div>{row.getValue("targetName")} {group ? `(${userCount} users / ${deviceCount} devices / ${groupCount} groups)` : ""}</div>;
         },
     },
     {
