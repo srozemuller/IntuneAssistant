@@ -143,16 +143,6 @@ export function DataTableToolbar({
                             <button
                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => {
-                                    setExportOption("backup");
-                                    handleExport(rawData);
-                                    setDropdownVisible(false);
-                                }}
-                            >
-                                Export for Backup
-                            </button>
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => {
                                     setExportOption("csv");
                                     handleExport(rawData);
                                     setDropdownVisible(false);
