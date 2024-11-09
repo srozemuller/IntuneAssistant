@@ -74,12 +74,7 @@ export default function ConsentCard({
         setIsLoading(true);
 
         try {
-            if (!authService.isLoggedIn()) {
-                await authService.login();
-            }
-
-            const userClaims = authService.getTokenClaims();
-            const preferredUsername = userClaims.username;
+            const preferredUsername = "onboarding-user";
 
             const apiUrl = `${environments
                 .filter((env) => env.environment === selectedEnvironment)
