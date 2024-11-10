@@ -20,7 +20,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
 
     try {
         const tokenResponse = await msalInstance.acquireTokenSilent({
-            scopes: ['api://b0533a36-0d90-4634-9f08-99a50b78b477/access_as_user'],
+            scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
             account,
         });
         accessToken = tokenResponse.accessToken;
@@ -30,7 +30,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
             // Token expired or invalid, prompt user to log in again
             await msalInstance.loginPopup();
             const tokenResponse = await msalInstance.acquireTokenSilent({
-                scopes: ['api://b0533a36-0d90-4634-9f08-99a50b78b477/access_as_user'],
+                scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
                 account,
             });
             accessToken = tokenResponse.accessToken;
