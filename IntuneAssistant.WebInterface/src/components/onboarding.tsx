@@ -45,6 +45,7 @@ export default function ConsentCard({
     );
     const [isOptionsOpen, setIsOptionsOpen] = React.useState<boolean>(false);
     const [tenantId, setTenantId] = React.useState<string>("");
+    const [tenantName, setTenantName] = React.useState<string>("onmicrosoft.com");
     const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [isTenantIdValid, setIsTenantIdValid] = React.useState<boolean>(true);
@@ -74,11 +75,9 @@ export default function ConsentCard({
         setIsLoading(true);
 
         try {
-            const preferredUsername = "onboarding-user";
-
             const apiUrl = `${environments
                 .filter((env) => env.environment === selectedEnvironment)
-                .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&userPrincipalName=${preferredUsername}&state=onboarding`;
+                .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&tenantName=${tenantName}&state=onboarding`;
 
             const response = await fetch(apiUrl, { method: 'GET' });
             const data = await response.json();
@@ -128,8 +127,30 @@ export default function ConsentCard({
                                     Current Tenant ID: {currentTenantId}
                                 </div>
                             )}
+                        </div>
+                        <div className="flex flex-col space-y-1.5">
+                            <Label htmlFor="domain">
+                                Tenant Domain <small><a
+                                href="https://learn.microsoft.com/en-us/partner-center/account-settings/find-ids-and-domain-names#find-the-microsoft-entra-tenant-id-and-primary-domain-name"
+                                target="_blank"> (find tenant domain)</a></small>
+                            </Label>
+                            <div className="flex items-center space-y-2 space-x-2">
+                                <Input
+                                    id="domain"
+                                    placeholder="tenant"
+                                    maxLength={36}
+                                    onChange={(e) => setTenantName(e.target.value)}
+                                    onBlur={handleBlur}
+                                    className="w-1/2"
+                                />
+                                <span>.onmicrosoft.com</span>
+                            </div>
+                        </div>
+                        <div className="flex flex-col space-y-1.5">
                             <Label htmlFor="name">
-                                Tenant ID <small><a href="https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id#find-your-microsoft-entra-tenant" target="_blank"> (find Tenant ID)</a></small>
+                                Tenant ID <small><a
+                                href="https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id#find-your-microsoft-entra-tenant"
+                                target="_blank"> (find Tenant ID)</a></small>
                             </Label>
                             <Input
                                 id="name"
@@ -155,7 +176,7 @@ export default function ConsentCard({
                                     <h4 className="text-sm font-semibold">Advanced options</h4>
                                     <CollapsibleTrigger asChild>
                                         <Button variant="ghost" size="sm" className="w-9 p-0">
-                                            <ChevronsUpDown className="h-4 w-4" />
+                                            <ChevronsUpDown className="h-4 w-4"/>
                                             <span className="sr-only">Toggle</span>
                                         </Button>
                                     </CollapsibleTrigger>
@@ -167,7 +188,7 @@ export default function ConsentCard({
                                         onValueChange={(e) => setSelectedEnvironment(e)}
                                     >
                                         <SelectTrigger id="framework">
-                                            <SelectValue placeholder="Select" />
+                                            <SelectValue placeholder="Select"/>
                                         </SelectTrigger>
                                         <SelectContent position="popper">
                                             {environments.map((env) => (
