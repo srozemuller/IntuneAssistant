@@ -41,14 +41,27 @@ export default defineConfig({
       },
       sidebar: [
         {
-          label: 'Getting started',
+          label: 'Intune Assistant',
           collapsed: true,
-          autogenerate: {
-            directory: 'docs/cli/getting-started',
-          },
+          items: [
+            {
+              label: 'General',
+              autogenerate: {
+                collapsed: true,
+                directory: 'docs/general'
+              }
+            },
+            {
+              label: 'Getting Started',
+              autogenerate: {
+                collapsed: true,
+                directory: 'docs/web/getting-started'
+              }
+            },
+          ],
         },
         {
-          label: 'Commands',
+          label: 'Intune CLI',
           collapsed: true,
           items: [
             {
