@@ -74,6 +74,11 @@
   }
 }
 
+.small-image {
+  width: 50%; /* Adjust the percentage as needed */
+  height: auto;
+}
+
 summary {
   display: flex !important;
 }

@@ -19,7 +19,7 @@ export const navMenuConfig: NavMenuConfig = {
       items: [
         {
           title: "Intune Assistant Web",
-          href: "/docs/web/getting-started",
+          href: "/docs/web/getting-started/onboarding",
           description: "Information about the Intune Assistant Web",
         },
         {
