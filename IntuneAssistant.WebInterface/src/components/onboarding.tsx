@@ -49,6 +49,7 @@ export default function ConsentCard({
     const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [isTenantIdValid, setIsTenantIdValid] = React.useState<boolean>(true);
+    const [isTenantNameValid, setIsTenantNameValid] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         const fetchCurrentTenantId = async () => {
@@ -61,6 +62,12 @@ export default function ConsentCard({
         fetchCurrentTenantId();
     }, []);
 
+    const validateTenantName = (name: string) => {
+        const nameRegex = /^[a-zA-Z]+$/;
+        return nameRegex.test(name);
+    };
+
+
     const validateGuid = (guid: string) => {
         const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         return guidRegex.test(guid);
@@ -68,9 +75,12 @@ export default function ConsentCard({
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setIsTenantIdValid(validateGuid(value));
+        if (e.target.id === "name") {
+            setIsTenantIdValid(validateGuid(value));
+        } else if (e.target.id === "domain") {
+            setIsTenantNameValid(validateTenantName(value));
+        }
     };
-
     const fetchUrlAndRedirect = async () => {
         setIsLoading(true);
 
@@ -141,8 +151,13 @@ export default function ConsentCard({
                                     maxLength={36}
                                     onChange={(e) => setTenantName(e.target.value)}
                                     onBlur={handleBlur}
-                                    className="w-1/2"
+                                    className={!isTenantNameValid ? "border-red-500" : ""}
                                 />
+                                {!isTenantNameValid && (
+                                    <div className="text-red-500 text-sm">
+                                        Please enter a valid Tenant Name (letters only).
+                                    </div>
+                                )}
                                 <span>.onmicrosoft.com</span>
                             </div>
                         </div>
