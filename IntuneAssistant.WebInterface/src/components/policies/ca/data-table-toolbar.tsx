@@ -4,7 +4,7 @@ import { statuses } from "@/components/policies/ca/fixed-values.tsx"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { Cross2Icon } from "@radix-ui/react-icons"
-import { toast } from "sonner"
+import { ToastContainer, toast } from 'react-toastify';
 import { type Table } from "@tanstack/react-table"
 import { useState } from "react"
 import JSZip from "jszip";
@@ -64,10 +64,18 @@ export function DataTableToolbar({
             }).catch((err) => {
                 toast.error(`Failed to create zip file: ${err.message}`);
             });
-        } else if (exportOption === "idpowertools") {
+        } else if (exportOption === "idpowertoys") {
             const idPowerToolsData = { value: dataToExport };
             navigator.clipboard.writeText(JSON.stringify(idPowerToolsData)).then(() => {
-                toast.success(`Data for IDPowerTools copied to clipboard, selected ${dataCount} ${rowString}.`);
+                toast.success(
+                    <div>
+                        Data for IDPowerTools copied to clipboard, selected {dataCount} {rowString}.
+                        <a href="https://idpowertoys.merill.net/ca" target="_blank" style={{ color: 'text-yellow-500', textDecoration: 'underline' }}>
+                             Go to IDPowerTools
+                        </a>  and paste the data in manual generation.
+                    </div>,
+                { autoClose: false }
+                );
             }).catch((err) => {
                 toast.error(`Failed to copy data: ${err.message}`);
             });
@@ -76,9 +84,15 @@ export function DataTableToolbar({
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
+            pending: {
+                render:  `Searching for conditional access policies ...`,
+            },
+            success: {
+                render: `Conditional access policies fetched successfully`,
+            },
+            error:  {
+                render: (errorMessage) => `Failed to get conditional access policies because: ${errorMessage}`,
+            }
         });
     };
 
@@ -134,21 +148,21 @@ export function DataTableToolbar({
                                 Export for Backup
                             </button>
                             {source === "ca" && (
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => {
-                                    setExportOption("idpowertools");
-                                    handleExport(rawData);
-                                    setDropdownVisible(false);
-                                }}
-                            >
-                                Export for IDPowerTools
-                            </button>
-                                )}
+                                <button
+                                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                                    onClick={() => {
+                                        setExportOption("idpowertoys");
+                                        handleExport(rawData);
+                                        setDropdownVisible(false);
+                                    }}
+                                >
+                                    Export for IDPowerTools
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
-                <DataTableViewOptions table={table} />
+                <DataTableViewOptions table={table}/>
             </div>
         </div>
     );
