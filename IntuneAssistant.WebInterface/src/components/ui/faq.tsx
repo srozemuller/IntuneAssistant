@@ -39,7 +39,7 @@ const faqData = [
     {
         question: "I read something about the Intune Assistant API?",
         answer: "That is great to hear! The Intune Assistant API is a sort of aggregation layer. The API harvests many Graph API endpoints and combines data to something that is useful. <br>" +
-        "In fact, the Intune Assisant API is just a data shipper that streamlines that Graph data to the web interfase as also the Intune CLI"
+        "In fact, the Intune Assisant API is just a data shipper that streamlines Graph data to the web interfase as also the Intune CLI"
     },
     {
         question: "What permissions does Intune Assistant need?",
@@ -59,7 +59,8 @@ const faqData = [
     },
     {
         question: "I want to request a feature",
-        answer: `That is great! In my repo there is a template available for requestion features. You can find it <a href="https://github.com/srozemuller/IntuneAssistant/issues/new/choose" target="_blank">here</a>. Use is al`
+        answer: `That is great! In my repo there is a template available for requesting features. You can find it <a href="https://github.com/srozemuller/IntuneAssistant/issues/new/choose" target="_blank">here</a>. 
+                    <br> Use is also for bugs or other issues.`
     },
     {
         question: "Where can I find the documentation?",
