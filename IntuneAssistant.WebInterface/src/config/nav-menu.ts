@@ -75,10 +75,10 @@ export const navMenuConfig: NavMenuConfig = {
     }
   ],
   links: [
-    // {
-    //   title: "Example",
-    //   href: "/example",
-    //   description: "this is an example link",
-    // },
+    {
+      title: "FAQ",
+      href: "/faq",
+      description: "Frequently asked questions",
+    },
   ],
 };

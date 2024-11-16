@@ -53,6 +53,19 @@ const info: InfoLdg = {
                 Intune Assistant is born out of the need to simplify and streamline Microsoft Intune management. <br/>{" "}
             </p>
         </div>
+        <div class="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
+            <div class="flex justify-center space-x-2 md:space-x-4">
+                <a href="/faq" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
+                    FAQ
+                </a>
+                <a href="/onboarding" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
+                    Onboarding
+                </a>
+                <a href="/docs" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
+                    Documentation
+                </a>
+            </div>
+        </div>
     </section>
     <InfoLanding data={info} reverse={true} />
     <section id="open-source" class="container py-8 md:py-12 lg:py-28">
