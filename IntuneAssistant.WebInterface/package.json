@@ -44,6 +44,7 @@
     "@tanstack/react-table": "^8.19.3",
     "astro": "^4.12.2",
     "astro-icon": "^1.1.0",
+    "astro-seo": "^0.8.4",
     "axios": "^1.7.2",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.0",
