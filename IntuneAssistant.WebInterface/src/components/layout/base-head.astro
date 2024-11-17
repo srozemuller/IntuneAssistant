@@ -2,7 +2,7 @@
 import { siteConfig } from "@/config/site";
 import "@/styles/globals.css";
 import { ViewTransitions } from "astro:transitions";
-
+import { SEO } from "astro-seo";
 interface Props {
     title: string;
     description?: string;
@@ -37,8 +37,8 @@ const {
 <link rel="canonical" href={canonicalURL} />
 
 <!-- Primary Meta Tags -->
-<title>{title ? `${title} | The modern Intune management tool` : "Intune Assistant"}</title>
-    <meta name="title" content={title ? `${title} | The modern Intune management tool ` : "Intune Assistant"} />
+<title>{title ? `${title} | The Intune management tool` : "Intune Assistant"}</title>
+    <meta name="title" content={title ? `${title} | The  Intune management tool ` : "Intune Assistant"} />
     <meta name="description" content={description} />
 
     <!-- Open Graph / Facebook -->
