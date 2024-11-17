@@ -2,7 +2,6 @@
 import { siteConfig } from "@/config/site";
 import "@/styles/globals.css";
 import { ViewTransitions } from "astro:transitions";
-import { SEO } from "astro-seo";
 interface Props {
     title: string;
     description?: string;
@@ -54,6 +53,23 @@ const {
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={new URL(image, Astro.url)} />
+
+    <!-- Google Analytics -->
+    <!-- Google tag (gtag.js) -->
+    <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-1KSX6MPF8W"
+        ></script>
+    <script is:inline>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
+
+        gtag("config", "G-1KSX6MPF8W");
+        </script>
+
     <script is:inline>
         (function() {
             const getThemePreference = () => {
