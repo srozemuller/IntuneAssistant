@@ -15,7 +15,7 @@ import { navMenuConfig } from "@/config/nav-menu";
 import type { MenuItem } from "@/types";
 import { Badge } from "lucide-react";
 import authService from "@/scripts/msalservice";
-import {INTUNEASSISTANT_TENANT_INFO} from "@/components/constants/apiUrls";
+import {INTUNEASSISTANT_TENANT_INFO} from "@/constants/apiUrls";
 
 const links = navMenuConfig.links;
 const main = navMenuConfig.mainNav[0];

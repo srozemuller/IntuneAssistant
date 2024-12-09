@@ -9,7 +9,7 @@ import { type Table } from "@tanstack/react-table"
 import { useState } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants.js";
+import { FILTER_PLACEHOLDER } from "@/constants/appConstants.js";
 import { SelectAllButton } from "@/components/button-selectall.tsx";
 interface TData {
     displayName: string;

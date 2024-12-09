@@ -1,6 +1,7 @@
 ---
 import MainLayout from "../../layouts/main-layout.astro";
 import ConsentCard from "../../components/onboarding";
+import {msalInstance} from "../../authconfig.js"
 
 // TODO: Retrieve a list of active environments from the API
 const intuneAssistantEnvironments = [
@@ -34,13 +35,14 @@ const intuneAssistantEnvironments = [
             console.log(urlParams.get('error_description'));
             const error = urlParams.get('error');
             const tenant = urlParams.get('tenant');
+            const admin_consent = urlParams.get('admin_consent');
             const token = localStorage.getItem('consentToken') || '';
 
             if (error) {
                 window.location.href = `/onboarding/error?error=${error}&error_description=${urlParams.get('error_description')}`;
                 console.log(urlParams);
-            } else if (tenant) {
-                window.location.href = `/onboarding/onboarded?tenant=${tenant}`;
+            } else if (tenant && admin_consent) {
+                window.location.href = `/onboarding/onboarded?tenant=${tenant}&admin_consent=${admin_consent}`;
             }
         });
     }

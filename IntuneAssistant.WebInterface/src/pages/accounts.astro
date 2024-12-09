@@ -1,0 +1,61 @@
+---
+import { buttonVariants } from "@/components/ui/button";
+import MainLayout from "@/layouts/main-layout.astro";
+import { cn } from "@/lib/utils";
+import { Icons } from "@/icons";
+import AccountsPage from "../components/accounts/account-selection";
+import {toast, Toaster} from "sonner";
+import export const TenantProvider = ({ children }: { children: ReactNode }) => {
+    const [tenantId, setTenantId] = useState<string>('');
+
+    const switchTenant = async (newTenantId: string) => {
+        setTenantId(newTenantId);
+        const accounts = msalInstance.getAllAccounts();
+        let account = accounts.find(acc => acc.tenantId === newTenantId);
+
+        if (!account) {
+            // Prompt for login if the tenant ID is not in the accounts
+            const loginRequest = {
+                scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
+                authority: `https://login.microsoftonline.com/${newTenantId}`
+            };
+            const loginResponse = await msalInstance.loginPopup(loginRequest);
+            account = msalInstance.getAllAccounts().find(acc => acc.tenantId === newTenantId);
+            console.log('Login response:', loginResponse);
+        }
+
+        if (account) {
+            await msalInstance.setActiveAccount(account);
+            console.log('Switched to tenant:', newTenantId);
+            console.log('Active account:', account);
+
+            // Store the selected tenant information in local storage
+            const updatedAccounts = accounts.map(acc =>
+                acc.tenantId === newTenantId ? { ...acc, tenantId: newTenantId } : acc
+            );
+            localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
+            localStorage.setItem('selectedTenantId', newTenantId);
+        }
+    };
+
+    return (
+        <TenantContext.Provider value={{ tenantId, setTenantId, switchTenant }}>
+            {children}
+        </TenantContext.Provider>
+    );
+};AccountSelectionPage from "../components/accounts/account-selection";
+---
+
+<MainLayout title="Assignments Overview" mainClass="flex-1">
+    <section id="features" class="bg-background-200 py-8 md:pt-12">
+        <div class="container space-y-6">
+            <div class="mx-auto flex max-w-[58rem] flex-col space-y-4">
+                <h3 class="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">Logged in accounts</h3>
+                <p class="max-w-[95%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 balance-text">
+                    All assignments in Microsoft Intune are shown in this overview. You can filter on different properties to find the assignments you are looking for.
+                </p>
+            </div>
+        </div>
+    </section>
+    <AccountSelectionPage client:only="react" />
+</MainLayout>

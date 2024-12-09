@@ -8,67 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-const gifImage = "/images/giphy.gif";
-
+import Onboarded from "../../components/onboarding/onboarded";
 let tenant = '';
+
 ---
-<script>
-  import axios from 'axios';
-  import { CONSENT_CALLBACK } from '@/components/constants/apiUrls.js';
-
-  async function fetchData() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tenant = urlParams.get('tenant') || '';
-    document.getElementById('tenant-id').textContent += tenant;
-
-    const token = localStorage.getItem('consentToken');
-    if (token) {
-      const accessToken = localStorage.getItem('accessToken');
-      // Send request to the API endpoint
-      const callbackUrl = `${CONSENT_CALLBACK}?consentToken=${token}`;
-      try {
-        const response = await axios.get(callbackUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
-
-  if (typeof window !== "undefined") {
-    window.addEventListener('DOMContentLoaded', async (event) => {
-      await fetchData();
-      // Now the rest of the page can be shown
-      document.getElementById('page-content').style.display = 'block';
-    });
-  }
-</script>
 
 <MainLayout title="Onboarded" hideFooter>
-  <div class="flex items-center justify-center h-[calc(100vh-25vh)]">
-    <Card className="w-[400px] ">
-      <CardHeader>
-        <CardTitle class="text-center">
-          Congratulations
-        </CardTitle>
-        <CardDescription>You have made it!</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div class="flex justify-center">
-          <img src={gifImage} alt="Celebration GIF" />
-        </div>
-        <hr class="border-t border-white my-4" />
-        You have successfully activated Intune Assistant and ready for launch 🚀.
-        <p id="tenant-id">Tenant ID: {tenant} </p>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        — Enjoy!
-      </CardFooter>
-    </Card>
-  </div>
+  <Onboarded client:only="react"/>
 </MainLayout>

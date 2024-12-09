@@ -1,7 +1,8 @@
+// src/components/middleware/fetchData.js
 import axios from 'axios';
 import { msalInstance } from '@/components/auth';
 
-const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
+const authDataMiddleware = async (endpoint, method = 'GET', body = {}, homeAccountId) => {
     let formattedError = '';
     let consentUri = '';
 
@@ -10,12 +11,17 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
 
     // Fetch access token
     const accounts = msalInstance.getAllAccounts();
+    console.log('Accounts:', accounts);
     if (accounts.length === 0) {
         await msalInstance.loginPopup();
         throw new Error('No accounts found. Please log in.');
     }
 
-    const account = accounts[0];
+    const account = accounts.find(acc => acc.homeAccountId === homeAccountId);
+    if (!account) {
+        throw new Error('Selected account not found.');
+    }
+
     let accessToken;
 
     try {

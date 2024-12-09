@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
 import authDataMiddleware from "@/components/middleware/fetchData";
-import { CA_POLICIES_ENDPOINT } from "@/components/constants/apiUrls.js";
+import { CA_POLICIES_ENDPOINT } from "@/constants/apiUrls.js";
 import { columns } from "@/components/policies/ca/columns.tsx";
 
 import { z } from "zod";
@@ -23,7 +23,13 @@ export default function DemoPage() {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
-            const response = await authDataMiddleware(CA_POLICIES_ENDPOINT);
+
+            const homeAccountId = localStorage.getItem('selectedHomeAccountId');
+            if (!homeAccountId) {
+                throw new Error('No homeAccountId found');
+            }
+            const response = await authDataMiddleware(CA_POLICIES_ENDPOINT, 'GET', {}, homeAccountId);
+
             const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data); // Ensure rawData is a string
 
             setRawData(rawData);

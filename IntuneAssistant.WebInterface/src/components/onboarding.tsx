@@ -63,7 +63,7 @@ export default function ConsentCard({
     }, []);
 
     const validateTenantName = (name: string) => {
-        const nameRegex = /^[a-zA-Z]+$/;
+        const nameRegex = /^[a-zA-Z0-9]+$/;
         return nameRegex.test(name);
     };
 
@@ -97,7 +97,7 @@ export default function ConsentCard({
             console.log(localStorage.getItem('consentToken'));
 
             console.info(consentUrl);
-            window.open(`${consentUrl}`, "_blank", "noreferrer"); // Include token in the URL
+            window.location.href = `${consentUrl}`; // Open URL in the same tab
 
             setIsLoading(false);
         } catch (error) {
