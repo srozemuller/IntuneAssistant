@@ -40,14 +40,16 @@ export function MainNavigationMenu() {
 
     useEffect(() => {
       const fetchLicenseInfo = async () => {
-        try {
-          const response = await fetch(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${currentTenantId}`);
-          const data = await response.json();
-          console.log(data);
-          setIsLicensed(data.enabled);
-        } catch (error) {
-          console.error("Failed to fetch license info:", error);
-        }
+          if (currentTenantId) {
+              try {
+                  const response = await fetch(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${currentTenantId}`);
+                  const data = await response.json();
+                  console.log(data);
+                  setIsLicensed(data.enabled);
+              } catch (error) {
+                  console.error("Failed to fetch license info:", error);
+              }
+          }
       };
 
       fetchLicenseInfo();
