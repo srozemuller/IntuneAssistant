@@ -165,7 +165,8 @@ export function DataTableRowActions<TData extends {
             console.log('Migration failed:', error);
             if (error.consentUri) {
                 setConsentUri(error.consentUri);
-                window.location.href = error.consentUri; // Redirect to consent URI
+                //window.location.href = error.consentUri; // Redirect to consent URI
+                window.open(error.consentUri, '_blank'); // Redirect to consent URI in a new tab
             }
         }
     };
