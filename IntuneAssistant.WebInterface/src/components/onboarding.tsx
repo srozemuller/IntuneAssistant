@@ -63,7 +63,7 @@ export default function ConsentCard({
     }, []);
 
     const validateTenantName = (name: string) => {
-        const nameRegex = /^[a-zA-Z]+$/;
+        const nameRegex = /^[a-zA-Z0-9]+$/;
         return nameRegex.test(name);
     };
 
@@ -147,8 +147,8 @@ export default function ConsentCard({
                             <div className="flex items-center space-y-2 space-x-2">
                                 <Input
                                     id="domain"
-                                    placeholder="tenant"
-                                    maxLength={36}
+                                    placeholder="domain"
+                                    maxLength={150}
                                     onChange={(e) => setTenantName(e.target.value)}
                                     onBlur={handleBlur}
                                     className={!isTenantNameValid ? "border-red-500" : ""}
@@ -232,7 +232,7 @@ export default function ConsentCard({
                         Please wait
                     </Button>
                 ) : (
-                    <Button onClick={fetchUrlAndRedirect} disabled={!isTenantIdValid}>Deploy</Button>
+                    <Button onClick={fetchUrlAndRedirect} disabled={!isTenantIdValid || !isTenantNameValid}>Deploy</Button>
                 )}
             </CardFooter>
         </Card>
