@@ -122,7 +122,7 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger>
-                        <span>Exclude/Remove</span>
+                        <span>Remove/Exclude</span>
                     </TooltipTrigger>
                     <TooltipContent>
                         <p>Select to exclude or remove the group from the source policy</p>
@@ -131,37 +131,32 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
             </TooltipProvider>
         ),
         cell: ({ row }) => {
-            const [selectedOption, setSelectedOption] = useState<'exclude' | 'remove' | 'none'>('exclude');
+            const [isExcluded, setIsExcluded] = useState(row.original.excludeGroupFromSource);
 
-            const handleOptionChange = (value: 'exclude' | 'remove' | 'none') => {
-                setSelectedOption(value);
-                row.original.excludeGroupFromSource = value === 'exclude';
-                row.original.removeGroupFromSource = value === 'remove';
+            const handleSwitchChange = (checked: boolean) => {
+                setIsExcluded(checked);
+                row.original.excludeGroupFromSource = checked;
+                row.original.removeGroupFromSource = !checked;
             };
 
             return (
-                <div className="mr-radio-button">
-                    <label>
-                        <input
-                            type="radio"
-                            name={`excludeOrRemove-${row.id}`}
-                            value="exclude"
-                            checked={selectedOption === 'exclude'}
-                            onChange={() => handleOptionChange('exclude')}
-                        />
-                        Exclude
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name={`excludeOrRemove-${row.id}`}
-                            value="remove"
-                            checked={selectedOption === 'remove'}
-                            onChange={() => handleOptionChange('remove')}
-                        />
-                        Remove
-                    </label>
-                </div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div>
+                                <Switch
+                                    checked={isExcluded}
+                                    onCheckedChange={handleSwitchChange}
+                                    className={`custom-switch ${isExcluded ? 'text-orange-500' : 'text-red-500'}`}
+                                    style={{ backgroundColor: `rgb(var(${isExcluded ? '--orange' : '--red'}) / var(--tw-bg-opacity, 1))` }}
+                                />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{isExcluded ? 'Exclude' : 'Remove'}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             );
         },
         enableSorting: false,
@@ -266,7 +261,7 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
     },
     {
         accessorKey: 'assignmentType',
-        header: 'Type',
+        header: 'Include/Exclude',
         cell: ({ row }) => {
             const [isEnabled, setIsEnabled] = useState(row.original.assignmentType === filterType[0].value);
             const [isGroupSelected, setIsGroupSelected] = useState(!!row.original.groupToMigrate);
