@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
-import { ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT } from "@/components/constants/apiUrls.js";
+import {
+    ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT,
+    ASSIGNMENTS_MIGRATE_ENDPOINT
+} from "@/components/constants/apiUrls.js";
 import {MoreHorizontal} from "lucide-react";
 import {DropdownMenuLabel, DropdownMenuSeparator} from "@radix-ui/react-dropdown-menu";
 import {toast} from "sonner";
@@ -151,8 +154,8 @@ export function DataTableRowActions<TData extends {
             };
 
             // Send the updated task object in the JSON payload
-            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.destinationPolicy?.id}`, 'POST', JSON.stringify(updatedTask));
-            if (response?.status === 204) {
+            const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', JSON.stringify([updatedTask]));
+            if (response?.status === 200) {
                 setMigrationStatus('success');
                 toast.success('Migration successful!'); // Show success toast message
             } else {
