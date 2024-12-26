@@ -15,10 +15,23 @@ import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
 import { SelectAllButton } from "@/components/button-selectall.tsx";
 
 interface TData {
-    displayName: string;
     id: string;
-    name: string;
-    // Add other properties as needed
+    resourceType: string;
+    assignmentType: string;
+    isExcluded: boolean;
+    isAssigned: boolean;
+    targetId: string;
+    targetName: string;
+    resourceId: string;
+    resourceName: string;
+    filterId: string;
+    filterType:string;
+    filterDisplayName: string;
+    filterRule: string;
+    filter?: {
+        displayName: string;
+        rule: string;
+    };
 }
 
 interface DataTableToolbarProps {
@@ -45,8 +58,22 @@ export function DataTableToolbar({
 
         const dataToExport = parsedRawData.filter((item: TData) =>
             selectedIds.includes(item.id)
-        );
-
+        ).map((item: TData) => {
+            return {
+                resourceType: item.resourceType,
+                assignmentType: item.assignmentType,
+                isExcluded: item.isExcluded,
+                isAssigned: item.isAssigned,
+                targetId: item.targetId,
+                targetName: item.targetName,
+                resourceId: item.resourceId,
+                resourceName: item.resourceName,
+                filterId: item.filterId,
+                filterType: item.filterType,
+                filterDisplayName: item.filter?.displayName,
+                filterRule: item.filter?.rule,
+            };
+        });
         const dataCount = dataToExport.length;
         if (dataCount === 0) {
             toast.error("No data to export.");
@@ -57,7 +84,7 @@ export function DataTableToolbar({
         if (exportOption === "backup") {
             const zip = new JSZip();
             dataToExport.forEach((item: TData, index: number) => {
-                const fileName = `${item.displayName}.json`;
+                const fileName = `${item.resourceName}.json`;
                 const fileContent = JSON.stringify(item, null, 2);
                 zip.file(fileName, fileContent);
             });

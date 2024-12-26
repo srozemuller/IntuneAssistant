@@ -51,7 +51,6 @@ export function DataTableToolbar({
             selectedIds.includes(item.id)
         );
 
-        const dataString = JSON.stringify(dataToExport, null, 2);
         const dataCount = dataToExport.length;
         if (dataCount === 0) {
             toast.error("No data to export.");
