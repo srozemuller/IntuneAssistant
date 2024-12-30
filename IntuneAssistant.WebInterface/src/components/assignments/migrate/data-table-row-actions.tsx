@@ -62,6 +62,25 @@ export function DataTableRowActions({
         setSelectedFilterType(row.original.filterType);
     }, [row.original]);
 
+    useEffect(() => {
+        const updateRowInBackground = async () => {
+            try {
+                const updatedTask = {
+                    ...task,
+                    groupToMigrate: selectedGroup,
+                    assignmentId: selectedGroupId,
+                    filterToMigrate: selectedFilter,
+                    assignmentType: selectedAssignmentType,
+                    filterType: selectedFilterType
+                };
+            } catch (error: any) {
+                console.error('Error updating row in background:', error);
+            }
+        };
+
+        updateRowInBackground();
+    }, [selectedGroup, selectedGroupId, selectedFilter, selectedAssignmentType, selectedFilterType]);
+
     const handleMigrate = async () => {
         try {
             setMigrationStatus('pending');
@@ -108,7 +127,7 @@ export function DataTableRowActions({
                 AssignmentId: selectedGroupId,
                 AssignmentType: selectedAssignmentType,
                 FilterId: selectedFilter?.id || null,
-                FilterType: selectedFilterType
+                FilterType: selectedFilterType ||  'none'
             };
 
             const response = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify([requestBody]));
@@ -117,6 +136,10 @@ export function DataTableRowActions({
                 if (!responseData.hasCorrectAssignment) {
                     row.original.isMigrated = false;
                     row.original.isReadyForMigration = true;
+                }
+                else {
+                    row.original.isMigrated = true;
+                    row.original.isReadyForMigration = false
                 }
                 setMigrationStatus('success');
                 toast.success('Validation successful!');

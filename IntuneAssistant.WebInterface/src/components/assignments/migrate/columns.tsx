@@ -16,6 +16,7 @@ import {useEffect, useState} from "react";
 import {z} from "zod";
 import { SingleSelect } from '@/components/ui/single-select';
 import {Switch} from "@/components/ui/switch.tsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
 
 
 export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer<typeof assignmentFilterSchema>[], setTableData: React.Dispatch<React.SetStateAction<AssignmentsMigrationModel[]>>) :ColumnDef<AssignmentsMigrationModel>[] => [
@@ -345,16 +346,16 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         accessorKey: 'filterType',
         header: 'Type',
         cell: ({ row }) => {
-            const [isEnabled, setIsEnabled] = useState(row.original.filterType === filterType[0].value);
+            const [selectedFilterType, setSelectedFilterType] = useState(row.original.filterType || 'none');
             const [isGroupSelected, setIsGroupSelected] = useState(!!row.original.groupToMigrate);
 
             useEffect(() => {
                 setIsGroupSelected(!!row.original.groupToMigrate);
             }, [row.original.groupToMigrate]);
 
-            const handleSwitchChange = (checked: boolean) => {
-                setIsEnabled(checked);
-                row.original.filterType = checked ? filterType[0].value : filterType[1].value;
+            const handleFilterTypeChange = (value: string) => {
+                setSelectedFilterType(value);
+                row.original.filterType = value === 'none' ? null : value;
             };
 
             return (
@@ -362,17 +363,24 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <div>
-                                <Switch
-                                    checked={isEnabled}
-                                    onCheckedChange={handleSwitchChange}
-                                    className={`custom-switch ${isEnabled ? 'text-green-500' : 'text-red-500'}`}
-                                    style={{ backgroundColor: `rgb(var(${isEnabled ? '--green' : '--red'}) / var(--tw-bg-opacity, 1))` }}
-                                    disabled={!isGroupSelected} // Disable the switch if no group is selected
-                                />
+                                <Select
+                                    value={selectedFilterType}
+                                    onValueChange={handleFilterTypeChange}
+                                    disabled={!isGroupSelected} // Disable the select if no group is selected
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">None</SelectItem>
+                                        <SelectItem value={filterType[0].value}>{filterType[0].label}</SelectItem>
+                                        <SelectItem value={filterType[1].value}>{filterType[1].label}</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{isEnabled ? filterType[0].label : filterType[1].label}</p>
+                            <p>{selectedFilterType === 'none' ? 'None' : selectedFilterType === filterType[0].value ? filterType[0].label : filterType[1].label}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
