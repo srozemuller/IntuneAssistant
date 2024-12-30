@@ -190,7 +190,7 @@ export function DataTableToolbar({
         try {
             setMigrationStatus('pending');
             const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', dataString);
-            if (response?.status === 200) {
+            if (response?.status === 204) {
                 setMigrationStatus('success');
                 toast.success("Selected rows migrated successfully.");
             } else {
