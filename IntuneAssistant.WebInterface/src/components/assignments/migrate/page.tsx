@@ -126,8 +126,16 @@ export default function DemoPage() {
     return (
         <div className="container max-w-[95%] py-6">
             <ToastContainer autoClose={toastDuration} position={toastPosition}/>
-            <CSVUploader setRows={setRows} />
-            <DataTable rowClassName={isAnimating ? 'fade-to-normal' : ''} columns={columns(groups, filters)} data={data} rawData={rawData} fetchData={fetchData} source="assignmentsMigration" setTableData={setData} />
+            <CSVUploader setRows={setRows}/>
+            <DataTable
+                rowClassName={isAnimating ? 'fade-to-normal' : ''}
+                columns={columns(groups, filters, setData)} // Pass setData as setTableData
+                data={data}
+                rawData={rawData}
+                fetchData={fetchData}
+                source="assignmentsMigration"
+                setTableData={setData} // Ensure setTableData is passed here
+            />
         </div>
     );
 }
