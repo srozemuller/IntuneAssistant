@@ -1,7 +1,7 @@
 // src/components/assignments/migrate/page.tsx
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
-import CSVUploader from '@/components/csv-uploader.tsx';
+import CSVUploader from "@/components/csv-uploader.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import {
     ASSIGNMENTS_COMPARE_ENDPOINT,
@@ -15,31 +15,30 @@ import {
     type AssignmentsMigrationModel,
     groupsSchema
 } from "@/components/assignments/migrate/schema";
-import type {filterSchema} from "@/schemas/filters.tsx";
+import type { filterSchema } from "@/schemas/filters.tsx";
 
 // Toast configuration
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 
-interface MigratePageProps {
-    data: any[];
-}
-
 export default function DemoPage() {
     const [data, setData] = useState<AssignmentsMigrationModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
+    const [rows, setRows] = useState<object[]>([]);
     const [jsonString, setJsonString] = useState<string>('');
     const [groups, setGroups] = useState<z.infer<typeof groupsSchema>[]>([]);
     const [filters, setFilters] = useState<z.infer<typeof filterSchema>[]>([]);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const fetchData = async () => {
         try {
             setLoading(true);
             setError('');
             setData([]);
+            const jsonString = JSON.stringify(rows);
             const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString);
             const rawData = typeof response?.data === 'string' ? JSON.parse(response.data) : response?.data;
             setRawData(JSON.stringify(rawData, null, 2));
@@ -95,7 +94,7 @@ export default function DemoPage() {
     }, []);
 
     useEffect(() => {
-        if (jsonString) {
+        if (rows) {
             toast.promise(fetchData(), {
                 pending: {
                     render:  `Searching for policies...`,
@@ -108,7 +107,7 @@ export default function DemoPage() {
                 }
             });
         }
-    }, [jsonString]);
+    }, [rows]);
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
@@ -127,8 +126,16 @@ export default function DemoPage() {
     return (
         <div className="container max-w-[95%] py-6">
             <ToastContainer autoClose={toastDuration} position={toastPosition}/>
-            <CSVUploader setJsonString={setJsonString} />
-            <DataTable columns={columns(groups, filters)} data={data} rawData={rawData} fetchData={fetchData} source="assignmentsMigration" />
+            <CSVUploader setRows={setRows}/>
+            <DataTable
+                rowClassName={isAnimating ? 'fade-to-normal' : ''}
+                columns={columns(groups, filters, setData)} // Pass setData as setTableData
+                data={data}
+                rawData={rawData}
+                fetchData={fetchData}
+                source="assignmentsMigration"
+                setTableData={setData} // Ensure setTableData is passed here
+            />
         </div>
     );
 }
