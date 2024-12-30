@@ -48,7 +48,7 @@ const migrationCheckResultSchema = z.object({
 });
 
 const assignmentFilterSchema = z.object({
-    id: z.string(),
+    id: z.string().nullable(),
     displayName: z.string(),
     description: z.string(),
     platform: z.string(),

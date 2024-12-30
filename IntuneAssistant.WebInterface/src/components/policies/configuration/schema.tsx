@@ -24,7 +24,8 @@ const policySchema = z.object({
     settingCount: z.number(),
     id: z.string(),
     settings: z.array(settingSchema).nullable(),
-    isAssigned: z.boolean()
+    isAssigned: z.boolean(),
+    assignments: z.array(assignmentSchema).nullable()
 });
 
 export type Policy = z.infer<typeof policySchema>;

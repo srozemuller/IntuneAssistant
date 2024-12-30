@@ -2,12 +2,11 @@ import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
 import { toast, Toaster } from "sonner";
 import {CrossIcon, DeleteIcon} from "lucide-react";
-import {Button} from "@/components/ui/button.tsx";
-interface CsvUploaderProps {
-    setJsonString: (jsonString: string) => void;
+import {Button} from "@/components/ui/button.tsx";interface CsvUploaderProps {
+    setRows: (rows: object[]) => void;
 }
 
-const CsvUploader: React.FC<CsvUploaderProps> = ({ setJsonString }) => {
+const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -20,8 +19,8 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setJsonString }) => {
                 header: true,
                 skipEmptyLines: true,
                 complete: (results) => {
-                    const jsonString = JSON.stringify(results.data);
-                    setJsonString(jsonString);
+                    const parsedData = results.data as object[];
+                    setRows(parsedData);
                     toast.success('CSV file uploaded successfully!'); // Show success toast message
                 },
                 error: (error) => {
@@ -33,7 +32,7 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setJsonString }) => {
 
     const handleClearFile = () => {
         setFile(null);
-        setJsonString('');
+        setRows([]);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }

@@ -1,6 +1,5 @@
 // src/components/assignments/migrate/data-table-row-actions.tsx
-import {useEffect, useState} from 'react';
-
+import { useEffect, useState } from 'react';
 import { type Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -12,104 +11,38 @@ import {
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import {
-    ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT,
-    ASSIGNMENTS_MIGRATE_ENDPOINT
+    ASSIGNMENTS_MIGRATE_ENDPOINT,
+    ASSIGNMENTS_VALIDATION_ENDPOINT
 } from "@/components/constants/apiUrls.js";
-import {MoreHorizontal} from "lucide-react";
-import {DropdownMenuLabel, DropdownMenuSeparator} from "@radix-ui/react-dropdown-menu";
-import {toast} from "sonner";
+import { MoreHorizontal } from "lucide-react";
+import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
+import { toast } from "sonner";
 
-interface DataTableRowActionsProps<TData extends {
-    id: string,
-    isReadyForMigration: boolean,
-    isMigrated: boolean,
-    groupToMigrate: string,
-    migrationCheckResult?: {
-        sourcePolicyExists: boolean,
-        sourcePolicyIsUnique: boolean,
-        destinationPolicyExists: boolean,
-        destinationPolicyIsUnique: boolean,
-        groupExists: boolean
-    },
-    sourcePolicy: {
-        id: string | null,
-        "odataType": string | null,
-        policyType: string | null,
-        createdDateTime: string,
-        creationSource: string | null,
-        description: string | null,
-        lastModifiedDateTime: string,
-        name: string | null,
-        settingCount: number | null,
-        isAssigned: boolean | null
-    } | null,
-    destinationPolicy: {
-        id: string | null,
-        "odataType": string | null,
-        policyType: string | null,
-        createdDateTime: string,
-        creationSource: string | null,
-        description: string | null,
-        lastModifiedDateTime: string,
-        name: string | null,
-        settingCount: number | null,
-        isAssigned: boolean | null
-    } | null
-}> {
-    row: Row<TData>,
-    onAnimationStart: () => void,
-    onAnimationEnd: () => void,
+// Define the interface with the required properties
+interface AssignmentRow {
+    id: string;
+    isReadyForMigration: boolean;
+    isMigrated: boolean;
+    migrationCheckResult: any;
+    groupToMigrate: any;
+    assignmentId: string;
+    filterToMigrate: any;
+    assignmentType: string;
+    filterType: string;
+    destinationPolicy?: { id: string };
 }
 
-export function DataTableRowActions<TData extends {
-    id: string,
-    assignmentId: string,
-    assignmentType: string,
-    isReadyForMigration: boolean,
-    isMigrated: boolean,
-    groupToMigrate: string,
-    filterToMigrate: { displayName: string, id: string } | null,
-    filterType: string,
-    migrationCheckResult?: {
-        sourcePolicyExists: boolean,
-        sourcePolicyIsUnique: boolean,
-        destinationPolicyExists: boolean,
-        destinationPolicyIsUnique: boolean,
-        groupExists: boolean
-    },
-    sourcePolicy: {
-        id: string | null,
-        "odataType": string | null,
-        policyType: string | null,
-        createdDateTime: string,
-        creationSource: string | null,
-        description: string | null,
-        lastModifiedDateTime: string,
-        name: string | null,
-        settingCount: number | null,
-        isAssigned: boolean | null
-    } | null,
-    destinationPolicy: {
-        id: string | null,
-        "odataType": string | null,
-        policyType: string | null,
-        createdDateTime: string,
-        creationSource: string | null,
-        description: string | null,
-        lastModifiedDateTime: string,
-        name: string | null,
-        settingCount: number | null,
-        isAssigned: boolean | null
-    } | null
-}>({
-       row,
-                                          onAnimationStart,
-                                          onAnimationEnd,
-   }: DataTableRowActionsProps<TData>) {
+interface DataTableRowActionsProps {
+    row: Row<AssignmentRow>;
+    setTableData: React.Dispatch<React.SetStateAction<AssignmentRow[]>>;
+}
+export function DataTableRowActions({
+                                        row,
+                                        setTableData,
+                                    }: DataTableRowActionsProps) {
     const [consentUri, setConsentUri] = useState<string | null>(null);
     const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
     const [refreshStatus, setRefreshStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
-    const [isAnimating, setIsAnimating] = useState(false);
     const task = assignmentMigrationSchema.parse(row.original);
     const isReadyForMigration = row.original.isReadyForMigration;
     const isMigrated = row.original.isMigrated;
@@ -119,7 +52,7 @@ export function DataTableRowActions<TData extends {
     const [selectedFilter, setSelectedFilter] = useState(row.original.filterToMigrate);
     const [selectedAssignmentType, setSelectedAssignmentType] = useState(row.original.assignmentType);
     const [selectedFilterType, setSelectedFilterType] = useState(row.original.filterType);
-
+    const [isAnimating, setIsAnimating] = useState(false);
 
     useEffect(() => {
         setSelectedGroup(row.original.groupToMigrate);
@@ -127,23 +60,13 @@ export function DataTableRowActions<TData extends {
         setSelectedFilter(row.original.filterToMigrate);
         setSelectedAssignmentType(row.original.assignmentType);
         setSelectedFilterType(row.original.filterType);
-    }, [row.original.groupToMigrate, row.original.assignmentId, row.original.filterToMigrate, row.original.assignmentType, row.original.filterType]);
-
+    }, [row.original]);
 
     const handleMigrate = async () => {
         try {
             setMigrationStatus('pending');
-            toast.info('Migration is pending...'); // Show toast message
+            toast.info('Migration is pending...');
 
-            // Ensure the latest state values are used
-            const selectedGroup = row.original.groupToMigrate;
-            const selectedGroupId = row.original.assignmentId;
-            const selectedFilter = row.original.filterToMigrate;
-            const selectedAssignmentType = row.original.assignmentType;
-            const selectedFilterType = row.original.filterType;
-
-            console.log(selectedFilterType);
-            // Update the task object with the new selected group and filter
             const updatedTask = {
                 ...task,
                 groupToMigrate: selectedGroup,
@@ -153,23 +76,21 @@ export function DataTableRowActions<TData extends {
                 filterType: selectedFilterType
             };
 
-            // Send the updated task object in the JSON payload
             const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', JSON.stringify([updatedTask]));
             if (response?.status === 200) {
                 setMigrationStatus('success');
-                toast.success('Migration successful!'); // Show success toast message
+                toast.success('Migration successful!');
             } else {
                 setMigrationStatus('failed');
-                toast.error('Migration failed!'); // Show error toast message
+                toast.error('Migration failed!');
             }
         } catch (error: any) {
             setMigrationStatus('failed');
-            toast.error('Migration failed!'); // Show error toast message
+            toast.error('Migration failed!');
             console.log('Migration failed:', error);
             if (error.consentUri) {
                 setConsentUri(error.consentUri);
-                //window.location.href = error.consentUri; // Redirect to consent URI
-                window.open(error.consentUri, '_blank'); // Redirect to consent URI in a new tab
+                window.open(error.consentUri, '_blank');
             }
         }
     };
@@ -178,18 +99,40 @@ export function DataTableRowActions<TData extends {
         try {
             setRefreshStatus('pending');
             setIsAnimating(true);
-            // Implement the refresh logic here
-            // For example, re-fetch the data for this specific row
-            const response = await authDataMiddleware(`${ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT}/${row.original.id}`, 'GET');
+            console.log('Row settings before refresh:', row.original);
+
+            const requestBody = {
+                Id: row.original.id,
+                ResourceType: "ConfigurationPolicy",
+                ResourceId: row.original.destinationPolicy?.id,
+                AssignmentId: selectedGroupId,
+                AssignmentType: selectedAssignmentType,
+                FilterId: selectedFilter?.id || null,
+                FilterType: selectedFilterType
+            };
+
+            const response = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify([requestBody]));
             if (response?.status === 200) {
-                // Update the row data with the new data
-                setRefreshStatus('success');
-                toast.success('Refreshed'); // Show success toast message
-                setTimeout(() => setIsAnimating(false), 1000); // End animation after 1 second
+                const responseData = response.data[0];
+                if (!responseData.hasCorrectAssignment) {
+                    row.original.isMigrated = false;
+                    row.original.isReadyForMigration = true;
+                }
+                setMigrationStatus('success');
+                toast.success('Validation successful!');
             } else {
-                setRefreshStatus('failed');
-                setIsAnimating(false);
+                setMigrationStatus('failed');
+                toast.error('Validation failed!');
             }
+
+            console.log('API response:', response.data);
+            console.log('Row settings after refresh:', requestBody);
+
+            setTableData(prevData => prevData.map(r => r.id === row.original.id ? { ...row.original } : r));
+
+            setRefreshStatus('success');
+            toast.success('Row refreshed successfully!');
+            setTimeout(() => setIsAnimating(false), 1000);
         } catch (error: any) {
             setRefreshStatus('failed');
             setIsAnimating(false);
@@ -209,30 +152,28 @@ export function DataTableRowActions<TData extends {
     };
 
     return (
-        <div className={isAnimating ? 'fade-to-normal' : ''}>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4"/>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem
-                        onClick={handleMigrate}
-                        className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
-                    >
-                        Migrate
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        onClick={handleRefresh}
-                        className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
-                    >
-                        Refresh
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                    onClick={handleMigrate}
+                    disabled={!isReadyForMigration || isMigrated}
+                    className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
+                >
+                    Migrate
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    onClick={handleRefresh}
+                >
+                    Refresh
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }

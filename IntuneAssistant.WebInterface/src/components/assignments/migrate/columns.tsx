@@ -12,14 +12,13 @@ import {migrationNeeded, readyForMigration, filterType} from "@/components/assig
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 import {CheckCircle, TriangleAlert, BicepsFlexed} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
-import {DataTableRowActions} from "@/components/assignments/migrate/data-table-row-actions.tsx";
 import {useEffect, useState} from "react";
 import {z} from "zod";
 import { SingleSelect } from '@/components/ui/single-select';
 import {Switch} from "@/components/ui/switch.tsx";
 
 
-export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer<typeof assignmentFilterSchema>[]): ColumnDef<AssignmentsMigrationModel>[] => [
+export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer<typeof assignmentFilterSchema>[], setTableData: React.Dispatch<React.SetStateAction<AssignmentsMigrationModel[]>>) :ColumnDef<AssignmentsMigrationModel>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -486,8 +485,5 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         },
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
-    {
-        id: "actions",
-        cell: ({ row }) => <DataTableRowActions row={row} />,
-    },
+
 ];

@@ -2,7 +2,7 @@ import { z } from "zod";
 import {assignmentsSchema} from "@/components/assignments/overview/schema.tsx";
 
 const filterSchema = z.object({
-    id: z.string().uuid(),
+    id: z.string().nullable(),
     createdDateTime: z.string().datetime(),
     lastModifiedDateTime: z.string().datetime(),
     displayName: z.string().nullable(),
