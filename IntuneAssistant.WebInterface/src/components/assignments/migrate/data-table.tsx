@@ -1,4 +1,5 @@
-import * as React from "react"
+// src/components/assignments/migrate/data-table.tsx
+import * as React from "react";
 import {
     type ColumnDef,
     type ColumnFiltersState,
@@ -12,8 +13,7 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
-} from "@tanstack/react-table"
-
+} from "@tanstack/react-table";
 import {
     Table,
     TableBody,
@@ -21,16 +21,20 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
+import { DataTablePagination } from "@/components/ui/pagination";
+import { DataTableToolbar } from "@/components/assignments/migrate/data-table-toolbar.tsx";
+import { useState } from "react";
+import { DataTableRowActions } from './data-table-row-actions.tsx';
 
-import { DataTablePagination } from "@/components/ui/pagination"
-import { DataTableToolbar } from "@/components/assignments/migrate/data-table-toolbar.tsx"
 interface DataTableProps<TData, TValue> {
-    source: string
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
-    rawData: string
-    fetchData: () => Promise<void>; // Update the type to accept no parameters
+    source: string;
+    columns: ColumnDef<TData, TValue>[];
+    data: TData[];
+    rawData: string;
+    rowClassName?: string;
+    fetchData: () => Promise<void>;
+    setTableData: React.Dispatch<React.SetStateAction<TData[]>>;
 }
 
 export function DataTable<TData, TValue>({
@@ -39,11 +43,14 @@ export function DataTable<TData, TValue>({
                                              rawData,
                                              fetchData,
                                              source,
+                                             rowClassName,
+                                             setTableData,
                                          }: DataTableProps<TData, TValue>) {
-    const [rowSelection, setRowSelection] = React.useState({})
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-    const [sorting, setSorting] = React.useState<SortingState>([])
+    const [rowSelection, setRowSelection] = React.useState({});
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const table = useReactTable({
         data,
@@ -64,7 +71,7 @@ export function DataTable<TData, TValue>({
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
-    })
+    });
 
     return (
         <div className="space-y-4">
@@ -87,7 +94,7 @@ export function DataTable<TData, TValue>({
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows.map(row => (
-                            <TableRow key={row.id}>
+                            <TableRow key={row.id} className={isAnimating ? rowClassName : ''}>
                                 {row.getVisibleCells().map(cell => (
                                     <TableCell key={cell.id}>
                                         {flexRender(
@@ -96,6 +103,9 @@ export function DataTable<TData, TValue>({
                                         )}
                                     </TableCell>
                                 ))}
+                                <TableCell>
+                                    <DataTableRowActions row={row} setTableData={setTableData} />
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -103,5 +113,5 @@ export function DataTable<TData, TValue>({
             </div>
             <DataTablePagination table={table} />
         </div>
-    )
+    );
 }
