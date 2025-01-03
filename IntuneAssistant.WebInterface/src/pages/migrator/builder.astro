@@ -1,0 +1,8 @@
+---
+import AssignmentsMigration from '@/components/assignments/migrate-builder/page';
+import MainLayout from "../../layouts/main-layout.astro";
+---
+
+<MainLayout title="Migrate Assignments" mainClass="flex-1 bg-background-200">
+    <AssignmentsMigration client:only="react" />
+</MainLayout>

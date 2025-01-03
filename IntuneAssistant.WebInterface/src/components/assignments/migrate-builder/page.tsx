@@ -38,16 +38,7 @@ export default function DemoPage() {
             setLoading(true);
             setError('');
             setData([]);
-            const sanitizedRows = rows.map(row => {
-                const sanitizedRow = { ...row };
-                for (const key in sanitizedRow) {
-                    if (sanitizedRow[key] === '') {
-                        sanitizedRow[key] = null;
-                    }
-                }
-                return sanitizedRow;
-            });
-            const jsonString = JSON.stringify(sanitizedRows);
+            const jsonString = JSON.stringify(rows);
             const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString);
             const rawData = typeof response?.data === 'string' ? JSON.parse(response.data) : response?.data;
             setRawData(JSON.stringify(rawData, null, 2));
@@ -138,12 +129,12 @@ export default function DemoPage() {
             <CSVUploader setRows={setRows}/>
             <DataTable
                 rowClassName={isAnimating ? 'fade-to-normal' : ''}
-                columns={columns(groups, filters, setData)}
+                columns={columns(groups, filters, setData)} // Pass setData as setTableData
                 data={data}
                 rawData={rawData}
                 fetchData={fetchData}
                 source="assignmentsMigration"
-                setTableData={setData}
+                setTableData={setData} // Ensure setTableData is passed here
             />
         </div>
     );
