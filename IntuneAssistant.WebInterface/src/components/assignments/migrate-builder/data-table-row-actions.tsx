@@ -29,7 +29,7 @@ interface AssignmentRow {
     filterToMigrate: any;
     assignmentType: string;
     filterType: string;
-    policy: { id: string };
+    destinationPolicy?: { id: string };
 }
 
 interface DataTableRowActionsProps {
@@ -123,7 +123,7 @@ export function DataTableRowActions({
             const requestBody = {
                 Id: row.original.id,
                 ResourceType: "ConfigurationPolicy",
-                ResourceId: row.original.policy.id,
+                ResourceId: row.original.destinationPolicy?.id,
                 AssignmentId: selectedGroupId,
                 AssignmentType: selectedAssignmentType,
                 FilterId: selectedFilter?.id || null,

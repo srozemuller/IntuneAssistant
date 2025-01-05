@@ -1,4 +1,5 @@
-import * as React from "react"
+// src/components/assignments/migrate/data-table.tsx
+import * as React from "react";
 import {
     type ColumnDef,
     type ColumnFiltersState,
@@ -12,8 +13,7 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
-} from "@tanstack/react-table"
-
+} from "@tanstack/react-table";
 import {
     Table,
     TableBody,
@@ -21,23 +21,20 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
-
-import { DataTablePagination } from "@/components/ui/pagination"
-import { DataTableToolbar } from "@/components/assignments/overview/data-table-group-toolbar.tsx"
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import axios from "axios"
+} from "@/components/ui/table";
+import { DataTablePagination } from "@/components/ui/pagination";
+import { DataTableToolbar } from "@/components/assignments/migrate/data-table-toolbar.tsx";
+import { useState } from "react";
+import { DataTableRowActions } from './data-table-row-actions.tsx';
 
 interface DataTableProps<TData, TValue> {
-    source: string
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
-    rawData: string
-    fetchData: () => Promise<void>
-}
-interface UserMember {
-    id: string;
-    name: string;
+    source: string;
+    columns: ColumnDef<TData, TValue>[];
+    data: TData[];
+    rawData: string;
+    rowClassName?: string;
+    fetchData: () => Promise<void>;
+    setTableData: React.Dispatch<React.SetStateAction<TData[]>>;
 }
 
 export function DataTable<TData, TValue>({
@@ -46,15 +43,14 @@ export function DataTable<TData, TValue>({
                                              rawData,
                                              fetchData,
                                              source,
+                                             rowClassName,
+                                             setTableData,
                                          }: DataTableProps<TData, TValue>) {
-    const [rowSelection, setRowSelection] = React.useState({})
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [isDialogOpen, setIsDialogOpen] = React.useState(false)
-// Update the state and fetch function to use the UserMember type
-    const [members, setMembers] = React.useState<UserMember[]>([]);
-
+    const [rowSelection, setRowSelection] = React.useState({});
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const table = useReactTable({
         data,
@@ -75,7 +71,7 @@ export function DataTable<TData, TValue>({
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
-    })
+    });
 
     return (
         <div className="space-y-4">
@@ -98,7 +94,7 @@ export function DataTable<TData, TValue>({
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows.map(row => (
-                            <TableRow key={row.id}>
+                            <TableRow key={row.id} className={isAnimating ? rowClassName : ''}>
                                 {row.getVisibleCells().map(cell => (
                                     <TableCell key={cell.id}>
                                         {flexRender(
@@ -107,28 +103,15 @@ export function DataTable<TData, TValue>({
                                         )}
                                     </TableCell>
                                 ))}
+                                <TableCell>
+                                    <DataTableRowActions row={row} setTableData={setTableData} />
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </div>
             <DataTablePagination table={table} />
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
-                    <DialogTitle>Group Members</DialogTitle>
-                    <DialogDescription>
-                        {members.length > 0 ? (
-                            <ul>
-                                {members.map((member) => (
-                                    <li key={member.id}>{member.name}</li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No members found.</p>
-                        )}
-                    </DialogDescription>
-                </DialogContent>
-            </Dialog>
         </div>
-    )
+    );
 }

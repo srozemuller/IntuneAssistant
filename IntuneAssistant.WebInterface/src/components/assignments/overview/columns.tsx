@@ -225,7 +225,7 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
         ),
         cell: ({ row }) => {
             const assignmentType = row.getValue("assignmentType");
-            const targetId: string = row.original.targetId; // Access targetId from row.original
+            const targetId: string = row.original.targetId;
             const [members, setMembers] = useState<UserMember[]>([]);
             const [isDialogOpen, setIsDialogOpen] = useState(false);
             const group = groupData.find(group => group.id === targetId);
@@ -233,10 +233,7 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
             const deviceCount = group ? group.members.filter(member => member.type === "Device").length : 0;
             const groupCount = group ? group.members.filter(member => member.type === "Group").length : 0;
 
-            console.log("Group:", group);
-            console.log("User Count:", userCount);
-            console.log("Device Count:", deviceCount);
-            console.log("Group Count:", groupCount);
+
             if (assignmentType === "Entra ID Group" || assignmentType === "Entra ID Group Exclude") {
                 return (
                     <>

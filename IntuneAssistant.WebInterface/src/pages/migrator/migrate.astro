@@ -1,0 +1,8 @@
+---
+import Migrate from '@/components/assignments/migrate/page';
+import MainLayout from "../../layouts/main-layout.astro";
+---
+
+<MainLayout title="Migrate Assignments" mainClass="flex-1 bg-background-200">
+    <Migrate client:only="react" />
+</MainLayout>

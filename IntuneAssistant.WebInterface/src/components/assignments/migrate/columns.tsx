@@ -14,12 +14,58 @@ import {CheckCircle, TriangleAlert, BicepsFlexed} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {useEffect, useState} from "react";
 import {z} from "zod";
-import { SingleSelect } from '@/components/ui/single-select';
-import {Switch} from "@/components/ui/switch.tsx";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
+import type {filterSchema} from "@/schemas/filters.tsx";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {type UserMember, fetchGroupMembers, memberColumns} from "@/components/dialogs/group-membership-dialog.tsx"
+import {DataTable} from "@/components/assignments/overview/data-table-groups.tsx";
 
+const FilterCell = ({ row, filters }: { row: any, filters: z.infer<typeof filterSchema>[] }) => {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const filterToMigrate = row.original.filterToMigrate;
+    const hasFilterProvided = row.original.filterName;
+    const filterExist = row.original.migrationCheckResult?.filterExist;
 
-export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer<typeof assignmentFilterSchema>[], setTableData: React.Dispatch<React.SetStateAction<AssignmentsMigrationModel[]>>) :ColumnDef<AssignmentsMigrationModel>[] => [
+    const handleFilterClick = () => {
+        setIsDialogOpen(true);
+    };
+
+    return (
+        <div>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <span
+                            onClick={hasFilterProvided ? handleFilterClick : undefined}
+                            className={`cursor-pointer ${!hasFilterProvided ? 'text-gray-500 italic' : filterExist === false ? 'text-red-500 italic' : 'text-primary'}`}
+                        >
+                            {!hasFilterProvided ? <em>No filter provided</em> : filterToMigrate.displayName}
+                        </span>
+                    </TooltipTrigger>
+                    {!hasFilterProvided && (
+                        <TooltipContent>
+                            <p>No filter found</p>
+                        </TooltipContent>
+                    )}
+                </Tooltip>
+            </TooltipProvider>
+            {isDialogOpen && hasFilterProvided && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogContent>
+                        <DialogTitle>{filterToMigrate.displayName}</DialogTitle>
+                        <DialogDescription>
+                            <p>ID: {filterToMigrate.id}</p>
+                            <p>Description: {filterToMigrate.description}</p>
+                            <p>Platform: {filterToMigrate.platform}</p>
+                            <p>Rule: {filterToMigrate.rule}</p>
+                            <p>Assignment Filter Management Type: {filterToMigrate.assignmentFilterManagementType}</p>
+                        </DialogDescription>
+                    </DialogContent>
+                </Dialog>
+            )}
+        </div>
+    );
+};
+export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.infer<typeof filterSchema>[], setTableData: React.Dispatch<React.SetStateAction<AssignmentsMigrationModel[]>>): ColumnDef<AssignmentsMigrationModel>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -49,125 +95,11 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         enableHiding: false,
     },
     {
-        accessorKey: 'sourcePolicy.policyType',
-        header: 'Policy Type',
-    },
-    {
-        accessorKey: 'sourcePolicy.name',
-        header: 'Source Policy',
+        accessorKey: 'policy.name',
+        header: 'Policy Name',
         cell: ({ row }) => {
-            const sourcePolicyName = row.original.sourcePolicy?.name;
-            const sourcePolicyId = row.original.sourcePolicy?.id;
-
-            if (!sourcePolicyName) {
-                return <em>Policy does not exist</em>;
-            }
-
-            return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger>
-                            <span>{sourcePolicyName}</span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{sourcePolicyId}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            );
-        },
-    },
-    {
-        accessorKey: 'sourcePolicy.assignments',
-        header: 'Assignments',
-        cell: ({ row }) => {
-            const assignments = row.original.sourcePolicyGroups;
-            const groupToMigrate = row.original.groupToMigrate;
-
-            if (!assignments || assignments.length === 0) {
-                return (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <div className="flex w-[100px] items-center">
-                                    <TriangleAlert className={`h-5 w-5 text-orange-500`} />
-                                </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>No assignments, is migration needed?</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                );
-            }
-
-            return (
-                <div>
-                    {assignments.map((assignment, index) => (
-                        <span
-                            key={index}
-                            className={assignment === groupToMigrate ? 'text-primary' : ''}
-                        >
-                            {assignment}
-                            {index < assignments.length - 1 && ', '}
-                        </span>
-                    ))}
-                </div>
-            );
-        },
-    },
-    {
-        id: "excludeOrRemoveGroup",
-        header: () => (
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger>
-                        <span>Remove/Exclude</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Select to exclude or remove the group from the source policy</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        ),
-        cell: ({ row }) => {
-            const [isExcluded, setIsExcluded] = useState(row.original.excludeGroupFromSource);
-
-            const handleSwitchChange = (checked: boolean) => {
-                setIsExcluded(checked);
-                row.original.excludeGroupFromSource = checked;
-                row.original.removeGroupFromSource = !checked;
-            };
-
-            return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div>
-                                <Switch
-                                    checked={isExcluded}
-                                    onCheckedChange={handleSwitchChange}
-                                    className={`custom-switch ${isExcluded ? 'text-orange-500' : 'text-red-500'}`}
-                                    style={{ backgroundColor: `rgb(var(${isExcluded ? '--orange' : '--red'}) / var(--tw-bg-opacity, 1))` }}
-                                />
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{isExcluded ? 'Exclude' : 'Remove'}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            );
-        },
-        enableSorting: false,
-        enableHiding: false,
-    },
-    {
-        accessorKey: 'destinationPolicy.name',
-        header: 'Destination Policy',
-        cell: ({ row }) => {
-            const policyName = row.original.destinationPolicy?.name;
-            const policyId = row.original.destinationPolicy?.id;
+            const policyName = row.original.policy?.name;
+            const policyId = row.original.policy?.id;
 
             if (!policyName) {
                 return <em>Policy does not exist</em>;
@@ -188,26 +120,49 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         },
     },
     {
-        accessorKey: 'destinationPolicy.assignments',
+        accessorKey: 'policy.assignments',
         header: 'Current Assignments',
         cell: ({ row }) => {
-            const [assignments, setAssignments] = useState(row.original.destinationPolicyGroups);
+            const [assignments, setAssignments] = useState(row.original.policy?.assignments || []);
+            const [members, setMembers] = useState<UserMember[]>([]);
+            const [isDialogOpen, setIsDialogOpen] = useState(false);
 
             useEffect(() => {
-                setAssignments(row.original.destinationPolicyGroups);
-            }, [row.original.destinationPolicyGroups]);
+                setAssignments(row.original.policy?.assignments || []);
+            }, [row.original.policy]);
+
+            const handleGroupClick = (groupId: string) => {
+                fetchGroupMembers(groupId, setMembers, setIsDialogOpen);
+            };
 
             return (
                 <div>
-                    {assignments?.map((assignment, index) => (
-                        <span
-                            key={index}
-                            className={assignment === row.original.groupToMigrate ? 'text-primary' : ''}
-                        >
-                        {assignment}
-                            {index < assignments.length - 1 && ', '}
-                    </span>
-                    ))}
+                    {assignments.map((assignment, index) => {
+                        const groupId = assignment.target.groupId;
+                        const groupInfo = groupData.find(group => group.id === groupId) || null;
+
+                        return (
+                            <span
+                                key={index}
+                                className="text-primary cursor-pointer"
+                                onClick={() => handleGroupClick(groupId)}
+                            >
+                            {groupInfo?.displayName || groupId}
+                                {index < assignments.length - 1 && ', '}
+                        </span>
+                        );
+                    })}
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogContent className="container max-w-[60%] py-6">
+                            <DialogTitle>Group members</DialogTitle>
+                            <DialogDescription>
+                                These are the members of the selected group.
+                            </DialogDescription>
+                            <div className="container max-w-[95%] py-6">
+                                <DataTable columns={memberColumns} data={members} />
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             );
         },
@@ -216,46 +171,50 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         accessorKey: 'groupToMigrate',
         header: 'Group to Migrate',
         cell: ({ row }) => {
-            const groupToMigrate = row.getValue('groupToMigrate') as string;
-            const initialSelectedGroup = groups.find(group => group.displayName === groupToMigrate)?.id;
+            const groupName = row.getValue('groupToMigrate') as React.ReactNode;
+            const groupInfo = groupData.find(group => group.displayName === groupName) || null;
+            const [members, setMembers] = useState<UserMember[]>([]);
+            const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-            const [selectedGroup, setSelectedGroup] = useState<{ id: string; createdDateTime: string; description: string; displayName: string; } | null>(() => {
-                const initialGroup = groups.find(group => group.id === initialSelectedGroup);
-                return initialGroup || null;
-            });
-
-            useEffect(() => {
-                const updatedGroupToMigrate = row.getValue('groupToMigrate') as string;
-                const updatedSelectedGroup = groups.find(group => group.id === updatedGroupToMigrate) || null;
-                setSelectedGroup(updatedSelectedGroup);
-            }, [row.getValue('groupToMigrate')]);
-
-            const handleGroupChange = (selectedOption: string) => {
-                const selectedGroup = groups.find(group => group.id === selectedOption) || null;
-                setSelectedGroup(selectedGroup);
-                if (selectedGroup) {
-                    row.original.groupToMigrate = selectedGroup.displayName;
-                    row.original.assignmentId = selectedGroup.id;
-                    const task = assignmentMigrationSchema.parse(row.original);
-                    task.groupToMigrate = selectedGroup.displayName;
-                    task.assignmentId = selectedGroup.id;
-                    setTableData(prevData => prevData.map(item => item.id === row.original.id ? task : item));
+            const handleGroupClick = () => {
+                if (groupInfo) {
+                    fetchGroupMembers(groupInfo.id, setMembers, setIsDialogOpen);
                 }
             };
 
-            const options = groups.map((group) => ({
-                value: group.id,
-                label: group.displayName,
-            }));
-
             return (
-                <SingleSelect
-                    options={options}
-                    onValueChange={handleGroupChange}
-                    value={selectedGroup?.id || ''}
-                    defaultValue={initialSelectedGroup || ''}
-                    placeholder="Select group"
-                />
+                <div>
+                    {groupInfo ? (
+                        <span
+                            className="text-primary cursor-pointer"
+                            onClick={handleGroupClick}
+                        >
+                        {groupName}
+                    </span>
+                    ) : (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <span className="text-red-500 cursor-default"><em>{groupName}</em></span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Group not found</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogContent className="container max-w-[60%] py-6">
+                            <DialogTitle>Group members</DialogTitle>
+                            <DialogDescription>
+                                These are the members of the selected group.
+                            </DialogDescription>
+                            <div className="container max-w-[95%] py-6">
+                                <DataTable columns={memberColumns} data={members} />
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             );
         },
     },
@@ -263,42 +222,8 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         accessorKey: 'assignmentType',
         header: 'Include/Exclude',
         cell: ({ row }) => {
-            const [isEnabled, setIsEnabled] = useState(row.original.assignmentType === filterType[0].value);
-            const [isGroupSelected, setIsGroupSelected] = useState(!!row.original.groupToMigrate);
-
-            useEffect(() => {
-                setIsEnabled(row.original.assignmentType === filterType[0].value);
-                setIsGroupSelected(!!row.original.groupToMigrate);
-            }, [row.original.assignmentType, row.original.groupToMigrate]);
-
-            const handleSwitchChange = (checked: boolean) => {
-                setIsEnabled(checked);
-                row.original.assignmentType = checked ? filterType[0].value : filterType[1].value;
-                const task = assignmentMigrationSchema.parse(row.original);
-                task.assignmentType = row.original.assignmentType;
-                setTableData(prevData => prevData.map(item => item.id === row.original.id ? task : item));
-            };
-
-            return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div>
-                                <Switch
-                                    checked={isEnabled}
-                                    onCheckedChange={handleSwitchChange}
-                                    className={`custom-switch ${isEnabled ? 'text-green-500' : 'text-red-500'}`}
-                                    style={{ backgroundColor: `rgb(var(${isEnabled ? '--green' : '--red'}) / var(--tw-bg-opacity, 1))` }}
-                                    disabled={!isGroupSelected} // Disable the switch if no group is selected
-                                />
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{isEnabled ? filterType[0].label : filterType[1].label}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            );
+            const assignmentType = row.getValue('assignmentType') as string;
+            return <span>{assignmentType}</span>;
         },
     },
     {
@@ -306,89 +231,41 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
         header: 'Filter',
         cell: ({ row }) => {
             const filterToMigrate = row.original.filterToMigrate;
-            const initialSelectedFilter = filters.find(filter => filter.displayName === filterToMigrate?.displayName) || null;
+            const filterExist = row.original.migrationCheckResult?.filterExist;
+            const filterName = row.original.filterName;
+            if (filterToMigrate && filterToMigrate.id) {
+                return <FilterCell row={row} filters={filters} />;
+            }
+            if (!filterName){
+                return <span className="text-gray-500 italic"><em>No filter provided</em></span>;
+            }
+            if (filterExist === false) {
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <span className="text-red-500 italic"><em>{filterName}</em></span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Filter does not exist.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
+            }
 
-            const [selectedFilter, setSelectedFilter] = useState<{ id: string; displayName: string; } | null>(initialSelectedFilter);
-
-            useEffect(() => {
-                const updatedFilterToMigrate = row.original.filterToMigrate;
-                const updatedSelectedFilter = filters.find(filter => filter.displayName === updatedFilterToMigrate?.displayName) || null;
-                setSelectedFilter(updatedSelectedFilter);
-            }, [row.original.filterToMigrate]);
-
-            const handleFilterChange = (selectedOption: string) => {
-                const selectedFilter = filters.find(filter => filter.id === selectedOption) || null;
-                setSelectedFilter(selectedFilter);
-                if (selectedFilter) {
-                    row.original.filterToMigrate = selectedFilter;
-                    const task = assignmentMigrationSchema.parse(row.original);
-                    task.filterToMigrate = selectedFilter;
-                    setTableData(prevData => prevData.map(item => item.id === row.original.id ? task : item));
-                }
-            };
-
-            const options = filters.map((filter) => ({
-                value: filter.id,
-                label: filter.displayName,
-            }));
-
-            return (
-                <SingleSelect
-                    options={options}
-                    onValueChange={handleFilterChange}
-                    value={selectedFilter?.id || ''}
-                    defaultValue={initialSelectedFilter?.id || ''}
-                    placeholder="Select filter"
-                />
-            );
         },
     },
     {
         accessorKey: 'filterType',
         header: 'Type',
         cell: ({ row }) => {
-            const [selectedFilterType, setSelectedFilterType] = useState(row.original.filterType || 'none');
-            const [isGroupSelected, setIsGroupSelected] = useState(!!row.original.groupToMigrate);
-
-            useEffect(() => {
-                setIsGroupSelected(!!row.original.groupToMigrate);
-            }, [row.original.groupToMigrate]);
-
-            const handleFilterTypeChange = (value: string) => {
-                setSelectedFilterType(value);
-                row.original.filterType = value === 'none' ? null : value;
-                const task = assignmentMigrationSchema.parse(row.original);
-                task.filterType = row.original.filterType;
-                setTableData(prevData => prevData.map(item => item.id === row.original.id ? task : item));
-            };
-
-            return (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div>
-                                <Select
-                                    value={selectedFilterType}
-                                    onValueChange={handleFilterTypeChange}
-                                    disabled={!isGroupSelected} // Disable the select if no group is selected
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none">None</SelectItem>
-                                        <SelectItem value={filterType[0].value}>{filterType[0].label}</SelectItem>
-                                        <SelectItem value={filterType[1].value}>{filterType[1].label}</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{selectedFilterType === 'none' ? 'None' : selectedFilterType === filterType[0].value ? filterType[0].label : filterType[1].label}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            );
+            const filterType = row.getValue('filterType') as string;
+            const filterName = row.original.filterName;
+            if (!filterName) {
+                return <span className="text-gray-500 italic"><em>{filterType}</em></span>;
+            }
+            return <span>{filterType}</span>;
         },
     },
     {
@@ -451,16 +328,15 @@ export const columns = (groups: z.infer<typeof groupsSchema>[], filters: z.infer
             const getTooltipMessage = () => {
                 if (!migrationCheckResult) return "Migration check result is missing.";
                 const messages = [];
-                if (isMigrated) return "Migration is already done.";
-                if (!migrationCheckResult.sourcePolicyExists) messages.push("Source policy does not exist.");
-                if (!migrationCheckResult.sourcePolicyIsUnique) messages.push("Source policy is not unique.");
-                if (!migrationCheckResult.destinationPolicyExists) messages.push("Destination policy does not exist.");
-                if (!migrationCheckResult.destinationPolicyIsUnique) messages.push("Destination policy is not unique.");
+               // if (isMigrated) return "Migration is already done.";
+                if (!migrationCheckResult.policyExists) messages.push("Destination policy does not exist.");
+                if (!migrationCheckResult.policyIsUnique) messages.push("Destination policy is not unique.");
                 if (!migrationCheckResult.groupExists) messages.push("Group does not exist.");
                 if (!migrationCheckResult.correctAssignmentTypeProvided) messages.push("Incorrect assignment type provided (must be included or excluded).");
                 if (!migrationCheckResult.filterExist) messages.push("Filter does not exist.");
                 if (!migrationCheckResult.filterIsUnique) messages.push("Filter is not unique.");
                 if (!migrationCheckResult.correctFilterTypeProvided) messages.push("Incorrect filter type provided (must be included or excluded).");
+                if (!migrationCheckResult.correctFilterPlatform) messages.push("Policy platform does not fit filter platform.");
                 return messages.join(" ");
             };
 
