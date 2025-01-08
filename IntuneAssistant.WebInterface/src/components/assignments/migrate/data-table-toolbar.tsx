@@ -155,7 +155,7 @@ export function DataTableToolbar({
     };
 
     const handleDownloadTemplate = () => {
-        const csvContent = "CurrentPolicyName,ReplacementPolicyName,GroupName,AssignmentType,FilterName,FilterType\n";
+        const csvContent = "PolicyName,GroupName,AssignmentType,FilterName,FilterType\n";
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         saveAs(blob, "assignment_migration_template.csv");
     };
@@ -190,9 +190,10 @@ export function DataTableToolbar({
         try {
             setMigrationStatus('pending');
             const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', dataString);
-            if (response?.status === 204) {
+            if (response?.status === 200) {
                 setMigrationStatus('success');
                 toast.success("Selected rows migrated successfully.");
+                await fetchData();
             } else {
                 setMigrationStatus('failed');
                 toast.error("Failed to migrate selected rows.");
