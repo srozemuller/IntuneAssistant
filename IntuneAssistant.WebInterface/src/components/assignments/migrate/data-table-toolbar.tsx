@@ -47,8 +47,8 @@ export function DataTableToolbar({
                                      rawData,
                                      fetchData,
                                      source,
-                                        backupStatus,
-                                        setBackupStatus,
+                                     backupStatus,
+                                     setBackupStatus,
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
@@ -58,10 +58,12 @@ export function DataTableToolbar({
     const [jsonString, setJsonString] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedRowCount, setSelectedRowCount] = useState(0);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
         setSelectedRowCount(selectedRows.length);
+        setSelectedIds(selectedRows.map(row => row.original.id));
     }, [table.getSelectedRowModel().rows]);
 
     const handleExport = async (rawData: string) => {
@@ -185,6 +187,14 @@ export function DataTableToolbar({
     };
 
     const handleConfirmMigrate = () => {
+        const selectedRows = table.getSelectedRowModel().rows;
+        const selectedIds = selectedRows.map(row => row.original.id);
+        const noBackups = selectedIds.some(id => !backupStatus[id]);
+
+        if (noBackups) {
+            toast.error("Some selected rows are not backed up.");
+        }
+
         setIsDialogOpen(true);
     };
 
@@ -283,11 +293,18 @@ export function DataTableToolbar({
                         <DialogTitle>Confirm Migration</DialogTitle>
                     </DialogHeader>
                     <p>Are you sure you want to migrate the selected {selectedRowCount} row(s)?</p>
+                    {selectedRowCount > 0 && selectedIds.some(id => !backupStatus[id]) && (
+                        <p className="text-red-500">Warning: Some selected rows are not backed up.</p>
+                    )}
                     <DialogFooter>
                         <Button onClick={handleDialogCancel} variant="outline">
                             Cancel
                         </Button>
-                        <Button onClick={handleDialogConfirm} variant="default">
+                        <Button
+                            onClick={handleDialogConfirm}
+                            variant="default"
+                            disabled={selectedRowCount > 0 && selectedIds.some(id => !backupStatus[id])}
+                        >
                             Confirm
                         </Button>
                     </DialogFooter>
