@@ -32,6 +32,8 @@
     --chart-5: 27 87% 67%;
     --green: 34 197 94;
     --red: 239 68 68;
+    --orange: 245 158 11;
+    --grey: 107 114 128;
   }
 
   .dark {
@@ -59,7 +61,25 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --green: 34 197 94;
+    --red: 239 68 68;
+    --orange: 245 158 11;
+    --grey: 107 114 128;
+
   }
+}
+
+@keyframes fadeToNormal {
+  from {
+    background-color: yellow;
+  }
+  to {
+    background-color: white;
+  }
+}
+
+.fade-to-normal {
+  animation: fadeToNormal 1s ease-in-out;
 }
 
 @layer base {
