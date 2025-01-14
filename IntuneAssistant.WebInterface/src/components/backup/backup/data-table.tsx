@@ -1,3 +1,4 @@
+// src/components/assignments/overview/data-table.tsx
 import * as React from "react"
 import {
     type ColumnDef,
@@ -24,9 +25,11 @@ import {
 } from "@/components/ui/table"
 
 import { DataTablePagination } from "@/components/ui/pagination"
-import { DataTableToolbar } from "@/components/policies/configuration/data-table-toolbar.tsx"
-import {useState} from "react";
-import {DataTableRowActions} from "@/components/policies/configuration/data-table-row-actions.tsx";
+import { DataTableToolbar } from "@/components/assignments/overview/data-table-toolbar.tsx"
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import type {Filters} from "@/schemas/filters.tsx";
+import type {GroupModel} from "@/schemas/groupSchema.tsx";
+
 
 interface DataTableProps<TData, TValue> {
     source: string
@@ -34,7 +37,11 @@ interface DataTableProps<TData, TValue> {
     data: TData[]
     rawData: string
     fetchData: () => Promise<void>
-    setTableData: React.Dispatch<React.SetStateAction<TData[]>>;
+    groupData: GroupModel[]
+}
+interface UserMember {
+    id: string;
+    name: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -43,14 +50,15 @@ export function DataTable<TData, TValue>({
                                              rawData,
                                              fetchData,
                                              source,
-                                             setTableData,
+                                             groupData,
                                          }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({})
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [sorting, setSorting] = React.useState<SortingState>([])
+    const [isDialogOpen, setIsDialogOpen] = React.useState(false)
 
-    const [backupStatus, setBackupStatus] = useState<{ [key: string]: boolean }>({});
+    const [members, setMembers] = React.useState<UserMember[]>([]);
 
     const table = useReactTable({
         data,
@@ -75,7 +83,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar source={source} table={table} rawData={rawData} fetchData={fetchData} backupStatus={backupStatus} setBackupStatus={setBackupStatus}/>
+            <DataTableToolbar source={source} table={table} rawData={rawData} fetchData={fetchData} />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -103,15 +111,28 @@ export function DataTable<TData, TValue>({
                                         )}
                                     </TableCell>
                                 ))}
-                                <TableCell>
-                                    <DataTableRowActions row={row} setTableData={setTableData} backupStatus={backupStatus} setBackupStatus={setBackupStatus} />
-                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </div>
             <DataTablePagination table={table} />
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                    <DialogTitle>Group Members</DialogTitle>
+                    <DialogDescription>
+                        {members.length > 0 ? (
+                            <ul>
+                                {members.map((member) => (
+                                    <li key={member.id}>{member.name}</li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No members found.</p>
+                        )}
+                    </DialogDescription>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

@@ -40,21 +40,28 @@ export const navMenuConfig: NavMenuConfig = {
           description: "Information about all assignments"
         },
         {
-          title: "Configuration Policies",
-          href: "/policies/configuration",
-          description: "Configuration Policy overview",
-        },
-        {
           title: "Configuration Settings",
           href: "/policies/configuration/settings",
           description: "Configuration Settings overview",
+        },
+      ],
+    }
+  ],
+  resourcesNav: [
+    {
+      title: "Resources",
+      items: [
+        {
+          title: "Configuration Policies",
+          href: "/policies/configuration",
+          description: "Configuration Policy overview",
         },
         {
           title: "Conditional Access Policies",
           href: "/policies/ca",
           description: "Information about Conditional Access Policies"
         },
-      ],
+      ]
     }
   ],
   migrationNav: [

@@ -32,7 +32,7 @@ interface TData {
     groupToMigrate: string;
     assignmentId: string;
     filterToMigrate: { displayName: string, id: string } | null,
-    isBackuped?: boolean; // Add isBackuped property
+    isBackuped?: boolean;
 }
 
 interface DataTableToolbarProps<TData> {
