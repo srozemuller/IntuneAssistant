@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { type Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button.tsx";
+import { saveAs } from 'file-saver';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,8 +12,8 @@ import {
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import {
-    ASSIGNMENTS_MIGRATE_ENDPOINT,
-    ASSIGNMENTS_VALIDATION_ENDPOINT
+    ASSIGNMENTS_MIGRATE_ENDPOINT, ASSIGNMENTS_VALIDATION_ENDPOINT,
+    EXPORT_ENDPOINT,
 } from "@/components/constants/apiUrls.js";
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
@@ -29,7 +30,10 @@ interface AssignmentRow {
     filterToMigrate: any;
     assignmentType: string;
     filterType: string;
-    policy: { id: string };
+    policy: {
+        id: string
+        policyType: string
+    };
 }
 
 interface DataTableRowActionsProps {
@@ -39,6 +43,8 @@ interface DataTableRowActionsProps {
 export function DataTableRowActions({
                                         row,
                                         setTableData,
+    backupStatus,
+    setBackupStatus
                                     }: DataTableRowActionsProps) {
     const [consentUri, setConsentUri] = useState<string | null>(null);
     const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
@@ -114,6 +120,27 @@ export function DataTableRowActions({
         }
     };
 
+    const handleBackup = async () => {
+        try {
+            const policyType = row.original.policy.policyType;
+            const policyId = row.original.policy.id;
+            const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policyType}/${policyId}`, 'GET');
+
+            if (response?.status === 200) {
+                const jsonString = JSON.stringify(response.data);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                saveAs(blob, `${policyType}_${policyId}.json`);
+                toast.success('Backup successful!');
+                setBackupStatus(prevStatus => ({ ...prevStatus, [row.original.id]: true })); // Update backup status
+            } else {
+                toast.error('Backup failed!');
+            }
+        } catch (error: any) {
+            console.error('Backup failed:', error);
+            toast.error('Backup failed!');
+        }
+    };
+
     const handleRefresh = async () => {
         try {
             setRefreshStatus('pending');
@@ -185,9 +212,14 @@ export function DataTableRowActions({
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
+                    onClick={handleBackup}
+                >
+                    Backup
+                </DropdownMenuItem>
+                <DropdownMenuItem
                     onClick={handleMigrate}
-                    disabled={!isReadyForMigration || isMigrated}
-                    className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
+                    disabled={!isReadyForMigration || isMigrated || !backupStatus[row.original.id]}
+                    className={!isReadyForMigration || isMigrated || !backupStatus[row.original.id] ? 'text-gray-500' : ''}
                 >
                     Migrate
                 </DropdownMenuItem>

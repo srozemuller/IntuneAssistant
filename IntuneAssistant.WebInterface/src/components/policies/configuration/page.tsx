@@ -30,24 +30,14 @@ export default function DemoPage() {
             }
 
             const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
-
             setRawData(rawData);
             console.log('Raw data:', rawData);
 
-            // Preprocess the data to set default values
-            const preprocessedData = JSON.parse(rawData).map((policy: any) => ({
-                ...policy,
-                assignments: policy.assignments?.map((assignment: any) => ({
-                    ...assignment,
-                    resourceName: assignment.resourceName ?? 'defaultResourceName',
-                    filterId: assignment.filterId ?? 'defaultFilterId',
-                    filterType: assignment.filterType ?? 'defaultFilterType',
-                    targetId: assignment.targetId ?? 'defaultTargetId'
-                })) ?? []
-            }));
+            // Parse the raw data string into an array
+            const parsedArray = JSON.parse(rawData);
 
             // Validate and parse the preprocessed data
-            const parsedData: Policy[] = z.array(policySchema).parse(preprocessedData);
+            const parsedData: Policy[] = z.array(policySchema).parse(parsedArray);
             setData(parsedData);
         } catch (error) {
             console.error('Error:', error);
@@ -61,7 +51,6 @@ export default function DemoPage() {
     };
 
     useEffect(() => {
-        fetchData();
         toast.promise(fetchData(), {
             pending: {
                 render:  `Searching for configuration  policies...`,
@@ -78,7 +67,13 @@ export default function DemoPage() {
     return (
         <div className="container max-w-[95%] py-6">
             <ToastContainer autoClose={toastDuration} position={toastPosition}/>
-            <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="configuration"  />
+            <DataTable
+                columns={columns}
+                data={data}
+                rawData={rawData}
+                fetchData={fetchData}
+                source="configuration"
+                setTableData={setData} />
         </div>
     );
 }
