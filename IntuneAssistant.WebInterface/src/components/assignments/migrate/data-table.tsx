@@ -52,6 +52,8 @@ export function DataTable<TData, TValue>({
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [isAnimating, setIsAnimating] = useState(false);
 
+    const [backupStatus, setBackupStatus] = useState<{ [key: string]: boolean }>({});
+
     const table = useReactTable({
         data,
         columns,
@@ -75,7 +77,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar source={source} table={table} rawData={rawData} fetchData={fetchData} />
+            <DataTableToolbar source={source} table={table} rawData={rawData} fetchData={fetchData} backupStatus={backupStatus} setBackupStatus={setBackupStatus} />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -104,7 +106,7 @@ export function DataTable<TData, TValue>({
                                     </TableCell>
                                 ))}
                                 <TableCell>
-                                    <DataTableRowActions row={row} setTableData={setTableData} />
+                                    <DataTableRowActions row={row} setTableData={setTableData} backupStatus={backupStatus} setBackupStatus={setBackupStatus} />
                                 </TableCell>
                             </TableRow>
                         ))}

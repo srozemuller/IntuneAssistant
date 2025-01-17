@@ -48,8 +48,8 @@ export default function ConsentCard({
     const [tenantName, setTenantName] = React.useState<string>("onmicrosoft.com");
     const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const [isTenantIdValid, setIsTenantIdValid] = React.useState<boolean>(true);
-    const [isTenantNameValid, setIsTenantNameValid] = React.useState<boolean>(true);
+    const [isTenantIdValid, setIsTenantIdValid] = React.useState<boolean>(false);
+    const [isTenantNameValid, setIsTenantNameValid] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         const fetchCurrentTenantId = async () => {
@@ -64,7 +64,7 @@ export default function ConsentCard({
 
     const validateTenantName = (name: string) => {
         const nameRegex = /^[a-zA-Z0-9]+$/;
-        return nameRegex.test(name);
+        return nameRegex.test(name) && name.length <= 27;
     };
 
 
@@ -155,7 +155,7 @@ export default function ConsentCard({
                                 />
                                 {!isTenantNameValid && (
                                     <div className="text-red-500 text-sm">
-                                        Please enter a valid Tenant Name (letters only).
+                                        Please enter a valid tenant name (alphanumeric only with the max of 27).
                                     </div>
                                 )}
                                 <span>.onmicrosoft.com</span>

@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants";
 import authDataMiddleware from "@/components/middleware/fetchData";
-import { ASSIGNMENTS_MIGRATE_ENDPOINT } from "@/components/constants/apiUrls";
+import {ASSIGNMENTS_MIGRATE_ENDPOINT, EXPORT_ENDPOINT} from "@/components/constants/apiUrls";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
@@ -26,13 +26,13 @@ import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 interface TData {
     id: string;
     excludeGroupFromSource: boolean;
-    sourcePolicy: z.infer<typeof policySchema> | null;
-    destinationPolicy: z.infer<typeof policySchema> | null;
+    policy: z.infer<typeof policySchema> | null;
     assignmentType: string,
     filterType: string,
     groupToMigrate: string;
     assignmentId: string;
     filterToMigrate: { displayName: string, id: string } | null,
+    isBackuped?: boolean;
 }
 
 interface DataTableToolbarProps<TData> {
@@ -47,6 +47,8 @@ export function DataTableToolbar({
                                      rawData,
                                      fetchData,
                                      source,
+                                     backupStatus,
+                                     setBackupStatus,
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
@@ -56,17 +58,18 @@ export function DataTableToolbar({
     const [jsonString, setJsonString] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedRowCount, setSelectedRowCount] = useState(0);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
         setSelectedRowCount(selectedRows.length);
+        setSelectedIds(selectedRows.map(row => row.original.id));
     }, [table.getSelectedRowModel().rows]);
 
-    const handleExport = (rawData: string) => {
+    const handleExport = async (rawData: string) => {
         const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
-
 
         const dataToExport = parsedRawData
             .filter((item: TData) => selectedIds.includes(item.id))
@@ -74,18 +77,7 @@ export function DataTableToolbar({
                 const selectedRow = selectedRows.find(row => row.original.id === item.id);
                 return {
                     id: selectedRow?.original.id,
-                    sourcePolicy: {
-                        id: selectedRow?.original.sourcePolicy?.id,
-                        name: selectedRow?.original.sourcePolicy?.name,
-                        policyType: selectedRow?.original.sourcePolicy?.policyType,
-                        assignments: selectedRow?.original.sourcePolicy?.assignments || []
-                    },
-                    destinationPolicy: {
-                        id: selectedRow?.original.destinationPolicy?.id,
-                        name: selectedRow?.original.destinationPolicy?.name,
-                        policyType: selectedRow?.original.destinationPolicy?.policyType,
-                        assignments: selectedRow?.original.destinationPolicy?.assignments || []
-                    },
+                    policy: selectedRow?.original.policy
                 };
             });
         console.log("Data to export:", dataToExport); // Log data to export
@@ -99,36 +91,23 @@ export function DataTableToolbar({
 
         if (exportOption === "backup") {
             const zip = new JSZip();
-            dataToExport.forEach((item: TData) => {
-                if (item.sourcePolicy?.id) {
-                    const sourceFileName = `${item.sourcePolicy.name}_source.json`;
-                    const sourceFileContent = JSON.stringify({
-                        itemId: item.id,
-                        id: item.sourcePolicy.id,
-                        name: item.sourcePolicy.name,
-                        policyType: item.sourcePolicy.policyType,
-                        assignments: item.sourcePolicy.assignments
-                    }, null, 2);
-                    console.log("Adding file to zip:", sourceFileName, sourceFileContent); // Log file details
-                    zip.file(sourceFileName, sourceFileContent);
+            for (const item of dataToExport) {
+                if (item.policy?.id) {
+                    const policyType = item.policy.policyType;
+                    const policyId = item.policy.id;
+                    const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policyType}/${policyId}`, 'GET');
+                    if (response && response.data) {
+                        const sourceFileName = `${item.policy.name}_source.json`;
+                        const sourceFileContent = JSON.stringify(response.data, null, 2);
+                        zip.file(sourceFileName, sourceFileContent);
+                        setBackupStatus(prevStatus => ({ ...prevStatus, [item.id]: true })); // Update backup status
+                    } else {
+                        toast.error(`Backup failed for policy ${policyId}!`);
+                    }
                 } else {
                     console.warn(`No source assignments found for item with id: ${item.id}`);
                 }
-                if (item.destinationPolicy?.id) {
-                    const sourceFileName = `${item.destinationPolicy.name}_destination.json`;
-                    const sourceFileContent = JSON.stringify({
-                        itemId: item.id,
-                        id: item.destinationPolicy.id,
-                        name: item.destinationPolicy.name,
-                        policyType: item.destinationPolicy.policyType,
-                        assignments: item.destinationPolicy.assignments
-                    }, null, 2);
-                    console.log("Adding file to zip:", sourceFileName, sourceFileContent); // Log file details
-                    zip.file(sourceFileName, sourceFileContent);
-                } else {
-                    console.warn(`No destination assignments found for item with id: ${item.id}`);
-                }
-            });
+            }
 
             zip.generateAsync({ type: "blob" }).then((content) => {
                 saveAs(content, `${source}-backup.zip`);
@@ -159,13 +138,14 @@ export function DataTableToolbar({
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         saveAs(blob, "assignment_migration_template.csv");
     };
+
     const handleMigrate = async () => {
         const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
 
         const dataToExport = parsedRawData
-            .filter((item: TData) => selectedIds.includes(item.id))
+            .filter((item: TData) => selectedIds.includes(item.id) && backupStatus[item.id])
             .map((item: TData) => {
                 const selectedRow = selectedRows.find(row => row.original.id === item.id);
                 if (selectedRow) {
@@ -173,15 +153,15 @@ export function DataTableToolbar({
                     item.groupToMigrate = selectedRow.original.groupToMigrate;
                     item.assignmentId = selectedRow.original.assignmentId;
                     item.filterToMigrate = selectedRow.original.filterToMigrate;
-                    item.assignmentType = selectedRow.original.assignmentType; // Ensure assignmentType is set
+                    item.assignmentType = selectedRow.original.assignmentType;
                     item.filterType = selectedRow.original.filterType;
-                    assignmentMigrationSchema.parse(item); // Validate the updated item
+                    assignmentMigrationSchema.parse(item);
                 }
                 return item;
             });
 
         if (dataToExport.length === 0) {
-            toast.error("No rows selected for migration.");
+            toast.error("No rows selected for migration or rows are not backed up.");
             return;
         }
 
@@ -201,13 +181,20 @@ export function DataTableToolbar({
         } catch (error: any) {
             setMigrationStatus('failed');
             if (error.consentUri) {
-                setConsentUri(error.consentUri);
                 window.location.href = error.consentUri;
             }
         }
     };
 
     const handleConfirmMigrate = () => {
+        const selectedRows = table.getSelectedRowModel().rows;
+        const selectedIds = selectedRows.map(row => row.original.id);
+        const noBackups = selectedIds.some(id => !backupStatus[id]);
+
+        if (noBackups) {
+            toast.error("Some selected rows are not backed up.");
+        }
+
         setIsDialogOpen(true);
     };
 
@@ -306,11 +293,18 @@ export function DataTableToolbar({
                         <DialogTitle>Confirm Migration</DialogTitle>
                     </DialogHeader>
                     <p>Are you sure you want to migrate the selected {selectedRowCount} row(s)?</p>
+                    {selectedRowCount > 0 && selectedIds.some(id => !backupStatus[id]) && (
+                        <p className="text-red-500">Warning: Some selected rows are not backed up.</p>
+                    )}
                     <DialogFooter>
                         <Button onClick={handleDialogCancel} variant="outline">
                             Cancel
                         </Button>
-                        <Button onClick={handleDialogConfirm} variant="default">
+                        <Button
+                            onClick={handleDialogConfirm}
+                            variant="default"
+                            disabled={selectedRowCount > 0 && selectedIds.some(id => !backupStatus[id])}
+                        >
                             Confirm
                         </Button>
                     </DialogFooter>

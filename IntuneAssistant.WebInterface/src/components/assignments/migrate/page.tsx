@@ -37,6 +37,8 @@ export default function DemoPage() {
         try {
             setLoading(true);
             setError('');
+            fetchGroups();
+            fetchFilters();
             setData([]);
             const sanitizedRows = rows.map(row => {
                 const sanitizedRow = { ...row };
@@ -98,8 +100,6 @@ export default function DemoPage() {
     };
 
     useEffect(() => {
-        fetchGroups();
-        fetchFilters();
     }, []);
 
     useEffect(() => {

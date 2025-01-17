@@ -21,6 +21,7 @@ const links = navMenuConfig.links;
 const main = navMenuConfig.mainNav[0];
 const docs = navMenuConfig.docsNav?.length ? navMenuConfig.docsNav[0] : null;
 const assistant = navMenuConfig.assistantNav?.length ? navMenuConfig.assistantNav[0] : null;
+const resources = navMenuConfig.resourcesNav?.length ? navMenuConfig.resourcesNav[0] : null;
 const migration = navMenuConfig.migrationNav?.length ? navMenuConfig.migrationNav[0] : null;
 
 export function MainNavigationMenu() {
@@ -109,6 +110,18 @@ export function MainNavigationMenu() {
                 </NavigationMenuContent>
               </NavigationMenuItem>
           )}
+            {resources  &&(
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>{resources.title}</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                            {resources.items?.map((page) => (
+                                <ListItem key={page.title} {...page} />
+                            ))}
+                        </ul>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
+            )}
           {migration && isLicensed && (
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{migration.title}</NavigationMenuTrigger>

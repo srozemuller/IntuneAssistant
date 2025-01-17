@@ -3,8 +3,6 @@ import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
 import {isAssignedValues} from "@/components/policies/configuration/fixed-values.tsx"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
-import { Cross2Icon } from "@radix-ui/react-icons"
-import { toast } from "sonner"
 
 import { useState, useEffect } from "react"
 import JSZip from "jszip";
@@ -13,44 +11,71 @@ import type { Table } from '@tanstack/react-table';
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants.js"
 import { policySchema } from "@/components/policies/configuration/schema.tsx";
 import {SelectAllButton} from "@/components/button-selectall.tsx";
+import {z} from "zod";
 
-interface ToolbarProps<TData> {
+// Toast configuration
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+import authDataMiddleware from "@/components/middleware/fetchData";
+import { EXPORT_ENDPOINT } from "@/components/constants/apiUrls.js"
+import {CrossIcon} from "lucide-react";
+
+interface TData {
+    id: string;
+    isBackuped?: boolean;
+    policyType: string;
+    name: string;
+}
+
+interface DataTableToolbarProps<TData> {
     table: Table<TData>;
     rawData: string;
     fetchData: () => Promise<void>;
     source: string;
 }
 
-interface ExportData {
-    id: string;
-    displayName: string;
-}
-
-
-export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarProps<TData>) {
-
+export function DataTableToolbar({
+                                     table,
+                                     rawData,
+                                     fetchData,
+                                     source,
+                                     backupStatus,
+                                     setBackupStatus,
+                                 }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
+    const [consentUri, setConsentUri] = useState<string | null>(null);
+    const [jsonString, setJsonString] = useState<string | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedRowCount, setSelectedRowCount] = useState(0);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
     useEffect(() => {
-        console.log("isAssignedValues:", isAssignedValues);
-        const isAssignedColumn = table.getColumn("isAssigned");
-        if (isAssignedColumn) {
-            console.log("isAssigned column values:", isAssignedColumn.getFacetedUniqueValues());
-        }
-    }, [table]);
+        const selectedRows = table.getSelectedRowModel().rows;
+        setSelectedRowCount(selectedRows.length);
+        setSelectedIds(selectedRows.map(row => row.original.id));
+    }, [table.getSelectedRowModel().rows]);
 
-
-    const handleExport = (rawData: string) => {
-        const selectedRows = table.getSelectedRowModel().rows as Array<{ original: ExportData }>;
+    const handleExport = async (rawData: string) => {
+        const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
 
         const dataToExport = parsedRawData
-            .map((item: ExportData) => policySchema.parse(item))
-            .filter((item: ExportData) => selectedIds.includes(item.id));
+            .filter((item: TData) => selectedIds.includes(item.id))
+            .map((item: TData) => {
+                const selectedRow = selectedRows.find(row => row.original.id === item.id);
+                return {
+                    id: selectedRow?.original.id,
+                    policyType: selectedRow?.original.policyType,
+                    name: selectedRow?.original.name
+                };
+            });
+        console.log("Data to export:", dataToExport);
 
-        const dataString = JSON.stringify(dataToExport, null, 2);
         const dataCount = dataToExport.length;
         if (dataCount === 0) {
             toast.error("No data to export.");
@@ -59,40 +84,70 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
         const rowString = dataCount === 1 ? "row" : "rows";
 
         if (exportOption === "backup") {
-            const zip = new JSZip();
-            dataToExport.forEach((item: ExportData, index: number) => {
-                const fileName = `${item.displayName}.json`;
-                const fileContent = JSON.stringify(item, null, 2);
-                zip.file(fileName, fileContent);
-            });
+            toast.promise(
+                (async () => {
+                    const zip = new JSZip();
+                    for (const item of dataToExport) {
+                        if (item?.id) {
+                            const policyType = item.policyType;
+                            const policyId = item.id;
+                            const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policyType}/${policyId}`, 'GET');
+                            if (response && response.data) {
+                                const sourceFileName = `${item.name}_source.json`;
+                                const sourceFileContent = JSON.stringify(response.data, null, 2);
+                                zip.file(sourceFileName, sourceFileContent);
+                                setBackupStatus(prevStatus => ({ ...prevStatus, [item.id]: true })); // Update backup status
+                            } else {
+                                toast.error(`Backup failed for policy ${policyId}!`);
+                            }
+                        } else {
+                            console.warn(`No source assignments found for item with id: ${item.id}`);
+                        }
+                    }
 
-            zip.generateAsync({ type: "blob" }).then((content) => {
-                saveAs(content, `${source}-backup.zip`);
-                toast.success(`Zip file created and downloaded, selected ${dataCount} ${rowString}.`);
-            }).catch((err) => {
-                toast.error(`Failed to create zip file: ${err.message}`);
-            });
-        } else if (exportOption === "idpowertools") {
-            const idPowerToolsData = { value: dataToExport };
-            navigator.clipboard.writeText(JSON.stringify(idPowerToolsData)).then(() => {
-                toast.success(`Data for IDPowerTools copied to clipboard, selected ${dataCount} ${rowString}.`);
-            }).catch((err) => {
-                toast.error(`Failed to copy data: ${err.message}`);
-            });
+                    await zip.generateAsync({ type: "blob" }).then((content) => {
+                        saveAs(content, `${source}-backup.zip`);
+                    }).catch((err) => {
+                        console.error("Failed to create zip file:", err);
+                        throw new Error(`Failed to create zip file: ${err.message}`);
+                    });
+                })(),
+                {
+                    pending: `Creating backup file for ${dataCount} ${rowString}...`,
+                    success: `Zip file created and downloaded, selected ${dataCount} ${rowString}.`,
+                    error: {
+                        render({ data }) {
+                            return `Failed to create zip file: ${data.message}`;
+                        }
+                    }
+                }
+            );
         }
     };
-
     const handleRefresh = () => {
         toast.promise(fetchData(), {
-            loading: `Searching for configuration policies...`,
-            success: `Configuration policies fetched successfully`,
-            error: (err) => `Failed to get configuration policies because: ${err.message}`,
+            pending: {
+                render:  `Searching for policies...`,
+            },
+            success: {
+                render: `Policies fetched successfully`,
+            },
+            error:  {
+                render: (errorMessage) => `Failed to get policies because: ${errorMessage}`,
+            }
         });
     };
 
-    const handleSelectAllToggle = () => {
-        const allRowsSelected = table.getIsAllRowsSelected();
-        table.toggleAllRowsSelected(!allRowsSelected);
+    const handleDownloadTemplate = () => {
+        const csvContent = "PolicyName,GroupName,AssignmentType,FilterName,FilterType\n";
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, "assignment_migration_template.csv");
+    };
+
+
+
+    const handleDialogCancel = () => {
+        setIsDialogOpen(false);
     };
 
     return (
@@ -108,13 +163,7 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
                     }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
-                {table.getColumn("isAssigned") && (
-                    <DataTableFacetedFilter
-                        column={table.getColumn("isAssigned")}
-                        title="Is Assigned"
-                        options={isAssignedValues}
-                    />
-                )}
+
                 {isFiltered && (
                     <Button
                         variant="ghost"
@@ -122,7 +171,7 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
                         className="h-8 px-2 lg:px-3"
                     >
                         Reset
-                        <Cross2Icon className="ml-2 h-4 w-4" />
+                        <CrossIcon className="ml-2 h-4 w-4" />
                     </Button>
                 )}
             </div>
@@ -135,7 +184,8 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
                         Export
                     </Button>
                     {dropdownVisible && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                        <div
+                            className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                             <button
                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => {
@@ -145,6 +195,16 @@ export function Toolbar<TData>({ table, rawData, fetchData, source }: ToolbarPro
                                 }}
                             >
                                 Export for Backup
+                            </button>
+                            <button
+                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                                onClick={() => {
+                                    setExportOption("csv");
+                                    handleExport(rawData);
+                                    setDropdownVisible(false);
+                                }}
+                            >
+                                Export to CSV
                             </button>
                         </div>
                     )}
