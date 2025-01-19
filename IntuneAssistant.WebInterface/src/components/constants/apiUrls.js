@@ -6,7 +6,7 @@ export const API_BASE_URL = process.env.NODE_ENV === 'development' ? API_BASE_DE
 
 export const CONSENT_CALLBACK = `${API_BASE_URL}/consent-callback`;
 export const INTUNEASSISTANT_TENANT_INFO = `${API_BASE_URL}/tenant/license-info`;
-
+export const INTUNEASSISTANT_TENANT_STYLE = `${API_BASE_URL}/tenant/style`;
 
 export const GROUPS_ENDPOINT = `${API_BASE_URL}/groups`;
 
