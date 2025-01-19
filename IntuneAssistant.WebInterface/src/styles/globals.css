@@ -34,6 +34,7 @@
     --red: 239 68 68;
     --orange: 245 158 11;
     --grey: 107 114 128;
+    --logo-url: url('/src/icons/yellow.svg');
   }
 
   .dark {
@@ -97,6 +98,11 @@
 .small-image {
   width: 50%; /* Adjust the percentage as needed */
   height: auto;
+}
+.bg-icon {
+  background-image: var(--logo-url);
+  width: 2rem;
+  height: 2rem;
 }
 
 summary {
