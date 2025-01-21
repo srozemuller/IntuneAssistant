@@ -100,14 +100,26 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
         cell: ({ row }) => {
             const policyName = row.original.policy?.name;
             const policyId = row.original.policy?.id;
+            const providedPolicyName = row.original.providedPolicyName;
 
             if (!policyName) {
-                return <em>Policy does not exist</em>;
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <span className="text-red-500 cursor-default"><em>{providedPolicyName || "Policy does not exist"}</em></span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Policy does not exist</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
             }
 
             return (
                 <TooltipProvider>
-                    <Tooltip>
+                <Tooltip>
                         <TooltipTrigger>
                             <span>{policyName}</span>
                         </TooltipTrigger>
