@@ -100,10 +100,7 @@ export default function DemoPage() {
     };
 
     useEffect(() => {
-    }, []);
-
-    useEffect(() => {
-        if (rows) {
+        if (rows.length > 0) {
             toast.promise(fetchData(), {
                 pending: {
                     render:  `Searching for policies...`,

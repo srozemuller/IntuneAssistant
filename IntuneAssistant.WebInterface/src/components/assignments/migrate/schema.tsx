@@ -57,8 +57,9 @@ const assignmentFilterSchema = z.object({
 
 const assignmentMigrationSchema = z.object({
     id: z.string(),
+    providedPolicyName: z.string(),
     policy: policySchema.nullable(),
-    assignedGroups: z.array(z.string()).nullable(),
+    assignedGroups: z.array(z.string().nullable()).nullable(),
     excludeGroupFromSource: z.boolean(),
     removeGroupFromSource: z.boolean(),
     assignmentId: z.string().nullable(),
