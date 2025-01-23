@@ -196,13 +196,13 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
 
             return (
                 <div>
-                    {groupInfo ? (
+                    {groupInfo || groupName === "All Devices" ? (
                         <span
-                            className="text-primary cursor-pointer"
-                            onClick={handleGroupClick}
+                            className={groupName === "All Devices" ? "" : "text-primary cursor-pointer"}
+                            onClick={groupInfo && groupName !== "All Devices" ? handleGroupClick : undefined}
                         >
-                        {groupName}
-                    </span>
+            {groupName}
+        </span>
                     ) : (
                         <TooltipProvider>
                             <Tooltip>
@@ -215,17 +215,19 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
                             </Tooltip>
                         </TooltipProvider>
                     )}
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogContent className="container max-w-[60%] py-6">
-                            <DialogTitle>Group members</DialogTitle>
-                            <DialogDescription>
-                                These are the members of the selected group.
-                            </DialogDescription>
-                            <div className="container max-w-[95%] py-6">
-                                <DataTable columns={memberColumns} data={members} />
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    {groupInfo && (
+                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                            <DialogContent className="container max-w-[60%] py-6">
+                                <DialogTitle>Group members</DialogTitle>
+                                <DialogDescription>
+                                    These are the members of the selected group.
+                                </DialogDescription>
+                                <div className="container max-w-[95%] py-6">
+                                    <DataTable columns={memberColumns} data={members}/>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    )}
                 </div>
             );
         },
@@ -233,7 +235,7 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
     {
         accessorKey: 'assignmentType',
         header: 'Include/Exclude',
-        cell: ({ row }) => {
+        cell: ({row}) => {
             const assignmentType = row.getValue('assignmentType') as string;
             return <span>{assignmentType}</span>;
         },
@@ -241,14 +243,14 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
     {
         accessorKey: 'filterToMigrate',
         header: 'Filter',
-        cell: ({ row }) => {
+        cell: ({row}) => {
             const filterToMigrate = row.original.filterToMigrate;
             const filterExist = row.original.migrationCheckResult?.filterExist;
             const filterName = row.original.filterName;
             if (filterToMigrate && filterToMigrate.id) {
-                return <FilterCell row={row} filters={filters} />;
+                return <FilterCell row={row} filters={filters}/>;
             }
-            if (!filterName){
+            if (!filterName) {
                 return <span className="text-gray-500 italic"><em>No filter provided</em></span>;
             }
             if (filterExist === false) {
