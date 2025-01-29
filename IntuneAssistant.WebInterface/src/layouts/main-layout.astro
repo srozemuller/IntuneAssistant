@@ -10,7 +10,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import AuthButton from "@/components/auth"
 import { siteConfig } from "@/config/site";
 import { Icon } from "astro-icon/components";
-import {Toaster} from "sonner";
 import React from "react";
 
 type Props = {
@@ -24,7 +23,6 @@ const { title, description, mainClass, hideFooter } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
-  <Toaster />
   <Header className="border-b">
 
     <MainNavigationMenu slot="left-header" client:load />

@@ -1,5 +1,5 @@
 // src/components/assignments/migrate/data-table-row-actions.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { type Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button.tsx";
 import { saveAs } from 'file-saver';
@@ -17,8 +17,9 @@ import {
 } from "@/components/constants/apiUrls.js";
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
-import { toast } from "sonner";
-import * as Sentry from "@sentry/astro";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
 
 // Define the interface with the required properties
@@ -42,12 +43,16 @@ interface AssignmentRow {
 interface DataTableRowActionsProps {
     row: Row<AssignmentRow>;
     setTableData: React.Dispatch<React.SetStateAction<AssignmentRow[]>>;
+    table: any;
+    backupStatus: Record<string, boolean>;
+    setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 export function DataTableRowActions({
                                         row,
                                         setTableData,
-    backupStatus,
-    setBackupStatus
+                                        table,
+                                        backupStatus,
+                                        setBackupStatus
                                     }: DataTableRowActionsProps) {
     const [consentUri, setConsentUri] = useState<string | null>(null);
     const [migrationStatus, setMigrationStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
@@ -71,7 +76,6 @@ export function DataTableRowActions({
         setSelectedAssignmentType(row.original.assignmentType);
         setSelectedFilterType(row.original.filterType);
     }, [row.original]);
-
 
     const validateAndUpdateRow = async () => {
         try {
@@ -203,9 +207,12 @@ export function DataTableRowActions({
 
             console.log('API response:', response.data);
             console.log('Row settings after refresh:', requestBody);
+            // Store the current page index
+            const currentPage = table.getState().pagination.pageIndex;
 
             setTableData(prevData => prevData.map(r => r.id === row.original.id ? { ...row.original } : r));
-
+            // Restore the page index
+            table.setPageIndex(currentPage);
             setRefreshStatus('success');
             toast.success('Row refreshed successfully!');
 
@@ -215,16 +222,6 @@ export function DataTableRowActions({
         }
     };
 
-    const getTooltipMessage = () => {
-        if (!migrationCheckResult) return "Migration check result is missing.";
-        const messages = [];
-        if (!migrationCheckResult.sourcePolicyExists) messages.push("Source policy does not exist.");
-        if (!migrationCheckResult.sourcePolicyIsUnique) messages.push("Source policy is not unique.");
-        if (!migrationCheckResult.destinationPolicyExists) messages.push("Destination policy does not exist.");
-        if (!migrationCheckResult.destinationPolicyIsUnique) messages.push("Destination policy is not unique.");
-        if (!migrationCheckResult.groupExists) messages.push("Group does not exist.");
-        return messages.join(" ");
-    };
     const handleDialogCancel = () => {
         setIsDialogOpen(false);
     };

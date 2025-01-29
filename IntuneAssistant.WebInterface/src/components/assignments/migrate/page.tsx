@@ -20,7 +20,7 @@ import type { filterSchema } from "@/schemas/filters.tsx";
 // Toast configuration
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+
 
 export default function DemoPage() {
     const [data, setData] = useState<AssignmentsMigrationModel[]>([]);
@@ -115,23 +115,8 @@ export default function DemoPage() {
         }
     }, [rows]);
 
-    const handleRefresh = () => {
-        toast.promise(fetchData(), {
-            pending: {
-                render:  `Searching for policies...`,
-            },
-            success: {
-                render: `Policies fetched successfully`,
-            },
-            error:  {
-                render: (errorMessage) => `Failed to get policies because: ${errorMessage}`,
-            }
-        });
-    };
-
     return (
         <div className="container max-w-[95%] py-6">
-            <ToastContainer autoClose={toastDuration} position={toastPosition}/>
             <CSVUploader setRows={setRows}/>
             <DataTable
                 rowClassName={isAnimating ? 'fade-to-normal' : ''}
