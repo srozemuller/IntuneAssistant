@@ -23,7 +23,7 @@ export const taskSchema = z.object({
     displayName: z.string(),
     state: z.string(),
     createdDateTime: z.string(),
-    modifiedDateTime: z.string(),
+    modifiedDateTime: z.string().nullable(),
     conditions: conditionSchema.optional()
 });
 
