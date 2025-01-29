@@ -1,10 +1,10 @@
-// src/components/assignments/migrate/data-table.tsx
 import * as React from "react";
 import {
     type ColumnDef,
     type ColumnFiltersState,
     type SortingState,
     type VisibilityState,
+    type PaginationState,
     flexRender,
     getCoreRowModel,
     getFacetedRowModel,
@@ -51,7 +51,8 @@ export function DataTable<TData, TValue>({
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [isAnimating, setIsAnimating] = useState(false);
-
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize, setPageSize] = useState(10); // Default page size
     const [backupStatus, setBackupStatus] = useState<{ [key: string]: boolean }>({});
 
     const table = useReactTable({
@@ -62,11 +63,17 @@ export function DataTable<TData, TValue>({
             columnFilters,
             columnVisibility,
             rowSelection,
+            pagination: { pageIndex: currentPage, pageSize },
         },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
+        onPaginationChange: (updater) => {
+            const newState = typeof updater === 'function' ? updater({ pageIndex: currentPage, pageSize }) : updater;
+            setCurrentPage(newState.pageIndex);
+            setPageSize(newState.pageSize);
+        },
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

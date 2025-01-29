@@ -1,8 +1,11 @@
 import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
-import { toast, Toaster } from "sonner";
 import {CrossIcon, DeleteIcon} from "lucide-react";
-import {Button} from "@/components/ui/button.tsx";interface CsvUploaderProps {
+import {Button} from "@/components/ui/button.tsx";
+// Toast configuration
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+interface CsvUploaderProps {
     setRows: (rows: object[]) => void;
 }
 
@@ -36,12 +39,10 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
-        toast('File cleared');
     };
 
     return (
         <div>
-            <Toaster />
             <input
                 type="file"
                 accept=".csv"
@@ -59,6 +60,12 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
                     <DeleteIcon className="ml-2 h-4 w-4" />
                 </Button>
             )}
+            <ToastContainer
+                toastClassName={() =>
+                    "bg-gray-500 text-white text-sm p-3 rounded-md shadow-md"
+                }
+                bodyClassName={() => "text-sm"}
+            />
         </div>
     );
 };

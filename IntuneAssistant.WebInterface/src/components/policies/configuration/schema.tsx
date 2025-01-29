@@ -10,7 +10,7 @@ export const assignmentSchema = z.object({
         "@odata.type": z.string(),
         deviceAndAppManagementAssignmentFilterId: z.string().nullable(),
         deviceAndAppManagementAssignmentFilterType: z.string(),
-        groupId: z.string()
+        groupId: z.string().optional()
     }),
     resourceType: z.string().optional(),
     assignmentType: z.string().optional(),
@@ -24,7 +24,7 @@ export const assignmentSchema = z.object({
 });
 
 export const policySchema = z.object({
-    odataType: z.string().nullable(),
+    "@odata.type": z.string().nullable(),
     policyType: z.string(),
     createdDateTime: z.string(),
     creationSource: z.string().nullable(),

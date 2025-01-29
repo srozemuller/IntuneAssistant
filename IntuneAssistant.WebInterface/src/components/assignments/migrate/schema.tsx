@@ -11,7 +11,7 @@ const assignmentTargetSchema = z.object({
     "@odata.type": z.string(),
     deviceAndAppManagementAssignmentFilterId: z.string().nullable(),
     deviceAndAppManagementAssignmentFilterType: z.string(),
-    groupId: z.string(),
+    groupId: z.string().optional(), // is optional because it depends on the target type
 });
 
 const assignmentSchema = z.object({
@@ -21,17 +21,16 @@ const assignmentSchema = z.object({
 });
 
 const policySchema = z.object({
-    odataType: z.string().nullable(),
+    "@odata.type": z.string().nullable(),
     policyType: z.string().nullable(),
     createdDateTime: z.string(),
-    creationSource: z.string().nullable(),
     description: z.string().nullable(),
     lastModifiedDateTime: z.string(),
     name: z.string().nullable(),
     settingCount: z.number(),
     id: z.string().nullable(),
     isAssigned: z.boolean(),
-    assignments: z.array(assignmentSchema).nullable(),
+    assignments: z.array(assignmentSchema.nullable()).nullable(),
     settings: z.array(z.unknown()).nullable(),
 });
 
@@ -40,6 +39,7 @@ const migrationCheckResultSchema = z.object({
     policyIsUnique: z.boolean(),
     groupExists: z.boolean(),
     correctAssignmentTypeProvided: z.boolean(),
+    correctAssignmentActionProvided: z.boolean(),
     filterExist:z.boolean(),
     filterIsUnique: z.boolean(),
     correctFilterPlatform: z.boolean(),
@@ -57,13 +57,16 @@ const assignmentFilterSchema = z.object({
 
 const assignmentMigrationSchema = z.object({
     id: z.string(),
+    providedPolicyName: z.string(),
     policy: policySchema.nullable(),
-    assignedGroups: z.array(z.string()).nullable(),
+    assignedGroups: z.array(z.string().nullable()).nullable(),
     excludeGroupFromSource: z.boolean(),
     removeGroupFromSource: z.boolean(),
     assignmentId: z.string().nullable(),
     groupToMigrate: z.string(),
     assignmentType: z.string(),
+    assignmentDirection: z.string(),
+    assignmentAction: z.string(),
     filterToMigrate: assignmentFilterSchema.nullable(),
     filterName: z.string().nullable(),
     filterType: z.string().nullable(),

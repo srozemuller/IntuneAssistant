@@ -1,14 +1,16 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import { migrationNeeded, readyForMigration } from "@/components/assignments/migrate/fixed-values.tsx"
+import {assignmentAction, migrationNeeded, readyForMigration} from "@/components/assignments/migrate/fixed-values.tsx"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
-import { CrossIcon } from "lucide-react";
+import { Undo2Icon } from "lucide-react";
 import { type Table } from "@tanstack/react-table"
 import { useState, useEffect } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog.tsx"
+import * as Sentry from "@sentry/astro";
+import { useUser } from "@/contexts/usercontext.tsx";
 
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants";
 import authDataMiddleware from "@/components/middleware/fetchData";
@@ -59,13 +61,16 @@ export function DataTableToolbar({
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedRowCount, setSelectedRowCount] = useState(0);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
+    const [acknowledgeRisk, setAcknowledgeRisk] = useState(false);
+    const { userClaims } = useUser();
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
         setSelectedRowCount(selectedRows.length);
         setSelectedIds(selectedRows.map(row => row.original.id));
     }, [table.getSelectedRowModel().rows]);
 
+    // Function to log data to Sentry
+    Sentry.captureMessage('This is a custom message from Astro!');
     const handleExport = async (rawData: string) => {
         const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
@@ -134,7 +139,7 @@ export function DataTableToolbar({
     };
 
     const handleDownloadTemplate = () => {
-        const csvContent = "PolicyName,GroupName,AssignmentType,FilterName,FilterType\n";
+        const csvContent = "PolicyName,GroupName,AssignmentDirection,AssignmentAction,FilterName,FilterType\n";
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         saveAs(blob, "assignment_migration_template.csv");
     };
@@ -145,7 +150,7 @@ export function DataTableToolbar({
         const parsedRawData = JSON.parse(rawData);
 
         const dataToExport = parsedRawData
-            .filter((item: TData) => selectedIds.includes(item.id) && backupStatus[item.id])
+            .filter((item: TData) => selectedIds.includes(item.id)) // removed && backupStatus[item.id] because you can migrate without backup.
             .map((item: TData) => {
                 const selectedRow = selectedRows.find(row => row.original.id === item.id);
                 if (selectedRow) {
@@ -199,6 +204,11 @@ export function DataTableToolbar({
     };
 
     const handleDialogConfirm = () => {
+        // Capture a custom error
+        console.log("Capturing exception with Sentry");
+        if (acknowledgeRisk) {
+            Sentry.captureException(new Error(`User ${userClaims?.username} acknowledged the risks of migrating rows without backups in tenant ${userClaims?.tenantId}.`));
+        }
         setIsDialogOpen(false);
         handleMigrate();
     };
@@ -234,6 +244,13 @@ export function DataTableToolbar({
                         options={readyForMigration}
                     />
                 )}
+                {table.getColumn("isReadyForMigration") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("assignmentAction")}
+                        title="Assignment Action"
+                        options={assignmentAction}
+                    />
+                )}
                 {isFiltered && (
                     <Button
                         variant="ghost"
@@ -241,7 +258,7 @@ export function DataTableToolbar({
                         className="h-8 px-2 lg:px-3"
                     >
                         Reset
-                        <CrossIcon className="ml-2 h-4 w-4" />
+                        <Undo2Icon className="ml-2 h-4 w-4" />
                     </Button>
                 )}
             </div>
@@ -292,9 +309,24 @@ export function DataTableToolbar({
                     <DialogHeader>
                         <DialogTitle>Confirm Migration</DialogTitle>
                     </DialogHeader>
-                    <p>Are you sure you want to migrate the selected {selectedRowCount} row(s)?</p>
+                    <p>Are you really sure you want to migrate the selected {selectedRowCount} row(s)?</p>
+                    <p>This action can not be reverted thereafter. </p>
                     {selectedRowCount > 0 && selectedIds.some(id => !backupStatus[id]) && (
-                        <p className="text-red-500">Warning: Some selected rows are not backed up.</p>
+                        <>
+                            <p className="text-red-500">Warning: Some selected rows are not backed up.</p>
+                            <div className="flex items-center mt-2">
+                                <input
+                                    type="checkbox"
+                                    id="acknowledgeRisk"
+                                    checked={acknowledgeRisk}
+                                    onChange={(e) => setAcknowledgeRisk(e.target.checked)}
+                                    className="mr-2"
+                                />
+                                <label htmlFor="acknowledgeRisk" className="text-sm">
+                                    I acknowledge the risks of migrating rows without backups.
+                                </label>
+                            </div>
+                        </>
                     )}
                     <DialogFooter>
                         <Button onClick={handleDialogCancel} variant="outline">
@@ -303,7 +335,7 @@ export function DataTableToolbar({
                         <Button
                             onClick={handleDialogConfirm}
                             variant="default"
-                            disabled={selectedRowCount > 0 && selectedIds.some(id => !backupStatus[id])}
+                            disabled={selectedRowCount > 0 && selectedIds.some(id => !backupStatus[id]) && !acknowledgeRisk}
                         >
                             Confirm
                         </Button>
