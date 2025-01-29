@@ -150,19 +150,24 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
             return (
                 <div>
                     {assignments.map((assignment, index) => {
-                        const groupId = assignment.target.groupId;
-                        const groupInfo = groupData.find(group => group.id === groupId) || null;
+                        const groupId = assignment?.target?.groupId;
+                        const odataType = assignment?.target?.["@odata.type"];
 
-                        return (
-                            <span
-                                key={index}
-                                className="text-primary cursor-pointer"
-                                onClick={() => handleGroupClick(groupId)}
-                            >
-                            {groupInfo?.displayName || groupId}
-                                {index < assignments.length - 1 && ', '}
-                        </span>
-                        );
+                        if (odataType === "#microsoft.graph.allDevicesAssignmentTarget") {
+                            return <span>All Devices</span>;
+                        } else if (groupId) {
+                            const groupInfo = groupData.find(group => group.id === groupId) || null;
+                            return (
+                                <span
+                                    className="text-primary cursor-pointer"
+                                    onClick={() => handleGroupClick(groupId)}
+                                >
+            {groupInfo?.displayName || groupId}
+        </span>
+                            );
+                        } else {
+                            return <span className="text-red-500 cursor-default"><em>Group not found</em></span>;
+                        }
                     })}
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogContent className="container max-w-[60%] py-6">
@@ -233,11 +238,19 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
         },
     },
     {
-        accessorKey: 'assignmentType',
+        accessorKey: 'assignmentDirection',
         header: 'Include/Exclude',
         cell: ({row}) => {
-            const assignmentType = row.getValue('assignmentType') as string;
-            return <span>{assignmentType}</span>;
+            const assignmentDirection = row.getValue('assignmentDirection') as string;
+            return <span>{assignmentDirection}</span>;
+        },
+    },
+    {
+        accessorKey: 'assignmentAction',
+        header: 'Action',
+        cell: ({row}) => {
+            const assignmentDirection = row.getValue('assignmentAction') as string;
+            return <span>{assignmentDirection}</span>;
         },
     },
     {
@@ -332,17 +345,16 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
             <DataTableColumnHeader column={column} title="Ready for Migration" />
         ),
         cell: ({ row }) => {
-            const state = row.getValue("isReadyForMigration");
             const isMigrated = row.original.isMigrated;
-            const status = readyForMigration.find(
-                (status) => status.value === row.original.isReadyForMigration,
-            );
+            const isReadyForMigration = row.original.isReadyForMigration;
             const migrationCheckResult = row.original.migrationCheckResult;
-            const color = isMigrated ? "text-gray-500" : readyForMigration.find(status => status.value === row.original.isReadyForMigration)?.color || "text-default";
+            const color = isMigrated ? "text-gray-500" : readyForMigration.find(status => status.value === isReadyForMigration)?.color || "text-default";
+
             const getTooltipMessage = () => {
                 if (!migrationCheckResult) return "Migration check result is missing.";
                 const messages = [];
-               // if (isMigrated) return "Migration is already done.";
+                if (isMigrated) return "Migration is already done.";
+                if (isReadyForMigration) return "Ready for migration.";
                 if (!migrationCheckResult.policyExists) messages.push("Destination policy does not exist.");
                 if (!migrationCheckResult.policyIsUnique) messages.push("Destination policy is not unique.");
                 if (!migrationCheckResult.groupExists) messages.push("Group does not exist.");
@@ -354,6 +366,24 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
                 return messages.join(" ");
             };
 
+            if (isMigrated) {
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className={`flex w-[100px] items-center ${isMigrated ? 'text-gray-500' : ''}`}>
+                                    <CheckCircle className={`h-5 w-5 ${color}`}/>
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{getTooltipMessage()}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
+            }
+
+            const status = readyForMigration.find(status => status.value === isReadyForMigration);
             if (!status) {
                 return (
                     <TooltipProvider>
@@ -370,12 +400,13 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
                     </TooltipProvider>
                 );
             }
+
             return (
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
                             <div className={`flex w-[100px] items-center ${color}`}>
-                                <status.icon className={`h-5 w-5 ${color}`}/>
+                                <status.icon className={`h-5 w-5 ${color}`} />
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -386,6 +417,6 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
             );
         },
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
-    },
+    }
 
 ];

@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 const childSettingInfoSchema = z.object({
-    odatatype: z.string(),
-    name: z.string(),
-    value: z.string()
+    '@odata.type': z.string().nullable(),
+    name: z.string().nullable(),
+    value: z.string().nullable()
 });
 
 const settingSchema = z.object({

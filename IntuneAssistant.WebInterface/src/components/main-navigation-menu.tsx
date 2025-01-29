@@ -34,7 +34,7 @@ export function MainNavigationMenu() {
         const fetchCurrentTenantId = async () => {
             if (authService.isLoggedIn()) {
                 const userClaims = authService.getTokenClaims();
-                setCurrentTenantId(userClaims.tenantId); // Assuming 'tid' is the tenant ID claim
+                setCurrentTenantId(userClaims.tenantId);
                 console.log("Current tenant ID:", userClaims.tenantId);
             }
         };

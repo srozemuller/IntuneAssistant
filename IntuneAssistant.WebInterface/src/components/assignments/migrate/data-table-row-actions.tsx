@@ -18,6 +18,8 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
+import * as Sentry from "@sentry/astro";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
 
 // Define the interface with the required properties
 interface AssignmentRow {
@@ -29,6 +31,7 @@ interface AssignmentRow {
     assignmentId: string;
     filterToMigrate: any;
     assignmentType: string;
+    assignmentAction: string;
     filterType: string;
     policy: {
         id: string
@@ -58,7 +61,8 @@ export function DataTableRowActions({
     const [selectedFilter, setSelectedFilter] = useState(row.original.filterToMigrate);
     const [selectedAssignmentType, setSelectedAssignmentType] = useState(row.original.assignmentType);
     const [selectedFilterType, setSelectedFilterType] = useState(row.original.filterType);
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [acknowledgeRisk, setAcknowledgeRisk] = useState(false);
 
     useEffect(() => {
         setSelectedGroup(row.original.groupToMigrate);
@@ -68,26 +72,46 @@ export function DataTableRowActions({
         setSelectedFilterType(row.original.filterType);
     }, [row.original]);
 
-    useEffect(() => {
-        const updateRowInBackground = async () => {
-            try {
-                const updatedTask = {
-                    ...task,
-                    groupToMigrate: selectedGroup,
-                    assignmentId: selectedGroupId,
-                    filterToMigrate: selectedFilter,
-                    assignmentType: selectedAssignmentType,
-                    filterType: selectedFilterType
-                };
-            } catch (error: any) {
-                console.error('Error updating row in background:', error);
+
+    const validateAndUpdateRow = async () => {
+        try {
+            const requestBody = {
+                Id: row.original.id,
+                ResourceType: "ConfigurationPolicy",
+                ResourceId: row.original.policy.id,
+                AssignmentId: selectedGroupId,
+                AssignmentType: selectedAssignmentType,
+                AssignmentAction: row.original.assignmentAction,
+                FilterId: selectedFilter?.id || null,
+                FilterType: selectedFilterType || 'none'
+            };
+
+            const response = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify([requestBody]));
+            if (response?.status === 200) {
+                const responseData = response.data[0];
+                row.original.isMigrated = responseData.hasCorrectAssignment;
+                row.original.isReadyForMigration = !responseData.hasCorrectAssignment;
+                row.original.groupToMigrate = selectedGroup;
+                row.original.assignmentId = selectedGroupId;
+                row.original.filterToMigrate = selectedFilter;
+                row.original.assignmentType = selectedAssignmentType;
+                row.original.filterType = selectedFilterType;
+
+            } else {
+                toast.error('Validation failed!');
             }
-        };
+        } catch (error: any) {
+            console.log('Validation failed:', error);
+            toast.error('Validation failed!');
+        }
+    };
 
-        updateRowInBackground();
-    }, [selectedGroup, selectedGroupId, selectedFilter, selectedAssignmentType, selectedFilterType]);
+    const handleMigrate = () => {
+        setIsDialogOpen(true);
+    };
 
-    const handleMigrate = async () => {
+    const handleDialogConfirm = async () => {
+        setIsDialogOpen(false);
         try {
             setMigrationStatus('pending');
             toast.info('Migration is pending...');
@@ -105,6 +129,7 @@ export function DataTableRowActions({
             if (response?.status === 200) {
                 setMigrationStatus('success');
                 toast.success('Migration successful!');
+                await validateAndUpdateRow();
             } else {
                 setMigrationStatus('failed');
                 toast.error('Migration failed!');
@@ -141,10 +166,10 @@ export function DataTableRowActions({
         }
     };
 
+
     const handleRefresh = async () => {
         try {
             setRefreshStatus('pending');
-            setIsAnimating(true);
             console.log('Row settings before refresh:', row.original);
 
             const requestBody = {
@@ -153,6 +178,7 @@ export function DataTableRowActions({
                 ResourceId: row.original.policy.id,
                 AssignmentId: selectedGroupId,
                 AssignmentType: selectedAssignmentType,
+                AssignmentAction: row.original.assignmentAction,
                 FilterId: selectedFilter?.id || null,
                 FilterType: selectedFilterType ||  'none'
             };
@@ -182,10 +208,9 @@ export function DataTableRowActions({
 
             setRefreshStatus('success');
             toast.success('Row refreshed successfully!');
-            setTimeout(() => setIsAnimating(false), 1000);
+
         } catch (error: any) {
             setRefreshStatus('failed');
-            setIsAnimating(false);
             console.log('Refresh failed:', error);
         }
     };
@@ -200,8 +225,11 @@ export function DataTableRowActions({
         if (!migrationCheckResult.groupExists) messages.push("Group does not exist.");
         return messages.join(" ");
     };
-
+    const handleDialogCancel = () => {
+        setIsDialogOpen(false);
+    };
     return (
+        <div>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
@@ -218,8 +246,8 @@ export function DataTableRowActions({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={handleMigrate}
-                    disabled={!isReadyForMigration || isMigrated || !backupStatus[row.original.id]}
-                    className={!isReadyForMigration || isMigrated || !backupStatus[row.original.id] ? 'text-gray-500' : ''}
+                    disabled={!isReadyForMigration || isMigrated}
+                    className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
                 >
                     Migrate
                 </DropdownMenuItem>
@@ -230,5 +258,30 @@ export function DataTableRowActions({
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Confirm Migration</DialogTitle>
+                    </DialogHeader>
+                    <p>Are you sure you want to migrate this row?</p>
+                    {!backupStatus[row.original.id] && (
+                        <p className="text-red-500">Warning: This row is not backed up.</p>
+                    )}
+                    <DialogFooter>
+                        <Button onClick={handleDialogCancel} variant="outline">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleDialogConfirm} variant="default">
+                            Confirm
+                        </Button>
+                        {!backupStatus[row.original.id] && (
+                            <Button onClick={handleBackup} variant="default">
+                                Make Backup
+                            </Button>
+                        )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </div>
     );
 }
