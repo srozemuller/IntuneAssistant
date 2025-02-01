@@ -14,7 +14,11 @@ import { useUser } from "@/contexts/usercontext.tsx";
 
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants";
 import authDataMiddleware from "@/components/middleware/fetchData";
-import {ASSIGNMENTS_MIGRATE_ENDPOINT, EXPORT_ENDPOINT} from "@/components/constants/apiUrls";
+import {
+    ASSIGNMENTS_MIGRATE_ENDPOINT,
+    ASSIGNMENTS_VALIDATION_ENDPOINT,
+    EXPORT_ENDPOINT
+} from "@/components/constants/apiUrls";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
@@ -30,6 +34,7 @@ interface TData {
     excludeGroupFromSource: boolean;
     policy: z.infer<typeof policySchema> | null;
     assignmentType: string,
+    assignmentAction: string,
     filterType: string,
     groupToMigrate: string;
     assignmentId: string;
@@ -51,6 +56,7 @@ export function DataTableToolbar({
                                      source,
                                      backupStatus,
                                      setBackupStatus,
+                                     validateAndUpdateTable
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
@@ -62,6 +68,8 @@ export function DataTableToolbar({
     const [selectedRowCount, setSelectedRowCount] = useState(0);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [acknowledgeRisk, setAcknowledgeRisk] = useState(false);
+    const [tableData, setTableData] = useState<TData[]>([]);
+
     const { userClaims } = useUser();
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
@@ -139,46 +147,37 @@ export function DataTableToolbar({
     };
 
     const handleDownloadTemplate = () => {
-        const csvContent = "PolicyName,GroupName,AssignmentDirection,AssignmentAction,FilterName,FilterType\n";
+        const csvContent = "PolicyName;GroupName;AssignmentDirectionAssignmentAction;FilterName,FilterType\n";
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         saveAs(blob, "assignment_migration_template.csv");
     };
 
     const handleMigrate = async () => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const selectedIds = selectedRows.map(row => row.original.id);
-        const parsedRawData = JSON.parse(rawData);
-
-        const dataToExport = parsedRawData
-            .filter((item: TData) => selectedIds.includes(item.id)) // removed && backupStatus[item.id] because you can migrate without backup.
-            .map((item: TData) => {
-                const selectedRow = selectedRows.find(row => row.original.id === item.id);
-                if (selectedRow) {
-                    item.excludeGroupFromSource = selectedRow.original.excludeGroupFromSource;
-                    item.groupToMigrate = selectedRow.original.groupToMigrate;
-                    item.assignmentId = selectedRow.original.assignmentId;
-                    item.filterToMigrate = selectedRow.original.filterToMigrate;
-                    item.assignmentType = selectedRow.original.assignmentType;
-                    item.filterType = selectedRow.original.filterType;
-                    assignmentMigrationSchema.parse(item);
-                }
-                return item;
-            });
-
-        if (dataToExport.length === 0) {
-            toast.error("No rows selected for migration or rows are not backed up.");
-            return;
-        }
-
-        const dataString = JSON.stringify(dataToExport, null, 2);
-
         try {
             setMigrationStatus('pending');
+            const selectedRows = table.getSelectedRowModel().rows;
+            const dataToExport = selectedRows.map(row => row.original);
+            const dataString = JSON.stringify(dataToExport);
+
             const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', dataString);
             if (response?.status === 200) {
                 setMigrationStatus('success');
                 toast.success("Selected rows migrated successfully.");
-                await fetchData();
+
+                // Group selected rows by policy ID
+                const policyGroups = selectedRows.reduce((groups, row) => {
+                    const policyId = row.original.policy.id;
+                    if (!groups[policyId]) {
+                        groups[policyId] = [];
+                    }
+                    groups[policyId].push(row);
+                    return groups;
+                }, {});
+
+                // Validate and update table for each policy group
+                for (const policyId in policyGroups) {
+                    await validateAndUpdateTable(policyId);
+                }
             } else {
                 setMigrationStatus('failed');
                 toast.error("Failed to migrate selected rows.");

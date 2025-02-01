@@ -60,6 +60,7 @@ export function MainNavigationMenu() {
                     document.documentElement.style.setProperty('--primary', styles.primary);
                     document.documentElement.style.setProperty('--primary-foreground', styles.primaryforeground);
                     document.documentElement.style.setProperty('--accent-foreground', styles.accentforeground);
+                    document.documentElement.style.setProperty('--secondary', styles.secondary);
 
                     // Set the logo URL if defined
                     if (styles.logourl) {
