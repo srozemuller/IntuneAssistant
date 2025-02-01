@@ -108,3 +108,8 @@
 summary {
   display: flex !important;
 }
+
+.blur {
+  filter: blur(5px);
+  pointer-events: none;
+}

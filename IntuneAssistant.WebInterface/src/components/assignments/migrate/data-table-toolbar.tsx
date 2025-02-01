@@ -56,6 +56,7 @@ export function DataTableToolbar({
                                      source,
                                      backupStatus,
                                      setBackupStatus,
+                                     validateAndUpdateTable
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
@@ -152,83 +153,31 @@ export function DataTableToolbar({
     };
 
     const handleMigrate = async () => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const selectedIds = selectedRows.map(row => row.original.id);
-        const parsedRawData = JSON.parse(rawData);
-
-        const dataToExport = parsedRawData
-            .filter((item: TData) => selectedIds.includes(item.id))
-            .map((item: TData) => {
-                const selectedRow = selectedRows.find(row => row.original.id === item.id);
-                if (selectedRow) {
-                    item.excludeGroupFromSource = selectedRow.original.excludeGroupFromSource;
-                    item.groupToMigrate = selectedRow.original.groupToMigrate;
-                    item.assignmentId = selectedRow.original.assignmentId;
-                    item.filterToMigrate = selectedRow.original.filterToMigrate;
-                    item.assignmentType = selectedRow.original.assignmentType;
-                    item.filterType = selectedRow.original.filterType;
-                    assignmentMigrationSchema.parse(item);
-                }
-                return item;
-            });
-
-        if (dataToExport.length === 0) {
-            toast.error("No rows selected for migration or rows are not backed up.");
-            return;
-        }
-
-        const dataString = JSON.stringify(dataToExport, null, 2);
-
         try {
             setMigrationStatus('pending');
+            const selectedRows = table.getSelectedRowModel().rows;
+            const dataToExport = selectedRows.map(row => row.original);
+            const dataString = JSON.stringify(dataToExport);
+
             const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', dataString);
             if (response?.status === 200) {
                 setMigrationStatus('success');
                 toast.success("Selected rows migrated successfully.");
 
-                // Fetch validation data for all selected rows and rows with the same policy ID
-                const policyIds = [...new Set(dataToExport.map(item => item.policy?.id))];
-                const allRows = table.getRowModel().rows;
-                const rowsWithSamePolicyId = allRows.filter(row => policyIds.includes(row.original.policy?.id));
-                const validationRequestBody = rowsWithSamePolicyId.map(row => {
-                    if (row.original.policy) {
-                        return {
-                            Id: row.original.id,
-                            ResourceType: row.original.policy.policyType,
-                            ResourceId: row.original.policy.id,
-                            AssignmentId: row.original.assignmentId,
-                            AssignmentType: row.original.assignmentType,
-                            AssignmentAction: row.original.assignmentAction,
-                            FilterId: row.original.filterToMigrate?.id || null,
-                            FilterType: row.original.filterType || 'none'
-                        };
+                // Group selected rows by policy ID
+                const policyGroups = selectedRows.reduce((groups, row) => {
+                    const policyId = row.original.policy.id;
+                    if (!groups[policyId]) {
+                        groups[policyId] = [];
                     }
-                    return null;
-                }).filter(item => item !== null);
+                    groups[policyId].push(row);
+                    return groups;
+                }, {});
 
-                const validationResponse = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify(validationRequestBody));
-                if (validationResponse?.status === 200) {
-                    const validationData = validationResponse.data;
-                    const updatedData = tableData.map(row => {
-                        const validationItem = validationData.find(item => item.id === row.id);
-                        if (validationItem) {
-                            return {
-                                ...row,
-                                isMigrated: validationItem.hasCorrectAssignment,
-                                policy: {
-                                    ...row.policy,
-                                    assignments: validationItem.policy.assignments
-                                }
-                            };
-                        }
-                        return row;
-                    });
-                    setTableData(updatedData);
-                } else {
-                    toast.error('Failed to validate all rows.');
+                // Validate and update table for each policy group
+                for (const policyId in policyGroups) {
+                    await validateAndUpdateTable(policyId);
                 }
-
-                await fetchData();
             } else {
                 setMigrationStatus('failed');
                 toast.error("Failed to migrate selected rows.");
