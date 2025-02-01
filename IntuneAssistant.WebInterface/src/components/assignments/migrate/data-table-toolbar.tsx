@@ -14,7 +14,11 @@ import { useUser } from "@/contexts/usercontext.tsx";
 
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants";
 import authDataMiddleware from "@/components/middleware/fetchData";
-import {ASSIGNMENTS_MIGRATE_ENDPOINT, EXPORT_ENDPOINT} from "@/components/constants/apiUrls";
+import {
+    ASSIGNMENTS_MIGRATE_ENDPOINT,
+    ASSIGNMENTS_VALIDATION_ENDPOINT,
+    EXPORT_ENDPOINT
+} from "@/components/constants/apiUrls";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
@@ -30,6 +34,7 @@ interface TData {
     excludeGroupFromSource: boolean;
     policy: z.infer<typeof policySchema> | null;
     assignmentType: string,
+    assignmentAction: string,
     filterType: string,
     groupToMigrate: string;
     assignmentId: string;
@@ -62,6 +67,8 @@ export function DataTableToolbar({
     const [selectedRowCount, setSelectedRowCount] = useState(0);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [acknowledgeRisk, setAcknowledgeRisk] = useState(false);
+    const [tableData, setTableData] = useState<TData[]>([]);
+
     const { userClaims } = useUser();
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
@@ -139,7 +146,7 @@ export function DataTableToolbar({
     };
 
     const handleDownloadTemplate = () => {
-        const csvContent = "PolicyName,GroupName,AssignmentDirection,AssignmentAction,FilterName,FilterType\n";
+        const csvContent = "PolicyName;GroupName;AssignmentDirectionAssignmentAction;FilterName,FilterType\n";
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         saveAs(blob, "assignment_migration_template.csv");
     };
@@ -179,20 +186,47 @@ export function DataTableToolbar({
                 setMigrationStatus('success');
                 toast.success("Selected rows migrated successfully.");
 
-                // Update the rows based on the response
-                const responseData = response.data;
-                const updatedData = tableData.map(row => {
-                    const responseItem = responseData.find(item => item.id === row.id);
-                    if (responseItem && responseItem.hasCorrectAssignment) {
+                // Fetch validation data for all selected rows and rows with the same policy ID
+                const policyIds = [...new Set(dataToExport.map(item => item.policy?.id))];
+                const allRows = table.getRowModel().rows;
+                const rowsWithSamePolicyId = allRows.filter(row => policyIds.includes(row.original.policy?.id));
+                const validationRequestBody = rowsWithSamePolicyId.map(row => {
+                    if (row.original.policy) {
                         return {
-                            ...row,
-                            isMigrated: true,
-                            policy: responseItem.policy
+                            Id: row.original.id,
+                            ResourceType: row.original.policy.policyType,
+                            ResourceId: row.original.policy.id,
+                            AssignmentId: row.original.assignmentId,
+                            AssignmentType: row.original.assignmentType,
+                            AssignmentAction: row.original.assignmentAction,
+                            FilterId: row.original.filterToMigrate?.id || null,
+                            FilterType: row.original.filterType || 'none'
                         };
                     }
-                    return row;
-                });
-                setTableData(updatedData);
+                    return null;
+                }).filter(item => item !== null);
+
+                const validationResponse = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify(validationRequestBody));
+                if (validationResponse?.status === 200) {
+                    const validationData = validationResponse.data;
+                    const updatedData = tableData.map(row => {
+                        const validationItem = validationData.find(item => item.id === row.id);
+                        if (validationItem) {
+                            return {
+                                ...row,
+                                isMigrated: validationItem.hasCorrectAssignment,
+                                policy: {
+                                    ...row.policy,
+                                    assignments: validationItem.policy.assignments
+                                }
+                            };
+                        }
+                        return row;
+                    });
+                    setTableData(updatedData);
+                } else {
+                    toast.error('Failed to validate all rows.');
+                }
 
                 await fetchData();
             } else {

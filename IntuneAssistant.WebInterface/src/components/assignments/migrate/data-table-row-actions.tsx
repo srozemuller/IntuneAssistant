@@ -152,26 +152,6 @@ export function DataTableRowActions({
                 // Send all rows with the same policyId to the validation endpoint
                 const policyId = row.original.policy.id;
                 console.log('Policy ID:', policyId);
-
-                if (table?.getRowModel) {
-                    const allRows = table.getRowModel().rows;
-                    console.log('All rows:', allRows);
-                    const rowsWithSamePolicyId = allRows.filter((r: any) => r.original.policy.id === policyId);
-                    console.log('Rows with the same policy ID:', rowsWithSamePolicyId);
-                    const validationRequestBody = rowsWithSamePolicyId.map((r: any) => ({
-                        Id: r.original.id,
-                        ResourceType: r.original.policy.policyType,
-                        ResourceId: r.original.policy.id,
-                        AssignmentId: r.original.assignmentId,
-                        AssignmentType: r.original.assignmentType,
-                        AssignmentAction: r.original.assignmentAction,
-                        FilterId: r.original.filterToMigrate?.id || null,
-                        FilterType: r.original.filterType || 'none'
-                    }));
-
-                } else {
-                    console.error('table.getRowModel is not a function or table is undefined');
-                }
             } else {
                 setMigrationStatus('failed');
                 toast.error('Migration failed!');
