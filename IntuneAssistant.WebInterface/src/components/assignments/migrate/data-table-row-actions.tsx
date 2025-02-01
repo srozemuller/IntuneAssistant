@@ -79,30 +79,44 @@ export function DataTableRowActions({
 
     const validateAndUpdateRow = async () => {
         try {
-            const requestBody = {
-                Id: row.original.id,
-                ResourceType: "ConfigurationPolicy",
-                ResourceId: row.original.policy.id,
-                AssignmentId: selectedGroupId,
-                AssignmentType: selectedAssignmentType,
-                AssignmentAction: row.original.assignmentAction,
-                FilterId: selectedFilter?.id || null,
-                FilterType: selectedFilterType || 'none'
-            };
+            const policyId = row.original.policy.id;
+            if (table?.getRowModel) {
+                const allRows = table.getRowModel().rows;
+                const rowsWithSamePolicyId = allRows.filter((r: any) => r.original.policy.id === policyId);
+                const validationRequestBody = rowsWithSamePolicyId.map((r: any) => ({
+                    Id: r.original.id,
+                    ResourceType: r.original.policy.policyType,
+                    ResourceId: r.original.policy.id,
+                    AssignmentId: r.original.assignmentId,
+                    AssignmentType: r.original.assignmentType,
+                    AssignmentAction: r.original.assignmentAction,
+                    FilterId: r.original.filterToMigrate?.id || null,
+                    FilterType: r.original.filterType || 'none'
+                }));
 
-            const response = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify([requestBody]));
-            if (response?.status === 200) {
-                const responseData = response.data[0];
-                row.original.isMigrated = responseData.hasCorrectAssignment;
-                row.original.isReadyForMigration = !responseData.hasCorrectAssignment;
-                row.original.groupToMigrate = selectedGroup;
-                row.original.assignmentId = selectedGroupId;
-                row.original.filterToMigrate = selectedFilter;
-                row.original.assignmentType = selectedAssignmentType;
-                row.original.filterType = selectedFilterType;
-
+                const validationResponse = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify(validationRequestBody));
+                if (validationResponse?.status === 200) {
+                    const validationData = validationResponse.data;
+                    const updatedData = allRows.map((r: any) => {
+                        const validationItem = validationData.find((item: any) => item.id === r.original.id);
+                        if (validationItem) {
+                            return {
+                                ...r.original,
+                                isMigrated: validationItem.hasCorrectAssignment,
+                                policy: {
+                                    ...r.original.policy,
+                                    assignments: validationItem.policy.assignments
+                                }
+                            };
+                        }
+                        return r.original;
+                    });
+                    setTableData(updatedData);
+                } else {
+                    toast.error('Failed to validate all rows.');
+                }
             } else {
-                toast.error('Validation failed!');
+                console.error('table.getRowModel is not a function or table is undefined');
             }
         } catch (error: any) {
             console.log('Validation failed:', error);
@@ -134,6 +148,30 @@ export function DataTableRowActions({
                 setMigrationStatus('success');
                 toast.success('Migration successful!');
                 await validateAndUpdateRow();
+
+                // Send all rows with the same policyId to the validation endpoint
+                const policyId = row.original.policy.id;
+                console.log('Policy ID:', policyId);
+
+                if (table?.getRowModel) {
+                    const allRows = table.getRowModel().rows;
+                    console.log('All rows:', allRows);
+                    const rowsWithSamePolicyId = allRows.filter((r: any) => r.original.policy.id === policyId);
+                    console.log('Rows with the same policy ID:', rowsWithSamePolicyId);
+                    const validationRequestBody = rowsWithSamePolicyId.map((r: any) => ({
+                        Id: r.original.id,
+                        ResourceType: r.original.policy.policyType,
+                        ResourceId: r.original.policy.id,
+                        AssignmentId: r.original.assignmentId,
+                        AssignmentType: r.original.assignmentType,
+                        AssignmentAction: r.original.assignmentAction,
+                        FilterId: r.original.filterToMigrate?.id || null,
+                        FilterType: r.original.filterType || 'none'
+                    }));
+
+                } else {
+                    console.error('table.getRowModel is not a function or table is undefined');
+                }
             } else {
                 setMigrationStatus('failed');
                 toast.error('Migration failed!');

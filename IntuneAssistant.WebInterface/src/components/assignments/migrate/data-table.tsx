@@ -113,7 +113,7 @@ export function DataTable<TData, TValue>({
                                     </TableCell>
                                 ))}
                                 <TableCell>
-                                    <DataTableRowActions row={row} setTableData={setTableData} backupStatus={backupStatus} setBackupStatus={setBackupStatus} />
+                                    <DataTableRowActions row={row} setTableData={setTableData} backupStatus={backupStatus} setBackupStatus={setBackupStatus} table={table}/>
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -150,7 +150,7 @@ export function DataTableToolbar({
         const parsedRawData = JSON.parse(rawData);
 
         const dataToExport = parsedRawData
-            .filter((item: TData) => selectedIds.includes(item.id)) // removed && backupStatus[item.id] because you can migrate without backup.
+            .filter((item: TData) => selectedIds.includes(item.id))
             .map((item: TData) => {
                 const selectedRow = selectedRows.find(row => row.original.id === item.id);
                 if (selectedRow) {
@@ -178,6 +178,22 @@ export function DataTableToolbar({
             if (response?.status === 200) {
                 setMigrationStatus('success');
                 toast.success("Selected rows migrated successfully.");
+
+                // Update the rows based on the response
+                const responseData = response.data;
+                const updatedData = tableData.map(row => {
+                    const responseItem = responseData.find(item => item.id === row.id);
+                    if (responseItem && responseItem.hasCorrectAssignment) {
+                        return {
+                            ...row,
+                            isMigrated: true,
+                            policy: responseItem.policy
+                        };
+                    }
+                    return row;
+                });
+                setTableData(updatedData);
+
                 await fetchData();
             } else {
                 setMigrationStatus('failed');
