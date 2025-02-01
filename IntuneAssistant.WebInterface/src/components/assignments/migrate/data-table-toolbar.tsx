@@ -11,12 +11,10 @@ import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog.tsx"
 import * as Sentry from "@sentry/astro";
 import { useUser } from "@/contexts/usercontext.tsx";
-
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import {
     ASSIGNMENTS_MIGRATE_ENDPOINT,
-    ASSIGNMENTS_VALIDATION_ENDPOINT,
     EXPORT_ENDPOINT
 } from "@/components/constants/apiUrls";
 import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
@@ -28,6 +26,7 @@ import { SelectAllButton } from "@/components/button-selectall.tsx";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+import Papa from "papaparse";
 
 interface TData {
     id: string;
@@ -79,7 +78,43 @@ export function DataTableToolbar({
 
     // Function to log data to Sentry
     Sentry.captureMessage('This is a custom message from Astro!');
-    const handleExport = async (rawData: string) => {
+
+    const handleBackupExport = async (rawData: string) => {
+        const selectedRows = table.getSelectedRowModel().rows;
+        const parsedRawData = JSON.parse(rawData);
+
+        const uniquePolicies = [...new Map(selectedRows.map(row => [row.original.policy?.id, { id: row.original.policy?.id, type: row.original.policy?.policyType }])).values()];
+
+        if (uniquePolicies.length === 0) {
+            toast.error("No data to export.");
+            return;
+        }
+
+        const zip = new JSZip();
+        for (const policy of uniquePolicies) {
+            if (policy.id && policy.type) {
+                const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.type}/${policy.id}`, 'GET');
+                if (response && response.data) {
+                    const sourceFileName = `${policy.id}_source.json`;
+                    const sourceFileContent = JSON.stringify(response.data, null, 2);
+                    zip.file(sourceFileName, sourceFileContent);
+                    setBackupStatus((prevStatus: Record<string, boolean>) => ({ ...prevStatus, [policy.id]: true })); // Update backup status
+                } else {
+                    toast.error(`Backup failed for policy ${policy.id}!`);
+                }
+            }
+        }
+
+        zip.generateAsync({ type: "blob" }).then((content) => {
+            saveAs(content, `backup.zip`);
+            toast.success(`Zip file created and downloaded.`);
+        }).catch((err) => {
+            console.error("Failed to create zip file:", err);
+            toast.error(`Failed to create zip file: ${err.message}`);
+        });
+    };
+
+    const handleCsvExport = async (rawData: string) => {
         const selectedRows = table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
@@ -93,42 +128,15 @@ export function DataTableToolbar({
                     policy: selectedRow?.original.policy
                 };
             });
-        console.log("Data to export:", dataToExport); // Log data to export
 
-        const dataCount = dataToExport.length;
-        if (dataCount === 0) {
-            toast.error("No data to export.");
-            return;
-        }
-        const rowString = dataCount === 1 ? "row" : "rows";
-
-        if (exportOption === "backup") {
-            const zip = new JSZip();
-            for (const item of dataToExport) {
-                if (item.policy?.id) {
-                    const policyType = item.policy.policyType;
-                    const policyId = item.policy.id;
-                    const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policyType}/${policyId}`, 'GET');
-                    if (response && response.data) {
-                        const sourceFileName = `${item.policy.name}_source.json`;
-                        const sourceFileContent = JSON.stringify(response.data, null, 2);
-                        zip.file(sourceFileName, sourceFileContent);
-                        setBackupStatus(prevStatus => ({ ...prevStatus, [item.id]: true })); // Update backup status
-                    } else {
-                        toast.error(`Backup failed for policy ${policyId}!`);
-                    }
-                } else {
-                    console.warn(`No source assignments found for item with id: ${item.id}`);
-                }
-            }
-
-            zip.generateAsync({ type: "blob" }).then((content) => {
-                saveAs(content, `${source}-backup.zip`);
-                toast.success(`Zip file created and downloaded, selected ${dataCount} ${rowString}.`);
-            }).catch((err) => {
-                console.error("Failed to create zip file:", err);
-                toast.error(`Failed to create zip file: ${err.message}`);
-            });
+        try {
+            const csv = Papa.unparse(dataToExport);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            saveAs(blob, 'export.csv');
+            toast.success("CSV export successful!");
+        } catch (err) {
+            console.error("CSV export failed:", err);
+            toast.error("CSV export failed!");
         }
     };
 
@@ -281,8 +289,7 @@ export function DataTableToolbar({
                             <button
                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => {
-                                    setExportOption("backup");
-                                    handleExport(rawData);
+                                    handleBackupExport(rawData);
                                     setDropdownVisible(false);
                                 }}
                             >
@@ -291,8 +298,7 @@ export function DataTableToolbar({
                             <button
                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => {
-                                    setExportOption("csv");
-                                    handleExport(rawData);
+                                    handleCsvExport(rawData);
                                     setDropdownVisible(false);
                                 }}
                             >
