@@ -147,28 +147,47 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
                 fetchGroupMembers(groupId, setMembers, setIsDialogOpen);
             };
 
+            const includedGroups = assignments.filter(assignment => !assignment?.target?.["@odata.type"].includes("exclude"));
+            const excludedGroups = assignments.filter(assignment => assignment?.target?.["@odata.type"].includes("exclude"));
+
             return (
                 <div>
-                    {assignments.map((assignment, index) => {
-                        const groupId = assignment?.target?.groupId;
-                        const odataType = assignment?.target?.["@odata.type"];
-
-                        if (odataType === "#microsoft.graph.allDevicesAssignmentTarget") {
-                            return <span>All Devices</span>;
-                        } else if (groupId) {
-                            const groupInfo = groupData.find(group => group.id === groupId) || null;
-                            return (
-                                <span
-                                    className="text-primary cursor-pointer"
-                                    onClick={() => handleGroupClick(groupId)}
-                                >
-            {groupInfo?.displayName || groupId}
-        </span>
-                            );
-                        } else {
-                            return <span className="text-red-500 cursor-default"><em>Group not found</em></span>;
-                        }
-                    })}
+                    <div>
+                        <strong>Included:</strong>
+                        <ul>
+                            {includedGroups.map((assignment, index) => {
+                                const groupId = assignment?.target?.groupId;
+                                const groupInfo = groupData.find(group => group.id === groupId) || null;
+                                return (
+                                    <li
+                                        key={index}
+                                        className="text-primary cursor-pointer hover:text-secondary"
+                                        onClick={() => handleGroupClick(groupId)}
+                                    >
+                                        - {groupInfo?.displayName || groupId}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                    <div>
+                        <strong>Excluded:</strong>
+                        <ul>
+                            {excludedGroups.map((assignment, index) => {
+                                const groupId = assignment?.target?.groupId;
+                                const groupInfo = groupData.find(group => group.id === groupId) || null;
+                                return (
+                                    <li
+                                        key={index}
+                                        className="text-primary cursor-pointer hover:text-secondary"
+                                        onClick={() => handleGroupClick(groupId)}
+                                    >
+                                        - {groupInfo?.displayName || groupId}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogContent className="container max-w-[60%] py-6">
                             <DialogTitle>Group members</DialogTitle>

@@ -26,6 +26,10 @@ import { DataTablePagination } from "@/components/ui/pagination";
 import { DataTableToolbar } from "@/components/assignments/migrate/data-table-toolbar.tsx";
 import { useState } from "react";
 import { DataTableRowActions } from './data-table-row-actions.tsx';
+import authDataMiddleware from "@/components/middleware/fetchData";
+import { ASSIGNMENTS_VALIDATION_ENDPOINT } from "@/components/constants/apiUrls.js";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface DataTableProps<TData, TValue> {
     source: string;
@@ -54,6 +58,7 @@ export function DataTable<TData, TValue>({
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(10); // Default page size
     const [backupStatus, setBackupStatus] = useState<{ [key: string]: boolean }>({});
+    const [isBlurring, setIsBlurring] = useState(false);
 
     const table = useReactTable({
         data,
@@ -82,9 +87,65 @@ export function DataTable<TData, TValue>({
         getFacetedUniqueValues: getFacetedUniqueValues(),
     });
 
+    const validateAndUpdateTable = async (policyId?: string) => {
+        try {
+            setIsBlurring(true);
+            const allRows = table.getRowModel().rows;
+            const rowsToValidate = policyId
+                ? allRows.filter((r: any) => r.original.policy.id === policyId)
+                : allRows;
+
+            const validationRequestBody = rowsToValidate.map((r: any) => ({
+                Id: r.original.id,
+                ResourceType: r.original.policy.policyType,
+                ResourceId: r.original.policy.id,
+                AssignmentId: r.original.assignmentId,
+                AssignmentType: r.original.assignmentType,
+                AssignmentAction: r.original.assignmentAction,
+                FilterId: r.original.filterToMigrate?.id || null,
+                FilterType: r.original.filterType || 'none'
+            }));
+
+            const validationResponse = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify(validationRequestBody));
+            if (validationResponse?.status === 200) {
+                const validationData = validationResponse.data;
+                const updatedData = allRows.map((r: any) => {
+                    const validationItem = validationData.find((item: any) => item.id === r.original.id);
+                    if (validationItem) {
+                        return {
+                            ...r.original,
+                            isMigrated: validationItem.hasCorrectAssignment,
+                            policy: {
+                                ...r.original.policy,
+                                assignments: validationItem.policy.assignments
+                            }
+                        };
+                    }
+                    return r.original;
+                });
+                setTableData(updatedData);
+            } else {
+                toast.error('Failed to validate all rows.');
+            }
+        } catch (error: any) {
+            console.error('Validation failed:', error);
+            toast.error('Validation failed!');
+        } finally {
+            setIsBlurring(false);
+        }
+    };
+
     return (
-        <div className="space-y-4">
-            <DataTableToolbar source={source} table={table} rawData={rawData} fetchData={fetchData} backupStatus={backupStatus} setBackupStatus={setBackupStatus} />
+        <div className={isBlurring ? 'blur' : ''}>
+            <DataTableToolbar
+                source={source}
+                table={table}
+                rawData={rawData}
+                fetchData={fetchData}
+                backupStatus={backupStatus}
+                setBackupStatus={setBackupStatus}
+                validateAndUpdateTable={validateAndUpdateTable}
+            />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -113,14 +174,21 @@ export function DataTable<TData, TValue>({
                                     </TableCell>
                                 ))}
                                 <TableCell>
-                                    <DataTableRowActions row={row} setTableData={setTableData} backupStatus={backupStatus} setBackupStatus={setBackupStatus} />
+                                    <DataTableRowActions
+                                        row={row}
+                                        setTableData={setTableData}
+                                        backupStatus={backupStatus}
+                                        setBackupStatus={setBackupStatus}
+                                        table={table}
+                                        validateAndUpdateTable={validateAndUpdateTable}
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </div>
-            <DataTablePagination table={table} />
+            <DataTablePagination table={table}/>
         </div>
     );
 }
