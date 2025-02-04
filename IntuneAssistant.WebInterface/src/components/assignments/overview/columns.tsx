@@ -219,6 +219,14 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
+        accessorKey: "platform",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Platform" />
+        ),
+        cell: ({ row }) => <div>{row.getValue("platform")}</div>,
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    },
+    {
         accessorKey: "targetName",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Group" />
