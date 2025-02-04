@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { msalInstance } from '@/components/auth';
+import { msalInstance, AppId } from '@/components/auth';
 
 const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     let formattedError = '';
@@ -20,7 +20,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
 
     try {
         const tokenResponse = await msalInstance.acquireTokenSilent({
-            scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
+            scopes: [`api://${AppId}/access_as_user`],
             account,
         });
         accessToken = tokenResponse.accessToken;
@@ -30,7 +30,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
             // Token expired or invalid, prompt user to log in again
             await msalInstance.loginPopup();
             const tokenResponse = await msalInstance.acquireTokenSilent({
-                scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
+                scopes: [`api://${AppId}/access_as_user`],
                 account,
             });
             accessToken = tokenResponse.accessToken;
@@ -66,9 +66,15 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
         if (error.response) {
             console.log('Error response:', error.response);
             if (error.response.data && error.response.data.message && error.response.data.message.includes("AADSTS65001")) {
-                // Redirect to onboarding page
-                console.log(error.response.data)
-                //window.location.href = '/onboarding';
+                // Handle user consent required error
+                const neededScopes = error.response.data.neededScopes;
+                if (neededScopes) {
+                    const tenantId = msalInstance.getAllAccounts()[0].tenantId; // Assuming you have tenantId in userClaims
+                    const scopes = neededScopes.join(' ');
+                    const consentUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${AppId}&response_type=code&redirect_uri=${window.location.origin}&response_mode=query&scope=${encodeURIComponent(scopes)}&state=12345`;
+
+                    window.location.href = consentUrl;
+                }
                 return;
             }
             if (error.response.headers['www-authenticate']) {
