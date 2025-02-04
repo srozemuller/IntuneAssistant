@@ -38,7 +38,7 @@ export default function DemoPage() {
                 .map(assignment => assignment.targetId))];
             // Send unique targetIds to GROUPS_ENDPOINT
             console.log('Unique targetIds:', uniqueTargetIds);
-            const groupResponse = await authDataMiddleware(GROUPS_ENDPOINT, 'POST', uniqueTargetIds );
+            const groupResponse = await authDataMiddleware(GROUPS_ENDPOINT, 'POST', uniqueTargetIds);
             const rawGroupData = typeof groupResponse?.data === 'string' ? groupResponse.data : JSON.stringify(groupResponse?.data);
             const parsedGroupData: GroupModel[] = z.array(groupSchema).parse(JSON.parse(rawGroupData));
             setGroupData(parsedGroupData);

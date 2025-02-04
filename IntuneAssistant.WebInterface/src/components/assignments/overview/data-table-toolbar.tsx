@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import {assignmentTypes, isAssignedValues} from "@/components/assignments/overview/fixed-values.tsx"
+import {accountIsEnabled, assignmentTypes, isAssignedValues, platform} from "@/components/assignments/overview/fixed-values.tsx"
 import {configurationTypes} from "@/components/constants/policyTypes.ts"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
@@ -143,6 +143,13 @@ export function DataTableToolbar({
                         column={table.getColumn("assignmentType")}
                         title="Assignment Type"
                         options={assignmentTypes}
+                    />
+                )}
+                {table.getColumn("platform") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("platform")}
+                        title="Platform"
+                        options={platform}
                     />
                 )}
                 {isFiltered && (
