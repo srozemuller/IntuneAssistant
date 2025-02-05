@@ -20,6 +20,7 @@ interface TData {
     assignmentType: string;
     isExcluded: boolean;
     isAssigned: boolean;
+    platform: string;
     targetId: string;
     targetName: string;
     resourceId: string;
@@ -100,6 +101,39 @@ export function DataTableToolbar({
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             saveAs(blob, `${source}-data.csv`);
             toast.success(`CSV file created and downloaded, selected ${dataCount} ${rowString}.`);
+        }
+    };
+
+    const handleCsvExport = async (rawData: string) => {
+        const selectedRows = table.getSelectedRowModel().rows;
+        const selectedIds = selectedRows.map(row => row.original.id);
+        const parsedRawData = JSON.parse(rawData);
+
+        const dataToExport = parsedRawData
+            .filter((item: TData) => selectedIds.includes(item.id))
+            .map((item: TData) => {
+                return {
+                    id: item.id,
+                    resourceName: item.resourceName,
+                    resourceId: item.resourceId,
+                    platform: item.platform,
+                    isAssigned: item.isAssigned,
+                    targetName: item.targetName,
+                    targetId: item.targetId,
+                    assignmentType: item.assignmentType,
+                    filterDisplayName: item.filter?.displayName,
+                    filterRule: item.filter?.rule,
+                };
+            });
+
+        try {
+            const csv = Papa.unparse(dataToExport);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            saveAs(blob, 'export.csv');
+            toast.success("CSV export successful!");
+        } catch (err) {
+            console.error("CSV export failed:", err);
+            toast.error("CSV export failed!");
         }
     };
 
@@ -187,8 +221,7 @@ export function DataTableToolbar({
                             <button
                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => {
-                                    setExportOption("csv");
-                                    handleExport(rawData);
+                                    handleCsvExport(rawData);
                                     setDropdownVisible(false);
                                 }}
                             >

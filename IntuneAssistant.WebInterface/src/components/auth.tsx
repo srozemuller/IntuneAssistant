@@ -4,7 +4,7 @@ import {type Configuration, PublicClientApplication} from "@azure/msal-browser";
 
 const msalConfig: Configuration = {
     auth: {
-        clientId: '0f0f930f-a5c7-4da2-a985-8464d1ff51d0',
+        clientId: '131386a4-d462-4270-ac50-7ebc4685da14',
         authority: 'https://login.microsoftonline.com/organizations',
         redirectUri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4321/authentication/login-callback',
     },
@@ -15,7 +15,7 @@ const msalConfig: Configuration = {
 };
 
 export const msalInstance = new PublicClientApplication(msalConfig);
-export const AppId = '6317a049-4e55-464f-80a1-0896b8309fec';
+export const AppId = 'b0533a36-0d90-4634-9f08-99a50b78b477';
 const loginRequest = {
     scopes: [`api://${AppId}/access_as_user`],
 };
