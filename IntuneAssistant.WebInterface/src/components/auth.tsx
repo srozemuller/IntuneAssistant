@@ -15,7 +15,8 @@ const msalConfig: Configuration = {
 };
 
 export const msalInstance = new PublicClientApplication(msalConfig);
-export const AppId = '6317a049-4e55-464f-80a1-0896b8309fec';
+
+export const AppId = process.env.REACT_APP_APP_ID || 'b0533a36-0d90-4634-9f08-99a50b78b477';
 const loginRequest = {
     scopes: [`api://${AppId}/access_as_user`],
 };
