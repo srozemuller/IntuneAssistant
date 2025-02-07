@@ -18,6 +18,7 @@ interface TData {
     id: string;
     resourceType: string;
     assignmentType: string;
+    CreatedDateTime: string;
     isExcluded: boolean;
     isAssigned: boolean;
     platform: string;
@@ -124,7 +125,7 @@ export function DataTableToolbar({
                     assignmentType: item.assignmentType,
                     filterDisplayName: item.filter?.displayName,
                     filterRule: item.filter?.rule,
-                    createdTime: item.createdTime,
+                    createdTime: item.CreatedDateTime,
                 };
             });
 
