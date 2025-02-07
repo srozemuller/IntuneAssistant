@@ -123,8 +123,7 @@ export function DataTableToolbar({
                     targetId: item.targetId,
                     assignmentType: item.assignmentType,
                     filterDisplayName: item.filter?.displayName,
-                    filterRule: item.filter?.rule,
-                    createdTime: item.createdTime,
+                    filterRule: item.filter?.rule
                 };
             });
 
