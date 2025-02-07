@@ -1,24 +1,22 @@
-// File: src/components/SelectAllButton.tsx
-
 import { Button } from "@/components/ui/button.tsx";
-import type { Table } from '@tanstack/react-table';
+import { type Table } from "@tanstack/react-table";
 
 interface SelectAllButtonProps<TData> {
     table: Table<TData>;
 }
 
 export function SelectAllButton<TData>({ table }: SelectAllButtonProps<TData>) {
-    const handleSelectAllToggle = () => {
-        const allRowsSelected = table.getIsAllRowsSelected();
-        table.toggleAllRowsSelected(!allRowsSelected);
+    const handleSelectAll = () => {
+        const filteredRows = table.getFilteredRowModel().rows;
+        const allFilteredRowIds = filteredRows.map(row => row.id);
+        table.setRowSelection(allFilteredRowIds.reduce((acc, id) => {
+            acc[id] = true;
+            return acc;
+        }, {}));
     };
 
     return (
-        <Button
-            onClick={handleSelectAllToggle}
-            className="h-8 px-2 lg:px-3"
-            variant="ghost"
-        >
+        <Button onClick={handleSelectAll} variant="outline" size="sm">
             Select All
         </Button>
     );

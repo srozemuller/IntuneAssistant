@@ -105,7 +105,8 @@ export function DataTableToolbar({
     };
 
     const handleCsvExport = async (rawData: string) => {
-        const selectedRows = table.getSelectedRowModel().rows;
+        const filteredRows = table.getFilteredRowModel().rows;
+        const selectedRows = filteredRows.length > 0 ? filteredRows : table.getSelectedRowModel().rows;
         const selectedIds = selectedRows.map(row => row.original.id);
         const parsedRawData = JSON.parse(rawData);
 
@@ -123,6 +124,7 @@ export function DataTableToolbar({
                     assignmentType: item.assignmentType,
                     filterDisplayName: item.filter?.displayName,
                     filterRule: item.filter?.rule,
+                    createdTime: item.createdTime,
                 };
             });
 
