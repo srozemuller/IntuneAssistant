@@ -64,6 +64,18 @@ export const navMenuConfig: NavMenuConfig = {
       ]
     }
   ],
+  comparatorNav: [
+    {
+      title: "Comparator",
+      items: [
+        {
+          title: "Compare Policy Settings",
+          href: "/compare/settings",
+          description: "Configuration Policy setting comparison",
+        },
+      ]
+    }
+  ],
   migrationNav: [
     {
       title: "Migration",
