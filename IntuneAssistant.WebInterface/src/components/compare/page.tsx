@@ -9,6 +9,9 @@ import { settingStatus } from "@/components/compare/fixed-values.tsx";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
+import {isAssignedValues} from "@/components/assignments/overview/fixed-values.tsx";
+import {CheckCircle} from "lucide-react";
 
 function PolicySelectionDialog({ isOpen, onClose, policies, onSelect }) {
     const [selectedPolicies, setSelectedPolicies] = useState<string[]>([]);
@@ -56,6 +59,49 @@ function PolicySelectionDialog({ isOpen, onClose, policies, onSelect }) {
         {
             header: 'Policy ID',
             accessorKey: 'id',
+        },
+        {
+            accessorKey: "isAssigned",
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Is Assigned" />
+            ),
+            cell: ({ row }) => {
+                const state = row.getValue("isAssigned");
+                const status = isAssignedValues.find(
+                    (status) => status.value === row.original.isAssigned,
+                );
+                if (!status) {
+                    return (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <div className="flex w-[100px] items-center">
+                                        <CheckCircle />
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Unknown</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    );
+                }
+                return (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className="flex w-[100px] items-center">
+                                    <status.icon className={`h-5 w-5 ${status.color}`} />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{status.label}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                );
+            },
+            filterFn: (row, id, value) => value.includes(row.getValue(id)),
         },
         {
             header: 'Platform',
@@ -117,18 +163,20 @@ export default function DemoPage() {
     };
 
     useEffect(() => {
-        toast.promise(fetchData(), {
-            pending: {
-                render:  `Searching for policies ...`,
-            },
-            success: {
-                render: `Policies fetched successfully`,
-            },
-            error:  {
-                render: (errorMessage) => `Failed to get policies because: ${errorMessage}`,
-            }
-        });
-    }, []);
+        if (isDialogOpen) {
+            toast.promise(fetchData(), {
+                pending: {
+                    render:  `Searching for policies ...`,
+                },
+                success: {
+                    render: `Policies fetched successfully`,
+                },
+                error:  {
+                    render: (errorMessage) => `Failed to get policies because: ${errorMessage}`,
+                }
+            });
+        }
+    }, [isDialogOpen]);
 
     const columns = [
         {
