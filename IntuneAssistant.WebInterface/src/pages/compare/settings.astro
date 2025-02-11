@@ -1,0 +1,18 @@
+---
+import Compare  from '@/components/compare/page';
+import MainLayout from "@/layouts/main-layout.astro";
+---
+
+<MainLayout title="Intune Policy Settings Comparator" mainClass="flex-1">
+    <section id="features" class="bg-background-200 py-8 md:pt-12">
+        <div class="container space-y-6">
+            <div class="mx-auto flex max-w-[58rem] flex-col space-y-4">
+                <h3 class="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">Intune Policy Settings Comparator</h3>
+                <p class="max-w-[95%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 balance-text">
+                    Compare the settings of two Intune policies side by side. This tool will help you to identify the differences between two Intune policies. You can compare the settings of two policies by uploading the exported JSON files of the policies.
+                </p>
+            </div>
+        </div>
+    </section>
+    <Compare client:only="react" />
+</MainLayout>
