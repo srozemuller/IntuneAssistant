@@ -9,6 +9,8 @@ export const INTUNEASSISTANT_TENANT_INFO = `${API_BASE_URL}/tenant/license-info`
 export const INTUNEASSISTANT_TENANT_STYLE = `${API_BASE_URL}/tenant/style`;
 
 export const GROUPS_ENDPOINT = `${API_BASE_URL}/groups`;
+export const COMPARE_ENDPOINT = `${API_BASE_URL}/compare`;
+
 
 export const POLICIES_ENDPOINT = `${API_BASE_URL}/policies`;
 export const EXPORT_ENDPOINT = `${API_BASE_URL}/export`;
@@ -23,7 +25,11 @@ export const GROUP_POLICY_SETTINGS_ENDPOINT = `${POLICIES_ENDPOINT}/group/settin
 
 
 
+
 export const ASSIGNMENTS_COMPARE_ENDPOINT = `${ASSIGNMENTS_ENDPOINT}/compare`;
+
+
+
 export const ASSIGNMENTS_VALIDATION_ENDPOINT = `${ASSIGNMENTS_ENDPOINT}/validate
 `;
 export const ASSIGNMENTS_CONFIGURATION_POLICY_ENDPOINT = `${ASSIGNMENTS_ENDPOINT}/configuration`;
