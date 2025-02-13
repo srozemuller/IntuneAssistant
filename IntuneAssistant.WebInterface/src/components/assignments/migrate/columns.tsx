@@ -159,9 +159,10 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
                                 const groupId = assignment?.target?.groupId;
                                 const groupInfo = groupData.find(group => group.id === groupId) || null;
                                 const odataType = assignment?.target?.["@odata.type"];
-
                                 if (odataType === "#microsoft.graph.allDevicesAssignmentTarget") {
                                     return <span>All Devices</span>;
+                                } else if (odataType === "#microsoft.graph.allLicensedUsersAssignmentTarget") {
+                                    return <span>All Licensed Users</span>;
                                 } else if (groupId) {
                                     const groupInfo = groupData.find(group => group.id === groupId) || null;
                                     return (
