@@ -6,8 +6,8 @@ import authDataMiddleware from "@/components/middleware/fetchData";
 import { CheckCircle } from "lucide-react";
 import { DataTable } from "./data-table-groups.tsx"; // Ensure you have a DataTable component
 import type { ColumnDef } from "@tanstack/react-table";
-import type { Assignments } from "@/components/assignments/overview/schema.tsx";
-import { accountIsEnabled, isAssignedValues, memberType } from "@/components/assignments/overview/fixed-values.tsx";
+import type { Assignments } from "@/components/assignments/apps/schema.tsx";
+import { accountIsEnabled, isAssignedValues, memberType } from "@/components/assignments/apps/fixed-values.tsx";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { GROUPS_ENDPOINT } from "@/components/constants/apiUrls"; // Ensure you have a Dialog component
 import type { GroupModel } from "@/schemas/groupSchema";
@@ -219,11 +219,11 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
-        accessorKey: "platform",
+        accessorKey: "enrollmentType",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Platform" />
+            <DataTableColumnHeader column={column} title="Install Type" />
         ),
-        cell: ({ row }) => <div>{row.getValue("platform")}</div>,
+        cell: ({ row }) => <div>{row.getValue("enrollmentType")}</div>,
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
     {
