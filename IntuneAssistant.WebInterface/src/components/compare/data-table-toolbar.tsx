@@ -140,9 +140,9 @@ export function DataTableToolbar({
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
+            loading: `Searching for policies...`,
+            success: `Policies fetched successfully`,
+            error: (err) => `Failed to get policies because: ${err.message}`,
         });
     };
 

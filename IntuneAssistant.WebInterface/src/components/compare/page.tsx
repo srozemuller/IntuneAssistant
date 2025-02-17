@@ -13,6 +13,7 @@ import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
 import {isAssignedValues} from "@/components/assignments/overview/fixed-values.tsx";
 import {CheckCircle} from "lucide-react";
 
+
 function PolicySelectionDialog({ isOpen, onClose, policies, onSelect }) {
     const [selectedPolicies, setSelectedPolicies] = useState<string[]>([]);
     const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
@@ -45,16 +46,19 @@ function PolicySelectionDialog({ isOpen, onClose, policies, onSelect }) {
 
     const columns = [
         {
-            header: 'Policy Name',
-            accessorKey: 'name',
-            cell: ({ row }) => (
-                <div
-                    className={`p-2 border rounded cursor-pointer ${selectedPolicies.includes(row.original.id) ? 'bg-yellow-500 text-white' : ''}`}
-                    onClick={() => handleSelect(row.original.id, row.original.platform)}
-                >
-                    {row.original.name}
-                </div>
-            ),
+            header: 'Selected Policies',
+            accessorKey: 'selected',
+            cell: ({ row }) => {
+                const isDisabled = selectedPlatform && row.original.platform !== selectedPlatform;
+                return (
+                    <div
+                        className={`p-2 border rounded ${selectedPolicies.includes(row.original.id) ? 'bg-yellow-500 text-white' : ''} ${isDisabled ? 'bg-gray-200 cursor-not-allowed' : 'cursor-pointer'}`}
+                        onClick={() => !isDisabled && handleSelect(row.original.id, row.original.platform)}
+                    >
+                        {row.original.name}
+                    </div>
+                );
+            },
         },
         {
             header: 'Policy ID',
@@ -109,14 +113,19 @@ function PolicySelectionDialog({ isOpen, onClose, policies, onSelect }) {
         },
     ];
 
+    const sortedPolicies = [
+        ...policies.filter(policy => selectedPolicies.includes(policy.id)),
+        ...policies.filter(policy => !selectedPolicies.includes(policy.id)),
+    ];
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="container max-w-[80%] py-6">
+            <DialogContent className="container max-w-[80%] max-h-[80vh] overflow-y-auto py-6">
                 <DialogTitle>Select Policies to Compare</DialogTitle>
                 <DialogDescription>
                     Please select two policies to compare.
                 </DialogDescription>
-                <DataTable columns={columns} data={policies} rawData={JSON.stringify(policies)} fetchData={() => {}} source="policy-selection" groupData={[]} />
+                <DataTable columns={columns} data={sortedPolicies} rawData={JSON.stringify(policies)} fetchData={() => {}} source="policy-selection" groupData={[]} />
                 <button onClick={handleConfirm} className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded-md">
                     Confirm
                 </button>
@@ -124,7 +133,6 @@ function PolicySelectionDialog({ isOpen, onClose, policies, onSelect }) {
         </Dialog>
     );
 }
-
 export default function DemoPage() {
     const [policies, setPolicies] = useState<any[]>([]);
     const [selectedPolicy, setSelectedPolicy] = useState<string>('');
