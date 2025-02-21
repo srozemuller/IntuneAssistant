@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import {accountIsEnabled, assignmentTypes, isAssignedValues, platform} from "@/components/assignments/overview/fixed-values.tsx"
+import {accountIsEnabled, assignmentTypes, isAssignedValues, installType} from "@/components/assignments/apps/fixed-values.tsx"
 import {configurationTypes} from "@/components/constants/policyTypes.ts"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
@@ -20,6 +20,7 @@ interface TData {
     assignmentType: string;
     isExcluded: boolean;
     isAssigned: boolean;
+    enrollmentType: string;
     platform: string;
     targetId: string;
     targetName: string;
@@ -65,6 +66,7 @@ export function DataTableToolbar({
                 assignmentType: item.assignmentType,
                 isExcluded: item.isExcluded,
                 isAssigned: item.isAssigned,
+                enrollmentType: item.enrollmentType,
                 targetId: item.targetId,
                 targetName: item.targetName,
                 resourceId: item.resourceId,
@@ -118,6 +120,7 @@ export function DataTableToolbar({
                     resourceName: item.resourceName,
                     resourceId: item.resourceId,
                     platform: item.platform,
+                    enrollmentType: item.enrollmentType,
                     isAssigned: item.isAssigned,
                     targetName: item.targetName,
                     targetId: item.targetId,
@@ -180,11 +183,11 @@ export function DataTableToolbar({
                         options={assignmentTypes}
                     />
                 )}
-                {table.getColumn("platform") && (
+                {table.getColumn("enrollmentType") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("platform")}
-                        title="Platform"
-                        options={platform}
+                        column={table.getColumn("enrollmentType")}
+                        title="Install Type"
+                        options={installType}
                     />
                 )}
                 {isFiltered && (

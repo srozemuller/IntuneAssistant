@@ -40,6 +40,11 @@ export const navMenuConfig: NavMenuConfig = {
           description: "Information about all assignments"
         },
         {
+          title: "Application Assignments",
+          href: "/assignments/apps",
+          description: "Information about application assignments and there installation type"
+        },
+        {
           title: "Configuration Settings",
           href: "/policies/configuration/settings",
           description: "Configuration Settings overview",
@@ -60,6 +65,18 @@ export const navMenuConfig: NavMenuConfig = {
           title: "Conditional Access Policies",
           href: "/policies/ca",
           description: "Information about Conditional Access Policies"
+        },
+      ]
+    }
+  ],
+  comparatorNav: [
+    {
+      title: "Comparator",
+      items: [
+        {
+          title: "Compare Policy Settings",
+          href: "/compare/settings",
+          description: "Configuration Policy setting comparison",
         },
       ]
     }

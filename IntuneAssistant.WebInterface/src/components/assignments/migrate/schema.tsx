@@ -23,9 +23,10 @@ const assignmentSchema = z.object({
 const policySchema = z.object({
     "@odata.type": z.string().nullable(),
     policyType: z.string().nullable(),
-    createdDateTime: z.string(),
+    policySubType: z.string().nullable(),
+    createdDateTime: z.string().nullable(),
     description: z.string().nullable(),
-    lastModifiedDateTime: z.string(),
+    lastModifiedDateTime: z.string().nullable(),
     name: z.string().nullable(),
     settingCount: z.number(),
     id: z.string().nullable(),

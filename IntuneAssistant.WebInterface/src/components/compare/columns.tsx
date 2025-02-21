@@ -284,39 +284,18 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
         cell: ({ row }) => {
             const displayName = row.original.filter?.displayName || "No Filter";
             const rule = row.original.filter?.rule || "No Rule";
-            const [isDialogOpen, setIsDialogOpen] = useState(false);
 
             return (
-                <>
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger>
-                                {displayName !== "No Filter" ? (
-                                    <a
-                                        className="text-yellow-500 cursor-pointer"
-                                        onClick={() => setIsDialogOpen(true)}
-                                    >
-                                        {displayName}
-                                    </a>
-                                ) : (
-                                    <div className="text-gray-500"><i>{displayName}</i></div>
-                                )}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{rule}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogContent>
-                            <DialogTitle>Filter Information</DialogTitle>
-                            <DialogDescription>
-                                <p>Display Name: {displayName}</p>
-                                <p>Rule: {rule}</p>
-                            </DialogDescription>
-                        </DialogContent>
-                    </Dialog>
-                </>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div>{displayName}</div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{rule}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             );
         },
     },
@@ -325,13 +304,6 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
         header: ({column}) => (
             <DataTableColumnHeader column={column} title="Filter Type"/>
         ),
-        cell: ({ row }) => {
-            const filterType = row.getValue("filterType");
-            return filterType !== "None" ? (
-                <div>{filterType}</div>
-            ) : (
-                <div className="text-gray-500"><i>{filterType}</i></div>
-            );
-        }
+        cell: ({row}) => <div>{row.getValue("filterType")}</div>,
     }
 ];

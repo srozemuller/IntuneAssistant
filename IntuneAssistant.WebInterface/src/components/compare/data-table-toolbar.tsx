@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
 import {accountIsEnabled, assignmentTypes, isAssignedValues, platform} from "@/components/assignments/overview/fixed-values.tsx"
 import {configurationTypes} from "@/components/constants/policyTypes.ts"
-import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
+import { DataTableFacetedFilter } from "../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { toast } from "sonner"
@@ -12,7 +12,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
-import { SelectAllButton } from "@/components/button-selectall.tsx";
+import {settingStatus} from "@/components/compare/fixed-values.tsx";
 
 interface TData {
     id: string;
@@ -140,16 +140,15 @@ export function DataTableToolbar({
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
+            loading: `Searching for policies...`,
+            success: `Policies fetched successfully`,
+            error: (err) => `Failed to get policies because: ${err.message}`,
         });
     };
 
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
-                <SelectAllButton table={table} />
                 <Input
                     placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}
@@ -159,32 +158,11 @@ export function DataTableToolbar({
                     }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
-                {table.getColumn("resourceType") && (
+                {table.getColumn("settingCheckState") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("resourceType")}
-                        title="Type"
-                        options={configurationTypes}
-                    />
-                )}
-                {table.getColumn("isAssigned") && (
-                    <DataTableFacetedFilter
-                        column={table.getColumn("isAssigned")}
-                        title="Is Assigned"
-                        options={isAssignedValues}
-                    />
-                )}
-                {table.getColumn("assignmentType") && (
-                    <DataTableFacetedFilter
-                        column={table.getColumn("assignmentType")}
-                        title="Assignment Type"
-                        options={assignmentTypes}
-                    />
-                )}
-                {table.getColumn("platform") && (
-                    <DataTableFacetedFilter
-                        column={table.getColumn("platform")}
-                        title="Platform"
-                        options={platform}
+                        column={table.getColumn("settingCheckState")}
+                        title="Setting Status"
+                        options={settingStatus}
                     />
                 )}
                 {isFiltered && (

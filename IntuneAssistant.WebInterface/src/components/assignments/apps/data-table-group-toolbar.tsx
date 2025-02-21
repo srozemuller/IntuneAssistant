@@ -1,6 +1,11 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import {accountIsEnabled, assignmentTypes, isAssignedValues, platform} from "@/components/assignments/overview/fixed-values.tsx"
+import {
+    accountIsEnabled,
+    assignmentTypes,
+    isAssignedValues,
+    memberType
+} from "@/components/assignments/overview/fixed-values.tsx"
 import {configurationTypes} from "@/components/constants/policyTypes.ts"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
@@ -12,27 +17,12 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
-import { SelectAllButton } from "@/components/button-selectall.tsx";
+
 
 interface TData {
+    displayName: string;
     id: string;
-    resourceType: string;
-    assignmentType: string;
-    isExcluded: boolean;
-    isAssigned: boolean;
-    platform: string;
-    targetId: string;
-    targetName: string;
-    resourceId: string;
-    resourceName: string;
-    filterId: string;
-    filterType:string;
-    filterDisplayName: string;
-    filterRule: string;
-    filter?: {
-        displayName: string;
-        rule: string;
-    };
+    name: string;
 }
 
 interface DataTableToolbarProps {
@@ -59,22 +49,8 @@ export function DataTableToolbar({
 
         const dataToExport = parsedRawData.filter((item: TData) =>
             selectedIds.includes(item.id)
-        ).map((item: TData) => {
-            return {
-                resourceType: item.resourceType,
-                assignmentType: item.assignmentType,
-                isExcluded: item.isExcluded,
-                isAssigned: item.isAssigned,
-                targetId: item.targetId,
-                targetName: item.targetName,
-                resourceId: item.resourceId,
-                resourceName: item.resourceName,
-                filterId: item.filterId,
-                filterType: item.filterType,
-                filterDisplayName: item.filter?.displayName,
-                filterRule: item.filter?.rule,
-            };
-        });
+        );
+
         const dataCount = dataToExport.length;
         if (dataCount === 0) {
             toast.error("No data to export.");
@@ -85,7 +61,7 @@ export function DataTableToolbar({
         if (exportOption === "backup") {
             const zip = new JSZip();
             dataToExport.forEach((item: TData, index: number) => {
-                const fileName = `${item.resourceName}.json`;
+                const fileName = `${item.displayName}.json`;
                 const fileContent = JSON.stringify(item, null, 2);
                 zip.file(fileName, fileContent);
             });
@@ -104,52 +80,10 @@ export function DataTableToolbar({
         }
     };
 
-    const handleCsvExport = async (rawData: string) => {
-        const filteredRows = table.getFilteredRowModel().rows;
-        const selectedRows = filteredRows.length > 0 ? filteredRows : table.getSelectedRowModel().rows;
-        const selectedIds = selectedRows.map(row => row.original.id);
-        const parsedRawData = JSON.parse(rawData);
-
-        const dataToExport = parsedRawData
-            .filter((item: TData) => selectedIds.includes(item.id))
-            .map((item: TData) => {
-                return {
-                    id: item.id,
-                    resourceName: item.resourceName,
-                    resourceId: item.resourceId,
-                    platform: item.platform,
-                    isAssigned: item.isAssigned,
-                    targetName: item.targetName,
-                    targetId: item.targetId,
-                    assignmentType: item.assignmentType,
-                    filterDisplayName: item.filter?.displayName,
-                    filterRule: item.filter?.rule
-                };
-            });
-
-        try {
-            const csv = Papa.unparse(dataToExport);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            saveAs(blob, 'export.csv');
-            toast.success("CSV export successful!");
-        } catch (err) {
-            console.error("CSV export failed:", err);
-            toast.error("CSV export failed!");
-        }
-    };
-
-    const handleRefresh = () => {
-        toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
-        });
-    };
 
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
-                <SelectAllButton table={table} />
                 <Input
                     placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}
@@ -159,32 +93,18 @@ export function DataTableToolbar({
                     }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
-                {table.getColumn("resourceType") && (
+                {table.getColumn("type") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("resourceType")}
-                        title="Type"
-                        options={configurationTypes}
+                        column={table.getColumn("type")}
+                        title="Member Type"
+                        options={memberType}
                     />
                 )}
-                {table.getColumn("isAssigned") && (
+                {table.getColumn("accountEnabled") && (
                     <DataTableFacetedFilter
-                        column={table.getColumn("isAssigned")}
+                        column={table.getColumn("accountEnabled")}
                         title="Is Assigned"
-                        options={isAssignedValues}
-                    />
-                )}
-                {table.getColumn("assignmentType") && (
-                    <DataTableFacetedFilter
-                        column={table.getColumn("assignmentType")}
-                        title="Assignment Type"
-                        options={assignmentTypes}
-                    />
-                )}
-                {table.getColumn("platform") && (
-                    <DataTableFacetedFilter
-                        column={table.getColumn("platform")}
-                        title="Platform"
-                        options={platform}
+                        options={accountIsEnabled}
                     />
                 )}
                 {isFiltered && (
@@ -199,9 +119,6 @@ export function DataTableToolbar({
                 )}
             </div>
             <div className="flex items-center space-x-2">
-                <Button onClick={handleRefresh} variant="outline" size="sm">
-                    Refresh
-                </Button>
                 <div className="relative">
                     <Button variant="outline" size="sm" onClick={() => setDropdownVisible(!dropdownVisible)}>
                         Export
@@ -212,17 +129,8 @@ export function DataTableToolbar({
                             <button
                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => {
-                                    setExportOption("backup");
+                                    setExportOption("csv");
                                     handleExport(rawData);
-                                    setDropdownVisible(false);
-                                }}
-                            >
-                                Export for Backup
-                            </button>
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => {
-                                    handleCsvExport(rawData);
                                     setDropdownVisible(false);
                                 }}
                             >

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { msalInstance, AppId } from '@/components/auth';
+import { msalInstance } from '@/components/auth';
 
 const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     let formattedError = '';
@@ -20,7 +20,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
 
     try {
         const tokenResponse = await msalInstance.acquireTokenSilent({
-            scopes: [`api://${AppId}/access_as_user`],
+            scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
             account,
         });
         accessToken = tokenResponse.accessToken;
@@ -30,7 +30,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
             // Token expired or invalid, prompt user to log in again
             await msalInstance.loginPopup();
             const tokenResponse = await msalInstance.acquireTokenSilent({
-                scopes: [`api://${AppId}/access_as_user`],
+                scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
                 account,
             });
             accessToken = tokenResponse.accessToken;
@@ -69,9 +69,10 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
                 // Handle user consent required error
                 const neededScopes = error.response.data.neededScopes;
                 if (neededScopes) {
+                    const appId = '6317a049-4e55-464f-80a1-0896b8309fec'; // Replace with your actual app ID
                     const tenantId = msalInstance.getAllAccounts()[0].tenantId; // Assuming you have tenantId in userClaims
                     const scopes = neededScopes.join(' ');
-                    const consentUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${AppId}&response_type=code&redirect_uri=${window.location.origin}&response_mode=query&scope=${encodeURIComponent(scopes)}&state=12345`;
+                    const consentUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${appId}&response_type=code&redirect_uri=${window.location.origin}&response_mode=query&scope=${encodeURIComponent(scopes)}&state=12345`;
 
                     window.location.href = consentUrl;
                 }

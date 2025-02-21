@@ -155,7 +155,7 @@ export function DataTableToolbar({
     };
 
     const handleDownloadTemplate = () => {
-        const csvContent = "PolicyName;GroupName;AssignmentDirectionAssignmentAction;FilterName,FilterType\n";
+        const csvContent = "PolicyName;GroupName;AssignmentDirection;AssignmentAction;FilterName;FilterType\n";
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         saveAs(blob, "assignment_migration_template.csv");
     };
