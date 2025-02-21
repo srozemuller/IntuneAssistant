@@ -151,7 +151,7 @@ export default function DemoPage() {
 
     const handleCompare = async () => {
         try {
-            const response = await authDataMiddleware(`${COMPARE_ENDPOINT}/configurationpolicy`, 'POST', {
+            const response = await authDataMiddleware(`${COMPARE_ENDPOINT}/configurationpolicies`, 'POST', {
                 PolicyId: selectedPolicy,
                 ComparePolicyId: comparePolicy
             });
