@@ -21,7 +21,7 @@ const groupSchema = z.object({
     displayName: z.string().default(""),
     description: z.string().default(""),
     createdDateTime: z.string().default(""),
-    members: z.array(groupMemberSchema).default([]),
+    members: z.array(groupMemberSchema).nullable()
 });
 
 export type GroupModel = z.infer<typeof groupSchema>;
