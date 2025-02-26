@@ -26,6 +26,7 @@ export const assignmentSchema = z.object({
 export const policySchema = z.object({
     "@odata.type": z.string().nullable(),
     policyType: z.string(),
+    policySubType: z.string().nullable(),
     createdDateTime: z.string(),
     creationSource: z.string().nullable(),
     description: z.string().nullable(),
