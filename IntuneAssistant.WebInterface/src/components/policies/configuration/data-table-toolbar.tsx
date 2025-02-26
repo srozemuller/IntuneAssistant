@@ -19,7 +19,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { EXPORT_ENDPOINT } from "@/components/constants/apiUrls.js"
-import {CrossIcon} from "lucide-react";
+import {CrossIcon, XIcon} from "lucide-react";
+import {settingStatus} from "@/components/compare/fixed-values.tsx";
+import {platform} from "@/components/constants/fixed-values.tsx";
 
 interface TData {
     id: string;
@@ -163,7 +165,13 @@ export function DataTableToolbar({
                     }}
                     className="h-8 w-[150px] lg:w-[250px]"
                 />
-
+                {table.getColumn("platforms") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("platforms")}
+                        title="Platform"
+                        options={platform}
+                    />
+                )}
                 {isFiltered && (
                     <Button
                         variant="ghost"
@@ -171,7 +179,7 @@ export function DataTableToolbar({
                         className="h-8 px-2 lg:px-3"
                     >
                         Reset
-                        <CrossIcon className="ml-2 h-4 w-4" />
+                        <XIcon className="ml-2 h-4 w-4" />
                     </Button>
                 )}
             </div>
