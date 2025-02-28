@@ -7,12 +7,16 @@ interface SelectAllButtonProps<TData> {
 }
 
 export function SelectAllButton<TData>({ table }: SelectAllButtonProps<TData>) {
-    const [allSelected, setAllSelected] = useState(false);
+    const [allSelected, setAllSelected] = useState(() => {
+        const filteredRows = table.getFilteredRowModel().rows;
+        const allFilteredRowIds = filteredRows.map(row => row.id);
+        return allFilteredRowIds.length > 0 && table.getIsAllRowsSelected();
+    });
 
     useEffect(() => {
         const filteredRows = table.getFilteredRowModel().rows;
         const allFilteredRowIds = filteredRows.map(row => row.id);
-        const allSelected = allFilteredRowIds.every(id => table.getIsAllRowsSelected(id));
+        const allSelected = allFilteredRowIds.length > 0 && table.getIsAllRowsSelected();
         setAllSelected(allSelected);
     }, [table]);
 

@@ -21,7 +21,6 @@ import type { filterSchema } from "@/schemas/filters.tsx";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 export default function DemoPage() {
     const [data, setData] = useState<AssignmentsMigrationModel[]>([]);
     const [loading, setLoading] = useState(true);
@@ -114,7 +113,6 @@ export default function DemoPage() {
             });
         }
     }, [rows]);
-
     return (
         <div className="container max-w-[95%] py-6">
             <CSVUploader setRows={setRows}/>
