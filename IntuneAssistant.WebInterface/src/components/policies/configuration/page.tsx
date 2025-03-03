@@ -19,6 +19,7 @@ export default function DemoPage() {
 
 
     const fetchData = async () => {
+        const toastId = toast.loading('Fetching assignments');
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
@@ -34,16 +35,27 @@ export default function DemoPage() {
             console.log('Raw data:', rawData);
 
             // Parse the raw data string into an array
-            const parsedArray = JSON.parse(rawData);
+            const parsedArray = JSON.parse(rawData).data;
 
             // Validate and parse the preprocessed data
             const parsedData: Policy[] = z.array(policySchema).parse(parsedArray);
             setData(parsedData);
+            // Show toast message based on the status
+            const { message } = JSON.parse(rawData);
+            const status = JSON.parse(rawData).status.toLowerCase();
+            console.log('Status:', status);
+            if (status === 'success') {
+                toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
+            } else if (status === 'error') {
+                toast.update(toastId, { render: message, type: 'error', isLoading: false, autoClose: toastDuration });
+            } else if (status === 'warning') {
+                toast.update(toastId, { render: message, type: 'warning', isLoading: false, autoClose: toastDuration });
+            }
         } catch (error) {
             console.error('Error:', error);
-            const errorMessage = `Failed to fetch policies. ${(error as Error).message}`;
+            const errorMessage = `Failed to assignments. ${(error as Error).message}`;
             setError(errorMessage);
-            toast.error(errorMessage);
+            toast.update(toastId, { render: errorMessage, type: 'error', isLoading: false, autoClose: toastDuration });
             throw new Error(errorMessage);
         } finally {
             setLoading(false);
@@ -51,17 +63,7 @@ export default function DemoPage() {
     };
 
     useEffect(() => {
-        toast.promise(fetchData(), {
-            pending: {
-                render:  `Searching for configuration  policies...`,
-            },
-            success: {
-                render: `Configuration policies fetched successfully`,
-            },
-            error:  {
-                render: (errorMessage) => `Failed to get configuration policies because: ${errorMessage}`,
-            }
-        });
+        fetchData();
     }, []);
 
     return (
