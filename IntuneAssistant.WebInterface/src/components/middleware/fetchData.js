@@ -66,8 +66,9 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
         if (error.response) {
             console.log('Error response:', error.response);
             if (error.response.data && error.response.data.message && error.response.data.message.includes("AADSTS65001")) {
+                console.log('Error message in if:', error.response.data.message)
                 // Handle user consent required error
-                const neededScopes = error.response.data.neededScopes;
+                const neededScopes = error.response.data.details;
                 if (neededScopes) {
                     const appId = '6317a049-4e55-464f-80a1-0896b8309fec'; // Replace with your actual app ID
                     const tenantId = msalInstance.getAllAccounts()[0].tenantId; // Assuming you have tenantId in userClaims
@@ -82,8 +83,10 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
                 console.log('Error response headers:', error.response.headers);
                 const authHeader = error.response.headers['www-authenticate'];
                 const matches = authHeader.match(/consentUri="([^"]+)"/);
+
                 if (matches && matches[1]) {
                     consentUri = matches[1];
+                    window.location.href = consentUri; // Redirect to the consent URI
                 }
                 const errorMessage = authHeader.match(/error_description="([^"]+)"/);
                 if (errorMessage && errorMessage[1]) {

@@ -50,8 +50,8 @@ export default function DemoPage() {
             });
             const jsonString = JSON.stringify(sanitizedRows);
             const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString);
-            const rawData = typeof response?.data === 'string' ? JSON.parse(response.data) : response?.data;
-            setRawData(JSON.stringify(rawData, null, 2));
+            const rawData = typeof response?.data.data === 'string' ? JSON.parse((response.data).data) : (response?.data).data;
+            setRawData(JSON.stringify((rawData).data, null, 2));
 
             // Ensure filterToMigrate properties are not null
             const sanitizedData = rawData.map((item: any) => {

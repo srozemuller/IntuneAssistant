@@ -26,7 +26,7 @@ export default function DemoPage() {
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
             const response = await authDataMiddleware(ASSIGNMENTS_APPS_ENDPOINT);
-            const rawData = typeof response?.data === 'string' ? response.data : JSON.stringify(response?.data);
+            const rawData = typeof response?.data.data === 'string' ? (response.data).data : JSON.stringify((response?.data).data);
             setRawData(rawData);
             console.log('Raw data:', rawData);
             const parsedData: Assignment[] = z.array(assignmentSchema).parse(JSON.parse(rawData));
