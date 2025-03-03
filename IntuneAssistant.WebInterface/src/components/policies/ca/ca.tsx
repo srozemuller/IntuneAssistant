@@ -11,6 +11,7 @@ import { taskSchema, type Task } from "@/components/policies/ca/schema";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+import {type Assignments, assignmentsSchema} from "@/components/assignments/overview/schema.tsx";
 
 export default function DemoPage() {
     const [data, setData] = useState<Task[]>([]);
@@ -24,11 +25,11 @@ export default function DemoPage() {
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
             const response = await authDataMiddleware(CA_POLICIES_ENDPOINT);
-            const rawData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data); // Ensure rawData is a string
+            const rawData = typeof response?.data === 'string' ? response.data : JSON.stringify(response?.data);
 
             setRawData(rawData);
             console.log('Raw data:', rawData);
-            const parsedData: Task[] = z.array(taskSchema).parse(JSON.parse(rawData));
+            const parsedData: Task[] = z.array(taskSchema).parse(JSON.parse(rawData).data);
             setData(parsedData);
         } catch (error) {
             console.error('Error:', error);

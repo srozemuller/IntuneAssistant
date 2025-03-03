@@ -34,9 +34,9 @@ export default function DemoPage() {
             if (!policyResponse || !groupPolicyResponse) {
                 throw new Error('One or both responses are undefined');
             }
-
-            const policyData = typeof policyResponse.data === 'string' ? JSON.parse(policyResponse.data) : policyResponse.data;
-            const groupPolicyData = typeof groupPolicyResponse.data === 'string' ? JSON.parse(groupPolicyResponse.data) : groupPolicyResponse.data;
+            console.log(policyResponse)
+            const policyData = typeof policyResponse.data.data === 'string' ? JSON.parse((policyResponse.data).data) : (policyResponse.data).data;
+            const groupPolicyData = typeof groupPolicyResponse.data.data === 'string' ? JSON.parse((groupPolicyResponse.data).data) : (groupPolicyResponse.data).data;
 
             const combinedData = [...policyData, ...groupPolicyData];
             setRawData(JSON.stringify(combinedData));
