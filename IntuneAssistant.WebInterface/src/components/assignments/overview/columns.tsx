@@ -237,12 +237,23 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
             const [members, setMembers] = useState<UserMember[]>([]);
             const [isDialogOpen, setIsDialogOpen] = useState(false);
             const group = groupData.find(group => group.id === targetId);
-            const userCount = group?.members?.filter(member => member.type === "User").length || 0;
-            const deviceCount = group?.members?.filter(member => member.type === "Device").length || 0;
-            const groupCount = group?.members?.filter(member => member.type === "Group").length || 0;
+            let userCount = 0;
+            let deviceCount = 0;
+            let groupCount = 0;
 
 
-            if (assignmentType === "Entra ID Group" || assignmentType === "Entra ID Group Exclude") {
+            if (group) {
+                // Check if the group exists and has valid members
+                if (group.members) {
+                    userCount = group.members.filter(member => member.type === "User").length;
+                    deviceCount = group.members.filter(member => member.type === "Device").length;
+                    groupCount = group.members.filter(member => member.type === "Group").length;
+                }
+            }
+            // Determine if group is deleted - targetId exists but group is not found
+            const isGroupDeleted = targetId && targetId.trim() !== "" && !group;
+
+            if ((!isGroupDeleted) && assignmentType === "Entra ID Group" || assignmentType === "Entra ID Group Exclude") {
                 return (
                     <>
                         <div
@@ -266,6 +277,13 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
                             </DialogContent>
                         </Dialog>
                     </>
+                );
+            }
+            if (isGroupDeleted) {
+                return (
+                    <div className="text-red-500">
+                        {row.getValue("targetName")} (Group deleted but assignment remains)
+                    </div>
                 );
             }
             return (
