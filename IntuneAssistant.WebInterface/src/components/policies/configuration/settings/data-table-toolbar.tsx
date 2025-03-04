@@ -1,15 +1,19 @@
 import { Input } from "@/components/ui/input.tsx"
-import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
 import { statuses } from "@/components/policies/configuration/settings/fixed-values.tsx"
 import { DataTableFacetedFilter } from "../../../data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { toast } from "sonner"
 import { type Table } from "@tanstack/react-table"
-import { useState } from "react"
+import {useMemo, useState} from "react"
 import { handleExport } from "@/lib/handle-export";
 import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
 import {SelectAllButton} from "@/components/button-selectall.tsx";
+
+import { DataTableExport } from "@/components/data-table-export";
+import { DataTableRefresh } from "@/components/data-table-refresh";
+import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
+
 
 interface TData {
     displayName: string;
@@ -34,17 +38,67 @@ export function DataTableToolbar({
     const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter !== undefined;
     const [dropdownVisible, setDropdownVisible] = useState(false);
 
-    const handleExportClick = (rawData: string, exportOption: string) => {
-        handleExport(rawData, table, exportOption, source);
-    };
+    const prepareExportData = useMemo(() => {
+        try {
+            const selectedRows = table.getSelectedRowModel().rows;
+            let parsedRawData = [];
 
-    const handleRefresh = () => {
-        toast.promise(fetchData(), {
-            loading: `Searching for settings in configuration policies...`,
-            success: `Settings fetched successfully`,
-            error: (err) => `Failed to get settings because: ${err.message}`,
-        });
-    };
+            // Handle different data formats safely
+            if (typeof rawData === 'string') {
+                try {
+                    const parsed = JSON.parse(rawData);
+                    // Access the nested data property directly
+                    parsedRawData = parsed || [];
+                } catch (e) {
+                    console.error("Failed to parse JSON:", e);
+                }
+            } else if (Array.isArray(rawData)) {
+                parsedRawData = rawData;
+            } else if (rawData && typeof rawData === 'object') {
+                // If rawData is already an object, extract the data property
+                parsedRawData = rawData.data || [];
+            }
+
+            // Log for debugging
+            console.log("Extracted data array:", parsedRawData);
+
+            // Ensure parsedRawData is an array at this point
+            if (!Array.isArray(parsedRawData)) {
+                console.error("Raw data is not an array after parsing", parsedRawData);
+                return [];
+            }
+
+            // Get all rows or filtered rows based on selection
+            const dataToProcess = selectedRows.length > 0
+                ? parsedRawData.filter(item =>
+                    selectedRows.map(row => row.original.id).includes(item.id)
+                )
+                : parsedRawData;
+
+            // Process and map all the filtered rows in the same way
+            return dataToProcess.map((item) => {
+                // Create a flattened representation of child settings
+                let childSettingsStr = '';
+                if (item.childSettingInfo && Array.isArray(item.childSettingInfo)) {
+                    childSettingsStr = item.childSettingInfo
+                        .map(setting => `${setting.name}: ${setting.value}`)
+                        .join('| ');
+                }
+
+                return {
+                    id: item.id || '',
+                    policyId: item.policyId || '',
+                    policyName: item.policyName || '',
+                    settingName: item.settingName || '',
+                    settingValue: item.settingValue || '',
+                    childSettings: childSettingsStr,
+                };
+            });
+        } catch (error) {
+            console.error("Failed to prepare export data:", error);
+            return [];
+        }
+    }, [table.getSelectedRowModel().rows, rawData]);
 
     return (
         <div className="flex items-center justify-between">
@@ -73,28 +127,15 @@ export function DataTableToolbar({
                 )}
             </div>
             <div className="flex items-center space-x-2">
-                <Button onClick={handleRefresh} variant="outline" size="sm">
-                    Refresh
-                </Button>
-                <div className="relative">
-                    <Button variant="outline" size="sm" onClick={() => setDropdownVisible(!dropdownVisible)}>
-                        Export
-                    </Button>
-                    {dropdownVisible && (
-                        <div
-                            className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => {
-                                    handleExportClick(rawData, "csv");
-                                    setDropdownVisible(false);
-                                }}
-                            >
-                                Export to CSV
-                            </button>
-                        </div>
-                    )}
-                </div>
+                <DataTableRefresh
+                    fetchData={fetchData}
+                    resourceName={source ? `${source}` : "data"}
+                />
+                <DataTableExport
+                    data={prepareExportData}
+                    fileName={`${source}-data`}
+                    disabled={!prepareExportData || prepareExportData.length === 0}
+                />
                 <DataTableViewOptions table={table}/>
             </div>
         </div>

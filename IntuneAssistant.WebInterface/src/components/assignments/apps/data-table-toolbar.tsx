@@ -1,5 +1,4 @@
 import { Input } from "@/components/ui/input.tsx"
-import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
 import {accountIsEnabled, assignmentTypes, isAssignedValues, installType} from "@/components/assignments/apps/fixed-values.tsx"
 import {configurationTypes} from "@/components/constants/policyTypes.ts"
 import { DataTableFacetedFilter } from "../../data-table-faceted-filter.tsx"
@@ -7,12 +6,17 @@ import { Button } from "@/components/ui/button.tsx"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { toast } from "sonner"
 import { type Table } from "@tanstack/react-table"
-import { useState } from "react"
+import {useMemo, useState} from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 import {FILTER_PLACEHOLDER} from "@/components/constants/appConstants";
 import { SelectAllButton } from "@/components/button-selectall.tsx";
+
+import { DataTableExport } from "@/components/data-table-export";
+import { DataTableRefresh } from "@/components/data-table-refresh";
+import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
+
 
 interface TData {
     id: string;
@@ -53,15 +57,62 @@ export function DataTableToolbar({
     const [exportOption, setExportOption] = useState("");
     const [dropdownVisible, setDropdownVisible] = useState(false);
 
-    const handleExport = (rawData: string) => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const selectedIds = selectedRows.map(row => row.original.id);
-        const parsedRawData = JSON.parse(rawData);
+    const prepareExportData = useMemo(() => {
+        try {
+            const selectedRows = table.getSelectedRowModel().rows;
+            let parsedRawData = [];
 
-        const dataToExport = parsedRawData.filter((item: TData) =>
-            selectedIds.includes(item.id)
-        ).map((item: TData) => {
-            return {
+            // Handle different data formats safely
+            if (typeof rawData === 'string') {
+                try {
+                    const parsed = JSON.parse(rawData);
+                    // Access the nested data property directly
+                    parsedRawData = parsed || [];
+                    console.log("Parsed raw data:", parsed);
+                } catch (e) {
+                    console.error("Failed to parse JSON:", e);
+                }
+            } else if (Array.isArray(rawData)) {
+                parsedRawData = rawData;
+            } else if (rawData && typeof rawData === 'object') {
+                // If rawData is already an object, extract the data property
+                parsedRawData = rawData.data || [];
+            }
+
+            // Log for debugging
+            console.log("Extracted data array:", parsedRawData);
+
+            // Ensure parsedRawData is an array at this point
+            if (!Array.isArray(parsedRawData)) {
+                console.error("Raw data is not an array after parsing", parsedRawData);
+                return [];
+            }
+
+            // Process the data (rest of the logic remains the same)
+            if (selectedRows.length > 0) {
+                console.log("Selected rows:", selectedRows.length);
+                const selectedIds = selectedRows.map(row => row.original.id);
+                return parsedRawData.filter((item) =>
+                    selectedIds.includes(item.id)
+                ).map((item) => ({
+                    resourceType: item.resourceType,
+                    assignmentType: item.assignmentType,
+                    isExcluded: item.isExcluded,
+                    isAssigned: item.isAssigned,
+                    enrollmentType: item.enrollmentType,
+                    targetId: item.targetId,
+                    targetName: item.targetName,
+                    resourceId: item.resourceId,
+                    resourceName: item.resourceName,
+                    filterId: item.filterId,
+                    filterType: item.filterType,
+                    filterDisplayName: item.filter?.displayName,
+                    filterRule: item.filter?.rule,
+                }));
+            }
+
+            // Return all data if no rows selected
+            return parsedRawData.map((item) => ({
                 resourceType: item.resourceType,
                 assignmentType: item.assignmentType,
                 isExcluded: item.isExcluded,
@@ -75,79 +126,13 @@ export function DataTableToolbar({
                 filterType: item.filterType,
                 filterDisplayName: item.filter?.displayName,
                 filterRule: item.filter?.rule,
-            };
-        });
-        const dataCount = dataToExport.length;
-        if (dataCount === 0) {
-            toast.error("No data to export.");
-            return;
+            }));
+        } catch (error) {
+            console.error("Failed to prepare export data:", error);
+            return [];
         }
-        const rowString = dataCount === 1 ? "row" : "rows";
+    }, [table.getSelectedRowModel().rows, rawData]);
 
-        if (exportOption === "backup") {
-            const zip = new JSZip();
-            dataToExport.forEach((item: TData, index: number) => {
-                const fileName = `${item.resourceName}.json`;
-                const fileContent = JSON.stringify(item, null, 2);
-                zip.file(fileName, fileContent);
-            });
-
-            zip.generateAsync({ type: "blob" }).then((content) => {
-                saveAs(content, `${source}-backup.zip`);
-                toast.success(`Zip file created and downloaded, selected ${dataCount} ${rowString}.`);
-            }).catch((err) => {
-                toast.error(`Failed to create zip file: ${err.message}`);
-            });
-        }  else if (exportOption === "csv") {
-            const csv = Papa.unparse(dataToExport);
-            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-            saveAs(blob, `${source}-data.csv`);
-            toast.success(`CSV file created and downloaded, selected ${dataCount} ${rowString}.`);
-        }
-    };
-
-    const handleCsvExport = async (rawData: string) => {
-        const filteredRows = table.getFilteredRowModel().rows;
-        const selectedRows = filteredRows.length > 0 ? filteredRows : table.getSelectedRowModel().rows;
-        const selectedIds = selectedRows.map(row => row.original.id);
-        const parsedRawData = JSON.parse(rawData);
-
-        const dataToExport = parsedRawData
-            .filter((item: TData) => selectedIds.includes(item.id))
-            .map((item: TData) => {
-                return {
-                    id: item.id,
-                    resourceName: item.resourceName,
-                    resourceId: item.resourceId,
-                    platform: item.platform,
-                    enrollmentType: item.enrollmentType,
-                    isAssigned: item.isAssigned,
-                    targetName: item.targetName,
-                    targetId: item.targetId,
-                    assignmentType: item.assignmentType,
-                    filterDisplayName: item.filter?.displayName,
-                    filterRule: item.filter?.rule
-                };
-            });
-
-        try {
-            const csv = Papa.unparse(dataToExport);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            saveAs(blob, 'export.csv');
-            toast.success("CSV export successful!");
-        } catch (err) {
-            console.error("CSV export failed:", err);
-            toast.error("CSV export failed!");
-        }
-    };
-
-    const handleRefresh = () => {
-        toast.promise(fetchData(), {
-            loading: `Searching for conditional access policies...`,
-            success: `Conditional access policies fetched successfully`,
-            error: (err) => `Failed to get conditional access policies because: ${err.message}`,
-        });
-    };
 
     return (
         <div className="flex items-center justify-between">
@@ -202,38 +187,15 @@ export function DataTableToolbar({
                 )}
             </div>
             <div className="flex items-center space-x-2">
-                <Button onClick={handleRefresh} variant="outline" size="sm">
-                    Refresh
-                </Button>
-                <div className="relative">
-                    <Button variant="outline" size="sm" onClick={() => setDropdownVisible(!dropdownVisible)}>
-                        Export
-                    </Button>
-                    {dropdownVisible && (
-                        <div
-                            className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => {
-                                    setExportOption("backup");
-                                    handleExport(rawData);
-                                    setDropdownVisible(false);
-                                }}
-                            >
-                                Export for Backup
-                            </button>
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => {
-                                    handleCsvExport(rawData);
-                                    setDropdownVisible(false);
-                                }}
-                            >
-                                Export to CSV
-                            </button>
-                        </div>
-                    )}
-                </div>
+                <DataTableRefresh
+                    fetchData={fetchData}
+                    resourceName={source ? `${source}` : "data"}
+                />
+                <DataTableExport
+                    data={prepareExportData}
+                    fileName={`${source}-data`}
+                    disabled={!prepareExportData || prepareExportData.length === 0}
+                />
                 <DataTableViewOptions table={table}/>
             </div>
         </div>

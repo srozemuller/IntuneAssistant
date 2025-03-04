@@ -16,10 +16,11 @@ export default function DemoPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
+    const source = '"configuration_policies"';
 
 
     const fetchData = async () => {
-        const toastId = toast.loading('Fetching assignments');
+        const toastId = toast.loading('Fetching configuration_policies');
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
@@ -74,7 +75,7 @@ export default function DemoPage() {
                 data={data}
                 rawData={rawData}
                 fetchData={fetchData}
-                source="configuration"
+                source={source}
                 setTableData={setData} />
         </div>
     );
