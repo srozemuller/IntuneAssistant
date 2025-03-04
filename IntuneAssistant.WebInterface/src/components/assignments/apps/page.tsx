@@ -70,7 +70,7 @@ export default function DemoPage() {
     return (
         <div className="container max-w-[95%] py-6">
             <ToastContainer autoClose={toastDuration} position={toastPosition}/>
-            <DataTable columns={columns(groupData)} data={data} rawData={rawData} groupData={groupData}  fetchData={fetchData} source="assignments"  />
+            <DataTable columns={columns(groupData)} data={data} rawData={rawData} groupData={groupData}  fetchData={fetchData} source="assignments_apps"  />
         </div>
     );
 }
