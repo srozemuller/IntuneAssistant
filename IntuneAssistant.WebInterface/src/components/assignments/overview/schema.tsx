@@ -5,7 +5,7 @@ const assignmentsSchema = z.object({
     assignmentType: z.string(),
     platform: z.string().nullable(),
     isAssigned: z.boolean(),
-    targetId: z.string(),
+    targetId: z.string().nullable(),
     targetName: z.string(),
     resourceId: z.string(),
     resourceName: z.string().nullable(),
