@@ -21,7 +21,11 @@ import type { filterSchema } from "@/schemas/filters.tsx";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function DemoPage() {
+import { withOnboardingCheck } from "@/components/with-onboarded-check.tsx";
+import {toastDuration} from "@/config/toastConfig.ts";
+
+
+function MigrationPage() {
     const [data, setData] = useState<AssignmentsMigrationModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
@@ -31,6 +35,7 @@ export default function DemoPage() {
     const [groups, setGroups] = useState<z.infer<typeof groupsSchema>[]>([]);
     const [filters, setFilters] = useState<z.infer<typeof filterSchema>[]>([]);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -50,6 +55,16 @@ export default function DemoPage() {
             });
             const jsonString = JSON.stringify(sanitizedRows);
             const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString);
+
+            if (response.notOnboarded) {
+                // Show dialog instead of auto-redirecting
+                setTenantId(response.tenantId);
+                setShowOnboardingDialog(true);
+                setLoading(false);
+                return;
+            }
+
+
             const rawData = typeof response?.data.data === 'string' ? JSON.parse((response.data).data) : (response?.data).data;
             setRawData(JSON.stringify((rawData).data, null, 2));
 
@@ -67,11 +82,26 @@ export default function DemoPage() {
 
             const parsedData: AssignmentsMigrationModel[] = z.array(assignmentMigrationSchema).parse(sanitizedData);
             setData(parsedData);
+
+            // Show toast message based on the status
+            const { message } = JSON.parse(rawData);
+            const status = JSON.parse(rawData).status.toLowerCase();
+            console.log('Status:', status);
+            if (status === 'success') {
+                toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
+            } else if (status === 'error') {
+                toast.update(toastId, { render: message, type: 'error', isLoading: false, autoClose: toastDuration });
+            } else if (status === 'warning') {
+                toast.update(toastId, { render: message, type: 'warning', isLoading: false, autoClose: toastDuration });
+            }
+
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = `Failed to assignments. ${(error as Error).message}`;
             setError(errorMessage);
             setLoading(false); // Ensure loading state is set to false on error
+            toast.update(toastId, { render: errorMessage, type: 'error', isLoading: false, autoClose: toastDuration });
+
             throw error; // Re-throw the error to be caught by toast.promise
         } finally {
             setLoading(false);
@@ -100,17 +130,7 @@ export default function DemoPage() {
 
     useEffect(() => {
         if (rows.length > 0) {
-            toast.promise(fetchData(), {
-                pending: {
-                    render:  `Searching for policies...`,
-                },
-                success: {
-                    render: `Policies fetched successfully`,
-                },
-                error:  {
-                    render: (errorMessage) => `Failed to get policies because: ${errorMessage}`,
-                }
-            });
+            fetchData();
         }
     }, [rows]);
     return (
@@ -128,3 +148,4 @@ export default function DemoPage() {
         </div>
     );
 }
+export default withOnboardingCheck(MigrationPage);

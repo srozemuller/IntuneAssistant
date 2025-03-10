@@ -9,23 +9,33 @@ import { policySchema, type Policy } from "@/components/policies/configuration/s
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+import {withOnboardingCheck} from "@/components/with-onboarded-check.tsx";
 
 
-export default function DemoPage() {
+function ConfigPoliciesPage() {
     const [data, setData] = useState<Policy[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
-    const source = '"configuration_policies"';
-
+    const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
+    const source = 'Configuration Policies';
 
     const fetchData = async () => {
-        const toastId = toast.loading('Fetching configuration_policies');
+        const toastId = toast.loading(`Fetching ${source}`);
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
             const response = await authDataMiddleware(CONFIGURATION_POLICIES_ENDPOINT);
+
+            if (response.notOnboarded) {
+                // Show dialog instead of auto-redirecting
+                setTenantId(response.tenantId);
+                setShowOnboardingDialog(true);
+                setLoading(false);
+                return;
+            }
+
 
             if (!response) {
                 throw new Error('No response received from the server');
@@ -80,3 +90,4 @@ export default function DemoPage() {
         </div>
     );
 }
+export default withOnboardingCheck(ConfigPoliciesPage);

@@ -13,14 +13,17 @@ import { settingSchema, type PolicySettings } from "@/components/policies/config
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+import {withOnboardingCheck} from "@/components/with-onboarded-check.tsx";
 
-export default function DemoPage() {
+function ConfigPolicySettingsPage() {
     const [data, setData] = useState<PolicySettings[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
+    const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
 
     const fetchData = async () => {
+        const toastId = toast.loading('Fetching configuration policy settings');
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
@@ -35,6 +38,15 @@ export default function DemoPage() {
                 throw new Error('One or both responses are undefined');
             }
             console.log(policyResponse)
+
+            if (policyResponse.notOnboarded) {
+                // Show dialog instead of auto-redirecting
+                setTenantId(response.tenantId);
+                setShowOnboardingDialog(true);
+                setLoading(false);
+                return;
+            }
+
             const policyData = typeof policyResponse.data.data === 'string' ? JSON.parse((policyResponse.data).data) : (policyResponse.data).data;
             const groupPolicyData = typeof groupPolicyResponse.data.data === 'string' ? JSON.parse((groupPolicyResponse.data).data) : (groupPolicyResponse.data).data;
 
@@ -44,10 +56,26 @@ export default function DemoPage() {
             const parsedData: PolicySettings[] = z.array(settingSchema).parse(combinedData);
 
             setData(parsedData);
+
+            // Show toast message based on the status
+            const { message } = JSON.parse(rawData);
+            const status = JSON.parse(rawData).status.toLowerCase();
+            console.log('Status:', status);
+            if (status === 'success') {
+                toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
+            } else if (status === 'error') {
+                toast.update(toastId, { render: message, type: 'error', isLoading: false, autoClose: toastDuration });
+            } else if (status === 'warning') {
+                toast.update(toastId, { render: message, type: 'warning', isLoading: false, autoClose: toastDuration });
+            }
+
+
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = `Failed to fetch policies. ${(error as Error).message}`;
             setError(errorMessage);
+            toast.update(toastId, { render: errorMessage, type: 'error', isLoading: false, autoClose: toastDuration });
+
             throw new Error(errorMessage);
         } finally {
             setLoading(false);
@@ -55,18 +83,9 @@ export default function DemoPage() {
     };
 
     useEffect(() => {
-        toast.promise(fetchData(), {
-            pending: {
-                render:  `Searching for configuration policy settings ...`,
-            },
-            success: {
-                render: `Configuration policies settings fetched successfully`,
-            },
-            error:  {
-                render: (errorMessage) => `Failed to get configuration policy settings because: ${errorMessage}`,
-            }
-        });
+        fetchData();
     }, []);
+
 
     return (
         <div className="container max-w-[95%] py-6">
@@ -75,3 +94,5 @@ export default function DemoPage() {
         </div>
     );
 }
+
+export default withOnboardingCheck(ConfigPolicySettingsPage);

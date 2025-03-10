@@ -11,14 +11,17 @@ import {type GroupModel, groupSchema} from "@/schemas/groupSchema";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+import { withOnboardingCheck } from "@/components/with-onboarded-check.tsx";
 
-
-export default function DemoPage() {
+function AssignmentsPage() {
     const [data, setData] = useState<Assignments[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
     const [groupData, setGroupData] = useState<GroupModel[]>([]);
+    const [tenantId, setTenantId] = useState<string>('');
+    const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
+
 
     const fetchData = async () => {
         const toastId = toast.loading('Fetching assignments');
@@ -27,6 +30,18 @@ export default function DemoPage() {
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
             const response = await authDataMiddleware(ASSIGNMENTS_ENDPOINT);
+
+
+            if (response.notOnboarded) {
+                // Show dialog instead of auto-redirecting
+                setTenantId(response.tenantId);
+                setShowOnboardingDialog(true);
+                setLoading(false);
+                return;
+            }
+
+
+
             const rawData = typeof response?.data === 'string' ? response.data : JSON.stringify(response?.data);
             setRawData(rawData);
             console.log('Raw data:', rawData);
@@ -77,3 +92,4 @@ export default function DemoPage() {
         </div>
     );
 }
+export default withOnboardingCheck(AssignmentsPage);
