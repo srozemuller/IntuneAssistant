@@ -15,21 +15,22 @@ export function withOnboardingCheck<P extends object>(
         const [showDialog, setShowDialog] = useState(false);
         const [loading, setLoading] = useState(true);
         const [isAuthenticated, setIsAuthenticated] = useState(false);
-        const [isOnboarded, setIsOnboarded] = useState(false);
 
         useEffect(() => {
             const checkAuthAndOnboarding = async () => {
                 try {
-                    // Check if user is authenticated using your authService
+                    // Check authentication first
                     const isLoggedIn = authService.isLoggedIn();
+                    console.log("logged in: ",isLoggedIn);
                     setIsAuthenticated(isLoggedIn);
 
+                    // Only check onboarding status if authenticated
                     if (isLoggedIn) {
-                        // Only check onboarding if authenticated
                         const status = await checkTenantOnboardingStatus();
                         setOnboardingStatus(status);
-                        setIsOnboarded(status.isOnboarded);
-                        setShowDialog(isLoggedIn && !status.isOnboarded);
+
+                        // Only show onboarding dialog for authenticated users who aren't onboarded
+                        setShowDialog(!status.isOnboarded);
                     }
                 } catch (error) {
                     console.error('Error checking status:', error);
@@ -54,11 +55,12 @@ export function withOnboardingCheck<P extends object>(
             authService.login();
         };
 
+        // Show loading while checking
         if (loading) {
             return <div className="flex items-center justify-center h-screen">Loading...</div>;
         }
 
-        // Not authenticated - show login message
+        // First check: Is the user authenticated?
         if (!isAuthenticated) {
             return (
                 <div className="container max-w-[95%] py-6">
@@ -75,8 +77,8 @@ export function withOnboardingCheck<P extends object>(
             );
         }
 
-        // Authenticated but not onboarded - show onboarding message
-        if (!isOnboarded) {
+        // Second check: Is the tenant onboarded? (Only runs if authenticated)
+        if (isAuthenticated && onboardingStatus && !onboardingStatus.isOnboarded) {
             return (
                 <>
                     <div className="container max-w-[95%] py-6">
@@ -97,8 +99,8 @@ export function withOnboardingCheck<P extends object>(
                             <DialogContent>
                                 <p>This tenant needs to be onboarded before you can use this feature.</p>
                                 <p className="text-sm text-gray-500 mt-2">
-                                    Tenant ID: {onboardingStatus?.tenantId}
-                                    {onboardingStatus?.tenantName && <span> ({onboardingStatus.tenantName})</span>}
+                                    Tenant ID: {onboardingStatus.tenantId}
+                                    {onboardingStatus.tenantName && <span> ({onboardingStatus.tenantName})</span>}
                                 </p>
                             </DialogContent>
                             <DialogFooter>
@@ -115,7 +117,7 @@ export function withOnboardingCheck<P extends object>(
             );
         }
 
-        // Authenticated and onboarded - render the actual component
+        // User is authenticated and tenant is onboarded - render the protected component
         return <Component {...props} />;
     };
 }
