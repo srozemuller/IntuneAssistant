@@ -1,8 +1,10 @@
 import authService from './msalservice.js';
+import { checkTenantOnboardingStatus } from '../components/onboarded-check';
+import { toast } from 'sonner';
 
 document.addEventListener('DOMContentLoaded', async () => {
     await authService.initialize(); // Ensure authService is initialized
-    updateAuthLinks();
+    await checkOnboardingAndUpdateUI();
 
     document.getElementById('login-link').addEventListener('click', async (e) => {
         e.preventDefault();
@@ -12,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         try {
             await authService.login();
-            updateAuthLinks();
+            await checkOnboardingAndUpdateUI();
         } catch (error) {
             console.error('Login error:', error);
         }
@@ -24,6 +26,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateAuthLinks();
     });
 });
+
+async function checkOnboardingAndUpdateUI() {
+    updateAuthLinks();
+    if (authService.isLoggedIn()) {
+        try {
+            const onboardingStatus = await checkTenantOnboardingStatus();
+            if (!onboardingStatus.isOnboarded) {
+                // Show onboarding notification
+                showOnboardingNotification(onboardingStatus.tenantId, onboardingStatus.tenantName);
+            }
+        } catch (error) {
+            console.error('Error checking onboarding status:', error);
+        }
+    }
+}
+
+function showOnboardingNotification(tenantId, tenantName) {
+    toast({
+        title: "Tenant Not Onboarded",
+        description: `Your tenant ${tenantName || tenantId} needs to be onboarded before using this application.`,
+        action: {
+            label: "Onboard Now",
+            onClick: () => window.location.href = `/onboarding?tenantId=${tenantId}`
+        },
+        duration: 0 // Don't auto-dismiss
+    });
+}
 
 function updateAuthLinks() {
     const isLoggedIn = authService.isLoggedIn();
