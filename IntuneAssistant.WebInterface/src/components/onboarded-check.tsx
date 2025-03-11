@@ -36,7 +36,7 @@ export async function checkTenantOnboardingStatus(): Promise<OnboardingStatus> {
         });
 
         const data = response.data;
-        const isOnboarded = data.status === "Onboarded" && data.data.enabled;
+        const isOnboarded = data.status === "Onboarded";
 
         return {
             isOnboarded,
