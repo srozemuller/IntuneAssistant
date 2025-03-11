@@ -31,7 +31,7 @@ import { ASSIGNMENTS_VALIDATION_ENDPOINT } from "@/components/constants/apiUrls.
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends AssignmentRow, TValue> {
     source: string;
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
@@ -41,15 +41,33 @@ interface DataTableProps<TData, TValue> {
     setTableData: React.Dispatch<React.SetStateAction<TData[]>>;
 }
 
-export function DataTable<TData, TValue>({
-                                             columns,
-                                             data,
-                                             rawData,
-                                             fetchData,
-                                             source,
-                                             rowClassName,
-                                             setTableData,
-                                         }: DataTableProps<TData, TValue>) {
+interface AssignmentRow {
+    id: string;
+    policy: {
+        id: string;
+        policyType: string;
+        assignments: any[];
+    };
+    assignmentId: string;
+    assignmentType: string;
+    assignmentAction: string;
+    filterType?: string;
+    filterToMigrate?: {
+        id: string | null;
+    } | null;
+    isMigrated?: boolean;
+}
+
+
+export function DataTable<TData extends AssignmentRow, TValue>({
+                                                                   columns,
+                                                                   data,
+                                                                   rawData,
+                                                                   fetchData,
+                                                                   source,
+                                                                   rowClassName,
+                                                                   setTableData,
+                                                               }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({});
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -92,10 +110,10 @@ export function DataTable<TData, TValue>({
             setIsBlurring(true);
             const allRows = table.getRowModel().rows;
             const rowsToValidate = policyId
-                ? allRows.filter((r: any) => r.original.policy.id === policyId)
+                ? allRows.filter((r) => r.original.policy.id === policyId)
                 : allRows;
 
-            const validationRequestBody = rowsToValidate.map((r: any) => ({
+            const validationRequestBody = rowsToValidate.map((r) => ({
                 Id: r.original.id,
                 ResourceType: r.original.policy.policyType,
                 ResourceId: r.original.policy.id,
@@ -106,30 +124,75 @@ export function DataTable<TData, TValue>({
                 FilterType: r.original.filterType || 'none'
             }));
 
-            const validationResponse = await authDataMiddleware(`${ASSIGNMENTS_VALIDATION_ENDPOINT}`, 'POST', JSON.stringify(validationRequestBody));
-            if (validationResponse?.status === 200) {
-                const validationData = validationResponse.data;
-                const updatedData = allRows.map((r: any) => {
-                    const validationItem = validationData.find((item: any) => item.id === r.original.id);
-                    if (validationItem) {
-                        return {
-                            ...r.original,
-                            isMigrated: validationItem.hasCorrectAssignment,
-                            policy: {
-                                ...r.original.policy,
-                                assignments: validationItem.policy.assignments
-                            }
-                        };
+            const validationResponse = await authDataMiddleware(
+                `${ASSIGNMENTS_VALIDATION_ENDPOINT}`,
+                'POST',
+                JSON.stringify(validationRequestBody)
+            );
+
+            // Safely handle the response data
+            let validationData: any[] = [];
+
+            if (validationResponse?.data) {
+                // Parse string data if needed
+                if (typeof validationResponse.data === 'string') {
+                    try {
+                        validationData = JSON.parse(validationResponse.data);
+                    } catch (e) {
+                        console.error('Failed to parse validation data:', e);
+                        toast.error('Failed to parse validation data');
+                        return;
                     }
-                    return r.original;
-                });
-                setTableData(updatedData);
-            } else {
-                toast.error('Failed to validate all rows.');
+                }
+                // Handle nested data structure
+                else if (validationResponse.data.data) {
+                    if (typeof validationResponse.data.data === 'string') {
+                        try {
+                            validationData = JSON.parse(validationResponse.data.data);
+                        } catch (e) {
+                            console.error('Failed to parse nested validation data:', e);
+                            toast.error('Failed to parse validation data');
+                            return;
+                        }
+                    } else {
+                        validationData = validationResponse.data.data;
+                    }
+                }
+                // Direct object assignment
+                else {
+                    validationData = validationResponse.data;
+                }
             }
-        } catch (error: any) {
+
+            // Ensure validationData is an array
+            if (!Array.isArray(validationData)) {
+                console.error('Validation data is not an array:', validationData);
+                toast.error('Invalid validation data format received');
+                return;
+            }
+
+            // Update the data with validation results
+            const updatedData = allRows.map((r) => {
+                // Find matching validation item
+                const validationItem = validationData.find((item) => item && item.id === r.original.id);
+
+                if (validationItem) {
+                    return {
+                        ...r.original,
+                        isMigrated: validationItem.hasCorrectAssignment,
+                        policy: {
+                            ...r.original.policy,
+                            assignments: validationItem.policy?.assignments || r.original.policy.assignments
+                        }
+                    };
+                }
+                return r.original;
+            });
+
+            setTableData(updatedData);
+        } catch (error) {
             console.error('Validation failed:', error);
-            toast.error('Validation failed!');
+            toast.error(`Validation failed: ${(error as Error).message}`);
         } finally {
             setIsBlurring(false);
         }
