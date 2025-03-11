@@ -36,8 +36,10 @@ function MigrationPage() {
     const [filters, setFilters] = useState<z.infer<typeof filterSchema>[]>([]);
     const [isAnimating, setIsAnimating] = useState(false);
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
+    const [tenantId, setTenantId] = useState<string>('');
 
     const fetchData = async () => {
+        const toastId = toast.loading(`Loading migration config`);
         try {
             setLoading(true);
             setError('');
@@ -45,7 +47,8 @@ function MigrationPage() {
             fetchFilters();
             setData([]);
             const sanitizedRows = rows.map(row => {
-                const sanitizedRow = { ...row };
+                // Define sanitizedRow with an index signature
+                const sanitizedRow: { [key: string]: any } = { ...row };
                 for (const key in sanitizedRow) {
                     if (sanitizedRow[key] === '') {
                         sanitizedRow[key] = null;
@@ -56,17 +59,35 @@ function MigrationPage() {
             const jsonString = JSON.stringify(sanitizedRows);
             const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString);
 
-            if (response.notOnboarded) {
-                // Show dialog instead of auto-redirecting
+            // Fix the JSON parsing error - handle the response data properly
+            let rawData;
+            if (response?.data) {
+                // Check if data is already an object or a string that needs parsing
+                if (typeof response.data === 'string') {
+                    rawData = JSON.parse(response.data);
+                } else if (response.data.data) {
+                    // If response.data.data exists, properly handle it
+                    rawData = typeof response.data.data === 'string'
+                        ? JSON.parse(response.data.data)
+                        : response.data.data;
+                } else {
+                    // Fallback to the whole response.data object
+                    rawData = response.data;
+                }
+                setRawData(JSON.stringify(rawData, null, 2));
+            }
+
+            if (response?.notOnboarded) {
                 setTenantId(response.tenantId);
                 setShowOnboardingDialog(true);
                 setLoading(false);
                 return;
             }
 
-
-            const rawData = typeof response?.data.data === 'string' ? JSON.parse((response.data).data) : (response?.data).data;
-            setRawData(JSON.stringify((rawData).data, null, 2));
+            // Make sure we have valid data to process
+            if (!rawData || !Array.isArray(rawData)) {
+                throw new Error('Invalid response format');
+            }
 
             // Ensure filterToMigrate properties are not null
             const sanitizedData = rawData.map((item: any) => {
@@ -83,10 +104,21 @@ function MigrationPage() {
             const parsedData: AssignmentsMigrationModel[] = z.array(assignmentMigrationSchema).parse(sanitizedData);
             setData(parsedData);
 
-            // Show toast message based on the status
-            const { message } = JSON.parse(rawData);
-            const status = JSON.parse(rawData).status.toLowerCase();
+            // Extract message and status safely
+            let message = 'Operation completed';
+            let status = 'success';
+
+            if (rawData.message) {
+                message = rawData.message;
+            }
+
+            if (rawData.status) {
+                status = typeof rawData.status === 'string' ? rawData.status.toLowerCase() : 'success';
+            }
+
             console.log('Status:', status);
+
+            // Show toast message based on the status
             if (status === 'success') {
                 toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
             } else if (status === 'error') {
@@ -97,12 +129,9 @@ function MigrationPage() {
 
         } catch (error) {
             console.error('Error:', error);
-            const errorMessage = `Failed to assignments. ${(error as Error).message}`;
+            const errorMessage = `Failed to load assignments. ${(error as Error).message}`;
             setError(errorMessage);
-            setLoading(false); // Ensure loading state is set to false on error
             toast.update(toastId, { render: errorMessage, type: 'error', isLoading: false, autoClose: toastDuration });
-
-            throw error; // Re-throw the error to be caught by toast.promise
         } finally {
             setLoading(false);
         }
