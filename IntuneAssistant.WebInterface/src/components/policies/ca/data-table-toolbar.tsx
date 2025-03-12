@@ -126,6 +126,10 @@ export function DataTableToolbar({
                 state: item.state || '',
                 createdDateTime: item.createdDateTime || '',
                 modifiedDateTime: item.modifiedDateTime || '',
+                includedUsers: item.conditions?.users?.includeUsersReadable?.map((group: { displayName: string }) => group.displayName).join('\n') || '',
+                excludedUsers: item.conditions?.users?.excludeUsersReadable?.map((group: { displayName: string }) => group.displayName).join('\n') || '',
+                includedGroups: item.conditions?.users?.includeGroupsReadable?.map((group: { displayName: string }) => group.displayName).join('\n') || '',
+                excludedGroups: item.conditions?.users?.excludeGroupsReadable?.map((group: { displayName: string }) => group.displayName).join('\n') || ''
             }));
         } catch (error) {
             console.error("Failed to prepare export data:", error);
