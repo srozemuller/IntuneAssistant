@@ -49,20 +49,6 @@ export const columns: ColumnDef<Task>[] = [
         enableHiding: true,
     },
     {
-        id: "includeUsersReadable",
-        accessorKey: 'includeUsersReadable',
-        accessorFn: (row) => row.conditions?.users.includeUsersReadable?.map(user => user.displayName).join(", ") || "N/A",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Included Users" />
-        ),
-        cell: ({ row }) => {
-            const includedUsers = row.original.conditions?.users?.includeUsersReadable;
-            return includedUsers?.map(user => user.displayName).join(", ") || "N/A";
-        },
-        enableSorting: true,
-        enableHiding: true,
-    },
-    {
         accessorKey: 'state',
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Status" />
@@ -91,6 +77,20 @@ export const columns: ColumnDef<Task>[] = [
         },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    },
+    {
+        id: "includeUsersReadable",
+        accessorKey: 'includeUsersReadable',
+        accessorFn: (row) => row.conditions?.users.includeUsersReadable?.map(user => user.displayName).join(", ") || "N/A",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Included Users" />
+        ),
+        cell: ({ row }) => {
+            const includedUsers = row.original.conditions?.users?.includeUsersReadable;
+            return includedUsers?.map(user => user.displayName).join(", ") || "N/A";
+        },
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         id: "excludeUsersReadable",
