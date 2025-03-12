@@ -54,6 +54,8 @@ export default function ConsentCard({
     const [isTenantIdValid, setIsTenantIdValid] = React.useState<boolean>(false);
     const [isTenantNameValid, setIsTenantNameValid] = React.useState<boolean>(false);
     const [isOnboarded, setIsOnboarded] = React.useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(isOnboarded);
+
 
     React.useEffect(() => {
         const fetchCurrentTenantId = async () => {
@@ -67,7 +69,9 @@ export default function ConsentCard({
                     const response = await fetch(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${tenantId}`);
                     const data = await response.json();
                     console.log('API Response:', data); // Log the API response
-                    setIsOnboarded(data.status === "Onboarded");
+                    const onboarded = data.status === "Onboarded";
+                    setIsOnboarded(onboarded);
+                    setIsDialogOpen(onboarded);
                 } catch (error) {
                     console.error('Error fetching onboarding status:', error);
                 }
@@ -77,6 +81,12 @@ export default function ConsentCard({
         fetchCurrentTenantId();
     }, []);
 
+    React.useEffect(() => {
+        if (isOnboarded) {
+            setIsDialogOpen(true);
+        }
+    }, [isOnboarded]);
+    
     const validateTenantName = (name: string) => {
         const nameRegex = /^[a-zA-Z0-9]+$/;
         return nameRegex.test(name) && name.length <= 27;
@@ -126,8 +136,8 @@ export default function ConsentCard({
     return (
         <>
             {isOnboarded && (
-                <Dialog open={isOnboarded}>
-                    <DialogContent>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Already Onboarded</DialogTitle>
                             <DialogDescription>
