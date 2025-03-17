@@ -113,3 +113,8 @@ summary {
   filter: blur(5px);
   pointer-events: none;
 }
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
