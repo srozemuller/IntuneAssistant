@@ -101,9 +101,8 @@ export function DataTableRowActions({
             if (response?.status === 200) {
                 setMigrationStatus('success');
                 toast.success('Migration successful!');
-                await validateAndUpdateTable(row.original.policy.id);
-
                 const policyId = row.original.policy.id;
+                await validateAndUpdateTable(policyId);
                 console.log('Policy ID:', policyId);
             } else {
                 setMigrationStatus('failed');

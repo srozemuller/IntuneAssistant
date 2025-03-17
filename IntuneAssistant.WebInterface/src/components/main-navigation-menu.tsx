@@ -48,10 +48,16 @@ export function MainNavigationMenu() {
             if (currentTenantId) {
                 try {
                     const response = await fetch(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${currentTenantId}`);
-                    const data = await response.json();
-                    console.log(data);
-                    setIsLicensed(data.enabled);
+                    const responseData = await response.json();
+                    console.log(responseData);
 
+                    // Access the enabled property correctly
+                    if (responseData.data) {
+                        setIsLicensed(responseData.data.enabled);
+                    } else if (responseData.status === "Onboarded") {
+                        // Alternative path if the structure is different
+                        setIsLicensed(!!responseData.data?.enabled);
+                    }
                     const styleResponse = await authDataMiddleware(`${INTUNEASSISTANT_TENANT_STYLE}/${currentTenantId}`);
                     const styles = typeof styleResponse?.data === 'string' ? JSON.parse(styleResponse.data) : styleResponse?.data;
                     console.log('Styles:', styles);

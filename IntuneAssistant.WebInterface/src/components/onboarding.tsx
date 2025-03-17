@@ -25,6 +25,9 @@ import {
 import { ChevronsUpDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import authService from "@/scripts/msalservice";
+import {INTUNEASSISTANT_TENANT_INFO} from "@/components/constants/apiUrls";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
 
 type LicenseProperties = {
     environment: string;
@@ -50,18 +53,40 @@ export default function ConsentCard({
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [isTenantIdValid, setIsTenantIdValid] = React.useState<boolean>(false);
     const [isTenantNameValid, setIsTenantNameValid] = React.useState<boolean>(false);
+    const [isOnboarded, setIsOnboarded] = React.useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(isOnboarded);
+
 
     React.useEffect(() => {
         const fetchCurrentTenantId = async () => {
             if (authService.isLoggedIn()) {
                 const userClaims = authService.getTokenClaims();
-                setCurrentTenantId(userClaims.tenantId); // Assuming 'tid' is the tenant ID claim
+                const tenantId = userClaims.tenantId;
+                setCurrentTenantId(tenantId);
+
+                try {
+                    // Check if the tenant is already onboarded
+                    const response = await fetch(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${tenantId}`);
+                    const data = await response.json();
+                    console.log('API Response:', data); // Log the API response
+                    const onboarded = data.status === "Onboarded";
+                    setIsOnboarded(onboarded);
+                    setIsDialogOpen(onboarded);
+                } catch (error) {
+                    console.error('Error fetching onboarding status:', error);
+                }
             }
         };
 
         fetchCurrentTenantId();
     }, []);
 
+    React.useEffect(() => {
+        if (isOnboarded) {
+            setIsDialogOpen(true);
+        }
+    }, [isOnboarded]);
+    
     const validateTenantName = (name: string) => {
         const nameRegex = /^[a-zA-Z0-9]+$/;
         return nameRegex.test(name) && name.length <= 27;
@@ -89,7 +114,7 @@ export default function ConsentCard({
                 .filter((env) => env.environment === selectedEnvironment)
                 .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&tenantName=${tenantName}&state=onboarding`;
 
-            const response = await fetch(apiUrl, { method: 'GET' });
+            const response = await fetch(apiUrl, {method: 'GET'});
             const data = await response.json();
             const consentUrl = data.url;
             const token = data.onboardingToken;
@@ -101,140 +126,159 @@ export default function ConsentCard({
 
             setIsLoading(false);
         } catch (error) {
-            toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please contact support.</a></div>);
+            toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please
+                contact support.</a></div>);
             console.error(error);
             setIsLoading(false);
         }
     };
 
     return (
-        <Card className="w-full">
-            <CardHeader>
-                <CardTitle>
-                    <span className="font-sans font-bold text-gradient_indigo-purple">
-                        Intune Assistant Onboarding
-                    </span>
-                </CardTitle>
-                <CardDescription>
-                    Onboard a new tenant into Intune Assistant.
-                    <br />
-                    For more information, please refer to the{" "}
-                    <a
-                        href="/docs/onboarding"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        documentation.
-                    </a>
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form>
-                    <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-1.5">
-                            {currentTenantId && (
-                                <div className="text-sm text-gray-500">
-                                    Current Tenant ID: {currentTenantId}
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="domain">
-                                Tenant Domain <small><a
-                                href="https://learn.microsoft.com/en-us/partner-center/account-settings/find-ids-and-domain-names#find-the-microsoft-entra-tenant-id-and-primary-domain-name"
-                                target="_blank"> (find tenant domain)</a></small>
-                            </Label>
-                            <div className="flex items-center space-y-2 space-x-2">
-                                <Input
-                                    id="domain"
-                                    placeholder="domain"
-                                    maxLength={150}
-                                    onChange={(e) => setTenantName(e.target.value)}
-                                    onBlur={handleBlur}
-                                    className={!isTenantNameValid ? "border-red-500" : ""}
-                                />
-                                {!isTenantNameValid && (
-                                    <div className="text-red-500 text-sm">
-                                        Please enter a valid tenant name (alphanumeric only with the max of 27).
+        <>
+            {isOnboarded && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Already Onboarded</DialogTitle>
+                            <DialogDescription>
+                                You are already onboarded with the tenant ID: {currentTenantId}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <Button variant="outline" onClick={() => window.location.href = '/'}>
+                            Return to Main Page
+                        </Button>
+                    </DialogContent>
+                </Dialog>
+            )}
+            <Card className={`w-full ${isOnboarded ? 'opacity-50 pointer-events-none' : ''}`}>
+                <CardHeader>
+                    <CardTitle>
+                        <span className="font-sans font-bold text-gradient_indigo-purple">
+                            Intune Assistant Onboarding
+                        </span>
+                    </CardTitle>
+                    <CardDescription>
+                        Onboard a new tenant into Intune Assistant.
+                        <br/>
+                        For more information, please refer to the{" "}
+                        <a
+                            href="/docs/onboarding"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            documentation.
+                        </a>
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form>
+                        <div className="grid w-full items-center gap-4">
+                            <div className="flex flex-col space-y-1.5">
+                                {currentTenantId && (
+                                    <div className="text-sm text-gray-500">
+                                        Current Tenant ID: {currentTenantId}
                                     </div>
                                 )}
-                                <span>.onmicrosoft.com</span>
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="domain">
+                                    Tenant Domain <small><a
+                                    href="https://learn.microsoft.com/en-us/partner-center/account-settings/find-ids-and-domain-names#find-the-microsoft-entra-tenant-id-and-primary-domain-name"
+                                    target="_blank"> (find tenant domain)</a></small>
+                                </Label>
+                                <div className="flex items-center space-y-2 space-x-2">
+                                    <Input
+                                        id="domain"
+                                        placeholder="domain"
+                                        maxLength={150}
+                                        onChange={(e) => setTenantName(e.target.value)}
+                                        onBlur={handleBlur}
+                                        className={!isTenantNameValid ? "border-red-500" : ""}
+                                    />
+                                    {!isTenantNameValid && (
+                                        <div className="text-red-500 text-sm">
+                                            Please enter a valid tenant name (alphanumeric only with the max of 27).
+                                        </div>
+                                    )}
+                                    <span>.onmicrosoft.com</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="name">
+                                    Tenant ID <small><a
+                                    href="https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id#find-your-microsoft-entra-tenant"
+                                    target="_blank"> (find Tenant ID)</a></small>
+                                </Label>
+                                <Input
+                                    id="name"
+                                    placeholder="00000000-0000-0000-0000-000000000000"
+                                    maxLength={36}
+                                    onChange={(e) => setTenantId(e.target.value)}
+                                    onBlur={handleBlur}
+                                    className={!isTenantIdValid ? "border-red-500" : ""}
+                                />
+                                {!isTenantIdValid && (
+                                    <div className="text-red-500 text-sm">
+                                        Please enter a valid Tenant ID.
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <Collapsible
+                                    open={isOptionsOpen}
+                                    onOpenChange={setIsOptionsOpen}
+                                    className="w-full space-y-2"
+                                >
+                                    <div className="flex items-center justify-between space-x-4">
+                                        <h4 className="text-sm font-semibold">Advanced options</h4>
+                                        <CollapsibleTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="w-9 p-0">
+                                                <ChevronsUpDown className="h-4 w-4"/>
+                                                <span className="sr-only">Toggle</span>
+                                            </Button>
+                                        </CollapsibleTrigger>
+                                    </div>
+                                    <CollapsibleContent className="space-y-2">
+                                        <Label htmlFor="framework">License</Label>
+                                        <Select
+                                            defaultValue={defaultEnvironment.environment}
+                                            onValueChange={(e) => setSelectedEnvironment(e)}
+                                        >
+                                            <SelectTrigger id="framework">
+                                                <SelectValue placeholder="Select"/>
+                                            </SelectTrigger>
+                                            <SelectContent position="popper">
+                                                {environments.map((env) => (
+                                                    <SelectItem
+                                                        key={env.environment}
+                                                        value={env.environment}
+                                                    >
+                                                        {env.displayName}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </CollapsibleContent>
+                                </Collapsible>
                             </div>
                         </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="name">
-                                Tenant ID <small><a
-                                href="https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id#find-your-microsoft-entra-tenant"
-                                target="_blank"> (find Tenant ID)</a></small>
-                            </Label>
-                            <Input
-                                id="name"
-                                placeholder="00000000-0000-0000-0000-000000000000"
-                                maxLength={36}
-                                onChange={(e) => setTenantId(e.target.value)}
-                                onBlur={handleBlur}
-                                className={!isTenantIdValid ? "border-red-500" : ""}
-                            />
-                            {!isTenantIdValid && (
-                                <div className="text-red-500 text-sm">
-                                    Please enter a valid Tenant ID.
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Collapsible
-                                open={isOptionsOpen}
-                                onOpenChange={setIsOptionsOpen}
-                                className="w-full space-y-2"
-                            >
-                                <div className="flex items-center justify-between space-x-4">
-                                    <h4 className="text-sm font-semibold">Advanced options</h4>
-                                    <CollapsibleTrigger asChild>
-                                        <Button variant="ghost" size="sm" className="w-9 p-0">
-                                            <ChevronsUpDown className="h-4 w-4"/>
-                                            <span className="sr-only">Toggle</span>
-                                        </Button>
-                                    </CollapsibleTrigger>
-                                </div>
-                                <CollapsibleContent className="space-y-2">
-                                    <Label htmlFor="framework">License</Label>
-                                    <Select
-                                        defaultValue={defaultEnvironment.environment}
-                                        onValueChange={(e) => setSelectedEnvironment(e)}
-                                    >
-                                        <SelectTrigger id="framework">
-                                            <SelectValue placeholder="Select"/>
-                                        </SelectTrigger>
-                                        <SelectContent position="popper">
-                                            {environments.map((env) => (
-                                                <SelectItem
-                                                    key={env.environment}
-                                                    value={env.environment}
-                                                >
-                                                    {env.displayName}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </CollapsibleContent>
-                            </Collapsible>
-                        </div>
-                    </div>
-                </form>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-                <Button variant="outline" onClick={() => window.location.reload()}>
-                    Reset
-                </Button>
-                {isLoading ? (
-                    <Button disabled>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Please wait
+                    </form>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                    <Button variant="outline" onClick={() => window.location.reload()}>
+                        Reset
                     </Button>
-                ) : (
-                    <Button onClick={fetchUrlAndRedirect} disabled={!isTenantIdValid || !isTenantNameValid}>Deploy</Button>
-                )}
-            </CardFooter>
-        </Card>
+                    {isLoading ? (
+                        <Button disabled>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                            Please wait
+                        </Button>
+                    ) : (
+                        <Button onClick={fetchUrlAndRedirect}
+                                disabled={!isTenantIdValid || !isTenantNameValid}>Deploy</Button>
+                    )}
+                </CardFooter>
+            </Card>
+        </>
     );
 }
