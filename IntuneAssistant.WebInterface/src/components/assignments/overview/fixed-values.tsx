@@ -1,4 +1,15 @@
-import {CheckCircle, XCircle, UserCircle, Computer, Users, Grid2X2Icon, AppleIcon, BotIcon} from "lucide-react"
+import {
+    CheckCircle,
+    Circle,
+    XCircle,
+    UserCircle,
+    Computer,
+    Users,
+    Grid2X2Icon,
+    AppleIcon,
+    BotIcon,
+    HelpCircleIcon
+} from "lucide-react"
 
 export const isAssignedValues = [
     {
@@ -32,7 +43,7 @@ export const accountIsEnabled = [
 
 export const platform = [
     {
-        value: 'windows10',
+        value: 'Windows',
         label: "Windows",
         icon: Grid2X2Icon,
         color: "text-green-500",
@@ -50,9 +61,21 @@ export const platform = [
         color: "text-red-500",
     },
     {
-        value: 'MacOs',
+        value: 'macOS',
         label: "macOS",
         icon: AppleIcon,
+        color: "text-red-500",
+    },
+    {
+        value: 'General',
+        label: "General",
+        icon: Circle,
+        color: "text-red-500",
+    },
+    {
+        value: 'Unknown',
+        label: "Unknown",
+        icon: HelpCircleIcon,
         color: "text-red-500",
     },
 ]
