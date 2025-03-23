@@ -19,6 +19,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
+import JSZip from "jszip";
 
 interface AssignmentRow {
     id: string;
@@ -136,6 +137,11 @@ export function DataTableRowActions({
 
                     setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: true }));
                     toast.success(`Backup successful for policy ${policy.id}.`);
+                    setBackupStatus(prev => {
+                        const newStatus = {...prev, [policy.id]: true};
+                        console.log("Backup status updated:", newStatus);
+                        return newStatus;
+                    });
                 } else {
                     setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
                     toast.error(`Backup failed for policy ${policy.id}!`);
@@ -200,7 +206,7 @@ export function DataTableRowActions({
                         <DialogTitle>Confirm Migration</DialogTitle>
                     </DialogHeader>
                     <p>Are you sure you want to migrate this row?</p>
-                    {!backupStatus[row.original.id] && (
+                    {!backupStatus[row.original.policy.id] && (
                         <p className="text-red-500">Warning: This row is not backed up.</p>
                     )}
                     <DialogFooter>
@@ -210,7 +216,7 @@ export function DataTableRowActions({
                         <Button onClick={handleDialogConfirm} variant="default">
                             Confirm
                         </Button>
-                        {!backupStatus[row.original.id] && (
+                        {!backupStatus[row.original.policy.id] && (
                             <Button onClick={handleRowBackup} variant="default">
                                 Make Backup
                             </Button>
