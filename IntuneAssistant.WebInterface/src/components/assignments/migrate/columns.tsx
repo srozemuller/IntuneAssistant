@@ -10,7 +10,7 @@ import {
 import {DataTableColumnHeader} from "@/components/data-table-column-header.tsx";
 import {migrationNeeded, readyForMigration, filterType} from "@/components/assignments/migrate/fixed-values.tsx";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
-import {CheckCircle, TriangleAlert, BicepsFlexed} from "lucide-react";
+import {CheckCircle, TriangleAlert, BicepsFlexed, CircleX} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {useEffect, useState} from "react";
 import {z} from "zod";
@@ -464,11 +464,11 @@ export const columns = (
                 const isBackedUp = policyId ? backupStatus[policyId] : undefined;
 
                 if (isBackedUp === undefined) {
-                    return <span className="text-gray-400">Not backed up</span>;
+                    return <TriangleAlert className="h-5 w-5 text-orange-500" />;
                 } else if (isBackedUp) {
                     return <CheckCircle className="h-5 w-5 text-green-500" />;
                 } else {
-                    return <TriangleAlert className="h-5 w-5 text-red-500" />;
+                    return <CircleX className="h-5 w-5 text-red-500" />;
                 }
             },
         }

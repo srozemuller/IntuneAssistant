@@ -46,6 +46,8 @@ interface DataTableToolbarProps<TData> {
     fetchData: () => Promise<void>;
     source: string;
     validateAndUpdateTable;
+    backupStatus: Record<string, boolean>;
+    setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 export function DataTableToolbar({
@@ -53,7 +55,9 @@ export function DataTableToolbar({
                                      rawData,
                                      fetchData,
                                      source,
-                                     validateAndUpdateTable
+                                     validateAndUpdateTable,
+                                     backupStatus,
+                                     setBackupStatus
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
@@ -66,19 +70,16 @@ export function DataTableToolbar({
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [acknowledgeRisk, setAcknowledgeRisk] = useState(false);
     const [tableData, setTableData] = useState<TData[]>([]);
-    const [backupStatus, setBackupStatus] = useState<Record<string, boolean>>({});
+
 
     const { userClaims } = useUser();
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
         setSelectedRowCount(selectedRows.length);
-        setSelectedIds(selectedRows.map(row => row.original.id));
+        setSelectedIds(selectedRows.map(row => row.original.policy?.id).filter(Boolean));
     }, [table.getSelectedRowModel().rows]);
 
-    // Function to log data to Sentry
-    Sentry.captureMessage('This is a custom message from Astro!');
 
-    // In DataTableToolbar.tsx
     const handleBackupExport = async () => {
         const selectedRows = table.getSelectedRowModel().rows;
         const uniquePolicies = [...new Map(selectedRows.map(row =>
@@ -92,6 +93,7 @@ export function DataTableToolbar({
 
         const zip = new JSZip();
         let hasError = false;
+        const newBackupStatus = { ...backupStatus }; // Create a copy of the current backup status
 
         for (const policy of uniquePolicies) {
             if (policy.id && policy.type) {
@@ -101,14 +103,14 @@ export function DataTableToolbar({
                         const sourceFileName = `${policy.id}_source.json`;
                         const sourceFileContent = JSON.stringify(response.data, null, 2);
                         zip.file(sourceFileName, sourceFileContent);
-                        setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: true }));
+                        newBackupStatus[policy.id] = true; // Update the copy instead of using setState
                     } else {
-                        setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
+                        newBackupStatus[policy.id] = false; // Update the copy
                         hasError = true;
                     }
                 } catch (error) {
                     console.error(`Failed to backup policy ${policy.id}:`, error);
-                    setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
+                    newBackupStatus[policy.id] = false; // Update the copy
                     hasError = true;
                 }
             }
@@ -117,6 +119,10 @@ export function DataTableToolbar({
         try {
             const content = await zip.generateAsync({ type: "blob" });
             saveAs(content, `backup.zip`);
+
+            // Apply all status changes at once using the prop's setter
+            setBackupStatus(newBackupStatus);
+
             toast.success(`Zip file created and downloaded.`);
 
             if (hasError) {
@@ -212,7 +218,6 @@ export function DataTableToolbar({
         }
     };
 
-// In your component where handleConfirmMigrate is defined
     const handleConfirmMigrate = () => {
         const selectedRows = table.getSelectedRowModel().rows;
         const nonBackedUpRows = selectedRows.filter(row => !backupStatus[row.original.policy?.id]);
@@ -226,8 +231,6 @@ export function DataTableToolbar({
     };
 
     const handleDialogConfirm = () => {
-        // Capture a custom error
-        console.log("Capturing exception with Sentry");
         if (acknowledgeRisk) {
             Sentry.captureException(new Error(`User ${userClaims?.username} acknowledged the risks of migrating rows without backups in tenant ${userClaims?.tenantId}.`));
         }
