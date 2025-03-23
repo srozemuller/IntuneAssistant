@@ -38,7 +38,6 @@ interface TData {
     groupToMigrate: string;
     assignmentId: string;
     filterToMigrate: { displayName: string, id: string } | null,
-    isBackuped?: boolean;
 }
 
 interface DataTableToolbarProps<TData> {
@@ -46,6 +45,7 @@ interface DataTableToolbarProps<TData> {
     rawData: string;
     fetchData: () => Promise<void>;
     source: string;
+    validateAndUpdateTable;
 }
 
 export function DataTableToolbar({
@@ -53,8 +53,6 @@ export function DataTableToolbar({
                                      rawData,
                                      fetchData,
                                      source,
-                                     backupStatus,
-                                     setBackupStatus,
                                      validateAndUpdateTable
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
@@ -68,6 +66,7 @@ export function DataTableToolbar({
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [acknowledgeRisk, setAcknowledgeRisk] = useState(false);
     const [tableData, setTableData] = useState<TData[]>([]);
+    const [backupStatus, setBackupStatus] = useState<Record<string, boolean>>({});
 
     const { userClaims } = useUser();
     useEffect(() => {
@@ -79,11 +78,12 @@ export function DataTableToolbar({
     // Function to log data to Sentry
     Sentry.captureMessage('This is a custom message from Astro!');
 
-    const handleBackupExport = async (rawData: string) => {
+    // In DataTableToolbar.tsx
+    const handleBackupExport = async () => {
         const selectedRows = table.getSelectedRowModel().rows;
-        const parsedRawData = JSON.parse(rawData);
-
-        const uniquePolicies = [...new Map(selectedRows.map(row => [row.original.policy?.id, { id: row.original.policy?.id, type: row.original.policy?.policyType }])).values()];
+        const uniquePolicies = [...new Map(selectedRows.map(row =>
+            [row.original.policy?.id, { id: row.original.policy?.id, type: row.original.policy?.policyType }]
+        )).values()];
 
         if (uniquePolicies.length === 0) {
             toast.error("No data to export.");
@@ -91,27 +91,41 @@ export function DataTableToolbar({
         }
 
         const zip = new JSZip();
+        let hasError = false;
+
         for (const policy of uniquePolicies) {
             if (policy.id && policy.type) {
-                const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.type}/${policy.id}`, 'GET');
-                if (response && response.data) {
-                    const sourceFileName = `${policy.id}_source.json`;
-                    const sourceFileContent = JSON.stringify(response.data, null, 2);
-                    zip.file(sourceFileName, sourceFileContent);
-                    setBackupStatus((prevStatus: Record<string, boolean>) => ({ ...prevStatus, [policy.id]: true })); // Update backup status
-                } else {
-                    toast.error(`Backup failed for policy ${policy.id}!`);
+                try {
+                    const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.type}/${policy.id}`, 'GET');
+                    if (response && response.data) {
+                        const sourceFileName = `${policy.id}_source.json`;
+                        const sourceFileContent = JSON.stringify(response.data, null, 2);
+                        zip.file(sourceFileName, sourceFileContent);
+                        setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: true }));
+                    } else {
+                        setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
+                        hasError = true;
+                    }
+                } catch (error) {
+                    console.error(`Failed to backup policy ${policy.id}:`, error);
+                    setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
+                    hasError = true;
                 }
             }
         }
 
-        zip.generateAsync({ type: "blob" }).then((content) => {
+        try {
+            const content = await zip.generateAsync({ type: "blob" });
             saveAs(content, `backup.zip`);
             toast.success(`Zip file created and downloaded.`);
-        }).catch((err) => {
+
+            if (hasError) {
+                toast.error("Some policies failed to backup. Check the status indicators.");
+            }
+        } catch (err) {
             console.error("Failed to create zip file:", err);
             toast.error(`Failed to create zip file: ${err.message}`);
-        });
+        }
     };
 
     const handleCsvExport = async (rawData: string) => {
@@ -198,13 +212,14 @@ export function DataTableToolbar({
         }
     };
 
+// In your component where handleConfirmMigrate is defined
     const handleConfirmMigrate = () => {
         const selectedRows = table.getSelectedRowModel().rows;
-        const selectedIds = selectedRows.map(row => row.original.id);
-        const noBackups = selectedIds.some(id => !backupStatus[id]);
+        const nonBackedUpRows = selectedRows.filter(row => !backupStatus[row.original.policy?.id]);
 
-        if (noBackups) {
-            toast.error("Some selected rows are not backed up.");
+        if (nonBackedUpRows.length > 0) {
+            toast.warning("Some selected rows are not backed up. Please back them up first.");
+            return;
         }
 
         setIsDialogOpen(true);

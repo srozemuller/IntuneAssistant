@@ -65,7 +65,12 @@ const FilterCell = ({ row, filters }: { row: any, filters: z.infer<typeof filter
         </div>
     );
 };
-export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.infer<typeof filterSchema>[], setTableData: React.Dispatch<React.SetStateAction<AssignmentsMigrationModel[]>>): ColumnDef<AssignmentsMigrationModel>[] => [
+export const columns = (
+    groupData: z.infer<typeof groupsSchema>[],
+    filters: z.infer<typeof filterSchema>[],
+    backupStatus: Record<string, boolean>,
+    setTableData: React.Dispatch<React.SetStateAction<AssignmentsMigrationModel[]>>
+): ColumnDef<AssignmentsMigrationModel>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -445,6 +450,23 @@ export const columns = (groupData: z.infer<typeof groupsSchema>[], filters: z.in
             );
         },
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
-    }
+    },
+    {
+        accessorKey: "backupStatus",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Backup Status" />
+        ),
+        cell: ({ row }) => {
+            const policyId = row.original.policy?.id;
+            const isBackedUp = policyId ? backupStatus[policyId] : undefined;
 
+            if (isBackedUp === undefined) {
+                return <span className="text-gray-400">Not backed up</span>;
+            } else if (isBackedUp) {
+                return <CheckCircle className="h-5 w-5 text-green-500" />;
+            } else {
+                return <TriangleAlert className="h-5 w-5 text-red-500" />;
+            }
+        },
+    }
 ];

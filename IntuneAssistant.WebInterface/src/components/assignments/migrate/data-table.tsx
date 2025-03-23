@@ -240,9 +240,9 @@ export function DataTable<TData extends AssignmentRow, TValue>({
                                     <DataTableRowActions
                                         row={row}
                                         setTableData={setTableData}
+                                        table={table}
                                         backupStatus={backupStatus}
                                         setBackupStatus={setBackupStatus}
-                                        table={table}
                                         validateAndUpdateTable={validateAndUpdateTable}
                                     />
                                 </TableCell>

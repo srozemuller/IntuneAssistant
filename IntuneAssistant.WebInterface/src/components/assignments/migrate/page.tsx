@@ -37,6 +37,7 @@ function MigrationPage() {
     const [isAnimating, setIsAnimating] = useState(false);
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
     const [tenantId, setTenantId] = useState<string>('');
+    const [backupStatus, setBackupStatus] = useState<Record<string, boolean>>({});
 
     const fetchData = async () => {
         const toastId = toast.loading(`Loading migration config`);
@@ -173,6 +174,8 @@ function MigrationPage() {
                 fetchData={fetchData}
                 source="assignmentsMigration"
                 setTableData={setData}
+                backupStatus={backupStatus}
+                setBackupStatus={setBackupStatus}
             />
         </div>
     );
