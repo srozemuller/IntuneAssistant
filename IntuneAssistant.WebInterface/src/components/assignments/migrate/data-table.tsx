@@ -39,6 +39,8 @@ interface DataTableProps<TData extends AssignmentRow, TValue> {
     rowClassName?: string;
     fetchData: () => Promise<void>;
     setTableData: React.Dispatch<React.SetStateAction<TData[]>>;
+    backupStatus: Record<string, boolean>
+    setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }
 
 interface AssignmentRow {
@@ -67,6 +69,8 @@ export function DataTable<TData extends AssignmentRow, TValue>({
                                                                    source,
                                                                    rowClassName,
                                                                    setTableData,
+                                                                   backupStatus,
+                                                                   setBackupStatus,
                                                                }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({});
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -75,7 +79,6 @@ export function DataTable<TData extends AssignmentRow, TValue>({
     const [isAnimating, setIsAnimating] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(10); // Default page size
-    const [backupStatus, setBackupStatus] = useState<{ [key: string]: boolean }>({});
     const [isBlurring, setIsBlurring] = useState(false);
 
     const table = useReactTable({
@@ -240,9 +243,9 @@ export function DataTable<TData extends AssignmentRow, TValue>({
                                     <DataTableRowActions
                                         row={row}
                                         setTableData={setTableData}
+                                        table={table}
                                         backupStatus={backupStatus}
                                         setBackupStatus={setBackupStatus}
-                                        table={table}
                                         validateAndUpdateTable={validateAndUpdateTable}
                                     />
                                 </TableCell>

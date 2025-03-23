@@ -21,6 +21,7 @@ import { assignmentMigrationSchema } from "@/components/assignments/migrate/sche
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
 import { SelectAllButton } from "@/components/button-selectall.tsx";
+import { Progress } from "@/components/ui/progress";
 
 // Toast configuration
 import { ToastContainer, toast } from 'react-toastify';
@@ -38,7 +39,6 @@ interface TData {
     groupToMigrate: string;
     assignmentId: string;
     filterToMigrate: { displayName: string, id: string } | null,
-    isBackuped?: boolean;
 }
 
 interface DataTableToolbarProps<TData> {
@@ -46,6 +46,9 @@ interface DataTableToolbarProps<TData> {
     rawData: string;
     fetchData: () => Promise<void>;
     source: string;
+    validateAndUpdateTable;
+    backupStatus: Record<string, boolean>;
+    setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 export function DataTableToolbar({
@@ -53,9 +56,9 @@ export function DataTableToolbar({
                                      rawData,
                                      fetchData,
                                      source,
+                                     validateAndUpdateTable,
                                      backupStatus,
-                                     setBackupStatus,
-                                     validateAndUpdateTable
+                                     setBackupStatus
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
@@ -69,49 +72,83 @@ export function DataTableToolbar({
     const [acknowledgeRisk, setAcknowledgeRisk] = useState(false);
     const [tableData, setTableData] = useState<TData[]>([]);
 
+    const [backupProgress, setBackupProgress] = useState(0);
+    const [isBackingUp, setIsBackingUp] = useState(false);
+    const [totalPolicies, setTotalPolicies] = useState(0);
+    const [processedPolicies, setProcessedPolicies] = useState(0);
+
+
     const { userClaims } = useUser();
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
         setSelectedRowCount(selectedRows.length);
-        setSelectedIds(selectedRows.map(row => row.original.id));
+        setSelectedIds(selectedRows.map(row => row.original.policy?.id).filter(Boolean));
     }, [table.getSelectedRowModel().rows]);
 
-    // Function to log data to Sentry
-    Sentry.captureMessage('This is a custom message from Astro!');
 
-    const handleBackupExport = async (rawData: string) => {
+    const handleBackupExport = async () => {
         const selectedRows = table.getSelectedRowModel().rows;
-        const parsedRawData = JSON.parse(rawData);
-
-        const uniquePolicies = [...new Map(selectedRows.map(row => [row.original.policy?.id, { id: row.original.policy?.id, type: row.original.policy?.policyType }])).values()];
+        const uniquePolicies = [...new Map(selectedRows.map(row =>
+            [row.original.policy?.id, { id: row.original.policy?.id, type: row.original.policy?.policyType }]
+        )).values()];
 
         if (uniquePolicies.length === 0) {
             toast.error("No data to export.");
             return;
         }
 
+        // Initialize progress state
+        setIsBackingUp(true);
+        setBackupProgress(0);
+        setTotalPolicies(uniquePolicies.length);
+        setProcessedPolicies(0);
+
         const zip = new JSZip();
-        for (const policy of uniquePolicies) {
+        let hasError = false;
+        const newBackupStatus = { ...backupStatus };
+
+        for (const [index, policy] of uniquePolicies.entries()) {
             if (policy.id && policy.type) {
-                const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.type}/${policy.id}`, 'GET');
-                if (response && response.data) {
-                    const sourceFileName = `${policy.id}_source.json`;
-                    const sourceFileContent = JSON.stringify(response.data, null, 2);
-                    zip.file(sourceFileName, sourceFileContent);
-                    setBackupStatus((prevStatus: Record<string, boolean>) => ({ ...prevStatus, [policy.id]: true })); // Update backup status
-                } else {
-                    toast.error(`Backup failed for policy ${policy.id}!`);
+                try {
+                    const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.type}/${policy.id}`, 'GET');
+                    if (response && response.data) {
+                        const sourceFileName = `${policy.id}_source.json`;
+                        const sourceFileContent = JSON.stringify(response.data, null, 2);
+                        zip.file(sourceFileName, sourceFileContent);
+                        newBackupStatus[policy.id] = true;
+                    } else {
+                        newBackupStatus[policy.id] = false;
+                        hasError = true;
+                    }
+                } catch (error) {
+                    console.error(`Failed to backup policy ${policy.id}:`, error);
+                    newBackupStatus[policy.id] = false;
+                    hasError = true;
                 }
+
+                // Update progress after each policy is processed
+                setProcessedPolicies(index + 1);
+                setBackupProgress(Math.round(((index + 1) / uniquePolicies.length) * 100));
             }
         }
 
-        zip.generateAsync({ type: "blob" }).then((content) => {
+        try {
+            const content = await zip.generateAsync({ type: "blob" });
             saveAs(content, `backup.zip`);
+
+            setBackupStatus(newBackupStatus);
             toast.success(`Zip file created and downloaded.`);
-        }).catch((err) => {
+
+            if (hasError) {
+                toast.error("Some policies failed to backup. Check the status indicators.");
+            }
+        } catch (err) {
             console.error("Failed to create zip file:", err);
             toast.error(`Failed to create zip file: ${err.message}`);
-        });
+        } finally {
+            // Reset progress state
+            setIsBackingUp(false);
+        }
     };
 
     const handleCsvExport = async (rawData: string) => {
@@ -200,19 +237,17 @@ export function DataTableToolbar({
 
     const handleConfirmMigrate = () => {
         const selectedRows = table.getSelectedRowModel().rows;
-        const selectedIds = selectedRows.map(row => row.original.id);
-        const noBackups = selectedIds.some(id => !backupStatus[id]);
+        const nonBackedUpRows = selectedRows.filter(row => !backupStatus[row.original.policy?.id]);
 
-        if (noBackups) {
-            toast.error("Some selected rows are not backed up.");
+        if (nonBackedUpRows.length > 0) {
+            toast.warning("Some selected rows are not backed up. Please back them up first.");
+            return;
         }
 
         setIsDialogOpen(true);
     };
 
     const handleDialogConfirm = () => {
-        // Capture a custom error
-        console.log("Capturing exception with Sentry");
         if (acknowledgeRisk) {
             Sentry.captureException(new Error(`User ${userClaims?.username} acknowledged the risks of migrating rows without backups in tenant ${userClaims?.tenantId}.`));
         }
@@ -308,6 +343,23 @@ export function DataTableToolbar({
                 </div>
                 <DataTableViewOptions table={table} />
             </div>
+            {isBackingUp && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
+                        <h3 className="text-lg font-medium mb-2">Backing up policies</h3>
+                        <div className="mb-2">
+                            <Progress value={backupProgress} className="h-2 mb-1" />
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>{processedPolicies} of {totalPolicies} policies</span>
+                                <span>{backupProgress}%</span>
+                            </div>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                            Please wait while your policies are being backed up...
+                        </p>
+                    </div>
+                </div>
+            )}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
