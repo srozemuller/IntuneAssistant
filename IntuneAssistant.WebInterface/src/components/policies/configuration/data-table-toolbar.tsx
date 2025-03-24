@@ -61,17 +61,16 @@ export function DataTableToolbar({
     const [backupProcessStatus, setBackupProcessStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
 
     useEffect(() => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        setSelectedRowCount(selectedRows.length);
+        const selectedRowsFlat = Object.values(table.getSelectedRowModel().rowsById);
+        setSelectedRowCount(selectedRowsFlat.length);
 
         // Use a type guard to filter out undefined values
-        const ids = selectedRows
+        const ids = selectedRowsFlat
             .map((row: any) => row.original.id)
             .filter((id): id is string => Boolean(id));
 
         setSelectedIds(ids);
-    }, [table.getSelectedRowModel().rows]);
-
+    }, [table.getSelectedRowModel().rowsById]);
     const prepareExportData = useMemo(() => {
         try {
             const selectedRows = table.getSelectedRowModel().rows;
@@ -127,8 +126,11 @@ export function DataTableToolbar({
 
     const handleBackupExport = async () => {
         try {
-            const selectedRows = table.getSelectedRowModel().rows;
-            if (selectedRows.length === 0) {
+            // Get all selected rows across all pages
+            const selectedRowsModel = table.getSelectedRowModel();
+            const selectedRowsFlat = Object.values(selectedRowsModel.rowsById);
+
+            if (selectedRowsFlat.length === 0) {
                 toast.warning("Please select rows to backup");
                 return;
             }
@@ -136,13 +138,13 @@ export function DataTableToolbar({
             // Save table state for restoring after operation
             const tableState = {
                 pagination: { ...table.getState().pagination },
-                sorting: [...table.getState().sorting ],
+                sorting: [...table.getState().sorting],
                 columnFilters: [...table.getState().columnFilters],
                 globalFilter: table.getState().globalFilter
             };
 
-            const dataToExport = selectedRows.map((row: any) => row.original);
-            const totalRows = selectedRows.length;
+            const dataToExport = selectedRowsFlat.map((row: any) => row.original);
+            const totalRows = dataToExport.length;
 
             // Initialize progress tracking
             setIsBackuping(true);
@@ -153,8 +155,11 @@ export function DataTableToolbar({
             // Track backup status for each row
             const newBackupStatus = { ...backupStatus };
 
-            // Create a zip file for all backups - flat structure, no folders
+            // Create a zip file for all backups
             const zip = new JSZip();
+
+            // Create folders for each platform type
+            const platformFolders: Record<string, JSZip> = {};
 
             for (let i = 0; i < dataToExport.length; i++) {
                 const item = dataToExport[i];
@@ -165,10 +170,24 @@ export function DataTableToolbar({
                 setCompletedBackups(i + 1);
 
                 try {
-                    // Access the policy type and ID from the current item
+                    // Access the policy type, ID and platform from the current item
                     const policyType = item.policyType;
                     const policyId = item.id;
                     const policyName = item.name || `policy_${policyId}`;
+                    // Get platform (could be a string or array)
+                    const platformValue = item.platforms || 'unknown';
+
+                    // Handle platforms as an array or string
+                    let platformFolder;
+                    if (Array.isArray(platformValue)) {
+                        // If platform is an array, use the first value
+                        platformFolder = platformValue[0] || 'unknown';
+                    } else {
+                        platformFolder = platformValue;
+                    }
+
+                    // Normalize platform folder name
+                    platformFolder = String(platformFolder).trim() || 'unknown';
 
                     // Create safe filename by removing invalid characters
                     const safeFileName = policyName
@@ -187,11 +206,16 @@ export function DataTableToolbar({
                     );
 
                     if (response && response.data) {
-                        // Add the file to the zip with display name as filename
-                        const sourceFileContent = JSON.stringify(response.data, null, 2);
+                        // Create or get the platform folder
+                        if (!platformFolders[platformFolder]) {
+                            platformFolders[platformFolder] = zip.folder(platformFolder) as JSZip;
+                        }
 
-                        // Add file directly to zip root (no folders)
-                        zip.file(`${safeFileName}.json`, sourceFileContent);
+                        const folder = platformFolders[platformFolder];
+
+                        // Add the file to the appropriate platform folder
+                        const sourceFileContent = JSON.stringify(response.data, null, 2);
+                        folder.file(`${safeFileName}.json`, sourceFileContent);
 
                         // Update backup status for this item
                         newBackupStatus[item.id] = true;

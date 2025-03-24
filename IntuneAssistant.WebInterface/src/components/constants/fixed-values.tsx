@@ -2,7 +2,7 @@ import {AppleIcon, BotIcon, Grid2X2Icon} from "lucide-react";
 
 export const platform = [
     {
-        value: 'windows10',
+        value: 'Windows',
         label: "Windows",
         icon: Grid2X2Icon,
         color: "text-green-500",
@@ -20,7 +20,7 @@ export const platform = [
         color: "text-red-500",
     },
     {
-        value: 'MacOs',
+        value: 'macOS',
         label: "macOS",
         icon: AppleIcon,
         color: "text-red-500",
