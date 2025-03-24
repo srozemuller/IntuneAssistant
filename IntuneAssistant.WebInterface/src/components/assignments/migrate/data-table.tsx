@@ -79,7 +79,6 @@ export function DataTable<TData extends AssignmentRow, TValue>({
     const [isAnimating, setIsAnimating] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(10); // Default page size
-    const [isBlurring, setIsBlurring] = useState(false);
 
     const table = useReactTable({
         data,
@@ -108,23 +107,27 @@ export function DataTable<TData extends AssignmentRow, TValue>({
         getFacetedUniqueValues: getFacetedUniqueValues(),
     });
 
-    const validateAndUpdateTable = async (policyId?: string) => {
+    // In data-table.tsx
+    const validateAndUpdateTable = async (policyId?: string): Promise<boolean> => {
         try {
-            setIsBlurring(true);
-            const allRows = table.getRowModel().rows;
+            // Find rows to validate based on policy ID
             const rowsToValidate = policyId
-                ? allRows.filter((r) => r.original.policy.id === policyId)
-                : allRows;
+                ? data.filter(row => row.policy?.id === policyId)
+                : data;
 
-            const validationRequestBody = rowsToValidate.map((r) => ({
-                Id: r.original.id,
-                ResourceType: r.original.policy.policyType,
-                ResourceId: r.original.policy.id,
-                AssignmentId: r.original.assignmentId,
-                AssignmentType: r.original.assignmentType,
-                AssignmentAction: r.original.assignmentAction,
-                FilterId: r.original.filterToMigrate?.id || null,
-                FilterType: r.original.filterType || 'none'
+            if (rowsToValidate.length === 0) {
+                return true; // Nothing to validate
+            }
+
+            const validationRequestBody = rowsToValidate.map(row => ({
+                Id: row.id,
+                ResourceType: row.policy?.policyType,
+                ResourceId: row.policy?.id,
+                AssignmentId: row.assignmentId,
+                AssignmentType: row.assignmentType,
+                AssignmentAction: row.assignmentAction,
+                FilterId: row.filterToMigrate?.id || null,
+                FilterType: row.filterType || 'none'
             }));
 
             const validationResponse = await authDataMiddleware(
@@ -133,76 +136,53 @@ export function DataTable<TData extends AssignmentRow, TValue>({
                 JSON.stringify(validationRequestBody)
             );
 
-            // Safely handle the response data
+            // Parse validation data
             let validationData: any[] = [];
-
             if (validationResponse?.data) {
-                // Parse string data if needed
                 if (typeof validationResponse.data === 'string') {
-                    try {
-                        validationData = JSON.parse(validationResponse.data);
-                    } catch (e) {
-                        console.error('Failed to parse validation data:', e);
-                        toast.error('Failed to parse validation data');
-                        return;
-                    }
-                }
-                // Handle nested data structure
-                else if (validationResponse.data.data) {
-                    if (typeof validationResponse.data.data === 'string') {
-                        try {
-                            validationData = JSON.parse(validationResponse.data.data);
-                        } catch (e) {
-                            console.error('Failed to parse nested validation data:', e);
-                            toast.error('Failed to parse validation data');
-                            return;
-                        }
-                    } else {
-                        validationData = validationResponse.data.data;
-                    }
-                }
-                // Direct object assignment
-                else {
+                    validationData = JSON.parse(validationResponse.data);
+                } else if (validationResponse.data.data) {
+                    validationData = Array.isArray(validationResponse.data.data)
+                        ? validationResponse.data.data
+                        : JSON.parse(validationResponse.data.data);
+                } else {
                     validationData = validationResponse.data;
                 }
             }
 
-            // Ensure validationData is an array
-            if (!Array.isArray(validationData)) {
-                console.error('Validation data is not an array:', validationData);
-                toast.error('Invalid validation data format received');
-                return;
-            }
+            // Update data in-place without refreshing the entire table
+            setTableData(prevData => {
+                const newData = [...prevData];
 
-            // Update the data with validation results
-            const updatedData = allRows.map((r) => {
-                // Find matching validation item
-                const validationItem = validationData.find((item) => item && item.id === r.original.id);
+                validationData.forEach(validationItem => {
+                    if (!validationItem || !validationItem.id) return;
 
-                if (validationItem) {
-                    return {
-                        ...r.original,
-                        isMigrated: validationItem.hasCorrectAssignment,
-                        policy: {
-                            ...r.original.policy,
-                            assignments: validationItem.policy?.assignments || r.original.policy.assignments
-                        }
-                    };
-                }
-                return r.original;
+                    const rowIndex = newData.findIndex(row => row.id === validationItem.id);
+                    if (rowIndex >= 0) {
+                        newData[rowIndex] = {
+                            ...newData[rowIndex],
+                            isMigrated: validationItem.hasCorrectAssignment,
+                            policy: {
+                                ...newData[rowIndex].policy,
+                                assignments: validationItem.policy?.assignments || newData[rowIndex].policy?.assignments
+                            }
+                        };
+                    }
+                });
+
+                return newData;
             });
 
-            setTableData(updatedData);
+            return true;
         } catch (error) {
             console.error('Validation failed:', error);
-            toast.error(`Validation failed: ${(error as Error).message}`);
-        } finally {
-            setIsBlurring(false);
+            toast.error(`Validation failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+            return false;
         }
     };
 
     return (
-        <div className={isBlurring ? 'blur' : ''}>
+        <div>
             <DataTableToolbar
                 source={source}
                 table={table}

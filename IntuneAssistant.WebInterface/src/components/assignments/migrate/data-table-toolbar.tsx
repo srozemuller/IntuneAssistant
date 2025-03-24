@@ -5,7 +5,7 @@ import { DataTableFacetedFilter } from "./data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { Undo2Icon } from "lucide-react";
 import { type Table } from "@tanstack/react-table"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog.tsx"
@@ -29,6 +29,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import Papa from "papaparse";
 
+interface ValidateAndUpdateTableFn {
+    (policyId?: string): Promise<boolean>;
+}
+
 interface TData {
     id: string;
     excludeGroupFromSource: boolean;
@@ -46,7 +50,7 @@ interface DataTableToolbarProps<TData> {
     rawData: string;
     fetchData: () => Promise<void>;
     source: string;
-    validateAndUpdateTable;
+    validateAndUpdateTable: ValidateAndUpdateTableFn;
     backupStatus: Record<string, boolean>;
     setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
@@ -77,12 +81,24 @@ export function DataTableToolbar({
     const [totalPolicies, setTotalPolicies] = useState(0);
     const [processedPolicies, setProcessedPolicies] = useState(0);
 
+    // Add these state variables alongside your other state variables
+    const [isMigrating, setIsMigrating] = useState(false);
+    const [migrationProgress, setMigrationProgress] = useState(0);
+    const [totalMigrations, setTotalMigrations] = useState(0);
+    const [completedMigrations, setCompletedMigrations] = useState(0);
 
     const { userClaims } = useUser();
+
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
         setSelectedRowCount(selectedRows.length);
-        setSelectedIds(selectedRows.map(row => row.original.policy?.id).filter(Boolean));
+
+        // Use a type guard to filter out undefined values
+        const ids = selectedRows
+            .map(row => row.original.policy?.id)
+            .filter((id): id is string => Boolean(id));
+
+        setSelectedIds(ids);
     }, [table.getSelectedRowModel().rows]);
 
 
@@ -199,39 +215,87 @@ export function DataTableToolbar({
 
     const handleMigrate = async () => {
         try {
-            setMigrationStatus('pending');
             const selectedRows = table.getSelectedRowModel().rows;
+            if (selectedRows.length === 0) {
+                toast.warning("Please select rows to migrate");
+                return;
+            }
+
+            // Store table state for pagination preservation
+            const tableState = {
+                pagination: { ...table.getState().pagination },
+                sorting: [...table.getState().sorting],
+                columnFilters: [...table.getState().columnFilters],
+                globalFilter: table.getState().globalFilter
+            };
+
             const dataToExport = selectedRows.map(row => row.original);
+            const totalRows = selectedRows.length;
+
+            // Initialize progress tracking
+            setIsMigrating(true);
+            setMigrationProgress(0);
+            setTotalMigrations(totalRows);
+            setCompletedMigrations(0);
+
+            // Step 1: Migration phase - 50% of progress bar
             const dataString = JSON.stringify(dataToExport);
-
             const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', dataString);
+
             if (response?.status === 200) {
-                setMigrationStatus('success');
-                toast.success("Selected rows migrated successfully.");
+                // First phase complete (migration)
+                setMigrationProgress(50);
+                setCompletedMigrations(Math.floor(totalRows / 2));
 
-                // Group selected rows by policy ID
-                const policyGroups = selectedRows.reduce((groups, row) => {
-                    const policyId = row.original.policy.id;
-                    if (!groups[policyId]) {
-                        groups[policyId] = [];
-                    }
-                    groups[policyId].push(row);
-                    return groups;
-                }, {});
+                // Fix the TypeScript error related to possibly undefined policy IDs
+                const uniquePolicyIds: string[] = Array.from(new Set(
+                    selectedRows
+                        .map(row => row.original.policy?.id)
+                        .filter((id): id is string => Boolean(id))
+                ));
 
-                // Validate and update table for each policy group
-                for (const policyId in policyGroups) {
+                // Step 2: Validation phase - remaining 50%
+                let validatedPolicies = 0;
+                for (const policyId of uniquePolicyIds) {
+                    // Call the validateAndUpdateTable function from props
                     await validateAndUpdateTable(policyId);
+
+                    validatedPolicies++;
+
+                    // Calculate progress (50-100%)
+                    const validationProgress = Math.round((validatedPolicies / uniquePolicyIds.length) * 50);
+                    setMigrationProgress(50 + validationProgress);
+                    setCompletedMigrations(Math.floor(totalRows * (0.5 + validatedPolicies / uniquePolicyIds.length / 2)));
+
+                    // Small delay for UI updates
+                    await new Promise(resolve => setTimeout(resolve, 50));
                 }
+
+                // Reapply table state to preserve pagination
+                if (tableState.globalFilter) {
+                    table.setGlobalFilter(tableState.globalFilter);
+                }
+                table.setColumnFilters(tableState.columnFilters);
+                table.setSorting(tableState.sorting);
+                table.setPagination(tableState.pagination);
+
+                setMigrationProgress(100);
+                setCompletedMigrations(totalRows);
+                setMigrationStatus('success');
+                toast.success("Migration and validation completed successfully.");
             } else {
                 setMigrationStatus('failed');
                 toast.error("Failed to migrate selected rows.");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             setMigrationStatus('failed');
-            if (error.consentUri) {
-                window.location.href = error.consentUri;
+            if (typeof error === 'object' && error !== null && 'consentUri' in error) {
+                window.location.href = (error as { consentUri: string }).consentUri;
+            } else {
+                toast.error(`Migration error: ${error instanceof Error ? error.message : "Unknown error"}`);
             }
+        } finally {
+            setIsMigrating(false);
         }
     };
 
@@ -356,6 +420,27 @@ export function DataTableToolbar({
                         </div>
                         <p className="text-sm text-gray-600">
                             Please wait while your policies are being backed up...
+                        </p>
+                    </div>
+                </div>
+            )}
+            {isMigrating && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] pointer-events-auto">
+                        <h3 className="text-lg font-medium mb-2">
+                            {migrationProgress <= 50 ? "Migrating assignments" : "Validating assignments"}
+                        </h3>
+                        <div className="mb-2">
+                            <Progress value={migrationProgress} className="h-2 mb-1" />
+                            <div className="flex justify-between text-sm text-gray-500">
+                                <span>{completedMigrations} of {totalMigrations} assignments</span>
+                                <span>{migrationProgress}%</span>
+                            </div>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                            {migrationProgress <= 50
+                                ? "Please wait while your assignments are being migrated..."
+                                : "Please wait while your assignments are being validated..."}
                         </p>
                     </div>
                 </div>
