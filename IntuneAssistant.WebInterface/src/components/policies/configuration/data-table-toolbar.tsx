@@ -293,7 +293,6 @@ export function DataTableToolbar({
                 )}
             </div>
             <div className="flex items-center space-x-2">
-                {selectedRowCount > 0 && (
                     <Button
                         variant="outline"
                         size="sm"
@@ -304,7 +303,6 @@ export function DataTableToolbar({
                         <DownloadCloudIcon className="mr-2 h-4 w-4" />
                         Backup ({selectedRowCount})
                     </Button>
-                )}
                 <DataTableRefresh
                     fetchData={fetchData}
                     resourceName={source ? `${source}` : "data"}
