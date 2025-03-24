@@ -3,8 +3,8 @@ import {assignmentsSchema} from "@/components/assignments/overview/schema.tsx";
 
 const filterSchema = z.object({
     id: z.string().nullable(),
-    createdDateTime: z.string().datetime(),
-    lastModifiedDateTime: z.string().datetime(),
+    createdDateTime: z.string(),
+    lastModifiedDateTime: z.string(),
     displayName: z.string().nullable(),
     description: z.string().nullable(),
     platform: z.string().nullable(),
