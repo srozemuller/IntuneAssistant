@@ -1,5 +1,5 @@
 // src/components/assignments/migrate/page.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { DataTable } from './data-table.tsx';
 import CSVUploader from "@/components/csv-uploader.tsx";
 import authDataMiddleware from "@/components/middleware/fetchData";
@@ -37,6 +37,14 @@ function MigrationPage() {
     const [isAnimating, setIsAnimating] = useState(false);
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
     const [tenantId, setTenantId] = useState<string>('');
+    const [backupStatus, setBackupStatus] = useState<Record<string, boolean>>({});
+
+    // Add a useMemo to recreate columns when backupStatus changes
+    const tableColumns = useMemo(
+        () => columns(groups, filters, backupStatus, setData),
+        [groups, filters, backupStatus, setData]
+    );
+
 
     const fetchData = async () => {
         const toastId = toast.loading(`Loading migration config`);
@@ -167,12 +175,14 @@ function MigrationPage() {
             <CSVUploader setRows={setRows}/>
             <DataTable
                 rowClassName={isAnimating ? 'fade-to-normal' : ''}
-                columns={columns(groups, filters, setData)}
+                columns={tableColumns}
                 data={data}
                 rawData={rawData}
                 fetchData={fetchData}
                 source="assignmentsMigration"
                 setTableData={setData}
+                backupStatus={backupStatus}
+                setBackupStatus={setBackupStatus}
             />
         </div>
     );

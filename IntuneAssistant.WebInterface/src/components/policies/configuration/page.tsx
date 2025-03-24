@@ -18,6 +18,7 @@ function ConfigPoliciesPage() {
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
+    const [backupStatus, setBackupStatus] = useState<Record<string, boolean>>({});
     const source = 'Configuration Policies';
 
     const fetchData = async () => {
@@ -86,7 +87,10 @@ function ConfigPoliciesPage() {
                 rawData={rawData}
                 fetchData={fetchData}
                 source={source}
-                setTableData={setData} />
+                setTableData={setData}
+                backupStatus={backupStatus}
+                setBackupStatus={setBackupStatus}
+            />
         </div>
     );
 }

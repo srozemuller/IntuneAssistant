@@ -75,7 +75,13 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar source={source} table={table} rawData={rawData} fetchData={fetchData} backupStatus={backupStatus} setBackupStatus={setBackupStatus}/>
+            <DataTableToolbar
+                source={source}
+                table={table}
+                rawData={rawData}
+                fetchData={fetchData}
+                backupStatus={backupStatus}
+                setBackupStatus={setBackupStatus}/>
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

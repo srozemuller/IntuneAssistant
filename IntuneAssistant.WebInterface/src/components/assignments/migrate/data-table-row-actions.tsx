@@ -19,6 +19,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
+import JSZip from "jszip";
 
 interface AssignmentRow {
     id: string;
@@ -119,24 +120,37 @@ export function DataTableRowActions({
         }
     };
 
-    const handleBackup = async () => {
-        try {
-            const policyType = row.original.policy.policyType;
-            const policyId = row.original.policy.id;
-            const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policyType}/${policyId}`, 'GET');
+    const handleRowBackup = async () => {
+        const policy = row.original.policy;
+        if (policy?.id && policy?.policyType) {
+            try {
+                const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.policyType}/${policy.id}`, 'GET');
+                if (response && response.data) {
+                    const sourceFileName = `${policy.id}_source.json`;
+                    const sourceFileContent = JSON.stringify(response.data, null, 2);
 
-            if (response?.status === 200) {
-                const jsonString = JSON.stringify(response.data);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                saveAs(blob, `${policyType}_${policyId}.json`);
-                toast.success('Backup successful!');
-                setBackupStatus(prevStatus => ({ ...prevStatus, [row.original.id]: true }));
-            } else {
-                toast.error('Backup failed!');
+                    const zip = new JSZip();
+                    zip.file(sourceFileName, sourceFileContent);
+
+                    const blob = await zip.generateAsync({ type: "blob" });
+                    saveAs(blob, `backup_${policy.id}.zip`);
+
+                    setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: true }));
+                    toast.success(`Backup successful for policy ${policy.id}.`);
+                    setBackupStatus(prev => {
+                        const newStatus = {...prev, [policy.id]: true};
+                        console.log("Backup status updated:", newStatus);
+                        return newStatus;
+                    });
+                } else {
+                    setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
+                    toast.error(`Backup failed for policy ${policy.id}!`);
+                }
+            } catch (error) {
+                console.error("Backup failed:", error);
+                setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
+                toast.error(`Backup failed for policy ${policy.id}!`);
             }
-        } catch (error: any) {
-            console.error('Backup failed:', error);
-            toast.error('Backup failed!');
         }
     };
 
@@ -171,7 +185,7 @@ export function DataTableRowActions({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={handleBackup}>
+                    <DropdownMenuItem onClick={handleRowBackup}>
                         Backup
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -192,7 +206,7 @@ export function DataTableRowActions({
                         <DialogTitle>Confirm Migration</DialogTitle>
                     </DialogHeader>
                     <p>Are you sure you want to migrate this row?</p>
-                    {!backupStatus[row.original.id] && (
+                    {!backupStatus[row.original.policy.id] && (
                         <p className="text-red-500">Warning: This row is not backed up.</p>
                     )}
                     <DialogFooter>
@@ -202,8 +216,8 @@ export function DataTableRowActions({
                         <Button onClick={handleDialogConfirm} variant="default">
                             Confirm
                         </Button>
-                        {!backupStatus[row.original.id] && (
-                            <Button onClick={handleBackup} variant="default">
+                        {!backupStatus[row.original.policy.id] && (
+                            <Button onClick={handleRowBackup} variant="default">
                                 Make Backup
                             </Button>
                         )}
