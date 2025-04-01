@@ -1,6 +1,8 @@
 ---
 import BaseHead from "@/components/layout/base-head.astro";
 import TailwindIndicator from "@/components/tailwind-indicator.astro";
+import MigrationPopup from "@/components/migrate-popup";
+
 // Correct the import path for the Toaster component
 
 import { cn } from "@/lib/utils";
@@ -25,5 +27,6 @@ const { title, description, bodyClass } = Astro.props;
   <body class={cn("flex flex-col min-h-screen", bodyClass)}>
     <slot />
     <TailwindIndicator />
+    <MigrationPopup client:load />
   </body>
 </html>

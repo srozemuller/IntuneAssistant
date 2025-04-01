@@ -1,7 +1,7 @@
 import * as msal from '../../node_modules/@azure/msal-browser';
 const msalConfig = {
     auth: {
-        clientId: '0f0f930f-a5c7-4da2-a985-8464d1ff51d0',
+        clientId: '3448bc04-cdbe-4a07-8e24-7e0e6f6980c1',
         authority: 'https://login.microsoftonline.com/organizations',
         redirectUri: 'https://intuneassistant.cloud',
     },
@@ -15,5 +15,5 @@ const msalInstance = new msal.PublicClientApplication(msalConfig);
 
 export { msalInstance };
 export const loginRequest = {
-    scopes: ["api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user"]
+    scopes: ["api://afe66ddf-67d4-4d61-8a51-beca7b799f52/access_as_user"]
 };

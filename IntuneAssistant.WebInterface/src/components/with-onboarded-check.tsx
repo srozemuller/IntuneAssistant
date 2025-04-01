@@ -1,7 +1,7 @@
 // src/components/with-onboarded-check.tsx
 import React, { useEffect, useState } from 'react';
 import { checkTenantOnboardingStatus } from './onboarded-check';
-import authService from '../auth/msalservice';  // Import your auth service
+import authService from '../auth/msalservice';
 import type { OnboardingStatus } from './onboarded-check';
 import { Dialog, DialogTitle, DialogContent, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
@@ -12,28 +12,42 @@ export function withOnboardingCheck<P extends object>(
 ): React.FC<P> {
     return (props: P) => {
         const [onboardingStatus, setOnboardingStatus] = useState<OnboardingStatus | null>(null);
+        const [needsMigration, setNeedsMigration] = useState(false);
         const [showDialog, setShowDialog] = useState(false);
+        const [showConsentDialog, setShowConsentDialog] = useState(false);
         const [loading, setLoading] = useState(true);
         const [isAuthenticated, setIsAuthenticated] = useState(false);
+        const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
         useEffect(() => {
             const checkAuthAndOnboarding = async () => {
                 try {
                     // Check authentication first
                     const isLoggedIn = authService.isLoggedIn();
-                    console.log("logged in: ",isLoggedIn);
+                    console.log("logged in: ", isLoggedIn);
                     setIsAuthenticated(isLoggedIn);
 
                     // Only check onboarding status if authenticated
                     if (isLoggedIn) {
                         const status = await checkTenantOnboardingStatus();
                         setOnboardingStatus(status);
+                        console.log("needsMigration", status);
+                        if (status.needsMigration) {
+                            setNeedsMigration(true);
+                            setShowConsentDialog(true);
 
-                        // Only show onboarding dialog for authenticated users who aren't onboarded
-                        setShowDialog(!status.isOnboarded);
+                        }
+                        else {
+                            // Only show onboarding dialog for authenticated users who aren't onboarded
+                            setShowDialog(!status.isOnboarded);
+                        }
                     }
                 } catch (error) {
                     console.error('Error checking status:', error);
+
+                    // Check if the error contains the specific migration message
+                    const errorMsg = error instanceof Error ? error.message : String(error);
+                    setErrorMessage(errorMsg);
                     toast.error('Failed to verify status');
                 } finally {
                     setLoading(false);
@@ -53,6 +67,15 @@ export function withOnboardingCheck<P extends object>(
 
         const handleLogin = () => {
             authService.login();
+        };
+
+        const handleConsent = () => {
+            // Redirect to the consent URL
+
+            const currentDomain = window.location.hostname;
+            const protocol = window.location.protocol;
+            const port = window.location.port ? `:${window.location.port}` : '';
+            window.location.href = `${protocol}//${currentDomain}${port}/onboarding?status=migrate`;
         };
 
         // Show loading while checking
@@ -76,6 +99,47 @@ export function withOnboardingCheck<P extends object>(
                 </div>
             );
         }
+
+        // // Show consent dialog if the tenant needs new consent
+        // if (isAuthenticated && needsMigration) {
+        //     return (
+        //         <>
+        //             <div className="container max-w-[95%] py-6">
+        //                 <div className="border border-yellow-300 bg-yellow-50 p-4 rounded-md mb-4">
+        //                     <h3 className="text-lg font-medium text-yellow-800">Application Update Required</h3>
+        //                     <p className="text-yellow-700">
+        //                         Your tenant needs to walk through to the updated application.
+        //                     </p>
+        //                     <Button onClick={handleConsent} className="mt-2">
+        //                         Go to migration page
+        //                     </Button>
+        //                 </div>
+        //             </div>
+        //             {showConsentDialog && (
+        //             <Dialog open={showConsentDialog} onOpenChange={setShowConsentDialog}>
+        //                 <DialogTitle>Application Update Required</DialogTitle>
+        //                 <DialogContent>
+        //                     <p>This tenant needs to provide consent to the updated application before you can proceed.</p>
+        //                     {errorMessage && (
+        //                         <p className="text-sm text-gray-500 mt-2">
+        //                             Error details: {errorMessage}
+        //                         </p>
+        //                     )}
+        //                 </DialogContent>
+        //                 <DialogFooter>
+        //                     <Button variant="secondary" onClick={() => setShowConsentDialog(false)}>
+        //                         Cancel
+        //                     </Button>
+        //                     <Button onClick={handleConsent}>
+        //                         Go to migration page
+        //                     </Button>
+        //                 </DialogFooter>
+        //             </Dialog>
+        //                 )}
+        //             <Component {...props} />
+        //         </>
+        //     );
+        // }
 
         // Second check: Is the tenant onboarded? (Only runs if authenticated)
         if (isAuthenticated && onboardingStatus && !onboardingStatus.isOnboarded) {

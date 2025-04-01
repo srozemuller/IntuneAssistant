@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { msalInstance } from '@/components/auth';
-
+import { apiScope, msalInstance } from '@/authconfig';
 const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     let formattedError = '';
     let consentUri = '';
@@ -18,9 +17,11 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     const account = accounts[0];
     let accessToken;
 
+    console.log("Using scope", apiScope);
+
     try {
         const tokenResponse = await msalInstance.acquireTokenSilent({
-            scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
+            scopes: [apiScope],
             account,
         });
         accessToken = tokenResponse.accessToken;
@@ -30,7 +31,7 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
             // Token expired or invalid, prompt user to log in again
             await msalInstance.loginPopup();
             const tokenResponse = await msalInstance.acquireTokenSilent({
-                scopes: ['api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user'],
+                scopes: [apiScope],
                 account,
             });
             accessToken = tokenResponse.accessToken;
@@ -42,17 +43,21 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     // Fetch data using the access token
     try {
         let response;
+        let useLegacyCredentials =  localStorage.getItem('useLegacy');
+        const headers = {
+            Authorization: `Bearer ${accessToken}`,
+            'Use-Legacy-Credentials': useLegacyCredentials
+        };
+
         switch (method) {
             case 'GET':
-                response = await axios.get(endpoint, {
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                });
+                response = await axios.get(endpoint, {headers} );
 
                 break;
             case 'POST':
                 response = await axios.post(endpoint, body, {
                     headers: {
-                        Authorization: `Bearer ${accessToken}`,
+                        ...headers,
                         'Content-Type': 'application/json',
                     },
                 });
@@ -70,8 +75,8 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
                 // Handle user consent required error
                 const neededScopes = error.response.data.details;
                 if (neededScopes) {
-                    const appId = '6317a049-4e55-464f-80a1-0896b8309fec'; // Replace with your actual app ID
-                    const tenantId = msalInstance.getAllAccounts()[0].tenantId; // Assuming you have tenantId in userClaims
+                    const appId = 'afe66ddf-67d4-4d61-8a51-beca7b799f52';
+                    const tenantId = msalInstance.getAllAccounts()[0].tenantId;
                     const scopes = neededScopes.join(' ');
                     const consentUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${appId}&response_type=code&redirect_uri=${window.location.origin}&response_mode=query&scope=${encodeURIComponent(scopes)}&state=12345`;
 
