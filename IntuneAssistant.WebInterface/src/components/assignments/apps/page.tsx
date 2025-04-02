@@ -41,7 +41,7 @@ function AppAssignmentsPage() {
                 : JSON.stringify(response?.data?.data);
 
             setRawData(rawData);
-            console.log('Raw data:', rawData);
+            console.log('Raw data:', response);
             const parsedData: Assignment[] = z.array(assignmentSchema).parse(JSON.parse(rawData));
             setData(parsedData);
 
@@ -59,15 +59,18 @@ function AppAssignmentsPage() {
             setGroupData(parsedGroupData);
 
             // Show toast message based on the status
-            const { message } = JSON.parse(rawData);
-            const status = JSON.parse(rawData).status.toLowerCase();
-            console.log('Status:', status);
-            if (status === 'success') {
-                toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
-            } else if (status === 'error') {
-                toast.update(toastId, { render: message, type: 'error', isLoading: false, autoClose: toastDuration });
-            } else if (status === 'warning') {
-                toast.update(toastId, { render: message, type: 'warning', isLoading: false, autoClose: toastDuration });
+            const { message, status } = response?.data;
+            if (status && typeof status === 'string') {
+                const lowerCaseStatus = status.toLowerCase();
+                if (lowerCaseStatus === 'success') {
+                    toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
+                } else if (lowerCaseStatus === 'error') {
+                    toast.update(toastId, { render: message, type: 'error', isLoading: false, autoClose: toastDuration });
+                } else if (lowerCaseStatus === 'warning') {
+                    toast.update(toastId, { render: message, type: 'warning', isLoading: false, autoClose: toastDuration });
+                }
+            } else {
+                throw new Error('Invalid status in response data');
             }
 
         } catch (error) {
