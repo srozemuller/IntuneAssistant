@@ -49,10 +49,7 @@ function MigrationPage() {
     const fetchData = async () => {
         const toastId = toast.loading(`Loading migration config`);
         try {
-            setLoading(true);
             setError('');
-            fetchGroups();
-            fetchFilters();
             setData([]);
             const sanitizedRows = rows.map(row => {
                 // Define sanitizedRow with an index signature
@@ -145,6 +142,7 @@ function MigrationPage() {
         }
     };
 
+    // Need to fetch all groups because we need to compare the targetIds in the current assignments
     const fetchGroups = async () => {
         try {
             const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET');
@@ -167,7 +165,24 @@ function MigrationPage() {
 
     useEffect(() => {
         if (rows.length > 0) {
-            fetchData();
+            const fetchAllData = async () => {
+                const toastId = toast.loading('Fetching migration info...');
+                try {
+                    await fetchGroups(); // Wait for fetchGroups to complete
+                    toast.update(toastId, { render: 'Fetching groups completed', type: 'info', isLoading: true });
+
+                    await fetchFilters(); // Wait for fetchFilters to complete
+                    toast.update(toastId, { render: 'Fetching filters completed', type: 'info', isLoading: true });
+
+                    await fetchData(); // Fetch migration data
+                    toast.update(toastId, { render: 'Fetching migration data completed', type: 'success', isLoading: false, autoClose: toastDuration });
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    toast.update(toastId, { render: `Error fetching data: ${(error as Error).message}`, type: 'error', isLoading: false, autoClose: toastDuration });
+                }
+            };
+
+            fetchAllData();
         }
     }, [rows]);
     return (
