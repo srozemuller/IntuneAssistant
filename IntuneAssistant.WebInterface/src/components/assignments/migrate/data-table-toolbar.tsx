@@ -53,6 +53,8 @@ interface DataTableToolbarProps<TData> {
     validateAndUpdateTable: ValidateAndUpdateTableFn;
     backupStatus: Record<string, boolean>;
     setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    groupData: z.infer<typeof groupsSchema>[];
+    filters: z.infer<typeof filterSchema>[];
 }
 
 export function DataTableToolbar({
@@ -62,7 +64,9 @@ export function DataTableToolbar({
                                      source,
                                      validateAndUpdateTable,
                                      backupStatus,
-                                     setBackupStatus
+                                     setBackupStatus,
+                                     groupData,
+                                     filters,
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
@@ -101,6 +105,109 @@ export function DataTableToolbar({
         setSelectedIds(ids);
     }, [table.getSelectedRowModel().rows]);
 
+
+    const handleBackup = () => {
+        const selectedRows = table.getSelectedRowModel().rows;
+
+        if (selectedRows.length === 0) {
+            toast.error("No rows selected for backup.");
+            return;
+        }
+
+        // Create a map to store unique assignments
+        const uniqueBackupData: Record<string, any> = {};
+        // Track policies we've already seen to determine first vs subsequent assignments
+        const seenPolicies: Record<string, boolean> = {};
+        // Track which policies are included in this backup
+        const backedUpPolicyIds = new Set<string>();
+
+        selectedRows.forEach((row: any) => {
+            // Access the original policy and its assignments from row.original
+            const policy = row.original.policy || {};
+            const policyName = policy.name || "Unknown Policy";
+            const policyId = policy.id || "";
+            const assignments = policy.assignments || [];
+
+            // Add policy ID to the set of backed up policies
+            if (policyId) {
+                backedUpPolicyIds.add(policyId);
+            }
+
+            // Map through the original assignments
+            assignments.forEach((assignment: any) => {
+                const assignmentId = assignment?.id || "";
+                // Skip if we've already processed this assignment
+                if (uniqueBackupData[assignmentId]) return;
+
+                const isAllDevices = assignment?.target?.["@odata.type"]?.includes("allDevicesAssignmentTarget");
+                const isAllUsers = assignment?.target?.["@odata.type"]?.includes("allUsersAssignmentTarget");
+
+                // Handle group name based on assignment type
+                let groupName = "Unknown Group";
+                let groupId = "";
+
+                if (isAllDevices) {
+                    groupName = "All Devices";
+                } else if (isAllUsers) {
+                    groupName = "All Users";
+                } else {
+                    groupId = assignment?.target?.groupId || "";
+                    // Only look up group name if we have a groupId
+                    const group = groupData?.find((g) => g.id === groupId);
+                    groupName = group?.displayName || "Unknown Group";
+                }
+
+                const assignmentDirection = assignment?.target?.["@odata.type"]?.includes("exclusion")
+                    ? "Exclude"
+                    : "Include";
+
+                const filterId = assignment?.target?.deviceAndAppManagementAssignmentFilterId || "";
+                const filter = filters?.find((f) => f.id === filterId);
+                const filterName = filter?.displayName || null;
+                const filterType = assignment?.target?.deviceAndAppManagementAssignmentFilterType || "none";
+
+                // Determine if this is the first assignment for this policy
+                const assignmentAction = seenPolicies[policyId] ? "Add" : "Replace";
+                // Mark this policy as seen for future assignments
+                if (!seenPolicies[policyId]) {
+                    seenPolicies[policyId] = true;
+                }
+
+                // Create a unique key for this assignment
+                uniqueBackupData[assignmentId] = {
+                    PolicyId: policyId,
+                    PolicyName: policyName,
+                    GroupId: groupId,
+                    GroupName: groupName,
+                    AssignmentDirection: assignmentDirection,
+                    AssignmentAction: assignmentAction,
+                    FilterName: filterName,
+                    FilterType: filterType,
+                };
+            });
+        });
+
+        // Convert the unique data map to an array
+        const backupData = Object.values(uniqueBackupData);
+
+        // Convert to CSV using PapaParse
+        const csv = Papa.unparse(backupData);
+
+        // Create Blob and download the file
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const filename = `assignments_backup_${new Date().toISOString().slice(0, 10)}.csv`;
+        saveAs(blob, filename);
+
+        // Update backup status for all policies included in this backup
+        const newBackupStatus = { ...backupStatus };
+        backedUpPolicyIds.forEach(policyId => {
+            newBackupStatus[policyId] = true;
+        });
+        setBackupStatus(newBackupStatus);
+
+        console.table(backupData); // For debugging purposes
+        toast.success(`Backup created with ${backupData.length} unique assignments`);
+    };
 
     const handleBackupExport = async () => {
         const selectedRows = table.getSelectedRowModel().rows;
@@ -370,6 +477,9 @@ export function DataTableToolbar({
             <div className="flex items-center space-x-2">
                 <Button onClick={handleRefresh} variant="outline" size="sm">
                     Refresh
+                </Button>
+                <Button onClick={handleBackup} variant="outline" size="sm">
+                    Backup
                 </Button>
                 <Button onClick={handleConfirmMigrate} variant="outline" size="sm">
                     Migrate
