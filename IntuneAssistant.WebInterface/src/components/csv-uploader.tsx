@@ -289,24 +289,7 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
                     </p>
                 </div>
             </div>
-
-            {file && (
-                <div className="flex items-center justify-between bg-gray-100 p-2 rounded">
-                    <div className="flex items-center">
-                        <span className="text-sm font-medium mr-2">{file.name}</span>
-                        <span className="text-xs text-gray-500">({(file.size / 1024).toFixed(2)} KB)</span>
-                    </div>
-                    <Button
-                        variant="ghost"
-                        onClick={() => handleClearFile()}
-                        className="h-8 px-2 lg:px-3"
-                    >
-                        Clear
-                        <DeleteIcon className="ml-2 h-4 w-4" />
-                    </Button>
-                </div>
-            )}
-
+            
             {file && (
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between bg-gray-100 p-2 rounded">
@@ -342,10 +325,20 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
             )}
 
             <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
                 toastClassName={() =>
-                    "bg-gray-500 text-white text-sm p-3 rounded-md shadow-md"
+                    "bg-gray-500 text-white text-sm p-3 rounded-md shadow-md relative"
                 }
-                className={() => "text-sm"} // Changed from bodyClassName to className
+                className="z-50"
             />
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
