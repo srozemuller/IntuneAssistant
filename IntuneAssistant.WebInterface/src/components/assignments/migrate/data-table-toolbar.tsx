@@ -17,7 +17,7 @@ import {
     ASSIGNMENTS_MIGRATE_ENDPOINT,
     EXPORT_ENDPOINT
 } from "@/components/constants/apiUrls";
-import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
+import {assignmentMigrationSchema, groupsSchema} from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
 import { SelectAllButton } from "@/components/button-selectall.tsx";
@@ -28,6 +28,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import Papa from "papaparse";
+import type {filterSchema} from "@/schemas/filters.tsx";
 
 interface ValidateAndUpdateTableFn {
     (policyId?: string): Promise<boolean>;
@@ -114,6 +115,16 @@ export function DataTableToolbar({
             return;
         }
 
+        // Create metadata header
+        const metadata = {
+            version: "1.0",
+            exportDate: new Date().toISOString(),
+            tenantId: userClaims?.tenantId || "unknown",
+            exportedBy: userClaims?.username || "unknown",
+            totalPolicies: new Set(selectedRows.map(row => row.original.policy?.id).filter(Boolean)).size,
+            totalAssignments: 0, // Will be updated later
+        };
+
         // Create a map to store unique assignments
         const uniqueBackupData: Record<string, any> = {};
         // Track policies we've already seen to determine first vs subsequent assignments
@@ -190,13 +201,25 @@ export function DataTableToolbar({
         // Convert the unique data map to an array
         const backupData = Object.values(uniqueBackupData);
 
-        // Convert to CSV using PapaParse
-        const csv = Papa.unparse(backupData);
+        // Update total assignments count in metadata
+        metadata.totalAssignments = backupData.length;
+
+        // Create a CSV string for metadata
+        const metadataRows = Object.entries(metadata).map(([key, value]) => {
+            return { MetadataKey: key, MetadataValue: value };
+        });
+
+        // Create CSV content with metadata section followed by a divider and then data
+        const metadataCsv = Papa.unparse(metadataRows);
+        const dataCsv = Papa.unparse(backupData);
+
+        const fullCsvContent = `# METADATA\n${metadataCsv}\n# DATA\n${dataCsv}`;
 
         // Create Blob and download the file
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([fullCsvContent], { type: 'text/csv;charset=utf-8;' });
         const filename = `assignments_backup_${new Date().toISOString().slice(0, 10)}.csv`;
         saveAs(blob, filename);
+
 
         // Update backup status for all policies included in this backup
         const newBackupStatus = { ...backupStatus };
