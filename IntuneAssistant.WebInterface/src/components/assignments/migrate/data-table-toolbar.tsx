@@ -114,13 +114,22 @@ export function DataTableToolbar({
             toast.error("No rows selected for backup.");
             return;
         }
+        let accountInfo = null;
+        try {
+            const accountInfoStr = sessionStorage.getItem("accountInfo");
+            if (accountInfoStr) {
+                accountInfo = JSON.parse(accountInfoStr);
+            }
+        } catch (error) {
+            console.error("Error parsing account info:", error);
+        }
 
-        // Create metadata header
         const metadata = {
             version: "1.0",
             exportDate: new Date().toISOString(),
-            tenantId: userClaims?.tenantId || "unknown",
-            exportedBy: userClaims?.username || "unknown",
+            purpose: "backup",
+            tenantId: accountInfo?.tenantId || "unknown",
+            exportedBy: accountInfo?.name || userClaims?.username || "unknown",
             totalPolicies: new Set(selectedRows.map(row => row.original.policy?.id).filter(Boolean)).size,
             totalAssignments: 0, // Will be updated later
         };
@@ -210,8 +219,13 @@ export function DataTableToolbar({
         });
 
         // Create CSV content with metadata section followed by a divider and then data
-        const metadataCsv = Papa.unparse(metadataRows);
-        const dataCsv = Papa.unparse(backupData);
+        const metadataCsv = Papa.unparse(metadataRows, {
+            delimiter: ";"
+        });
+        const dataCsv = Papa.unparse(backupData, {
+            delimiter: ";"
+        });
+
 
         const fullCsvContent = `# METADATA\n${metadataCsv}\n# DATA\n${dataCsv}`;
 
