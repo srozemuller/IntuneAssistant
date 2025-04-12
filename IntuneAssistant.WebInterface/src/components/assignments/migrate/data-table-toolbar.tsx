@@ -123,12 +123,15 @@ export function DataTableToolbar({
         } catch (error) {
             console.error("Error parsing account info:", error);
         }
-
+        const tenantName = accountInfo?.username?.includes('@') ?
+            accountInfo?.username.split('@')[1] :
+            (userClaims?.username || "unknown")
         const metadata = {
             version: "1.0",
             exportDate: new Date().toISOString(),
             purpose: "backup",
             tenantId: accountInfo?.tenantId || "unknown",
+            tenant: tenantName,
             exportedBy: accountInfo?.name || userClaims?.username || "unknown",
             totalPolicies: new Set(selectedRows.map(row => row.original.policy?.id).filter(Boolean)).size,
             totalAssignments: 0, // Will be updated later
@@ -231,7 +234,7 @@ export function DataTableToolbar({
 
         // Create Blob and download the file
         const blob = new Blob([fullCsvContent], { type: 'text/csv;charset=utf-8;' });
-        const filename = `assignments_backup_${new Date().toISOString().slice(0, 10)}.csv`;
+        const filename = `${tenantName}_assignments_backup_${new Date().toISOString().slice(0, 10)}.csv`;
         saveAs(blob, filename);
 
 
