@@ -5,7 +5,7 @@ const newClientId = '3448bc04-cdbe-4a07-8e24-7e0e6f6980c1';
 const legacyApiScope = 'api://6317a049-4e55-464f-80a1-0896b8309fec/access_as_user';
 const newApiScope = `api://afe66ddf-67d4-4d61-8a51-beca7b799f52/access_as_user`;
 
-const useLegacy = (typeof window !== 'undefined' && localStorage.getItem('useLegacy') === 'true');
+const useLegacy = (typeof window !== 'undefined' && sessionStorage.getItem('useLegacy') === 'true');
 
 const msalConfig = {
     auth: {
