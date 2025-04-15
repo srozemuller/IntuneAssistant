@@ -41,6 +41,8 @@ interface DataTableProps<TData extends AssignmentRow, TValue> {
     setTableData: React.Dispatch<React.SetStateAction<TData[]>>;
     backupStatus: Record<string, boolean>
     setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+    groupData?: any[]; // Changed from groups to groupData
+    filters?: any[];
 }
 
 interface AssignmentRow {
@@ -71,6 +73,8 @@ export function DataTable<TData extends AssignmentRow, TValue>({
                                                                    setTableData,
                                                                    backupStatus,
                                                                    setBackupStatus,
+                                                                   groupData = [],
+                                                                   filters = [],   // Added with default empty array
                                                                }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({});
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -191,6 +195,8 @@ export function DataTable<TData extends AssignmentRow, TValue>({
                 backupStatus={backupStatus}
                 setBackupStatus={setBackupStatus}
                 validateAndUpdateTable={validateAndUpdateTable}
+                groupData={groupData || []} // Ensure default value
+                filters={filters || []}  // Ensure default value
             />
             <div className="rounded-md border">
                 <Table>

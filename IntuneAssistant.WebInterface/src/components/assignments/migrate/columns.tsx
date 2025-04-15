@@ -160,51 +160,49 @@ export const columns = (
 
                 return (
                     <div>
-                        <div>
-                            <strong>Included:</strong>
-                            <ul>
-                                {includedGroups.map((assignment, index) => {
-                                    const groupId = assignment?.target?.groupId;
-                                    const groupInfo = groupData.find(group => group.id === groupId) || null;
-                                    const odataType = assignment?.target?.["@odata.type"];
-                                    if (odataType === "#microsoft.graph.allDevicesAssignmentTarget") {
-                                        return <span>All Devices</span>;
-                                    } else if (odataType === "#microsoft.graph.allLicensedUsersAssignmentTarget") {
-                                        return <span>All Licensed Users</span>;
-                                    } else if (groupId) {
-                                        const groupInfo = groupData.find(group => group.id === groupId) || null;
-                                        return (
-                                            <span
-                                                className="text-primary cursor-pointer"
-                                                onClick={() => handleGroupClick(groupId)}
-                                            >
-            {groupInfo?.displayName || groupId}
-        </span>
-                                        );
-                                    } else {
-                                        return <span className="text-red-500 cursor-default"><em>Group not found</em></span>;
-                                    }
-                                })}
-                            </ul>
-                        </div>
-                        <div>
-                            <strong>Excluded:</strong>
-                            <ul>
-                                {excludedGroups.map((assignment, index) => {
-                                    const groupId = assignment?.target?.groupId;
-                                    const groupInfo = groupData.find(group => group.id === groupId) || null;
-                                    return (
-                                        <li
-                                            key={index}
-                                            className="text-primary cursor-pointer hover:text-secondary"
-                                            onClick={() => handleGroupClick(groupId)}
-                                        >
-                                            - {groupInfo?.displayName || groupId}
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </div>
+                        {[...includedGroups, ...excludedGroups].map((assignment, index) => {
+                            const groupId = assignment?.target?.groupId;
+                            const odataType = assignment?.target?.["@odata.type"];
+                            const isExcluded = assignment?.target?.["@odata.type"].includes("exclusion");
+
+                            if (odataType === "#microsoft.graph.allDevicesAssignmentTarget") {
+                                return (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                        <span>All Devices</span>
+                                    </div>
+                                );
+                            } else if (odataType === "#microsoft.graph.allLicensedUsersAssignmentTarget") {
+                                return (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                        <span>All Licensed Users</span>
+                                    </div>
+                                );
+                            } else if (groupId) {
+                                const groupInfo = groupData.find(group => group.id === groupId) || null;
+                                return (
+                                    <div
+                                        key={index}
+                                        className="flex items-center gap-2 cursor-pointer"
+                                        onClick={() => { if (groupId) handleGroupClick(groupId); }}
+                                    >
+                                        {isExcluded ?
+                                            <CircleX className="h-4 w-4 text-red-500" /> :
+                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                        }
+                                        <span className="text-primary group-hover:text-secondary">{groupInfo?.displayName || groupId}</span>
+                                    </div>
+                                );
+                            } else {
+                                return (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <TriangleAlert className="h-4 w-4 text-orange-500" />
+                                        <span className="text-red-500 cursor-default"><em>Group not found</em></span>
+                                    </div>
+                                );
+                            }
+                        })}
                         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                             <DialogContent className="container max-w-[60%] py-6">
                                 <DialogTitle>Group members</DialogTitle>
@@ -239,11 +237,11 @@ export const columns = (
                     <div>
                         {groupInfo || groupName === "All Devices" ? (
                             <span
-                                className={groupName === "All Devices" ? "" : "text-primary cursor-pointer"}
+                                className={groupName === "All Devices" ? "" : "text-primary cursor-pointer group-hover:text-secondary "}
                                 onClick={groupInfo && groupName !== "All Devices" ? handleGroupClick : undefined}
                             >
-            {groupName}
-        </span>
+                                {groupName}
+                            </span>
                         ) : (
                             <TooltipProvider>
                                 <Tooltip>
@@ -264,7 +262,13 @@ export const columns = (
                                         These are the members of the selected group.
                                     </DialogDescription>
                                     <div className="container max-w-[95%] py-6">
-                                        <DataTable columns={memberColumns} data={members}/>
+                                        <DataTable
+                                            columns={memberColumns}
+                                            data={members}
+                                            source="group-members"
+                                            rawData={members}
+                                            fetchData={() => Promise.resolve()}
+                                        />
                                     </div>
                                 </DialogContent>
                             </Dialog>

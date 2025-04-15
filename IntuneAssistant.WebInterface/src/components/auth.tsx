@@ -31,6 +31,7 @@ const AuthButton: React.FC = () => {
             if (accounts.length > 0) {
                 setIsLoggedIn(true);
                 setUserName(accounts[0].name ?? null);
+                sessionStorage.setItem("accountInfo", JSON.stringify(accounts[0]));
             }
         };
 
@@ -52,6 +53,7 @@ const AuthButton: React.FC = () => {
                     account,
                 });
                 localStorage.setItem('accessToken', tokenResponse.accessToken);
+
             }
         } catch (error) {
             console.error('Login error:', error);
