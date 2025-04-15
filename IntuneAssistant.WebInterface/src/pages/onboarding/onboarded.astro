@@ -8,10 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const gifImage = "/images/giphy.gif";
 
 let tenant = '';
+let isMigrating = false;
 ---
 <script>
   import axios from 'axios';
@@ -33,6 +36,8 @@ let tenant = '';
             Authorization: `Bearer ${accessToken}`
           }
         });
+        localStorage.setItem('useLegacy', false.toString());
+        localStorage.setItem('onboarded', true.toString());
         console.log(response.data);
       } catch (error) {
         console.error(error);

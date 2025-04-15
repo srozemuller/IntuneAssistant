@@ -34,6 +34,7 @@ const intuneAssistantEnvironments = [
             console.log(urlParams.get('error_description'));
             const error = urlParams.get('error');
             const tenant = urlParams.get('tenant');
+            localStorage.removeItem('isOnboarding')
             const token = localStorage.getItem('consentToken') || '';
 
             if (error) {

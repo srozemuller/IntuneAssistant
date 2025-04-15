@@ -82,7 +82,10 @@ function AssignmentsPage() {
     };
 
     useEffect(() => {
-        fetchData();
+        const hasOnboarded = localStorage.getItem('onboarded') === 'true';
+        if (hasOnboarded) {
+            fetchData();
+        }
     }, []);
 
     return (
