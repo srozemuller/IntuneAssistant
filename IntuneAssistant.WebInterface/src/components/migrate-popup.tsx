@@ -15,9 +15,11 @@ const MigrationPopup = () => {
 
         const hasOnboarded = localStorage.getItem('onboarded') === 'true';
         const isOnboardingPage = window.location.pathname.includes('/onboarding');
+        const isFaqPage = window.location.pathname.includes('/faq');
         const isLegacy = sessionStorage.getItem('useLegacy') === 'true';
 
-        if (!isLegacy) {
+        // Show popup ONLY if user hasn't checked "Skip for now" AND is not on the onboarding page OR at the FAQ page
+        if (!isLegacy && !isOnboardingPage && !isFaqPage) {
             setShowPopup(true);
         }
 
