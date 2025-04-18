@@ -140,6 +140,26 @@ export default function ConsentCard({
         setIsLoading(true);
 
         try {
+            // First, determine the state based on the URL status parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+
+            // Set storage items based on status
+            if (status === 'migrate') {
+                sessionStorage.setItem('isMigrating', 'true');
+                localStorage.setItem('isOnboarding', 'false');
+            } else {
+                localStorage.setItem('isOnboarding', 'true');
+                sessionStorage.setItem('isMigrating', 'false');
+            }
+
+            // Retrieve the correct values from storage
+            const isMigrating = sessionStorage.getItem('isMigrating') === 'true';
+            const isOnboarding = localStorage.getItem('isOnboarding') === 'true';
+
+            // Determine state parameter
+            const state = isMigrating ? 'migrating' : isOnboarding ? 'onboarding' : '';
+            console.log('Current state:', state);
             const apiUrl = `${environments
                 .filter((env) => env.environment === selectedEnvironment)
                 .map((env) => {
@@ -149,7 +169,7 @@ export default function ConsentCard({
                     return isDevelopment
                         ? "https://localhost:7224"
                         : env.url;
-                })}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&tenantName=${tenantName}&state=onboarding`;
+                })}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&tenantName=${tenantName}&state=${state}`;
 
             const response = await fetch(apiUrl, { method: 'GET' });
             const data = await response.json();
@@ -213,6 +233,7 @@ export default function ConsentCard({
                         {isMigration ? 'Migrate an existing tenant into Intune Assistant.' : 'Onboard a new tenant into Intune Assistant.'}
                         <br />
                         {isMigration ? 'Use the legacy login button below to login first' : ' '}
+                        <br />
                         For more information, please refer to the{" "}
                         <a
                             href="/docs/onboarding"

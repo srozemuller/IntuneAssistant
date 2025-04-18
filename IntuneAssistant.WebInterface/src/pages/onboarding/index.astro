@@ -34,14 +34,17 @@ const intuneAssistantEnvironments = [
             console.log(urlParams.get('error_description'));
             const error = urlParams.get('error');
             const tenant = urlParams.get('tenant');
+            const state = urlParams.get('state');
             localStorage.removeItem('isOnboarding')
+            sessionStorage.removeItem('isMigrating')
             const token = localStorage.getItem('consentToken') || '';
 
             if (error) {
                 window.location.href = `/onboarding/error?error=${error}&error_description=${urlParams.get('error_description')}`;
                 console.log(urlParams);
             } else if (tenant) {
-                window.location.href = `/onboarding/onboarded?tenant=${tenant}`;
+                const stateParam = state ? `&state=${state}` : '';
+                window.location.href = `/onboarding/onboarded?tenant=${tenant}${stateParam}`;
             }
         });
     }

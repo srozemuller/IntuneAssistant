@@ -18,8 +18,11 @@ const MigrationPopup = () => {
         const isFaqPage = window.location.pathname.includes('/faq');
         const isLegacy = sessionStorage.getItem('useLegacy') === 'true';
 
-        // Show popup ONLY if user hasn't checked "Skip for now" AND is not on the onboarding page OR at the FAQ page
-        if (!isLegacy && !isOnboardingPage && !isFaqPage) {
+        // Only show popup if:
+        // 1. User is using legacy OR
+        // 2. User is NOT using legacy but has NOT onboarded yet
+        // AND in both cases, not on onboarding or FAQ pages
+        if ((isLegacy || (!isLegacy && !hasOnboarded)) && !isOnboardingPage && !isFaqPage) {
             setShowPopup(true);
         }
 
@@ -35,6 +38,7 @@ const MigrationPopup = () => {
                     account,
                 });
                 localStorage.setItem('accessToken', tokenResponse.accessToken);
+                sessionStorage.setItem('isMigrating', true.toString());
                 window.location.href = '/onboarding?status=migrate';
             }
             localStorage.setItem('isOnboarding', true.toString());
