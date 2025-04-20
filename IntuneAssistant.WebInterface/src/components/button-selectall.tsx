@@ -1,38 +1,55 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button.tsx";
-import { type Table } from "@tanstack/react-table";
+import { type Table, type Row } from "@tanstack/react-table";
+import { toast } from 'react-toastify';
 
 interface SelectAllButtonProps<TData> {
     table: Table<TData>;
+    filterFn?: () => Row<TData>[];
 }
 
-export function SelectAllButton<TData>({ table }: SelectAllButtonProps<TData>) {
-    const [allSelected, setAllSelected] = useState(() => {
-        const filteredRows = table.getFilteredRowModel().rows;
-        const allFilteredRowIds = filteredRows.map(row => row.id);
-        return allFilteredRowIds.length > 0 && table.getIsAllRowsSelected();
-    });
+export function SelectAllButton<TData>({ table, filterFn }: SelectAllButtonProps<TData>) {
+    const [allSelected, setAllSelected] = useState(false);
 
     useEffect(() => {
-        const filteredRows = table.getFilteredRowModel().rows;
-        const allFilteredRowIds = filteredRows.map(row => row.id);
-        const allSelected = allFilteredRowIds.length > 0 && table.getIsAllRowsSelected();
+        const selectableRows = filterFn ? filterFn() : table.getFilteredRowModel().rows;
+        const allFilteredRowIds = selectableRows.map(row => row.id);
+
+        // Check if all selectable rows are currently selected
+        const allSelected =
+            allFilteredRowIds.length > 0 &&
+            allFilteredRowIds.every(id => table.getState().rowSelection[id]);
+
         setAllSelected(allSelected);
-    }, [table]);
+    }, [table, filterFn]);
 
     const handleSelectAll = () => {
-        const filteredRows = table.getFilteredRowModel().rows;
-        const allFilteredRowIds = filteredRows.map(row => row.id);
+        const selectableRows = filterFn ? filterFn() : table.getFilteredRowModel().rows;
+        const allRows = table.getFilteredRowModel().rows;
+
+        const allFilteredRowIds = selectableRows.map(row => row.id);
+
+        // Check if there are rows that were filtered out
+        if (allRows.length > selectableRows.length) {
+            const filteredOutCount = allRows.length - selectableRows.length;
+            toast.info(`${filteredOutCount} row(s) were not selected because they are not ready for migration.`);
+        }
 
         if (allSelected) {
-            table.setRowSelection({});
+            // Deselect only the selectable rows
+            const newSelection = { ...table.getState().rowSelection };
+            allFilteredRowIds.forEach(id => {
+                delete newSelection[id];
+            });
+            table.setRowSelection(newSelection);
         } else {
-            table.setRowSelection(allFilteredRowIds.reduce((acc, id) => {
-                acc[id] = true;
-                return acc;
-            }, {} as Record<string, boolean>));
+            // Select all selectable rows while preserving other selections
+            const newSelection = { ...table.getState().rowSelection };
+            allFilteredRowIds.forEach(id => {
+                newSelection[id] = true;
+            });
+            table.setRowSelection(newSelection);
         }
-        setAllSelected(!allSelected);
     };
 
     return (
