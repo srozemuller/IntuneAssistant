@@ -23,7 +23,15 @@ let isMigrating = false;
   async function fetchData() {
     const urlParams = new URLSearchParams(window.location.search);
     const tenant = urlParams.get('tenant') || '';
+    const state = urlParams.get('state') || '';
     document.getElementById('tenant-id').textContent += tenant;
+
+    // Check if this is a migration
+    if (state === 'migrating') {
+      console.log('Migration detected, removing access token');
+
+      sessionStorage.removeItem('isMigrating'); // Clean up migration flag
+    }
 
     const token = localStorage.getItem('consentToken');
     if (token) {
@@ -38,6 +46,10 @@ let isMigrating = false;
         });
         localStorage.setItem('useLegacy', false.toString());
         localStorage.setItem('onboarded', true.toString());
+        localStorage.removeItem('notOnboarded');
+        sessionStorage.removeItem('isMigrating');
+        sessionStorage.removeItem('isOnboarding');
+        sessionStorage.removeItem('skipMigrate');
         console.log(response.data);
       } catch (error) {
         console.error(error);

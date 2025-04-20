@@ -17,9 +17,18 @@ const MigrationPopup = () => {
         const isOnboardingPage = window.location.pathname.includes('/onboarding');
         const isFaqPage = window.location.pathname.includes('/faq');
         const isLegacy = sessionStorage.getItem('useLegacy') === 'true';
+        const skipMigrate = sessionStorage.getItem('skipMigrate') === 'true';
 
-        // Show popup ONLY if user hasn't checked "Skip for now" AND is not on the onboarding page OR at the FAQ page
-        if (!isLegacy && !isOnboardingPage && !isFaqPage) {
+        // Only show popup if:
+        // 1. User is using legacy OR
+        // 2. User is NOT using legacy but has NOT onboarded yet
+        // AND in both cases:
+        // - Not on onboarding or FAQ pages
+        // - Not explicitly skipped with skipMigrate flag
+        if ((isLegacy || (!isLegacy && !hasOnboarded)) &&
+            !isOnboardingPage &&
+            !isFaqPage &&
+            !skipMigrate) {
             setShowPopup(true);
         }
 
@@ -35,6 +44,7 @@ const MigrationPopup = () => {
                     account,
                 });
                 localStorage.setItem('accessToken', tokenResponse.accessToken);
+                sessionStorage.setItem('isMigrating', true.toString());
                 window.location.href = '/onboarding?status=migrate';
             }
             localStorage.setItem('isOnboarding', true.toString());
@@ -54,6 +64,7 @@ const MigrationPopup = () => {
             return;
         }
         setShowPopup(false);
+        sessionStorage.setItem("useLegacy", "true");
     };
 
     return (
@@ -85,6 +96,7 @@ const MigrationPopup = () => {
                                     setAcknowledged(e.target.checked);
                                     if (e.target.checked) {
                                         sessionStorage.setItem('useLegacy', 'true');
+                                        sessionStorage.setItem('skipMigrate', 'true');
                                     } else {
                                         sessionStorage.setItem('useLegacy', 'false');
                                     }
