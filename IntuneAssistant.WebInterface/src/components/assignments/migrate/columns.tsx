@@ -289,8 +289,17 @@ export const columns = (
             accessorKey: 'assignmentAction',
             header: 'Action',
             cell: ({row}) => {
-                const assignmentDirection = row.getValue('assignmentAction') as string;
-                return <span>{assignmentDirection}</span>;
+                const action = row.getValue('assignmentAction') as string;
+                const getColorClass = (action: string) => {
+                    switch(action?.toLowerCase()) {
+                        case 'add': return 'text-green-500';
+                        case 'replace': return 'text-orange-500';
+                        case 'remove': return 'text-red-500';
+                        default: return '';
+                    }
+                };
+
+                return <span className={getColorClass(action)}>{action}</span>;
             },
         },
         {
