@@ -47,6 +47,9 @@ let isMigrating = false;
         localStorage.setItem('useLegacy', false.toString());
         localStorage.setItem('onboarded', true.toString());
         localStorage.removeItem('notOnboarded');
+        sessionStorage.removeItem('isMigrating');
+        sessionStorage.removeItem('isOnboarding');
+        sessionStorage.removeItem('skipMigrate');
         console.log(response.data);
       } catch (error) {
         console.error(error);
