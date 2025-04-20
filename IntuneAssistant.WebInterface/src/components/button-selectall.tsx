@@ -11,29 +11,23 @@ interface SelectAllButtonProps<TData> {
 export function SelectAllButton<TData>({ table, filterFn }: SelectAllButtonProps<TData>) {
     const [allSelected, setAllSelected] = useState(false);
 
+    // Recalculate selection state whenever row selection changes
     useEffect(() => {
         const selectableRows = filterFn ? filterFn() : table.getFilteredRowModel().rows;
         const allFilteredRowIds = selectableRows.map(row => row.id);
 
         // Check if all selectable rows are currently selected
-        const allSelected =
+        const allRowsSelected =
             allFilteredRowIds.length > 0 &&
             allFilteredRowIds.every(id => table.getState().rowSelection[id]);
 
-        setAllSelected(allSelected);
-    }, [table, filterFn]);
+        setAllSelected(allRowsSelected);
+    }, [table.getState().rowSelection, table, filterFn]);
 
     const handleSelectAll = () => {
         const selectableRows = filterFn ? filterFn() : table.getFilteredRowModel().rows;
         const allRows = table.getFilteredRowModel().rows;
-
         const allFilteredRowIds = selectableRows.map(row => row.id);
-
-        // Check if there are rows that were filtered out
-        if (allRows.length > selectableRows.length) {
-            const filteredOutCount = allRows.length - selectableRows.length;
-            toast.info(`${filteredOutCount} row(s) were not selected because they are not ready for migration.`);
-        }
 
         if (allSelected) {
             // Deselect only the selectable rows
@@ -49,6 +43,12 @@ export function SelectAllButton<TData>({ table, filterFn }: SelectAllButtonProps
                 newSelection[id] = true;
             });
             table.setRowSelection(newSelection);
+
+            // Show toast only when selecting AND there are rows that can't be selected
+            if (allRows.length > selectableRows.length) {
+                const filteredOutCount = allRows.length - selectableRows.length;
+                toast.info(`${filteredOutCount} row(s) were not selected because they are not ready for migration.`);
+            }
         }
     };
 
