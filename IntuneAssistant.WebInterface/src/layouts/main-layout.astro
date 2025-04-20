@@ -10,8 +10,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import AuthButton from "@/components/auth"
 import { siteConfig } from "@/config/site";
 import { Icon } from "astro-icon/components";
-import React from "react";
-
+import LegacyModeToggle from "@/components/legacy-mode-toggle";
 type Props = {
   title: string;
   description?: string;
@@ -24,7 +23,6 @@ const { title, description, mainClass, hideFooter } = Astro.props;
 
 <BaseLayout title={title} description={description}>
   <Header className="border-b">
-
     <MainNavigationMenu slot="left-header" client:load />
     <SheetMobileNav
       mainNavItems={[...navMenuConfig.links]}

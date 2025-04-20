@@ -8,10 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const gifImage = "/images/giphy.gif";
 
 let tenant = '';
+let isMigrating = false;
 ---
 <script>
   import axios from 'axios';
@@ -20,7 +23,15 @@ let tenant = '';
   async function fetchData() {
     const urlParams = new URLSearchParams(window.location.search);
     const tenant = urlParams.get('tenant') || '';
+    const state = urlParams.get('state') || '';
     document.getElementById('tenant-id').textContent += tenant;
+
+    // Check if this is a migration
+    if (state === 'migrating') {
+      console.log('Migration detected, removing access token');
+
+      sessionStorage.removeItem('isMigrating'); // Clean up migration flag
+    }
 
     const token = localStorage.getItem('consentToken');
     if (token) {
@@ -33,6 +44,12 @@ let tenant = '';
             Authorization: `Bearer ${accessToken}`
           }
         });
+        localStorage.setItem('useLegacy', false.toString());
+        localStorage.setItem('onboarded', true.toString());
+        localStorage.removeItem('notOnboarded');
+        sessionStorage.removeItem('isMigrating');
+        sessionStorage.removeItem('isOnboarding');
+        sessionStorage.removeItem('skipMigrate');
         console.log(response.data);
       } catch (error) {
         console.error(error);

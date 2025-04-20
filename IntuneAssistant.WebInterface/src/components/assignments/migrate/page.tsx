@@ -198,6 +198,8 @@ function MigrationPage() {
                 setTableData={setData}
                 backupStatus={backupStatus}
                 setBackupStatus={setBackupStatus}
+                groupData={groups || []} // Pass groups as groupData
+                filters={filters || []}  // Pass filters
             />
         </div>
     );

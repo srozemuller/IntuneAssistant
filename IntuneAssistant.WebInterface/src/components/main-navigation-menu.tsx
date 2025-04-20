@@ -29,7 +29,7 @@ const migration = navMenuConfig.migrationNav?.length ? navMenuConfig.migrationNa
 export function MainNavigationMenu() {
     const [isLicensed, setIsLicensed] = useState(false);
     const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
-    const [logoUrl, setLogoUrl] = useState<string>("/default-logo.svg"); // Default logo URL
+    const [logoUrl, setLogoUrl] = useState<string>("/images/launch.jpg"); // Default logo URL
 
     useEffect(() => {
         const fetchCurrentTenantId = async () => {
@@ -47,17 +47,17 @@ export function MainNavigationMenu() {
         const fetchLicenseInfo = async () => {
             if (currentTenantId) {
                 try {
-                    const response = await fetch(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${currentTenantId}`);
-                    const responseData = await response.json();
-                    console.log(responseData);
-
-                    // Access the enabled property correctly
-                    if (responseData.data) {
-                        setIsLicensed(responseData.data.enabled);
-                    } else if (responseData.status === "Onboarded") {
-                        // Alternative path if the structure is different
-                        setIsLicensed(!!responseData.data?.enabled);
-                    }
+                    // const response = await authDataMiddleware(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${currentTenantId}`);
+                    // const responseData = typeof response?.data === 'string' ? JSON.parse(response.data) : response?.data;
+                    // console.log(responseData);
+                    //
+                    // // Access the enabled property correctly
+                    // if (responseData.data) {
+                    //     setIsLicensed(responseData.data.enabled);
+                    // } else if (responseData.status === "Onboarded") {
+                    //     // Alternative path if the structure is different
+                    //     setIsLicensed(!!responseData.data?.enabled);
+                    // }
                     const styleResponse = await authDataMiddleware(`${INTUNEASSISTANT_TENANT_STYLE}/${currentTenantId}`);
                     const styles = typeof styleResponse?.data === 'string' ? JSON.parse(styleResponse.data) : styleResponse?.data;
                     console.log('Styles:', styles);
@@ -102,7 +102,7 @@ export function MainNavigationMenu() {
                                         className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                                         href="/onboarding"
                                     >
-                                        <img src={logoUrl} alt="Logo" className="h-6 w-6" />
+                                        <img src='/images/launch.png' alt="Logo" />
                                         <div className="mb-2 mt-4 text-lg font-medium">
                                             Onboarding
                                         </div>
@@ -112,6 +112,20 @@ export function MainNavigationMenu() {
                                     </a>
                                 </NavigationMenuLink>
                             </li>
+                            <NavigationMenuLink asChild>
+                                <a
+                                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                                    href="/onboarding?status=migrate"
+                                >
+                                    <img src='/images/migrate.png' alt="Logo" />
+                                    <div className="mb-2 mt-4 text-lg font-medium">
+                                        Migrate
+                                    </div>
+                                    <p className="text-sm leading-tight text-muted-foreground">
+                                        Walk through the process of migrating to the new app.
+                                    </p>
+                                </a>
+                            </NavigationMenuLink>
                             {main.items?.map((page) => (
                                 <ListItem key={page.title} {...page} />
                             ))}

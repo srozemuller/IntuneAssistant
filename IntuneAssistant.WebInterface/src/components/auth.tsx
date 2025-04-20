@@ -1,24 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import {type Configuration, PublicClientApplication} from "@azure/msal-browser";
-
-const msalConfig: Configuration = {
-    auth: {
-        clientId: '0f0f930f-a5c7-4da2-a985-8464d1ff51d0',
-        authority: 'https://login.microsoftonline.com/organizations',
-        redirectUri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4321/authentication/login-callback',
-    },
-    cache: {
-        cacheLocation: 'sessionStorage',
-        storeAuthStateInCookie: true,
-    },
-};
-
-export const msalInstance = new PublicClientApplication(msalConfig);
-export const AppId = '6317a049-4e55-464f-80a1-0896b8309fec';
-const loginRequest = {
-    scopes: [`api://${AppId}/access_as_user`],
-};
+import { msalInstance, loginRequest } from '@/authconfig';
 
 const AuthButton: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,12 +13,10 @@ const AuthButton: React.FC = () => {
             if (accounts.length > 0) {
                 setIsLoggedIn(true);
                 setUserName(accounts[0].name ?? null);
+                sessionStorage.setItem("accountInfo", JSON.stringify(accounts[0]));
             }
         };
-
-        if (typeof window !== 'undefined') {
-            initializeMsal();
-        }
+        initializeMsal();
     }, []);
 
     const login = async () => {
@@ -52,6 +32,7 @@ const AuthButton: React.FC = () => {
                     account,
                 });
                 localStorage.setItem('accessToken', tokenResponse.accessToken);
+
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -66,6 +47,9 @@ const AuthButton: React.FC = () => {
             setIsLoggedIn(false);
             setUserName(null);
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('onboarded');
+            localStorage.removeItem('consentToken');
+            sessionStorage.removeItem('useLegacy');
         } catch (error) {
             console.error('Logout error:', error);
             toast.error(`Logout error: ${(error as Error).message}`);

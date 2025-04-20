@@ -26,8 +26,8 @@ import { ChevronsUpDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import authService from "@/scripts/msalservice";
 import {INTUNEASSISTANT_TENANT_INFO} from "@/components/constants/apiUrls";
+import { legacyRequest, legacyMsalInstance } from '@/authconfig';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-
 
 type LicenseProperties = {
     environment: string;
@@ -55,43 +55,52 @@ export default function ConsentCard({
     const [isTenantNameValid, setIsTenantNameValid] = React.useState<boolean>(false);
     const [isOnboarded, setIsOnboarded] = React.useState<boolean>(false);
     const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(isOnboarded);
-
+    const [isMigration, setIsMigration] = React.useState<boolean>(false);
+    const [isNotOnboardedPopupOpen, setIsNotOnboardedPopupOpen] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        const fetchCurrentTenantId = async () => {
-            if (authService.isLoggedIn()) {
-                const userClaims = authService.getTokenClaims();
-                const tenantId = userClaims.tenantId;
-                setCurrentTenantId(tenantId);
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
 
-                try {
-                    // Check if the tenant is already onboarded
-                    const response = await fetch(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${tenantId}`);
-                    const data = await response.json();
-                    console.log('API Response:', data); // Log the API response
-                    const onboarded = data.status === "Onboarded";
-                    setIsOnboarded(onboarded);
-                    setIsDialogOpen(onboarded);
-                } catch (error) {
-                    console.error('Error fetching onboarding status:', error);
-                }
-            }
-        };
-
-        fetchCurrentTenantId();
+        if (status === 'migrate') {
+            setIsMigration(true);
+            fetchTenantInfo();
+        }
     }, []);
 
-    React.useEffect(() => {
-        if (isOnboarded) {
-            setIsDialogOpen(true);
+    const fetchTenantInfo = async () => {
+        if (authService.isLoggedIn()) {
+            const userClaims = authService.getTokenClaims();
+            const tenantId = userClaims.tenantId;
+            setCurrentTenantId(tenantId);
+
+            try {
+                const response = await fetch(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${tenantId}`);
+                const data = await response.json();
+                console.log("onboarded data:", data);
+                if (data.status != 0 && data.data) {
+                    setTenantId(data.data.tenantId);
+                    setTenantName(data.data.tenantName);
+                    setIsTenantIdValid(true);
+                    setIsTenantNameValid(true);
+                } else {
+                    setIsTenantIdValid(false);
+                    setIsTenantNameValid(false);
+                    localStorage.setItem('notOnboarded', true.toString());
+                    setIsNotOnboardedPopupOpen(true);
+                }
+            } catch (error) {
+                console.error('Error fetching tenant info:', error);
+                setIsTenantIdValid(false);
+                setIsTenantNameValid(false);
+            }
         }
-    }, [isOnboarded]);
-    
+    };
+
     const validateTenantName = (name: string) => {
         const nameRegex = /^[a-zA-Z0-9]+$/;
         return nameRegex.test(name) && name.length <= 27;
     };
-
 
     const validateGuid = (guid: string) => {
         const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
@@ -99,6 +108,7 @@ export default function ConsentCard({
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        if (isMigration) return;
         const value = e.target.value;
         if (e.target.id === "name") {
             setIsTenantIdValid(validateGuid(value));
@@ -106,28 +116,72 @@ export default function ConsentCard({
             setIsTenantNameValid(validateTenantName(value));
         }
     };
+
+    const handleLegacyLogin = async () => {
+        try {
+            const loginResponse = await legacyMsalInstance.loginPopup(legacyRequest);
+            const account = loginResponse.account;
+            if (account) {
+                const tokenResponse = await legacyMsalInstance.acquireTokenSilent({
+                    ...legacyRequest,
+                    account,
+                });
+                localStorage.setItem('accessToken', tokenResponse.accessToken);
+                window.location.href = '/onboarding?status=migrate';
+            }
+            localStorage.setItem('isOnboarding', true.toString());
+            sessionStorage.setItem('isMigrating', true.toString());
+        } catch (error) {
+            console.error('Login error:', error);
+        }
+    };
+
     const fetchUrlAndRedirect = async () => {
         setIsLoading(true);
 
         try {
+            // First, determine the state based on the URL status parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+
+            // Set storage items based on status
+            if (status === 'migrate') {
+                sessionStorage.setItem('isMigrating', 'true');
+                localStorage.setItem('isOnboarding', 'false');
+            } else {
+                localStorage.setItem('isOnboarding', 'true');
+                sessionStorage.setItem('isMigrating', 'false');
+            }
+
+            // Retrieve the correct values from storage
+            const isMigrating = sessionStorage.getItem('isMigrating') === 'true';
+            const isOnboarding = localStorage.getItem('isOnboarding') === 'true';
+
+            // Determine state parameter
+            const state = isMigrating ? 'migrating' : isOnboarding ? 'onboarding' : '';
+            console.log('Current state:', state);
             const apiUrl = `${environments
                 .filter((env) => env.environment === selectedEnvironment)
-                .map((env) => env.url)}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&tenantName=${tenantName}&state=onboarding`;
+                .map((env) => {
+                    const isDevelopment = process.env.NODE_ENV === 'development' ||
+                        window.location.hostname === 'localhost';
 
-            const response = await fetch(apiUrl, {method: 'GET'});
+                    return isDevelopment
+                        ? "https://localhost:7224"
+                        : env.url;
+                })}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&tenantName=${tenantName}&state=${state}`;
+
+            const response = await fetch(apiUrl, { method: 'GET' });
             const data = await response.json();
             const consentUrl = data.url;
             const token = data.onboardingToken;
-            localStorage.setItem('consentToken', token); // Store token in localStorage
-            console.log(localStorage.getItem('consentToken'));
+            localStorage.setItem('consentToken', token);
 
-            console.info(consentUrl);
-            window.open(`${consentUrl}`, "_blank", "noreferrer"); // Include token in the URL
+            window.open(`${consentUrl}`, "_blank", "noreferrer");
 
             setIsLoading(false);
         } catch (error) {
-            toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please
-                contact support.</a></div>);
+            toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please contact support.</a></div>);
             console.error(error);
             setIsLoading(false);
         }
@@ -137,7 +191,7 @@ export default function ConsentCard({
         <>
             {isOnboarded && (
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
+                    <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Already Onboarded</DialogTitle>
                             <DialogDescription>
@@ -150,16 +204,36 @@ export default function ConsentCard({
                     </DialogContent>
                 </Dialog>
             )}
-            <Card className={`w-full ${isOnboarded ? 'opacity-50 pointer-events-none' : ''}`}>
+            {isNotOnboardedPopupOpen && (
+                <Dialog open={isNotOnboardedPopupOpen} onOpenChange={setIsNotOnboardedPopupOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Not Onboarded</DialogTitle>
+                            <DialogDescription>
+                                The tenant was not onboarded earlier. Please proceed with the onboarding process.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <Button variant="outline" onClick={() => {
+                            localStorage.setItem('isOnboarding', true.toString());
+                            window.location.href = '/onboarding';
+                        }}>
+                            Onboard directly
+                        </Button>
+                    </DialogContent>
+                </Dialog>
+            )}
+            <Card className={`w-full ${isOnboarded ? 'opacity-50 pointer-events-none' : ''} ${isMigration ? 'bg-secondary/80' : ''}`}>
                 <CardHeader>
                     <CardTitle>
                         <span className="font-sans font-bold text-gradient_indigo-purple">
-                            Intune Assistant Onboarding
+                            {isMigration ? 'Intune Assistant Migrate' : 'Intune Assistant Onboarding'}
                         </span>
                     </CardTitle>
                     <CardDescription>
-                        Onboard a new tenant into Intune Assistant.
-                        <br/>
+                        {isMigration ? 'Migrate an existing tenant into Intune Assistant.' : 'Onboard a new tenant into Intune Assistant.'}
+                        <br />
+                        {isMigration ? 'Use the legacy login button below to login first' : ' '}
+                        <br />
                         For more information, please refer to the{" "}
                         <a
                             href="/docs/onboarding"
@@ -191,11 +265,13 @@ export default function ConsentCard({
                                         id="domain"
                                         placeholder="domain"
                                         maxLength={150}
+                                        value={tenantName}
                                         onChange={(e) => setTenantName(e.target.value)}
                                         onBlur={handleBlur}
-                                        className={!isTenantNameValid ? "border-red-500" : ""}
+                                        className={`${!isTenantNameValid && !isMigration ? "border-red-500" : ""}`}
+                                        disabled={isMigration}
                                     />
-                                    {!isTenantNameValid && (
+                                    {!isTenantNameValid && !isMigration && (
                                         <div className="text-red-500 text-sm">
                                             Please enter a valid tenant name (alphanumeric only with the max of 27).
                                         </div>
@@ -213,69 +289,83 @@ export default function ConsentCard({
                                     id="name"
                                     placeholder="00000000-0000-0000-0000-000000000000"
                                     maxLength={36}
+                                    value={tenantId}
                                     onChange={(e) => setTenantId(e.target.value)}
                                     onBlur={handleBlur}
-                                    className={!isTenantIdValid ? "border-red-500" : ""}
+                                    className={`${!isTenantIdValid && !isMigration ? "border-red-500" : ""}`}
+                                    disabled={isMigration}
                                 />
-                                {!isTenantIdValid && (
+                                {!isTenantIdValid && !isMigration && (
                                     <div className="text-red-500 text-sm">
                                         Please enter a valid Tenant ID.
                                     </div>
                                 )}
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                <Collapsible
-                                    open={isOptionsOpen}
-                                    onOpenChange={setIsOptionsOpen}
-                                    className="w-full space-y-2"
-                                >
-                                    <div className="flex items-center justify-between space-x-4">
-                                        <h4 className="text-sm font-semibold">Advanced options</h4>
-                                        <CollapsibleTrigger asChild>
-                                            <Button variant="ghost" size="sm" className="w-9 p-0">
-                                                <ChevronsUpDown className="h-4 w-4"/>
-                                                <span className="sr-only">Toggle</span>
-                                            </Button>
-                                        </CollapsibleTrigger>
-                                    </div>
-                                    <CollapsibleContent className="space-y-2">
-                                        <Label htmlFor="framework">License</Label>
-                                        <Select
-                                            defaultValue={defaultEnvironment.environment}
-                                            onValueChange={(e) => setSelectedEnvironment(e)}
-                                        >
-                                            <SelectTrigger id="framework">
-                                                <SelectValue placeholder="Select"/>
-                                            </SelectTrigger>
-                                            <SelectContent position="popper">
-                                                {environments.map((env) => (
-                                                    <SelectItem
-                                                        key={env.environment}
-                                                        value={env.environment}
-                                                    >
-                                                        {env.displayName}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </CollapsibleContent>
-                                </Collapsible>
+                                {!isMigration && (
+                                    <Collapsible
+                                        open={isOptionsOpen}
+                                        onOpenChange={setIsOptionsOpen}
+                                        className="w-full space-y-2"
+                                    >
+                                        <div className="flex items-center justify-between space-x-4">
+                                            <h4 className="text-sm font-semibold">Advanced options</h4>
+                                            <CollapsibleTrigger asChild>
+                                                <Button variant="ghost" size="sm" className="w-9 p-0">
+                                                    <ChevronsUpDown className="h-4 w-4" />
+                                                    <span className="sr-only">Toggle</span>
+                                                </Button>
+                                            </CollapsibleTrigger>
+                                        </div>
+                                        <CollapsibleContent className="space-y-2">
+                                            <Label htmlFor="framework">License</Label>
+                                            <Select
+                                                defaultValue={defaultEnvironment.environment}
+                                                onValueChange={(e) => setSelectedEnvironment(e)}
+                                            >
+                                                <SelectTrigger id="framework">
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+                                                <SelectContent position="popper">
+                                                    {environments.map((env) => (
+                                                        <SelectItem
+                                                            key={env.environment}
+                                                            value={env.environment}
+                                                        >
+                                                            {env.displayName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </CollapsibleContent>
+                                    </Collapsible>
+                                )}
                             </div>
                         </div>
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    <Button variant="outline" onClick={() => window.location.reload()}>
-                        Reset
-                    </Button>
+                    {!isMigration && (
+                        <Button variant="outline" onClick={() => window.location.reload()}>
+                            Reset
+                        </Button>
+                    )}
                     {isLoading ? (
                         <Button disabled>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Please wait
                         </Button>
                     ) : (
-                        <Button onClick={fetchUrlAndRedirect}
-                                disabled={!isTenantIdValid || !isTenantNameValid}>Deploy</Button>
+                        <>
+                            {isMigration && (
+                                <Button variant="outline" onClick={handleLegacyLogin}>
+                                    Legacy Login
+                                </Button>
+                            )}
+                            <Button onClick={fetchUrlAndRedirect} disabled={!isTenantIdValid || !isTenantNameValid}>
+                                {isMigration ? 'Migrate' : 'Deploy'}
+                            </Button>
+                        </>
                     )}
                 </CardFooter>
             </Card>

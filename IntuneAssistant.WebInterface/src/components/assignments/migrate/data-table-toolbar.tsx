@@ -17,7 +17,7 @@ import {
     ASSIGNMENTS_MIGRATE_ENDPOINT,
     EXPORT_ENDPOINT
 } from "@/components/constants/apiUrls";
-import { assignmentMigrationSchema } from "@/components/assignments/migrate/schema.tsx";
+import {assignmentMigrationSchema, groupsSchema} from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
 import { SelectAllButton } from "@/components/button-selectall.tsx";
@@ -28,6 +28,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import Papa from "papaparse";
+import type {filterSchema} from "@/schemas/filters.tsx";
 
 interface ValidateAndUpdateTableFn {
     (policyId?: string): Promise<boolean>;
@@ -53,6 +54,8 @@ interface DataTableToolbarProps<TData> {
     validateAndUpdateTable: ValidateAndUpdateTableFn;
     backupStatus: Record<string, boolean>;
     setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    groupData: z.infer<typeof groupsSchema>[];
+    filters: z.infer<typeof filterSchema>[];
 }
 
 export function DataTableToolbar({
@@ -62,7 +65,9 @@ export function DataTableToolbar({
                                      source,
                                      validateAndUpdateTable,
                                      backupStatus,
-                                     setBackupStatus
+                                     setBackupStatus,
+                                     groupData,
+                                     filters,
                                  }: DataTableToolbarProps<TData>) {
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
@@ -101,6 +106,148 @@ export function DataTableToolbar({
         setSelectedIds(ids);
     }, [table.getSelectedRowModel().rows]);
 
+
+    const handleBackup = () => {
+        const selectedRows = table.getSelectedRowModel().rows;
+
+        if (selectedRows.length === 0) {
+            toast.error("No rows selected for backup.");
+            return;
+        }
+        let accountInfo = null;
+        try {
+            const accountInfoStr = sessionStorage.getItem("accountInfo");
+            if (accountInfoStr) {
+                accountInfo = JSON.parse(accountInfoStr);
+            }
+        } catch (error) {
+            console.error("Error parsing account info:", error);
+        }
+        const tenantName = accountInfo?.username?.includes('@') ?
+            accountInfo?.username.split('@')[1] :
+            (userClaims?.username || "unknown")
+        const metadata = {
+            version: "1.0",
+            exportDate: new Date().toISOString(),
+            purpose: "backup",
+            tenantId: accountInfo?.tenantId || "unknown",
+            tenant: tenantName,
+            exportedBy: accountInfo?.name || userClaims?.username || "unknown",
+            totalPolicies: new Set(selectedRows.map(row => row.original.policy?.id).filter(Boolean)).size,
+            totalAssignments: 0, // Will be updated later
+        };
+
+        // Create a map to store unique assignments
+        const uniqueBackupData: Record<string, any> = {};
+        // Track policies we've already seen to determine first vs subsequent assignments
+        const seenPolicies: Record<string, boolean> = {};
+        // Track which policies are included in this backup
+        const backedUpPolicyIds = new Set<string>();
+
+        selectedRows.forEach((row: any) => {
+            // Access the original policy and its assignments from row.original
+            const policy = row.original.policy || {};
+            const policyName = policy.name || "Unknown Policy";
+            const policyId = policy.id || "";
+            const assignments = policy.assignments || [];
+
+            // Add policy ID to the set of backed up policies
+            if (policyId) {
+                backedUpPolicyIds.add(policyId);
+            }
+
+            // Map through the original assignments
+            assignments.forEach((assignment: any) => {
+                const assignmentId = assignment?.id || "";
+                // Skip if we've already processed this assignment
+                if (uniqueBackupData[assignmentId]) return;
+
+                const isAllDevices = assignment?.target?.["@odata.type"]?.includes("allDevicesAssignmentTarget");
+                const isAllUsers = assignment?.target?.["@odata.type"]?.includes("allUsersAssignmentTarget");
+
+                // Handle group name based on assignment type
+                let groupName = "Unknown Group";
+                let groupId = "";
+
+                if (isAllDevices) {
+                    groupName = "All Devices";
+                } else if (isAllUsers) {
+                    groupName = "All Users";
+                } else {
+                    groupId = assignment?.target?.groupId || "";
+                    // Only look up group name if we have a groupId
+                    const group = groupData?.find((g) => g.id === groupId);
+                    groupName = group?.displayName || "Unknown Group";
+                }
+
+                const assignmentDirection = assignment?.target?.["@odata.type"]?.includes("exclusion")
+                    ? "Exclude"
+                    : "Include";
+
+                const filterId = assignment?.target?.deviceAndAppManagementAssignmentFilterId || "";
+                const filter = filters?.find((f) => f.id === filterId);
+                const filterName = filter?.displayName || null;
+                const filterType = assignment?.target?.deviceAndAppManagementAssignmentFilterType || "none";
+
+                // Determine if this is the first assignment for this policy
+                const assignmentAction = seenPolicies[policyId] ? "Add" : "Replace";
+                // Mark this policy as seen for future assignments
+                if (!seenPolicies[policyId]) {
+                    seenPolicies[policyId] = true;
+                }
+
+                // Create a unique key for this assignment
+                uniqueBackupData[assignmentId] = {
+                    PolicyId: policyId,
+                    PolicyName: policyName,
+                    GroupId: groupId,
+                    GroupName: groupName,
+                    AssignmentDirection: assignmentDirection,
+                    AssignmentAction: assignmentAction,
+                    FilterName: filterName,
+                    FilterType: filterType,
+                };
+            });
+        });
+
+        // Convert the unique data map to an array
+        const backupData = Object.values(uniqueBackupData);
+
+        // Update total assignments count in metadata
+        metadata.totalAssignments = backupData.length;
+
+        // Create a CSV string for metadata
+        const metadataRows = Object.entries(metadata).map(([key, value]) => {
+            return { MetadataKey: key, MetadataValue: value };
+        });
+
+        // Create CSV content with metadata section followed by a divider and then data
+        const metadataCsv = Papa.unparse(metadataRows, {
+            delimiter: ";"
+        });
+        const dataCsv = Papa.unparse(backupData, {
+            delimiter: ";"
+        });
+
+
+        const fullCsvContent = `# METADATA\n${metadataCsv}\n# DATA\n${dataCsv}`;
+
+        // Create Blob and download the file
+        const blob = new Blob([fullCsvContent], { type: 'text/csv;charset=utf-8;' });
+        const filename = `${tenantName}_assignments_backup_${new Date().toISOString().slice(0, 10)}.csv`;
+        saveAs(blob, filename);
+
+
+        // Update backup status for all policies included in this backup
+        const newBackupStatus = { ...backupStatus };
+        backedUpPolicyIds.forEach(policyId => {
+            newBackupStatus[policyId] = true;
+        });
+        setBackupStatus(newBackupStatus);
+
+        console.table(backupData); // For debugging purposes
+        toast.success(`Backup created with ${backupData.length} unique assignments`);
+    };
 
     const handleBackupExport = async () => {
         const selectedRows = table.getSelectedRowModel().rows;
@@ -325,7 +472,12 @@ export function DataTableToolbar({
     return (
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
-                <SelectAllButton table={table} />
+                <SelectAllButton
+                    table={table}
+                    filterFn={() => table.getFilteredRowModel().rows.filter(row =>
+                        row.original.isReadyForMigration === true
+                    )}
+                />
                 <Input
                     placeholder={FILTER_PLACEHOLDER}
                     value={table.getState().globalFilter ?? ""}
@@ -371,6 +523,9 @@ export function DataTableToolbar({
                 <Button onClick={handleRefresh} variant="outline" size="sm">
                     Refresh
                 </Button>
+                <Button onClick={handleBackup} variant="outline" size="sm">
+                    Backup
+                </Button>
                 <Button onClick={handleConfirmMigrate} variant="outline" size="sm">
                     Migrate
                 </Button>
@@ -408,9 +563,11 @@ export function DataTableToolbar({
                 <DataTableViewOptions table={table} />
             </div>
             {isBackingUp && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
-                        <h3 className="text-lg font-medium mb-2">Backing up policies</h3>
+                        <h3 className="text-lg font-medium mb-2">
+                            Backing up policies
+                        </h3>
                         <div className="mb-2">
                             <Progress value={backupProgress} className="h-2 mb-1" />
                             <div className="flex justify-between text-sm text-gray-500">
@@ -425,8 +582,8 @@ export function DataTableToolbar({
                 </div>
             )}
             {isMigrating && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] pointer-events-auto">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
                         <h3 className="text-lg font-medium mb-2">
                             {migrationProgress <= 50 ? "Migrating assignments" : "Validating assignments"}
                         </h3>
