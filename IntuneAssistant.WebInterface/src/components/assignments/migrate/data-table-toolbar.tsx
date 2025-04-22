@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input.tsx"
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
-import {assignmentAction, migrationNeeded, readyForMigration} from "@/components/assignments/migrate/fixed-values.tsx"
+import {assignmentAction, migrationNeeded, readyForMigration, backupStatusValues} from "@/components/assignments/migrate/fixed-values.tsx"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { Undo2Icon } from "lucide-react";
@@ -22,6 +22,7 @@ import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
 import { SelectAllButton } from "@/components/button-selectall.tsx";
 import { Progress } from "@/components/ui/progress";
+
 
 // Toast configuration
 import { ToastContainer, toast } from 'react-toastify';
@@ -506,6 +507,13 @@ export function DataTableToolbar({
                         column={table.getColumn("assignmentAction")}
                         title="Assignment Action"
                         options={assignmentAction}
+                    />
+                )}
+                {table.getColumn("backupStatus") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("backupStatus")}
+                        title="Backup Status"
+                        options={backupStatusValues}
                     />
                 )}
                 {isFiltered && (

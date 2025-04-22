@@ -469,20 +469,27 @@ export const columns = (
         },
         {
             accessorKey: "backupStatus",
+            accessorFn: (row) => {
+                const status = row.isBackedUp;
+                if (status === undefined) return "unknown";
+                return status ? "backed-up" : "not-backed-up";
+            },
             header: ({ column }) => (
                 <DataTableColumnHeader column={column} title="Backup Status" />
             ),
             cell: ({ row }) => {
-                const policyId = row.original.policy?.id;
-                const isBackedUp = policyId ? backupStatus[policyId] : undefined;
+                const status = row.original.isBackedUp;
 
-                if (isBackedUp === undefined) {
+                if (status === undefined) {
                     return <TriangleAlert className="h-5 w-5 text-orange-500" />;
-                } else if (isBackedUp) {
+                } else if (status) {
                     return <CheckCircle className="h-5 w-5 text-green-500" />;
                 } else {
                     return <CircleX className="h-5 w-5 text-red-500" />;
                 }
+            },
+            filterFn: (row, id, value) => {
+                return value.includes(row.getValue(id));
             },
         }
     ];
