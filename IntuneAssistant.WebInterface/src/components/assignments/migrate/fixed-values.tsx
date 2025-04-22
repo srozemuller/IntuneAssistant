@@ -24,6 +24,26 @@ export const migrationNeeded = [
         color: "text-red-500",
     }
 ]
+export const backupStatusValues = [
+    {
+        value: "backed-up",
+        label: "Backed up",
+        icon: CheckCircle,
+        color: "text-green-500",
+    },
+    {
+        value: "not-backed-up",
+        label: "Not backed up",
+        icon: CircleX,
+        color: "text-red-500",
+    },
+    {
+        value: "unknown",
+        label: "Unknown",
+        icon: TriangleAlert,
+        color: "text-orange-500",
+    }
+];
 
 export const readyForMigration = [
     {
