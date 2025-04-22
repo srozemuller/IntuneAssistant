@@ -307,10 +307,10 @@ export const columns = (
             cell: ({row}) => {
                 const action = row.getValue('assignmentAction') as string;
                 const getColorClass = (action: string) => {
-                    switch(action?.toLowerCase()) {
-                        case 'add': return 'text-green-500';
-                        case 'replace': return 'text-orange-500';
-                        case 'remove': return 'text-red-500';
+                    switch(action) {
+                        case 'Add': return 'text-green-500';
+                        case 'Replace': return 'text-orange-500';
+                        case 'Remove': return 'text-red-500';
                         default: return '';
                     }
                 };

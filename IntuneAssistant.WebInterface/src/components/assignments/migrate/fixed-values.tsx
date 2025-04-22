@@ -61,19 +61,19 @@ export const readyForMigration = [
 ]
 export const assignmentAction = [
     {
-        value: 'add',
+        value: 'Add',
         label: "Add",
         icon: CirclePlus,
         color: "text-green-500",
     },
     {
-        value: 'remove',
+        value: 'Remove',
         label: "Remove",
         icon: CircleX,
         color: "text-red-500",
     },
     {
-        value: 'replace',
+        value: 'Replace',
         label: "Replace",
         icon: CircleArrowLeft,
         color: "text-orange-500",
