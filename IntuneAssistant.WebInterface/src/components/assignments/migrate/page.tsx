@@ -50,6 +50,7 @@ function MigrationPage() {
         setData([]);
         setRawData('');
         setBackupStatus({});
+        setRows([]);
         // Clear any other data states that should be reset
     };
 

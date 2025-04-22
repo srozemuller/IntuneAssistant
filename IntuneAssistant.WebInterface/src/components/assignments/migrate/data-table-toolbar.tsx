@@ -520,13 +520,25 @@ export function DataTableToolbar({
                 )}
             </div>
             <div className="flex items-center space-x-2">
-                <Button onClick={handleRefresh} variant="outline" size="sm">
+                <Button
+                    onClick={handleRefresh}
+                    variant="outline"
+                    size="sm"
+                    disabled={table.getRowModel().rows.length === 0}>
                     Refresh
                 </Button>
-                <Button onClick={handleBackup} variant="outline" size="sm">
+                <Button
+                    onClick={handleBackup}
+                    variant="outline"
+                    size="sm"
+                    disabled={table.getRowModel().rows.length === 0}>
                     Backup
                 </Button>
-                <Button onClick={handleConfirmMigrate} variant="outline" size="sm">
+                <Button
+                    onClick={handleConfirmMigrate}
+                    variant="outline"
+                    size="sm"
+                    disabled={table.getRowModel().rows.length === 0}>
                     Migrate
                 </Button>
                 <Button onClick={handleDownloadTemplate} variant="outline" size="sm">
