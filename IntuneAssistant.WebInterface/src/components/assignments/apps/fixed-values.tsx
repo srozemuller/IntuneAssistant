@@ -7,7 +7,8 @@ import {
     Grid2X2Icon,
     AppleIcon,
     BotIcon,
-    CircleAlertIcon, CirclePlusIcon, CircleXIcon, CircleMinusIcon
+    CircleAlertIcon, CirclePlusIcon, CircleXIcon, CircleMinusIcon, ComputerIcon,
+    GroupIcon,
 } from "lucide-react"
 
 export const isAssignedValues = [
@@ -51,13 +52,13 @@ export const installType = [
         value: 'Available',
         label: "Available",
         icon: CirclePlusIcon,
-        color: "text-red-500",
+        color: "text-orange-500",
     },
     {
         value: 'None',
         label: "None",
         icon: CircleMinusIcon,
-        color: "text-red-500",
+        color: "text-grey-500",
     },
     {
         value: 'Uninstall',
@@ -87,36 +88,35 @@ export const memberType = [
         color: "text-grey-500",
     }
 ]
-
 export const assignmentTypes = [
     {
         value: "No assignment",
         label: "No assignment",
         icon: CheckCircle,
-        color: "text-green-500",
+        color: "text-grey-500",
     },
     {
         value: "All Users (Intune)",
         label: "All Users (Intune)",
-        icon: XCircle,
-        color: "text-red-500",
+        icon: UserCircle,
+        color: "text-grey-500",
     },
     {
         value: "All Devices (Intune)",
         label: "All Devices (Intune)",
-        icon: XCircle,
-        color: "text-red-500",
+        icon: ComputerIcon,
+        color: "text-grey-500",
     },
     {
         value: "Entra ID Group",
         label: "Entra ID Group",
-        icon: XCircle,
-        color: "text-red-500",
+        icon: GroupIcon,
+        color: "text-grey-500",
     },
     {
         value: "Entra ID Group Exclude",
         label: "Entra ID Group Exclude",
         icon: XCircle,
-        color: "text-red-500",
+        color: "text-grey-500",
     },
 ]

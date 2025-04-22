@@ -8,7 +8,7 @@ import {
     Grid2X2Icon,
     AppleIcon,
     BotIcon,
-    HelpCircleIcon
+    HelpCircleIcon, GroupIcon, ComputerIcon
 } from "lucide-react"
 
 export const isAssignedValues = [
@@ -46,37 +46,37 @@ export const platform = [
         value: 'Windows',
         label: "Windows",
         icon: Grid2X2Icon,
-        color: "text-green-500",
+        color: "text-grey-500",
     },
     {
         value: 'iOS',
         label: "iOS",
         icon: AppleIcon,
-        color: "text-red-500",
+        color: "text-grey-500",
     },
     {
         value: 'Android',
         label: "Android",
         icon: BotIcon,
-        color: "text-red-500",
+        color: "text-grey-500",
     },
     {
         value: 'macOS',
         label: "macOS",
         icon: AppleIcon,
-        color: "text-red-500",
+        color: "text-grey-500",
     },
     {
         value: 'General',
         label: "General",
         icon: Circle,
-        color: "text-red-500",
+        color: "text-grey-500",
     },
     {
         value: 'Unknown',
         label: "Unknown",
         icon: HelpCircleIcon,
-        color: "text-red-500",
+        color: "text-grey-500",
     },
 ]
 
@@ -106,30 +106,30 @@ export const assignmentTypes = [
         value: "No assignment",
         label: "No assignment",
         icon: CheckCircle,
-        color: "text-green-500",
+        color: "text-grey-500",
     },
     {
         value: "All Users (Intune)",
         label: "All Users (Intune)",
-        icon: XCircle,
-        color: "text-red-500",
+        icon: UserCircle,
+        color: "text-grey-500",
     },
     {
         value: "All Devices (Intune)",
         label: "All Devices (Intune)",
-        icon: XCircle,
-        color: "text-red-500",
+        icon: ComputerIcon,
+        color: "text-grey-500",
     },
     {
         value: "Entra ID Group",
         label: "Entra ID Group",
-        icon: XCircle,
-        color: "text-red-500",
+        icon: GroupIcon,
+        color: "text-grey-500",
     },
     {
         value: "Entra ID Group Exclude",
         label: "Entra ID Group Exclude",
         icon: XCircle,
-        color: "text-red-500",
+        color: "text-grey-500",
     },
 ]
