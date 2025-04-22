@@ -520,13 +520,25 @@ export function DataTableToolbar({
                 )}
             </div>
             <div className="flex items-center space-x-2">
-                <Button onClick={handleRefresh} variant="outline" size="sm">
+                <Button
+                    onClick={handleRefresh}
+                    variant="outline"
+                    size="sm"
+                    disabled={table.getRowModel().rows.length === 0}>
                     Refresh
                 </Button>
-                <Button onClick={handleBackup} variant="outline" size="sm">
+                <Button
+                    onClick={handleBackup}
+                    variant="outline"
+                    size="sm"
+                    disabled={table.getRowModel().rows.length === 0}>
                     Backup
                 </Button>
-                <Button onClick={handleConfirmMigrate} variant="outline" size="sm">
+                <Button
+                    onClick={handleConfirmMigrate}
+                    variant="outline"
+                    size="sm"
+                    disabled={table.getRowModel().rows.length === 0}>
                     Migrate
                 </Button>
                 <Button onClick={handleDownloadTemplate} variant="outline" size="sm">
@@ -563,9 +575,11 @@ export function DataTableToolbar({
                 <DataTableViewOptions table={table} />
             </div>
             {isBackingUp && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
-                        <h3 className="text-lg font-medium mb-2">Backing up policies</h3>
+                        <h3 className="text-lg font-medium mb-2">
+                            Backing up policies
+                        </h3>
                         <div className="mb-2">
                             <Progress value={backupProgress} className="h-2 mb-1" />
                             <div className="flex justify-between text-sm text-gray-500">
@@ -580,8 +594,8 @@ export function DataTableToolbar({
                 </div>
             )}
             {isMigrating && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] pointer-events-auto">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
                         <h3 className="text-lg font-medium mb-2">
                             {migrationProgress <= 50 ? "Migrating assignments" : "Validating assignments"}
                         </h3>
