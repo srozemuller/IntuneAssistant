@@ -18,27 +18,32 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import type { Column } from '@tanstack/react-table';
 import type * as React from 'react';
-import { CheckCircle, Circle } from "lucide-react";
+import { CheckCircle, Circle, ListFilter } from "lucide-react";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
     column?: Column<TData, TValue>;
     title?: string;
-    options: { value: boolean; label: string; icon: React.ComponentType<{ className?: string }>; color: string }[];
+    options: Array<{
+        value: string | boolean;
+        label: string;
+        icon: React.ComponentType<{ className?: string }> | React.ForwardRefExoticComponent<any>;
+        color: string
+    }>;
 }
-
 export function DataTableFacetedFilter<TData, TValue>({
                                                           column,
                                                           title,
                                                           options,
                                                       }: DataTableFacetedFilterProps<TData, TValue>) {
     const facets = column?.getFacetedUniqueValues();
-    const selectedValues = new Set(column?.getFilterValue() as boolean[]);
+    const selectedValues = new Set(column?.getFilterValue() as (string | boolean)[]);
+    const optionsArray = Array.isArray(options) ? options : [];
 
     return (
         <Popover>
             <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="h-8 border-dashed">
-                    <Circle className="mr-2 h-4 w-4" />
+                    <ListFilter className="mr-2 h-4 w-4" />
                     {title}
                     {selectedValues?.size > 0 && (
                         <>
@@ -81,7 +86,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
                         <CommandGroup>
-                            {options.map((option) => {
+                            {optionsArray.map((option) => {
                                 const isSelected = selectedValues.has(option.value);
                                 return (
                                     <CommandItem
@@ -108,8 +113,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                                         >
                                             <CheckCircle className={cn("h-4 w-4")} />
                                         </div>
+                                        {/* Render the icon if it exists */}
                                         {option.icon && (
-                                            <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                                            <option.icon className={cn("mr-2 h-4 w-4", option.color)} />
                                         )}
                                         <span>{option.label}</span>
                                         {facets?.get(option.value) && (
