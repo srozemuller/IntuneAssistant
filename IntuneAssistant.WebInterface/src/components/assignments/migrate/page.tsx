@@ -45,6 +45,15 @@ function MigrationPage() {
         [groups, filters, backupStatus, setData]
     );
 
+    // Add a function to clear all data states
+    const clearAllData = () => {
+        setData([]);
+        setRawData('');
+        setBackupStatus({});
+        setRows([]);
+        // Clear any other data states that should be reset
+    };
+
 
     const fetchData = async () => {
         const toastId = toast.loading(`Loading migration config`);
@@ -187,7 +196,10 @@ function MigrationPage() {
     }, [rows]);
     return (
         <div className="container max-w-[95%] py-6">
-            <CSVUploader setRows={setRows}/>
+            <CSVUploader
+                setRows={setRows}
+                clearParentData={clearAllData}
+            />
             <DataTable
                 rowClassName={isAnimating ? 'fade-to-normal' : ''}
                 columns={tableColumns}
