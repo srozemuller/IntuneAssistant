@@ -9,13 +9,14 @@ import { Progress } from "@/components/ui/progress.tsx";
 
 interface CsvUploaderProps {
     setRows: (rows: object[]) => void;
+    clearParentData?: () => void;
 }
 
 interface Metadata {
     [key: string]: string;
 }
 
-const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
+const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows, clearParentData }) => {
     const [file, setFile] = useState<File | null>(null);
     const [conflictingRows, setConflictingRows] = useState<string[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -54,7 +55,7 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
             // Find the data section and parse it
             const dataMatch = content.match(/^# DATA\s+([\s\S]*)/m);
             if (dataMatch && dataMatch[1]) {
-                const dataSection = dataMatch[1];
+                const dataSection = dataMatch[1].trim();  // Add trim() to ensure clean string
 
                 Papa.parse(dataSection, {
                     header: true,
@@ -62,20 +63,20 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
                     complete: (results) => {
                         handleParsedData(results.data as object[]);
                     },
-                    error: (error) => {
+                    error: (error: Papa.ParseError) => {
                         toast.error(`Error parsing CSV data: ${error.message}`);
                         setIsProcessing(false);
                     }
                 });
             } else {
                 // If no specific sections found, parse the whole file as data
-                Papa.parse(content, {
+                Papa.parse(content as string, {
                     header: true,
                     skipEmptyLines: true,
                     complete: (results) => {
                         handleParsedData(results.data as object[]);
                     },
-                    error: (error) => {
+                    error: (error: Papa.ParseError) => {
                         toast.error(`Error parsing CSV file: ${error.message}`);
                         setIsProcessing(false);
                     }
@@ -247,12 +248,36 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows }) => {
     };
 
     const handleClearFile = () => {
+        // Clear all local state
         setFile(null);
-        setRows([]);
+        setMetadata({});
+        setConflictingRows([]);
+        setIsDialogOpen(false);
+        setIsDragging(false);
+        setIsProcessing(false);
+        setProcessingProgress(0);
+
+        // Clear parent component's data - use an empty array with explicit type casting
+        setRows([] as object[]);
+
+        // Clear parent component's actual data table
+        if (clearParentData) {
+            clearParentData();
+        }
+
+        // Reset the file input
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
+
+        // Emit an event to notify parent component (optional approach)
+        const clearEvent = new CustomEvent('csv-data-cleared');
+        window.dispatchEvent(clearEvent);
+
+        // Notify user
+        toast.info('CSV file and table data have been cleared');
     };
+
 
     const openFileSelector = () => {
         if (fileInputRef.current) {
