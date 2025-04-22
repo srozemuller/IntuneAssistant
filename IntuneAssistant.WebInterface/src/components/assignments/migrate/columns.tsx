@@ -17,7 +17,7 @@ import {z} from "zod";
 import type {filterSchema} from "@/schemas/filters.tsx";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import {type UserMember, fetchGroupMembers, memberColumns} from "@/components/dialogs/group-membership-dialog.tsx"
-import {DataTable} from "@/components/assignments/overview/data-table-groups.tsx";
+import {DataTable} from "@/components/assignments/migrate/data-table-groups.tsx";
 
 const FilterCell = ({ row, filters }: { row: any, filters: z.infer<typeof filterSchema>[] }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -104,7 +104,12 @@ export const columns = (
         },
         {
             accessorKey: 'policy.name',
-            header: 'Policy Name',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Policy Name" />
+            ),
+            enableResizing: true,
+            enableSorting: true,
+            enableColumnFilter: true,
             cell: ({ row }) => {
                 const policyName = row.original.policy?.name;
                 const policyId = row.original.policy?.id;
@@ -138,10 +143,15 @@ export const columns = (
                     </TooltipProvider>
                 );
             },
+            filterFn: (row, id, value) => value.includes(row.getValue(id)),
         },
         {
             accessorKey: 'policy.assignments',
-            header: 'Current Assignments',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Current Assignments" />
+            ),
+            enableColumnFilter: true,
+
             cell: ({ row }) => {
                 const [assignments, setAssignments] = useState(row.original.policy?.assignments || []);
                 const [members, setMembers] = useState<UserMember[]>([]);
@@ -220,7 +230,9 @@ export const columns = (
         },
         {
             accessorKey: 'groupToMigrate',
-            header: 'Group to Migrate',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Group to target" />
+            ),
             cell: ({ row }) => {
                 const groupName = row.getValue('groupToMigrate') as React.ReactNode;
                 const groupInfo = groupData.find(group => group.displayName === groupName) || null;
@@ -279,7 +291,9 @@ export const columns = (
         },
         {
             accessorKey: 'assignmentDirection',
-            header: 'Include/Exclude',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="In/Exclude" />
+            ),
             cell: ({row}) => {
                 const assignmentDirection = row.getValue('assignmentDirection') as string;
                 return <span>{assignmentDirection}</span>;
@@ -287,7 +301,9 @@ export const columns = (
         },
         {
             accessorKey: 'assignmentAction',
-            header: 'Action',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Target Action" />
+            ),
             cell: ({row}) => {
                 const action = row.getValue('assignmentAction') as string;
                 const getColorClass = (action: string) => {
@@ -304,7 +320,9 @@ export const columns = (
         },
         {
             accessorKey: 'filterToMigrate',
-            header: 'Filter',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Filter" />
+            ),
             cell: ({row}) => {
                 const filterToMigrate = row.original.filterToMigrate;
                 const filterExist = row.original.migrationCheckResult?.filterExist;
@@ -334,7 +352,10 @@ export const columns = (
         },
         {
             accessorKey: 'filterType',
-            header: 'Type',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Direction" />
+            ),
+            enableColumnFilter: true,
             cell: ({ row }) => {
                 const filterType = row.getValue('filterType') as string;
                 const filterName = row.original.filterName;
@@ -385,7 +406,6 @@ export const columns = (
                     </TooltipProvider>
                 );
             },
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             filterFn: (row, id, value) => value.includes(row.getValue(id)),
         },
         {
