@@ -61,6 +61,26 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Rollout Assistant',
+          collapsed: true,
+          items: [
+            {
+              label: 'General',
+              autogenerate: {
+                collapsed: true,
+                directory: 'docs/general'
+              }
+            },
+            {
+              label: 'Getting Started',
+              autogenerate: {
+                collapsed: true,
+                directory: 'docs/web/getting-started'
+              }
+            },
+          ],
+        },
+        {
           label: 'Intune CLI',
           collapsed: true,
           items: [

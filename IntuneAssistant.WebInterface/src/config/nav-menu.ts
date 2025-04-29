@@ -15,20 +15,9 @@ export const navMenuConfig: NavMenuConfig = {
   ],
   docsNav: [
     {
-      title: "Documentation",
-      items: [
-        {
-          title: "Intune Assistant",
-          href: "/docs/web/getting-started/onboarding",
-          description: "Information about the Intune Assistant",
-        },
-        {
-          title: "Intune CLI",
-          href: "/docs/cli/getting-started",
-          description: "Information about the Intune CLI"
-        }
-      ],
-    }
+      title: "Docs",
+      href: "/docs",
+    },
   ],
   assistantNav: [
     {

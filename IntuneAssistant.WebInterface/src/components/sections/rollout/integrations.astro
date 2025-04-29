@@ -1,0 +1,53 @@
+---
+import { Icon } from "astro-icon/components";
+import { Badge } from "@/components/ui/badge";
+import { UserPlus, MonitorCog, Settings, MonitorSmartphone, ShieldCheck, SquareStack } from 'lucide-react';
+import type {InfoLdg} from "../../../types";
+import InfoLanding from "../info-landing.astro";
+import Integrations from "@/components/sections/integrations.astro";
+
+const info: InfoLdg = {
+  title: "What Intune Assistant can do for you",
+  description: "Use the Intune Assistant Web to get insights into your Microsoft Intune environment with ease.",
+  image: "/images/landing-page.png",
+  list: [
+    {
+      title: "Fast insights",
+      description: "The Intune Assistant Web provides fast insights into your Microsoft Intune environment.",
+      icon: "lucide:cpu"
+    },
+    {
+      title: "Security improvements",
+      description: "See your Conditional Access policies settings a single view.",
+      icon: "lucide:shield-check"
+    },
+    {
+      title: "Keep your environment clean",
+      description: "Finds duplicate settings, unused policies and more.",
+      icon: "lucide:layers-3"
+    },
+    {
+      title: "Integrated with Entra ID",
+      description: "Integrated with Entra ID for secure access using a single identity.",
+      icon: "lucide:fingerprint"
+    }
+  ]
+};
+
+---
+
+<section id="features" class="bg-background-200 py-8 md:py-12 lg:py-24">
+  <div class="container space-y-6">
+    <div class="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
+      <h2 class="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+        Intune Rollout Assistant helps you with ...
+      </h2>
+      <p class="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 balance-text">
+      The Intune Rollout Assistant empowers administrators to manage Intune assignments with efficiency. It helps you to target multiple resources at once.
+      </p>
+    </div>
+    <div class="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
+      <InfoLanding data={info} reverse={true} />
+    </div>
+  </div>
+</section>

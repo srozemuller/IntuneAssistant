@@ -13,6 +13,7 @@
   --sl-color-bg-nav: var(--sl-color-bg);
   --icon-size: 1.2rem;
   --icon-spacing: 0.5rem;
+  --input: 12 6.5% 15.1%;
   --sl-color-accent-low: hsla(20 14.3% 4.1%);
   --sl-color-accent: hsl(51, 91%, 50%);
   --sl-color-accent-high: hsla(47.9 95.8% 53.1%);
@@ -23,7 +24,7 @@
   --sl-color-gray-4: #4c5969;
   --sl-color-gray-5: hsla(0, 0%, 25%, 0.5);
   --sl-color-gray-6: hsla(0, 0%, 20%, 0.5);
-  --sl-color-black: hsla(0, 0%, 80%, 0.1);
+  --sl-color-black: hsla(0, 0%, 0%, 100);
 }
 :root[data-theme="light"] {
   --background: 0, 0%, 100%;
@@ -72,3 +73,40 @@ h1 {
   font-size: var(--sl-text-5xl);
 }
 
+.sl-link-button {
+  border-radius: calc(var(--radius) - 2px);
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  height: 2.75rem;
+  border: hsl(var(--input)) !important;
+}
+
+
+.rounded {
+  border-radius: 0.25rem;
+}
+.rounded-\[inherit\] {
+  border-radius: inherit;
+}
+.rounded-full {
+  border-radius: 9999px;
+}
+.rounded-lg {
+  border-radius: var(--radius);
+}
+.rounded-md {
+  border-radius: calc(var(--radius) - 2px);
+}
+.rounded-sm {
+  border-radius: calc(var(--radius) - 4px);
+}
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+.rounded-tl-sm {
+  border-top-left-radius: calc(var(--radius) - 4px);
+}
