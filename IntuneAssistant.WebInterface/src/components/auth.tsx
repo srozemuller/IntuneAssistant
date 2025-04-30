@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { msalInstance, loginRequest } from '@/authconfig';
+import { checkTenantOnboardingStatus } from '@/components/onboarded-check'; // Import the onboarding check
 
 const AuthButton: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -33,6 +34,20 @@ const AuthButton: React.FC = () => {
                 });
                 localStorage.setItem('accessToken', tokenResponse.accessToken);
 
+                // Check if the tenant is onboarded
+                try {
+                    const onboardingStatus = await checkTenantOnboardingStatus();
+                    if (onboardingStatus && onboardingStatus.isOnboarded) {
+                        sessionStorage.setItem('onboarded', 'true');
+                        console.log('Tenant is onboarded');
+                    } else {
+                        sessionStorage.setItem('onboarded', 'false');
+                        console.log('Tenant is not onboarded');
+                    }
+                } catch (onboardingError) {
+                    console.error('Failed to check onboarding status:', onboardingError);
+                    sessionStorage.removeItem('onboarded');
+                }
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -47,8 +62,8 @@ const AuthButton: React.FC = () => {
             setIsLoggedIn(false);
             setUserName(null);
             localStorage.removeItem('accessToken');
-            localStorage.removeItem('onboarded');
-            localStorage.removeItem('consentToken');
+            sessionStorage.removeItem('onboarded');
+            sessionStorage.removeItem('consentToken');
             sessionStorage.removeItem('useLegacy');
         } catch (error) {
             console.error('Logout error:', error);
