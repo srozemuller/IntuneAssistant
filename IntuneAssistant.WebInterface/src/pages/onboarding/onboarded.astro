@@ -33,7 +33,7 @@ let isMigrating = false;
       sessionStorage.removeItem('isMigrating'); // Clean up migration flag
     }
 
-    const token = localStorage.getItem('consentToken');
+    const token = sessionStorage.getItem('consentToken');
     if (token) {
       const accessToken = localStorage.getItem('accessToken');
       // Send request to the API endpoint
@@ -44,9 +44,9 @@ let isMigrating = false;
             Authorization: `Bearer ${accessToken}`
           }
         });
-        localStorage.setItem('useLegacy', false.toString());
-        localStorage.setItem('onboarded', true.toString());
-        localStorage.removeItem('notOnboarded');
+        sessionStorage.setItem('useLegacy', false.toString());
+        sessionStorage.setItem('onboarded', true.toString());
+        sessionStorage.removeItem('notOnboarded');
         sessionStorage.removeItem('isMigrating');
         sessionStorage.removeItem('isOnboarding');
         sessionStorage.removeItem('skipMigrate');

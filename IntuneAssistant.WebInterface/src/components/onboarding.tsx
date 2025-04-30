@@ -86,7 +86,7 @@ export default function ConsentCard({
                 } else {
                     setIsTenantIdValid(false);
                     setIsTenantNameValid(false);
-                    localStorage.setItem('notOnboarded', true.toString());
+                    sessionStorage.setItem('notOnboarded', true.toString());
                     setIsNotOnboardedPopupOpen(true);
                 }
             } catch (error) {
@@ -129,7 +129,7 @@ export default function ConsentCard({
                 localStorage.setItem('accessToken', tokenResponse.accessToken);
                 window.location.href = '/onboarding?status=migrate';
             }
-            localStorage.setItem('isOnboarding', true.toString());
+            sessionStorage.setItem('isOnboarding', true.toString());
             sessionStorage.setItem('isMigrating', true.toString());
         } catch (error) {
             console.error('Login error:', error);
@@ -147,15 +147,15 @@ export default function ConsentCard({
             // Set storage items based on status
             if (status === 'migrate') {
                 sessionStorage.setItem('isMigrating', 'true');
-                localStorage.setItem('isOnboarding', 'false');
+                sessionStorage.setItem('isOnboarding', 'false');
             } else {
-                localStorage.setItem('isOnboarding', 'true');
+                sessionStorage.setItem('isOnboarding', 'true');
                 sessionStorage.setItem('isMigrating', 'false');
             }
 
             // Retrieve the correct values from storage
             const isMigrating = sessionStorage.getItem('isMigrating') === 'true';
-            const isOnboarding = localStorage.getItem('isOnboarding') === 'true';
+            const isOnboarding = sessionStorage.getItem('isOnboarding') === 'true';
 
             // Determine state parameter
             const state = isMigrating ? 'migrating' : isOnboarding ? 'onboarding' : '';
@@ -175,7 +175,7 @@ export default function ConsentCard({
             const data = await response.json();
             const consentUrl = data.url;
             const token = data.onboardingToken;
-            localStorage.setItem('consentToken', token);
+            sessionStorage.setItem('consentToken', token);
 
             window.open(`${consentUrl}`, "_blank", "noreferrer");
 
@@ -214,7 +214,7 @@ export default function ConsentCard({
                             </DialogDescription>
                         </DialogHeader>
                         <Button variant="outline" onClick={() => {
-                            localStorage.setItem('isOnboarding', true.toString());
+                            sessionStorage.setItem('isOnboarding', true.toString());
                             window.location.href = '/onboarding';
                         }}>
                             Onboard directly
@@ -276,7 +276,6 @@ export default function ConsentCard({
                                             Please enter a valid tenant name (alphanumeric only with the max of 27).
                                         </div>
                                     )}
-                                    <span>.onmicrosoft.com</span>
                                 </div>
                             </div>
                             <div className="flex flex-col space-y-1.5">

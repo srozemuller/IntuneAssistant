@@ -13,7 +13,7 @@ const MigrationPopup = () => {
         };
         initializeMsal();
 
-        const hasOnboarded = localStorage.getItem('onboarded') === 'true';
+        const hasOnboarded = sessionStorage.getItem('onboarded') === 'true';
         const isOnboardingPage = window.location.pathname.includes('/onboarding');
         const isFaqPage = window.location.pathname.includes('/faq');
         const isLegacy = sessionStorage.getItem('useLegacy') === 'true';
@@ -25,7 +25,7 @@ const MigrationPopup = () => {
         // AND in both cases:
         // - Not on onboarding or FAQ pages
         // - Not explicitly skipped with skipMigrate flag
-        if ((isLegacy || (!isLegacy && !hasOnboarded)) &&
+        if (!hasOnboarded &&
             !isOnboardingPage &&
             !isFaqPage &&
             !skipMigrate) {
@@ -54,7 +54,7 @@ const MigrationPopup = () => {
     };
 
     const handleRedirect = () => {
-        localStorage.setItem('isOnboarding', true.toString());
+        sessionStorage.setItem('isOnboarding', true.toString());
         window.location.href = '/onboarding';
     };
 
@@ -64,7 +64,6 @@ const MigrationPopup = () => {
             return;
         }
         setShowPopup(false);
-        sessionStorage.setItem("useLegacy", "true");
     };
 
     return (
@@ -75,8 +74,7 @@ const MigrationPopup = () => {
                     <div className="text-center">
                         <img src='/yellowblocks.png' alt="Assistant Icon" className="mx-auto mb-4" width="150" height="150" />
                         <p className="text-lg font-semibold">Intune Assistant is moving to a new enterprise app that is officially verified.</p>
-                        <p className="text-md mt-2">If you are here for the first time, use the onboarding process.</p>
-                        <p className="text-md mt-2">If you have onboarded earlier, go to the migration page.</p>
+                        <p className="text-md mt-2">Please walk through the onboarding process to onboard the new application</p>
                         <p className="text-md mt-4">
                             <a
                                 href={`${window.location.origin}/docs/web/getting-started/migrate/`}
@@ -87,42 +85,27 @@ const MigrationPopup = () => {
                                 Read more about migration
                             </a>
                         </p>
-                        <div className="mt-4">
-                            <input
-                                type="checkbox"
-                                id="acknowledge"
-                                checked={acknowledged}
-                                onChange={(e) => {
-                                    setAcknowledged(e.target.checked);
-                                    if (e.target.checked) {
-                                        sessionStorage.setItem('useLegacy', 'true');
-                                        sessionStorage.setItem('skipMigrate', 'true');
-                                    } else {
-                                        sessionStorage.setItem('useLegacy', 'false');
-                                    }
-                                }}
-                            />
-                            <label htmlFor="acknowledge" className="ml-2">Skip for now and continue</label>
-                        </div>
                     </div>
-                    <Button onClick={handleLogin}>
-                        Go to migration page
-                    </Button>
+                    <div className="mt-4">
+                        <input
+                            type="checkbox"
+                            id="acknowledge"
+                            checked={acknowledged}
+                            onChange={(e) => {
+                                setAcknowledged(e.target.checked);
+                                if (e.target.checked) {
+                                    sessionStorage.setItem('onboarded', 'true');
+                                } else {
+                                    sessionStorage.setItem('onboarded', 'false');
+                                }
+                            }}
+                        />
+                        <label htmlFor="acknowledge" className="ml-2">Check if you are already onboarded and close the popup</label>
+                    </div>
                     <Button onClick={handleRedirect}>
                         Go to onboarding page
                     </Button>
-                    <Button
-                        onClick={handleClose}
-                        className={!acknowledged ? "opacity-50" : ""}
-                    >
-                        {acknowledged ? "Continue" : "Close"}
-                    </Button>
                 </DialogContent>
-                <DialogFooter>
-                    <Button onClick={handleClose}>
-                        Close
-                    </Button>
-                </DialogFooter>
             </Dialog>
         )
     );
