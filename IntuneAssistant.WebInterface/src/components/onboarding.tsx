@@ -175,7 +175,7 @@ export default function ConsentCard({
             const data = await response.json();
             const consentUrl = data.url;
             const token = data.onboardingToken;
-            sessionStorage.setItem('consentToken', token);
+            localStorage.setItem('consentToken', token);
 
             window.open(`${consentUrl}`, "_blank", "noreferrer");
 

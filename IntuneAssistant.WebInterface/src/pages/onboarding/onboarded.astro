@@ -33,7 +33,7 @@ let isMigrating = false;
       sessionStorage.removeItem('isMigrating'); // Clean up migration flag
     }
 
-    const token = sessionStorage.getItem('consentToken');
+    const token = localStorage.getItem('consentToken');
     if (token) {
       const accessToken = localStorage.getItem('accessToken');
       // Send request to the API endpoint
@@ -46,6 +46,7 @@ let isMigrating = false;
         });
         sessionStorage.setItem('useLegacy', false.toString());
         sessionStorage.setItem('onboarded', true.toString());
+        localStorage.removeItem('consentToken');
         sessionStorage.removeItem('notOnboarded');
         sessionStorage.removeItem('isMigrating');
         sessionStorage.removeItem('isOnboarding');

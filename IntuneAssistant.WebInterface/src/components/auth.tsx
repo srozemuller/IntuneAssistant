@@ -63,7 +63,7 @@ const AuthButton: React.FC = () => {
             setUserName(null);
             localStorage.removeItem('accessToken');
             sessionStorage.removeItem('onboarded');
-            sessionStorage.removeItem('consentToken');
+            localStorage.removeItem('consentToken');
             sessionStorage.removeItem('useLegacy');
         } catch (error) {
             console.error('Logout error:', error);
