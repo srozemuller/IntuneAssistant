@@ -24,6 +24,7 @@ export default defineConfig({
       tracesSampleRate: 0.3,
     }),
     starlight({
+
       title: 'Intune Assistant Docs',
       social: {
         github: 'https://github.com/srozemuller/intuneAssistant',
@@ -65,19 +66,12 @@ export default defineConfig({
           collapsed: true,
           items: [
             {
-              label: 'General',
+              label: 'Assignments',
               autogenerate: {
                 collapsed: true,
-                directory: 'docs/general'
+                directory: 'docs/rollout'
               }
-            },
-            {
-              label: 'Getting Started',
-              autogenerate: {
-                collapsed: true,
-                directory: 'docs/web/getting-started'
-              }
-            },
+            }
           ],
         },
         {

@@ -65,6 +65,9 @@
   }
 }
 
+* {
+  border-color: hsl(var(--border));
+}
 code {
   white-space: nowrap;
 }

@@ -184,7 +184,7 @@ export function MainNavigationMenu() {
                         </NavigationMenuContent>
                     </NavigationMenuItem>
                 )}
-                {migration && isLicensed && (
+                {migration && (
                     <NavigationMenuItem>
                         <NavigationMenuTrigger>{migration.title}</NavigationMenuTrigger>
                         <NavigationMenuContent>

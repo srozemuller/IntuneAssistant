@@ -72,12 +72,12 @@ export const navMenuConfig: NavMenuConfig = {
   ],
   migrationNav: [
     {
-      title: "Migration",
+      title: "Rollout",
       items: [
         {
-          title: "Migrate policy assignments",
+          title: "Rollout policy assignments",
           href: "/assignments/migrate",
-          description: "Migrate policy assignments based on a CSV file"
+          description: "Rollout policy assignments based on a CSV file"
         },
         {
           title: "Restore",
