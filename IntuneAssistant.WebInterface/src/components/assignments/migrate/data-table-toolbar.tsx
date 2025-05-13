@@ -306,9 +306,9 @@ export function DataTableToolbar({
             if (hasError) {
                 toast.error("Some policies failed to backup. Check the status indicators.");
             }
-        } catch (err) {
+        } catch (err: unknown) {
             console.error("Failed to create zip file:", err);
-            toast.error(`Failed to create zip file: ${err.message}`);
+            toast.error(`Failed to create zip file: ${err instanceof Error ? err.message : "Unknown error"}`);
         } finally {
             // Reset progress state
             setIsBackingUp(false);

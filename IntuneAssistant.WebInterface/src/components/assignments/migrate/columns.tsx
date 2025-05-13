@@ -220,7 +220,13 @@ export const columns = (
                                     These are the members of the selected group.
                                 </DialogDescription>
                                 <div className="container max-w-[95%] py-6">
-                                    <DataTable columns={memberColumns} data={members} />
+                                    <DataTable
+                                        columns={memberColumns}
+                                        data={members}
+                                        source="group-members"
+                                        rawData={JSON.stringify(members)} // Convert array to string
+                                        fetchData={() => Promise.resolve()}
+                                    />
                                 </div>
                             </DialogContent>
                         </Dialog>
@@ -278,7 +284,7 @@ export const columns = (
                                             columns={memberColumns}
                                             data={members}
                                             source="group-members"
-                                            rawData={members}
+                                            rawData={JSON.stringify(members)} // Convert array to string
                                             fetchData={() => Promise.resolve()}
                                         />
                                     </div>
@@ -490,7 +496,8 @@ export const columns = (
         {
             accessorKey: "backupStatus",
             accessorFn: (row) => {
-                const status = row.isBackedUp;
+                // Correctly access backupStatus using the row.id
+                const status = backupStatus[row.policy?.id || row.id];
                 if (status === undefined) return "unknown";
                 return status ? "backed-up" : "not-backed-up";
             },
@@ -498,7 +505,8 @@ export const columns = (
                 <DataTableColumnHeader column={column} title="Backup Status" />
             ),
             cell: ({ row }) => {
-                const status = row.original.isBackedUp;
+                // Correctly access backupStatus using the row.original.id
+                const status = backupStatus[row.original.policy?.id || row.original.id];
 
                 if (status === undefined) {
                     return <TriangleAlert className="h-5 w-5 text-orange-500" />;

@@ -44,7 +44,7 @@ interface DataTableRowActionsProps {
     table: any;
     backupStatus: Record<string, boolean>;
     setBackupStatus: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-    validateAndUpdateTable: () => Promise<void>;
+    validateAndUpdateTable: (policyId?: string) => Promise<void>;
 }
 
 export function DataTableRowActions({
@@ -135,20 +135,20 @@ export function DataTableRowActions({
                     const blob = await zip.generateAsync({ type: "blob" });
                     saveAs(blob, `backup_${policy.id}.zip`);
 
-                    setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: true }));
+                    // Update the state in a single operation
+                    const newStatus = { ...backupStatus, [policy.id]: true };
+                    setBackupStatus(newStatus);
+
+                    // Update the parent component about the change
                     toast.success(`Backup successful for policy ${policy.id}.`);
-                    setBackupStatus(prev => {
-                        const newStatus = {...prev, [policy.id]: true};
-                        console.log("Backup status updated:", newStatus);
-                        return newStatus;
-                    });
+                    console.log("Backup status updated:", newStatus);
                 } else {
-                    setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
+                    setBackupStatus({ ...backupStatus, [policy.id]: false });
                     toast.error(`Backup failed for policy ${policy.id}!`);
                 }
             } catch (error) {
                 console.error("Backup failed:", error);
-                setBackupStatus((prevStatus) => ({ ...prevStatus, [policy.id]: false }));
+                setBackupStatus({ ...backupStatus, [policy.id]: false });
                 toast.error(`Backup failed for policy ${policy.id}!`);
             }
         }
