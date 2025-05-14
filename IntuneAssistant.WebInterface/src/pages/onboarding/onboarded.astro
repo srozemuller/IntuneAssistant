@@ -44,9 +44,10 @@ let isMigrating = false;
             Authorization: `Bearer ${accessToken}`
           }
         });
-        localStorage.setItem('useLegacy', false.toString());
-        localStorage.setItem('onboarded', true.toString());
-        localStorage.removeItem('notOnboarded');
+        sessionStorage.setItem('useLegacy', false.toString());
+        sessionStorage.setItem('onboarded', true.toString());
+        localStorage.removeItem('consentToken');
+        sessionStorage.removeItem('notOnboarded');
         sessionStorage.removeItem('isMigrating');
         sessionStorage.removeItem('isOnboarding');
         sessionStorage.removeItem('skipMigrate');
