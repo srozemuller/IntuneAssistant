@@ -16,6 +16,15 @@ import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
 import {Copy, ExternalLink} from "lucide-react";
 
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+
 interface TData {
     displayName: string;
     id: string;
@@ -38,10 +47,18 @@ export function DataTableToolbar({
     const isFiltered = table.getState().columnFilters.length > 0;
     const [exportOption, setExportOption] = useState("");
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    // Add state for the confirmation dialog
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
+
+    // Modified to show confirmation first
     const handleCopyAndRedirect = () => {
+        setShowConfirmDialog(true);
+    };
+
+    const confirmCopyAndRedirect = () => {
         try {
-            let dataToExport;
+            let dataToExport = "";  // Initialize with empty string to avoid undefined
 
             // Check if rawData is a string containing a JSON object with data property
             if (typeof rawData === 'string') {
@@ -50,7 +67,7 @@ export function DataTableToolbar({
                     if (parsed && parsed.data) {
                         // Create the properly formatted structure for idpowertoys
                         dataToExport = JSON.stringify({
-                             "value": parsed.data
+                            "value": parsed.data
                         });
                     }
                 } catch (e) {
@@ -58,33 +75,60 @@ export function DataTableToolbar({
                     dataToExport = rawData;
                 }
             } else {
-                dataToExport = rawData;
+                dataToExport = typeof rawData === 'string' ? rawData : JSON.stringify(rawData);
             }
 
             // Copy the formatted data to clipboard
             navigator.clipboard.writeText(dataToExport)
                 .then(() => {
                     toast.success("Data copied to clipboard");
+                    // Close the dialog
+                    setShowConfirmDialog(false);
                     // Open external link in new tab
                     window.open("https://idpowertoys.merill.net/ca", "_blank");
                 })
                 .catch(err => {
                     console.error("Failed to copy: ", err);
                     toast.error("Failed to copy data");
+                    // Close the dialog
+                    setShowConfirmDialog(false);
                     // Still open the link even if copy fails
                     window.open("https://idpowertoys.merill.net/ca", "_blank");
                 });
         } catch (error) {
             console.error("Error handling copy and redirect: ", error);
             toast.error("An error occurred");
+            setShowConfirmDialog(false);
         }
     };
 
+    const selectedRows = table.getSelectedRowModel().rows.map(row => row.original);
+    const parsedRawData = useMemo(() => {
+        try {
+            if (typeof rawData === 'string') {
+                try {
+                    const parsed = JSON.parse(rawData);
+                    return parsed.data || parsed || [];
+                } catch (e) {
+                    console.error("Failed to parse JSON:", e);
+                    return [];
+                }
+            } else if (Array.isArray(rawData)) {
+                return rawData;
+            } else if (rawData && typeof rawData === 'object') {
+                return (rawData as any).data || [];
+            }
+            return [];
+        } catch (error) {
+            console.error("Failed to parse raw data:", error);
+            return [];
+        }
+    }, [rawData]);
 
     const prepareExportData = useMemo(() => {
         try {
             const selectedRows = table.getSelectedRowModel().rows;
-            let parsedRawData = [];
+            let parsedRawData: any[] = [];  // Properly typed as any array
 
             // Handle different data formats safely
             if (typeof rawData === 'string') {
@@ -99,7 +143,7 @@ export function DataTableToolbar({
                 parsedRawData = rawData;
             } else if (rawData && typeof rawData === 'object') {
                 // If rawData is already an object, extract the data property
-                parsedRawData = rawData.data || [];
+                parsedRawData = (rawData as any).data || [];
             }
 
             // Log for debugging
@@ -168,6 +212,26 @@ export function DataTableToolbar({
                     </Button>
                 )}
             </div>
+
+            <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Redirect to Power Toys</DialogTitle>
+                        <DialogDescription>
+                            Your data will be copied to clipboard and you will be redirected to Power Toys.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={confirmCopyAndRedirect}>
+                            Copy & Open Power Toys
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             <div className="flex items-center space-x-2">
                 <DataTableRefresh
                     fetchData={fetchData}
@@ -176,6 +240,8 @@ export function DataTableToolbar({
                 <DataTableExport
                     data={prepareExportData}
                     fileName={`${source}-data`}
+                    rawData={parsedRawData}
+                    selectedRows={selectedRows}
                     disabled={!prepareExportData || prepareExportData.length === 0}
                 />
                 <Button
