@@ -171,7 +171,11 @@ export function DataTableRowActions({
             setRefreshStatus('pending');
             toast.info('Refreshing data...');
 
-            await validateAndUpdateTable(row.original.policy.id); // Pass the policy ID
+            if (row.original.policy?.id) {
+                await validateAndUpdateTable(row.original.policy.id); // Pass the policy ID
+            } else {
+                await validateAndUpdateTable(); // Call without policy ID
+            }
 
             setRefreshStatus('success');
             toast.success('Data refreshed and validated successfully!');
@@ -208,17 +212,25 @@ export function DataTableRowActions({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={handleRowBackup}>
+                    <DropdownMenuItem
+                        onClick={handleRowBackup}
+                        disabled={!row.original.policy}
+                        className={!row.original.policy ? 'text-gray-500' : ''}
+                    >
                         Backup
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={handleMigrate}
-                        disabled={!isReadyForMigration || isMigrated}
-                        className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
+                        disabled={!row.original.policy || !isReadyForMigration || isMigrated}
+                        className={!row.original.policy || !isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
                     >
                         Migrate
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleRefresh}>
+                    <DropdownMenuItem
+                        onClick={handleRefresh}
+                        disabled={!row.original.policy}
+                        className={!row.original.policy ? 'text-gray-500' : ''}
+                    >
                         Refresh
                     </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -236,10 +248,9 @@ export function DataTableRowActions({
                         effectively removing those assignments.
                     </p>
 
-                    {!backupStatus[row.original.policy.id] && (
+                    {row.original.policy && !backupStatus[row.original.policy?.id] && (
                         <p className="text-red-500">Warning: This row is not backed up.</p>
                     )}
-
 
                     <DialogFooter>
                         <Button onClick={handleDialogCancel} variant="outline">
@@ -248,10 +259,12 @@ export function DataTableRowActions({
                         <Button onClick={handleDialogConfirm} variant="default">
                             Confirm
                         </Button>
-                        {!backupStatus[row.original.policy.id] && (
-                            <Button onClick={handleRowBackup} variant="default">
-                                Make Backup
-                            </Button>
+                        {row.original.policy ? (
+                            !backupStatus[row.original.policy?.id] && (
+                                <p className="text-red-500">Warning: This row is not backed up.</p>
+                            )
+                        ) : (
+                            <p className="text-amber-500">Warning: No policy information available.</p>
                         )}
                     </DialogFooter>
                 </DialogContent>
