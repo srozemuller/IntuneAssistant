@@ -185,10 +185,20 @@ export function DataTableToolbar({
             }
 
             // Handle authenticationStrength - keep only the id
-            if (exportItem.grantControls?.authenticationStrength) {
-                const authStrengthId = exportItem.grantControls.authenticationStrength.id;
-                exportItem.grantControls.authenticationStrength = { id: authStrengthId };
-            }
+                if (exportItem.grantControls?.authenticationStrength) {
+                    delete exportItem.grantControls.authenticationStrengthODataContext;
+
+                    // Store the ID and completely replace the authenticationStrength object
+                    const authStrengthId = exportItem.grantControls.authenticationStrength.id;
+                    exportItem.grantControls.authenticationStrength = { id: authStrengthId };
+
+                    // Ensure any other properties are removed
+                    Object.keys(exportItem.grantControls.authenticationStrength).forEach(key => {
+                        if (key !== 'id') {
+                            delete exportItem.grantControls.authenticationStrength[key];
+                        }
+                    });
+                }
             return {
                 id: exportItem.id || '',
                 displayName: exportItem.displayName || '',
