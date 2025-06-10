@@ -48,7 +48,7 @@ export default function ConsentCard({
     );
     const [isOptionsOpen, setIsOptionsOpen] = React.useState<boolean>(false);
     const [tenantId, setTenantId] = React.useState<string>("");
-    const [tenantName, setTenantName] = React.useState<string>("onmicrosoft.com");
+    const [tenantName, setTenantName] = React.useState<string>("");
     const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [isTenantIdValid, setIsTenantIdValid] = React.useState<boolean>(false);
@@ -98,8 +98,8 @@ export default function ConsentCard({
     };
 
     const validateTenantName = (name: string) => {
-        const nameRegex = /^[a-zA-Z0-9]+$/;
-        return nameRegex.test(name) && name.length <= 27;
+        const nameRegex = /^[a-zA-Z0-9]([a-zA-Z0-9.-])*[a-zA-Z0-9](\.[a-zA-Z]{2,})+$/;
+        return nameRegex.test(name) && name.length <= 255; // Domain names can be up to 255 characters
     };
 
     const validateGuid = (guid: string) => {
@@ -263,7 +263,7 @@ export default function ConsentCard({
                                 <div className="flex items-center space-y-2 space-x-2">
                                     <Input
                                         id="domain"
-                                        placeholder="domain"
+                                        placeholder="domain.com"
                                         maxLength={150}
                                         value={tenantName}
                                         onChange={(e) => setTenantName(e.target.value)}
@@ -273,7 +273,7 @@ export default function ConsentCard({
                                     />
                                     {!isTenantNameValid && !isMigration && (
                                         <div className="text-red-500 text-sm">
-                                            Please enter a valid tenant name (alphanumeric only with the max of 27).
+                                            Please enter a valid tenant domain like domain.com.
                                         </div>
                                     )}
                                 </div>

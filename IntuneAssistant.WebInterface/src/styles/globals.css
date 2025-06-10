@@ -98,6 +98,10 @@
 .rounded-xl.border {
   border: none;
 }
+.bg-gray-100 {
+    background-color: var(--background);
+}
+
 .small-image {
   width: 50%; /* Adjust the percentage as needed */
   height: auto;

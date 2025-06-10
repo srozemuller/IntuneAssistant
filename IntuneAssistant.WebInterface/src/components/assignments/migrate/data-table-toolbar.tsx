@@ -95,6 +95,14 @@ export function DataTableToolbar({
 
     const { userClaims } = useUser();
 
+    const hasReplaceWithNoAssignments = table.getFilteredSelectedRowModel().rows.some(
+        (selectedRow) => {
+            const action = String(selectedRow.original.assignmentAction || "");
+            const type = String(selectedRow.original.assignmentType || "");
+            return action.includes("Replace") && type.includes("NoAssignment");
+        }
+    );
+
     useEffect(() => {
         const selectedRows = table.getSelectedRowModel().rows;
         setSelectedRowCount(selectedRows.length);
@@ -115,6 +123,7 @@ export function DataTableToolbar({
             toast.error("No rows selected for backup.");
             return;
         }
+
         let accountInfo = null;
         try {
             const accountInfoStr = sessionStorage.getItem("accountInfo");
@@ -124,9 +133,11 @@ export function DataTableToolbar({
         } catch (error) {
             console.error("Error parsing account info:", error);
         }
+
         const tenantName = accountInfo?.username?.includes('@') ?
             accountInfo?.username.split('@')[1] :
-            (userClaims?.username || "unknown")
+            (userClaims?.username || "unknown");
+
         const metadata = {
             version: "1.0",
             exportDate: new Date().toISOString(),
@@ -134,88 +145,113 @@ export function DataTableToolbar({
             tenantId: accountInfo?.tenantId || "unknown",
             tenant: tenantName,
             exportedBy: accountInfo?.name || userClaims?.username || "unknown",
-            totalPolicies: new Set(selectedRows.map(row => row.original.policy?.id).filter(Boolean)).size,
+            totalPolicies: 0, // Will be updated later
             totalAssignments: 0, // Will be updated later
         };
 
         // Create a map to store unique assignments
-        const uniqueBackupData: Record<string, any> = {};
+        const backupRows: Record<string, any>[] = [];
         // Track policies we've already seen to determine first vs subsequent assignments
         const seenPolicies: Record<string, boolean> = {};
         // Track which policies are included in this backup
         const backedUpPolicyIds = new Set<string>();
+        // Track which policies we've already processed to avoid duplications
+        const processedPolicyIds = new Set<string>();
 
+        // Process all selected rows
         selectedRows.forEach((row: any) => {
-            // Access the original policy and its assignments from row.original
             const policy = row.original.policy || {};
             const policyName = policy.name || "Unknown Policy";
             const policyId = policy.id || "";
-            const assignments = policy.assignments || [];
+
+            // Skip if we've already processed this policy
+            if (processedPolicyIds.has(policyId)) {
+                return;
+            }
+
+            // Mark this policy as processed
+            processedPolicyIds.add(policyId);
 
             // Add policy ID to the set of backed up policies
             if (policyId) {
                 backedUpPolicyIds.add(policyId);
             }
 
-            // Map through the original assignments
-            assignments.forEach((assignment: any) => {
-                const assignmentId = assignment?.id || "";
-                // Skip if we've already processed this assignment
-                if (uniqueBackupData[assignmentId]) return;
+            // Get assignments array from the policy
+            const assignments = policy.assignments || [];
 
-                const isAllDevices = assignment?.target?.["@odata.type"]?.includes("allDevicesAssignmentTarget");
-                const isAllUsers = assignment?.target?.["@odata.type"]?.includes("allUsersAssignmentTarget");
-
-                // Handle group name based on assignment type
-                let groupName = "Unknown Group";
-                let groupId = "";
-
-                if (isAllDevices) {
-                    groupName = "All Devices";
-                } else if (isAllUsers) {
-                    groupName = "All Users";
-                } else {
-                    groupId = assignment?.target?.groupId || "";
-                    // Only look up group name if we have a groupId
-                    const group = groupData?.find((g) => g.id === groupId);
-                    groupName = group?.displayName || "Unknown Group";
-                }
-
-                const assignmentDirection = assignment?.target?.["@odata.type"]?.includes("exclusion")
-                    ? "Exclude"
-                    : "Include";
-
-                const filterId = assignment?.target?.deviceAndAppManagementAssignmentFilterId || "";
-                const filter = filters?.find((f) => f.id === filterId);
-                const filterName = filter?.displayName || null;
-                const filterType = assignment?.target?.deviceAndAppManagementAssignmentFilterType || "none";
-
-                // Determine if this is the first assignment for this policy
-                const assignmentAction = seenPolicies[policyId] ? "Add" : "Replace";
-                // Mark this policy as seen for future assignments
-                if (!seenPolicies[policyId]) {
+            // If there are no assignments, create one placeholder row for this policy
+            if (assignments.length === 0) {
+                backupRows.push({
+                    PolicyId: policyId,
+                    PolicyName: policyName,
+                    GroupId: "",
+                    GroupName: "",
+                    AssignmentDirection: "",
+                    AssignmentAction: "Replace", // Default for first/only assignment
+                    FilterName: "",
+                    FilterType: "none",
+                    NoAssignments: true
+                });
+            } else {
+                // Determine if this is the first time we're seeing this policy
+                let isFirstAssignmentForPolicy = !seenPolicies[policyId];
+                if (isFirstAssignmentForPolicy) {
                     seenPolicies[policyId] = true;
                 }
 
-                // Create a unique key for this assignment
-                uniqueBackupData[assignmentId] = {
-                    PolicyId: policyId,
-                    PolicyName: policyName,
-                    GroupId: groupId,
-                    GroupName: groupName,
-                    AssignmentDirection: assignmentDirection,
-                    AssignmentAction: assignmentAction,
-                    FilterName: filterName,
-                    FilterType: filterType,
-                };
-            });
+                // Process each assignment for this policy
+                assignments.forEach((assignment: any) => {
+                    const isAllDevices = assignment?.target?.["@odata.type"]?.includes("allDevicesAssignmentTarget");
+                    const isAllUsers = assignment?.target?.["@odata.type"]?.includes("allUsersAssignmentTarget");
+
+                    // Handle group name based on assignment type
+                    let groupName = "Unknown Group";
+                    let groupId = "";
+
+                    if (isAllDevices) {
+                        groupName = "All Devices";
+                    } else if (isAllUsers) {
+                        groupName = "All Users";
+                    } else {
+                        groupId = assignment?.target?.groupId || "";
+                        // Only look up group name if we have a groupId
+                        const group = groupData?.find((g) => g.id === groupId);
+                        groupName = group?.displayName || "Unknown Group";
+                    }
+
+                    const assignmentDirection = assignment?.target?.["@odata.type"]?.includes("exclusion")
+                        ? "Exclude"
+                        : "Include";
+
+                    const filterId = assignment?.target?.deviceAndAppManagementAssignmentFilterId || "";
+                    const filter = filters?.find((f) => f.id === filterId);
+                    const filterName = filter?.displayName || "";
+                    const filterType = assignment?.target?.deviceAndAppManagementAssignmentFilterType || "none";
+
+                    // Create a row for this assignment
+                    backupRows.push({
+                        PolicyId: policyId,
+                        PolicyName: policyName,
+                        GroupId: groupId,
+                        GroupName: groupName,
+                        AssignmentDirection: assignmentDirection,
+                        AssignmentAction: isFirstAssignmentForPolicy ? "Replace" : "Add",
+                        FilterName: filterName,
+                        FilterType: filterType
+                    });
+
+                    // After the first assignment for a policy, subsequent ones should be "Add"
+                    if (isFirstAssignmentForPolicy) {
+                        isFirstAssignmentForPolicy = false;
+                    }
+                });
+            }
         });
 
-        // Convert the unique data map to an array
-        const backupData = Object.values(uniqueBackupData);
-
-        // Update total assignments count in metadata
-        metadata.totalAssignments = backupData.length;
+        // Update metadata with counts
+        metadata.totalPolicies = backedUpPolicyIds.size;
+        metadata.totalAssignments = backupRows.length;
 
         // Create a CSV string for metadata
         const metadataRows = Object.entries(metadata).map(([key, value]) => {
@@ -226,10 +262,9 @@ export function DataTableToolbar({
         const metadataCsv = Papa.unparse(metadataRows, {
             delimiter: ";"
         });
-        const dataCsv = Papa.unparse(backupData, {
+        const dataCsv = Papa.unparse(backupRows, {
             delimiter: ";"
         });
-
 
         const fullCsvContent = `# METADATA\n${metadataCsv}\n# DATA\n${dataCsv}`;
 
@@ -238,7 +273,6 @@ export function DataTableToolbar({
         const filename = `${tenantName}_assignments_backup_${new Date().toISOString().slice(0, 10)}.csv`;
         saveAs(blob, filename);
 
-
         // Update backup status for all policies included in this backup
         const newBackupStatus = { ...backupStatus };
         backedUpPolicyIds.forEach(policyId => {
@@ -246,8 +280,7 @@ export function DataTableToolbar({
         });
         setBackupStatus(newBackupStatus);
 
-        console.table(backupData); // For debugging purposes
-        toast.success(`Backup created with ${backupData.length} unique assignments`);
+        toast.success(`Backup created with ${backupRows.length} entries for ${backedUpPolicyIds.size} policies`);
     };
 
     const handleBackupExport = async () => {
@@ -552,34 +585,6 @@ export function DataTableToolbar({
                 <Button onClick={handleDownloadTemplate} variant="outline" size="sm">
                     Migration Template
                 </Button>
-                <div className="relative">
-                    <Button variant="outline" size="sm" onClick={() => setDropdownVisible(!dropdownVisible)}>
-                        Export
-                    </Button>
-                    {dropdownVisible && (
-                        <div
-                            className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => {
-                                    handleBackupExport(rawData);
-                                    setDropdownVisible(false);
-                                }}
-                            >
-                                Export for Backup
-                            </button>
-                            <button
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => {
-                                    handleCsvExport(rawData);
-                                    setDropdownVisible(false);
-                                }}
-                            >
-                                Export to CSV
-                            </button>
-                        </div>
-                    )}
-                </div>
                 <DataTableViewOptions table={table} />
             </div>
             {isBackingUp && (
@@ -629,6 +634,15 @@ export function DataTableToolbar({
                     </DialogHeader>
                     <p>Are you really sure you want to migrate the selected {selectedRowCount} row(s)?</p>
                     <p>This action can not be reverted thereafter. </p>
+
+                    {/* Warning about replacing assignments with no assignments */}
+                    {hasReplaceWithNoAssignments && (
+                        <p className="text-amber-500 font-semibold">
+                            Warning: This operation includes replacing assignments with no assignments,
+                            effectively removing those assignments.
+                        </p>
+                    )}
+
                     {selectedRowCount > 0 && selectedIds.some(id => !backupStatus[id]) && (
                         <>
                             <p className="text-red-500">Warning: Some selected rows are not backed up.</p>

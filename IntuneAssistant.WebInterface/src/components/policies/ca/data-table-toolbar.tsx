@@ -164,17 +164,54 @@ export function DataTableToolbar({
 
 
             // Process and map all the filtered rows in the same way
-            return dataToProcess.map((item) => ({
-                id: item.id || '',
-                displayName: item.displayName || '',
-                state: item.state || '',
-                createdDateTime: item.createdDateTime || '',
-                modifiedDateTime: item.modifiedDateTime || '',
+            return dataToProcess.map((item) => {
+                // Create a deep copy of the item to avoid mutating the original
+                const exportItem = JSON.parse(JSON.stringify(item));
+
+                // Remove the includeUsersReadable property if it exists
+                if (exportItem.conditions?.users?.includeUsersReadable) {
+                delete exportItem.conditions.users.includeUsersReadable;
+            }
+
+            // Remove other similar properties if needed
+            if (exportItem.conditions?.users?.excludeUsersReadable) {
+                delete exportItem.conditions.users.excludeUsersReadable;
+            }
+            if (exportItem.conditions?.users?.includeGroupsReadable) {
+                delete exportItem.conditions.users.includeGroupsReadable;
+            }
+            if (exportItem.conditions?.users?.excludeGroupsReadable) {
+                delete exportItem.conditions.users.excludeGroupsReadable;
+            }
+
+            // Handle authenticationStrength - keep only the id
+                if (exportItem.grantControls?.authenticationStrength) {
+                    delete exportItem.grantControls.authenticationStrengthODataContext;
+
+                    // Store the ID and completely replace the authenticationStrength object
+                    const authStrengthId = exportItem.grantControls.authenticationStrength.id;
+                    exportItem.grantControls.authenticationStrength = { id: authStrengthId };
+
+                    // Ensure any other properties are removed
+                    Object.keys(exportItem.grantControls.authenticationStrength).forEach(key => {
+                        if (key !== 'id') {
+                            delete exportItem.grantControls.authenticationStrength[key];
+                        }
+                    });
+                }
+            return {
+                id: exportItem.id || '',
+                displayName: exportItem.displayName || '',
+                state: exportItem.state || '',
+                createdDateTime: exportItem.createdDateTime || '',
+                modifiedDateTime: exportItem.modifiedDateTime || '',
+                // Still include the readable values in the exported CSV/Excel
                 includedUsers: item.conditions?.users?.includeUsersReadable?.map((group: { displayName: string }) => group.displayName).join('\n') || '',
                 excludedUsers: item.conditions?.users?.excludeUsersReadable?.map((group: { displayName: string }) => group.displayName).join('\n') || '',
                 includedGroups: item.conditions?.users?.includeGroupsReadable?.map((group: { displayName: string }) => group.displayName).join('\n') || '',
                 excludedGroups: item.conditions?.users?.excludeGroupsReadable?.map((group: { displayName: string }) => group.displayName).join('\n') || ''
-            }));
+            };
+            });
         } catch (error) {
             console.error("Failed to prepare export data:", error);
             return [];

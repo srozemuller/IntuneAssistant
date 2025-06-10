@@ -127,7 +127,7 @@ const memberColumns: ColumnDef<UserMember>[] = [
     }
 ];
 
-export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
+export const columns = [
     {
         id: "select",
         header: ({ table }) => (
@@ -236,22 +236,15 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
             const targetId: string = row.original.targetId;
             const [members, setMembers] = useState<UserMember[]>([]);
             const [isDialogOpen, setIsDialogOpen] = useState(false);
-            const group = groupData.find(group => group.id === targetId);
-            let userCount = 0;
-            let deviceCount = 0;
-            let groupCount = 0;
 
 
-            if (group) {
-                // Check if the group exists and has valid members
-                if (group.members) {
-                    userCount = group.members.filter(member => member.type === "User").length;
-                    deviceCount = group.members.filter(member => member.type === "Device").length;
-                    groupCount = group.members.filter(member => member.type === "Group").length;
-                }
-            }
+            // Get user/device counts directly from the row data
+            const userCount = row.original.group?.groupCount.userCount || 0;
+            const deviceCount = row.original.group?.groupCount.deviceCount || 0;
+            const groupCount = row.original.group?.groupCount.groupCount || 0;
+
             // Determine if group is deleted - targetId exists but group is not found
-            const isGroupDeleted = targetId && targetId.trim() !== "" && !group;
+            const isGroupDeleted = targetId && targetId.trim() !== "" && !row.original.group;
 
             if ((!isGroupDeleted) && assignmentType === "Entra ID Group" || assignmentType === "Entra ID Group Exclude") {
                 return (
@@ -263,7 +256,7 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
                             {row.getValue("targetName")}
                         </div>
                         <div className="italic text-sm">
-                            {group ? `(${userCount} users / ${deviceCount} devices / ${groupCount} groups)` : ""}
+                            {`(${userCount} users / ${deviceCount} devices / ${groupCount} groups)`}
                         </div>
                         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                             <DialogContent className="container max-w-[60%] py-6">

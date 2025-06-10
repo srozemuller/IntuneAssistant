@@ -31,6 +31,7 @@ interface AssignmentRow {
     filterToMigrate: any;
     assignmentType: string;
     assignmentAction: string;
+    assignmentDirection: string;
     filterType: string;
     policy: {
         id: string
@@ -70,12 +71,22 @@ export function DataTableRowActions({
     const [selectedFilter, setSelectedFilter] = useState(row.original.filterToMigrate);
     const [selectedAssignmentType, setSelectedAssignmentType] = useState(row.original.assignmentType);
     const [selectedFilterType, setSelectedFilterType] = useState(row.original.filterType);
+    const [selectedAssignmentDirection, setSelectedAssignmentDirection] = useState(row.original.assignmentDirection);
+    const [dialogWarningState, setDialogWarningState] = useState(false);
 
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    const hasReplaceWithNoAssignments = selectedRows.some((selectedRow: Row<AssignmentRow>) => {
+        // Check with more flexible matching
+        const action = String(selectedRow.original.assignmentAction);
+        const type = String(selectedRow.original.assignmentType);
+        return action.includes("Replace") && type.includes("NoAssignment");
+    });
     useEffect(() => {
         setSelectedGroup(row.original.groupToMigrate);
         setSelectedGroupId(row.original.assignmentId);
         setSelectedFilter(row.original.filterToMigrate);
         setSelectedAssignmentType(row.original.assignmentType);
+        setSelectedAssignmentDirection(row.original.assignmentDirection);
         setSelectedFilterType(row.original.filterType);
     }, [row.original]);
 
@@ -95,6 +106,7 @@ export function DataTableRowActions({
                 assignmentId: selectedGroupId,
                 filterToMigrate: selectedFilter,
                 assignmentType: selectedAssignmentType,
+                assignmentDirection: selectedAssignmentDirection,
                 filterType: selectedFilterType
             };
 
@@ -159,7 +171,11 @@ export function DataTableRowActions({
             setRefreshStatus('pending');
             toast.info('Refreshing data...');
 
-            await validateAndUpdateTable(row.original.policy.id); // Pass the policy ID
+            if (row.original.policy?.id) {
+                await validateAndUpdateTable(row.original.policy.id); // Pass the policy ID
+            } else {
+                await validateAndUpdateTable(); // Call without policy ID
+            }
 
             setRefreshStatus('success');
             toast.success('Data refreshed and validated successfully!');
@@ -174,6 +190,17 @@ export function DataTableRowActions({
         setIsDialogOpen(false);
     };
 
+    useEffect(() => {
+        if (isDialogOpen) {
+            const warningState = selectedRows.some((selectedRow: Row<AssignmentRow>) => {
+                const action = String(selectedRow.original.assignmentAction || "");
+                const type = String(selectedRow.original.assignmentType || "");
+                return action.includes("Replace") && type.includes("NoAssignment");
+            });
+            console.log("Dialog opened, setting warning state to:", warningState);
+            setDialogWarningState(warningState);
+        }
+    }, [isDialogOpen, selectedRows]);
     return (
         <div>
             <DropdownMenu>
@@ -185,30 +212,46 @@ export function DataTableRowActions({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={handleRowBackup}>
+                    <DropdownMenuItem
+                        onClick={handleRowBackup}
+                        disabled={!row.original.policy}
+                        className={!row.original.policy ? 'text-gray-500' : ''}
+                    >
                         Backup
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={handleMigrate}
-                        disabled={!isReadyForMigration || isMigrated}
-                        className={!isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
+                        disabled={!row.original.policy || !isReadyForMigration || isMigrated}
+                        className={!row.original.policy || !isReadyForMigration || isMigrated ? 'text-gray-500' : ''}
                     >
                         Migrate
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleRefresh}>
+                    <DropdownMenuItem
+                        onClick={handleRefresh}
+                        disabled={!row.original.policy}
+                        className={!row.original.policy ? 'text-gray-500' : ''}
+                    >
                         Refresh
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Confirm Migration</DialogTitle>
                     </DialogHeader>
-                    <p>Are you sure you want to migrate this row?</p>
-                    {!backupStatus[row.original.policy.id] && (
+                    <p>Are you sure you want to migrate {selectedRows.length > 1 ? 'these rows' : 'this row'}?</p>
+                    {/* Force the warning to display unconditionally to test */}
+                    <p className="text-amber-500 font-semibold">
+                        Warning: This operation includes replacing assignments with no assignments,
+                        effectively removing those assignments.
+                    </p>
+
+                    {row.original.policy && !backupStatus[row.original.policy?.id] && (
                         <p className="text-red-500">Warning: This row is not backed up.</p>
                     )}
+
                     <DialogFooter>
                         <Button onClick={handleDialogCancel} variant="outline">
                             Cancel
@@ -216,10 +259,12 @@ export function DataTableRowActions({
                         <Button onClick={handleDialogConfirm} variant="default">
                             Confirm
                         </Button>
-                        {!backupStatus[row.original.policy.id] && (
-                            <Button onClick={handleRowBackup} variant="default">
-                                Make Backup
-                            </Button>
+                        {row.original.policy ? (
+                            !backupStatus[row.original.policy?.id] && (
+                                <p className="text-red-500">Warning: This row is not backed up.</p>
+                            )
+                        ) : (
+                            <p className="text-amber-500">Warning: No policy information available.</p>
                         )}
                     </DialogFooter>
                 </DialogContent>

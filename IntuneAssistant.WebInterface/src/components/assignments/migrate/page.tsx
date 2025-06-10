@@ -64,8 +64,13 @@ function MigrationPage() {
                 // Define sanitizedRow with an index signature
                 const sanitizedRow: { [key: string]: any } = { ...row };
                 for (const key in sanitizedRow) {
+                    // Replace empty strings with null
                     if (sanitizedRow[key] === '') {
                         sanitizedRow[key] = null;
+                    }
+                    // Clean strings by trimming and removing trailing newlines
+                    else if (typeof sanitizedRow[key] === 'string') {
+                        sanitizedRow[key] = sanitizedRow[key].trim().replace(/\n$/, '');
                     }
                 }
                 return sanitizedRow;
