@@ -1,11 +1,5 @@
 import { z } from "zod";
 
-// Define GroupCountModel schema
-const groupCountSchema = z.object({
-    userCount: z.number(),
-    deviceCount: z.number(),
-});
-
 // Define GroupMemberModel schema (assuming structure)
 const groupMemberSchema = z.object({
     id: z.string().uuid(),
@@ -21,10 +15,14 @@ const groupSchema = z.object({
     displayName: z.string().default(""),
     description: z.string().default("").nullable(),
     createdDateTime: z.string().default(""),
+    groupCount: z.object({
+        userCount: z.number(),
+        deviceCount: z.number(),
+        groupCount: z.number(),
+    }).nullable(),
     members: z.array(groupMemberSchema).nullable()
 });
 
 export type GroupModel = z.infer<typeof groupSchema>;
-export type GroupCountModel = z.infer<typeof groupCountSchema>;
 export type GroupMemberModel = z.infer<typeof groupMemberSchema>;
-export { groupSchema, groupCountSchema, groupMemberSchema };
+export { groupSchema, groupMemberSchema };

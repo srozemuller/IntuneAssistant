@@ -48,17 +48,6 @@ function AssignmentsPage() {
             const parsedData: Assignments[] = z.array(assignmentsSchema).parse(JSON.parse(rawData).data);
             setData(parsedData);
 
-            // Filter assignments with assignmentType "EntraID Group" and find unique targetIds
-            const uniqueTargetIds = [...new Set(parsedData
-                .filter(assignment => assignment.assignmentType === 'Entra ID Group')
-                .map(assignment => assignment.targetId))];
-            // Send unique targetIds to GROUPS_ENDPOINT
-            console.log('Unique targetIds:', uniqueTargetIds);
-            const groupResponse = await authDataMiddleware(GROUPS_ENDPOINT, 'POST', uniqueTargetIds);
-            const rawGroupData = typeof groupResponse?.data === 'string' ? groupResponse.data : JSON.stringify(groupResponse?.data);
-            const parsedGroupData: GroupModel[] = z.array(groupSchema).parse(JSON.parse(rawGroupData));
-            setGroupData(parsedGroupData);
-
             // Show toast message based on the status
             const { message } = JSON.parse(rawData);
             const status = JSON.parse(rawData).status.toLowerCase();
@@ -91,7 +80,7 @@ function AssignmentsPage() {
     return (
         <div className="container max-w-[95%] py-6">
             <ToastContainer autoClose={toastDuration} position={toastPosition}/>
-            <DataTable columns={columns(groupData)} data={data} rawData={rawData} groupData={groupData}  fetchData={fetchData} source="assignments"  />
+            <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="assignments"  />
         </div>
     );
 }
