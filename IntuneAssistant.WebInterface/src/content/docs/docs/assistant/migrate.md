@@ -13,11 +13,11 @@ Everyone gets the message below, if you have used the tool before click on the m
 
 <img src="/images/getting-started/migrate-message.png" alt="migrate-form" width="300" height="200">
 
-If you are not onboarded yet, just go to the [onboarding page](/onboarding) and follow the steps. For more information about onboarding go to the [onboarding](/docs/web/getting-started/onboarding/) page.
+If you are not onboarded yet, just go to the [onboarding page](/src/content/docs/docs/assistant/onboarding.md) and follow the steps. For more information about onboarding go to the [onboarding](/docs/web/getting-started/onboarding/) page.
 
 
 ## Migrate
-The migrate process is quite simple. The only thing you need to do is to go to the [migrate page](/onboarding?status=migrate) and login using the Legacy login button. 
+The migrate process is quite simple. The only thing you need to do is to go to the [migrate page](/src/content/docs/docs/assistant/onboarding.md?status=migrate) and login using the Legacy login button. 
 This button logs you in using the old application. After logging, the needed information will be fetched from the backend.
 
 <img src="/images/getting-started/migrate-form.png" alt="migrate-form" width="300" height="200">

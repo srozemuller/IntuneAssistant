@@ -88,7 +88,17 @@ h1 {
   border: hsl(var(--input)) !important;
 }
 
+.sl-markdown-content h3:not(:where(.not-content *)) {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
 
+.sl-markdown-content :not(a, strong, em, del, span, input, code, br) + :not(a, strong, em, del, span, input, code, br, :where(.not-content *)) {
+    margin-top: auto;
+}
 .rounded {
   border-radius: 0.25rem;
 }

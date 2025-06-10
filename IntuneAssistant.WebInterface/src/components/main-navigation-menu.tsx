@@ -140,7 +140,7 @@ export function MainNavigationMenu() {
                                 key={link.href}
                                 href={link.href}
                                 className={navigationMenuTriggerStyle()}
-                                {...(link.forceReload ? { "data-astro-reload": true } : {})}
+                                {...(link.forceReload as boolean? { "data-astro-reload": true } : {})}
                             >
                                 {link.title}
                             </a>

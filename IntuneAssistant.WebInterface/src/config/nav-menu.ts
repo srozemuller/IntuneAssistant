@@ -76,12 +76,13 @@ export const navMenuConfig: NavMenuConfig = {
       items: [
         {
           title: "Rollout policy assignments",
-          href: "/assignments/migrate",
+          href: "/rollout/assignments",
           description: "Rollout policy assignments based on a CSV file"
         },
         {
           title: "Restore",
           href: "/assignments/restore",
+          disabled: true,
           description: "Restore assignments based on backup"
         }
       ]

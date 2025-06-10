@@ -46,27 +46,18 @@ export default defineConfig({
           collapsed: true,
           items: [
             {
-              label: 'General',
+              label: 'What is Intune Assistant?',
+              link: '/docs/what-is-intune-assistant'  // Link to your markdown file
+            },
+            {
+              label: 'Assistant',
               autogenerate: {
                 collapsed: true,
-                directory: 'docs/general'
+                directory: 'docs/assistant'
               }
             },
             {
-              label: 'Getting Started',
-              autogenerate: {
-                collapsed: true,
-                directory: 'docs/web/getting-started'
-              }
-            },
-          ],
-        },
-        {
-          label: 'Rollout Assistant',
-          collapsed: true,
-          items: [
-            {
-              label: 'Assignments',
+              label: 'Rollout',
               autogenerate: {
                 collapsed: true,
                 directory: 'docs/rollout'

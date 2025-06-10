@@ -18,7 +18,7 @@ Also, there are parts in IntuneAssistant that are paid. The onboarding part is n
 **No other data is stored in the backend database. The data that is shown in the application is only stored in the browser session of the user that is logged in. When the user logs out the data is removed from the session.**
 
 ## Onboarding
-The onboarding process is quite simple, just go to the [onboarding page](/onboarding) and follow the steps.
+The onboarding process is quite simple, just go to the [onboarding page](/src/content/docs/docs/assistant/onboarding.md) and follow the steps.
 On the onboarding page you will be asked to provide your tenant domain and tenant ID. From there click at the `Deploy` button and you will be redirected to the Microsoft login page to consent the application.
 
 ![onboarding-card.png](/images/getting-started/onboarding-card.png)
