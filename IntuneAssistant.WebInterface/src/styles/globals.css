@@ -95,6 +95,9 @@
   }
 }
 
+.rounded-xl.border {
+  border: none;
+}
 .bg-gray-100 {
     background-color: var(--background);
 }

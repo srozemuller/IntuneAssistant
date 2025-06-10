@@ -1,0 +1,61 @@
+---
+import { buttonVariants } from "@/components/ui/button";
+import MainLayout from "@/layouts/main-layout.astro";
+import { cn } from "@/lib/utils";
+import { Icons } from "@/icons";
+import InfoLanding from "@/components/sections/info-landing.astro";
+import type { InfoLdg } from "@/types";
+
+const info: InfoLdg = {
+    title: "Intune Rollout Assistant",
+    description: "Use the Intune Rollout Assistant to roll out Intune configuration with ease.",
+    image: "/images/rollout/rollout-assignments.png",
+    list: [
+        {
+            title: "Bulk assignments",
+            description: "Add assignments to resources in bulk",
+            icon: "lucide:cpu"
+        },
+        {
+            title: "Deploy complete Intune configuration",
+            description: "Adds configuration to Intune based on a configuration package.",
+            icon: "lucide:shield-check"
+        }
+    ]
+};
+---
+
+<MainLayout title="CLI">
+    <section class="space-y-6 pb-12 pt-16 lg:py-28">
+        <div class="container flex max-w-[64rem] flex-col items-center gap-5 text-center">
+            <h1 class="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl !leading-[1.1] text-balance">
+                About
+                <span class="text-gradient_indigo-purple">
+          <span class="font-sans font-bold">Intune Rollout Assistant</span>
+        </span>
+            </h1>
+            <p class="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 text-balance">
+                Made for the modern Cloud Engineer focussed on modern workplace and identity. <br/>{" "}
+            </p>
+        </div>
+        <div class="container flex max-w-[64rem] flex-col items-center gap-5 text-center">
+            <p class="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 text-balance">
+                Intune Assistant is born out of the need to simplify and streamline Microsoft Intune management. <br/>{" "}
+            </p>
+        </div>
+        <div class="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
+            <div class="flex justify-center space-x-2 md:space-x-4">
+                <a href="/faq" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
+                    FAQ
+                </a>
+                <a href="/licensing" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
+                    Onboarding
+                </a>
+                <a href="/docs/rollout" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
+                    Rollout Documentation
+                </a>
+            </div>
+        </div>
+    </section>
+    <InfoLanding data={info} reverse={true} />
+</MainLayout>
