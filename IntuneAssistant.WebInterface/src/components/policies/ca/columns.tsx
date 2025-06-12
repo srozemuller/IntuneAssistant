@@ -9,11 +9,36 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
-
+import { DeviceFilter } from "./device-filter";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 import { type Task } from "@/components/policies/ca/schema"
 import { DataTableColumnHeader } from "@/components/data-table-column-header"
 import { DataTableRowActions } from "@/components/policies/ca/data-table-row-actions.tsx"
 import { statuses } from "@/components/policies/ca/fixed-values"
+
+// Add a helper function to determine if a policy has device compliance settings
+const hasDeviceComplianceRequirement = (task: any): string[] => {
+    const deviceFilter = task.conditions?.devices?.deviceFilter?.rule;
+    const result: string[] = [];
+
+    if (!deviceFilter) return result;
+
+    if (deviceFilter.includes("device.isCompliant -eq True")) {
+        result.push("compliant");
+    }
+    if (deviceFilter.includes("device.isCompliant -eq False") ||
+        deviceFilter.includes("device.isCompliant -ne True")) {
+        result.push("non-compliant");
+    }
+    if (deviceFilter.includes("device.trustType -eq \"ServerAD\"") ||
+        deviceFilter.includes("device.trustType -eq 'ServerAD'")) {
+        result.push("hybrid-joined");
+    }
+
+    return result;
+};
+
 export const columns: ColumnDef<Task>[] = [
     {
         id: "select",
@@ -159,6 +184,38 @@ export const columns: ColumnDef<Task>[] = [
         },
         enableSorting: true,
         enableHiding: true,
+    },
+    {
+        id: "deviceCompliance",
+        header: ({ column }) => (
+            <DeviceFilter column={column} title="Device Filter" />
+        ),
+        cell: ({ row }) => {
+            const complianceTypes = hasDeviceComplianceRequirement(row.original);
+            return (
+                <div className="space-x-1">
+                    {complianceTypes.map(type => (
+                        <span key={type} className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+              {type === 'compliant' ? 'Compliant Device' :
+                  type === 'non-compliant' ? 'Non-Compliant Device' :
+                      'Hybrid Joined'}
+            </span>
+                    ))}
+                    {complianceTypes.length === 0 && (
+                        <span className="text-gray-500">None</span>
+                    )}
+                </div>
+            );
+        },
+        accessorFn: (row) => {
+            return hasDeviceComplianceRequirement(row).join(",");
+        },
+        filterFn: (row, columnId, filterValue) => {
+            if (!filterValue || filterValue.length === 0) return true;
+
+            const complianceTypes = hasDeviceComplianceRequirement(row.original);
+            return filterValue.some((filter: string) => complianceTypes.includes(filter));
+        }
     },
     {
         id: "actions",

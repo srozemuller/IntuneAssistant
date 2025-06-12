@@ -6,8 +6,21 @@ export const userReadableSchema = z.object({
     // Add other fields as necessary
 });
 
+export const deviceFilterSchema = z.object({
+    mode: z.string().optional(),
+    rule: z.string().optional(),
+});
+
+export const devicesSchema = z.object({
+    includeDeviceStates: z.array(z.string()).optional(),
+    excludeDeviceStates: z.array(z.string()).optional(),
+    includeDevices: z.array(z.string()).optional(),
+    excludeDevices: z.array(z.string()).optional(),
+    deviceFilter: deviceFilterSchema.optional(),
+});
 
 export const conditionSchema = z.object({
+    devices: devicesSchema.nullable(),
     users: z.object({
         includeUsersReadable: z.array(userReadableSchema).optional(),
         excludeUsersReadable: z.array(userReadableSchema).optional(),
@@ -24,7 +37,10 @@ export const taskSchema = z.object({
     state: z.string(),
     createdDateTime: z.string().nullable(),
     modifiedDateTime: z.string().nullable(),
-    conditions: conditionSchema.optional()
+    conditions: conditionSchema,
+    sessionControls: z.any().optional(),
+    grantControls: z.any().optional(),
 });
 
 export type Task = z.infer<typeof taskSchema>
+export type DeviceFilter = z.infer<typeof deviceFilterSchema>;
