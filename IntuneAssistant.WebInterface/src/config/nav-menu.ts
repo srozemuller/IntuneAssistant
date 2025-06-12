@@ -94,5 +94,10 @@ export const navMenuConfig: NavMenuConfig = {
       href: "/faq",
       description: "Frequently asked questions",
     },
+    {
+      title: "Docs",
+      href: "/docs",
+      description: "Documentation",
+    },
   ],
 };
