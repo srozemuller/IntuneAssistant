@@ -107,25 +107,11 @@ export function MainNavigationMenu() {
                                             Onboarding
                                         </div>
                                         <p className="text-sm leading-tight text-muted-foreground">
-                                            Walk through the process of setting up your Intune environment.
+                                            Walk through the process of setting up your Intune Assistant.
                                         </p>
                                     </a>
                                 </NavigationMenuLink>
                             </li>
-                            <NavigationMenuLink asChild>
-                                <a
-                                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                                    href="/onboarding?status=migrate"
-                                >
-                                    <img src='/images/migrate.png' alt="Logo" />
-                                    <div className="mb-2 mt-4 text-lg font-medium">
-                                        Migrate
-                                    </div>
-                                    <p className="text-sm leading-tight text-muted-foreground">
-                                        Walk through the process of migrating to the new app.
-                                    </p>
-                                </a>
-                            </NavigationMenuLink>
                             {main.items?.map((page) => (
                                 <ListItem key={page.title} {...page} />
                             ))}
@@ -182,7 +168,7 @@ export function MainNavigationMenu() {
                         </NavigationMenuContent>
                     </NavigationMenuItem>
                 )}
-                {migration && isLicensed && (
+                {migration && (
                     <NavigationMenuItem>
                         <NavigationMenuTrigger>{migration.title}</NavigationMenuTrigger>
                         <NavigationMenuContent>

@@ -26,7 +26,7 @@ import { ChevronsUpDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import authService from "@/scripts/msalservice";
 import {INTUNEASSISTANT_TENANT_INFO} from "@/components/constants/apiUrls";
-import { legacyRequest, legacyMsalInstance } from '@/authconfig';
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 type LicenseProperties = {
@@ -55,18 +55,7 @@ export default function ConsentCard({
     const [isTenantNameValid, setIsTenantNameValid] = React.useState<boolean>(false);
     const [isOnboarded, setIsOnboarded] = React.useState<boolean>(false);
     const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(isOnboarded);
-    const [isMigration, setIsMigration] = React.useState<boolean>(false);
     const [isNotOnboardedPopupOpen, setIsNotOnboardedPopupOpen] = React.useState<boolean>(false);
-
-    React.useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const status = urlParams.get('status');
-
-        if (status === 'migrate') {
-            setIsMigration(true);
-            fetchTenantInfo();
-        }
-    }, []);
 
     const fetchTenantInfo = async () => {
         if (authService.isLoggedIn()) {
@@ -108,7 +97,6 @@ export default function ConsentCard({
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        if (isMigration) return;
         const value = e.target.value;
         if (e.target.id === "name") {
             setIsTenantIdValid(validateGuid(value));
@@ -117,24 +105,6 @@ export default function ConsentCard({
         }
     };
 
-    const handleLegacyLogin = async () => {
-        try {
-            const loginResponse = await legacyMsalInstance.loginPopup(legacyRequest);
-            const account = loginResponse.account;
-            if (account) {
-                const tokenResponse = await legacyMsalInstance.acquireTokenSilent({
-                    ...legacyRequest,
-                    account,
-                });
-                localStorage.setItem('accessToken', tokenResponse.accessToken);
-                window.location.href = '/onboarding?status=migrate';
-            }
-            sessionStorage.setItem('isOnboarding', true.toString());
-            sessionStorage.setItem('isMigrating', true.toString());
-        } catch (error) {
-            console.error('Login error:', error);
-        }
-    };
 
     const fetchUrlAndRedirect = async () => {
         setIsLoading(true);
@@ -142,23 +112,15 @@ export default function ConsentCard({
         try {
             // First, determine the state based on the URL status parameter
             const urlParams = new URLSearchParams(window.location.search);
-            const status = urlParams.get('status');
 
             // Set storage items based on status
-            if (status === 'migrate') {
-                sessionStorage.setItem('isMigrating', 'true');
-                sessionStorage.setItem('isOnboarding', 'false');
-            } else {
-                sessionStorage.setItem('isOnboarding', 'true');
-                sessionStorage.setItem('isMigrating', 'false');
-            }
+            sessionStorage.setItem('isOnboarding', 'true');
 
             // Retrieve the correct values from storage
-            const isMigrating = sessionStorage.getItem('isMigrating') === 'true';
             const isOnboarding = sessionStorage.getItem('isOnboarding') === 'true';
 
             // Determine state parameter
-            const state = isMigrating ? 'migrating' : isOnboarding ? 'onboarding' : '';
+            const state =  isOnboarding ? 'onboarding' : '';
             console.log('Current state:', state);
             const apiUrl = `${environments
                 .filter((env) => env.environment === selectedEnvironment)
@@ -222,17 +184,15 @@ export default function ConsentCard({
                     </DialogContent>
                 </Dialog>
             )}
-            <Card className={`w-full ${isOnboarded ? 'opacity-50 pointer-events-none' : ''} ${isMigration ? 'bg-secondary/80' : ''}`}>
+            <Card className={`w-full ${isOnboarded ? 'opacity-50 pointer-events-none' : ''} `}>
                 <CardHeader>
                     <CardTitle>
                         <span className="font-sans font-bold text-gradient_indigo-purple">
-                            {isMigration ? 'Intune Assistant Migrate' : 'Intune Assistant Onboarding'}
+                            {'Intune Assistant Onboarding'}
                         </span>
                     </CardTitle>
                     <CardDescription>
-                        {isMigration ? 'Migrate an existing tenant into Intune Assistant.' : 'Onboard a new tenant into Intune Assistant.'}
-                        <br />
-                        {isMigration ? 'Use the legacy login button below to login first' : ' '}
+                        {'Onboard a new tenant into Intune Assistant.'}
                         <br />
                         For more information, please refer to the{" "}
                         <a
@@ -268,10 +228,9 @@ export default function ConsentCard({
                                         value={tenantName}
                                         onChange={(e) => setTenantName(e.target.value)}
                                         onBlur={handleBlur}
-                                        className={`${!isTenantNameValid && !isMigration ? "border-red-500" : ""}`}
-                                        disabled={isMigration}
+                                        className={`${!isTenantNameValid ? "border-red-500" : ""}`}
                                     />
-                                    {!isTenantNameValid && !isMigration && (
+                                    {!isTenantNameValid  && (
                                         <div className="text-red-500 text-sm">
                                             Please enter a valid tenant domain like domain.com.
                                         </div>
@@ -291,17 +250,16 @@ export default function ConsentCard({
                                     value={tenantId}
                                     onChange={(e) => setTenantId(e.target.value)}
                                     onBlur={handleBlur}
-                                    className={`${!isTenantIdValid && !isMigration ? "border-red-500" : ""}`}
-                                    disabled={isMigration}
+                                    className={`${!isTenantIdValid ? "border-red-500" : ""}`}
                                 />
-                                {!isTenantIdValid && !isMigration && (
+                                {!isTenantIdValid  && (
                                     <div className="text-red-500 text-sm">
                                         Please enter a valid Tenant ID.
                                     </div>
                                 )}
                             </div>
                             <div className="flex flex-col space-y-1.5">
-                                {!isMigration && (
+                                {(
                                     <Collapsible
                                         open={isOptionsOpen}
                                         onOpenChange={setIsOptionsOpen}
@@ -344,7 +302,7 @@ export default function ConsentCard({
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    {!isMigration && (
+                    { (
                         <Button variant="outline" onClick={() => window.location.reload()}>
                             Reset
                         </Button>
@@ -356,13 +314,8 @@ export default function ConsentCard({
                         </Button>
                     ) : (
                         <>
-                            {isMigration && (
-                                <Button variant="outline" onClick={handleLegacyLogin}>
-                                    Legacy Login
-                                </Button>
-                            )}
                             <Button onClick={fetchUrlAndRedirect} disabled={!isTenantIdValid || !isTenantNameValid}>
-                                {isMigration ? 'Migrate' : 'Deploy'}
+                                {'Deploy'}
                             </Button>
                         </>
                     )}

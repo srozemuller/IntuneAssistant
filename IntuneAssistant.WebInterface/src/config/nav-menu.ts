@@ -9,25 +9,8 @@ export const navMenuConfig: NavMenuConfig = {
           title: "About Intune Assistant",
           href: "/about",
           description: "All info about Intune Assistant",
-        },
-      ]
-    }
-  ],
-  docsNav: [
-    {
-      title: "Documentation",
-      items: [
-        {
-          title: "Intune Assistant",
-          href: "/docs/web/getting-started/onboarding",
-          description: "Information about the Intune Assistant",
-        },
-        {
-          title: "Intune CLI",
-          href: "/docs/cli/getting-started",
-          description: "Information about the Intune CLI"
         }
-      ],
+      ]
     }
   ],
   assistantNav: [
@@ -103,6 +86,11 @@ export const navMenuConfig: NavMenuConfig = {
       title: "FAQ",
       href: "/faq",
       description: "Frequently asked questions",
+    },
+    {
+      title: "Docs",
+      href: "/docs",
+      description: "Documentation",
     },
   ],
 };
