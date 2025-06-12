@@ -15,20 +15,9 @@ export const navMenuConfig: NavMenuConfig = {
   ],
   docsNav: [
     {
-      title: "Documentation",
-      items: [
-        {
-          title: "Intune Assistant",
-          href: "/docs/web/getting-started/onboarding",
-          description: "Information about the Intune Assistant",
-        },
-        {
-          title: "Intune CLI",
-          href: "/docs/cli/getting-started",
-          description: "Information about the Intune CLI"
-        }
-      ],
-    }
+      title: "Docs",
+      href: "/docs",
+    },
   ],
   assistantNav: [
     {
@@ -83,16 +72,17 @@ export const navMenuConfig: NavMenuConfig = {
   ],
   migrationNav: [
     {
-      title: "Migration",
+      title: "Rollout",
       items: [
         {
-          title: "Migrate policy assignments",
-          href: "/assignments/migrate",
-          description: "Migrate policy assignments based on a CSV file"
+          title: "Rollout policy assignments",
+          href: "/rollout/assignments",
+          description: "Rollout policy assignments based on a CSV file"
         },
         {
           title: "Restore",
           href: "/assignments/restore",
+          disabled: true,
           description: "Restore assignments based on backup"
         }
       ]
@@ -103,6 +93,11 @@ export const navMenuConfig: NavMenuConfig = {
       title: "FAQ",
       href: "/faq",
       description: "Frequently asked questions",
+    },
+    {
+      title: "Docs",
+      href: "/docs",
+      description: "Documentation",
     },
   ],
 };
