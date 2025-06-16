@@ -49,7 +49,6 @@ interface RoadmapProps {
     owner: string;          // GitHub username or organization
     projectNumber: number;  // GitHub project number
     repo?: string;          // Optional: GitHub repository name if not using user/org projects
-    token: string;          // GitHub Personal Access Token
 }
 
 type StatusPriorities = {
@@ -60,7 +59,7 @@ type StatusPriorities = {
     [key: string]: number;
 };
 
-const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "", token }) => {
+const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) => {
     const [items, setItems] = useState<RoadmapItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -123,11 +122,10 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "", toke
     }
   }`;
 
-                const response = await fetch('https://api.github.com/graphql', {
+                const response = await fetch('/api/github', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         query,
@@ -220,7 +218,7 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "", toke
         };
 
         fetchRoadmapData();
-    }, [owner, projectNumber, repo, token]);
+    }, [owner, projectNumber, repo]);
 
     const groupByIteration = (items: RoadmapItem[]) => {
         const groupedItems: Record<string, {
