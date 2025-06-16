@@ -112,6 +112,13 @@ export default defineConfig({
       ],
     }),
   ],
-  output: "static",
+  output: "server",
   adapter: netlify(),
+  vite: {
+    define: {
+      'import.meta.env.GITHUB_PAT_TOKEN': JSON.stringify(process.env.GITHUB_PAT_TOKEN),
+      'import.meta.env.REACT_APP_CLIENT_ID': JSON.stringify(process.env.REACT_APP_CLIENT_ID),
+      'import.meta.env.REACT_APP_SCOPE': JSON.stringify(process.env.REACT_APP_SCOPE)
+    }
+  }
 });
