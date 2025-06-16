@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import '@/styles/roadmap.css';
 
 import {
@@ -17,17 +17,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface RoadmapItem {
     id: string;
@@ -71,12 +60,23 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [showDone, setShowDone] = useState<boolean>(false);
 
-    useEffect(() => {
-        const fetchRoadmapData = async () => {
-            try {
-                setLoading(true);
+    const [lastFetchTime, setLastFetchTime] = useState<number | null>(null);
+    const [cacheExpiry] = useState<number>(5 * 60 * 1000); // 5 minutes cache
 
-                const query = `query GetFilteredRoadmap($owner: String!, $repo: String!, $projectNumber: Int!) {
+    const fetchRoadmapData = useCallback(async (forceRefresh = false) => {
+        try {
+            if (
+                !forceRefresh &&
+                lastFetchTime &&
+                Date.now() - lastFetchTime < cacheExpiry
+            ) {
+                // If we already have data and the cache is still valid, do nothing
+                return;
+            }
+
+            setLoading(true);
+
+            const query = `query GetFilteredRoadmap($owner: String!, $repo: String!, $projectNumber: Int!) {
     repository(owner: $owner, name: $repo) {
       projectV2(number: $projectNumber) {
         items(first: 100) {
@@ -122,103 +122,113 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
     }
   }`;
 
-                const response = await fetch('/api/github', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        query,
-                        variables: {
-                            owner,
-                            repo,
-                            projectNumber
-                        }
-                    })
-                });
+            const response = await fetch('/api/github', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    query,
+                    variables: {
+                        owner,
+                        repo,
+                        projectNumber
+                    }
+                })
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (data.errors) {
-                    throw new Error(data.errors[0].message);
-                }
-
-                const projectItems = data.data?.repository?.projectV2?.items?.nodes || [];
-
-                const formattedItems = projectItems.map((item: any) => {
-                    // Find due date field if it exists
-                    const dueDateField = item.fieldValues.nodes.find(
-                        (field: any) => field.field?.name === 'Due Date' && field.date
-                    );
-
-                    // Find status field if it exists
-                    const statusField = item.fieldValues.nodes.find(
-                        (field: any) => field.field?.name === 'Status' && field.name
-                    );
-
-                    // Find priority field if it exists
-                    const priorityField = item.fieldValues.nodes.find(
-                        (field: any) => field.field?.name === 'Priority' && field.name
-                    );
-
-                    // Find iteration field if it exists
-                    const iterationField = item.fieldValues.nodes.find(
-                        (field: any) => field.__typename === 'ProjectV2ItemFieldIterationValue' && field.title
-                    );
-
-                    // Extract labels
-                    const labels = item.content?.labels?.nodes?.map((label: any) => label.name) || [];
-
-                    return {
-                        id: item.id,
-                        title: item.content.title,
-                        state: statusField?.name || 'PLANNED',
-                        priority: priorityField?.name || 'Normal',
-                        labels: labels,
-                        createdAt: item.content.createdAt || new Date().toISOString(),
-                        dueDate: dueDateField?.date || null,
-                        description: item.content.body || '',
-                        iteration: iterationField ? {
-                            title: iterationField.title,
-                            startDate: iterationField.startDate,
-                            duration: iterationField.duration
-                        } : null
-                    };
-                });
-
-                // Sort by status and due date
-                const statusPriority: StatusPriorities = {
-                    'DONE': 3,
-                    'IN_PROGRESS': 2,
-                    'TODO': 1,
-                    'PLANNED': 0
-                };
-
-                formattedItems.sort((a: RoadmapItem, b: RoadmapItem) => {
-                    // First by status priority
-                    const priorityA = statusPriority[a.state] || 0;
-                    const priorityB = statusPriority[b.state] || 0;
-
-                    if (priorityB !== priorityA) return priorityB - priorityA;
-
-                    // Then by due date
-                    if (a.dueDate && b.dueDate) return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-                    if (a.dueDate) return -1;
-                    if (b.dueDate) return 1;
-
-                    return 0;
-                });
-
-                setItems(formattedItems);
-            } catch (err: unknown) {
-                setError(err instanceof Error ? err.message : 'An unknown error occurred');
-            } finally {
-                setLoading(false);
+            if (data.errors) {
+                throw new Error(data.errors[0].message);
             }
-        };
 
+            const projectItems = data.data?.repository?.projectV2?.items?.nodes || [];
+
+            const formattedItems = projectItems.map((item: any) => {
+                // Find due date field if it exists
+                const dueDateField = item.fieldValues.nodes.find(
+                    (field: any) => field.field?.name === 'Due Date' && field.date
+                );
+
+                // Find status field if it exists
+                const statusField = item.fieldValues.nodes.find(
+                    (field: any) => field.field?.name === 'Status' && field.name
+                );
+
+                // Find priority field if it exists
+                const priorityField = item.fieldValues.nodes.find(
+                    (field: any) => field.field?.name === 'Priority' && field.name
+                );
+
+                // Find iteration field if it exists
+                const iterationField = item.fieldValues.nodes.find(
+                    (field: any) => field.__typename === 'ProjectV2ItemFieldIterationValue' && field.title
+                );
+
+                // Extract labels
+                const labels = item.content?.labels?.nodes?.map((label: any) => label.name) || [];
+
+                return {
+                    id: item.id,
+                    title: item.content.title,
+                    state: statusField?.name || 'PLANNED',
+                    priority: priorityField?.name || 'Normal',
+                    labels: labels,
+                    createdAt: item.content.createdAt || new Date().toISOString(),
+                    dueDate: dueDateField?.date || null,
+                    description: item.content.body || '',
+                    iteration: iterationField ? {
+                        title: iterationField.title,
+                        startDate: iterationField.startDate,
+                        duration: iterationField.duration
+                    } : null
+                };
+            });
+
+            // Sort by status and due date
+            const statusPriority: StatusPriorities = {
+                'DONE': 3,
+                'IN_PROGRESS': 2,
+                'TODO': 1,
+                'PLANNED': 0
+            };
+
+            formattedItems.sort((a: RoadmapItem, b: RoadmapItem) => {
+                // First by status priority
+                const priorityA = statusPriority[a.state] || 0;
+                const priorityB = statusPriority[b.state] || 0;
+
+                if (priorityB !== priorityA) return priorityB - priorityA;
+
+                // Then by due date
+                if (a.dueDate && b.dueDate) return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+                if (a.dueDate) return -1;
+                if (b.dueDate) return 1;
+
+                return 0;
+            });
+
+            setItems(formattedItems);
+            setLastFetchTime(Date.now());
+
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        } finally {
+            setLoading(false);
+        }
+    }, [owner, projectNumber, repo, lastFetchTime, cacheExpiry, items.length]);
+
+    useEffect(() => {
         fetchRoadmapData();
-    }, [owner, projectNumber, repo]);
+
+        // Optional: Set up a refresh interval
+        const intervalId = setInterval(() => {
+            fetchRoadmapData(true);
+        }, cacheExpiry);
+
+        return () => clearInterval(intervalId);
+    }, [fetchRoadmapData]);
 
     const groupByIteration = (items: RoadmapItem[]) => {
         const groupedItems: Record<string, {
@@ -227,15 +237,18 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
             startDate?: Date,
         }> = {};
 
-        // First, group all items by iteration title
+        // First, group all items by iteration title, excluding unscheduled items
         items.forEach(item => {
-            const iterationKey = item.iteration?.title || 'Unscheduled';
+            // Skip items without an iteration
+            if (!item.iteration) return;
+
+            const iterationKey = item.iteration.title;
 
             if (!groupedItems[iterationKey]) {
                 groupedItems[iterationKey] = {
                     iteration: item.iteration,
                     items: [],
-                    startDate: item.iteration?.startDate ? new Date(item.iteration.startDate) : undefined
+                    startDate: item.iteration.startDate ? new Date(item.iteration.startDate) : undefined
                 };
             }
 
@@ -312,24 +325,6 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
         }
     };
 
-    // Extract unique values for filters
-    const uniqueStatuses = useMemo(() => {
-        // Get all statuses except "Done" if showDone is false
-        const statuses = Array.from(new Set(items.map(item => item.state))).sort();
-        return statuses;
-    }, [items]);
-
-
-    const uniquePriorities = useMemo(() =>
-            Array.from(new Set(items.map(item => item.priority || 'Normal'))).sort(),
-        [items]
-    );
-
-    const uniqueLabels = useMemo(() => {
-        const allLabels = items.flatMap(item => item.labels);
-        return Array.from(new Set(allLabels)).sort();
-    }, [items]);
-
     // Reset all filters
     const resetFilters = () => {
         setStatusFilter(null);
@@ -378,7 +373,9 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
     if (loading) return (
         <Card>
             <CardHeader>
-                <CardTitle>Project Roadmap</CardTitle>
+                <div className="flex justify-between items-center">
+                    <CardTitle>Project Roadmap</CardTitle>
+                </div>
             </CardHeader>
             <CardContent className="flex items-center justify-center p-6">
                 <div className="text-center text-muted-foreground">Loading roadmap...</div>
@@ -400,98 +397,23 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Project Roadmap</CardTitle>
-                <CardDescription>
-                    Viewing {filteredItems.length} of {totalVisibleCount} items from project
-                </CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Project Roadmap</CardTitle>
+                        <CardDescription>
+                            Viewing {filteredItems.length} of {totalVisibleCount} items from project
+                        </CardDescription>
+                    </div>
+                    <button
+                        onClick={() => fetchRoadmapData(true)}
+                        disabled={loading}
+                        className="px-3 py-1.5 text-sm font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+                    >
+                        {loading ? "Refreshing..." : "Refresh"}
+                    </button>
+                </div>
             </CardHeader>
             <CardContent>
-                <div className="flex flex-wrap items-end gap-4 mb-6">
-                    <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor="search">Search</Label>
-                        <Input
-                            id="search"
-                            placeholder="Search items..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-[250px]"
-                        />
-                    </div>
-                    <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor="status-filter">Status</Label>
-                        <Select
-                            value={statusFilter || undefined}
-                            onValueChange={setStatusFilter}
-                        >
-                            <SelectTrigger id="status-filter" className="w-[180px]">
-                                <SelectValue placeholder="All statuses" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {uniqueStatuses.map(status => (
-                                    <SelectItem key={status} value={status}>
-                                        {status}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor="priority-filter">Priority</Label>
-                        <Select
-                            value={priorityFilter || undefined}
-                            onValueChange={setPriorityFilter}
-                        >
-                            <SelectTrigger id="priority-filter" className="w-[180px]">
-                                <SelectValue placeholder="All priorities" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {uniquePriorities.map(priority => (
-                                    <SelectItem key={priority} value={priority}>
-                                        {priority}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor="label-filter">Label</Label>
-                        <Select
-                            value={labelFilter || undefined}
-                            onValueChange={setLabelFilter}
-                        >
-                            <SelectTrigger id="label-filter" className="w-[180px]">
-                                <SelectValue placeholder="All labels" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {uniqueLabels.map(label => (
-                                    <SelectItem key={label} value={label}>
-                                        {label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <Checkbox
-                            id="show-done"
-                            checked={showDone}
-                            onCheckedChange={(checked) => setShowDone(checked === true)}
-                        />
-                        <Label htmlFor="show-done">Show completed items</Label>
-                    </div>
-
-                    {(statusFilter || priorityFilter || labelFilter || searchQuery) && (
-                        <Button
-                            variant="outline"
-                            onClick={resetFilters}
-                            className="h-10"
-                        >
-                            Reset Filters
-                        </Button>
-                    )}
-                </div>
-
                 <div className="space-y-8">
                     {groupByIteration(filteredItems).map((group) => {
                         const startDate = group.startDate;
@@ -513,6 +435,47 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
                                                 {dateRange}
                                             </Badge>
                                         )}
+
+                                    {/* Add visual timeline indicator */}
+                                    {group !== groupByIteration(filteredItems)[groupByIteration(filteredItems).length - 1] && (
+                                        <div className="flex justify-center my-6 relative">
+                                            {group.startDate && (
+                                                <div className="flex items-center">
+                                                    <div className="relative">
+                                                        {(() => {
+                                                            const now = new Date();
+                                                            const startDate = group.startDate as Date;
+                                                            const endDate = group.iteration?.duration
+                                                                ? new Date(startDate.getTime() + (group.iteration.duration * 24 * 60 * 60 * 1000))
+                                                                : new Date(startDate.getTime() + (14 * 24 * 60 * 60 * 1000));
+
+                                                            const totalDuration = endDate.getTime() - startDate.getTime();
+                                                            const elapsed = now.getTime() - startDate.getTime();
+                                                            const progress = Math.max(0, Math.min(100, (elapsed / totalDuration) * 100));
+
+                                                            let statusText = "Upcoming";
+                                                            if (now > endDate) statusText = "Completed";
+                                                            else if (now >= startDate) statusText = `In progress (${Math.round(progress)}%)`;
+
+                                                            return (
+                                                                <div className="ml-2 flex flex-col gap-1">
+                                                                    <span className="text-xs text-muted-foreground">{statusText}</span>
+                                                                    {now >= startDate && now <= endDate && (
+                                                                        <div className="w-32 h-2 bg-gray-200 rounded overflow-hidden">
+                                                                            <div
+                                                                                className="h-full bg-primary"
+                                                                                style={{ width: `${progress}%` }}
+                                                                            ></div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })()}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                     </h3>
                                 </div>
 
@@ -520,10 +483,10 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead className="w-[400px]">Title</TableHead>
-                                                <TableHead>Status</TableHead>
-                                                <TableHead>Priority</TableHead>
-                                                <TableHead>Labels</TableHead>
+                                                <TableHead className="w-[50%]">Title</TableHead>
+                                                <TableHead className="w-[15%]">Status</TableHead>
+                                                <TableHead className="w-[15%]">Priority</TableHead>
+                                                <TableHead className="w-[20%]">Labels</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -536,18 +499,18 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
                                             ) : (
                                                 group.items.map(item => (
                                                     <TableRow key={item.id}>
-                                                        <TableCell className="font-medium">{item.title}</TableCell>
-                                                        <TableCell>
+                                                        <TableCell className="font-medium w-[50%]">{item.title}</TableCell>
+                                                        <TableCell className="w-[15%]">
                                                             <Badge style={getStatusBadgeVariant(item.state)}>
                                                                 {item.state}
                                                             </Badge>
                                                         </TableCell>
-                                                        <TableCell>
+                                                        <TableCell className="w-[15%]">
                                                             <Badge variant={getPriorityBadgeVariant(item.priority || '')}>
                                                                 {item.priority || 'Normal'}
                                                             </Badge>
                                                         </TableCell>
-                                                        <TableCell>
+                                                        <TableCell className="w-[20%]">
                                                             <div className="flex flex-wrap gap-1">
                                                                 {item.labels.map(label => (
                                                                     <Badge key={label} variant={getLabelBadgeVariant(label)}>
@@ -563,12 +526,7 @@ const Roadmap: React.FC<RoadmapProps> = ({ owner, projectNumber, repo = "" }) =>
                                     </Table>
                                 </div>
 
-                                {/* Add visual timeline indicator */}
-                                {group !== groupByIteration(filteredItems)[groupByIteration(filteredItems).length - 1] && (
-                                    <div className="flex justify-center my-6">
-                                        <div className="h-8 border-l-2 border-dashed border-gray-300"></div>
-                                    </div>
-                                )}
+
                             </div>
                         );
                     })}
