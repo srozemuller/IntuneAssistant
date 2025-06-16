@@ -24,7 +24,6 @@ export default defineConfig({
       tracesSampleRate: 0.3,
     }),
     starlight({
-
       title: 'Intune Assistant Docs',
       social: {
         github: 'https://github.com/srozemuller/intuneAssistant',

@@ -172,7 +172,18 @@ export function MainNavigationMenu() {
                 )}
                 {migration && (
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>{migration.title}</NavigationMenuTrigger>
+                        <NavigationMenuTrigger>
+                            <a
+                                href="/rollout"
+                                className="inline-block mr-1"
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevent dropdown from toggling
+                                    window.location.href = "/rollout";
+                                }}
+                            >
+                                {migration.title}
+                            </a>
+                        </NavigationMenuTrigger>
                         <NavigationMenuContent>
                             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                                 {migration.items?.map((page) => (
@@ -180,7 +191,7 @@ export function MainNavigationMenu() {
                                 ))}
                             </ul>
                         </NavigationMenuContent>
-                    </NavigationMenuItem>
+                        </NavigationMenuItem>
                 )}
                 {links && (
                     <NavigationMenuItem>
