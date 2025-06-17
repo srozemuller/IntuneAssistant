@@ -1,0 +1,25 @@
+---
+// src/pages/analyser/index.astro (Analyser - Paid)
+import ProductLayout from "@/layouts/product-layout.astro";
+
+// Check subscription here
+const hasAccess = Astro.locals.user?.subscription?.products?.includes('analyser') || false;
+---
+
+<ProductLayout title="Analyser | Data Analysis" product="analyser">
+    <div class="container mx-auto py-8">
+        {hasAccess ? (
+                <div>
+                    <h1 class="text-3xl font-bold">Analyser</h1>
+                    <p>Analyze your data with powerful tools.</p>
+                    <!-- Analyser content -->
+                </div>
+        ) : (
+                <div class="subscribe-prompt text-center py-12">
+                    <h2 class="text-2xl font-bold mb-4">Upgrade to access Analyser</h2>
+                    <p class="mb-6">This premium feature requires a subscription.</p>
+                    <a href="/pricing" class="px-4 py-2 bg-primary text-white rounded-md">Subscribe Now</a>
+                </div>
+        )}
+    </div>
+</ProductLayout>
