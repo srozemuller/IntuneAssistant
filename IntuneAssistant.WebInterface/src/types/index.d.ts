@@ -6,7 +6,10 @@ export type NavItem = {
 
 export type MenuItem = NavItem & {
   image?: string;
+  title: string;
+  href: string;
   description?: string;
+  disabled?: boolean;
   launched?: boolean;
   external?: boolean;
   forceReload?: boolean;
@@ -54,7 +57,15 @@ export type NavMenuConfig = {
   resourcesNav?: SidebarNavItem[];
   comparatorNav?: SidebarNavItem[];
   migrationNav?: SidebarNavItem[];
-  links: MenuItem[];
+  productsNav: SidebarNavItem[];
+  rolloutFAQ?: NavItem;
+  rolloutNav?: NavItem[];
+  links?: {
+    title: string;
+    href: string;
+    description?: string;
+    forceReload?: boolean;
+  }[];
 };
 
 export type DashboardConfig = {
