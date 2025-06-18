@@ -17,6 +17,7 @@ import authService from "@/scripts/msalservice";
 import {INTUNEASSISTANT_TENANT_INFO, INTUNEASSISTANT_TENANT_STYLE} from "@/components/constants/apiUrls";
 import authDataMiddleware from "@/components/middleware/fetchData";
 
+
 export function MainNavigationMenu() {
     const [isLicensed, setIsLicensed] = useState(false);
     const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
@@ -346,6 +347,7 @@ const ListItem: React.FC<MenuItem> = ({
                 </p>
             </a>
         </li>
+
     );
 };
 
