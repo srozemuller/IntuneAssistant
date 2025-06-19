@@ -17,20 +17,26 @@ const RolloutLanding: React.FC = () => {
         {
             title: "Configuration Policies",
             shortDesc: "Deploy device settings consistently across your organization with bulk assignment capabilities.",
-            longDesc: "Configuration policies allow you to manage settings on devices in your organization. With Rollout Assistant, you can quickly assign these policies to multiple groups, users, or devices simultaneously, ensuring consistent configuration across your environment. This saves time and reduces the risk of configuration errors when compared to manual assignments.",
+            longDesc: "Configuration policies allow you to manage settings on devices in your organization. With Rollout Assistant, you can quickly assign these policies to multiple groups, users, or devices simultaneously, ensuring consistent configuration across your environment. We currently support 95% of all configuration policy types and are actively working on the remaining ones.",
             color: "bg-[hsl(var(--chart-1))]"
         },
         {
-            title: "Compliance Policies",
+            title: "Compliance Policies (Coming Soon)",
             shortDesc: "Ensure your devices meet security requirements with quick compliance policy assignments.",
-            longDesc: "Compliance policies define the rules and settings that users and devices must meet to be considered compliant. With Rollout Assistant's bulk assignment capabilities, you can rapidly deploy these security standards across your organization, maintaining consistent security posture and ensuring regulatory compliance without the tedious process of individual assignments.",
+            longDesc: "Compliance policies define the rules and settings that users and devices must meet to be considered compliant. Support for bulk assignment of compliance policies will be available soon, allowing you to rapidly deploy security standards across your organization while maintaining consistent security posture without the tedious process of individual assignments.",
             color: "bg-[hsl(var(--chart-2))]"
         },
         {
-            title: "Windows Update Policies",
+            title: "Windows Update Policies (Coming Soon)",
             shortDesc: "Manage Windows updates at scale across your entire device fleet effortlessly.",
-            longDesc: "Windows update policies help you control how and when Windows updates are installed on devices in your organization. Rollout Assistant simplifies the deployment of these policies, allowing you to create a standardized update strategy that can be consistently applied across your organization with just a few clicks, rather than configuring each policy assignment individually.",
+            longDesc: "Windows update policies help you control how and when Windows updates are installed on devices in your organization. Support for Windows update policy deployment will be available soon, allowing you to create a standardized update strategy that can be consistently applied across your organization with just a few clicks.",
             color: "bg-[hsl(var(--chart-3))]"
+        },
+        {
+            title: "Autopilot Configuration (Coming Soon)",
+            shortDesc: "Streamline device provisioning and setup with bulk Autopilot configuration assignments.",
+            longDesc: "Autopilot configurations allow you to customize the out-of-box experience for new devices. Support for Autopilot configuration assignments will be coming soon, enabling you to efficiently manage device enrollment and setup experiences across your organization without repetitive manual configuration.",
+            color: "bg-[hsl(var(--chart-4))]"
         }
     ];
 
@@ -46,8 +52,12 @@ const RolloutLanding: React.FC = () => {
                     <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
                         Assign resources in bulk in just a few seconds, streamlining your management workflow.
                     </p>
-                    <Button className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground">
-                        Get Started
+                    <Button
+                        variant="outline"
+                        className="border-primary text-primary hover:bg-primary/10"
+                        asChild
+                    >
+                        <a href="/contact">Contact</a>
                     </Button>
                 </div>
             </section>
@@ -81,20 +91,20 @@ const RolloutLanding: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                         <div className="flex flex-col items-center text-center">
                             <div className="w-16 h-16 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-xl font-bold mb-4">1</div>
-                            <h3 className="text-xl font-semibold mb-2">Select Resources</h3>
-                            <p>Choose the policies you want to assign from our supported resource types.</p>
+                            <h3 className="text-xl font-semibold mb-2">Create CSV</h3>
+                            <p>Prepare a CSV file with policy names and their target assignments.</p>
                         </div>
 
                         <div className="flex flex-col items-center text-center">
                             <div className="w-16 h-16 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-xl font-bold mb-4">2</div>
-                            <h3 className="text-xl font-semibold mb-2">Define Targets</h3>
-                            <p>Specify the users, groups, or devices that should receive these policies.</p>
+                            <h3 className="text-xl font-semibold mb-2">Upload</h3>
+                            <p>Upload your prepared CSV file to the Rollout Assistant platform.</p>
                         </div>
 
                         <div className="flex flex-col items-center text-center">
                             <div className="w-16 h-16 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-xl font-bold mb-4">3</div>
-                            <h3 className="text-xl font-semibold mb-2">Deploy</h3>
-                            <p>Execute the assignment in seconds - no more repetitive manual tasks.</p>
+                            <h3 className="text-xl font-semibold mb-2">Migrate</h3>
+                            <p>Execute the migration process to apply all your policy assignments at once.</p>
                         </div>
                     </div>
                 </div>
@@ -108,11 +118,19 @@ const RolloutLanding: React.FC = () => {
                         Join organizations already using Rollout Assistant to save time and reduce errors.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                            Get Started Now
+                        <Button
+                            variant="outline"
+                            className="border-primary text-primary hover:bg-primary/10"
+                            asChild
+                        >
+                            <a href="/contact">Contact</a>
                         </Button>
-                        <Button variant="outline" className="border-primary text-primary hover:bg-primary/10">
-                            Learn More
+                        <Button
+                            variant="outline"
+                            className="border-primary text-primary hover:bg-primary/10"
+                            asChild
+                        >
+                            <a href="/docs/rollout">Docs</a>
                         </Button>
                     </div>
                 </div>
