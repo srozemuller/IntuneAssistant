@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Badge } from "@/components/ui/badge";
-import { UserPlus, MonitorCog, Settings, MonitorSmartphone, ShieldCheck, SquareStack } from 'lucide-react';
+import { UserPlus, MonitorCog, Rocket } from 'lucide-react';
+
 ---
 
 <section id="features" class="bg-background-200 py-8 md:py-12 lg:py-24">
@@ -20,87 +20,48 @@ import { UserPlus, MonitorCog, Settings, MonitorSmartphone, ShieldCheck, SquareS
       </a> 🚀.
       </p>
     </div>
-    <div class="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
+    <div class="mx-auto grid justify-center gap-4 sm:grid-cols-1 md:max-w-[64rem] md:grid-cols-3">
+      <!-- General Block -->
       <div class="relative overflow-hidden rounded-lg border bg-background p-2">
         <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
           <UserPlus size={48} className="size-12"/>
           <div class="space-y-2">
             <h3 class="font-bold">
-              <a href="/docs/general" class="block">General</a>
+              <a href="/docs/what-is-intune-assistant" class="block">General</a>
             </h3>
             <p class="text-sm text-muted-foreground">
-              All general information about Intune Assistant, things like how it works, and the changelogs.
+              All general information about Intune Assistant, how it works, requirements, and the changelogs.
             </p>
           </div>
         </div>
       </div>
-      <div
-        class="relative overflow-hidden rounded-lg border bg-background p-2"
-      >
+
+      <!-- Assistant Block -->
+      <div class="relative overflow-hidden rounded-lg border bg-background p-2">
         <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
           <MonitorCog size={48} className="size-12"/>
           <div class="space-y-2">
             <h3 class="font-bold">
-              <a href="/policies/configuration" class="block">Assistant</a>
-            </h3>
-            <p class="text-sm text-muted-foreground mt-3">
-                This is the core feature of Intune Assistant. Here you can find several overviews like the (apps) assignments overview and policy settings overview.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div
-        class="relative overflow-hidden rounded-lg border bg-background p-2"
-      >
-        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
-            <Settings size={48} className="size-12"/>
-          <div class="space-y-2">
-            <h3 class="font-bold">
-              <a href="/policies/configuration/settings" class="block">Configuration policies settings</a>
+              <a href="/docs/assistant" class="block">Assistant</a>
             </h3>
             <p class="text-sm text-muted-foreground">
-              A complete overview of all your Microsoft Intune settings.
+              This is the core feature of Intune Assistant. Here you can find several overviews like the (apps) assignments overview, policy settings overview and device management.
             </p>
           </div>
         </div>
       </div>
+
+      <!-- Rollout Block -->
       <div class="relative overflow-hidden rounded-lg border bg-background p-2">
         <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
-          <MonitorSmartphone size={48} className="size-12"/>
-          <div class="space-y-2">
-            <h3 class="font-bold">Devices</h3>
-            <p class="text-sm text-muted-foreground">
-              Devices overview of all your Microsoft Intune devices.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div
-        class="relative overflow-hidden rounded-lg border bg-background p-2"
-      >
-        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
-          <ShieldCheck size={48} className="size-12"/>
+          <Rocket size={48} className="size-12"/>
           <div class="space-y-2">
             <h3 class="font-bold">
-              <a href="/policies/ca" class="block">Conditional Access</a>
+              <a href="/docs/rollout" class="block">Rollout</a>
+
             </h3>
             <p class="text-sm text-muted-foreground">
-              Get a complete overview of all your Conditional Access policies and assignments.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div
-        class="relative overflow-hidden rounded-lg border bg-background p-2"
-      >
-        <div class="flex h-[180px] flex-col justify-between rounded-md p-5">
-          <SquareStack size={48} className="size-12"/>
-          <div class="space-y-2">
-            <h3 class="font-bold">Duplicate Settings
-              <Badge variant="secondary" className="ml-1" style={{ paddingTop: '3px' }}>soon</Badge>
-            </h3>
-            <p class="text-sm text-muted-foreground">
-              Get an overview of all your duplicate settings.
+              Plan and implement your Intune rollout strategy with helpful tools and guidance for a smooth deployment.
             </p>
           </div>
         </div>

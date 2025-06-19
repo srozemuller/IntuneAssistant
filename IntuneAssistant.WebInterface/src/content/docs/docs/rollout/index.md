@@ -1,29 +1,69 @@
 ---
-title: General information
+title: Rollout assignments
 description: An overview about how to roll out assignments in bulk
 ---
-In the documentation you will find all the information you need to know about the authentication and permissions part of the Intune Assistant.
+In this documentation you will find all the information you need to know about how to enroll assignments in bulk into Intune. 
+
+## Requirements
+To use this feature you have to purchase a license per tenant. More information about licencing check the [licensing docs](/docs/licensing)
+When missing the correct license you will see a page with the following error:
+
+`Your tenant needs the correct before you can use this feature.`
 
 ## Permissions
-First important thing to know is that the Intune Assistant needs only ***READ*** permissions to read data from your tenant. The permissions that are needed are:
+Making assignments needs extra permissions above the READ permissions (find READ permissions [here](/docs/general/authentication/). 
 
-- **DeviceManagementApps.Read.All** -> Read Microsoft Intune apps
-- **DeviceManagementConfiguration.Read.All** -> Read Microsoft Intune Device Configuration and Policies
-- **Directory.AccessAsUser.All** -> Access directory as the signed in user
-- **Group.Read.All** -> Read all groups
-- **Policy.Read.All** -> Read your organization's policies
-- **User.Read** -> Sign in and read user profile
-- **User.Read.All** -> Read all users' full profiles
+- **DeviceManagementApps.ReadWrite.All** -> Read and Write Microsoft Intune apps
+- **DeviceManagementConfiguration.ReadWrite.All** -> Read and Write Microsoft Intune Device Configuration and Policies
 
-The permissions are needed to read the data from your tenant. The Intune Assistant does not write any data to your tenant. The permissions are needed to read the data from your tenant and present it in the Intune Assistant application.
-All the permissions are on behalf of the logged-in user.
+## Bulk assignments overview
+When having the correct license, you get access to the assignments page. The page has looks like the screenshot below.  
+![assignments-page](/images/rollout/assignments-overview.png)
 
-The second important thing is that the Intune Assistant does not store any data from your tenant except the tenant ID and tenant domain. Why that data stored is explained in the [onboarding part](/docs/web/getting-started/onboarding/) of the documentation.
-All the information is presented in your browser. The data is only stored is the session of the user that is logged in at client side. When the user logs out the data is removed from the session.
+>Currently only configuration and compliance policy assignments are supported.
 
+## CSV
+To add Intune assignments in bulk you need to provide CSV file. 
+The CSV file contains several columns that makes the rollout possible. 
+You can download the CSV file template [here](/rollout/assignments)
 
-## Authentication
-The Intune Assistant Web interface uses the IntuneAssistant API. From there the IntuneAssistant API uses the Microsoft Graph API to read the data from your tenant.   
-The authentication is done with the Microsoft Graph API. The Intune Assistant uses the OAuth 2.0 authorization code flow to authenticate the user.   
-The user is redirected to the Microsoft login page where the user can login with his credentials. After the user is authenticated the user is redirected back to the Intune Assistant application.
-The user is now authenticated and can read the data from the tenant.
+### CSV file explained
+The CSV file has several columns. 
+
+- **PolicyName** -> It is the name of the policy
+- **GroupName** -> This is the Entra ID group name. All Users and All Devices are also supported, keep in mind these are the Intune objects.
+- **AssignmentDirection** -> This is the assignment direction *include* or *exclude* the assignment (Values: **_include, exclude_**)
+- **AssignmentAction** -> This is the action to *add*, *remove* or *replace* the assignment (Values: **_add, remove, replace_**)
+- **FilterName** ->  This is the filter name
+- **FilterType** -> This tells if you want to *include* or *exclude* the filter (Values: **_include, exclude_**)
+
+### Example
+An example of the CSV file is shown below:
+```text
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;FilterName;FilterType
+AE - Compliance Policy - Corporate owned dedicated device - v1.0;AAD_UA_Update-Ring-01;Include;Add;MacBook;include
+macOS - CP - Delay Major Software Updates - v1.0;All Users;Include;Add;;
+W11 - CP - Remove Chat Icon - v1.1;AAD_DA_AutoPilot-Devices-Shared;Exclude;Add;Windows 11;include
+W1x - CP - Block access to public Microsoft Store - v1.0;All Devices;Include;Add;;
+```
+
+### Scenario's
+- I want to add an assignment that includes All Users (Intune) without a filter.  
+`W1x - CP - Block access to public Microsoft Store - v1.0;All Users;Include;Add;;`  
+
+- I want to add an assignment that included All Devices (Intune)  
+`W1x - CP - Block access to public Microsoft Store - v1.0;All Devices;Include;Add;;`
+- I want to add an assignment that included an Entra ID group with a filter.
+
+- I want to add an assignment that excludes an Entra ID group without a filter.
+
+- I want to remove an included assignment
+
+- I want to replace all current assignments with a new assignment
+
+## CSV Upload
+When your CSV is ready, you can drop the CSV on the page or use the upload button to select the file from you system.
+After that, the upload process will check if you CSV has valid rows. Checks included for example are valid value and duplicate rows.
+
+When having issues in you CSV you will get a message like this
+
