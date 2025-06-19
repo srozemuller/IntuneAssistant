@@ -1,3 +1,7 @@
+---
+title: What is Intune Assistant
+description: Intune Assistant short description
+---
 # What is Intune Assistant
 
 Intune Assistant is a powerful toolkit designed to simplify the daily tasks of Intune administrators. It transforms complex management processes into streamlined workflows, giving you a clearer view of your environment and more control over your deployment.
