@@ -47,12 +47,6 @@ const AuthButton: React.FC = () => {
             description: ''
         },
         {
-            id: 'analyser',
-            name: 'Analyser',
-            href: '/analyser',
-            description: 'Analyze your Intune environment'
-        },
-        {
             id: 'rollout',
             name: 'Rollout',
             href: '/rollout',
@@ -253,9 +247,6 @@ const AuthButton: React.FC = () => {
                     </DropdownMenuSub>
                     <DropdownMenuItem onClick={() => window.location.href = '/profile'}>
                         Profile Settings
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => window.location.href = '/settings'}>
-                        Tenant Settings
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
