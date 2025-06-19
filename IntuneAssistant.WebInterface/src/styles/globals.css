@@ -34,7 +34,7 @@
     --red: 239 68 68;
     --orange: 245 158 11;
     --grey: 107 114 128;
-    --logo-url: url('/src/icons/yellow.svg');
+    --logo-url: url('/src/icons/cflogo.svg');
 
     /* Enhance glass effect variables for more contrast */
     --glass-opacity: 0.9;

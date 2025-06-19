@@ -33,7 +33,7 @@ export default defineConfig({
         './src/styles/starlight-overrides.css',
       ],
       logo: {
-        src: "./public/favicon.svg",
+        src: "./public/cflogo.svg",
         replacesTitle: false,
       },
       components: {
@@ -46,7 +46,7 @@ export default defineConfig({
           items: [
             {
               label: 'What is Intune Assistant?',
-              link: '/docs/what-is-intune-assistant'  // Link to your markdown file
+              link: '/docs/what-is-intune-assistant'
             },
             {
               label: 'Assistant',
