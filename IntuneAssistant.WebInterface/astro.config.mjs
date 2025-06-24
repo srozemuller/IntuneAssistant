@@ -24,7 +24,6 @@ export default defineConfig({
       tracesSampleRate: 0.3,
     }),
     starlight({
-
       title: 'Intune Assistant Docs',
       social: {
         github: 'https://github.com/srozemuller/intuneAssistant',
@@ -34,7 +33,7 @@ export default defineConfig({
         './src/styles/starlight-overrides.css',
       ],
       logo: {
-        src: "./public/favicon.svg",
+        src: "./public/cflogo.svg",
         replacesTitle: false,
       },
       components: {
@@ -47,7 +46,7 @@ export default defineConfig({
           items: [
             {
               label: 'What is Intune Assistant?',
-              link: '/docs/what-is-intune-assistant'  // Link to your markdown file
+              link: '/docs/what-is-intune-assistant'
             },
             {
               label: 'Assistant',
@@ -113,6 +112,13 @@ export default defineConfig({
       ],
     }),
   ],
-  output: "static",
+  output: "server",
   adapter: netlify(),
+  vite: {
+    define: {
+      'import.meta.env.GITHUB_PAT_TOKEN': JSON.stringify(process.env.GITHUB_PAT_TOKEN),
+      'import.meta.env.REACT_APP_CLIENT_ID': JSON.stringify(process.env.REACT_APP_CLIENT_ID),
+      'import.meta.env.REACT_APP_SCOPE': JSON.stringify(process.env.REACT_APP_SCOPE)
+    }
+  }
 });

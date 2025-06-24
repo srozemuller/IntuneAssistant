@@ -1,6 +1,29 @@
 import type { NavMenuConfig } from "@/types";
 
 export const navMenuConfig: NavMenuConfig = {
+  rolloutFAQ: {
+    title: "FAQ",
+    items: [
+      {
+        title: "General Questions",
+        href: "/rollout/faq/general",
+        description: "Answers to common questions about rollout management"
+      },
+      // Add more FAQ items as needed
+    ]
+  },
+  rolloutNav: [
+    {
+      title: "Rollout",
+      items: [
+        {
+          title: "Assignments Rollout",
+          href: "/rollout/assignments",
+          description: "Bulk rollout assignments management",
+        },
+      ]
+    }
+  ],
   mainNav: [
     {
       title: "Getting started",
@@ -19,9 +42,26 @@ export const navMenuConfig: NavMenuConfig = {
       href: "/docs",
     },
   ],
+  productsNav: {
+    title: "Products",
+    items: [
+      {
+        title: "Assistant",
+        href: "/assistant",
+        badge: "Community",
+        description: "The community tool for help you with Intune management."
+      },
+      {
+        title: "Rollout",
+        href: "/rollout",
+        badge: "Premium",
+        description: "Advanced feature rollout management for your Intune environment."
+      }
+    ]
+  },
   assistantNav: [
     {
-      title: "Assistant",
+      title: "Assignments",
       items: [
         {
           title: "Assignments Overview",
@@ -32,23 +72,23 @@ export const navMenuConfig: NavMenuConfig = {
           title: "Application Assignments",
           href: "/assignments/apps",
           description: "Information about application assignments and there installation type"
-        },
-        {
-          title: "Configuration Settings",
-          href: "/policies/configuration/settings",
-          description: "Configuration Settings overview",
-        },
+        }
       ],
     }
   ],
   resourcesNav: [
     {
-      title: "Resources",
+      title: "Policies",
       items: [
         {
           title: "Configuration Policies",
           href: "/policies/configuration",
           description: "Configuration Policy overview",
+        },
+        {
+          title: "Configuration Settings",
+          href: "/policies/configuration/settings",
+          description: "Configuration Settings overview",
         },
         {
           title: "Conditional Access Policies",

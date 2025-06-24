@@ -1,61 +1,179 @@
 ---
-import { buttonVariants } from "@/components/ui/button";
 import MainLayout from "@/layouts/main-layout.astro";
-import { cn } from "@/lib/utils";
-import { Icons } from "@/icons";
-import InfoLanding from "@/components/sections/info-landing.astro";
-import type { InfoLdg } from "@/types";
+import { Button, buttonVariants } from "../../components/ui/button";
 
-const info: InfoLdg = {
-    title: "Intune Rollout Assistant",
-    description: "Use the Intune Rollout Assistant to roll out Intune configuration with ease.",
-    image: "/images/rollout/rollout-assignments.png",
-    list: [
-        {
-            title: "Bulk assignments",
-            description: "Add assignments to resources in bulk",
-            icon: "lucide:cpu"
-        },
-        {
-            title: "Deploy complete Intune configuration",
-            description: "Adds configuration to Intune based on a configuration package.",
-            icon: "lucide:shield-check"
-        }
-    ]
-};
+import { cn } from "@/lib/utils";
+import React from "react";
+
 ---
 
-<MainLayout title="CLI">
-    <section class="space-y-6 pb-12 pt-16 lg:py-28">
-        <div class="container flex max-w-[64rem] flex-col items-center gap-5 text-center">
-            <h1 class="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl !leading-[1.1] text-balance">
-                About
-                <span class="text-gradient_indigo-purple">
-          <span class="font-sans font-bold">Intune Rollout Assistant</span>
-        </span>
-            </h1>
-            <p class="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 text-balance">
-                Made for the modern Cloud Engineer focussed on modern workplace and identity. <br/>{" "}
-            </p>
-        </div>
-        <div class="container flex max-w-[64rem] flex-col items-center gap-5 text-center">
-            <p class="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 text-balance">
-                Intune Assistant is born out of the need to simplify and streamline Microsoft Intune management. <br/>{" "}
-            </p>
-        </div>
-        <div class="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-            <div class="flex justify-center space-x-2 md:space-x-4">
-                <a href="/faq" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
-                    FAQ
-                </a>
-                <a href="/licensing" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
-                    Onboarding
-                </a>
-                <a href="/docs/rollout" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
-                    Rollout Documentation
-                </a>
+<MainLayout title="Rollout Assistant | ControlFlex">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden bg-background">
+        <div class="container px-4 md:px-6 flex flex-col md:flex-row items-center justify-between py-16 md:py-24 gap-8">
+            <div class="flex flex-col space-y-6 max-w-[640px]">
+                <div class="inline-block">
+          <span class="inline-flex items-center rounded-full px-3 py-1 text-sm bg-primary/10 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            The tool for assigning Intune resources
+          </span>
+                </div>
+                <h1 class="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl !leading-[1.1] text-balance">
+                    Rollout <span class="text-primary">Assistant</span>
+                </h1>
+                <p class="text-lg text-muted-foreground md:text-xl text-balance">
+                    Rollout Assistant is a premium addon on the free Intune Assistant platform. This feature streamlines Intune administration by providing a structured approach to implementing update ring strategies. It enables IT administrators to efficiently manage bulk assignments, track deployment progress, and maintain governance across your environment—all through an intuitive interface designed specifically for Microsoft Intune.
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="/docs/rollout" class={cn(buttonVariants({size: "lg", className: "w-full sm:w-auto"}))}>
+                        View documentation
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                    <a href="/onboarding" class={cn(buttonVariants({size: "lg", variant: "outline", className: "w-full sm:w-auto"}))}>
+                        Setup Wizard
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative w-full md:w-1/2 flex justify-center">
+                <div class="relative w-full max-w-[550px] aspect-video rounded-lg overflow-hidden shadow-2xl">
+                    <img
+                            src="/images/rollout/rollout-hero.png"
+                            alt="Rollout Assistant Dashboard"
+                            class="w-full h-auto object-cover"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+                </div>
             </div>
         </div>
     </section>
-    <InfoLanding data={info} reverse={true} />
+
+    <!-- Features Section -->
+    <section class="bg-muted/50 py-16 md:py-24">
+        <div class="container px-4 md:px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Rollout Features</h2>
+                <p class="mt-4 text-xl text-muted-foreground">Powerful features to streamline your Intune targetting</p>
+            </div>
+
+            <div class="container mx-auto px-4 py-12">
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
+                    <div class="bg-card p-6 rounded-lg border border-border">
+                        <h2 class="text-2xl font-semibold mb-4">Structured Deployments</h2>
+                        <p class="mb-4">
+                            Move beyond manual assignments with a structured approach to deploying
+                            configurations across your organization.
+                        </p>
+                        <ul class="list-disc pl-5 mb-4 space-y-2">
+                            <li>Implement proper update ring strategies</li>
+                            <li>Control deployment pace with confidence</li>
+                            <li>Track progress across deployment phases</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-card p-6 rounded-lg border border-border">
+                        <h2 class="text-2xl font-semibold mb-4">Bulk Operations</h2>
+                        <p class="mb-4">
+                            Save time and reduce errors by managing multiple assignments at once.
+                        </p>
+                        <ul class="list-disc pl-5 mb-4 space-y-2">
+                            <li>Assign resources to multiple groups</li>
+                            <li>Safely de-assign resources when needed</li>
+                            <li>Maintain consistency across your environment</li>
+                        </ul>
+                    </div>
+                    <div class="bg-card p-6 rounded-lg border border-border">
+                        <h2 class="text-2xl font-semibold mb-4">
+                            Enroll Intune configuration
+                            <span class="ml-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300">
+                                Soon
+                            </span>
+                        </h2>
+                        <p class="mb-4">
+                            Deploy complete Intune configurations with built-in best practices and governance standards.
+                        </p>
+                        <ul class="list-disc pl-5 mb-4 space-y-2">
+                            <li>Implement Microsoft recommended baselines</li>
+                            <li>Configure security policies with proven templates</li>
+                            <li>Automate deployment across your environment</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <h2 class="text-2xl font-semibold mb-4">Ready to get started?</h2>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Button client:load size="lg">
+                            <a href="/docs/rollout">View Documentation</a>
+                        </Button>
+                        <Button client:load variant="outline" size="lg">
+                            <a href="/contact">Contact Us</a>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section class="py-16 md:py-24">
+        <div class="container px-4 md:px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">How Rollout Assistant Works</h2>
+                <p class="mt-4 text-xl text-muted-foreground">Streamline update ring deployments in Microsoft Intune with structured, bulk assignment management</p>  </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="relative flex flex-col items-center text-center">
+                    <div class="absolute -left-4 md:left-auto md:-top-4 bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg">1</div>
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6" />
+                            <path d="M8 13h2" />
+                            <path d="M14 13h2" />
+                            <path d="M8 17h2" />
+                            <path d="M14 17h2" />
+                            <path d="M16 13v4" />
+                            <path d="M8 9h8" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Create CSV</h3>
+                    <p class="text-muted-foreground">Prepare a CSV file with policy names and their target assignments.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative flex flex-col items-center text-center">
+                    <div class="absolute -left-4 md:left-auto md:-top-4 bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg">2</div>
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Upload</h3>
+                    <p class="text-muted-foreground">Upload your prepared CSV file to the Rollout Assistant platform.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative flex flex-col items-center text-center">
+                    <div class="absolute -left-4 md:left-auto md:-top-4 bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg">3</div>
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+                            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                            <path d="M5 8v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7l-5-5H6a1 1 0 0 0-1 1Z" />
+                            <path d="M8 12h8" />
+                            <path d="M8 15h6" />
+                            <path d="M10 19v-9" />
+                            <path d="M14 19v-5" />
+                            <path d="m17 8 3 3-3 3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Migrate</h3>
+                    <p class="text-muted-foreground">Execute the migration process to apply all your policy assignments at once.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </MainLayout>

@@ -2,40 +2,319 @@
 import { buttonVariants } from "@/components/ui/button";
 import MainLayout from "@/layouts/main-layout.astro";
 import { cn } from "@/lib/utils";
-import Integrations from "@/components/sections/integrations.astro";
+
 
 import * as React from "react";
-import {toast, Toaster} from "sonner";
+import { toast, Toaster } from "sonner";
+
+import { Users, LayoutDashboard, Search, Sparkles, CirclePlay, LineChart, CheckCircle, ArrowRight } from "lucide-react";
 
 ---
+
 <Toaster />
 <MainLayout title="Intune Assistant">
-  <section class="flex items-center justify-center space-y-6 pb-12 pt-16 lg:py-28">
-    <div class="flex flex-col md:flex-row items-center gap-5">
-      <div class="flex flex-col items-center gap-5 text-center">
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden bg-background">
+    <div class="container px-4 md:px-6 flex flex-col md:flex-row items-center justify-between py-16 md:py-24 gap-8">
+      <div class="flex flex-col space-y-6 max-w-[640px]">
+        <div class="inline-block">
+          <span class="inline-flex items-center rounded-full px-3 py-1 text-sm bg-primary/10 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            Now available for all Intune admins
+          </span>
+        </div>
         <h1 class="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl !leading-[1.1] text-balance">
-          Revolutionize
+          Revolutionize <span class="text-primary">Intune Management</span>
         </h1>
-        <h1 class="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl !leading-[1.1] text-balance">
-          Intune Management
-        </h1>
-        <p class="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 text-balance">
-          Intune Assistant empowers administrators to manage Microsoft Intune with unparalleled efficiency.
-          It simplifies scattered, complex data, providing clear insights and streamlined management processes.
-          Elevate your Intune administration to new heights with cutting-edge visualization and analysis.
+        <p class="text-lg text-muted-foreground md:text-xl text-balance">
+          Intune Assistant empowers administrators to manage Microsoft Intune with unparalleled efficiency,
+          providing clear insights and streamlined management processes.
         </p>
-
-        <div class="flex justify-center space-x-2 md:space-x-4">
-          <a href="/onboarding" class={cn(buttonVariants({size: "lg"}))}>
-            Onboard directly
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="/onboarding" class={cn(buttonVariants({size: "lg", className: "w-full sm:w-auto"}))}>
+            Get Started Free
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
-          <a href="/about" class={cn(buttonVariants({size: "lg", variant: "outline"}))}>
-            About Intune Assistant
+          <a href="/about" class={cn(buttonVariants({size: "lg", variant: "outline", className: "w-full sm:w-auto"}))}>
+            Learn More
           </a>
         </div>
       </div>
-      <img src=/images/landing-page.png alt="Landing Page Image" class="w-full h-auto max-w-[42rem] rounded-lg" />
+
+      <div class="relative w-full md:w-1/2 flex justify-center">
+        <div class="relative w-full max-w-[550px] aspect-video rounded-lg overflow-hidden shadow-2xl">
+          <img
+              src="/images/landing-page.png"
+              alt="Intune Assistant Dashboard"
+              class="w-full h-auto object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+        </div>
+      </div>
     </div>
   </section>
-  <Integrations />
+
+  <!-- Features Section -->
+  <section class="bg-muted/50 py-16 md:py-24">
+    <div class="container px-4 md:px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Powerful Features</h2>
+        <p class="mt-4 text-xl text-muted-foreground">Everything you need to master Intune management</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="flex flex-col bg-card rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow relative">
+          <div class="absolute top-2 right-2">
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-primary/20 text-primary">Assistant</span>
+          </div>
+          <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <LayoutDashboard className="text-primary" size={24} />
+          </div>
+          <h3 class="text-xl font-bold mb-2">Intune global overviews</h3>
+          <p class="text-muted-foreground mb-4">Get a comprehensive overview of your Intune environment with actionable insights at a glance.</p>
+          <a href="/assistant" class="text-primary font-medium inline-flex items-center mt-auto">
+            Learn more
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+
+
+        <!-- Feature 2 -->
+        <div class="flex flex-col bg-card rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow relative">
+          <div class="absolute top-2 right-2">
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-primary/20 text-primary">Rollout</span>
+          </div>
+          <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <CirclePlay className="text-primary" size={24} />
+          </div>
+          <h3 class="text-xl font-bold mb-2">Rollout Management</h3>
+          <p class="text-muted-foreground mb-4">Plan, schedule, and track phased rollouts of policies and configurations across your organization.</p>
+          <a href="/rollout" class="text-primary font-medium inline-flex items-center mt-auto">
+            Learn more
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="flex flex-col bg-card rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow relative">
+          <div class="absolute top-2 right-2">
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-500/20 text-amber-500">Coming Soon</span>
+          </div>
+          <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <Sparkles className="text-primary" size={24} />
+          </div>
+          <h3 class="text-xl font-bold mb-2">Automated Remediation</h3>
+          <p class="text-muted-foreground mb-4">Fix common issues with one-click remediation powered by intelligent automation.</p>
+          <a href="#" class="text-muted-foreground hover:text-primary font-medium inline-flex items-center mt-auto">
+            Announced
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          </a>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="flex flex-col bg-card rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow relative">
+          <div class="absolute top-2 right-2">
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-500/20 text-amber-500">Coming Soon</span>
+          </div>
+          <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <!-- Custom Track & Trace icon - a dashed curly line with start and end points -->
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-primary"
+            >
+              <!-- Start point circle -->
+              <circle cx="4" cy="12" r="2" fill="currentColor" />
+              <!-- End point circle -->
+              <circle cx="20" cy="12" r="2" fill="currentColor" />
+              <!-- Curly dashed path from start to end -->
+              <path
+                  d="M4,12 Q8,6 12,12 T20,12"
+                  fill="none"
+                  stroke-dasharray="4 2"
+              />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Track & Trace</h3>
+          <p class="text-muted-foreground mb-4">Track and trace changes in your Intune environment using historic data.</p>
+          <a href="#" class="text-muted-foreground hover:text-primary font-medium inline-flex items-center mt-auto">
+            Announced
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          </a>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="flex flex-col bg-card rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow relative">
+          <div class="absolute top-2 right-2">
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-500/20 text-amber-500">Coming Soon</span>
+          </div>
+          <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <Search className="text-primary" size={24} />
+          </div>
+          <h3 class="text-xl font-bold mb-2">Advanced Analytics</h3>
+          <p class="text-muted-foreground mb-4">Dive deep into your data with powerful analytics that help identify issues and optimization opportunities.</p>
+          <a href="#" class="text-muted-foreground hover:text-primary font-medium inline-flex items-center mt-auto">
+            Announced
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          </a>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="flex flex-col bg-card rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow relative">
+          <div class="absolute top-2 right-2">
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-500/20 text-amber-500">Coming Soon</span>
+          </div>
+          <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <LineChart className="text-primary" size={24} />
+          </div>
+          <h3 class="text-xl font-bold mb-2">Comprehensive Reporting</h3>
+          <p class="text-muted-foreground mb-4">Generate detailed reports on device compliance, app deployment, and security posture.</p>
+          <a href="#" class="text-muted-foreground hover:text-primary font-medium inline-flex items-center mt-auto">
+            Announced
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Get Started Section -->
+  <section class="py-16 md:py-24">
+    <div class="container px-4 md:px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Get Started in Minutes</h2>
+        <p class="mt-4 text-xl text-muted-foreground">Simple steps to transform your Intune management</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Step 1 -->
+        <div class="relative flex flex-col items-center text-center">
+          <div class="absolute -left-4 md:left-auto md:-top-4 bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg">1</div>
+          <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Create Your Account</h3>
+          <p class="text-muted-foreground">Sign up with your Microsoft account for seamless integration with your tenant.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="relative flex flex-col items-center text-center">
+          <div class="absolute -left-4 md:left-auto md:-top-4 bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg">2</div>
+          <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 16V8"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Connect Your Tenant</h3>
+          <p class="text-muted-foreground">Grant necessary permissions to allow Intune Assistant to analyze your environment.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="relative flex flex-col items-center text-center">
+          <div class="absolute -left-4 md:left-auto md:-top-4 bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg">3</div>
+          <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Start Optimizing</h3>
+          <p class="text-muted-foreground">Access your dashboard and begin exploring insights and recommendations.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-center mt-12">
+        <a href="/onboarding" class={cn(buttonVariants({size: "lg"}))}>
+          Start Your Free Onboarding
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="bg-muted/50 py-16 md:py-24">
+    <div class="container px-4 md:px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Frequently Asked Questions</h2>
+        <p class="mt-4 text-xl text-muted-foreground">Everything you need to know about Intune Assistant</p>
+      </div>
+
+      <div class="grid gap-6 md:gap-8 max-w-3xl mx-auto">
+        <!-- FAQ Item 1 -->
+        <details class="group bg-card rounded-lg p-6 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer">
+            <h3 class="text-lg font-medium">Is Intune Assistant free to use?</h3>
+            <span class="ml-2 shrink-0 transition duration-300 group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="mt-4 text-muted-foreground">
+            <p>Intune Assistant offers a free tier with essential features for all Intune administrators. Advanced features like Rollout Management and Automated Remediation are available in our premium plans.</p>
+          </div>
+        </details>
+
+        <!-- FAQ Item 2 -->
+        <details class="group bg-card rounded-lg p-6 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer">
+            <h3 class="text-lg font-medium">What permissions does Intune Assistant need?</h3>
+            <span class="ml-2 shrink-0 transition duration-300 group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="mt-4 text-muted-foreground">
+            <p>Intune Assistant requires read access to your Intune environment to provide insights and analytics. For remediation features, write permissions are required. All permission requirements are clearly explained during the onboarding process.</p>
+          </div>
+        </details>
+
+        <!-- FAQ Item 3 -->
+        <details class="group bg-card rounded-lg p-6 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer">
+            <h3 class="text-lg font-medium">Is my data secure with Intune Assistant?</h3>
+            <span class="ml-2 shrink-0 transition duration-300 group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="mt-4 text-muted-foreground">
+            <p>Absolutely. Intune Assistant fetches data directly from the Graph API and stores the information in your screen. When you close the session, the data is gone as well. NO data will be stored.</p>
+          </div>
+        </details>
+
+        <!-- FAQ Item 4 -->
+        <details class="group bg-card rounded-lg p-6 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer">
+            <h3 class="text-lg font-medium">How does the Rollout feature work?</h3>
+            <span class="ml-2 shrink-0 transition duration-300 group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="mt-4 text-muted-foreground">
+            <p>The Rollout feature allows you to plan and execute phased deployments of Intune configurations. You can define target groups, set schedules, specify success criteria, and monitor progress in real-time. This reduces risk by allowing you to validate changes with smaller groups before full deployment.</p>
+          </div>
+        </details>
+
+        <!-- FAQ Item 5 -->
+        <details class="group bg-card rounded-lg p-6 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer">
+            <h3 class="text-lg font-medium">How does it work?</h3>
+            <span class="ml-2 shrink-0 transition duration-300 group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="mt-4 text-muted-foreground">
+            <p>Intune Assistant uses an app registration consented during the onboarding process. The app registration has only the needed READ permissions.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="/faq" class={cn(buttonVariants({variant: "outline"}))}>
+          View All FAQs
+        </a>
+      </div>
+    </div>
+  </section>
 </MainLayout>

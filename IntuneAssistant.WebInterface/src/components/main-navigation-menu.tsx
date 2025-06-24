@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Rocket } from "lucide-react";
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -18,25 +17,52 @@ import authService from "@/scripts/msalservice";
 import {INTUNEASSISTANT_TENANT_INFO, INTUNEASSISTANT_TENANT_STYLE} from "@/components/constants/apiUrls";
 import authDataMiddleware from "@/components/middleware/fetchData";
 
-const links = navMenuConfig.links;
-const main = navMenuConfig.mainNav[0];
-const docs = navMenuConfig.docsNav;
-const assistant = navMenuConfig.assistantNav?.length ? navMenuConfig.assistantNav[0] : null;
-const resources = navMenuConfig.resourcesNav?.length ? navMenuConfig.resourcesNav[0] : null;
-const comparator = navMenuConfig.comparatorNav?.length ? navMenuConfig.comparatorNav[0] : null;
-const migration = navMenuConfig.migrationNav?.length ? navMenuConfig.migrationNav[0] : null;
 
 export function MainNavigationMenu() {
     const [isLicensed, setIsLicensed] = useState(false);
     const [currentTenantId, setCurrentTenantId] = React.useState<string>("");
-    const [logoUrl, setLogoUrl] = useState<string>("/images/launch.jpg"); // Default logo URL
+    const [logoUrl, setLogoUrl] = useState<string>("/images/launch.jpg");
+    const [currentContext, setCurrentContext] = useState<string>("assistant");
+
+    // Determine current context based on path
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const path = window.location.pathname;
+            if (path.startsWith('/rollout')) {
+                setCurrentContext('rollout');
+            } else if (path.startsWith('/analyser')) {
+                setCurrentContext('analyser');
+            } else {
+                setCurrentContext('assistant');
+            }
+        }
+    }, []);
+
+    // Get menu items based on current context
+    const links = navMenuConfig.links;
+    const main = navMenuConfig.mainNav[0];
+    const docs = navMenuConfig.docsNav;
+    const products = navMenuConfig.productsNav;
+
+    // Context-specific navigation items
+    const assistant = currentContext === 'assistant' ?
+        (navMenuConfig.assistantNav?.length ? navMenuConfig.assistantNav[0] : null) : null;
+    const resources = currentContext === 'assistant' ?
+        (navMenuConfig.resourcesNav?.length ? navMenuConfig.resourcesNav[0] : null) : null;
+    const comparator = currentContext === 'analyser' ?
+        (navMenuConfig.comparatorNav?.length ? navMenuConfig.comparatorNav[0] : null) : null;
+    const migration = currentContext === 'rollout' ?
+        (navMenuConfig.migrationNav?.length ? navMenuConfig.migrationNav[0] : null) : null;
+
+    // Rollout specific items (add these to your navMenuConfig)
+    const rolloutFAQ = currentContext === 'rollout' ? navMenuConfig.rolloutFAQ : null;
+    const rolloutSpecific = currentContext === 'rollout' ? navMenuConfig.rolloutNav?.[0] : null;
 
     useEffect(() => {
         const fetchCurrentTenantId = async () => {
             if (authService.isLoggedIn()) {
                 const userClaims = authService.getTokenClaims();
                 setCurrentTenantId(userClaims.tenantId);
-                console.log("Current tenant ID:", userClaims.tenantId);
             }
         };
 
@@ -47,20 +73,8 @@ export function MainNavigationMenu() {
         const fetchLicenseInfo = async () => {
             if (currentTenantId) {
                 try {
-                    // const response = await authDataMiddleware(`${INTUNEASSISTANT_TENANT_INFO}?tenantId=${currentTenantId}`);
-                    // const responseData = typeof response?.data === 'string' ? JSON.parse(response.data) : response?.data;
-                    // console.log(responseData);
-                    //
-                    // // Access the enabled property correctly
-                    // if (responseData.data) {
-                    //     setIsLicensed(responseData.data.enabled);
-                    // } else if (responseData.status === "Onboarded") {
-                    //     // Alternative path if the structure is different
-                    //     setIsLicensed(!!responseData.data?.enabled);
-                    // }
                     const styleResponse = await authDataMiddleware(`${INTUNEASSISTANT_TENANT_STYLE}/${currentTenantId}`);
                     const styles = typeof styleResponse?.data === 'string' ? JSON.parse(styleResponse.data) : styleResponse?.data;
-                    console.log('Styles:', styles);
 
                     // Set the background color
                     document.documentElement.style.setProperty('--background', styles.background);
@@ -90,114 +104,198 @@ export function MainNavigationMenu() {
     }, [currentTenantId]);
 
     return (
-        <NavigationMenu>
-            <NavigationMenuList>
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger>{main.title}</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                            <li className="row-span-3">
-                                <NavigationMenuLink asChild>
-                                    <a
-                                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                                        href="/onboarding"
-                                    >
-                                        <img src='/images/launch.png' alt="Logo" />
-                                        <div className="mb-2 mt-4 text-lg font-medium">
-                                            Onboarding
-                                        </div>
-                                        <p className="text-sm leading-tight text-muted-foreground">
-                                            Walk through the process of setting up your Intune Assistant.
-                                        </p>
-                                    </a>
-                                </NavigationMenuLink>
-                            </li>
-                            {main.items?.map((page) => (
-                                <ListItem key={page.title} {...page} />
-                            ))}
-                        </ul>
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
+        <div className="flex items-center space-x-4">
+            <NavigationMenu>
+                <NavigationMenuList>
+                    {/* Product Selector */}
+                    <NavigationMenuItem>
+                        <NavigationMenuTrigger>
+                            {(() => {
+                                const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+                                // Determine which product is active based on the path
+                                return 'Products';
+                            })()}
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                            <ul className="grid w-[400px] gap-3 p-4">
+                                {products?.items?.map((product) => {
+                                    // Determine if this product item is the active one
+                                    const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+                                    const isActive = (
+                                        (product.href === '/' && path === '/') ||
+                                        (product.href !== '/' && path.startsWith(product.href || ''))
+                                    );
 
-                {docs && (
-                    <NavigationMenuItem>
-                        {docs.map((link) => (
-                            <a
-                                key={link.href}
-                                href={link.href}
-                                className={navigationMenuTriggerStyle()}
-                                {...(link.forceReload as boolean? { "data-astro-reload": true } : {})}
-                            >
-                                {link.title}
-                            </a>
-                        ))}
+                                    return (
+                                        <li key={product.title}>
+                                            <a
+                                                href={product.disabled ? undefined : product.href}
+                                                className={cn(
+                                                    "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                                                    product.disabled ? "text-muted-foreground hover:bg-transparent hover:text-muted-foreground" : "",
+                                                    isActive ? "bg-primary text-primary-foreground" : ""
+                                                )}
+                                            >
+                                                <div className="flex items-center text-sm font-medium leading-none">
+                                                    <span className="mr-2">{product.title}</span>
+                                                    {product.disabled && (
+                                                        <Badge
+                                                            radius="sm"
+                                                            className="h-5 px-1.5 text-xs font-medium"
+                                                        >
+                                                            SOON
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                                    {product.description}
+                                                </p>
+                                            </a>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </NavigationMenuContent>
                     </NavigationMenuItem>
-                )}
 
-                {assistant && (
+                    {/* Main Menu - Always shown */}
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>{assistant.title}</NavigationMenuTrigger>
+                        <NavigationMenuTrigger>{main.title}</NavigationMenuTrigger>
                         <NavigationMenuContent>
-                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                                {assistant.items?.map((page) => (
+                            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                <li className="row-span-3">
+                                    <NavigationMenuLink asChild>
+                                        <a
+                                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                                            href="/onboarding"
+                                        >
+                                            <img src='/images/launch.png' alt="Logo" />
+                                            <div className="mb-2 mt-4 text-lg font-medium">
+                                                Onboarding
+                                            </div>
+                                            <p className="text-sm leading-tight text-muted-foreground">
+                                                Walk through the process of setting up your Intune Assistant.
+                                            </p>
+                                        </a>
+                                    </NavigationMenuLink>
+                                </li>
+                                {main.items?.map((page) => (
                                     <ListItem key={page.title} {...page} />
                                 ))}
                             </ul>
                         </NavigationMenuContent>
                     </NavigationMenuItem>
-                )}
-                {resources && (
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger>{resources.title}</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                                {resources.items?.map((page) => (
-                                    <ListItem key={page.title} {...page} />
-                                ))}
-                            </ul>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                )}
-                {comparator && (
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger>{comparator.title}</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                                {comparator.items?.map((page) => (
-                                    <ListItem key={page.title} {...page} disabled={true}/>
-                                ))}
-                            </ul>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                )}
-                {migration && (
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger>{migration.title}</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                                {migration.items?.map((page) => (
-                                    <ListItem key={page.title} {...page} />
-                                ))}
-                            </ul>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                )}
-                {links && (
-                    <NavigationMenuItem>
-                        {links.map((link) => (
+
+                    {/* Rollout FAQ - Shown only in rollout context */}
+                    {rolloutFAQ && (
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>{rolloutFAQ.title}</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                    {rolloutFAQ.items?.map((page) => (
+                                        <ListItem key={page.title} {...page} />
+                                    ))}
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    )}
+
+                    {/* Rollout specific menu - Shown only in rollout context */}
+                    {rolloutSpecific && (
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>{rolloutSpecific.title}</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                    {rolloutSpecific.items?.map((page) => (
+                                        <ListItem key={page.title} {...page} />
+                                    ))}
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    )}
+
+                    {/* Assistant - Shown only in assistant context */}
+                    {assistant && (
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>{assistant.title}</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                    {assistant.items?.map((page) => (
+                                        <ListItem key={page.title} {...page} />
+                                    ))}
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    )}
+
+                    {/* Resources - Shown only in assistant context */}
+                    {resources && (
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>{resources.title}</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                    {resources.items?.map((page) => (
+                                        <ListItem key={page.title} {...page} />
+                                    ))}
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    )}
+
+                    {/* Comparator - Shown only in assistant context */}
+                    {comparator && (
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>{comparator.title}</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                    {comparator.items?.map((page) => (
+                                        <ListItem key={page.title} {...page} disabled={true} />
+                                    ))}
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    )}
+
+                    {/* Migration - Shown only in assistant context */}
+                    {migration && (
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>
+                                <a
+                                    href="/rollout"
+                                    className="inline-block mr-1"
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent dropdown from toggling
+                                        window.location.href = "/rollout";
+                                    }}
+                                >
+                                    {migration.title}
+                                </a>
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                    {migration.items?.map((page) => (
+                                        <ListItem key={page.title} {...page} />
+                                    ))}
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    )}
+
+                    {/* External links - Always shown */}
+                    {links && links.map((link) => (
+                        <NavigationMenuItem key={link.href}>
                             <a
-                                key={link.href}
                                 href={link.href}
                                 className={navigationMenuTriggerStyle()}
                                 {...(link.forceReload ? { "data-astro-reload": true } : {})}
                             >
                                 {link.title}
                             </a>
-                        ))}
-                    </NavigationMenuItem>
-                )}
-            </NavigationMenuList>
-        </NavigationMenu>
+                        </NavigationMenuItem>
+                    ))}
+                </NavigationMenuList>
+            </NavigationMenu>
+        </div>
     );
 }
 
@@ -249,6 +347,8 @@ const ListItem: React.FC<MenuItem> = ({
                 </p>
             </a>
         </li>
+
     );
 };
+
 ListItem.displayName = "ListItem";

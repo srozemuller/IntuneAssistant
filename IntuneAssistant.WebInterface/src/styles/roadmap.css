@@ -1,0 +1,155 @@
+.roadmap-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.roadmap-loading,
+.roadmap-error {
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+}
+
+.roadmap-error {
+    color: #d32f2f;
+}
+
+.roadmap-timeline {
+    position: relative;
+    margin: 40px 0;
+}
+
+.roadmap-timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e0e0e0;
+    transform: translateX(-50%);
+}
+
+.roadmap-item {
+    position: relative;
+    margin-bottom: 30px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    width: 45%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.roadmap-item::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.roadmap-item:nth-child(odd) {
+    margin-right: auto;
+}
+
+.roadmap-item:nth-child(odd)::after {
+    right: -36px;
+}
+
+.roadmap-item:nth-child(even) {
+    margin-left: auto;
+}
+
+.roadmap-item:nth-child(even)::after {
+    left: -36px;
+}
+
+.roadmap-item-done {
+    border-left: 4px solid #4caf50;
+}
+
+.roadmap-item-done::after {
+    background: #4caf50;
+}
+
+.roadmap-item-in_progress {
+    border-left: 4px solid #2196f3;
+}
+
+.roadmap-item-in_progress::after {
+    background: #2196f3;
+}
+
+.roadmap-item-todo,
+.roadmap-item-planned {
+    border-left: 4px solid #ff9800;
+}
+
+.roadmap-item-todo::after,
+.roadmap-item-planned::after {
+    background: #ff9800;
+}
+
+.roadmap-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.roadmap-item-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    background: #f5f5f5;
+}
+
+.roadmap-item-due-date {
+    font-size: 0.9rem;
+    color: #757575;
+    margin: 8px 0;
+}
+
+.roadmap-item-description {
+    font-size: 0.9rem;
+    margin-top: 10px;
+    white-space: pre-line;
+}
+
+.roadmap-iteration {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.roadmap-iteration:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Add progress indicator based on completion percentage */
+.roadmap-iteration .progress-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: rgba(var(--green), 0.05);
+    z-index: -1;
+    transition: width 0.5s ease;
+}
+
+@media (max-width: 768px) {
+    .roadmap-timeline::before {
+        left: 20px;
+    }
+
+    .roadmap-item {
+        width: calc(100% - 40px);
+        margin-left: 40px !important;
+    }
+
+    .roadmap-item::after {
+        left: -26px !important;
+    }
+}

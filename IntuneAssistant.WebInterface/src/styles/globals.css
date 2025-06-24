@@ -34,7 +34,17 @@
     --red: 239 68 68;
     --orange: 245 158 11;
     --grey: 107 114 128;
-    --logo-url: url('/src/icons/yellow.svg');
+    --logo-url: url('/src/icons/cflogo.svg');
+
+    /* Enhance glass effect variables for more contrast */
+    --glass-opacity: 0.9;
+    --glass-blur: 12px;
+    --glass-border-opacity: 0.25;
+    --glass-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.15), 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+
+    /* Darker gradient overlays for cards and UI elements */
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card) / 0.85));
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   }
 
   .dark {
@@ -66,6 +76,15 @@
     --red: 239 68 68;
     --orange: 245 158 11;
     --grey: 107 114 128;
+
+    /* Enhanced glass effect variables for dark mode */
+    --glass-opacity: 0.4;
+    --glass-border-opacity: 0.15;
+    --glass-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.35), 0 4px 8px -2px rgba(0, 0, 0, 0.25);
+
+    /* Darker gradient overlays for dark mode */
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card) / 0.75));
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
 
   }
 }
@@ -119,4 +138,72 @@ summary {
 .blur {
   filter: blur(5px);
   pointer-events: none;
+}
+
+/* Enhanced component styling for more depth */
+@layer components {
+  /* Card styling with more depth */
+  .bg-card,
+  .card,
+  [class*="card"] {
+    background: var(--gradient-card);
+    box-shadow: var(--card-shadow);
+    border-color: hsl(var(--border) / var(--glass-border-opacity));
+  }
+
+  /* Table styling with more depth */
+  table {
+    box-shadow: var(--glass-shadow);
+    border-color: hsl(var(--border) / var(--glass-border-opacity));
+  }
+
+  table thead tr {
+    background: hsl(var(--muted) / 0.8);
+    backdrop-filter: blur(var(--glass-blur));
+  }
+
+  table tbody tr:nth-child(odd) {
+    background: hsl(var(--card) / 0.5);
+  }
+
+  table tbody tr:nth-child(even) {
+    background: hsl(var(--card) / 0.7);
+  }
+
+  table tbody tr:hover {
+    background: hsl(var(--accent) / 0.15);
+    transition: background-color 0.2s ease;
+  }
+
+  /* Dialog and popover with more depth */
+  .bg-popover,
+  [class*="popover"] {
+    background: var(--gradient-card);
+    box-shadow: var(--card-shadow);
+  }
+
+  /* Input fields with subtle depth */
+  input,
+  select,
+  textarea {
+    background: hsl(var(--card) / 0.8);
+    border-color: hsl(var(--border) / 0.5);
+  }
+
+  /* Dialog content */
+  [role="dialog"] > div {
+    background: var(--gradient-card);
+    box-shadow: var(--card-shadow);
+  }
+
+  /* Any elements with border class */
+  .border {
+    border-color: hsl(var(--border) / 0.3);
+  }
+
+  /* Collapsible components */
+  .collapsible {
+    background: hsl(var(--card) / 0.9);
+    box-shadow: var(--card-shadow);
+  }
 }
