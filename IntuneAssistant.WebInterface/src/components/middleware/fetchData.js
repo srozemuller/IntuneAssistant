@@ -1,8 +1,15 @@
 import axios from 'axios';
 import { apiScope, msalInstance } from '@/authconfig';
-const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
+
+
+const createCancelTokenSource = () => axios.CancelToken.source();
+
+const authDataMiddleware = async (endpoint, method = 'GET', body = {}, cancelTokenSource = null) => {
     let formattedError = '';
     let consentUri = '';
+
+    // Create a cancellation token source if none provided
+    const source = cancelTokenSource || createCancelTokenSource();
 
     // Ensure MSAL is initialized
     await msalInstance.initialize();
@@ -49,15 +56,19 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
             'Use-Legacy-Credentials': useLegacyCredentials
         };
 
+        const requestConfig = {
+            headers,
+            cancelToken: source.token
+        };
+
         switch (method) {
             case 'GET':
-                response = await axios.get(endpoint, {headers} );
-
+                response = await axios.get(endpoint, requestConfig );
                 break;
             case 'POST':
                 response = await axios.post(endpoint, body, {
                     headers: {
-                        ...headers,
+                        ...requestConfig.headers,
                         'Content-Type': 'application/json',
                     },
                 });
@@ -68,6 +79,12 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
         }
         return response; // Return the full response object
     } catch (error) {
+        // Check if the request was cancelled
+        if (axios.isCancel(error)) {
+            console.log('Request canceled:', error.message);
+            throw { isCancelled: true, message: 'Request was cancelled' };
+        }
+
         if (error.response) {
             console.log('Error response:', error.response);
             if (error.response.data && error.response.data.message && error.response.data.message.includes("AADSTS65001")) {
@@ -109,4 +126,5 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}) => {
     }
 };
 
-export default authDataMiddleware;
+// Export both the middleware and the token source creator
+export { authDataMiddleware as default, createCancelTokenSource };

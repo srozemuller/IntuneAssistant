@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
-import authDataMiddleware from "@/components/middleware/fetchData";
-import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT} from "@/components/constants/apiUrls.js";
+import authDataMiddleware, { createCancelTokenSource } from '@/components/middleware/fetchData';
+
+import { ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/overview/columns.tsx";
 
 import { z } from "zod";
 import { assignmentsSchema, type Assignments } from "@/components/assignments/overview/schema";
-import {type GroupModel, groupSchema} from "@/schemas/groupSchema";
+import { type GroupModel, groupSchema } from "@/schemas/groupSchema";
 // Toast configuration
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,66 +23,162 @@ function AssignmentsPage() {
     const [tenantId, setTenantId] = useState<string>('');
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
 
-
-    const fetchData = async () => {
-        const toastId = toast.loading('Fetching assignments');
+    const fetchData = async (cancelSource = createCancelTokenSource()) => {
+        let toastId: ReturnType<typeof toast.loading> = null as any;
         try {
+            toastId = toast.loading(
+                <div className="flex items-center justify-between">
+                    <span>Fetching assignments...</span>
+                    <button
+                        className="ml-4 px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
+                        onClick={() => {
+                            cancelSource.cancel("User cancelled request");
+                            if (toastId) {
+                                toast.update(toastId, {
+                                    render: "Request cancelled by user",
+                                    type: "warning",
+                                    isLoading: false,
+                                    autoClose: toastDuration
+                                });
+                            }
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </div>,
+                { closeButton: false }
+            );
+
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
-            const response = await authDataMiddleware(ASSIGNMENTS_ENDPOINT);
 
+            // Properly pass the cancellation token source
+            const response = await authDataMiddleware(ASSIGNMENTS_ENDPOINT, 'GET', {}, cancelSource as any);
 
-            if (response.notOnboarded) {
-                // Show dialog instead of auto-redirecting
-                setTenantId(response.tenantId);
+            // Check if response exists and has custom properties
+            const responseData = response?.data;
+
+            // Handle custom properties that might be in the response data
+            if (responseData && responseData.notOnboarded) {
+                setTenantId(responseData.tenantId || '');
                 setShowOnboardingDialog(true);
                 setLoading(false);
+                toast.update(toastId, {
+                    render: 'Tenant not onboarded',
+                    type: 'warning',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
                 return;
             }
 
+            if (response && responseData) {
+                const rawDataStr = typeof responseData === 'string'
+                    ? responseData
+                    : JSON.stringify(responseData);
 
+                setRawData(rawDataStr);
+                console.log('Raw data:', rawDataStr);
 
-            const rawData = typeof response?.data === 'string' ? response.data : JSON.stringify(response?.data);
-            setRawData(rawData);
-            console.log('Raw data:', rawData);
-            const parsedData: Assignments[] = z.array(assignmentsSchema).parse(JSON.parse(rawData).data);
-            setData(parsedData);
+                const parsedJson = JSON.parse(rawDataStr);
+                const parsedData: Assignments[] = z.array(assignmentsSchema).parse(parsedJson.data);
+                setData(parsedData);
 
-            // Show toast message based on the status
-            const { message } = JSON.parse(rawData);
-            const status = JSON.parse(rawData).status.toLowerCase();
-            console.log('Status:', status);
-            if (status === 'success') {
-                toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
-            } else if (status === 'error') {
-                toast.update(toastId, { render: message, type: 'error', isLoading: false, autoClose: toastDuration });
-            } else if (status === 'warning') {
-                toast.update(toastId, { render: message, type: 'warning', isLoading: false, autoClose: toastDuration });
+                // Show toast message based on the status
+                const { message } = parsedJson;
+                const status = parsedJson.status.toLowerCase();
+                console.log('Status:', status);
+
+                // Always update the existing toast instead of creating a new one
+                toast.update(toastId, {
+                    render: message,
+                    type: status === 'success' ? 'success' :
+                        status === 'warning' ? 'warning' : 'error',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
             }
         } catch (error) {
             console.error('Error:', error);
-            const errorMessage = `Failed to assignments. ${(error as Error).message}`;
-            setError(errorMessage);
-            toast.update(toastId, { render: errorMessage, type: 'error', isLoading: false, autoClose: toastDuration });
-            throw new Error(errorMessage);
+            // Check if the request was cancelled
+            if (error && typeof error === 'object' && 'isCancelled' in error) {
+                // Only update if not already updated by the cancel button
+                if (toast.isActive(toastId)) {
+                    toast.update(toastId, {
+                        render: 'Request was cancelled',
+                        type: 'info',
+                        isLoading: false,
+                        autoClose: toastDuration
+                    });
+                }
+            } else {
+                const errorMessage = `Failed to fetch assignments. ${(error as Error).message}`;
+                setError(errorMessage);
+                toast.update(toastId, {
+                    render: errorMessage,
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+                throw new Error(errorMessage);
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        const hasOnboarded = sessionStorage.getItem('onboarded') === 'true';
-        if (hasOnboarded) {
-            fetchData();
+    const fetchGroupData = async (cancelSource = createCancelTokenSource()) => {
+        try {
+            const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource);
+
+            if (response && response.data) {
+                const rawData = typeof response.data === 'string'
+                    ? response.data
+                    : JSON.stringify(response.data);
+
+                const parsedJson = JSON.parse(rawData);
+                const parsedGroups: GroupModel[] = z.array(groupSchema).parse(parsedJson.data);
+                setGroupData(parsedGroups);
+            }
+        } catch (error) {
+            if (error && typeof error === 'object' && 'isCancelled' in error) {
+                console.log('Group data request was cancelled');
+            } else {
+                console.error('Error fetching group data:', error);
+            }
         }
+    };
+
+
+    useEffect(() => {
+            const assignmentsSource = createCancelTokenSource();
+            const groupsSource = createCancelTokenSource();
+
+            // Call fetch functions immediately (don't use nested functions)
+            fetchData(assignmentsSource);
+            fetchGroupData(groupsSource);
+
+            return () => {
+                assignmentsSource.cancel('Component unmounted');
+                groupsSource.cancel('Component unmounted');
+                console.log('Requests cancelled due to component unmount');
+            };
     }, []);
 
     return (
         <div className="container max-w-[95%] py-6">
             <ToastContainer autoClose={toastDuration} position={toastPosition}/>
-            <DataTable columns={columns} data={data} rawData={rawData} fetchData={fetchData} source="assignments"  />
+            <DataTable
+                columns={columns}
+                data={data}
+                rawData={rawData}
+                fetchData={fetchData}
+                source="assignments"
+                groupData={groupData}
+            />
         </div>
     );
 }
+
 export default withOnboardingCheck(AssignmentsPage);
