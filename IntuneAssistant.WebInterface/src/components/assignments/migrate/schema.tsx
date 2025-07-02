@@ -49,11 +49,11 @@ const migrationCheckResultSchema = z.object({
 
 const assignmentFilterSchema = z.object({
     id: z.string().nullable(),
-    displayName: z.string(),
-    description: z.string(),
-    platform: z.string(),
-    rule: z.string(),
-    assignmentFilterManagementType: z.string(),
+    displayName: z.string().nullable(),
+    description: z.string().nullable(),
+    platform: z.string().nullable(),
+    rule: z.string().nullable(),
+    assignmentFilterManagementType: z.string().nullable(),
 });
 
 const assignmentMigrationSchema = z.object({

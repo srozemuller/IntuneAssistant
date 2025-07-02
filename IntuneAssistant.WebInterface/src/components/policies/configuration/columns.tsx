@@ -57,7 +57,7 @@ export const columns: ColumnDef<Policy>[] = [
     {
         accessorKey: "policySubType",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="policySubType" />
+            <DataTableColumnHeader column={column} title="Type" />
         ),
         cell: ({ row }) => <div>{row.getValue("policySubType")}</div>,
     },

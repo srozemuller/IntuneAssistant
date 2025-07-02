@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import * as Sentry from "@sentry/astro";
 import { useUser } from "@/contexts/usercontext.tsx";
 import { FILTER_PLACEHOLDER } from "@/components/constants/appConstants";
-import authDataMiddleware from "@/components/middleware/fetchData";
+import authDataMiddleware, {createCancelTokenSource} from "@/components/middleware/fetchData";
 import {
     ASSIGNMENTS_MIGRATE_ENDPOINT,
     EXPORT_ENDPOINT
@@ -23,6 +23,7 @@ import type {policySchema} from "@/components/policies/configuration/schema.tsx"
 import { SelectAllButton } from "@/components/button-selectall.tsx";
 import { Progress } from "@/components/ui/progress";
 
+import { showLoadingToast } from '@/utils/toastUtils';
 
 // Toast configuration
 import { ToastContainer, toast } from 'react-toastify';
@@ -94,6 +95,8 @@ export function DataTableToolbar({
     const [completedMigrations, setCompletedMigrations] = useState(0);
 
     const { userClaims } = useUser();
+
+    const [cancelSource, setCancelSource] = useState<ReturnType<typeof createCancelTokenSource> | null>(null);
 
     const hasReplaceWithNoAssignments = table.getFilteredSelectedRowModel().rows.some(
         (selectedRow) => {
@@ -283,7 +286,7 @@ export function DataTableToolbar({
         toast.success(`Backup created with ${backupRows.length} entries for ${backedUpPolicyIds.size} policies`);
     };
 
-    const handleBackupExport = async () => {
+    const handleBackupExport = async (cancelSource = createCancelTokenSource()) => {
         const selectedRows = table.getSelectedRowModel().rows;
         const uniquePolicies = [...new Map(selectedRows.map(row =>
             [row.original.policy?.id, { id: row.original.policy?.id, type: row.original.policy?.policyType }]
@@ -307,7 +310,7 @@ export function DataTableToolbar({
         for (const [index, policy] of uniquePolicies.entries()) {
             if (policy.id && policy.type) {
                 try {
-                    const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.type}/${policy.id}`, 'GET');
+                    const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.type}/${policy.id}`, 'GET', {}, cancelSource as any);
                     if (response && response.data) {
                         const sourceFileName = `${policy.id}_source.json`;
                         const sourceFileContent = JSON.stringify(response.data, null, 2);
@@ -394,89 +397,75 @@ export function DataTableToolbar({
         saveAs(blob, "assignment_migration_template.csv");
     };
 
-    const handleMigrate = async () => {
+    const handleMigrate = async (cancelSource = createCancelTokenSource()) => {
+        const source = createCancelTokenSource();
+        setCancelSource(source); // Set the cancelSource state
+        const toastId = showLoadingToast("Migrating assignments...", () => {
+            cancelSource.cancel("Migration canceled by user");
+        });
+
         try {
             const selectedRows = table.getSelectedRowModel().rows;
             if (selectedRows.length === 0) {
-                toast.warning("Please select rows to migrate");
+                toast.update(toastId, {
+                    render: "Please select rows to migrate",
+                    type: "warning",
+                    isLoading: false,
+                    autoClose: toastDuration,
+                });
                 return;
             }
-
-            // Store table state for pagination preservation
-            const tableState = {
-                pagination: { ...table.getState().pagination },
-                sorting: [...table.getState().sorting],
-                columnFilters: [...table.getState().columnFilters],
-                globalFilter: table.getState().globalFilter
-            };
 
             const dataToExport = selectedRows.map(row => row.original);
             const totalRows = selectedRows.length;
 
-            // Initialize progress tracking
             setIsMigrating(true);
             setMigrationProgress(0);
             setTotalMigrations(totalRows);
             setCompletedMigrations(0);
 
-            // Step 1: Migration phase - 50% of progress bar
             const dataString = JSON.stringify(dataToExport);
-            const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', dataString);
+            const response = await authDataMiddleware(`${ASSIGNMENTS_MIGRATE_ENDPOINT}`, 'POST', dataString, cancelSource as any);
 
             if (response?.status === 200) {
-                // First phase complete (migration)
-                setMigrationProgress(50);
-                setCompletedMigrations(Math.floor(totalRows / 2));
-
-                // Fix the TypeScript error related to possibly undefined policy IDs
-                const uniquePolicyIds: string[] = Array.from(new Set(
-                    selectedRows
-                        .map(row => row.original.policy?.id)
-                        .filter((id): id is string => Boolean(id))
-                ));
-
-                // Step 2: Validation phase - remaining 50%
-                let validatedPolicies = 0;
-                for (const policyId of uniquePolicyIds) {
-                    // Call the validateAndUpdateTable function from props
-                    await validateAndUpdateTable(policyId);
-
-                    validatedPolicies++;
-
-                    // Calculate progress (50-100%)
-                    const validationProgress = Math.round((validatedPolicies / uniquePolicyIds.length) * 50);
-                    setMigrationProgress(50 + validationProgress);
-                    setCompletedMigrations(Math.floor(totalRows * (0.5 + validatedPolicies / uniquePolicyIds.length / 2)));
-
-                    // Small delay for UI updates
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                }
-
-                // Reapply table state to preserve pagination
-                if (tableState.globalFilter) {
-                    table.setGlobalFilter(tableState.globalFilter);
-                }
-                table.setColumnFilters(tableState.columnFilters);
-                table.setSorting(tableState.sorting);
-                table.setPagination(tableState.pagination);
-
                 setMigrationProgress(100);
                 setCompletedMigrations(totalRows);
                 setMigrationStatus('success');
-                toast.success("Migration and validation completed successfully.");
+                toast.update(toastId, {
+                    render: "Migration completed successfully",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: toastDuration,
+                });
             } else {
                 setMigrationStatus('failed');
-                toast.error("Failed to migrate selected rows.");
+                toast.update(toastId, {
+                    render: "Failed to migrate selected rows",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: toastDuration,
+                });
             }
         } catch (error: unknown) {
             setMigrationStatus('failed');
-            if (typeof error === 'object' && error !== null && 'consentUri' in error) {
-                window.location.href = (error as { consentUri: string }).consentUri;
+            if (cancelSource.token.reason?.message === "Migration canceled by user") {
+                toast.update(toastId, {
+                    render: "Migration canceled by user",
+                    type: "warning",
+                    isLoading: false,
+                    autoClose: toastDuration,
+                });
             } else {
-                toast.error(`Migration error: ${error instanceof Error ? error.message : "Unknown error"}`);
+                toast.update(toastId, {
+                    render: `Migration error: ${error instanceof Error ? error.message : "Unknown error"}`,
+                    type: "error",
+                    isLoading: false,
+                    autoClose: toastDuration,
+                });
             }
         } finally {
             setIsMigrating(false);
+            setCancelSource(null); // Clear the cancelSource after migration
         }
     };
 
@@ -624,6 +613,14 @@ export function DataTableToolbar({
                                 ? "Please wait while your assignments are being migrated..."
                                 : "Please wait while your assignments are being validated..."}
                         </p>
+                        <div className="mt-4 flex justify-end">
+                            <button
+                                onClick={() => cancelSource?.cancel("Migration canceled by user")}
+                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

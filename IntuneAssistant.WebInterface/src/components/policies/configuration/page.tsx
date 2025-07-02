@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
-import authDataMiddleware from "@/components/middleware/fetchData";
+import authDataMiddleware, {createCancelTokenSource} from "@/components/middleware/fetchData";
 import { CONFIGURATION_POLICIES_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/configuration/columns.tsx";
 import { z } from "zod";
@@ -10,30 +10,42 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import {withOnboardingCheck} from "@/components/with-onboarded-check.tsx";
-
+import { showLoadingToast } from '@/utils/toastUtils';
 
 function ConfigPoliciesPage() {
     const [data, setData] = useState<Policy[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
+    const [tenantId, setTenantId] = useState<string>('');
+
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
     const [backupStatus, setBackupStatus] = useState<Record<string, boolean>>({});
     const source = 'Configuration Policies';
 
-    const fetchData = async () => {
-        const toastId = toast.loading(`Fetching ${source}`);
+    const fetchData = async (cancelSource = createCancelTokenSource()) => {
+        const toastId = showLoadingToast(`Fetching ${source}`, () => {
+            cancelSource.cancel("User cancelled request");
+        });
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
-            const response = await authDataMiddleware(CONFIGURATION_POLICIES_ENDPOINT);
+            const response = await authDataMiddleware(CONFIGURATION_POLICIES_ENDPOINT, 'GET', {}, cancelSource as any);
 
-            if (response.notOnboarded) {
-                // Show dialog instead of auto-redirecting
-                setTenantId(response.tenantId);
+            // Check if response exists and has custom properties
+            const responseData = response?.data;
+
+            if (responseData && responseData.notOnboarded) {
+                setTenantId(responseData.tenantId || '');
                 setShowOnboardingDialog(true);
                 setLoading(false);
+                toast.update(toastId, {
+                    render: 'Tenant not onboarded',
+                    type: 'warning',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
                 return;
             }
 
@@ -75,7 +87,14 @@ function ConfigPoliciesPage() {
     };
 
     useEffect(() => {
-        fetchData();
+        const cancelSource = createCancelTokenSource();
+
+        fetchData(cancelSource);
+
+        return () => {
+            // Cancel the API call when the component unmounts
+            cancelSource.cancel("Component unmounted or user navigated away");
+        };
     }, []);
 
     return (

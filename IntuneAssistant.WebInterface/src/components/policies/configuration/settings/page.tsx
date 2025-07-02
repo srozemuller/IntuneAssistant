@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
-import authDataMiddleware from "@/components/middleware/fetchData";
+import authDataMiddleware, {createCancelTokenSource} from "@/components/middleware/fetchData";
 import {
     CONFIGURATION_POLICIES_ENDPOINT,
     GROUP_POLICY_SETTINGS_ENDPOINT,
@@ -14,6 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import {withOnboardingCheck} from "@/components/with-onboarded-check.tsx";
+import { showLoadingToast } from '@/utils/toastUtils';
 
 function ConfigPolicySettingsPage() {
     const [data, setData] = useState<PolicySettings[]>([]);
@@ -21,17 +22,22 @@ function ConfigPolicySettingsPage() {
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
+    const [tenantId, setTenantId] = useState<string>('');
 
-    const fetchData = async () => {
-        const toastId = toast.loading('Fetching configuration policy settings');
+    const source = 'Configuration Policy settings';
+
+    const fetchData = async (cancelSource = createCancelTokenSource()) => {
+        const toastId = showLoadingToast(`Fetching ${source}`, () => {
+            cancelSource.cancel("User cancelled request");
+        });
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
 
             const [policyResponse, groupPolicyResponse] = await Promise.all([
-                authDataMiddleware(POLICY_SETTINGS_ENDPOINT, 'GET'),
-                authDataMiddleware(GROUP_POLICY_SETTINGS_ENDPOINT, 'GET')
+                authDataMiddleware(POLICY_SETTINGS_ENDPOINT, 'GET', {}, cancelSource as any),
+                authDataMiddleware(GROUP_POLICY_SETTINGS_ENDPOINT, 'GET', {}, cancelSource as any)
             ]);
 
             if (!policyResponse || !groupPolicyResponse) {
@@ -39,11 +45,19 @@ function ConfigPolicySettingsPage() {
             }
             console.log(policyResponse)
 
-            if (policyResponse.notOnboarded) {
-                // Show dialog instead of auto-redirecting
-                setTenantId(response.tenantId);
+            // Check if response exists and has custom properties
+            const responseData = policyResponse?.data;
+
+            if (responseData && responseData.notOnboarded) {
+                setTenantId(responseData.tenantId || '');
                 setShowOnboardingDialog(true);
                 setLoading(false);
+                toast.update(toastId, {
+                    render: 'Tenant not onboarded',
+                    type: 'warning',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
                 return;
             }
 
@@ -83,7 +97,14 @@ function ConfigPolicySettingsPage() {
     };
 
     useEffect(() => {
-        fetchData();
+        const cancelSource = createCancelTokenSource();
+
+        fetchData(cancelSource);
+
+        return () => {
+            // Cancel the API call when the component unmounts
+            cancelSource.cancel("Component unmounted or user navigated away");
+        };
     }, []);
 
 

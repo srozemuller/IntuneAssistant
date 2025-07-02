@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
-import authDataMiddleware from "@/components/middleware/fetchData";
+import authDataMiddleware, {createCancelTokenSource} from "@/components/middleware/fetchData";
 import { CA_POLICIES_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/policies/ca/columns.tsx";
 
@@ -14,6 +14,7 @@ import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 
 
 import { withOnboardingCheck } from "@/components/with-onboarded-check.tsx";
+import {showLoadingToast} from "@/utils/toastUtils.tsx";
 
 
 function CaPage() {
@@ -21,23 +22,37 @@ function CaPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
+    const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
+    const [tenantId, setTenantId] = useState<string>('');
 
-    const fetchData = async () => {
-        const toastId = toast.loading('Fetching conditional access policies');
+    const source = "CA Policies";
+    const fetchData = async (cancelSource = createCancelTokenSource()) => {
+        const toastId = showLoadingToast(`Fetching ${source}`, () => {
+            cancelSource.cancel("User cancelled request");
+        });
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
-            const response = await authDataMiddleware(CA_POLICIES_ENDPOINT);
+            const response = await authDataMiddleware(CA_POLICIES_ENDPOINT, 'GET', {}, cancelSource as any);
             const rawData = typeof response?.data === 'string' ? response.data : JSON.stringify(response?.data);
 
-            if (response.notOnboarded) {
-                // Show dialog instead of auto-redirecting
-                setTenantId(response.tenantId);
+            // Check if response exists and has custom properties
+            const responseData = response?.data;
+
+            if (responseData && responseData.notOnboarded) {
+                setTenantId(responseData.tenantId || '');
                 setShowOnboardingDialog(true);
                 setLoading(false);
+                toast.update(toastId, {
+                    render: 'Tenant not onboarded',
+                    type: 'warning',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
                 return;
             }
+
 
 
             setRawData(rawData);
@@ -70,7 +85,14 @@ function CaPage() {
     };
 
     useEffect(() => {
-        fetchData();
+        const cancelSource = createCancelTokenSource();
+
+        fetchData(cancelSource);
+
+        return () => {
+            // Cancel the API call when the component unmounts
+            cancelSource.cancel("Component unmounted or user navigated away");
+        };
     }, []);
 
     return (

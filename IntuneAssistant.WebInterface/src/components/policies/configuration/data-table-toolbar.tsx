@@ -13,7 +13,7 @@ import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import authDataMiddleware from "@/components/middleware/fetchData";
 import { EXPORT_ENDPOINT } from "@/components/constants/apiUrls.js"
 import { XIcon, DownloadCloudIcon, UploadCloudIcon } from "lucide-react";
-import { platform } from "@/components/constants/fixed-values.tsx";
+import { platform, policySubType} from "@/components/constants/fixed-values.tsx";
 import { DataTableExport } from "@/components/data-table-export";
 import { DataTableRefresh } from "@/components/data-table-refresh";
 import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
@@ -30,7 +30,7 @@ interface TData {
 
 interface DataTableToolbarProps<TData> {
     table: Table<TData>;
-    rawData: string;
+    rawData: string | Array<any> | { data: Array<any> };
     fetchData: () => Promise<void>;
     source: string;
     backupStatus: Record<string, boolean>;
@@ -89,7 +89,7 @@ export function DataTableToolbar({
                 parsedRawData = rawData;
             } else if (rawData && typeof rawData === 'object') {
                 // If rawData is already an object, extract the data property
-                parsedRawData = rawData.data || [];
+                parsedRawData = (rawData as {data?: any[]}).data || [];
             }
 
             // Ensure parsedRawData is an array at this point
@@ -279,6 +279,13 @@ export function DataTableToolbar({
                         column={table.getColumn("platforms")}
                         title="Platform"
                         options={platform}
+                    />
+                )}
+                {table.getColumn("policySubType") && (
+                    <DataTableFacetedFilter
+                        column={table.getColumn("policySubType")}
+                        title="Type"
+                        options={policySubType}
                     />
                 )}
                 {isFiltered && (
