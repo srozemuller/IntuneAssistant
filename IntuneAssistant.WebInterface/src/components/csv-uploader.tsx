@@ -2,10 +2,15 @@ import React, { useState, useRef, useCallback } from 'react';
 import Papa from 'papaparse';
 import { CrossIcon, DeleteIcon, UploadCloudIcon } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog.tsx";
 import { Progress } from "@/components/ui/progress.tsx";
+import {showLoadingToast} from "@/utils/toastUtils.tsx";
+
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 
 interface CsvUploaderProps {
     setRows: (rows: object[]) => void;
@@ -30,7 +35,6 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows, clearParentData }) =
         setFile(selectedFile);
         setIsProcessing(true);
         setProcessingProgress(10); // Start with some initial progress
-        toast('Uploading CSV file...');
 
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -348,23 +352,6 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows, clearParentData }) =
                     )}
                 </div>
             )}
-
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-                toastClassName={() =>
-                    "bg-gray-500 text-white text-sm p-3 rounded-md shadow-md relative"
-                }
-                className="z-50"
-            />
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>

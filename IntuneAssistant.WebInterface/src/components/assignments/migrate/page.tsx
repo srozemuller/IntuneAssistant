@@ -2,7 +2,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { DataTable } from './data-table.tsx';
 import CSVUploader from "@/components/csv-uploader.tsx";
-import authDataMiddleware from "@/components/middleware/fetchData";
+import authDataMiddleware, { createCancelTokenSource } from "@/components/middleware/fetchData";
 import {
     ASSIGNMENTS_COMPARE_ENDPOINT,
     ASSIGNMENTS_FILTERS_ENDPOINT,
@@ -20,9 +20,11 @@ import type { filterSchema } from "@/schemas/filters.tsx";
 // Toast configuration
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+import { showLoadingToast } from '@/utils/toastUtils';
+
 
 import { withOnboardingCheck } from "@/components/with-onboarded-check.tsx";
-import {toastDuration} from "@/config/toastConfig.ts";
 
 
 function MigrationPage() {
@@ -31,182 +33,113 @@ function MigrationPage() {
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
     const [rows, setRows] = useState<object[]>([]);
-    const [jsonString, setJsonString] = useState<string>('');
     const [groups, setGroups] = useState<z.infer<typeof groupsSchema>[]>([]);
     const [filters, setFilters] = useState<z.infer<typeof filterSchema>[]>([]);
-    const [isAnimating, setIsAnimating] = useState(false);
-    const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
-    const [tenantId, setTenantId] = useState<string>('');
     const [backupStatus, setBackupStatus] = useState<Record<string, boolean>>({});
 
-    // Add a useMemo to recreate columns when backupStatus changes
     const tableColumns = useMemo(
         () => columns(groups, filters, backupStatus, setData),
         [groups, filters, backupStatus, setData]
     );
 
-    // Add a function to clear all data states
     const clearAllData = () => {
         setData([]);
         setRawData('');
         setBackupStatus({});
         setRows([]);
-        // Clear any other data states that should be reset
     };
 
-
-    const fetchData = async () => {
-        const toastId = toast.loading(`Loading migration config`);
-        try {
-            setError('');
-            setData([]);
-            const sanitizedRows = rows.map(row => {
-                // Define sanitizedRow with an index signature
-                const sanitizedRow: { [key: string]: any } = { ...row };
-                for (const key in sanitizedRow) {
-                    // Replace empty strings with null
-                    if (sanitizedRow[key] === '') {
-                        sanitizedRow[key] = null;
-                    }
-                    // Clean strings by trimming and removing trailing newlines
-                    else if (typeof sanitizedRow[key] === 'string') {
-                        sanitizedRow[key] = sanitizedRow[key].trim().replace(/\n$/, '');
-                    }
-                }
-                return sanitizedRow;
-            });
-            const jsonString = JSON.stringify(sanitizedRows);
-            const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString);
-
-            // Fix the JSON parsing error - handle the response data properly
-            let rawData;
-            if (response?.data) {
-                // Check if data is already an object or a string that needs parsing
-                if (typeof response.data === 'string') {
-                    rawData = JSON.parse(response.data);
-                } else if (response.data.data) {
-                    // If response.data.data exists, properly handle it
-                    rawData = typeof response.data.data === 'string'
-                        ? JSON.parse(response.data.data)
-                        : response.data.data;
-                } else {
-                    // Fallback to the whole response.data object
-                    rawData = response.data;
-                }
-                setRawData(JSON.stringify(rawData, null, 2));
-            }
-
-            if (response?.notOnboarded) {
-                setTenantId(response.tenantId);
-                setShowOnboardingDialog(true);
-                setLoading(false);
-                return;
-            }
-
-            // Make sure we have valid data to process
-            if (!rawData || !Array.isArray(rawData)) {
-                throw new Error('Invalid response format');
-            }
-
-            // Ensure filterToMigrate properties are not null
-            const sanitizedData = rawData.map((item: any) => {
-                if (item.filterToMigrate) {
-                    item.filterToMigrate.displayName = item.filterToMigrate.displayName ?? '';
-                    item.filterToMigrate.description = item.filterToMigrate.description ?? '';
-                    item.filterToMigrate.platform = item.filterToMigrate.platform ?? '';
-                    item.filterToMigrate.rule = item.filterToMigrate.rule ?? '';
-                    item.filterToMigrate.assignmentFilterManagementType = item.filterToMigrate.assignmentFilterManagementType ?? '';
-                }
-                return item;
-            });
-
-            const parsedData: AssignmentsMigrationModel[] = z.array(assignmentMigrationSchema).parse(sanitizedData);
-            setData(parsedData);
-
-            // Extract message and status safely
-            let message = 'Operation completed';
-            let status = 'success';
-
-            if (rawData.message) {
-                message = rawData.message;
-            }
-
-            if (rawData.status) {
-                status = typeof rawData.status === 'string' ? rawData.status.toLowerCase() : 'success';
-            }
-
-            console.log('Status:', status);
-
-            // Show toast message based on the status
-            if (status === 'success') {
-                toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
-            } else if (status === 'error') {
-                toast.update(toastId, { render: message, type: 'error', isLoading: false, autoClose: toastDuration });
-            } else if (status === 'warning') {
-                toast.update(toastId, { render: message, type: 'warning', isLoading: false, autoClose: toastDuration });
-            }
-
-        } catch (error) {
-            console.error('Error:', error);
-            const errorMessage = `Failed to load assignments. ${(error as Error).message}`;
-            setError(errorMessage);
-            toast.update(toastId, { render: errorMessage, type: 'error', isLoading: false, autoClose: toastDuration });
-        } finally {
-            setLoading(false);
-        }
+    const fetchGroups = async (cancelSource: any) => {
+        const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource);
+        return response?.data || [];
     };
 
-    // Need to fetch all groups because we need to compare the targetIds in the current assignments
-    const fetchGroups = async () => {
-        try {
-            const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET');
-            const groupsData = response?.data || [];
-            setGroups(groupsData);
-        } catch (error) {
-            console.error('Error fetching groups:', error);
-        }
+    const fetchFilters = async (cancelSource: any) => {
+        const response = await authDataMiddleware(ASSIGNMENTS_FILTERS_ENDPOINT, 'GET', {}, cancelSource);
+        return response?.data || [];
     };
 
-    const fetchFilters = async () => {
-        try {
-            const response = await authDataMiddleware(ASSIGNMENTS_FILTERS_ENDPOINT, 'GET');
-            const filtersData = response?.data || [];
-            setFilters(filtersData);
-        } catch (error) {
-            console.error('Error fetching filters:', error);
-        }
+    const fetchData = async (cancelSource: any) => {
+        const sanitizedRows = rows.map(row => {
+            const sanitizedRow: { [key: string]: any } = { ...row };
+            for (const key in sanitizedRow) {
+                if (sanitizedRow[key] === '') {
+                    sanitizedRow[key] = null;
+                } else if (typeof sanitizedRow[key] === 'string') {
+                    sanitizedRow[key] = sanitizedRow[key].trim().replace(/\n$/, '');
+                }
+            }
+            return sanitizedRow;
+        });
+        const jsonString = JSON.stringify(sanitizedRows);
+        const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString, cancelSource);
+        return response?.data || [];
     };
 
     useEffect(() => {
         if (rows.length > 0) {
+            const cancelSource = createCancelTokenSource();
+            const toastId = showLoadingToast('Fetching migration information', () => {
+                cancelSource.cancel('User canceled all requests');
+            });
+
             const fetchAllData = async () => {
-                const toastId = toast.loading('Fetching migration info...');
                 try {
-                    await fetchGroups(); // Wait for fetchGroups to complete
-                    toast.update(toastId, { render: 'Fetching groups completed', type: 'info', isLoading: true });
+                    const [groupsData, filtersData, migrationData] = await Promise.all([
+                        fetchGroups(cancelSource),
+                        fetchFilters(cancelSource),
+                        fetchData(cancelSource)
+                    ]);
 
-                    await fetchFilters(); // Wait for fetchFilters to complete
-                    toast.update(toastId, { render: 'Fetching filters completed', type: 'info', isLoading: true });
+                    setGroups(groupsData);
+                    setFilters(filtersData);
+                    setData(z.array(assignmentMigrationSchema).parse(migrationData));
 
-                    await fetchData(); // Fetch migration data
-                    toast.update(toastId, { render: 'Fetching migration data completed', type: 'success', isLoading: false, autoClose: toastDuration });
+                    toast.update(toastId, {
+                        render: 'Fetching migration data completed',
+                        type: 'success',
+                        isLoading: false,
+                        autoClose: toastDuration
+                    });
                 } catch (error) {
-                    console.error('Error fetching data:', error);
-                    toast.update(toastId, { render: `Error fetching data: ${(error as Error).message}`, type: 'error', isLoading: false, autoClose: toastDuration });
+                    if (error.message === 'User canceled all requests') {
+                        console.log('All requests canceled by user');
+                        toast.update(toastId, {
+                            render: 'Fetching canceled by user',
+                            type: 'warning',
+                            isLoading: false,
+                            autoClose: toastDuration
+                        });
+                    } else {
+                        console.error('Error fetching data:', error);
+                        toast.update(toastId, {
+                            render: `Error fetching data: ${(error as Error).message}`,
+                            type: 'error',
+                            isLoading: false,
+                            autoClose: toastDuration
+                        });
+                    }
+                } finally {
+                    setLoading(false);
                 }
             };
 
             fetchAllData();
+
+            return () => {
+                cancelSource.cancel('Component unmounted or user navigated away');
+            };
         }
     }, [rows]);
+
     return (
         <div className="container max-w-[95%] py-6">
+            <ToastContainer autoClose={toastDuration} position={toastPosition}/>
             <CSVUploader
                 setRows={setRows}
                 clearParentData={clearAllData}
             />
             <DataTable
-                rowClassName={isAnimating ? 'fade-to-normal' : ''}
                 columns={tableColumns}
                 data={data}
                 rawData={rawData}
@@ -215,10 +148,11 @@ function MigrationPage() {
                 setTableData={setData}
                 backupStatus={backupStatus}
                 setBackupStatus={setBackupStatus}
-                groupData={groups || []} // Pass groups as groupData
-                filters={filters || []}  // Pass filters
+                groupData={groups || []}
+                filters={filters || []}
             />
         </div>
     );
 }
+
 export default withOnboardingCheck(MigrationPage);

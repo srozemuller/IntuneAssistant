@@ -73,6 +73,14 @@ const authDataMiddleware = async (endpoint, method = 'GET', body = {}, cancelTok
                     },
                 });
                 break;
+            case 'PATCH':
+                response = await axios.patch(endpoint, body, {
+                    headers: {
+                        ...requestConfig.headers,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                break;
             // Add more cases for other HTTP methods as needed
             default:
                 throw new Error(`Unsupported method: ${method}`);

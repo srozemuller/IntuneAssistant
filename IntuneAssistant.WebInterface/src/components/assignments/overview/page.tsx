@@ -12,6 +12,8 @@ import { type GroupModel, groupSchema } from "@/schemas/groupSchema";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
+import { showLoadingToast } from '@/utils/toastUtils';
+
 import { withOnboardingCheck } from "@/components/with-onboarded-check.tsx";
 
 function AssignmentsPage() {
@@ -26,28 +28,9 @@ function AssignmentsPage() {
     const fetchData = async (cancelSource = createCancelTokenSource()) => {
         let toastId: ReturnType<typeof toast.loading> = null as any;
         try {
-            toastId = toast.loading(
-                <div className="flex items-center justify-between">
-                    <span>Fetching assignments...</span>
-                    <button
-                        className="ml-4 px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
-                        onClick={() => {
-                            cancelSource.cancel("User cancelled request");
-                            if (toastId) {
-                                toast.update(toastId, {
-                                    render: "Request cancelled by user",
-                                    type: "warning",
-                                    isLoading: false,
-                                    autoClose: toastDuration
-                                });
-                            }
-                        }}
-                    >
-                        Cancel
-                    </button>
-                </div>,
-                { closeButton: false }
-            );
+            const toastId = showLoadingToast("Fetching assignments", () => {
+                cancelSource.cancel("User cancelled request");
+            });
 
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
@@ -130,7 +113,7 @@ function AssignmentsPage() {
 
     const fetchGroupData = async (cancelSource = createCancelTokenSource()) => {
         try {
-            const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource);
+            const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource as any);
 
             if (response && response.data) {
                 const rawData = typeof response.data === 'string'

@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
-import authDataMiddleware from "@/components/middleware/fetchData";
+import authDataMiddleware, {createCancelTokenSource} from "@/components/middleware/fetchData";
 import { ASSIGNMENTS_APPS_ENDPOINT, GROUPS_ENDPOINT } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/apps/columns.tsx";
 import { z } from "zod";
 import { assignmentSchema, type Assignment } from "@/components/assignments/apps/schema";
 import { type GroupModel, groupSchema } from "@/schemas/groupSchema";
+
+import { withOnboardingCheck } from "@/components/with-onboarded-check.tsx";
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
-import { withOnboardingCheck } from "@/components/with-onboarded-check.tsx";
+import { showLoadingToast } from '@/utils/toastUtils';
+
+
+interface AssignmentsResponse {
+    notOnboarded?: boolean;
+    tenantId?: string;
+    data?: any;
+    message?: string;
+    status?: string;
+}
 
 function AppAssignmentsPage() {
     const [data, setData] = useState<Assignment[]>([]);
@@ -20,19 +32,31 @@ function AppAssignmentsPage() {
     const [tenantId, setTenantId] = useState<string>('');
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
 
-    const fetchData = async () => {
-        const toastId = toast.loading('Fetching assignments');
+    const fetchData = async (cancelSource = createCancelTokenSource()) => {
+        const toastId = showLoadingToast("Fetching app assignments", () => {
+            cancelSource.cancel("User cancelled request");
+        });
+
         try {
             setLoading(true);
             setError(''); // Reset the error state to clear previous errors
             setData([]); // Clear the table data
-            const response = await authDataMiddleware(ASSIGNMENTS_APPS_ENDPOINT);
+            const response = await authDataMiddleware(ASSIGNMENTS_APPS_ENDPOINT, 'GET', {}, cancelSource as any);
 
-            if (response.notOnboarded) {
-                // Show dialog instead of auto-redirecting
-                setTenantId(response.tenantId);
+            // Check if response exists and has custom properties
+            const responseData = response?.data;
+
+            // Handle custom properties that might be in the response data
+            if (responseData && responseData.notOnboarded) {
+                setTenantId(responseData.tenantId || '');
                 setShowOnboardingDialog(true);
                 setLoading(false);
+                toast.update(toastId, {
+                    render: 'Tenant not onboarded',
+                    type: 'warning',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
                 return;
             }
 
@@ -51,7 +75,7 @@ function AppAssignmentsPage() {
                 .map(assignment => assignment.targetId))];
             // Send unique targetIds to GROUPS_ENDPOINT
             console.log('Unique targetIds:', uniqueTargetIds);
-            const groupResponse = await authDataMiddleware(GROUPS_ENDPOINT, 'POST', uniqueTargetIds);
+            const groupResponse = await authDataMiddleware(GROUPS_ENDPOINT, 'POST', uniqueTargetIds, cancelSource as any);
             const rawGroupData = typeof groupResponse?.data === 'string'
                 ? groupResponse.data
                 : JSON.stringify(groupResponse?.data);
@@ -85,9 +109,15 @@ function AppAssignmentsPage() {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        const cancelSource = createCancelTokenSource();
 
+        fetchData(cancelSource);
+
+        return () => {
+            // Cancel the API call when the component unmounts
+            cancelSource.cancel("Component unmounted or user navigated away");
+        };
+    }, []);
 
     return (
         <div className="container max-w-[95%] py-6">
