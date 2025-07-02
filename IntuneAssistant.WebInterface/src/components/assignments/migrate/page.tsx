@@ -85,15 +85,21 @@ function MigrationPage() {
 
             const fetchAllData = async () => {
                 try {
-                    const [groupsData, filtersData, migrationData] = await Promise.all([
+                    const [groupsData, filtersData, migrationResponse] = await Promise.all([
                         fetchGroups(cancelSource),
                         fetchFilters(cancelSource),
                         fetchData(cancelSource)
                     ]);
 
+                    // Extract the `data` key from the API response
+                    const migrationData = migrationResponse?.data || [];
+                    console.log('Migration data:', migrationData);
+                    // Parse the extracted data
+                    const parsedMigrationData = z.array(assignmentMigrationSchema).parse(migrationData);
+
                     setGroups(groupsData);
                     setFilters(filtersData);
-                    setData(z.array(assignmentMigrationSchema).parse(migrationData));
+                    setData(parsedMigrationData);
 
                     toast.update(toastId, {
                         render: 'Fetching migration data completed',
