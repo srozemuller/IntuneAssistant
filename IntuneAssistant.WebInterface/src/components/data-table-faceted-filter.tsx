@@ -26,8 +26,8 @@ interface DataTableFacetedFilterProps<TData, TValue> {
     options: Array<{
         value: string | boolean;
         label: string;
-        icon: React.ComponentType<{ className?: string }> | React.ForwardRefExoticComponent<any>;
-        color: string
+        icon?: React.ComponentType<{ className?: string }> | React.ForwardRefExoticComponent<any>;
+        color?: string
     }>;
 }
 export function DataTableFacetedFilter<TData, TValue>({
