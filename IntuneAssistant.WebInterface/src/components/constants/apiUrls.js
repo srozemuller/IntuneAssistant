@@ -17,6 +17,7 @@ export const EXPORT_ENDPOINT = `${API_BASE_URL}/export`;
 export const CONFIGURATION_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/configuration`;
 export const CA_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/ca`;
 export const ASSIGNMENTS_ENDPOINT = `${API_BASE_URL}/assignments`;
+export const ASSIGNMENTS_GROUP_ENDPOINT = `${API_BASE_URL}/assignments/groups`;
 export const ASSIGNMENTS_FILTERS_ENDPOINT = `${API_BASE_URL}/assignments/filters`;
 export const POLICY_SETTINGS_ENDPOINT = `${CONFIGURATION_POLICIES_ENDPOINT}/settings`;
 

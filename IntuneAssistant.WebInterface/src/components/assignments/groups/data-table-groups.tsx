@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table"
 
 import { DataTablePagination } from "@/components/ui/pagination"
-import { DataTableToolbar } from "@/components/assignments/apps/data-table-group-toolbar.tsx"
+import { DataTableToolbar } from "@/components/assignments/groups/data-table-group-toolbar.tsx"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import axios from "axios"
 

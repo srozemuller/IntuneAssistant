@@ -112,24 +112,61 @@ function AssignmentsPage() {
     };
 
     const fetchGroupData = async (cancelSource = createCancelTokenSource()) => {
+        const toastId = showLoadingToast("Fetching groups", () => {
+            cancelSource.cancel("User cancelled request");
+        });
+
         try {
+            setLoading(true);
             const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource as any);
 
             if (response && response.data) {
-                const rawData = typeof response.data === 'string'
+                // Directly use response.data if it's already an array, otherwise parse it
+                const groupsData = Array.isArray(response.data)
                     ? response.data
-                    : JSON.stringify(response.data);
+                    : (typeof response.data === 'string'
+                        ? JSON.parse(response.data)
+                        : response.data.data || response.data);
 
-                const parsedJson = JSON.parse(rawData);
-                const parsedGroups: GroupModel[] = z.array(groupSchema).parse(parsedJson.data);
+                // Parse using schema
+                const parsedGroups = z.array(groupSchema).parse(groupsData);
                 setGroupData(parsedGroups);
+
+                toast.update(toastId, {
+                    render: "Groups fetched successfully",
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+            } else {
+                toast.update(toastId, {
+                    render: "No groups found",
+                    type: 'warning',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
             }
         } catch (error) {
+            console.error('Error fetching group data:', error);
+
             if (error && typeof error === 'object' && 'isCancelled' in error) {
-                console.log('Group data request was cancelled');
+                toast.update(toastId, {
+                    render: 'Group data request was cancelled',
+                    type: 'info',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
             } else {
-                console.error('Error fetching group data:', error);
+                const errorMessage = `Failed to fetch groups. ${(error as Error).message}`;
+                toast.update(toastId, {
+                    render: errorMessage,
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
             }
+        } finally {
+            setLoading(false);
         }
     };
 

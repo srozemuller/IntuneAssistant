@@ -1,3 +1,4 @@
+// src/components/assignments/overview/data-table.tsx
 import * as React from "react"
 import {
     type ColumnDef,
@@ -24,9 +25,11 @@ import {
 } from "@/components/ui/table"
 
 import { DataTablePagination } from "@/components/ui/pagination"
-import { DataTableToolbar } from "@/components/assignments/apps/data-table-group-toolbar.tsx"
+import { DataTableToolbar } from "@/components/assignments/groups/data-table-toolbar.tsx"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import axios from "axios"
+import type {Filters} from "@/schemas/filters.tsx";
+import type {GroupModel} from "@/schemas/groupSchema.tsx";
+
 
 interface DataTableProps<TData, TValue> {
     source: string
@@ -34,6 +37,7 @@ interface DataTableProps<TData, TValue> {
     data: TData[]
     rawData: string
     fetchData: () => Promise<void>
+    groupData: GroupModel[]
 }
 interface UserMember {
     id: string;
@@ -46,15 +50,15 @@ export function DataTable<TData, TValue>({
                                              rawData,
                                              fetchData,
                                              source,
+                                             groupData,
                                          }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({})
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [isDialogOpen, setIsDialogOpen] = React.useState(false)
-// Update the state and fetch function to use the UserMember type
-    const [members, setMembers] = React.useState<UserMember[]>([]);
 
+    const [members, setMembers] = React.useState<UserMember[]>([]);
 
     const table = useReactTable({
         data,
