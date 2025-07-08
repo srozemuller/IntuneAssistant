@@ -437,6 +437,16 @@ export function DataTableToolbar({
                     isLoading: false,
                     autoClose: toastDuration,
                 });
+                // Validation process
+                setMigrationProgress(50); // Reset progress for validation
+                const validationSuccess = await validateAndUpdateTable();
+                if (validationSuccess) {
+                    setMigrationProgress(100);
+                    toast.success("Validation completed successfully.");
+                } else {
+                    setMigrationStatus('failed');
+                    toast.error("Validation failed after migration.");
+                }
             } else {
                 setMigrationStatus('failed');
                 toast.update(toastId, {
