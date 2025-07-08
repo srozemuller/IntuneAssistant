@@ -26,17 +26,16 @@ function AssignmentsPage() {
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
 
     const fetchData = async (cancelSource = createCancelTokenSource()) => {
-        let toastId: ReturnType<typeof toast.loading> = null as any;
+        // Don't create and reassign toastId - declare once
+        const toastId = showLoadingToast("Fetching assignments", () => {
+            cancelSource.cancel("User cancelled request");
+        });
+
         try {
-            const toastId = showLoadingToast("Fetching assignments", () => {
-                cancelSource.cancel("User cancelled request");
-            });
-
             setLoading(true);
-            setError(''); // Reset the error state to clear previous errors
-            setData([]); // Clear the table data
+            setError('');
+            setData([]);
 
-            // Properly pass the cancellation token source
             const response = await authDataMiddleware(ASSIGNMENTS_ENDPOINT, 'GET', {}, cancelSource as any);
 
             // Check if response exists and has custom properties
@@ -46,7 +45,6 @@ function AssignmentsPage() {
             if (responseData && responseData.notOnboarded) {
                 setTenantId(responseData.tenantId || '');
                 setShowOnboardingDialog(true);
-                setLoading(false);
                 toast.update(toastId, {
                     render: 'Tenant not onboarded',
                     type: 'warning',
@@ -62,41 +60,52 @@ function AssignmentsPage() {
                     : JSON.stringify(responseData);
 
                 setRawData(rawDataStr);
-                console.log('Raw data:', rawDataStr);
 
-                const parsedJson = JSON.parse(rawDataStr);
-                const parsedData: Assignments[] = z.array(assignmentsSchema).parse(parsedJson.data);
-                setData(parsedData);
+                try {
+                    const parsedJson = JSON.parse(rawDataStr);
+                    const parsedData: Assignments[] = z.array(assignmentsSchema).parse(parsedJson.data);
+                    setData(parsedData);
 
-                // Show toast message based on the status
-                const { message } = parsedJson;
-                const status = parsedJson.status.toLowerCase();
-                console.log('Status:', status);
+                    // Show toast message based on the status
+                    const { message } = parsedJson;
+                    const status = parsedJson.status?.toLowerCase() || 'success';
 
-                // Always update the existing toast instead of creating a new one
+                    toast.update(toastId, {
+                        render: message || "Data fetched successfully",
+                        type: status === 'success' ? 'success' :
+                            status === 'warning' ? 'warning' : 'error',
+                        isLoading: false,
+                        autoClose: toastDuration
+                    });
+                } catch (parseError) {
+                    console.error('Error parsing data:', parseError);
+                    toast.update(toastId, {
+                        render: `Failed to parse assignments: ${(parseError as Error).message}`,
+                        type: 'error',
+                        isLoading: false,
+                        autoClose: toastDuration
+                    });
+                }
+            } else {
                 toast.update(toastId, {
-                    render: message,
-                    type: status === 'success' ? 'success' :
-                        status === 'warning' ? 'warning' : 'error',
+                    render: "No data received",
+                    type: 'warning',
                     isLoading: false,
                     autoClose: toastDuration
                 });
             }
         } catch (error) {
             console.error('Error:', error);
-            // Check if the request was cancelled
+
             if (error && typeof error === 'object' && 'isCancelled' in error) {
-                // Only update if not already updated by the cancel button
-                if (toast.isActive(toastId)) {
-                    toast.update(toastId, {
-                        render: 'Request was cancelled',
-                        type: 'info',
-                        isLoading: false,
-                        autoClose: toastDuration
-                    });
-                }
+                toast.update(toastId, {
+                    render: 'Request was cancelled',
+                    type: 'info',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
             } else {
-                const errorMessage = `Failed to fetch assignments. ${(error as Error).message}`;
+                const errorMessage = `Failed to fetch assignments. ${(error as Error).message || 'Server error'}`;
                 setError(errorMessage);
                 toast.update(toastId, {
                     render: errorMessage,
@@ -104,7 +113,6 @@ function AssignmentsPage() {
                     isLoading: false,
                     autoClose: toastDuration
                 });
-                throw new Error(errorMessage);
             }
         } finally {
             setLoading(false);
@@ -112,24 +120,62 @@ function AssignmentsPage() {
     };
 
     const fetchGroupData = async (cancelSource = createCancelTokenSource()) => {
+        const toastId = showLoadingToast("Fetching groups", () => {
+            cancelSource.cancel("User cancelled request");
+        });
+
         try {
+            setLoading(true);
             const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource as any);
 
             if (response && response.data) {
-                const rawData = typeof response.data === 'string'
-                    ? response.data
-                    : JSON.stringify(response.data);
+                // Handle different response data formats
+                let groupsData;
 
-                const parsedJson = JSON.parse(rawData);
-                const parsedGroups: GroupModel[] = z.array(groupSchema).parse(parsedJson.data);
+                if (typeof response.data === 'string') {
+                    groupsData = JSON.parse(response.data);
+                    groupsData = groupsData.data || groupsData;
+                } else {
+                    groupsData = response.data.data || response.data;
+                }
+
+                const parsedGroups = z.array(groupSchema).parse(groupsData);
                 setGroupData(parsedGroups);
+
+                toast.update(toastId, {
+                    render: "Groups fetched successfully",
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+            } else {
+                toast.update(toastId, {
+                    render: "No group data received",
+                    type: 'warning',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
             }
         } catch (error) {
+            console.error('Error fetching group data:', error);
+
             if (error && typeof error === 'object' && 'isCancelled' in error) {
-                console.log('Group data request was cancelled');
+                toast.update(toastId, {
+                    render: 'Group data request was cancelled',
+                    type: 'info',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
             } else {
-                console.error('Error fetching group data:', error);
+                toast.update(toastId, {
+                    render: `Failed to fetch groups: ${(error as Error).message || 'Unknown error'}`,
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
             }
+        } finally {
+            setLoading(false);
         }
     };
 
