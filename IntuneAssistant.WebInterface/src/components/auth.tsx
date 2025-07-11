@@ -248,6 +248,9 @@ const AuthButton: React.FC = () => {
                     <DropdownMenuItem onClick={() => window.location.href = '/profile'}>
                         Profile Settings
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => window.location.href = '/tenants'}>
+                        Tenants
+                    </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} disabled={isLoading}>

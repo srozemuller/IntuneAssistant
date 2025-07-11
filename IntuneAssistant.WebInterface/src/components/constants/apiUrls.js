@@ -10,7 +10,7 @@ export const INTUNEASSISTANT_TENANT_STYLE = `${API_BASE_URL}/tenant/style`;
 
 export const GROUPS_ENDPOINT = `${API_BASE_URL}/groups`;
 export const COMPARE_ENDPOINT = `${API_BASE_URL}/compare`;
-
+export const CUSTOMER_ENDPOINT = `${API_BASE_URL}/customer`;
 
 export const POLICIES_ENDPOINT = `${API_BASE_URL}/policies`;
 export const EXPORT_ENDPOINT = `${API_BASE_URL}/export`;
