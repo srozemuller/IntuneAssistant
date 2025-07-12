@@ -1,5 +1,7 @@
 import * as React from "react";
 import { Switch } from "../components/ui/switch";
+import { Button } from "../components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "../components/ui/card";
 import authService from "../scripts/msalservice";
 import authDataMiddleware, {createCancelTokenSource} from "@/components/middleware/fetchData";
 import {CUSTOMER_ENDPOINT} from "@/components/constants/apiUrls";
@@ -8,6 +10,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import { showLoadingToast } from '@/utils/toastUtils';
+import {useEffect} from "react";
+import { ClipboardIcon,RefreshCcw, Loader2 } from "lucide-react";
+
 
 
 interface Tenant {
@@ -22,6 +27,10 @@ interface Tenant {
 interface TenantData {
     id: string;
     name: string;
+    address?: string;
+    iban?: string;
+    primaryContactEmail?: string;
+    homeTenantId: string;
     tenants: Tenant[];
 }
 
@@ -29,36 +38,141 @@ const TenantManagement: React.FC = () => {
     const [tenantData, setTenantData] = React.useState<TenantData | null>(null);
     const [tenants, setTenants] = React.useState<Tenant[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [isRefreshing, setIsRefreshing] = React.useState(false);
 
-    React.useEffect(() => {
-        const fetchTenantData = async (cancelSource = createCancelTokenSource()) => {
-            const toastId = showLoadingToast("Fetching tenants", () => {
-                cancelSource.cancel("User cancelled request");
-            });
+    const InfoItem = ({ label, value }: { label: string; value: string }) => (
+        <div>
+            <p className="text-xs text-muted-foreground uppercase mb-1">{label}</p>
+            <p className="text-sm font-medium">{value}</p>
+        </div>
+    );
+
+    const handleRefreshTenants = async () => {
+        try {
+            setIsRefreshing(true);
+            await fetchTenantData(); // replace with your actual fetch logic
+            toast.success("Tenant data refreshed");
+        } catch (error) {
+            toast.error("Failed to refresh tenant data");
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
+    const fetchTenantData = async (cancelSource = createCancelTokenSource()) => {
+        let toastId;
+        toastId = showLoadingToast("Loading tenant data", () => {
+            cancelSource.cancel("User cancelled request");
+        });
+        console.log("Toast ID:", toastId);
+        try {
+            if (!authService.isLoggedIn()) {
+                toast.update(toastId, {
+                    render: 'User not logged in',
+                    type: 'warning',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+                return;
+            }
+
+            const userClaims = authService.getTokenClaims();
+            const tenantId = userClaims.tenantId;
+
+            const response = await authDataMiddleware(`${CUSTOMER_ENDPOINT}/${tenantId}/overview`);
+            const fetchedData = response?.data?.data || null;
+            setTenantData(fetchedData);
+            console.log("Toast ID:", toastId);
+
+            console.log("Fetched tenant data:", fetchedData);
+            if (response.status == 200) {
+                console.log("Toast ID fetched:", toastId);
+                toast.update(toastId, {
+                    render: `Successfully loaded customer data for tenant ${fetchedData.name}`,
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+            } else {
+                toast.update(toastId, {
+                    render: 'No tenants found',
+                    type: 'info',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+            }
+
+            if (fetchedData?.tenants && fetchedData.tenants.length > 0) {
+                setTenants(fetchedData.tenants);
+                toast.update(toastId, {
+                    render: `Successfully loaded ${fetchedData.tenants.length} tenants`,
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+            } else {
+                toast.update(toastId, {
+                    render: 'No tenants found',
+                    type: 'info',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching tenant data:", error);
+            if (toastId) {
+                toast.update(toastId, {
+                    render: 'Failed to fetch tenant data',
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: toastDuration
+                });
+            }
+        } finally {
+            setLoading(false);
+            // Ensure toast is always updated or dismissed
+            if (toastId) {
+                toast.update(toastId, {
+                    isLoading: false,
+                    autoClose: toastDuration,
+                });
+            }
+        }
+    };
+
+    useEffect(() => {
+        const tenantSource = createCancelTokenSource();
+
+        const initializeAuthAndFetchData = async () => {
             try {
-                if (authService.isLoggedIn()) {
-                    const userClaims = authService.getTokenClaims();
-                    const tenantId = userClaims.tenantId;
-
-
-                    const response = await authDataMiddleware(`${CUSTOMER_ENDPOINT}/${tenantId}/overview`);
-                    const fetchedData = response?.data?.data || null;
-                    setTenantData(fetchedData);
-
-                    // Set tenants from fetched data
-                    if (fetchedData?.tenants) {
-                        setTenants(fetchedData.tenants);
-                    }
+                if (!authService.isLoggedIn()) {
+                    console.error("User not logged in");
+                    toast.error("User not logged in", { autoClose: toastDuration });
+                    setLoading(false);
+                    return;
                 }
+
+                const userClaims = authService.getTokenClaims();
+                if (!userClaims || !userClaims.tenantId) {
+                    console.error("Invalid user claims");
+                    toast.error("Invalid user claims", { autoClose: toastDuration });
+                    setLoading(false);
+                    return;
+                }
+
+                await fetchTenantData(tenantSource);
             } catch (error) {
-                console.error("Error fetching tenant data:", error);
-            } finally {
-                setLoading(false);
+                console.error("Error during initialization:", error);
             }
         };
 
-        fetchTenantData();
-    }, []);
+        initializeAuthAndFetchData();
+
+        return () => {
+            tenantSource.cancel('Component unmounted');
+            toast.dismiss(); // Ensure all toasts are cleared
+        };
+    }, []); // Dependency array ensures this runs only once
 
     if (loading) {
         return <p>Loading tenant data...</p>;
@@ -138,41 +252,168 @@ const TenantManagement: React.FC = () => {
     };
 
     return (
-        <div className="p-6">
-            <ToastContainer position={toastPosition} autoClose={toastDuration} />
-            <h1 className="text-xl font-bold mb-4">Tenant Management</h1>
-            <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                <tr>
-                    <th className="border border-gray-300 p-2">Tenant ID</th>
-                    <th className="border border-gray-300 p-2">Display Name</th>
-                    <th className="border border-gray-300 p-2">Is Enabled</th>
-                    <th className="border border-gray-300 p-2">Is Primary</th>
-                    <th className="border border-gray-300 p-2">Last Login</th>
-                </tr>
-                </thead>
-                <tbody>
-                {tenants.map((tenant: Tenant) => (
-                    <tr key={tenant.tenantId}>
-                        <td className="border border-gray-300 p-2">{tenant.tenantId}</td>
-                        <td className="border border-gray-300 p-2">{tenant.displayName}</td>
-                        <td className="border border-gray-300 p-2">
-                            <Switch
-                                checked={tenant.isEnabled}
-                                onCheckedChange={(value) => handleToggle(tenant.tenantId, value)}
-                            />
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                            {tenant.isPrimary ? "Yes" : "No"}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                            {new Date(tenant.lastLogin).toLocaleString()}
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+        <div className="container mx-auto py-10">
+            <ToastContainer
+                position={toastPosition}
+                autoClose={toastDuration}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover/>
+            <h1 className="text-3xl font-bold mb-6">Tenant Management</h1>
+
+            <div className="grid gap-6">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRefreshTenants}
+                    disabled={isRefreshing}
+                    className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                >
+                    {isRefreshing ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Refreshing
+                        </>
+                    ) : (
+                        <>
+                            <RefreshCcw className="w-4 h-4" />
+                            Refresh
+                        </>
+                    )}
+                </Button>
+                {/* Customer Information Card */}
+                {tenantData && (
+                    <Card>
+                        <CardHeader className="pb-2">
+                            <CardTitle>Customer Information</CardTitle>
+                            <CardDescription>Details about the selected customer</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">Customer ID</p>
+                                    <p className="text-sm font-mono break-all">{tenantData.id}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">Name</p>
+                                    <p className="text-sm">{tenantData.name}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">Address</p>
+                                    <p className="text-sm">{tenantData.address || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">IBAN</p>
+                                    <p className="text-sm font-mono break-all">{tenantData.iban || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">Primary Contact</p>
+                                    <p className="text-sm">{tenantData.primaryContactEmail || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">Home Tenant ID</p>
+                                    <p className="text-sm font-mono break-all">{tenantData.homeTenantId}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <p className="text-xs text-muted-foreground">This information reflects the current state of the customer record.</p>
+                        </CardFooter>
+                    </Card>
+                )}
+
+                {/* Tenant Table Card */}
+                <Card>
+                    <CardHeader className="pb-2">
+                        <CardTitle>Tenant Overview</CardTitle>
+                        <CardDescription>All associated tenants for this customer</CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-3">
+                        {tenants.length > 0 ? (
+                            <>
+                                {/* Column Header Row (optional, but helps with structure) */}
+                                <div className="hidden md:grid grid-cols-4 gap-4 px-4 py-2 text-xs text-muted-foreground font-medium uppercase">
+                                    <div>Display Name</div>
+                                    <div>Enabled</div>
+                                    <div>Primary</div>
+                                    <div>Last Login</div>
+                                </div>
+
+                                {tenants.map((tenant: Tenant) => (
+                                    <div
+                                        key={tenant.tenantId}
+                                        className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center px-4 py-3 border border-muted rounded-md bg-muted/30 hover:bg-muted transition-colors cursor-pointer"
+                                    >
+
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-medium">{tenant.displayName}</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-xs font-mono text-muted-foreground break-all">{tenant.tenantId}</p>
+                                                <button
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(tenant.tenantId);
+                                                        toast.success("Tenant ID copied to clipboard");
+                                                    }}
+                                                    className="text-muted-foreground hover:text-foreground transition"
+                                                    title="Copy Tenant ID"
+                                                >
+                                                    <ClipboardIcon className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+
+                                        <div className="flex items-center gap-2">
+                                            <span className="md:hidden text-xs text-muted-foreground">Enabled:</span>
+                                            <Switch
+                                                checked={tenant.isEnabled}
+                                                onCheckedChange={(value) => handleToggle(tenant.tenantId, value)}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            {tenant.isPrimary ? (
+                                                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+                  Primary
+                </span>
+                                            ) : (
+                                                <span className="text-xs text-muted-foreground">—</span>
+                                            )}
+                                        </div>
+
+                                        <div className="text-sm text-muted-foreground">
+                                            {new Date(tenant.lastLogin).toLocaleString()}
+                                        </div>
+                                    </div>
+                                ))}
+                            </>
+                        ) : (
+                            <div className="py-12 text-center text-muted-foreground text-sm">
+                                <p className="mb-2">No tenants found for this customer.</p>
+                                <p>Once onboarded, tenants will appear in this list.</p>
+                            </div>
+                        )}
+                    </CardContent>
+
+                    {tenants.length > 0 && (
+                        <CardFooter>
+                            <p className="text-xs text-muted-foreground">
+                                These tenants are synchronized and managed through your connected Microsoft environment.
+                            </p>
+                        </CardFooter>
+                    )}
+                </Card>
+
+
+            </div>
         </div>
+
+
     );
 };
 
