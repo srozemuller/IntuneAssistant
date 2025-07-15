@@ -133,15 +133,27 @@ export default function ConsentCard({
                         : env.url;
                 })}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&tenantName=${tenantName}&state=${state}`;
 
-            const response = await fetch(apiUrl, { method: 'GET' });
-            const data = await response.json();
-            const consentUrl = data.url;
-            const token = data.onboardingToken;
-            localStorage.setItem('consentToken', token);
+            try {
+                const response = await fetch(apiUrl, { method: 'GET' });
+                const responseData = await response.json();
+                const data = responseData.data;
 
-            window.open(`${consentUrl}`, "_blank", "noreferrer");
+                if (data) {
+                    const consentUrl = data.url;
+                    const token = data.onboardingToken;
 
-            setIsLoading(false);
+                    localStorage.setItem('consentToken', token);
+                    window.open(consentUrl, "_blank", "noreferrer");
+                    setIsLoading(false);
+                } else {
+                    console.error("Data not found in response:", responseData);
+                }
+            } catch (error) {
+                toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please contact support.</a></div>);
+                console.error(error);
+            }
+
+
         } catch (error) {
             toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please contact support.</a></div>);
             console.error(error);

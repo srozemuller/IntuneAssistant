@@ -1,19 +1,20 @@
 import * as React from "react";
-import { Switch } from "../components/ui/switch";
-import { Button } from "../components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "../components/ui/card";
+import {Switch} from "../components/ui/switch";
+import {Button} from "../components/ui/button";
+import {Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter} from "../components/ui/card";
 import authService from "../scripts/msalservice";
 import authDataMiddleware, {createCancelTokenSource} from "@/components/middleware/fetchData";
 import {CUSTOMER_ENDPOINT} from "@/components/constants/apiUrls";
 // Toast configuration
-import { ToastContainer, toast } from 'react-toastify';
+import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
-import { showLoadingToast } from '@/utils/toastUtils';
+import {toastPosition, toastDuration} from "@/config/toastConfig.ts";
+import {showLoadingToast} from '@/utils/toastUtils';
 import {useEffect} from "react";
-import { ClipboardIcon,RefreshCcw, Loader2 } from "lucide-react";
-
-
+import {ClipboardIcon, RefreshCcw, Loader2} from "lucide-react";
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter} from "../components/ui/dialog";
+import TenantOnboarding from "./customer-tenant-onboarding";
+import {Tooltip, TooltipProvider} from "../components/ui/tooltip";
 
 interface Tenant {
     id: string;
@@ -29,8 +30,10 @@ interface TenantData {
     name: string;
     address?: string;
     iban?: string;
+    isActive: boolean;
     primaryContactEmail?: string;
     homeTenantId: string;
+    isMsp: boolean;
     tenants: Tenant[];
 }
 
@@ -40,7 +43,7 @@ const TenantManagement: React.FC = () => {
     const [loading, setLoading] = React.useState(true);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 
-    const InfoItem = ({ label, value }: { label: string; value: string }) => (
+    const InfoItem = ({label, value}: { label: string; value: string }) => (
         <div>
             <p className="text-xs text-muted-foreground uppercase mb-1">{label}</p>
             <p className="text-sm font-medium">{value}</p>
@@ -147,7 +150,7 @@ const TenantManagement: React.FC = () => {
             try {
                 if (!authService.isLoggedIn()) {
                     console.error("User not logged in");
-                    toast.error("User not logged in", { autoClose: toastDuration });
+                    toast.error("User not logged in", {autoClose: toastDuration});
                     setLoading(false);
                     return;
                 }
@@ -155,7 +158,7 @@ const TenantManagement: React.FC = () => {
                 const userClaims = authService.getTokenClaims();
                 if (!userClaims || !userClaims.tenantId) {
                     console.error("Invalid user claims");
-                    toast.error("Invalid user claims", { autoClose: toastDuration });
+                    toast.error("Invalid user claims", {autoClose: toastDuration});
                     setLoading(false);
                     return;
                 }
@@ -219,7 +222,7 @@ const TenantManagement: React.FC = () => {
             if (response && response.status >= 200 && response.status < 300) {
                 setTenants((prevTenants: Tenant[]) =>
                     prevTenants.map((t: Tenant) =>
-                        t.tenantId === tenantId ? { ...t, isEnabled } : t
+                        t.tenantId === tenantId ? {...t, isEnabled} : t
                     )
                 );
 
@@ -252,168 +255,203 @@ const TenantManagement: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto py-10">
-            <ToastContainer
-                position={toastPosition}
-                autoClose={toastDuration}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover/>
-            <h1 className="text-3xl font-bold mb-6">Tenant Management</h1>
+        <TooltipProvider>
+            <div className="container mx-auto py-10">
+                <ToastContainer
+                    position={toastPosition}
+                    autoClose={toastDuration}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover/>
+                <h1 className="text-3xl font-bold mb-6">Tenant Management</h1>
 
-            <div className="grid gap-6">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRefreshTenants}
-                    disabled={isRefreshing}
-                    className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-                >
-                    {isRefreshing ? (
-                        <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Refreshing
-                        </>
-                    ) : (
-                        <>
-                            <RefreshCcw className="w-4 h-4" />
-                            Refresh
-                        </>
-                    )}
-                </Button>
-                {/* Customer Information Card */}
-                {tenantData && (
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle>Customer Information</CardTitle>
-                            <CardDescription>Details about the selected customer</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Customer ID</p>
-                                    <p className="text-sm font-mono break-all">{tenantData.id}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Name</p>
-                                    <p className="text-sm">{tenantData.name}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Address</p>
-                                    <p className="text-sm">{tenantData.address || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">IBAN</p>
-                                    <p className="text-sm font-mono break-all">{tenantData.iban || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Primary Contact</p>
-                                    <p className="text-sm">{tenantData.primaryContactEmail || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Home Tenant ID</p>
-                                    <p className="text-sm font-mono break-all">{tenantData.homeTenantId}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <p className="text-xs text-muted-foreground">This information reflects the current state of the customer record.</p>
-                        </CardFooter>
-                    </Card>
-                )}
-
-                {/* Tenant Table Card */}
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle>Tenant Overview</CardTitle>
-                        <CardDescription>All associated tenants for this customer</CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="space-y-3">
-                        {tenants.length > 0 ? (
+                <div className="grid gap-6">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleRefreshTenants}
+                        disabled={isRefreshing}
+                        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                    >
+                        {isRefreshing ? (
                             <>
-                                {/* Column Header Row (optional, but helps with structure) */}
-                                <div className="hidden md:grid grid-cols-4 gap-4 px-4 py-2 text-xs text-muted-foreground font-medium uppercase">
-                                    <div>Display Name</div>
-                                    <div>Enabled</div>
-                                    <div>Primary</div>
-                                    <div>Last Login</div>
-                                </div>
-
-                                {tenants.map((tenant: Tenant) => (
-                                    <div
-                                        key={tenant.tenantId}
-                                        className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center px-4 py-3 border border-muted rounded-md bg-muted/30 hover:bg-muted transition-colors cursor-pointer"
-                                    >
-
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-medium">{tenant.displayName}</p>
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-xs font-mono text-muted-foreground break-all">{tenant.tenantId}</p>
-                                                <button
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(tenant.tenantId);
-                                                        toast.success("Tenant ID copied to clipboard");
-                                                    }}
-                                                    className="text-muted-foreground hover:text-foreground transition"
-                                                    title="Copy Tenant ID"
-                                                >
-                                                    <ClipboardIcon className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </div>
-
-
-                                        <div className="flex items-center gap-2">
-                                            <span className="md:hidden text-xs text-muted-foreground">Enabled:</span>
-                                            <Switch
-                                                checked={tenant.isEnabled}
-                                                onCheckedChange={(value) => handleToggle(tenant.tenantId, value)}
-                                            />
-                                        </div>
-
-                                        <div>
-                                            {tenant.isPrimary ? (
-                                                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
-                  Primary
-                </span>
-                                            ) : (
-                                                <span className="text-xs text-muted-foreground">—</span>
-                                            )}
-                                        </div>
-
-                                        <div className="text-sm text-muted-foreground">
-                                            {new Date(tenant.lastLogin).toLocaleString()}
-                                        </div>
-                                    </div>
-                                ))}
+                                <Loader2 className="w-4 h-4 animate-spin"/>
+                                Refreshing
                             </>
                         ) : (
-                            <div className="py-12 text-center text-muted-foreground text-sm">
-                                <p className="mb-2">No tenants found for this customer.</p>
-                                <p>Once onboarded, tenants will appear in this list.</p>
-                            </div>
+                            <>
+                                <RefreshCcw className="w-4 h-4"/>
+                                Refresh
+                            </>
                         )}
-                    </CardContent>
-
-                    {tenants.length > 0 && (
-                        <CardFooter>
-                            <p className="text-xs text-muted-foreground">
-                                These tenants are synchronized and managed through your connected Microsoft environment.
-                            </p>
-                        </CardFooter>
+                    </Button>
+                    <TenantOnboarding customerId={authService.getTokenClaims().tenantId} isMsp={tenantData.isMsp}/>
+                    {/* Customer Information Card */}
+                    {tenantData && (
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle>Customer Information</CardTitle>
+                                <CardDescription>Details about the selected customer</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">Customer ID</p>
+                                        <p className="text-sm font-mono break-all">{tenantData.id}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">Name</p>
+                                        <p className="text-sm">{tenantData.name}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">Address</p>
+                                        <p className="text-sm">{tenantData.address || "N/A"}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">IBAN</p>
+                                        <p className="text-sm font-mono break-all">{tenantData.iban || "N/A"}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">Primary Contact</p>
+                                        <p className="text-sm">{tenantData.primaryContactEmail || "N/A"}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">Home Tenant ID</p>
+                                        <p className="text-sm font-mono break-all">{tenantData.homeTenantId}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">Is Active</p>
+                                        <span
+                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                                                tenantData.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                                            }`}
+                                        >
+        {tenantData.isActive ? "Active" : "Inactive"}
+    </span>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">Is MSP</p>
+                                        <span
+                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                                                tenantData.isMsp ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"
+                                            }`}
+                                        >
+        {tenantData.isMsp ? "MSP" : "Non-MSP"}
+    </span>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <p className="text-xs text-muted-foreground">This information reflects the current state
+                                    of the customer record.</p>
+                            </CardFooter>
+                        </Card>
                     )}
-                </Card>
+
+                    {/* Tenant Table Card */}
+                    <Card>
+                        <CardHeader className="pb-2">
+                            <CardTitle>Tenant Overview</CardTitle>
+                            <CardDescription>All associated tenants for this customer</CardDescription>
+                        </CardHeader>
+
+                        <CardContent className="space-y-3">
+                            {tenants.length > 0 ? (
+                                <>
+                                {/* Column Header Row (optional, but helps with structure) */}
+                                    <div
+                                        className="hidden md:grid grid-cols-4 gap-4 px-4 py-2 text-xs text-muted-foreground font-medium uppercase">
+                                        <div>Display Name</div>
+                                        <div>Rollout Enabled</div>
+                                        <div>Primary</div>
+                                        <div>Last Login</div>
+                                    </div>
+
+                                    {tenants.map((tenant: Tenant) => (
+                                        <div
+                                            key={tenant.tenantId}
+                                            className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center px-4 py-3 border border-muted rounded-md bg-muted/30 hover:bg-muted transition-colors cursor-pointer"
+                                        >
+
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium">{tenant.displayName}</p>
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-xs font-mono text-muted-foreground break-all">{tenant.tenantId}</p>
+                                                    <button
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText(tenant.tenantId);
+                                                            toast.success("Tenant ID copied to clipboard");
+                                                        }}
+                                                        className="text-muted-foreground hover:text-foreground transition"
+                                                        title="Copy Tenant ID"
+                                                    >
+                                                        <ClipboardIcon className="w-4 h-4"/>
+                                                    </button>
+                                                </div>
+                                            </div>
 
 
+                                            <div className="flex items-center gap-2">
+                                                <span
+                                                    className="md:hidden text-xs text-muted-foreground">Enabled:</span>
+                                                <TooltipProvider>
+                                                    <Tooltip
+                                                        content={!tenantData.isActive ? "Tenant is not active yet" : ""}
+                                                        disableHoverableContent={!tenantData.isActive} // Ensure tooltip is shown only when disabled
+                                                    >
+                                                        <Switch
+                                                            checked={tenant.isEnabled}
+                                                            disabled={!tenantData.isActive}
+                                                            onCheckedChange={(value) => handleToggle(tenant.tenantId, value)}
+                                                        />
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </div>
+
+                                            <div>
+                                                {tenant.isPrimary ? (
+                                                    <span
+                                                        className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+                  Primary
+                </span>
+                                                ) : (
+                                                    <span className="text-xs text-muted-foreground">—</span>
+                                                )}
+                                            </div>
+
+                                            <div className="text-sm text-muted-foreground">
+                                                {new Date(tenant.lastLogin).toLocaleString()}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
+                            ) : (
+                                <div className="py-12 text-center text-muted-foreground text-sm">
+                                    <p className="mb-2">No tenants found for this customer.</p>
+                                    <p>Once onboarded, tenants will appear in this list.</p>
+                                </div>
+                            )}
+                        </CardContent>
+
+                        {tenants.length > 0 && (
+                            <CardFooter>
+                                <p className="text-xs text-muted-foreground">
+                                    These tenants are synchronized and managed through your connected Microsoft
+                                    environment.
+                                </p>
+                            </CardFooter>
+                        )}
+                    </Card>
+
+
+                </div>
             </div>
-        </div>
 
-
+        </TooltipProvider>
     );
 };
 
