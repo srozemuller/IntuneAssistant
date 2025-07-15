@@ -73,7 +73,19 @@ function MigrationPage() {
         });
         const jsonString = JSON.stringify(sanitizedRows);
         const response = await authDataMiddleware(ASSIGNMENTS_COMPARE_ENDPOINT, 'POST', jsonString, cancelSource);
+        if (response?.status === 401) {
+            const errorData = response;
+            toast.error(
+                <div>
+                    <strong>{errorData.message}</strong>
+                    <br />
+                    {errorData.details}
+                </div>
+            );
+            return [];
+        }
         return response?.data || [];
+
     };
 
     useEffect(() => {
