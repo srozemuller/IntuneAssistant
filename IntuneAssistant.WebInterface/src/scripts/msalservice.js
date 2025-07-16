@@ -8,12 +8,16 @@ const authService = {
     async initialize() {
         try {
             console.log('Initializing MSAL...');
-            await msalInstance.initialize();
-            this.isInitialized = true;
-            console.log('MSAL initialized');
+
+            // Ensure localStorage is available
+            if (typeof window !== 'undefined' && window.localStorage) {
+                await msalInstance.initialize();
+                this.isInitialized = true;
+            } else {
+                console.warn('localStorage is not available. Initialization skipped.');
+            }
         } catch (error) {
-            console.error('MSAL initialization error:', error);
-            throw error;
+            console.error('Error during MSAL initialization:', error);
         }
     },
 
