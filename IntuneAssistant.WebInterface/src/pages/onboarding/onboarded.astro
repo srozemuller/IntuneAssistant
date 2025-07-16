@@ -34,10 +34,10 @@ let isMigrating = false;
     }
 
     const token = localStorage.getItem('consentToken');
-    if (token) {
+    if (state) {
       const accessToken = localStorage.getItem('accessToken');
       // Send request to the API endpoint
-      const callbackUrl = `${CONSENT_CALLBACK}?consentToken=${token}`;
+      const callbackUrl = `${CONSENT_CALLBACK}?state=${state}`;
       try {
         const response = await axios.get(callbackUrl, {
           headers: {
