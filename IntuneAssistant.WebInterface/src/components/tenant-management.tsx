@@ -251,13 +251,13 @@ const TenantManagement: React.FC = () => {
                                         <p className="text-sm font-mono break-all">{tenantData.homeTenantId}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-muted-foreground">Is Active</p>
+                                        <p className="text-sm font-medium text-muted-foreground">Edition</p>
                                         <span
                                             className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                                                tenantData.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                                                tenantData.isActive ? "bg-green-100 text-green-800" : "bg-primary-100 text-primary-800"
                                             }`}
                                         >
-        {tenantData.isActive ? "Active" : "Inactive"}
+        {tenantData.isActive ? "Premium" : "Community"}
     </span>
                                     </div>
                                     <div>
