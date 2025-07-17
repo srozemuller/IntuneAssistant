@@ -120,8 +120,7 @@ export default function ConsentCard({
             const isOnboarding = sessionStorage.getItem('isOnboarding') === 'true';
 
             // Determine state parameter
-            const state =  isOnboarding ? 'onboarding' : '';
-            console.log('Current state:', state);
+
             const apiUrl = `${environments
                 .filter((env) => env.environment === selectedEnvironment)
                 .map((env) => {
@@ -131,17 +130,51 @@ export default function ConsentCard({
                     return isDevelopment
                         ? "https://localhost:7224"
                         : env.url;
-                })}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&redirectUrl=${window.location.origin}/onboarding&tenantName=${tenantName}&state=${state}`;
+                })}/v1/buildconsenturl?tenantid=${tenantId}&assistantLicense=${selectedEnvironment}&tenantName=${tenantName}`;
 
-            const response = await fetch(apiUrl, { method: 'GET' });
-            const data = await response.json();
-            const consentUrl = data.url;
-            const token = data.onboardingToken;
-            localStorage.setItem('consentToken', token);
+            try {
+                const response = await fetch(apiUrl, { method: 'GET' });
+                if (response.status === 409) {
+                    const conflictData = await response.json();
+                    toast.error(
+                        <div>
+                            <strong>{conflictData.message}</strong>
+                            <br />
+                            {conflictData.details}
+                            <br />
+                            <small>{conflictData.data}</small>
+                        </div>
+                    );
+                    setIsLoading(false);
+                    return;
+                }
 
-            window.open(`${consentUrl}`, "_blank", "noreferrer");
+                const responseData = await response.json();
+                const data = responseData.data;
 
-            setIsLoading(false);
+                if (data) {
+                    const consentUrl = data.url;
+                    const token = data.onboardingToken;
+
+                    localStorage.setItem('consentToken', token);
+                    window.open(consentUrl, "_blank", "noreferrer");
+                    setIsLoading(false);
+                } else {
+                    console.error("Data not found in response:", responseData);
+                }
+            } catch (error) {
+                toast.error(
+                    <div>
+                        Failed to fetch consent URL.{" "}
+                        <a href="mailto:sander@rozemuller.com" className="underline">
+                            Please contact support.
+                        </a>
+                    </div>
+                );
+                console.error(error);
+            }
+
+
         } catch (error) {
             toast.error(<div>Failed to fetch consent URL. <a href="mailto:sander@rozemuller.com" className="underline">Please contact support.</a></div>);
             console.error(error);
