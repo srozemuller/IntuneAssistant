@@ -42,13 +42,8 @@ const TenantManagement: React.FC = () => {
     const [tenants, setTenants] = React.useState<Tenant[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
-
-    const InfoItem = ({label, value}: { label: string; value: string }) => (
-        <div>
-            <p className="text-xs text-muted-foreground uppercase mb-1">{label}</p>
-            <p className="text-sm font-medium">{value}</p>
-        </div>
-    );
+    const userClaims = authService.getTokenClaims();
+    const customerId = userClaims?.tenantId;
 
     const handleRefreshTenants = async () => {
         try {
@@ -62,128 +57,66 @@ const TenantManagement: React.FC = () => {
         }
     };
 
-    const fetchTenantData = async (cancelSource = createCancelTokenSource()) => {
-        let toastId;
-        toastId = showLoadingToast("Loading tenant data", () => {
-            cancelSource.cancel("User cancelled request");
-        });
-        console.log("Toast ID:", toastId);
-        try {
-            if (!authService.isLoggedIn()) {
-                toast.update(toastId, {
-                    render: 'User not logged in',
-                    type: 'warning',
-                    isLoading: false,
-                    autoClose: toastDuration
-                });
-                return;
-            }
+    const fetchTenantData = async (cancelSource = createCancelTokenSource()): Promise<any> => {
+        console.log("Inside fetchTenantData");
 
-            const userClaims = authService.getTokenClaims();
-            const tenantId = userClaims.tenantId;
-
-            const response = await authDataMiddleware(`${CUSTOMER_ENDPOINT}/${tenantId}/overview`);
-            const fetchedData = response?.data?.data || null;
-            setTenantData(fetchedData);
-            console.log("Toast ID:", toastId);
-
-            console.log("Fetched tenant data:", fetchedData);
-            if (response.status == 200) {
-                console.log("Toast ID fetched:", toastId);
-                toast.update(toastId, {
-                    render: `Successfully loaded customer data for tenant ${fetchedData.name}`,
-                    type: 'success',
-                    isLoading: false,
-                    autoClose: toastDuration
-                });
-            } else {
-                toast.update(toastId, {
-                    render: 'No tenants found',
-                    type: 'info',
-                    isLoading: false,
-                    autoClose: toastDuration
-                });
-            }
-
-            if (fetchedData?.tenants && fetchedData.tenants.length > 0) {
-                setTenants(fetchedData.tenants);
-                toast.update(toastId, {
-                    render: `Successfully loaded ${fetchedData.tenants.length} tenants`,
-                    type: 'success',
-                    isLoading: false,
-                    autoClose: toastDuration
-                });
-            } else {
-                toast.update(toastId, {
-                    render: 'No tenants found',
-                    type: 'info',
-                    isLoading: false,
-                    autoClose: toastDuration
-                });
-            }
-        } catch (error) {
-            console.error("Error fetching tenant data:", error);
-            if (toastId) {
-                toast.update(toastId, {
-                    render: 'Failed to fetch tenant data',
-                    type: 'error',
-                    isLoading: false,
-                    autoClose: toastDuration
-                });
-            }
-        } finally {
-            setLoading(false);
-            // Ensure toast is always updated or dismissed
-            if (toastId) {
-                toast.update(toastId, {
-                    isLoading: false,
-                    autoClose: toastDuration,
-                });
-            }
+        const isLoggedIn = authService.isLoggedIn();
+        const userClaims = authService.getTokenClaims();
+        console.log("isLoggedIn:", isLoggedIn);
+        console.log("userClaims:", userClaims);
+        let pendingMessage = "Loading tenant data...";
+        if (!isLoggedIn || !userClaims?.tenantId) {
+            pendingMessage = "You have to log in to fetch tenant data.";
+            console.warn("Aborting fetch: not logged in or missing tenantId");
+            throw new Error("User not logged in or missing claims");
         }
+
+        const tenantId = userClaims.tenantId;
+        console.log("Fetching tenant overview for:", tenantId);
+
+        const promise = authDataMiddleware(`${CUSTOMER_ENDPOINT}/${tenantId}/overview`, 'GET', {}, cancelSource as any)
+            .then((response) => {
+                const fetchedData = response?.data?.data;
+                console.log("Fetch response:", response);
+
+                if (response && response.status === 200 && fetchedData) {
+                    setTenantData(fetchedData);
+                    setTenants(fetchedData?.tenants || []);
+                    setLoading(false);
+                    return fetchedData;
+                }
+
+                throw new Error("No tenant data found");
+            });
+
+        const result = await toast.promise(promise, {
+            pending: pendingMessage,
+            success: "Tenant data loaded!",
+            error: "Failed to fetch tenant data",
+        });
+
+        return result;
     };
 
+
     useEffect(() => {
+        console.log("Fetching tenant data on page load...");
         const tenantSource = createCancelTokenSource();
 
-        const initializeAuthAndFetchData = async () => {
-            try {
-                if (!authService.isLoggedIn()) {
-                    console.error("User not logged in");
-                    toast.error("User not logged in", {autoClose: toastDuration});
-                    setLoading(false);
-                    return;
-                }
-
-                const userClaims = authService.getTokenClaims();
-                if (!userClaims || !userClaims.tenantId) {
-                    console.error("Invalid user claims");
-                    toast.error("Invalid user claims", {autoClose: toastDuration});
-                    setLoading(false);
-                    return;
-                }
-
-                await fetchTenantData(tenantSource);
-            } catch (error) {
-                console.error("Error during initialization:", error);
-            }
-        };
-
-        initializeAuthAndFetchData();
+        fetchTenantData(tenantSource)
+            .then(() => console.log("Tenant data fetched successfully"))
+            .catch((error) => {
+                console.error("Error fetching tenant data:", error);
+            });
 
         return () => {
+            console.log("Cleaning up tenant data fetch...");
             tenantSource.cancel('Component unmounted');
-            toast.dismiss(); // Ensure all toasts are cleared
+            toast.dismiss();
         };
-    }, []); // Dependency array ensures this runs only once
+    }, []);
 
-    if (loading) {
-        return <p>Loading tenant data...</p>;
-    }
 
-    if (!tenantData) {
-        return <p>Unable to fetch tenant data.</p>;
-    }
     const handleToggle = async (tenantId: string, isEnabled: boolean, cancelSource = createCancelTokenSource()) => {
         const toastId = showLoadingToast("Switching tenant", () => {
             cancelSource.cancel("User cancelled request");
@@ -257,16 +190,7 @@ const TenantManagement: React.FC = () => {
     return (
         <TooltipProvider>
             <div className="container mx-auto py-10">
-                <ToastContainer
-                    position={toastPosition}
-                    autoClose={toastDuration}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover/>
+                <ToastContainer autoClose={toastDuration} position={toastPosition}/>
                 <h1 className="text-3xl font-bold mb-6">Tenant Management</h1>
 
                 <div className="grid gap-6">
@@ -289,7 +213,10 @@ const TenantManagement: React.FC = () => {
                             </>
                         )}
                     </Button>
-                    <TenantOnboarding customerId={authService.getTokenClaims().tenantId} isMsp={tenantData.isMsp}/>
+                    <TenantOnboarding
+                        customerId={customerId}
+                        isMsp={tenantData?.isMsp ?? false}
+                    />
                     {/* Customer Information Card */}
                     {tenantData && (
                         <Card>
@@ -360,11 +287,23 @@ const TenantManagement: React.FC = () => {
                         </CardHeader>
 
                         <CardContent className="space-y-3">
-                            {tenants.length > 0 ? (
+                            {loading ? (
+                                <div className="flex justify-center items-center py-12">
+                                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                                    <p className="ml-2 text-sm text-muted-foreground">Loading tenant data...</p>
+                                </div>
+                            ) : !tenantData ? (
+                                <div className="py-12 text-center text-muted-foreground text-sm">
+                                    <p>Unable to fetch tenant data.</p>
+                                </div>
+                            ) : tenants.length === 0 ? (
+                                <div className="py-12 text-center text-muted-foreground text-sm">
+                                <p>No tenants found for this customer.</p>
+                                <p>Once onboarded, tenants will appear in this list.</p>
+                                </div>
+                                ) : tenants.length > 0 ? (
                                 <>
-                                {/* Column Header Row (optional, but helps with structure) */}
-                                    <div
-                                        className="hidden md:grid grid-cols-4 gap-4 px-4 py-2 text-xs text-muted-foreground font-medium uppercase">
+                                    <div className="hidden md:grid grid-cols-4 gap-4 px-4 py-2 text-xs text-muted-foreground font-medium uppercase">
                                         <div>Display Name</div>
                                         <div>Rollout Enabled</div>
                                         <div>Primary</div>
@@ -376,7 +315,6 @@ const TenantManagement: React.FC = () => {
                                             key={tenant.tenantId}
                                             className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center px-4 py-3 border border-muted rounded-md bg-muted/30 hover:bg-muted transition-colors cursor-pointer"
                                         >
-
                                             <div className="space-y-1">
                                                 <p className="text-sm font-medium">{tenant.displayName}</p>
                                                 <div className="flex items-center gap-2">
@@ -389,19 +327,17 @@ const TenantManagement: React.FC = () => {
                                                         className="text-muted-foreground hover:text-foreground transition"
                                                         title="Copy Tenant ID"
                                                     >
-                                                        <ClipboardIcon className="w-4 h-4"/>
+                                                        <ClipboardIcon className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                             </div>
 
-
                                             <div className="flex items-center gap-2">
-                                                <span
-                                                    className="md:hidden text-xs text-muted-foreground">Enabled:</span>
+                                                <span className="md:hidden text-xs text-muted-foreground">Enabled:</span>
                                                 <TooltipProvider>
                                                     <Tooltip
                                                         content={!tenantData.isActive ? "Tenant is not active yet" : ""}
-                                                        disableHoverableContent={!tenantData.isActive} // Ensure tooltip is shown only when disabled
+                                                        disableHoverableContent={!tenantData.isActive}
                                                     >
                                                         <Switch
                                                             checked={tenant.isEnabled}
@@ -414,10 +350,9 @@ const TenantManagement: React.FC = () => {
 
                                             <div>
                                                 {tenant.isPrimary ? (
-                                                    <span
-                                                        className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
-                  Primary
-                </span>
+                                                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+                                    Primary
+                                </span>
                                                 ) : (
                                                     <span className="text-xs text-muted-foreground">—</span>
                                                 )}
@@ -440,8 +375,7 @@ const TenantManagement: React.FC = () => {
                         {tenants.length > 0 && (
                             <CardFooter>
                                 <p className="text-xs text-muted-foreground">
-                                    These tenants are synchronized and managed through your connected Microsoft
-                                    environment.
+                                    These tenants are synchronized and managed through your connected Microsoft environment.
                                 </p>
                             </CardFooter>
                         )}
