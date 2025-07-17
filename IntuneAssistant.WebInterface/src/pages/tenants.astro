@@ -1,8 +1,9 @@
 ---
 import MainLayout from "@/layouts/main-layout.astro";
 import TenantManagement from "../components/tenant-management";
+import MyRoadmapPage from "../components/roadmap/roadmap-page";
 ---
 
 <MainLayout title="Customer Information" description="Manage your tenants and customer information.">
-    <TenantManagement client:load />
+    <TenantManagement client:load  />
 </MainLayout>
