@@ -69,6 +69,11 @@ export const navMenuConfig: NavMenuConfig = {
           description: "Information about all assignments"
         },
         {
+          title: "Group Assignments",
+          href: "/assignments/groups",
+          description: "Information about assignments based on groups"
+        },
+        {
           title: "Application Assignments",
           href: "/assignments/apps",
           description: "Information about application assignments and there installation type"
