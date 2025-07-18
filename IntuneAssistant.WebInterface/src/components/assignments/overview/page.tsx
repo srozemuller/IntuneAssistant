@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
 import authDataMiddleware, { createCancelTokenSource } from '@/components/middleware/fetchData';
 
-import { ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT } from "@/components/constants/apiUrls.js";
+import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, GROUPS_LIST_ENDPOINT} from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/overview/columns.tsx";
 
 import { z } from "zod";
@@ -13,12 +13,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import { showLoadingToast } from '@/utils/toastUtils';
+import { Button } from "@/components/ui/button";
 
 import { withOnboardingCheck } from "@/components/with-onboarded-check.tsx";
 
 function AssignmentsPage() {
     const [data, setData] = useState<Assignments[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>('');
     const [rawData, setRawData] = useState<string>('');
     const [groupData, setGroupData] = useState<GroupModel[]>([]);
@@ -26,22 +27,18 @@ function AssignmentsPage() {
     const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
 
     const fetchData = async (cancelSource = createCancelTokenSource()) => {
-        // Don't create and reassign toastId - declare once
         const toastId = showLoadingToast("Fetching assignments", () => {
             cancelSource.cancel("User cancelled request");
         });
 
         try {
-            setLoading(true);
             setError('');
             setData([]);
 
             const response = await authDataMiddleware(ASSIGNMENTS_ENDPOINT, 'GET', {}, cancelSource as any);
 
-            // Check if response exists and has custom properties
             const responseData = response?.data;
 
-            // Handle custom properties that might be in the response data
             if (responseData && responseData.notOnboarded) {
                 setTenantId(responseData.tenantId || '');
                 setShowOnboardingDialog(true);
@@ -66,7 +63,6 @@ function AssignmentsPage() {
                     const parsedData: Assignments[] = z.array(assignmentsSchema).parse(parsedJson.data);
                     setData(parsedData);
 
-                    // Show toast message based on the status
                     const { message } = parsedJson;
                     const status = parsedJson.status?.toLowerCase() || 'success';
 
@@ -114,8 +110,6 @@ function AssignmentsPage() {
                     autoClose: toastDuration
                 });
             }
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -125,11 +119,9 @@ function AssignmentsPage() {
         });
 
         try {
-            setLoading(true);
-            const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource as any);
+            const response = await authDataMiddleware(GROUPS_LIST_ENDPOINT, 'GET', {}, cancelSource as any);
 
             if (response && response.data) {
-                // Handle different response data formats
                 let groupsData;
 
                 if (typeof response.data === 'string') {
@@ -174,26 +166,25 @@ function AssignmentsPage() {
                     autoClose: toastDuration
                 });
             }
+        }
+    };
+
+    const handleFetch = async () => {
+        const assignmentsSource = createCancelTokenSource();
+        const groupsSource = createCancelTokenSource();
+        setLoading(true);
+
+        try {
+            await Promise.all([
+                fetchData(assignmentsSource),
+                fetchGroupData(groupsSource)
+            ]);
+        } catch (error) {
+            console.error('Error during fetch:', error);
         } finally {
             setLoading(false);
         }
     };
-
-
-    useEffect(() => {
-            const assignmentsSource = createCancelTokenSource();
-            const groupsSource = createCancelTokenSource();
-
-            // Call fetch functions immediately (don't use nested functions)
-            fetchData(assignmentsSource);
-            fetchGroupData(groupsSource);
-
-            return () => {
-                assignmentsSource.cancel('Component unmounted');
-                groupsSource.cancel('Component unmounted');
-                console.log('Requests cancelled due to component unmount');
-            };
-    }, []);
 
     return (
         <div className="container max-w-[95%] py-6">
@@ -206,6 +197,17 @@ function AssignmentsPage() {
                 source="assignments"
                 groupData={groupData}
             />
+            <div className="flex justify-center mt-6">
+                {data.length === 0 && (
+                    <Button
+                        onClick={handleFetch}
+                        className="btn-primary"
+                        disabled={loading}
+                    >
+                        {loading ? "Loading..." : "Fetch Data"}
+                    </Button>
+                )}
+            </div>
         </div>
     );
 }

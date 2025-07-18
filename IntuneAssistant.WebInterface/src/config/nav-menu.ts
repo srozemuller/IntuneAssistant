@@ -69,6 +69,11 @@ export const navMenuConfig: NavMenuConfig = {
           description: "Information about all assignments"
         },
         {
+          title: "Group Assignments",
+          href: "/assignments/groups",
+          description: "Information about assignments based on groups"
+        },
+        {
           title: "Application Assignments",
           href: "/assignments/apps",
           description: "Information about application assignments and there installation type"
@@ -107,24 +112,6 @@ export const navMenuConfig: NavMenuConfig = {
           href: "/compare/settings",
           description: "Configuration Policy setting comparison",
         },
-      ]
-    }
-  ],
-  migrationNav: [
-    {
-      title: "Rollout",
-      items: [
-        {
-          title: "Rollout policy assignments",
-          href: "/rollout/assignments",
-          description: "Rollout policy assignments based on a CSV file"
-        },
-        {
-          title: "Restore",
-          href: "/assignments/restore",
-          disabled: true,
-          description: "Restore assignments based on backup"
-        }
       ]
     }
   ],

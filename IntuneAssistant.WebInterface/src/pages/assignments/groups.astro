@@ -1,0 +1,18 @@
+---
+import Assignments from '@/components/assignments/groups/page';
+import MainLayout from "@/layouts/main-layout.astro";
+---
+
+<MainLayout title="Intune Group Assignments Overview" mainClass="flex-1">
+    <section id="features" class="bg-background-200 py-8 md:pt-12">
+        <div class="container space-y-6">
+            <div class="mx-auto flex max-w-[58rem] flex-col space-y-4">
+                <h3 class="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">Intune Group Assignments</h3>
+                <p class="max-w-[95%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 balance-text">
+                    All Intune assignments that are connected to an Entra ID group are shown in this overview. You can filter on different properties to find the assignments you are looking for.
+                </p>
+            </div>
+        </div>
+    </section>
+    <Assignments client:only="react" />
+</MainLayout>

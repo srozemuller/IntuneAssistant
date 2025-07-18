@@ -6,7 +6,7 @@ import authDataMiddleware from "@/components/middleware/fetchData";
 import {
     ASSIGNMENTS_COMPARE_ENDPOINT,
     ASSIGNMENTS_FILTERS_ENDPOINT,
-    GROUPS_ENDPOINT
+    GROUPS_ENDPOINT, GROUPS_LIST_ENDPOINT
 } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/migrate/columns.tsx";
 import { z } from "zod";
@@ -70,7 +70,7 @@ export default function DemoPage() {
 
     const fetchGroups = async () => {
         try {
-            const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET');
+            const response = await authDataMiddleware(GROUPS_LIST_ENDPOINT, 'GET');
             const groupsData = response?.data || [];
             setGroups(groupsData);
         } catch (error) {

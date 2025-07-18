@@ -203,7 +203,18 @@ export function MainNavigationMenu() {
                     {/* Rollout specific menu - Shown only in rollout context */}
                     {rolloutSpecific && (
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>{rolloutSpecific.title}</NavigationMenuTrigger>
+                            <NavigationMenuTrigger>
+                                <a
+                                    href="/rollout"
+                                    className="inline-block mr-1"
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent dropdown from toggling
+                                        window.location.href = "/assignments";
+                                    }}
+                                >
+                                    {rolloutSpecific.title}
+                                </a>
+                            </NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                     {rolloutSpecific.items?.map((page) => (
@@ -217,7 +228,18 @@ export function MainNavigationMenu() {
                     {/* Assistant - Shown only in assistant context */}
                     {assistant && (
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>{assistant.title}</NavigationMenuTrigger>
+                        <NavigationMenuTrigger>
+                            <a
+                                href="/assignments"
+                                className="inline-block mr-1"
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevent dropdown from toggling
+                                    window.location.href = "/assignments";
+                                }}
+                            >
+                                {assistant.title}
+                            </a>
+                        </NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                     {assistant.items?.map((page) => (

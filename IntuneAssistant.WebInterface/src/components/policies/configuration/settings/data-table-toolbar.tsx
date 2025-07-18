@@ -35,6 +35,11 @@ export function DataTableToolbar({
                                      fetchData,
                                      source,
                                  }: DataTableToolbarProps) {
+
+    if (!rawData || rawData.trim() === '') {
+        return null; // Don't render the toolbar until rawData is available
+    }
+
     const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter !== undefined;
     const [dropdownVisible, setDropdownVisible] = useState(false);
 
@@ -43,41 +48,21 @@ export function DataTableToolbar({
             const selectedRows = table.getSelectedRowModel().rows;
             let parsedRawData = [];
 
-            // Handle different data formats safely
-            if (typeof rawData === 'string') {
-                try {
-                    const parsed = JSON.parse(rawData);
-                    // Access the nested data property directly
-                    parsedRawData = parsed || [];
-                } catch (e) {
-                    console.error("Failed to parse JSON:", e);
-                }
-            } else if (Array.isArray(rawData)) {
-                parsedRawData = rawData;
-            } else if (rawData && typeof rawData === 'object') {
-                // If rawData is already an object, extract the data property
-                parsedRawData = rawData.data || [];
-            }
-
-            // Log for debugging
-            console.log("Extracted data array:", parsedRawData);
-
-            // Ensure parsedRawData is an array at this point
-            if (!Array.isArray(parsedRawData)) {
-                console.error("Raw data is not an array after parsing", parsedRawData);
+            try {
+                const parsed = JSON.parse(rawData);
+                parsedRawData = Array.isArray(parsed) ? parsed : parsed.data || [];
+            } catch (e) {
+                console.error("Failed to parse JSON:", e);
                 return [];
             }
 
-            // Get all rows or filtered rows based on selection
             const dataToProcess = selectedRows.length > 0
                 ? parsedRawData.filter(item =>
                     selectedRows.map(row => row.original.id).includes(item.id)
                 )
                 : parsedRawData;
 
-            // Process and map all the filtered rows in the same way
             return dataToProcess.map((item) => {
-                // Create a flattened representation of child settings
                 let childSettingsStr = '';
                 if (item.childSettingInfo && Array.isArray(item.childSettingInfo)) {
                     childSettingsStr = item.childSettingInfo
