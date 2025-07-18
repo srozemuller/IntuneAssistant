@@ -110,24 +110,6 @@ export const navMenuConfig: NavMenuConfig = {
       ]
     }
   ],
-  migrationNav: [
-    {
-      title: "Rollout",
-      items: [
-        {
-          title: "Rollout policy assignments",
-          href: "/rollout/assignments",
-          description: "Rollout policy assignments based on a CSV file"
-        },
-        {
-          title: "Restore",
-          href: "/assignments/restore",
-          disabled: true,
-          description: "Restore assignments based on backup"
-        }
-      ]
-    }
-  ],
   links: [
     {
       title: "FAQ",

@@ -18,6 +18,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toastPosition, toastDuration } from "@/config/toastConfig.ts";
 import { showLoadingToast } from '@/utils/toastUtils';
 
+import GroupSearchCard from "@/components/group-search.tsx";
+
 function GroupAssignmentsPage() {
     const [groupId, setGroupId] = useState<string>('');
     const [groupInfo, setGroupInfo] = useState<any>(null);
@@ -30,7 +32,7 @@ function GroupAssignmentsPage() {
 
     const fetchGroupInfo = async () => {
         if (!groupId.trim()) {
-            toast.error("Please enter a group ID");
+            toast.error("Please enter a group ID or name");
             return;
         }
 
@@ -155,25 +157,12 @@ function GroupAssignmentsPage() {
     return (
         <div className="container max-w-[95%] py-6">
             <ToastContainer autoClose={toastDuration} position={toastPosition}/>
-
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold mb-4">Group Assignments</h1>
-                <div className="flex gap-4">
-                    <Input
-                        placeholder="Enter Group ID"
-                        value={groupId}
-                        onChange={(e) => setGroupId(e.target.value)}
-                        className="max-w-md"
-                    />
-                    <Button
-                        onClick={fetchGroupInfo}
-                        disabled={loading || !groupId}
-                    >
-                        Search Group
-                    </Button>
-                </div>
-            </div>
-
+            <GroupSearchCard
+                groupId={groupId}
+                setGroupId={setGroupId}
+                fetchGroupInfo={fetchGroupInfo}
+                loading={loading}
+            />
             {groupInfo && (
                 <Card className="mb-8">
                     <CardHeader>
