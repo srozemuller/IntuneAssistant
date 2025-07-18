@@ -32,8 +32,8 @@ function ConfigPolicySettingsPage() {
         });
         try {
             setLoading(true);
-            setError(''); // Reset the error state to clear previous errors
-            setData([]); // Clear the table data
+            setError('');
+            setData([]);
 
             const [policyResponse, groupPolicyResponse] = await Promise.all([
                 authDataMiddleware(POLICY_SETTINGS_ENDPOINT, 'GET', {}, cancelSource as any),
@@ -43,53 +43,39 @@ function ConfigPolicySettingsPage() {
             if (!policyResponse || !groupPolicyResponse) {
                 throw new Error('One or both responses are undefined');
             }
-            console.log(policyResponse)
 
-            // Check if response exists and has custom properties
-            const responseData = policyResponse?.data;
+            const parseResponseData = (response: any) => {
+                if (!response?.data?.data) {
+                    throw new Error('Response data is empty or invalid');
+                }
+                return typeof response.data.data === 'string'
+                    ? JSON.parse(response.data.data)
+                    : response.data.data;
+            };
 
-            if (responseData && responseData.notOnboarded) {
-                setTenantId(responseData.tenantId || '');
-                setShowOnboardingDialog(true);
-                setLoading(false);
-                toast.update(toastId, {
-                    render: 'Tenant not onboarded',
-                    type: 'warning',
-                    isLoading: false,
-                    autoClose: toastDuration
-                });
-                return;
-            }
-
-            const policyData = typeof policyResponse.data.data === 'string' ? JSON.parse((policyResponse.data).data) : (policyResponse.data).data;
-            const groupPolicyData = typeof groupPolicyResponse.data.data === 'string' ? JSON.parse((groupPolicyResponse.data).data) : (groupPolicyResponse.data).data;
+            const policyData = parseResponseData(policyResponse);
+            const groupPolicyData = parseResponseData(groupPolicyResponse);
 
             const combinedData = [...policyData, ...groupPolicyData];
             setRawData(JSON.stringify(combinedData));
 
             const parsedData: PolicySettings[] = z.array(settingSchema).parse(combinedData);
-
             setData(parsedData);
 
-            // Show toast message based on the status
-            const { message } = JSON.parse(rawData);
-            const status = JSON.parse(rawData).status.toLowerCase();
-            console.log('Status:', status);
-            if (status === 'success') {
+            // Extract message and status from the API response if they exist
+            const { message, status } = policyResponse.data || {};
+            if (status?.toLowerCase() === 'success') {
                 toast.update(toastId, { render: message, type: 'success', isLoading: false, autoClose: toastDuration });
-            } else if (status === 'error') {
+            } else if (status?.toLowerCase() === 'error') {
                 toast.update(toastId, { render: message, type: 'error', isLoading: false, autoClose: toastDuration });
-            } else if (status === 'warning') {
+            } else if (status?.toLowerCase() === 'warning') {
                 toast.update(toastId, { render: message, type: 'warning', isLoading: false, autoClose: toastDuration });
             }
-
-
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = `Failed to fetch policies. ${(error as Error).message}`;
             setError(errorMessage);
             toast.update(toastId, { render: errorMessage, type: 'error', isLoading: false, autoClose: toastDuration });
-
             throw new Error(errorMessage);
         } finally {
             setLoading(false);
@@ -100,7 +86,9 @@ function ConfigPolicySettingsPage() {
         const cancelSource = createCancelTokenSource();
 
         fetchData(cancelSource);
-
+        if (rawData) {
+            console.log('Raw data page:', rawData);
+        }
         return () => {
             // Cancel the API call when the component unmounts
             cancelSource.cancel("Component unmounted or user navigated away");

@@ -6,7 +6,7 @@ import authDataMiddleware, { createCancelTokenSource } from "@/components/middle
 import {
     ASSIGNMENTS_COMPARE_ENDPOINT,
     ASSIGNMENTS_FILTERS_ENDPOINT,
-    GROUPS_ENDPOINT
+    GROUPS_ENDPOINT, GROUPS_LIST_ENDPOINT
 } from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/migrate/columns.tsx";
 import { z } from "zod";
@@ -50,7 +50,7 @@ function MigrationPage() {
     };
 
     const fetchGroups = async (cancelSource: any) => {
-        const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource);
+        const response = await authDataMiddleware(GROUPS_LIST_ENDPOINT, 'GET', {}, cancelSource);
         return response?.data || [];
     };
 

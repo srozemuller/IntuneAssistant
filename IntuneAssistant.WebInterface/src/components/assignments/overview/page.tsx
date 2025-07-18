@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { DataTable } from './data-table.tsx';
 import authDataMiddleware, { createCancelTokenSource } from '@/components/middleware/fetchData';
 
-import { ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT } from "@/components/constants/apiUrls.js";
+import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, GROUPS_LIST_ENDPOINT} from "@/components/constants/apiUrls.js";
 import { columns } from "@/components/assignments/overview/columns.tsx";
 
 import { z } from "zod";
@@ -126,7 +126,7 @@ function AssignmentsPage() {
 
         try {
             setLoading(true);
-            const response = await authDataMiddleware(GROUPS_ENDPOINT, 'GET', {}, cancelSource as any);
+            const response = await authDataMiddleware(GROUPS_LIST_ENDPOINT, 'GET', {}, cancelSource as any);
 
             if (response && response.data) {
                 // Handle different response data formats

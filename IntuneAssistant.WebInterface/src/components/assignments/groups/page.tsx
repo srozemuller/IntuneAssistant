@@ -34,6 +34,10 @@ function GroupAssignmentsPage() {
             return;
         }
 
+
+        const isGuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(groupId);
+        const queryParam = isGuid ? `groupId=${groupId}` : `groupName=${groupId}`;
+
         const toastId = showLoadingToast("Fetching group information", () => {});
         const cancelSource = createCancelTokenSource();
 
@@ -43,7 +47,7 @@ function GroupAssignmentsPage() {
             setGroupInfo(null);
             setAssignments([]);
 
-            const response = await authDataMiddleware(`${GROUPS_ENDPOINT}/${groupId}`, 'GET', {}, cancelSource as any);
+            const response = await authDataMiddleware(`${GROUPS_ENDPOINT}?${queryParam}`, 'GET', {}, cancelSource as any);
             const groupData = response?.data?.data;
 
             if (groupData) {
@@ -84,7 +88,7 @@ function GroupAssignmentsPage() {
         try {
             setLoadingMembers(true);
 
-            const response = await authDataMiddleware(`${GROUPS_ENDPOINT}/${groupId}/members`,'GET',{},cancelSource as any );
+            const response = await authDataMiddleware(`${GROUPS_ENDPOINT}/${groupInfo.id}/members`,'GET',{},cancelSource as any );
 
             setGroupMembers(response?.data || []);
 
@@ -122,7 +126,7 @@ function GroupAssignmentsPage() {
             setError('');
             setAssignments([]);
 
-            const response = await authDataMiddleware(`${ASSIGNMENTS_GROUP_ENDPOINT}/${groupId}`, 'GET', {}, cancelSource as any);
+            const response = await authDataMiddleware(`${ASSIGNMENTS_GROUP_ENDPOINT}/${groupInfo.id}`, 'GET', {}, cancelSource as any);
 
             const parsedData = z.array(assignmentSchema).parse(response?.data?.data || []);
             setAssignments(parsedData);

@@ -9,6 +9,8 @@ export const INTUNEASSISTANT_TENANT_INFO = `${API_BASE_URL}/tenant/license-info`
 export const INTUNEASSISTANT_TENANT_STYLE = `${API_BASE_URL}/tenant/style`;
 
 export const GROUPS_ENDPOINT = `${API_BASE_URL}/groups`;
+export const GROUPS_LIST_ENDPOINT = `${API_BASE_URL}/groups/list`;
+
 export const COMPARE_ENDPOINT = `${API_BASE_URL}/compare`;
 export const CUSTOMER_ENDPOINT = `${API_BASE_URL}/customer`;
 
