@@ -217,7 +217,18 @@ export function MainNavigationMenu() {
                     {/* Assistant - Shown only in assistant context */}
                     {assistant && (
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>{assistant.title}</NavigationMenuTrigger>
+                        <NavigationMenuTrigger>
+                            <a
+                                href="/assignments"
+                                className="inline-block mr-1"
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevent dropdown from toggling
+                                    window.location.href = "/assignments";
+                                }}
+                            >
+                                {assistant.title}
+                            </a>
+                        </NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                     {assistant.items?.map((page) => (
