@@ -1,15 +1,17 @@
 ---
-sidebar_position: 3
+sidebar_position: 1
 ---
 
-# Intune Assistant Documentation
+# Assistant Overview
 
-Docusaurus can manage multiple versions of your docs.
+The Intune Assistant provides powerful tools to manage and analyze assignments in your Intune environment. These tools are divided into three main features:
 
-## Create a docs version
+- **All Assignments**: View and analyze all assignments across your Intune environment.
+- **Application Assignments**: Focus on assignments related to applications.
+- **Group Assignments**: Dive into assignments specific to groups.
 
-Release a version 1.0 of your project:
+Click on the links below to learn more about each feature:
 
-```bash
-npm run docusaurus docs:version 1.0
-```
+- [All Assignments](./assignments/all-assignments)
+- [Application Assignments](./assignments/application-assignments)
+- [Group Assignments](./assignments/group-assignments)
