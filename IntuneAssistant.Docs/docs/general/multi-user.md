@@ -27,11 +27,11 @@ To securely enable multi-user access, it is recommended to explicitly assign use
 
 ### Steps to Add Users or Groups to the Service Principal
 
-1. **Navigate to Azure Active Directory**:
-    - Go to the Azure portal and open the **Azure Active Directory** blade.
-
+1. **Navigate to Microsoft Entra ID**:
+    - Go to the Azure portal (https://portal.azure.com) and search for **Microsoft Entra ID** or go to or Microsoft Entra admin center (https://entra.microsoft.com) 
+    - Open the **enterprise applications** blade.
 2. **Locate the Service Principal**:
-    - Under **Enterprise Applications**, search for the Intune Assistant service principal.
+    - Under **Enterprise Applications**, search for the Intune Assistant and Intune Assistant API service principal.
 
 3. **Assign Users or Groups**:
     - Open the **Users and Groups** section.
@@ -39,6 +39,10 @@ To securely enable multi-user access, it is recommended to explicitly assign use
 
 4. **Save Changes**:
     - Confirm the assignments and save your changes.
+
+
+![add-users_groups.png](/img/multi-user/add-users_groups.png)
+Add the users to both the **Intune Assistant** and **Intune Assistant API** service principals to ensure they have access to both the application interface and the underlying API.
 
 By following these steps, you can ensure that only authorized users or groups have access to the Intune Assistant, improving security and compliance.
 

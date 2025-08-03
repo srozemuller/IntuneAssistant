@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Assistant Overview
+# Assistant Introduction
 
 The Intune Assistant provides powerful tools to manage and analyze assignments in your Intune environment. These tools are divided into three main features:
 
