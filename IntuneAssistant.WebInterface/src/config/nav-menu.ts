@@ -128,7 +128,7 @@ export const navMenuConfig: NavMenuConfig = {
     },
     {
       title: "Docs",
-      href: "https://docs.intuneassistant.cloud/docs",
+      href: "https://docs.intuneassistant.cloud",
       description: "Documentation",
     },
   ],
