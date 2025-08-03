@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+    <g id="custom_svg">
+        <!-- Background Rectangle -->
+        <rect id="background" width="800" height="600" fill="#f0f0f0" />
+
+        <!-- Circle Element -->
+        <circle id="circle_1" cx="400" cy="300" r="100" fill="#61dafb" />
+
+        <!-- Path Element -->
+        <path id="path_1" d="M200,300 Q400,100 600,300 T1000,300" stroke="#39374d" fill="none" stroke-width="5" />
+
+        <!-- Group with Multiple Rectangles -->
+        <g id="rectangles" transform="translate(100, 100)">
+            <rect id="rect_1" x="0" y="0" width="50" height="50" fill="#ff6584" />
+            <rect id="rect_2" x="60" y="0" width="50" height="50" fill="#4267b2" />
+            <rect id="rect_3" x="120" y="0" width="50" height="50" fill="#3ecc5f" />
+        </g>
+
+        <!-- Text Element -->
+        <text id="text_1" x="400" y="550" font-family="Arial" font-size="24" text-anchor="middle" fill="#65617d">
+            Custom SVG Example
+        </text>
+    </g>
+</svg>
