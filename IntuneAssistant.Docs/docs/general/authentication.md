@@ -18,7 +18,7 @@ First important thing to know is that the Intune Assistant needs only ***READ***
 The permissions are needed to read the data from your tenant. The Intune Assistant does not write any data to your tenant. The permissions are needed to read the data from your tenant and present it in the Intune Assistant application.
 All the permissions are on behalf of the logged-in user.
 
-The second important thing is that the Intune Assistant does not store any data from your tenant except the tenant ID and tenant domain. Why that data stored is explained in the [onboarding part](/docs/web/getting-started/onboarding/) of the documentation.
+The second important thing is that the Intune Assistant does not store any data from your tenant except the tenant ID and tenant domain. Why that data stored is explained in the [onboarding part](/docs/onboarding.md) of the documentation.
 All the information is presented in your browser. The data is only stored is the session of the user that is logged in at client side. When the user logs out the data is removed from the session.
 
 
