@@ -118,12 +118,17 @@ export const navMenuConfig: NavMenuConfig = {
   links: [
     {
       title: "FAQ",
-      href: "/faq",
+      href: "https://docs.intuneassistant.cloud/faq",
       description: "Frequently asked questions",
     },
     {
+      title: "About",
+      href: "https://docs.intuneassistant.cloud/about",
+      description: "Documentation",
+    },
+    {
       title: "Docs",
-      href: "/docs",
+      href: "https://docs.intuneassistant.cloud/docs",
       description: "Documentation",
     },
   ],
