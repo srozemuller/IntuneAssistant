@@ -9,7 +9,6 @@ export const navMenuConfig: NavMenuConfig = {
         href: "/rollout/faq/general",
         description: "Answers to common questions about rollout management"
       },
-      // Add more FAQ items as needed
     ]
   },
   rolloutNav: [
@@ -36,14 +35,8 @@ export const navMenuConfig: NavMenuConfig = {
       ]
     }
   ],
-  docsNav: [
-    {
-      title: "Docs",
-      href: "/docs",
-    },
-  ],
   productsNav: {
-    title: "Products",
+    title: "Modules",
     items: [
       {
         title: "Assistant",
