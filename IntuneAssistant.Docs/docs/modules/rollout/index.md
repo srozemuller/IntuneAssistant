@@ -37,7 +37,7 @@ When having the correct license, you get access to the assignments page. The pag
 
 To add Intune assignments in bulk you need to provide CSV file.
 The CSV file contains several columns that makes the rollout possible.
-You can download the CSV file template [here](/rollout/assignments)
+You can download the CSV file template [here](https://intuneassistant.cloud/rollout/assignments). Use the **Migration Template** button.
 
 ### CSV file explained
 The CSV file has several columns.
