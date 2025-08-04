@@ -113,7 +113,7 @@ export function MainNavigationMenu() {
                             {(() => {
                                 const path = typeof window !== 'undefined' ? window.location.pathname : '/';
                                 // Determine which product is active based on the path
-                                return 'Products';
+                                return 'Modules';
                             })()}
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
@@ -160,30 +160,14 @@ export function MainNavigationMenu() {
 
                     {/* Main Menu - Always shown */}
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>{main.title}</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                                <li className="row-span-3">
-                                    <NavigationMenuLink asChild>
-                                        <a
-                                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                                            href="/onboarding"
-                                        >
-                                            <img src='/images/onboarding.png' alt="Logo" />
-                                            <div className="mb-2 mt-4 text-lg font-medium">
-                                                Onboarding
-                                            </div>
-                                            <p className="text-sm leading-tight text-muted-foreground">
-                                                Walk through the process of setting up your Intune Assistant.
-                                            </p>
-                                        </a>
-                                    </NavigationMenuLink>
-                                </li>
-                                {main.items?.map((page) => (
-                                    <ListItem key={page.title} {...page} />
-                                ))}
-                            </ul>
-                        </NavigationMenuContent>
+                        <NavigationMenuLink asChild>
+                            <a
+                                href="/onboarding"
+                                className="block px-4 py-2 text-sm font-medium text-primary hover:underline"
+                            >
+                                Onboard NOW!
+                            </a>
+                        </NavigationMenuLink>
                     </NavigationMenuItem>
 
                     {/* Rollout FAQ - Shown only in rollout context */}
