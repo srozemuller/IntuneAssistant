@@ -1,4 +1,5 @@
 import { z } from "zod";
+import {groupSchema} from "@/schemas/groupSchema.tsx";
 
 // Define the group count schema
 const groupCountSchema = z.object({
@@ -7,15 +8,6 @@ const groupCountSchema = z.object({
     groupCount: z.number()
 });
 
-// Define the group schema
-const groupSchema = z.object({
-    id: z.string(),
-    displayName: z.string(),
-    description: z.string(),
-    createdDateTime: z.string(),
-    groupCount: groupCountSchema,
-    members: z.array(z.any()).nullable()
-});
 
 // Assignment schema matching your actual API response
 export const assignmentSchema = z.object({

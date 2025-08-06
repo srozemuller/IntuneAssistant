@@ -14,6 +14,7 @@ const groupSchema = z.object({
     id: z.string().uuid().default("00000000-0000-0000-0000-000000000000"),
     displayName: z.string().default(""),
     description: z.string().default("").nullable(),
+    membershipRule: z.string().default("").nullable(),
     createdDateTime: z.string().default(""),
     groupCount: z.object({
         userCount: z.number(),

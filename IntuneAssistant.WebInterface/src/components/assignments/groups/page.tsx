@@ -180,6 +180,12 @@ function GroupAssignmentsPage() {
                                 <p className="font-medium">{new Date(groupInfo.createdDateTime).toLocaleDateString()}</p>
                             </div>
                             <div>
+                                <p className="text-sm text-muted-foreground">Membership Rule</p>
+                                <p className="font-medium">
+                                    {groupInfo.membershipRule ? groupInfo.membershipRule : "Not applicable"}
+                                </p>
+                            </div>
+                            <div>
                                 <p className="text-sm text-muted-foreground">Member Count</p>
                                 <p className="font-medium">
                                     {groupInfo.groupCount?.userCount || 0} Users,
