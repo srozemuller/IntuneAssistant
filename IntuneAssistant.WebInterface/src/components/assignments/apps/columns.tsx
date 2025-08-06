@@ -3,7 +3,7 @@ import { DataTableColumnHeader } from "@/components/data-table-column-header.tsx
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import authDataMiddleware from "@/components/middleware/fetchData";
-import { CheckCircle } from "lucide-react";
+import {AlertTriangle, CheckCircle, EqualApproximately} from "lucide-react";
 import { DataTable } from "./data-table-groups.tsx"; // Ensure you have a DataTable component
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Assignments } from "@/components/assignments/apps/schema.tsx";
@@ -252,14 +252,42 @@ export const columns = (groupData: GroupModel[]): ColumnDef<Assignments>[] => [
 
             // Determine if group is deleted - targetId exists but group is not found
             const isGroupDeleted = targetId && targetId.trim() !== "" && !group;
+
+            // Check if the group is dynamic or fixed
+            const isDynamicGroup = row.original.group?.membershipRule !== null;
+
             if ((!isGroupDeleted) && assignmentType === "Entra ID Group" || assignmentType === "Entra ID Group Exclude") {
                 return (
                     <>
                         <div
-                            className="text-yellow-500 cursor-pointer"
+                            className="text-yellow-500 cursor-pointer flex items-center"
                             onClick={() => fetchGroupMembers(targetId, setMembers, setIsDialogOpen)}
                         >
                             {row.getValue("targetName")}
+                            {isDynamicGroup && (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger>
+                                            <EqualApproximately className="h-4 w-4 text-purple-500 ml-2" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Dynamic Group</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            )}
+                            {userCount > 0 && deviceCount > 0 && (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger>
+                                            <AlertTriangle className="h-4 w-4 text-orange-500 ml-2" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Group has both users and devices</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            )}
                         </div>
                         <div className="italic text-sm">
                             {group ? `(${userCount} users / ${deviceCount} devices / ${groupCount} groups)` : ""}
