@@ -169,6 +169,7 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows, clearParentData }) =
 
     const checkForConflicts = (data: object[]) => {
         const conflicts: string[] = [];
+        const ROW_OFFSET = 2; // Offset for row numbers in error messages
         const seen: { [key: string]: { action: string, row: number, filterName?: string, filterType?: string } } = {};
 
         // Keep track of policies with All Users/Devices
@@ -200,24 +201,24 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows, clearParentData }) =
 
             // Check for invalid "All Devices/Users" with exclude combinations
             if (row.GroupName?.toLowerCase() === "all devices" && row.AssignmentAction?.toLowerCase() === "exclude") {
-                conflicts.push(`[Invalid assignment] - Row ${index + 1}: Cannot exclude "All Devices" for policy "${row.PolicyName}"`);
+                conflicts.push(`[Invalid assignment] - Row ${index + ROW_OFFSET}: Cannot exclude "All Devices" for policy "${row.PolicyName}"`);
             }
 
             if (row.GroupName?.toLowerCase() === "all users" && row.AssignmentAction?.toLowerCase() === "exclude") {
-                conflicts.push(`[Invalid assignment] - Row ${index + 1}: Cannot exclude "All Users" for policy "${row.PolicyName}"`);
+                conflicts.push(`[Invalid assignment] - Row ${index + ROW_OFFSET}: Cannot exclude "All Users" for policy "${row.PolicyName}"`);
             }
 
             // Check for conflicts based on policy name and assignment action
             if (seen[key] && seen[key].action !== row.AssignmentAction) {
-                conflicts.push(`[Assignment action conflict] - Row ${index + 1}: Policy: ${row.PolicyName} with action '${row.AssignmentAction}' conflicts with Row ${seen[key].row + 1} with action '${seen[key].action}'`);
+                conflicts.push(`[Assignment action conflict] - Row ${index + ROW_OFFSET}: Policy: ${row.PolicyName} with action '${row.AssignmentAction}' conflicts with Row ${seen[key].row + ROW_OFFSET} with action '${seen[key].action}'`);
             }
 
             // Check for conflicts based on policy name, group name, and filter settings
             if (seen[filterKey] && (row.FilterName || row.FilterType)) {
-                conflicts.push(`[Group conflict] - Row ${index + 1}: Policy: ${row.PolicyName}, Group: ${row.GroupName}, Filter: ${row.FilterName}, Type: ${row.FilterType} conflicts with Row ${seen[filterKey].row + 1}`);
+                conflicts.push(`[Group conflict] - Row ${index + ROW_OFFSET}: Policy: ${row.PolicyName}, Group: ${row.GroupName}, Filter: ${row.FilterName}, Type: ${row.FilterType} conflicts with Row ${seen[filterKey].row + ROW_OFFSET}`);
             }
             if (seen[key] && (seen[key].filterName || seen[key].filterType) !== (row.FilterName || row.FilterType)) {
-                conflicts.push(`[Filter conflict] - Row ${index + 1}: Policy: ${row.PolicyName}, Group: ${row.GroupName} conflicts with Row ${seen[key].row + 1} due to filter mismatch`);
+                conflicts.push(`[Filter conflict] - Row ${index + ROW_OFFSET}: Policy: ${row.PolicyName}, Group: ${row.GroupName} conflicts with Row ${seen[key].row + ROW_OFFSET} due to filter mismatch`);
             }
 
             // Store the current row in the seen object
@@ -232,7 +233,7 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows, clearParentData }) =
                 const allDevicesRow = policiesWithAllDevices.get(policyName)!;
                 specificGroupRows.forEach(specificGroupRow => {
                     conflicts.push(
-                        `[Assignment conflict] - Row ${specificGroupRow + 1}: Policy: "${policyName}" has a specific group assignment that conflicts with "All Devices" assignment in Row ${allDevicesRow + 1}`
+                        `[Assignment conflict] - Row ${specificGroupRow + ROW_OFFSET}: Policy: "${policyName}" has a specific group assignment that conflicts with "All Devices" assignment in Row ${allDevicesRow + ROW_OFFSET}`
                     );
                 });
             }
@@ -242,7 +243,7 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ setRows, clearParentData }) =
                 const allUsersRow = policiesWithAllUsers.get(policyName)!;
                 specificGroupRows.forEach(specificGroupRow => {
                     conflicts.push(
-                        `[Assignment conflict] - Row ${specificGroupRow + 1}: Policy: "${policyName}" has a specific group assignment that conflicts with "All Users" assignment in Row ${allUsersRow + 1}`
+                        `[Assignment conflict] - Row ${specificGroupRow + ROW_OFFSET}: Policy: "${policyName}" has a specific group assignment that conflicts with "All Users" assignment in Row ${allUsersRow + ROW_OFFSET}`
                     );
                 });
             }
