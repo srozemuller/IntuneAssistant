@@ -18,7 +18,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx"
 
-import { Assignments } from "@/components/assignments/groups/schema.tsx"
+import { assignmentSchema } from "@/components/assignments/groups/schema.tsx"
 import {ExternalLink} from "lucide-react";
 
 interface DataTableRowActionsProps<TData> {
@@ -28,7 +28,7 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
                                                row,
                                            }: DataTableRowActionsProps<TData>) {
-    const task = Assignments.parse(row.original)
+    const task = assignmentSchema.parse(row.original)
 
     return (
         <DropdownMenu>
