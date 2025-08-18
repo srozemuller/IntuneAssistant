@@ -10,7 +10,7 @@ const groupCountSchema = z.object({
 
 
 // Assignment schema matching your actual API response
-export const assignmentSchema = z.object({
+const assignmentSchema = z.object({
     resourceType: z.string(),
     resourceSubType: z.string().nullable(),
     platform: z.string(),
@@ -28,4 +28,5 @@ export const assignmentSchema = z.object({
     group: groupSchema.nullable()
 });
 
-export type Assignment = z.infer<typeof assignmentSchema>;
+export type Assignments = z.infer<typeof assignmentSchema>;
+export { assignmentSchema };

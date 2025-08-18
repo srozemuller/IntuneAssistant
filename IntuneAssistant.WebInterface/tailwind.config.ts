@@ -15,6 +15,10 @@ const config = {
   		}
   	},
   	extend: {
+		animation: {
+			'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+			'pulse-once': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) 1'
+		},
   		fontFamily: {
   			sans: ["Inter", ...fontFamily.sans],
   			heading: ["CalSans Semibold", ...fontFamily.sans]

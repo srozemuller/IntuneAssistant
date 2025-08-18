@@ -3,7 +3,7 @@ import { DataTableViewOptions } from "@/components/data-table-view-options.tsx"
 import {assignmentAction, migrationNeeded, readyForMigration, backupStatusValues} from "@/components/assignments/migrate/fixed-values.tsx"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter.tsx"
 import { Button } from "@/components/ui/button.tsx"
-import { Undo2Icon } from "lucide-react";
+import { Undo2Icon, FilterIcon } from "lucide-react";
 import { type Table } from "@tanstack/react-table"
 import React, { useState, useEffect } from "react"
 import JSZip from "jszip";
@@ -17,7 +17,7 @@ import {
     ASSIGNMENTS_MIGRATE_ENDPOINT,
     EXPORT_ENDPOINT
 } from "@/components/constants/apiUrls";
-import {assignmentMigrationSchema, groupsSchema} from "@/components/assignments/migrate/schema.tsx";
+import {groupsSchema} from "@/components/assignments/migrate/schema.tsx";
 import {z} from "zod";
 import type {policySchema} from "@/components/policies/configuration/schema.tsx";
 import { SelectAllButton } from "@/components/button-selectall.tsx";
@@ -33,7 +33,7 @@ import Papa from "papaparse";
 import type {filterSchema} from "@/schemas/filters.tsx";
 
 interface ValidateAndUpdateTableFn {
-    (policyId?: string): Promise<boolean>;
+    (policyIds?: string[]): Promise<boolean>;
 }
 
 interface TData {
@@ -286,96 +286,6 @@ export function DataTableToolbar({
         toast.success(`Backup created with ${backupRows.length} entries for ${backedUpPolicyIds.size} policies`);
     };
 
-    const handleBackupExport = async (cancelSource = createCancelTokenSource()) => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const uniquePolicies = [...new Map(selectedRows.map(row =>
-            [row.original.policy?.id, { id: row.original.policy?.id, type: row.original.policy?.policyType }]
-        )).values()];
-
-        if (uniquePolicies.length === 0) {
-            toast.error("No data to export.");
-            return;
-        }
-
-        // Initialize progress state
-        setIsBackingUp(true);
-        setBackupProgress(0);
-        setTotalPolicies(uniquePolicies.length);
-        setProcessedPolicies(0);
-
-        const zip = new JSZip();
-        let hasError = false;
-        const newBackupStatus = { ...backupStatus };
-
-        for (const [index, policy] of uniquePolicies.entries()) {
-            if (policy.id && policy.type) {
-                try {
-                    const response = await authDataMiddleware(`${EXPORT_ENDPOINT}/${policy.type}/${policy.id}`, 'GET', {}, cancelSource as any);
-                    if (response && response.data) {
-                        const sourceFileName = `${policy.id}_source.json`;
-                        const sourceFileContent = JSON.stringify(response.data, null, 2);
-                        zip.file(sourceFileName, sourceFileContent);
-                        newBackupStatus[policy.id] = true;
-                    } else {
-                        newBackupStatus[policy.id] = false;
-                        hasError = true;
-                    }
-                } catch (error) {
-                    console.error(`Failed to backup policy ${policy.id}:`, error);
-                    newBackupStatus[policy.id] = false;
-                    hasError = true;
-                }
-
-                // Update progress after each policy is processed
-                setProcessedPolicies(index + 1);
-                setBackupProgress(Math.round(((index + 1) / uniquePolicies.length) * 100));
-            }
-        }
-
-        try {
-            const content = await zip.generateAsync({ type: "blob" });
-            saveAs(content, `backup.zip`);
-
-            setBackupStatus(newBackupStatus);
-            toast.success(`Zip file created and downloaded.`);
-
-            if (hasError) {
-                toast.error("Some policies failed to backup. Check the status indicators.");
-            }
-        } catch (err: unknown) {
-            console.error("Failed to create zip file:", err);
-            toast.error(`Failed to create zip file: ${err instanceof Error ? err.message : "Unknown error"}`);
-        } finally {
-            // Reset progress state
-            setIsBackingUp(false);
-        }
-    };
-
-    const handleCsvExport = async (rawData: string) => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const selectedIds = selectedRows.map(row => row.original.id);
-        const parsedRawData = JSON.parse(rawData);
-
-        const dataToExport = parsedRawData
-            .filter((item: TData) => selectedIds.includes(item.id))
-            .map((item: TData) => {
-                const selectedRow = selectedRows.find(row => row.original.id === item.id);
-                return {
-                    id: selectedRow?.original.id,
-                    policy: selectedRow?.original.policy
-                };
-            });
-
-        try {
-            const csv = Papa.unparse(dataToExport);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            saveAs(blob, 'export.csv');
-            toast.success("CSV export successful!");
-        } catch (err) {
-            console.error("CSV export failed:", err);
-            toast.error("CSV export failed!");
-        }
-    };
 
     const handleRefresh = () => {
         toast.promise(fetchData(), {
@@ -550,11 +460,15 @@ export function DataTableToolbar({
                 )}
                 {isFiltered && (
                     <Button
-                        variant="ghost"
+                        variant="destructive" // Use a more prominent color
                         onClick={() => table.resetColumnFilters()}
-                        className="h-8 px-2 lg:px-3"
+                        className="h-8 px-2 lg:px-3 flex items-center"
                     >
+                        <FilterIcon className="mr-2 h-4 w-4 text-yellow-500" />
                         Reset
+                        <span className="ml-2 bg-yellow-200 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded">
+            {table.getState().columnFilters.length}
+        </span>
                         <Undo2Icon className="ml-2 h-4 w-4" />
                     </Button>
                 )}
