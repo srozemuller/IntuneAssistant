@@ -50,6 +50,7 @@ interface AssignmentRow {
     policy: {
         id: string;
         policyType: string;
+        policySubType: string;
         assignments: any[];
     };
     assignmentId: string;
@@ -126,6 +127,7 @@ export function DataTable<TData extends AssignmentRow, TValue>({
             const validationRequestBody = rowsToValidate.map(row => ({
                 Id: row.id,
                 ResourceType: row.policy?.policyType,
+                SubResourceType: row.policy?.policySubType,
                 ResourceId: row.policy?.id,
                 AssignmentId: row.assignmentId,
                 AssignmentType: row.assignmentType,
