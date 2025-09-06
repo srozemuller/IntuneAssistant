@@ -497,12 +497,31 @@ export default function AssignmentsOverview() {
             }
         },
         {
-            key: 'assignmentType' as keyof Assignments,
+            key: 'assignmentType' as string,
             label: 'Assignment',
             width: 140,
             minWidth: 100,
             render: (value: unknown, row: Record<string, unknown>) => {
-                // ... existing render logic
+                const isAssigned = Boolean(row.isAssigned);
+                if (!isAssigned) {
+                    return (
+                        <Badge variant="secondary" className="text-xs whitespace-nowrap">
+                            Not Assigned
+                        </Badge>
+                    );
+                }
+
+                const assignmentType = String(value);
+                const isExclude = assignmentType.includes('Exclude');
+
+                return (
+                    <Badge
+                        variant={isExclude ? "destructive" : "default"}
+                        className="text-xs whitespace-nowrap"
+                    >
+                        {assignmentType}
+                    </Badge>
+                );
             }
         },
         {
