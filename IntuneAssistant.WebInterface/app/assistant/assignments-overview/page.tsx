@@ -118,43 +118,47 @@ export default function AssignmentsOverview() {
             {
                 key: 'resourceType',
                 label: 'Type',
-                width: 20
+                width: 20,
+                getValue: (row) => String(row.resourceType || '')
             },
             {
                 key: 'resourceName',
                 label: 'Resource',
                 width: 30,
-                getValue: (row) => row.resourceName || 'N/A'
+                getValue: (row) => String(row.resourceName || 'N/A')
             },
             {
                 key: 'assignmentType',
                 label: 'Assignment',
                 width: 25,
-                getValue: (row) => row.isAssigned ? row.assignmentType : 'Not Assigned'
+                getValue: (row) => String(row.assignmentType || '')
             },
             {
                 key: 'targetName',
                 label: 'Target',
-                width: 30
+                width: 30,
+                getValue: (row) => String(row.targetName || '')
             },
             {
                 key: 'platform',
                 label: 'Platform',
-                width: 20,
-                getValue: (row) => row.platform || 'All'
+                width: 15,
+                getValue: (row) => String(row.platform || 'All')
             },
             {
                 key: 'isAssigned',
                 label: 'Status',
-                width: 20,
+                width: 15,
                 getValue: (row) => row.isAssigned ? 'Assigned' : 'Not Assigned'
             },
             {
-                key: 'filter',
+                key: 'filterId',
                 label: 'Filter',
                 width: 25,
                 getValue: (row) => {
-                    const filterInfo = getFilterInfo(row.filterId, row.filterType);
+                    const filterId = row.filterId as string | null;
+                    if (!filterId || filterId === 'None') return 'None';
+                    const filterInfo = getFilterInfo(filterId, String(row.filterType));
                     return filterInfo.displayName;
                 }
             }
@@ -418,14 +422,14 @@ export default function AssignmentsOverview() {
 
     const groupMemberColumns = [
         {
-            key: 'displayName' as keyof UserMember,
+            key: 'displayName' as string,
             label: 'Display Name',
             render: (value: unknown) => (
                 <span className="font-medium">{String(value)}</span>
             )
         },
         {
-            key: 'type' as keyof UserMember,
+            key: 'type' as string,
             label: 'Type',
             render: (value: unknown) => (
                 <Badge variant="outline" className="text-xs">
@@ -434,7 +438,7 @@ export default function AssignmentsOverview() {
             )
         },
         {
-            key: 'accountEnabled' as keyof UserMember,
+            key: 'accountEnabled' as string,
             label: 'Account Status',
             render: (value: unknown) => {
                 const isEnabled = Boolean(value);
@@ -447,7 +451,7 @@ export default function AssignmentsOverview() {
             }
         },
         {
-            key: 'id' as keyof UserMember,
+            key: 'id' as string,
             label: 'ID',
             render: (value: unknown) => (
                 <span className="font-mono text-xs text-gray-500">{String(value)}</span>
@@ -457,7 +461,7 @@ export default function AssignmentsOverview() {
 
     const columns = [
         {
-            key: 'resourceType' as keyof Assignments,
+            key: 'resourceType' as string,
             label: 'Type',
             width: 120,
             minWidth: 80,
@@ -468,7 +472,7 @@ export default function AssignmentsOverview() {
             )
         },
         {
-            key: 'resourceName' as keyof Assignments,
+            key: 'resourceName' as string,
             label: 'Resource',
             width: 200,
             minWidth: 150,
@@ -525,7 +529,7 @@ export default function AssignmentsOverview() {
             }
         },
         {
-            key: 'targetName' as keyof Assignments,
+            key: 'targetName' as string,
             label: 'Target',
             width: 180,
             minWidth: 120,
@@ -565,7 +569,7 @@ export default function AssignmentsOverview() {
             }
         },
         {
-            key: 'platform' as keyof Assignments,
+            key: 'platform' as string,
             label: 'Platform',
             width: 100,
             minWidth: 80,
@@ -576,7 +580,7 @@ export default function AssignmentsOverview() {
             )
         },
         {
-            key: 'isAssigned' as keyof Assignments,
+            key: 'isAssigned' as string,
             label: 'Status',
             width: 120,
             minWidth: 90,
@@ -591,7 +595,7 @@ export default function AssignmentsOverview() {
             }
         },
         {
-            key: 'filterId' as keyof Assignments,
+            key: 'filterId' as string,
             label: 'Filter',
             width: 160,
             minWidth: 120,
@@ -998,7 +1002,6 @@ export default function AssignmentsOverview() {
                                 <div>
                                     <h4 className="text-lg font-medium mb-4">Group Members</h4>
                                     <DataTable
-                                        title=""
                                         data={selectedGroup.members}
                                         columns={groupMemberColumns}
                                     />
