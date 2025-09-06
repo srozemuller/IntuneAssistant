@@ -1,0 +1,8 @@
+{
+  "label": "General",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "The basic part of Intune Assistant and all the features it provides."
+  }
+}
