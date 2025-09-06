@@ -11,11 +11,11 @@ export interface ExportColumn {
     key: string;
     label: string;
     width?: number;
-    getValue?: (row: any) => string;
+    getValue?: (row: Record<string, unknown>) => string;
 }
 
 export interface ExportData {
-    data: any[];
+    data: Record<string, unknown>[];
     columns: ExportColumn[];
     filename: string;
     title: string;

@@ -1,20 +1,12 @@
 [build]
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "out"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
 
 [build.environment]
   NODE_VERSION = "18"
 
-# Handle Next.js routing
+# Handle client-side routing (order matters)
 [[redirects]]
   from = "/*"
-  to = "/404.html"
-  status = 404
-
-[[redirects]]
-  from = "/*"
-  to = "/"
+  to = "/index.html"
   status = 200
