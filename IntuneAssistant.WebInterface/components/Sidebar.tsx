@@ -19,7 +19,9 @@ import {
     CirclePlay,
     UserCheck,
     Smartphone,
-    UsersIcon
+    UsersIcon,
+    ChevronLeft,
+    Menu, ListCheck
 } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -49,7 +51,9 @@ const modules = [
         name: 'Rollout',
         icon: CirclePlay,
         path: '/rollout',
-        subItems: []
+        subItems: [
+            { id: 'assignments', name: 'Assignments', path: '/rollout/assignments', icon: ListCheck },
+        ]
     },
     {
         id: 'users',
@@ -71,16 +75,29 @@ export default function Sidebar() {
     const { instance, accounts } = useMsal();
     const { selectedTenant, availableTenants, setSelectedTenant } = useTenant();
     const [expandedModules, setExpandedModules] = useState<string[]>(['assistant']);
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const pathname = usePathname();
 
     const isAuthenticated = accounts.length > 0;
 
     const toggleModule = (moduleId: string) => {
+        if (isCollapsed) return; // Don't toggle modules when collapsed
         setExpandedModules(prev =>
             prev.includes(moduleId)
                 ? prev.filter(id => id !== moduleId)
                 : [...prev, moduleId]
         );
+    };
+
+    const toggleSidebar = () => {
+        setIsCollapsed(!isCollapsed);
+        if (!isCollapsed) {
+            // When collapsing, close all expanded modules
+            setExpandedModules([]);
+        } else {
+            // When expanding, restore the assistant module
+            setExpandedModules(['assistant']);
+        }
     };
 
     const handleLogin = async () => {
@@ -100,31 +117,48 @@ export default function Sidebar() {
 
     if (!isAuthenticated) {
         return (
-            <div className="w-64 bg-gray-900 text-white h-screen fixed left-0 top-0 p-6 flex flex-col justify-center items-center">
+            <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gray-900 text-white h-screen fixed left-0 top-0 p-6 flex flex-col justify-center items-center transition-all duration-300`}>
                 <div className="text-center">
                     <Building className="h-12 w-12 mx-auto mb-4 text-blue-400" />
-                    <h2 className="text-xl font-bold mb-4">Intune Assistant</h2>
-                    <p className="text-gray-400 mb-6">Please sign in to continue</p>
-                    <Button onClick={handleLogin} className="w-full">
-                        Sign In with Microsoft
-                    </Button>
+                    {!isCollapsed && (
+                        <>
+                            <h2 className="text-xl font-bold mb-4">Intune Assistant</h2>
+                            <p className="text-gray-400 mb-6">Please sign in to continue</p>
+                            <Button onClick={handleLogin} className="w-full">
+                                Sign In with Microsoft
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="w-64 bg-gray-900 text-white h-screen fixed left-0 top-0 flex flex-col">
+        <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gray-900 text-white h-screen fixed left-0 top-0 flex flex-col transition-all duration-300`}>
             {/* Header */}
-            <div className="p-4 border-b border-gray-700">
-                <h1 className="text-xl font-bold flex items-center gap-2">
-                    <Building className="h-6 w-6" />
-                    Intune Assistant
-                </h1>
+            <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+                {!isCollapsed && (
+                    <h1 className="text-xl font-bold flex items-center gap-2">
+                        <Building className="h-6 w-6" />
+                        Intune Assistant
+                    </h1>
+                )}
+                {isCollapsed && (
+                    <Building className="h-6 w-6 mx-auto" />
+                )}
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleSidebar}
+                    className="text-gray-400 hover:text-white p-1"
+                >
+                    {isCollapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                </Button>
             </div>
 
             {/* Tenant Selector */}
-            {availableTenants.length > 0 && (
+            {!isCollapsed && availableTenants.length > 0 && (
                 <div className="p-4 border-b border-gray-700">
                     <label className="text-sm text-gray-400 block mb-2">Current Tenant</label>
                     <Select value={selectedTenant || ''} onValueChange={setSelectedTenant}>
@@ -155,20 +189,21 @@ export default function Sidebar() {
                         <div key={module.id}>
                             {/* Main Module */}
                             <div
-                                className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
+                                className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors relative group ${
                                     isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                                 }`}
                                 onClick={() => hasSubItems ? toggleModule(module.id) : null}
+                                title={isCollapsed ? module.name : ''}
                             >
                                 <Link
                                     href={hasSubItems ? '#' : module.path}
-                                    className="flex items-center gap-3 flex-1"
+                                    className={`flex items-center gap-3 flex-1 ${isCollapsed ? 'justify-center' : ''}`}
                                     onClick={hasSubItems ? (e) => e.preventDefault() : undefined}
                                 >
-                                    <Icon className="h-5 w-5" />
-                                    <span className="font-medium">{module.name}</span>
+                                    <Icon className="h-5 w-5 flex-shrink-0" />
+                                    {!isCollapsed && <span className="font-medium">{module.name}</span>}
                                 </Link>
-                                {hasSubItems && (
+                                {!isCollapsed && hasSubItems && (
                                     <div className="ml-2">
                                         {isExpanded ? (
                                             <ChevronDown className="h-4 w-4" />
@@ -177,10 +212,18 @@ export default function Sidebar() {
                                         )}
                                     </div>
                                 )}
+
+                                {/* Tooltip for collapsed state */}
+                                {isCollapsed && (
+                                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                        {module.name}
+                                        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Sub Items */}
-                            {hasSubItems && isExpanded && (
+                            {!isCollapsed && hasSubItems && isExpanded && (
                                 <div className="ml-8 mt-2 space-y-1">
                                     {module.subItems.map((subItem) => {
                                         const SubIcon = subItem.icon;
@@ -210,21 +253,24 @@ export default function Sidebar() {
 
             {/* User Info & Logout */}
             <div className="p-4 border-t border-gray-700">
-                <div className="mb-3">
-                    <p className="text-sm font-medium">{accounts[0]?.name}</p>
-                    <p className="text-xs text-gray-400">{accounts[0]?.username}</p>
-                    <Badge variant="outline" className="mt-1 text-xs">
-                        {accounts[0]?.tenantId?.slice(0, 8)}...
-                    </Badge>
-                </div>
+                {!isCollapsed && (
+                    <div className="mb-3">
+                        <p className="text-sm font-medium">{accounts[0]?.name}</p>
+                        <p className="text-xs text-gray-400">{accounts[0]?.username}</p>
+                        <Badge variant="outline" className="mt-1 text-xs">
+                            {accounts[0]?.tenantId?.slice(0, 8)}...
+                        </Badge>
+                    </div>
+                )}
                 <Button
                     onClick={handleLogout}
                     variant="destructive"
                     size="sm"
-                    className="w-full flex items-center gap-2"
+                    className={`${isCollapsed ? 'w-8 h-8 p-0' : 'w-full'} flex items-center justify-center gap-2`}
+                    title={isCollapsed ? 'Logout' : ''}
                 >
                     <LogOut className="h-4 w-4" />
-                    Logout
+                    {!isCollapsed && 'Logout'}
                 </Button>
             </div>
         </div>
