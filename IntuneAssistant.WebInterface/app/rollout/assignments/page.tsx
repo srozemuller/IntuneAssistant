@@ -9,7 +9,7 @@ import {
     Play, RotateCcw, Eye, ArrowRight, Shield
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
-import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
 
 interface CSVRow {
@@ -74,6 +74,84 @@ export default function AssignmentRolloutPage() {
     const [error, setError] = useState<string | null>(null);
     const [migrationProgress, setMigrationProgress] = useState(0);
     const [validationResults, setValidationResults] = useState<any[]>([]);
+
+    // Backup rows
+    // Update the downloadBackups function to track backup status per row
+    const downloadBackups = async () => {
+        const readyForMigration = comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated);
+
+        if (readyForMigration.length === 0) {
+            alert('No policies ready for migration to backup');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const JSZip = (await import('jszip')).default;
+            const zip = new JSZip();
+            const backupResults: { [id: string]: boolean } = {};
+
+            for (const policy of readyForMigration) {
+                try {
+                    const response = await instance.acquireTokenSilent({
+                        scopes: [apiScope],
+                        account: accounts[0]
+                    });
+
+                    const apiResponse = await fetch(`${EXPORT_ENDPOINT}/${policy.policy.policySubType}/${policy.policy.id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${response.accessToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (apiResponse.ok) {
+                        const jsonData = await apiResponse.json();
+                        const fileName = `${policy.policy.policySubType}_${policy.policy.id}_${policy.policy.name?.replace(/[^a-zA-Z0-9]/g, '_') || 'policy'}.json`;
+                        zip.file(fileName, JSON.stringify(jsonData, null, 2));
+                        backupResults[policy.id] = true; // Mark as successfully backed up
+                    } else {
+                        backupResults[policy.id] = false; // Mark as failed
+                    }
+                } catch (error) {
+                    console.error(`Failed to backup policy ${policy.policy.id}:`, error);
+                    backupResults[policy.id] = false; // Mark as failed
+                }
+            }
+
+            // Update comparison results with backup status
+            setComparisonResults(prev =>
+                prev.map(result => ({
+                    ...result,
+                    isBackedUp: backupResults[result.id] === true
+                }))
+            );
+
+            const content = await zip.generateAsync({ type: 'blob' });
+            const url = window.URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `policy_backups_${new Date().toISOString().split('T')[0]}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            // Show summary of backup results
+            const successCount = Object.values(backupResults).filter(success => success).length;
+            const totalCount = Object.keys(backupResults).length;
+            alert(`Backup completed: ${successCount}/${totalCount} policies backed up successfully`);
+
+        } catch (error) {
+            console.error('Backup failed:', error);
+            alert('Backup failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     // CSV File Processing
     const parseCSV = (content: string): CSVRow[] => {
@@ -155,7 +233,6 @@ export default function AssignmentRolloutPage() {
                 // Use the API's isReadyForMigration value directly
                 isReadyForMigration: item.isReadyForMigration,
                 isMigrated: item.isMigrated || false,
-                isBackedUp: Math.random() > 0.3,
                 validationStatus: 'pending' as const
             }));
 
@@ -361,21 +438,30 @@ export default function AssignmentRolloutPage() {
                             const stepOrder = ['upload', 'compare', 'migrate', 'validate'];
                             const isCompleted = stepOrder.indexOf(currentStep) > stepOrder.indexOf(step.key);
 
+                            // Simplified validation completion check - just check if validationResults exist
+                            const isValidationCompleted = step.key === 'validate' &&
+                                currentStep === 'validate' &&
+                                comparisonResults.filter(r => r.isMigrated).length > 0 &&
+                                comparisonResults.filter(r => r.isMigrated).every(r =>
+                                    r.validationStatus && r.validationStatus !== 'pending'
+                                ) &&
+                                validationResults.length > 0
+
                             return (
                                 <div key={step.key} className="flex items-center">
                                     <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                                        isCompleted ? 'bg-green-500 border-green-500 text-white' :
-                                            isActive ? 'bg-blue-500 border-blue-500 text-white' :
+                                        isCompleted || isValidationCompleted ? 'bg-green-500 border-green-500 text-white' :
+                                            isActive && !isValidationCompleted ? 'bg-blue-500 border-blue-500 text-white' :
                                                 'border-gray-300 text-gray-400'
                                     }`}>
                                         <Icon className="h-5 w-5" />
                                     </div>
                                     <span className={`ml-2 text-sm font-medium ${
-                                        isActive ? 'text-blue-600' :
-                                            isCompleted ? 'text-green-600' : 'text-gray-400'
+                                        isCompleted || isValidationCompleted ? 'text-green-600' :
+                                            isActive && !isValidationCompleted ? 'text-blue-600' : 'text-gray-400'
                                     }`}>
-                                        {step.label}
-                                    </span>
+                {step.label}
+            </span>
                                     {index < 3 && (
                                         <ArrowRight className="h-4 w-4 mx-4 text-gray-300" />
                                     )}
@@ -385,6 +471,7 @@ export default function AssignmentRolloutPage() {
                     </div>
                 </CardContent>
             </Card>
+
 
             {/* Error Display */}
             {error && (
@@ -578,6 +665,13 @@ export default function AssignmentRolloutPage() {
                                     Select Ready
                                 </Button>
                                 <Button
+                                    onClick={downloadBackups}
+                                    disabled={loading || comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
+                                    variant="outline"
+                                >
+                                    {loading ? 'Creating Backup...' : 'Backup Ready Policies'}
+                                </Button>
+                                <Button
                                     onClick={migrateSelectedAssignments}
                                     disabled={!selectedRows.length || loading}
                                 >
@@ -615,14 +709,22 @@ export default function AssignmentRolloutPage() {
                                                     type="checkbox"
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
-                                                            setSelectedRows(comparisonResults.map(r => r.id));
+                                                            // Only select rows that are ready for migration and not yet migrated
+                                                            const readyRows = comparisonResults
+                                                                .filter(r => r.isReadyForMigration && !r.isMigrated)
+                                                                .map(r => r.id);
+                                                            setSelectedRows(readyRows);
                                                         } else {
                                                             setSelectedRows([]);
                                                         }
                                                     }}
-                                                    checked={selectedRows.length === comparisonResults.length && comparisonResults.length > 0}
+                                                    checked={
+                                                        comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length > 0 &&
+                                                        selectedRows.length === comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length
+                                                    }
                                                 />
                                             </th>
+
                                             <th className="text-left p-3">Policy Name</th>
                                             <th className="text-left p-3">Current Assignments</th>
                                             <th className="text-left p-3">Target Group</th>
@@ -723,10 +825,22 @@ export default function AssignmentRolloutPage() {
                                                                 Migrated
                                                             </Badge>
                                                         )}
-                                                        {result.isBackedUp && (
-                                                            <Badge variant="outline" className="text-xs w-fit">
+                                                        {result.isBackedUp === true && (
+                                                            <Badge variant="default" className="text-xs bg-green-100 text-green-800 w-fit">
                                                                 <Shield className="h-3 w-3 mr-1" />
                                                                 Backed Up
+                                                            </Badge>
+                                                        )}
+                                                        {result.isBackedUp === false && (
+                                                            <Badge variant="destructive" className="text-xs w-fit">
+                                                                <XCircle className="h-3 w-3 mr-1" />
+                                                                Backup Failed
+                                                            </Badge>
+                                                        )}
+                                                        {result.isBackedUp === undefined && result.isReadyForMigration && !result.isMigrated && (
+                                                            <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800 w-fit">
+                                                                <AlertTriangle className="h-3 w-3 mr-1" />
+                                                                No Backup
                                                             </Badge>
                                                         )}
                                                         {result.policy && !result.isReadyForMigration && !result.isMigrated && (
@@ -778,7 +892,16 @@ export default function AssignmentRolloutPage() {
                                     Verify migrated assignments
                                 </p>
                             </div>
-                            <Button onClick={validateAssignments} disabled={loading}>
+                            <Button
+                                onClick={validateAssignments}
+                                disabled={loading || (
+                                    comparisonResults.filter(r => r.isMigrated).length > 0 &&
+                                    validationResults.length > 0 && // Check if validation API was called
+                                    comparisonResults.filter(r => r.isMigrated).every(r =>
+                                        r.validationStatus && r.validationStatus !== 'pending'
+                                    )
+                                )}
+                            >
                                 {loading ? 'Validating...' : 'Run Validation'}
                             </Button>
                         </div>
