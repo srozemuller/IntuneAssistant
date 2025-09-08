@@ -19,14 +19,13 @@ import {
     CheckCircle,
     Loader2,
     Building,
-    Globe,
     Key,
     ArrowRight,
     AlertCircle,
     ExternalLink,
     Shield
 } from 'lucide-react';
-import { CUSTOMER_ENDPOINT } from '@/lib/constants';
+import { CUSTOMER_ENDPOINT, CONSENT_CALLBACK } from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
 
 interface TenantOnboardingModalProps {
@@ -54,6 +53,12 @@ interface ConsentResponse {
     };
 }
 
+interface OnboardingResult {
+    status: string;
+    message: string;
+    data?: object; // You can make this more specific based on your API response
+}
+
 export default function TenantOnboardingModal({
                                                   isOpen,
                                                   onClose,
@@ -74,7 +79,9 @@ export default function TenantOnboardingModal({
 
     // Consent data
     const [consentData, setConsentData] = useState<ConsentResponse | null>(null);
-    const [onboardingResult, setOnboardingResult] = useState<any>(null);
+    const [onboardingResult, setOnboardingResult] = useState<OnboardingResult | null>(null);
+    const [consentState, setConsentState] = useState<string | null>(null);
+
 
     const steps: OnboardingStep[] = [
         {
@@ -219,6 +226,10 @@ export default function TenantOnboardingModal({
             const result: ConsentResponse = await response.json();
             console.log('🔵 API Response:', result);
 
+            const state = extractStateFromConsentUrl(result.data.url);
+            setConsentState(state);
+            console.log('🔵 Extracted state:', state);
+
             setConsentData(result);
             setLoading(false);
         } catch (err) {
@@ -227,6 +238,17 @@ export default function TenantOnboardingModal({
             setLoading(false);
         }
     };
+
+    const extractStateFromConsentUrl = (url: string): string | null => {
+        try {
+            const urlObj = new URL(url);
+            return urlObj.searchParams.get('state');
+        } catch (error) {
+            console.error('Failed to parse consent URL:', error);
+            return null;
+        }
+    };
+
 
     const openConsentWindow = () => {
         console.log('🔵 openConsentWindow called');
@@ -289,17 +311,13 @@ export default function TenantOnboardingModal({
 
             // Check onboarding status or complete the process
             const response = await fetch(
-                `${CUSTOMER_ENDPOINT}/${customerId}/tenants/onboarding/complete`,
+                `${CONSENT_CALLBACK}${consentState ? `?state=${consentState}` : ''}`,
                 {
-                    method: 'POST',
+                    method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token.accessToken}`,
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        tenantId: tenantId,
-                        tenantName: tenantDomainName
-                    })
+                    }
                 }
             );
 
@@ -308,8 +326,14 @@ export default function TenantOnboardingModal({
                 throw new Error(errorData?.message || `Failed to complete onboarding: ${response.statusText}`);
             }
 
-            const result = await response.json();
-            console.log('✅ Onboarding completed:', result);
+            let result = null;
+            if (response.status === 204) {
+                console.log('✅ Onboarding completed (204 No Content)');
+                result = { status: 'success', message: 'Onboarding completed successfully' };
+            } else {
+                result = await response.json();
+                console.log('✅ Onboarding completed:', result);
+            }
             setOnboardingResult(result);
             setCurrentStep(3);
         } catch (err) {
@@ -319,6 +343,7 @@ export default function TenantOnboardingModal({
             setLoading(false);
         }
     };
+
 
 
     const handleClose = () => {
