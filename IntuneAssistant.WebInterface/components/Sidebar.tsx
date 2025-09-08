@@ -21,11 +21,18 @@ import {
     Smartphone,
     UsersIcon,
     ChevronLeft,
-    Menu, ListCheck
+    Menu,
+    ListCheck,
+    User,
+    ChevronUp,
+    Mail,
+    Loader2
 } from 'lucide-react';
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCustomerData } from '@/hooks/useCustomerData';
 
 const modules = [
     {
@@ -76,12 +83,28 @@ export default function Sidebar() {
     const { selectedTenant, availableTenants, setSelectedTenant } = useTenant();
     const [expandedModules, setExpandedModules] = useState<string[]>(['assistant']);
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const userMenuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
 
+    const { customerData, loading: customerLoading } = useCustomerData();
+
     const isAuthenticated = accounts.length > 0;
+    const router = useRouter();
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+                setUserMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const toggleModule = (moduleId: string) => {
-        if (isCollapsed) return; // Don't toggle modules when collapsed
+        if (isCollapsed) return;
         setExpandedModules(prev =>
             prev.includes(moduleId)
                 ? prev.filter(id => id !== moduleId)
@@ -92,10 +115,8 @@ export default function Sidebar() {
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
         if (!isCollapsed) {
-            // When collapsing, close all expanded modules
             setExpandedModules([]);
         } else {
-            // When expanding, restore the assistant module
             setExpandedModules(['assistant']);
         }
     };
@@ -234,9 +255,7 @@ export default function Sidebar() {
                                                 key={subItem.id}
                                                 href={subItem.path}
                                                 className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
-                                                    isSubActive
-                                                        ? 'bg-blue-500 text-white'
-                                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                                    isSubActive ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                                                 }`}
                                             >
                                                 <SubIcon className="h-4 w-4" />
@@ -251,27 +270,165 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            {/* User Info & Logout */}
-            <div className="p-4 border-t border-gray-700">
-                {!isCollapsed && (
-                    <div className="mb-3">
-                        <p className="text-sm font-medium">{accounts[0]?.name}</p>
-                        <p className="text-xs text-gray-400">{accounts[0]?.username}</p>
-                        <Badge variant="outline" className="mt-1 text-xs">
-                            {accounts[0]?.tenantId?.slice(0, 8)}...
-                        </Badge>
+            {/* User Info & Context Menu */}
+            <div className="p-4 border-t border-gray-700" ref={userMenuRef}>
+                {!isCollapsed ? (
+                    <div className="relative">
+                        <button
+                            onClick={() => setUserMenuOpen(!userMenuOpen)}
+                            className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors text-left"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                                    <User className="h-4 w-4" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate">{accounts[0]?.name}</p>
+                                    <p className="text-xs text-gray-400 truncate">{accounts[0]?.username}</p>
+                                </div>
+                            </div>
+                            {userMenuOpen ? (
+                                <ChevronUp className="h-4 w-4 text-gray-400" />
+                            ) : (
+                                <ChevronDown className="h-4 w-4 text-gray-400" />
+                            )}
+                        </button>
+
+                        {/* User Context Menu */}
+                        {userMenuOpen && (
+                            <div className="absolute bottom-full left-0 right-0 mb-2 bg-gray-800 rounded-lg border border-gray-600 shadow-lg z-50">
+                                {/* User Info Section */}
+                                <div className="p-4 border-b border-gray-600">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                                            <User className="h-5 w-5" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-white truncate">
+                                                {accounts[0]?.name || 'User'}
+                                            </p>
+                                            <p className="text-xs text-gray-400 truncate">
+                                                {accounts[0]?.username}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2 text-xs">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-400">Tenant ID:</span>
+                                            <Badge variant="outline" className="text-xs">
+                                                {accounts[0]?.tenantId?.slice(0, 8)}...
+                                            </Badge>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-400">Environment:</span>
+                                            <span className="text-gray-300">{accounts[0]?.environment}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-400">Home Account ID:</span>
+                                            <span className="text-gray-300">{accounts[0]?.homeAccountId?.slice(0, 8)}...</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Customer Info Section */}
+                                <div className="p-4 border-b border-gray-600">
+                                    <div className="mb-2">
+                                        <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wide">Customer</h4>
+                                    </div>
+                                    {customerLoading ? (
+                                        <div className="flex items-center gap-2 text-gray-400">
+                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                            <span className="text-xs">Loading...</span>
+                                        </div>
+                                    ) : customerData ? (
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                <Building className="h-3 w-3 text-gray-400" />
+                                                <span className="text-sm text-white font-medium truncate">
+                                                    {customerData.name}
+                                                </span>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <Badge variant={customerData.isMsp ? "default" : "secondary"} className="text-xs">
+                                                    {customerData.isMsp ? 'MSP' : 'Direct'}
+                                                </Badge>
+                                                <Badge variant={customerData.isActive ? "default" : "destructive"} className="text-xs">
+                                                    {customerData.isActive ? 'Active' : 'Inactive'}
+                                                </Badge>
+                                            </div>
+                                            {customerData.primaryContactEmail && (
+                                                <div className="flex items-center gap-2">
+                                                    <Mail className="h-3 w-3 text-gray-400" />
+                                                    <span className="text-xs text-gray-300 truncate">
+                                                        {customerData.primaryContactEmail}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <span className="text-xs text-gray-400">No customer data</span>
+                                    )}
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="p-2">
+                                    <button
+                                        onClick={() => {
+                                            setUserMenuOpen(false);
+                                            router.push('/account');
+                                        }}
+                                        className="w-full flex items-center gap-3 p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md transition-colors"
+                                    >
+                                        <User className="h-4 w-4" />
+                                        Account Overview
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setUserMenuOpen(false);
+                                            router.push('/customer');
+                                        }}
+                                        className="w-full flex items-center gap-3 p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md transition-colors"
+                                    >
+                                        <Building className="h-4 w-4" />
+                                        Customer Info
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setUserMenuOpen(false);
+                                            // Add settings/profile handler here
+                                        }}
+                                        className="w-full flex items-center gap-3 p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md transition-colors"
+                                    >
+                                        <Settings className="h-4 w-4" />
+                                        Account Settings
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setUserMenuOpen(false);
+                                            handleLogout();
+                                        }}
+                                        className="w-full flex items-center gap-3 p-2 text-sm text-red-400 hover:bg-gray-700 rounded-md transition-colors"
+                                    >
+                                        <LogOut className="h-4 w-4" />
+                                        Sign Out
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
+                ) : (
+                    // Collapsed state - simple logout button
+                    <Button
+                        onClick={handleLogout}
+                        variant="destructive"
+                        size="sm"
+                        className="w-8 h-8 p-0 flex items-center justify-center"
+                        title="Logout"
+                    >
+                        <LogOut className="h-4 w-4" />
+                    </Button>
                 )}
-                <Button
-                    onClick={handleLogout}
-                    variant="destructive"
-                    size="sm"
-                    className={`${isCollapsed ? 'w-8 h-8 p-0' : 'w-full'} flex items-center justify-center gap-2`}
-                    title={isCollapsed ? 'Logout' : ''}
-                >
-                    <LogOut className="h-4 w-4" />
-                    {!isCollapsed && 'Logout'}
-                </Button>
             </div>
         </div>
     );
