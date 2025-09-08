@@ -20,7 +20,11 @@ export const CONFIGURATION_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/configurati
 export const CA_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/ca`;
 export const ASSIGNMENTS_GROUP_ENDPOINT = `${API_BASE_URL}/assignments/groups`;
 export const ASSIGNMENTS_FILTERS_ENDPOINT = `${API_BASE_URL}/assignments/filters`;
+export const ASSIGNMENTS_COMPARE_ENDPOINT = `${API_BASE_URL}/assignments/compare`;
 export const POLICY_SETTINGS_ENDPOINT = `${CONFIGURATION_POLICIES_ENDPOINT}/settings`;
 
 
 export const GROUP_POLICY_SETTINGS_ENDPOINT = `${POLICIES_ENDPOINT}/group/settings`;
+
+
+export const ITEMS_PER_PAGE = 25;
