@@ -1,9 +1,9 @@
 // app/consent-callback/page.tsx
 'use client';
-import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import {useEffect, Suspense} from 'react';
+import {useSearchParams} from 'next/navigation';
 
-export default function ConsentCallback() {
+function ConsentCallbackContent() {
     const searchParams = useSearchParams();
 
     useEffect(() => {
@@ -31,6 +31,7 @@ export default function ConsentCallback() {
         window.close();
     }, [searchParams]);
 
+
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
@@ -38,5 +39,12 @@ export default function ConsentCallback() {
                 <p>Processing consent...</p>
             </div>
         </div>
+    );
+}
+export default function ConsentCallback() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ConsentCallbackContent />
+        </Suspense>
     );
 }
