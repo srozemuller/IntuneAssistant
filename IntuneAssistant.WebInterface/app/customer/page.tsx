@@ -40,14 +40,14 @@ interface CustomerData {
     isActive: boolean;
     primaryContactEmail: string | null;
     homeTenantId: string;
-    licenses: any[];
+    licenses: string[];
     tenants: Tenant[];
 }
 
 interface ApiResponse {
     status: string;
     message: string;
-    details: any[];
+    details: string[];
     data: CustomerData;
 }
 
