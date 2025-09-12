@@ -74,7 +74,9 @@ export default function AssignmentRolloutPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [migrationProgress, setMigrationProgress] = useState(0);
+    const [validationComplete, setValidationComplete] = useState(false);
     const [validationResults, setValidationResults] = useState<any[]>([]);
+
 
     // CSV File Processing
     const parseCSV = (content: string): CSVRow[] => {
@@ -309,6 +311,7 @@ export default function AssignmentRolloutPage() {
         if (!accounts.length) return;
 
         setLoading(true);
+        setValidationComplete(false); // Reset completion status
 
         try {
             const response = await instance.acquireTokenSilent({
@@ -375,6 +378,9 @@ export default function AssignmentRolloutPage() {
                 })
             );
 
+            // Mark validation as complete
+            setValidationComplete(true);
+
             console.log(`Validation completed for ${validationData.data?.length || 0} items`);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Validation failed');
@@ -384,14 +390,10 @@ export default function AssignmentRolloutPage() {
         }
     };
 
-// Keep the original function for manual validation
+    // Keep the original function for manual validation
     const validateAssignments = async () => {
         await validateMigratedAssignments();
     };
-
-
-
-
 
     const resetProcess = () => {
         setCurrentStep('upload');
@@ -400,6 +402,7 @@ export default function AssignmentRolloutPage() {
         setSelectedRows([]);
         setMigrationProgress(0);
         setValidationResults([]);
+        setValidationComplete(false);
         setError(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -435,21 +438,24 @@ export default function AssignmentRolloutPage() {
                             const stepOrder = ['upload', 'compare', 'migrate', 'validate'];
                             const isCompleted = stepOrder.indexOf(currentStep) > stepOrder.indexOf(step.key);
 
+                            // Special case for validate step - show green if validation is complete
+                            const isValidateComplete = step.key === 'validate' && validationComplete;
+
                             return (
                                 <div key={step.key} className="flex items-center">
                                     <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                                        isCompleted ? 'bg-green-500 border-green-500 text-white' :
+                                        isCompleted || isValidateComplete ? 'bg-green-500 border-green-500 text-white' :
                                             isActive ? 'bg-blue-500 border-blue-500 text-white' :
                                                 'border-gray-300 text-gray-400'
                                     }`}>
                                         <Icon className="h-5 w-5" />
                                     </div>
                                     <span className={`ml-2 text-sm font-medium ${
-                                        isActive ? 'text-blue-600' :
-                                            isCompleted ? 'text-green-600' : 'text-gray-400'
+                                        isActive && !isValidateComplete ? 'text-blue-600' :
+                                            isCompleted || isValidateComplete ? 'text-green-600' : 'text-gray-400'
                                     }`}>
-                                        {step.label}
-                                    </span>
+                            {step.label}
+                        </span>
                                     {index < 3 && (
                                         <ArrowRight className="h-4 w-4 mx-4 text-gray-300" />
                                     )}
@@ -873,9 +879,24 @@ export default function AssignmentRolloutPage() {
                                     Verify migrated assignments
                                 </p>
                             </div>
-                            <Button onClick={validateAssignments} disabled={loading}>
-                                {loading ? 'Validating...' : 'Run Validation'}
-                            </Button>
+                            {!validationComplete && (
+                                <Button onClick={validateAssignments} disabled={loading}>
+                                    {loading ? (
+                                        <div className="flex items-center">
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                            Validating...
+                                        </div>
+                                    ) : (
+                                        'Run Validation'
+                                    )}
+                                </Button>
+                            )}
+                            {validationComplete && (
+                                <div className="flex items-center gap-2 text-green-600">
+                                    <CheckCircle2 className="h-5 w-5" />
+                                    <span className="font-medium">Validation Complete</span>
+                                </div>
+                            )}
                         </div>
                     </CardHeader>
                     <CardContent>
