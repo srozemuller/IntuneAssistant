@@ -12,6 +12,8 @@ import {apiScope} from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
+import { useGroupDetails } from '@/hooks/useGroupDetails';
+
 
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
@@ -33,28 +35,6 @@ interface Assignments extends Record<string, unknown> {
         description: string;
     };
 }
-
-interface UserMember extends Record<string, unknown> {
-    id: string;
-    displayName: string;
-    accountEnabled: boolean;
-    type: string;
-}
-
-interface GroupDetails {
-    id: string;
-    displayName: string;
-    description: string | null;
-    membershipRule: string | null;
-    createdDateTime: string;
-    groupCount: {
-        userCount: number;
-        deviceCount: number;
-        groupCount: number;
-    } | null;
-    members: UserMember[] | null;
-}
-
 interface AssignmentFilter {
     id: string;
     createdDateTime: string;
@@ -79,11 +59,15 @@ export default function AssignmentsOverview() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Dialog states
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState<GroupDetails | null>(null);
-    const [groupLoading, setGroupLoading] = useState(false);
-    const [groupError, setGroupError] = useState<string | null>(null);
+    // Group details states from the hook
+    const {
+        selectedGroup,
+        groupLoading,
+        groupError,
+        isDialogOpen,
+        fetchGroupDetails,
+        closeDialog
+    } = useGroupDetails();
 
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
@@ -110,7 +94,6 @@ export default function AssignmentsOverview() {
     useEffect(() => {
         setCurrentPage(1);
     }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery]);
-
 
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
@@ -180,6 +163,7 @@ export default function AssignmentsOverview() {
             stats
         };
     };
+
     const fetchAssignments = async () => {
         if (!accounts.length) return;
 
@@ -229,47 +213,6 @@ export default function AssignmentsOverview() {
             setAssignments([]);
             setFilteredAssignments([]);
             throw new Error('Invalid data format received from API');
-        }
-    };
-
-    const fetchGroupDetails = async (resourceId: string) => {
-        if (!accounts.length) return;
-
-        setGroupLoading(true);
-        setGroupError(null);
-
-        try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(`${GROUPS_ENDPOINT}/${resourceId}/members`, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to fetch group details: ${apiResponse.statusText}`);
-            }
-
-            const groupData = await apiResponse.json();
-            setSelectedGroup(groupData);
-        } catch (error) {
-            console.error('Failed to fetch group details:', error);
-            setGroupError(error instanceof Error ? error.message : 'Failed to fetch group details');
-        } finally {
-            setGroupLoading(false);
-        }
-    };
-
-
-    const handleResourceClick = (resourceId: string, assignmentType: string) => {
-        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && resourceId) {
-            setIsDialogOpen(true);
-            fetchGroupDetails(resourceId);
         }
     };
 
@@ -419,6 +362,19 @@ export default function AssignmentsOverview() {
         setSearchQuery('');
     };
 
+    const handleResourceClick = (resourceId: string, assignmentType: string) => {
+        console.log('=== handleResourceClick DEBUG ===');
+        console.log('resourceId:', resourceId);
+        console.log('assignmentType:', assignmentType);
+
+        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
+            console.log('Calling fetchGroupDetails...');
+            fetchGroupDetails(resourceId); // This now uses resourceId instead of groupId
+        } else {
+            console.log('Not calling fetchGroupDetails - conditions not met');
+        }
+    };
+
     const groupMemberColumns = [
         {
             key: 'displayName' as string,
@@ -494,8 +450,8 @@ export default function AssignmentsOverview() {
 
                 return (
                     <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                    {resourceName}
-                </span>
+                        {resourceName}
+                    </span>
                 );
             }
         },
@@ -533,7 +489,6 @@ export default function AssignmentsOverview() {
             width: 180,
             minWidth: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
-                // ... existing render logic with updated classes for truncation
                 const targetName = String(value);
                 const assignmentType = String(row.assignmentType);
                 const isAssigned = Boolean(row.isAssigned);
@@ -552,8 +507,9 @@ export default function AssignmentsOverview() {
                             </button>
                             {group?.groupCount && (
                                 <div className="flex gap-1 text-xs text-gray-500">
-                                    <span>{group.groupCount.userCount}u</span>
-                                    <span>{group.groupCount.deviceCount}d</span>
+                                    <span>{group.groupCount.userCount} user</span>
+                                    <span>{group.groupCount.deviceCount} device</span>
+                                    <span>{group.groupCount.groupCount} group</span>
                                 </div>
                             )}
                         </div>
@@ -562,8 +518,8 @@ export default function AssignmentsOverview() {
 
                 return (
                     <span className="text-sm truncate block w-full" title={targetName}>
-                    {targetName}
-                </span>
+                        {targetName}
+                    </span>
                 );
             }
         },
@@ -574,8 +530,8 @@ export default function AssignmentsOverview() {
             minWidth: 80,
             render: (value: unknown) => (
                 <span className="text-sm text-gray-600 whitespace-nowrap">
-                {value ? String(value) : 'All'}
-            </span>
+                    {value ? String(value) : 'All'}
+                </span>
             )
         },
         {
@@ -636,8 +592,6 @@ export default function AssignmentsOverview() {
             }
         }
     ];
-
-
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -900,7 +854,6 @@ export default function AssignmentsOverview() {
                         </CardContent>
                     </Card>
 
-
                     {/* Filtered empty state */}
                     {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (
                         <Card>
@@ -928,8 +881,8 @@ export default function AssignmentsOverview() {
             )}
 
             {/* Group Details Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
+                <DialogContent className="!w-[75vw] h-[75vh] max-w-none max-h-none overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <Users className="h-5 w-5" />
@@ -939,7 +892,6 @@ export default function AssignmentsOverview() {
                             {selectedGroup?.description || 'Group information and members'}
                         </DialogDescription>
                     </DialogHeader>
-
                     {groupLoading ? (
                         <div className="flex items-center justify-center h-64">
                             <div className="flex items-center gap-2">
@@ -962,7 +914,7 @@ export default function AssignmentsOverview() {
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-gray-600">Created</label>
-                                    <p className="text-sm">{new Date(selectedGroup.createdDateTime).toLocaleDateString()}</p>
+                                    <p className="text-sm">{selectedGroup.createdDateTime ? new Date(selectedGroup.createdDateTime).toLocaleDateString() : 'N/A'}</p>
                                 </div>
                                 {selectedGroup.membershipRule && (
                                     <div className="md:col-span-2">
@@ -1079,8 +1031,8 @@ export default function AssignmentsOverview() {
                                 <div>
                                     <label className="text-sm font-medium text-gray-600 block mb-2">Filter Rule</label>
                                     <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto border">
-                            <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
-                        </pre>
+                                        <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
+                                    </pre>
                                 </div>
                             )}
 
@@ -1121,7 +1073,6 @@ export default function AssignmentsOverview() {
                     )}
                 </DialogContent>
             </Dialog>
-
         </div>
     );
 }

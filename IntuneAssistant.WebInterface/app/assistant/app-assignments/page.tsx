@@ -12,6 +12,7 @@ import {apiScope} from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
+import { useGroupDetails } from '@/hooks/useGroupDetails';
 
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
@@ -74,17 +75,22 @@ interface AssignmentFilter {
 
 export default function AssignmentsOverview() {
     const { instance, accounts } = useMsal();
+
+    // Use the group details hook
+    const {
+        selectedGroup,
+        groupLoading,
+        groupError,
+        isDialogOpen,
+        fetchGroupDetails,
+        closeDialog
+    } = useGroupDetails();
+
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
     const [filters, setFilters] = useState<AssignmentFilter[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    // Dialog states
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState<GroupDetails | null>(null);
-    const [groupLoading, setGroupLoading] = useState(false);
-    const [groupError, setGroupError] = useState<string | null>(null);
 
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
@@ -99,7 +105,6 @@ export default function AssignmentsOverview() {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
 
-
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
@@ -112,7 +117,6 @@ export default function AssignmentsOverview() {
     useEffect(() => {
         setCurrentPage(1);
     }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery]);
-
 
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
@@ -182,6 +186,7 @@ export default function AssignmentsOverview() {
             stats
         };
     };
+
     const fetchAssignments = async () => {
         if (!accounts.length) return;
 
@@ -231,47 +236,6 @@ export default function AssignmentsOverview() {
             setAssignments([]);
             setFilteredAssignments([]);
             throw new Error('Invalid data format received from API');
-        }
-    };
-
-    const fetchGroupDetails = async (resourceId: string) => {
-        if (!accounts.length) return;
-
-        setGroupLoading(true);
-        setGroupError(null);
-
-        try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(`${GROUPS_ENDPOINT}/${resourceId}/members`, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to fetch group details: ${apiResponse.statusText}`);
-            }
-
-            const groupData = await apiResponse.json();
-            setSelectedGroup(groupData);
-        } catch (error) {
-            console.error('Failed to fetch group details:', error);
-            setGroupError(error instanceof Error ? error.message : 'Failed to fetch group details');
-        } finally {
-            setGroupLoading(false);
-        }
-    };
-
-
-    const handleResourceClick = (resourceId: string, assignmentType: string) => {
-        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && resourceId) {
-            setIsDialogOpen(true);
-            fetchGroupDetails(resourceId);
         }
     };
 
@@ -335,6 +299,26 @@ export default function AssignmentsOverview() {
             platform: filter?.platform
         };
     };
+
+    const handleResourceClick = (resourceId: string, assignmentType: string) => {
+        console.log('=== handleResourceClick DEBUG ===');
+        console.log('resourceId:', resourceId);
+        console.log('assignmentType:', assignmentType);
+        console.log('Hook state before call:', { selectedGroup, groupLoading, groupError, isDialogOpen });
+
+        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
+            console.log('Calling fetchGroupDetails...');
+            fetchGroupDetails(resourceId);
+
+            // Add a timeout to check state after the call
+            setTimeout(() => {
+                console.log('Hook state after call:', { selectedGroup, groupLoading, groupError, isDialogOpen });
+            }, 100);
+        } else {
+            console.log('Not calling fetchGroupDetails - conditions not met');
+        }
+    };
+
 
     // Filter and search function
     useEffect(() => {
@@ -485,8 +469,8 @@ export default function AssignmentsOverview() {
 
                 return (
                     <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                    {resourceName}
-                </span>
+                        {resourceName}
+                    </span>
                 );
             }
         },
@@ -524,7 +508,6 @@ export default function AssignmentsOverview() {
             width: 180,
             minWidth: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
-                // ... existing render logic with updated classes for truncation
                 const targetName = String(value);
                 const assignmentType = String(row.assignmentType);
                 const isAssigned = Boolean(row.isAssigned);
@@ -553,8 +536,8 @@ export default function AssignmentsOverview() {
 
                 return (
                     <span className="text-sm truncate block w-full" title={targetName}>
-                    {targetName}
-                </span>
+                        {targetName}
+                    </span>
                 );
             }
         },
@@ -565,8 +548,8 @@ export default function AssignmentsOverview() {
             minWidth: 80,
             render: (value: unknown) => (
                 <span className="text-sm text-gray-600 whitespace-nowrap">
-                {value ? String(value) : 'All'}
-            </span>
+                    {value ? String(value) : 'All'}
+                </span>
             )
         },
         {
@@ -627,8 +610,6 @@ export default function AssignmentsOverview() {
             }
         }
     ];
-
-
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -891,7 +872,6 @@ export default function AssignmentsOverview() {
                         </CardContent>
                     </Card>
 
-
                     {/* Filtered empty state */}
                     {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (
                         <Card>
@@ -919,7 +899,7 @@ export default function AssignmentsOverview() {
             )}
 
             {/* Group Details Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
                 <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
@@ -930,7 +910,6 @@ export default function AssignmentsOverview() {
                             {selectedGroup?.description || 'Group information and members'}
                         </DialogDescription>
                     </DialogHeader>
-
                     {groupLoading ? (
                         <div className="flex items-center justify-center h-64">
                             <div className="flex items-center gap-2">
@@ -953,7 +932,7 @@ export default function AssignmentsOverview() {
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-gray-600">Created</label>
-                                    <p className="text-sm">{new Date(selectedGroup.createdDateTime).toLocaleDateString()}</p>
+                                    <p className="text-sm">{selectedGroup.createdDateTime ? new Date(selectedGroup.createdDateTime).toLocaleDateString() : 'N/A'}</p>
                                 </div>
                                 {selectedGroup.membershipRule && (
                                     <div className="md:col-span-2">
@@ -1070,8 +1049,8 @@ export default function AssignmentsOverview() {
                                 <div>
                                     <label className="text-sm font-medium text-gray-600 block mb-2">Filter Rule</label>
                                     <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto border">
-                            <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
-                        </pre>
+                                        <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
+                                    </pre>
                                 </div>
                             )}
 
@@ -1112,7 +1091,6 @@ export default function AssignmentsOverview() {
                     )}
                 </DialogContent>
             </Dialog>
-
         </div>
     );
 }

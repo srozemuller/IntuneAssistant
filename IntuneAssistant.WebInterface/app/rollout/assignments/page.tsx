@@ -7,18 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
 import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
+import { useGroupDetails } from '@/hooks/useGroupDetails';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CSVRow {
     PolicyName: string;
     GroupName: string;
     AssignmentDirection: 'Include' | 'Exclude';
     AssignmentAction: 'Add' | 'Remove';
-    AssignmentType: string;
     FilterName: string | null;
     FilterType: string | null;
 }
@@ -77,27 +79,61 @@ export default function AssignmentRolloutPage() {
     const [validationComplete, setValidationComplete] = useState(false);
     const [validationResults, setValidationResults] = useState<any[]>([]);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
+    const [compareCurrentPage, setCompareCurrentPage] = useState(1);
+    const [validationCurrentPage, setValidationCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(ITEMS_PER_PAGE);
+
+    // Add pagination logic before the return statement
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedResults = comparisonResults.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(comparisonResults.length / itemsPerPage);
+    const goToPreviousPage = () => {
+        setCurrentPage((prev) => Math.max(prev - 1, 1));
+    };
+
+    const goToNextPage = () => {
+        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    };
 
     // CSV File Processing
     const parseCSV = (content: string): CSVRow[] => {
         const lines = content.split('\n').filter(line => line.trim());
+        const headers = lines[0].split(';').map(h => h.trim());
+
         return lines.slice(1).map(line => {
             const values = line.split(';');
 
             // Helper function to convert empty strings to null
             const nullIfEmpty = (value: string) => value?.trim() === '' ? null : value?.trim() || null;
 
+            // Helper function to validate and convert direction
+            const getAssignmentDirection = (value: string): 'Include' | 'Exclude' => {
+                const normalized = value?.trim().toLowerCase();
+                return normalized === 'exclude' ? 'Exclude' : 'Include'; // Default to Include
+            };
+
+            // Helper function to validate and convert action
+            const getAssignmentAction = (value: string): 'Add' | 'Remove' => {
+                const normalized = value?.trim().toLowerCase();
+                return normalized === 'remove' ? 'Remove' : 'Add'; // Default to Add
+            };
+
+            // Map based on actual CSV structure
             return {
                 PolicyName: values[0] || '',
                 GroupName: values[1] || '',
-                AssignmentDirection: (values[2] as 'Include' | 'Exclude') || 'Include',
-                AssignmentAction: (values[3] as 'Add' | 'Remove') || 'Add',
-                AssignmentType: values[6] || 'GroupAssignment',
+                AssignmentDirection: getAssignmentDirection(values[2]),
+                AssignmentAction: getAssignmentAction(values[3]),
                 FilterName: nullIfEmpty(values[4]),
                 FilterType: nullIfEmpty(values[5])
             };
         });
     };
+
+
 
     // Backup rows
     const downloadBackups = async () => {
@@ -226,7 +262,6 @@ export default function AssignmentRolloutPage() {
                 ...item,
                 csvRow: {
                     ...csvData[index],
-                    AssignmentType: item.assignmentType || csvData[index].AssignmentType || 'GroupAssignment'
                 },
                 // Use the API's isReadyForMigration value directly
                 isReadyForMigration: item.isReadyForMigration,
@@ -244,9 +279,6 @@ export default function AssignmentRolloutPage() {
             setLoading(false);
         }
     };
-
-
-
 
     const migrateSelectedAssignments = async () => {
         if (!accounts.length || !selectedRows.length) return;
@@ -337,7 +369,6 @@ export default function AssignmentRolloutPage() {
                 SubResourceType: result.policy?.policySubType || '',
                 ResourceId: result.policy?.id || result.id,
                 AssignmentId: result.assignmentId,
-                AssignmentType: result.csvRow?.AssignmentType || 'GroupAssignment',
                 AssignmentAction: result.csvRow?.AssignmentAction || "Add",
                 FilterId: result.filterToMigrate?.id && result.filterToMigrate.id !== "00000000-0000-0000-0000-000000000000"
                     ? result.filterToMigrate.id
@@ -408,6 +439,25 @@ export default function AssignmentRolloutPage() {
             fileInputRef.current.value = '';
         }
     };
+
+    const {
+        selectedGroup,
+        groupLoading,
+        groupError,
+        isDialogOpen,
+        fetchGroupDetails,
+        closeDialog
+    } = useGroupDetails();
+
+    // Update the handleResourceClick function to handle GroupAssignment:
+    const handleResourceClick = (resourceId: string, assignmentType: string) => {
+        if (assignmentType === 'GroupAssignment' && resourceId) {
+            fetchGroupDetails(resourceId);
+        } else if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && resourceId) {
+            fetchGroupDetails(resourceId);
+        }
+    };
+
 
     return (
         <div className="container mx-auto p-6 space-y-6">
@@ -514,12 +564,11 @@ export default function AssignmentRolloutPage() {
                                         {loading ? 'Comparing...' : 'Compare Assignments'}
                                     </Button>
                                 </div>
+
                                 {/* Summary Stats */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-blue-600">
-                                            {csvData.length}
-                                        </div>
+                                        <div className="text-2xl font-bold text-blue-600">{csvData.length}</div>
                                         <div className="text-sm text-gray-600">Total Rows</div>
                                     </div>
                                     <div className="text-center">
@@ -541,8 +590,9 @@ export default function AssignmentRolloutPage() {
                                         <div className="text-sm text-gray-600">With Filters</div>
                                     </div>
                                 </div>
+
                                 <div className="border rounded-lg overflow-hidden">
-                                    <div className="overflow-x-auto max-h-96">
+                                    <div className="overflow-x-auto">
                                         <table className="w-full text-sm">
                                             <thead className="bg-gray-50 sticky top-0">
                                             <tr>
@@ -551,66 +601,122 @@ export default function AssignmentRolloutPage() {
                                                 <th className="text-left p-3 border-b">Group Name</th>
                                                 <th className="text-left p-3 border-b">Direction</th>
                                                 <th className="text-left p-3 border-b">Action</th>
-                                                <th className="text-left p-3 border-b">Assignment Type</th>
                                                 <th className="text-left p-3 border-b">Filter Name</th>
                                                 <th className="text-left p-3 border-b">Filter Type</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {csvData.map((row, index) => (
-                                                <tr key={index} className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                                                    <td className="p-3 text-gray-500">{index + 1}</td>
-                                                    <td className="p-3">
-                                                        <div className="max-w-xs truncate" title={row.PolicyName}>
-                                                            {row.PolicyName}
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-3">
-                                                        <div className="max-w-xs truncate" title={row.GroupName}>
-                                                            {row.GroupName}
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-3">
-                                                        <Badge variant={row.AssignmentDirection === 'Include' ? 'default' : 'destructive'}>
-                                                            {row.AssignmentDirection}
-                                                        </Badge>
-                                                    </td>
-                                                    <td className="p-3">
-                                                        <Badge variant={row.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
-                                                            {row.AssignmentAction}
-                                                        </Badge>
-                                                    </td>
-                                                    <td className="p-3">
-                                                        <Badge variant="outline">
-                                                            {row.AssignmentType}
-                                                        </Badge>
-                                                    </td>
-                                                    <td className="p-3">
-                                                        {row.FilterName ? (
-                                                            <div className="max-w-xs truncate" title={row.FilterName}>
-                                                                {row.FilterName}
+                                            {(() => {
+                                                const startIndex = (uploadCurrentPage - 1) * itemsPerPage;
+                                                const endIndex = startIndex + itemsPerPage;
+                                                const paginatedData = csvData.slice(startIndex, endIndex);
+
+                                                return paginatedData.map((row, index) => (
+                                                    <tr key={startIndex + index} className={`border-b ${(startIndex + index) % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                        <td className="p-3 text-gray-500">{startIndex + index + 1}</td>
+                                                        <td className="p-3">
+                                                            <div className="max-w-xs truncate" title={row.PolicyName}>
+                                                                {row.PolicyName}
                                                             </div>
-                                                        ) : (
-                                                            <span className="text-gray-400">-</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3">
-                                                        {row.FilterType ? (
-                                                            <Badge variant="outline" className="text-xs">
-                                                                {row.FilterType}
+                                                        </td>
+                                                        <td className="p-3">
+                                                            <div className="max-w-xs truncate" title={row.GroupName}>
+                                                                {row.GroupName}
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-3">
+                                                            <Badge variant={row.AssignmentDirection === 'Include' ? 'default' : 'destructive'}>
+                                                                {row.AssignmentDirection}
                                                             </Badge>
-                                                        ) : (
-                                                            <span className="text-gray-400">-</span>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                                        </td>
+                                                        <td className="p-3">
+                                                            <Badge variant={row.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
+                                                                {row.AssignmentAction}
+                                                            </Badge>
+                                                        </td>
+                                                        <td className="p-3">
+                                                            {row.FilterName ? (
+                                                                <div className="max-w-xs truncate" title={row.FilterName}>
+                                                                    {row.FilterName}
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-gray-400">-</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="p-3">
+                                                            {row.FilterType ? (
+                                                                <Badge variant={row.FilterType === 'Include' ? 'default' : 'secondary'}>
+                                                                    {row.FilterType}
+                                                                </Badge>
+                                                            ) : (
+                                                                <span className="text-gray-400">-</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ));
+                                            })()}
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {/* Upload Pagination Controls */}
+                                    {Math.ceil(csvData.length / itemsPerPage) > 1 && (
+                                        <div className="flex items-center justify-between p-4 border-t">
+                                            <div className="text-sm text-gray-600">
+                                                Showing {((uploadCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(uploadCurrentPage * itemsPerPage, csvData.length)} of {csvData.length} results
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setUploadCurrentPage(Math.max(1, uploadCurrentPage - 1))}
+                                                    disabled={uploadCurrentPage === 1}
+                                                >
+                                                    <ChevronLeft className="h-4 w-4" />
+                                                    Previous
+                                                </Button>
+
+                                                <div className="flex items-center gap-1">
+                                                    {Array.from({ length: Math.min(5, Math.ceil(csvData.length / itemsPerPage)) }, (_, i) => {
+                                                        const totalPages = Math.ceil(csvData.length / itemsPerPage);
+                                                        let pageNum;
+                                                        if (totalPages <= 5) {
+                                                            pageNum = i + 1;
+                                                        } else if (uploadCurrentPage <= 3) {
+                                                            pageNum = i + 1;
+                                                        } else if (uploadCurrentPage >= totalPages - 2) {
+                                                            pageNum = totalPages - 4 + i;
+                                                        } else {
+                                                            pageNum = uploadCurrentPage - 2 + i;
+                                                        }
+
+                                                        return (
+                                                            <Button
+                                                                key={pageNum}
+                                                                variant={uploadCurrentPage === pageNum ? "default" : "outline"}
+                                                                size="sm"
+                                                                onClick={() => setUploadCurrentPage(pageNum)}
+                                                                className="w-8 h-8 p-0"
+                                                            >
+                                                                {pageNum}
+                                                            </Button>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setUploadCurrentPage(Math.min(Math.ceil(csvData.length / itemsPerPage), uploadCurrentPage + 1))}
+                                                    disabled={uploadCurrentPage === Math.ceil(csvData.length / itemsPerPage)}
+                                                >
+                                                    Next
+                                                    <ChevronRight className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-
-
                             </div>
                         )}
                     </CardContent>
@@ -650,13 +756,37 @@ export default function AssignmentRolloutPage() {
                                         const readyRows = comparisonResults
                                             .filter(r => r.isReadyForMigration && !r.isMigrated)
                                             .map(r => r.id);
-                                        setSelectedRows(readyRows);
+
+                                        // Check if all ready rows are already selected
+                                        const allReadySelected = readyRows.length > 0 &&
+                                            readyRows.every(id => selectedRows.includes(id));
+
+                                        if (allReadySelected) {
+                                            // Deselect all ready rows
+                                            setSelectedRows(selectedRows.filter(id => !readyRows.includes(id)));
+                                        } else {
+                                            // Select all ready rows
+                                            const newSelection = [...new Set([...selectedRows, ...readyRows])];
+                                            setSelectedRows(newSelection);
+                                        }
                                     }}
                                     variant="outline"
                                     size="sm"
                                 >
-                                    Select Ready
+                                    {(() => {
+                                        const readyRows = comparisonResults
+                                            .filter(r => r.isReadyForMigration && !r.isMigrated)
+                                            .map(r => r.id);
+                                        const allReadySelected = readyRows.length > 0 &&
+                                            readyRows.every(id => selectedRows.includes(id));
+
+                                        return allReadySelected
+                                            ? `Deselect All Ready (${readyRows.length})`
+                                            : `Select All Ready (${readyRows.length})`;
+                                    })()}
                                 </Button>
+
+
                                 <Button
                                     onClick={downloadBackups}
                                     disabled={loading || comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
@@ -666,10 +796,21 @@ export default function AssignmentRolloutPage() {
                                 </Button>
                                 <Button
                                     onClick={migrateSelectedAssignments}
-                                    disabled={!selectedRows.length || loading}
+                                    disabled={
+                                        selectedRows.filter(id => {
+                                            const result = comparisonResults.find(r => r.id === id);
+                                            return result?.isReadyForMigration && !result?.isMigrated;
+                                        }).length === 0 || loading
+                                    }
                                 >
-                                    {loading ? 'Migrating...' : `Migrate ${selectedRows.length} Selected`}
+                                    {loading ? 'Migrating...' : `Migrate ${
+                                        selectedRows.filter(id => {
+                                            const result = comparisonResults.find(r => r.id === id);
+                                            return result?.isReadyForMigration && !result?.isMigrated;
+                                        }).length
+                                    } Selected`}
                                 </Button>
+
                             </div>
                         </div>
                     </CardHeader>
@@ -702,14 +843,22 @@ export default function AssignmentRolloutPage() {
                                                     type="checkbox"
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
-                                                            setSelectedRows(comparisonResults.map(r => r.id));
+                                                            // Only select rows that are ready for migration and not already migrated
+                                                            const readyRows = comparisonResults
+                                                                .filter(r => r.isReadyForMigration && !r.isMigrated)
+                                                                .map(r => r.id);
+                                                            setSelectedRows(readyRows);
                                                         } else {
                                                             setSelectedRows([]);
                                                         }
                                                     }}
-                                                    checked={selectedRows.length === comparisonResults.length && comparisonResults.length > 0}
+                                                    checked={
+                                                        comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length > 0 &&
+                                                        selectedRows.length === comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length
+                                                    }
                                                 />
                                             </th>
+
                                             <th className="text-left p-3">Policy Name</th>
                                             <th className="text-left p-3">Current Assignments</th>
                                             <th className="text-left p-3">Target Group</th>
@@ -720,23 +869,27 @@ export default function AssignmentRolloutPage() {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {comparisonResults.map((result, index) => (
-                                            <tr key={result.id}
-                                                className={`border-t ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                                                <td className="p-3">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedRows.includes(result.id)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedRows([...selectedRows, result.id]);
-                                                            } else {
-                                                                setSelectedRows(selectedRows.filter(id => id !== result.id));
-                                                            }
-                                                        }}
-                                                        disabled={!result.isReadyForMigration || result.isMigrated}
-                                                    />
-                                                </td>
+                                        {(() => {
+                                            const startIndex = (currentPage - 1) * itemsPerPage;
+                                            const endIndex = startIndex + itemsPerPage;
+                                            const paginatedResults = comparisonResults.slice(startIndex, endIndex);
+
+                                            return paginatedResults.map((result, index) => (
+                                                <tr key={result.id} className={`border-t ${(startIndex + index) % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                    <td className="p-3">
+                                                        <input
+                                                            type="checkbox"
+                                                            disabled={!result.isReadyForMigration || result.isMigrated}
+                                                            checked={selectedRows.includes(result.id)}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    setSelectedRows([...selectedRows, result.id]);
+                                                                } else {
+                                                                    setSelectedRows(selectedRows.filter(id => id !== result.id));
+                                                                }
+                                                            }}
+                                                        />
+                                                    </td>
                                                 <td className="p-3">
                                                     {result.policy ? (
                                                         <>
@@ -773,9 +926,6 @@ export default function AssignmentRolloutPage() {
                                                     )}
                                                 </td>
 
-                                                <td className="p-3">
-                                                    {result.csvRow?.GroupName || '-'}
-                                                </td>
                                                 <td className="p-3">
                                                     {result.csvRow?.AssignmentDirection && (
                                                         <Badge
@@ -839,7 +989,8 @@ export default function AssignmentRolloutPage() {
                                                     </div>
                                                 </td>
                                             </tr>
-                                        ))}
+                                            ));
+                                        })()}
                                         </tbody>
                                     </table>
                                 </div>
@@ -946,66 +1097,247 @@ export default function AssignmentRolloutPage() {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {comparisonResults.filter(r => r.isMigrated).map((result, index) => (
-                                            <tr key={result.id} className={`border-t ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                                                <td className="p-3">
-                                                    {result.policy ? (
-                                                        <div className="max-w-xs truncate" title={result.policy.name}>
-                                                            {result.policy.name}
-                                                        </div>
-                                                    ) : (
-                                                        <span className="text-red-600">Policy not found</span>
-                                                    )}
-                                                </td>
-                                                <td className="p-3">{result.csvRow?.GroupName || '-'}</td>
-                                                <td className="p-3">
-                                                    {result.csvRow?.AssignmentAction && (
-                                                        <Badge variant={result.csvRow.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
-                                                            {result.csvRow.AssignmentAction}
-                                                        </Badge>
-                                                    )}
-                                                </td>
-                                                <td className="p-3">
-                                                    {result.validationStatus === 'valid' && (
-                                                        <Badge variant="default" className="bg-green-100 text-green-800">
-                                                            <CheckCircle2 className="h-3 w-3 mr-1" />
-                                                            Valid
-                                                        </Badge>
-                                                    )}
-                                                    {result.validationStatus === 'invalid' && (
-                                                        <Badge variant="destructive">
-                                                            <XCircle className="h-3 w-3 mr-1" />
-                                                            Invalid
-                                                        </Badge>
-                                                    )}
-                                                    {result.validationStatus === 'warning' && (
-                                                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                                                            <AlertTriangle className="h-3 w-3 mr-1" />
-                                                            Warning
-                                                        </Badge>
-                                                    )}
-                                                    {result.validationStatus === 'pending' && (
-                                                        <Badge variant="outline">
-                                                            Pending
-                                                        </Badge>
-                                                    )}
-                                                </td>
-                                                <td className="p-3">
-                                        <span className="text-sm text-gray-600">
-                                            {result.validationMessage || '-'}
-                                        </span>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {(() => {
+                                            const migratedResults = comparisonResults.filter(r => r.isMigrated);
+                                            const startIndex = (validationCurrentPage - 1) * itemsPerPage;
+                                            const endIndex = startIndex + itemsPerPage;
+                                            const paginatedResults = migratedResults.slice(startIndex, endIndex);
+
+                                            return paginatedResults.map((result, index) => (
+                                                <tr key={result.id} className={`border-t ${(startIndex + index) % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                    <td className="p-3">
+                                                        {result.policy ? (
+                                                            <div className="max-w-xs truncate" title={result.policy.name}>
+                                                                {result.policy.name}
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-red-600">Policy not found</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-3">{result.csvRow?.GroupName || '-'}</td>
+                                                    <td className="p-3">
+                                                        {result.csvRow?.AssignmentAction && (
+                                                            <Badge variant={result.csvRow.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
+                                                                {result.csvRow.AssignmentAction}
+                                                            </Badge>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-3">
+                                                        {result.validationStatus === 'valid' && (
+                                                            <Badge variant="default" className="bg-green-100 text-green-800">
+                                                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                                                Valid
+                                                            </Badge>
+                                                        )}
+                                                        {result.validationStatus === 'invalid' && (
+                                                            <Badge variant="destructive">
+                                                                <XCircle className="h-3 w-3 mr-1" />
+                                                                Invalid
+                                                            </Badge>
+                                                        )}
+                                                        {result.validationStatus === 'warning' && (
+                                                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                                                                <AlertTriangle className="h-3 w-3 mr-1" />
+                                                                Warning
+                                                            </Badge>
+                                                        )}
+                                                        {result.validationStatus === 'pending' && (
+                                                            <Badge variant="outline">Pending</Badge>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-3">
+                                    <span className="text-sm text-gray-600">
+                                        {result.validationMessage || '-'}
+                                    </span>
+                                                    </td>
+                                                </tr>
+                                            ));
+                                        })()}
                                         </tbody>
                                     </table>
+
+                                    {/* Validation Pagination Controls */}
+                                    {(() => {
+                                        const migratedResults = comparisonResults.filter(r => r.isMigrated);
+                                        const totalPages = Math.ceil(migratedResults.length / itemsPerPage);
+
+                                        return totalPages > 1 && (
+                                            <div className="flex items-center justify-between p-4 border-t">
+                                                <div className="text-sm text-gray-600">
+                                                    Showing {((validationCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(validationCurrentPage * itemsPerPage, migratedResults.length)} of {migratedResults.length} results
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => setValidationCurrentPage(Math.max(1, validationCurrentPage - 1))}
+                                                        disabled={validationCurrentPage === 1}
+                                                    >
+                                                        <ChevronLeft className="h-4 w-4" />
+                                                        Previous
+                                                    </Button>
+
+                                                    <div className="flex items-center gap-1">
+                                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                                            let pageNum;
+                                                            if (totalPages <= 5) {
+                                                                pageNum = i + 1;
+                                                            } else if (validationCurrentPage <= 3) {
+                                                                pageNum = i + 1;
+                                                            } else if (validationCurrentPage >= totalPages - 2) {
+                                                                pageNum = totalPages - 4 + i;
+                                                            } else {
+                                                                pageNum = validationCurrentPage - 2 + i;
+                                                            }
+
+                                                            return (
+                                                                <Button
+                                                                    key={pageNum}
+                                                                    variant={validationCurrentPage === pageNum ? "default" : "outline"}
+                                                                    size="sm"
+                                                                    onClick={() => setValidationCurrentPage(pageNum)}
+                                                                    className="w-8 h-8 p-0"
+                                                                >
+                                                                    {pageNum}
+                                                                </Button>
+                                                            );
+                                                        })}
+                                                    </div>
+
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => setValidationCurrentPage(Math.min(totalPages, validationCurrentPage + 1))}
+                                                        disabled={validationCurrentPage === totalPages}
+                                                    >
+                                                        Next
+                                                        <ChevronRight className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             </div>
                         )}
+
                     </CardContent>
                 </Card>
             )}
+            {/* Group Details Dialog */}
+            <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Users className="h-5 w-5" />
+                            Group Details
+                        </DialogTitle>
+                    </DialogHeader>
 
+                    {groupLoading && (
+                        <div className="flex items-center justify-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span className="ml-2">Loading group details...</span>
+                        </div>
+                    )}
+
+                    {groupError && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div className="flex items-center gap-2 text-red-600">
+                                <AlertTriangle className="h-5 w-5" />
+                                <span>{groupError}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {selectedGroup && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500">Display Name</label>
+                                    <p className="text-sm font-semibold">{selectedGroup.displayName}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500">Group ID</label>
+                                    <p className="text-sm font-mono text-gray-600">{selectedGroup.id}</p>
+                                </div>
+                            </div>
+
+                            {selectedGroup.description && (
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500">Description</label>
+                                    <p className="text-sm text-gray-600">{selectedGroup.description}</p>
+                                </div>
+                            )}
+
+                            {selectedGroup.groupCount && (
+                                <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-blue-600">
+                                            {selectedGroup.groupCount.userCount}
+                                        </div>
+                                        <div className="text-sm text-gray-600">Users</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-green-600">
+                                            {selectedGroup.groupCount.deviceCount}
+                                        </div>
+                                        <div className="text-sm text-gray-600">Devices</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-purple-600">
+                                            {selectedGroup.groupCount.groupCount}
+                                        </div>
+                                        <div className="text-sm text-gray-600">Groups</div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedGroup.members && selectedGroup.members.length > 0 ? (
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 mb-2 block">
+                                        Members ({selectedGroup.members.length})
+                                    </label>
+                                    <div className="border rounded-lg overflow-hidden max-h-60 overflow-y-auto">
+                                        <table className="w-full text-sm">
+                                            <thead className="bg-gray-50 sticky top-0">
+                                            <tr>
+                                                <th className="text-left p-3 border-b">Name</th>
+                                                <th className="text-left p-3 border-b">Type</th>
+                                                <th className="text-left p-3 border-b">Status</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {selectedGroup.members.map((member, index) => (
+                                                <tr key={member.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                    <td className="p-3 border-b">
+                                                        <div className="font-medium">{member.displayName || 'Unknown'}</div>
+                                                        <div className="text-xs text-gray-500">{member.id || 'No ID'}</div>
+                                                    </td>
+                                                    <td className="p-3 border-b">
+                                                        <Badge variant="outline">{member.type || 'Unknown'}</Badge>
+                                                    </td>
+                                                    <td className="p-3 border-b">
+                                                        <Badge variant={member.accountEnabled ? 'default' : 'secondary'}>
+                                                            {member.accountEnabled ? 'Enabled' : 'Disabled'}
+                                                        </Badge>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                                    <p className="text-sm text-gray-600">No members found or unable to load member details.</p>
+                                </div>
+                            )}
+
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
