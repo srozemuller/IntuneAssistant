@@ -395,7 +395,14 @@ export default function AssignmentsOverview() {
         {
             key: 'accountEnabled' as string,
             label: 'Account Status',
-            render: (value: unknown) => {
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const type = String(row.type).toLowerCase();
+
+                // Don't show account status for groups
+                if (type === 'group') {
+                    return <span className="text-xs text-gray-500">N/A</span>;
+                }
+
                 const isEnabled = Boolean(value);
                 return (
                     <Badge variant={isEnabled ? 'default' : 'secondary'}
@@ -507,11 +514,13 @@ export default function AssignmentsOverview() {
                             </button>
                             {group?.groupCount && (
                                 <div className="flex gap-1 text-xs text-gray-500">
-                                    <span>{group.groupCount.userCount} user</span>
-                                    <span>{group.groupCount.deviceCount} device</span>
-                                    <span>{group.groupCount.groupCount} group</span>
+                                    <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
+                                    <span>{group.groupCount.deviceCount} {group.groupCount.deviceCount === 1 ? 'device' : 'devices'}</span>
+                                    <span>{group.groupCount.groupCount} {group.groupCount.groupCount === 1 ? 'group' : 'groups'}</span>
                                 </div>
                             )}
+
+
                         </div>
                     );
                 }
