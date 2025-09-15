@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useRef } from 'react';
@@ -6,29 +7,22 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
-import { ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT, EXPORT_ENDPOINT } from '@/lib/constants';
-import { apiScope } from "@/lib/msalConfig";
+import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+import {apiScope} from "@/lib/msalConfig";
+import { useGroupDetails } from '@/hooks/useGroupDetails';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CSVRow {
     PolicyName: string;
     GroupName: string;
     AssignmentDirection: 'Include' | 'Exclude';
     AssignmentAction: 'Add' | 'Remove';
-    AssignmentType: string;
     FilterName: string | null;
     FilterType: string | null;
-}
-
-interface ValidationResult {
-    id: string;
-    hasCorrectAssignment: boolean;
-    message?: {
-        reason?: string;
-        status?: string;
-    };
 }
 
 interface ComparisonResult {
@@ -68,6 +62,8 @@ interface ComparisonResult {
     validationMessage?: string;
 }
 
+
+
 export default function AssignmentRolloutPage() {
     const { instance, accounts } = useMsal();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +76,64 @@ export default function AssignmentRolloutPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [migrationProgress, setMigrationProgress] = useState(0);
-    const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
+    const [validationComplete, setValidationComplete] = useState(false);
+    const [validationResults, setValidationResults] = useState<any[]>([]);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
+    const [compareCurrentPage, setCompareCurrentPage] = useState(1);
+    const [validationCurrentPage, setValidationCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(ITEMS_PER_PAGE);
+
+    // Add pagination logic before the return statement
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedResults = comparisonResults.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(comparisonResults.length / itemsPerPage);
+    const goToPreviousPage = () => {
+        setCurrentPage((prev) => Math.max(prev - 1, 1));
+    };
+
+    const goToNextPage = () => {
+        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    };
+
+    // CSV File Processing
+    const parseCSV = (content: string): CSVRow[] => {
+        const lines = content.split('\n').filter(line => line.trim());
+        const headers = lines[0].split(';').map(h => h.trim());
+
+        return lines.slice(1).map(line => {
+            const values = line.split(';');
+
+            // Helper function to convert empty strings to null
+            const nullIfEmpty = (value: string) => value?.trim() === '' ? null : value?.trim() || null;
+
+            // Helper function to validate and convert direction
+            const getAssignmentDirection = (value: string): 'Include' | 'Exclude' => {
+                const normalized = value?.trim().toLowerCase();
+                return normalized === 'exclude' ? 'Exclude' : 'Include'; // Default to Include
+            };
+
+            // Helper function to validate and convert action
+            const getAssignmentAction = (value: string): 'Add' | 'Remove' => {
+                const normalized = value?.trim().toLowerCase();
+                return normalized === 'remove' ? 'Remove' : 'Add'; // Default to Add
+            };
+
+            // Map based on actual CSV structure
+            return {
+                PolicyName: values[0] || '',
+                GroupName: values[1] || '',
+                AssignmentDirection: getAssignmentDirection(values[2]),
+                AssignmentAction: getAssignmentAction(values[3]),
+                FilterName: nullIfEmpty(values[4]),
+                FilterType: nullIfEmpty(values[5])
+            };
+        });
+    };
+
+
 
     // Backup rows
     const downloadBackups = async () => {
@@ -155,26 +208,6 @@ export default function AssignmentRolloutPage() {
         }
     };
 
-    // CSV File Processing
-    const parseCSV = (content: string): CSVRow[] => {
-        const lines = content.split('\n').filter(line => line.trim());
-        return lines.slice(1).map(line => {
-            const values = line.split(';');
-
-            const nullIfEmpty = (value: string) => value?.trim() === '' ? null : value?.trim() || null;
-
-            return {
-                PolicyName: values[0] || '',
-                GroupName: values[1] || '',
-                AssignmentDirection: (values[2] as 'Include' | 'Exclude') || 'Include',
-                AssignmentAction: (values[3] as 'Add' | 'Remove') || 'Add',
-                AssignmentType: values[6] || 'GroupAssignment',
-                FilterName: nullIfEmpty(values[4]),
-                FilterType: nullIfEmpty(values[5])
-            };
-        });
-    };
-
     const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
@@ -185,13 +218,16 @@ export default function AssignmentRolloutPage() {
                 const content = e.target?.result as string;
                 const parsed = parseCSV(content);
                 setCsvData(parsed);
+                // Remove this line to stay on upload step
+                // setCurrentStep('compare');
                 setError(null);
-            } catch {
+            } catch (err) {
                 setError('Failed to parse CSV file. Please check the format.');
             }
         };
         reader.readAsText(file);
     }, []);
+
 
     // API Calls
     const compareAssignments = async () => {
@@ -219,20 +255,23 @@ export default function AssignmentRolloutPage() {
                 throw new Error(`API call failed: ${apiResponse.statusText}`);
             }
 
-            const responseData: { data: ComparisonResult[] } = await apiResponse.json();
+            const responseData = await apiResponse.json();
 
-            const enhancedResults = responseData.data.map((item: ComparisonResult, index: number) => ({
+            // Process and enhance the comparison results - use API response values directly
+            const enhancedResults = responseData.data.map((item: any, index: number) => ({
                 ...item,
                 csvRow: {
                     ...csvData[index],
-                    AssignmentType: item.csvRow?.AssignmentType || csvData[index].AssignmentType || 'GroupAssignment'
                 },
+                // Use the API's isReadyForMigration value directly
                 isReadyForMigration: item.isReadyForMigration,
                 isMigrated: item.isMigrated || false,
+                isBackedUp: false,
                 validationStatus: 'pending' as const
             }));
 
             setComparisonResults(enhancedResults);
+            // Move to migrate step after successful comparison
             setCurrentStep('migrate');
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to compare assignments');
@@ -270,11 +309,13 @@ export default function AssignmentRolloutPage() {
                 throw new Error(`Migration failed: ${apiResponse.statusText}`);
             }
 
+            // Simulate migration progress
             for (let i = 0; i <= 100; i += 10) {
                 setMigrationProgress(i);
                 await new Promise(resolve => setTimeout(resolve, 200));
             }
 
+            // Update migrated status and wait for state to update
             const updatedResults = comparisonResults.map(result =>
                 selectedRows.includes(result.id)
                     ? { ...result, isMigrated: true }
@@ -282,8 +323,11 @@ export default function AssignmentRolloutPage() {
             );
 
             setComparisonResults(updatedResults);
+
+            // Move to validation step
             setCurrentStep('validate');
 
+            // Use the updated results for validation instead of relying on state
             setTimeout(() => {
                 validateMigratedAssignments(updatedResults);
             }, 500);
@@ -299,6 +343,7 @@ export default function AssignmentRolloutPage() {
         if (!accounts.length) return;
 
         setLoading(true);
+        setValidationComplete(false); // Reset completion status
 
         try {
             const response = await instance.acquireTokenSilent({
@@ -306,6 +351,7 @@ export default function AssignmentRolloutPage() {
                 account: accounts[0]
             });
 
+            // Use passed results or current state
             const currentResults = results || comparisonResults;
             const migratedData = currentResults.filter(result => result.isMigrated);
 
@@ -316,13 +362,13 @@ export default function AssignmentRolloutPage() {
 
             console.log(`Validating ${migratedData.length} migrated assignments`);
 
+            // Transform the data to match the expected payload format
             const validationPayload = migratedData.map(result => ({
                 Id: result.id,
                 ResourceType: result.policy?.policyType || '',
                 SubResourceType: result.policy?.policySubType || '',
                 ResourceId: result.policy?.id || result.id,
                 AssignmentId: result.assignmentId,
-                AssignmentType: result.csvRow?.AssignmentType || 'GroupAssignment',
                 AssignmentAction: result.csvRow?.AssignmentAction || "Add",
                 FilterId: result.filterToMigrate?.id && result.filterToMigrate.id !== "00000000-0000-0000-0000-000000000000"
                     ? result.filterToMigrate.id
@@ -345,12 +391,13 @@ export default function AssignmentRolloutPage() {
                 throw new Error(`Validation failed: ${apiResponse.statusText}`);
             }
 
-            const validationData: { data: ValidationResult[] } = await apiResponse.json();
+            const validationData = await apiResponse.json();
             setValidationResults(validationData.data || []);
 
+            // Update comparison results with validation status
             setComparisonResults(prev =>
                 prev.map(result => {
-                    const validation = validationData.data?.find((v: ValidationResult) => v.id === result.id);
+                    const validation = validationData.data?.find((v: any) => v.id === result.id);
                     if (validation) {
                         return {
                             ...result,
@@ -362,6 +409,9 @@ export default function AssignmentRolloutPage() {
                 })
             );
 
+            // Mark validation as complete
+            setValidationComplete(true);
+
             console.log(`Validation completed for ${validationData.data?.length || 0} items`);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Validation failed');
@@ -371,6 +421,7 @@ export default function AssignmentRolloutPage() {
         }
     };
 
+    // Keep the original function for manual validation
     const validateAssignments = async () => {
         await validateMigratedAssignments();
     };
@@ -382,11 +433,31 @@ export default function AssignmentRolloutPage() {
         setSelectedRows([]);
         setMigrationProgress(0);
         setValidationResults([]);
+        setValidationComplete(false);
         setError(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
     };
+
+    const {
+        selectedGroup,
+        groupLoading,
+        groupError,
+        isDialogOpen,
+        fetchGroupDetails,
+        closeDialog
+    } = useGroupDetails();
+
+    // Update the handleResourceClick function to handle GroupAssignment:
+    const handleResourceClick = (resourceId: string, assignmentType: string) => {
+        if (assignmentType === 'GroupAssignment' && resourceId) {
+            fetchGroupDetails(resourceId);
+        } else if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && resourceId) {
+            fetchGroupDetails(resourceId);
+        }
+    };
+
 
     return (
         <div className="container mx-auto p-6 space-y-6">
@@ -410,42 +481,33 @@ export default function AssignmentRolloutPage() {
                             { key: 'upload', label: 'Upload CSV', icon: Upload },
                             { key: 'compare', label: 'Compare', icon: Eye },
                             { key: 'migrate', label: 'Migrate', icon: Play },
-                            { key: 'validate', label: 'Validate', icon: Shield }
+                            { key: 'validate', label: 'Validate', icon: CheckCircle2 }
                         ].map((step, index) => {
                             const Icon = step.icon;
                             const isActive = currentStep === step.key;
                             const stepOrder = ['upload', 'compare', 'migrate', 'validate'];
                             const isCompleted = stepOrder.indexOf(currentStep) > stepOrder.indexOf(step.key);
 
-                            const isValidationCompleted = step.key === 'validate' &&
-                                currentStep === 'validate' &&
-                                comparisonResults.filter(r => r.isMigrated).length > 0 &&
-                                comparisonResults.filter(r => r.isMigrated).every(r =>
-                                    r.validationStatus && r.validationStatus !== 'pending'
-                                ) &&
-                                validationResults.length > 0;
+                            // Special case for validate step - show green if validation is complete
+                            const isValidateComplete = step.key === 'validate' && validationComplete;
 
                             return (
                                 <div key={step.key} className="flex items-center">
-                                    <div className={`
-                                        w-10 h-10 rounded-full flex items-center justify-center border-2 
-                                        ${isActive ? 'border-blue-500 bg-blue-500 text-white' :
-                                        isCompleted || isValidationCompleted ? 'border-green-500 bg-green-500 text-white' :
-                                            'border-gray-300 bg-white text-gray-400'}
-                                    `}>
-                                        {isCompleted || isValidationCompleted ? (
-                                            <CheckCircle2 className="h-5 w-5" />
-                                        ) : (
-                                            <Icon className="h-5 w-5" />
-                                        )}
+                                    <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+                                        isCompleted || isValidateComplete ? 'bg-green-500 border-green-500 text-white' :
+                                            isActive ? 'bg-blue-500 border-blue-500 text-white' :
+                                                'border-gray-300 text-gray-400'
+                                    }`}>
+                                        <Icon className="h-5 w-5" />
                                     </div>
-                                    <div className="ml-3">
-                                        <p className={`text-sm font-medium ${isActive ? 'text-blue-600' : 'text-gray-900'}`}>
-                                            {step.label}
-                                        </p>
-                                    </div>
+                                    <span className={`ml-2 text-sm font-medium ${
+                                        isActive && !isValidateComplete ? 'text-blue-600' :
+                                            isCompleted || isValidateComplete ? 'text-green-600' : 'text-gray-400'
+                                    }`}>
+                            {step.label}
+                        </span>
                                     {index < 3 && (
-                                        <ArrowRight className="h-5 w-5 text-gray-300 mx-4" />
+                                        <ArrowRight className="h-4 w-4 mx-4 text-gray-300" />
                                     )}
                                 </div>
                             );
@@ -499,80 +561,168 @@ export default function AssignmentRolloutPage() {
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold">CSV Data Overview ({csvData.length} rows)</h3>
                                     <Button onClick={compareAssignments} disabled={loading}>
-                                        {loading ? 'Processing...' : 'Next: Compare'}
-                                        <ArrowRight className="h-4 w-4 ml-2" />
+                                        {loading ? 'Comparing...' : 'Compare Assignments'}
                                     </Button>
                                 </div>
+
+                                {/* Summary Stats */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-blue-600">
-                                            {new Set(csvData.map(row => row.PolicyName)).size}
-                                        </div>
-                                        <div className="text-sm text-gray-600">Unique Policies</div>
+                                        <div className="text-2xl font-bold text-blue-600">{csvData.length}</div>
+                                        <div className="text-sm text-gray-600">Total Rows</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-green-600">
-                                            {csvData.filter(row => row.AssignmentAction === 'Add').length}
+                                            {csvData.filter(r => r.AssignmentAction === 'Add').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Add Actions</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-red-600">
-                                            {csvData.filter(row => row.AssignmentAction === 'Remove').length}
+                                            {csvData.filter(r => r.AssignmentAction === 'Remove').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Remove Actions</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-purple-600">
-                                            {csvData.filter(row => row.FilterName).length}
+                                            {csvData.filter(r => r.FilterName).length}
                                         </div>
                                         <div className="text-sm text-gray-600">With Filters</div>
                                     </div>
                                 </div>
+
                                 <div className="border rounded-lg overflow-hidden">
-                                    <div className="overflow-x-auto max-h-96">
+                                    <div className="overflow-x-auto">
                                         <table className="w-full text-sm">
-                                            <thead className="bg-gray-50">
+                                            <thead className="bg-gray-50 sticky top-0">
                                             <tr>
-                                                <th className="px-4 py-2 text-left">Policy Name</th>
-                                                <th className="px-4 py-2 text-left">Group Name</th>
-                                                <th className="px-4 py-2 text-left">Direction</th>
-                                                <th className="px-4 py-2 text-left">Action</th>
-                                                <th className="px-4 py-2 text-left">Filter Name</th>
+                                                <th className="text-left p-3 border-b">#</th>
+                                                <th className="text-left p-3 border-b">Policy Name</th>
+                                                <th className="text-left p-3 border-b">Group Name</th>
+                                                <th className="text-left p-3 border-b">Direction</th>
+                                                <th className="text-left p-3 border-b">Action</th>
+                                                <th className="text-left p-3 border-b">Filter Name</th>
+                                                <th className="text-left p-3 border-b">Filter Type</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {csvData.slice(0, 10).map((row, index) => (
-                                                <tr key={index} className="border-b">
-                                                    <td className="px-4 py-2">{row.PolicyName}</td>
-                                                    <td className="px-4 py-2">{row.GroupName}</td>
-                                                    <td className="px-4 py-2">
-                                                        <Badge variant={row.AssignmentDirection === 'Include' ? 'default' : 'secondary'}>
-                                                            {row.AssignmentDirection}
-                                                        </Badge>
-                                                    </td>
-                                                    <td className="px-4 py-2">
-                                                        <Badge variant={row.AssignmentAction === 'Add' ? 'default' : 'destructive'}>
-                                                            {row.AssignmentAction}
-                                                        </Badge>
-                                                    </td>
-                                                    <td className="px-4 py-2">{row.FilterName || '-'}</td>
-                                                </tr>
-                                            ))}
+                                            {(() => {
+                                                const startIndex = (uploadCurrentPage - 1) * itemsPerPage;
+                                                const endIndex = startIndex + itemsPerPage;
+                                                const paginatedData = csvData.slice(startIndex, endIndex);
+
+                                                return paginatedData.map((row, index) => (
+                                                    <tr key={startIndex + index} className={`border-b ${(startIndex + index) % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                        <td className="p-3 text-gray-500">{startIndex + index + 1}</td>
+                                                        <td className="p-3">
+                                                            <div className="max-w-xs truncate" title={row.PolicyName}>
+                                                                {row.PolicyName}
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-3">
+                                                            <div className="max-w-xs truncate" title={row.GroupName}>
+                                                                {row.GroupName}
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-3">
+                                                            <Badge variant={row.AssignmentDirection === 'Include' ? 'default' : 'destructive'}>
+                                                                {row.AssignmentDirection}
+                                                            </Badge>
+                                                        </td>
+                                                        <td className="p-3">
+                                                            <Badge variant={row.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
+                                                                {row.AssignmentAction}
+                                                            </Badge>
+                                                        </td>
+                                                        <td className="p-3">
+                                                            {row.FilterName ? (
+                                                                <div className="max-w-xs truncate" title={row.FilterName}>
+                                                                    {row.FilterName}
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-gray-400">-</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="p-3">
+                                                            {row.FilterType ? (
+                                                                <Badge variant={row.FilterType === 'Include' ? 'default' : 'secondary'}>
+                                                                    {row.FilterType}
+                                                                </Badge>
+                                                            ) : (
+                                                                <span className="text-gray-400">-</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ));
+                                            })()}
                                             </tbody>
                                         </table>
-                                        {csvData.length > 10 && (
-                                            <div className="p-4 text-center text-gray-500">
-                                                ... and {csvData.length - 10} more rows
-                                            </div>
-                                        )}
                                     </div>
+
+                                    {/* Upload Pagination Controls */}
+                                    {Math.ceil(csvData.length / itemsPerPage) > 1 && (
+                                        <div className="flex items-center justify-between p-4 border-t">
+                                            <div className="text-sm text-gray-600">
+                                                Showing {((uploadCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(uploadCurrentPage * itemsPerPage, csvData.length)} of {csvData.length} results
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setUploadCurrentPage(Math.max(1, uploadCurrentPage - 1))}
+                                                    disabled={uploadCurrentPage === 1}
+                                                >
+                                                    <ChevronLeft className="h-4 w-4" />
+                                                    Previous
+                                                </Button>
+
+                                                <div className="flex items-center gap-1">
+                                                    {Array.from({ length: Math.min(5, Math.ceil(csvData.length / itemsPerPage)) }, (_, i) => {
+                                                        const totalPages = Math.ceil(csvData.length / itemsPerPage);
+                                                        let pageNum;
+                                                        if (totalPages <= 5) {
+                                                            pageNum = i + 1;
+                                                        } else if (uploadCurrentPage <= 3) {
+                                                            pageNum = i + 1;
+                                                        } else if (uploadCurrentPage >= totalPages - 2) {
+                                                            pageNum = totalPages - 4 + i;
+                                                        } else {
+                                                            pageNum = uploadCurrentPage - 2 + i;
+                                                        }
+
+                                                        return (
+                                                            <Button
+                                                                key={pageNum}
+                                                                variant={uploadCurrentPage === pageNum ? "default" : "outline"}
+                                                                size="sm"
+                                                                onClick={() => setUploadCurrentPage(pageNum)}
+                                                                className="w-8 h-8 p-0"
+                                                            >
+                                                                {pageNum}
+                                                            </Button>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setUploadCurrentPage(Math.min(Math.ceil(csvData.length / itemsPerPage), uploadCurrentPage + 1))}
+                                                    disabled={uploadCurrentPage === Math.ceil(csvData.length / itemsPerPage)}
+                                                >
+                                                    Next
+                                                    <ChevronRight className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
                     </CardContent>
                 </Card>
             )}
+
 
             {currentStep === 'compare' && (
                 <Card>
@@ -603,16 +753,40 @@ export default function AssignmentRolloutPage() {
                             <div className="flex gap-2">
                                 <Button
                                     onClick={() => {
-                                        const readyIds = comparisonResults
+                                        const readyRows = comparisonResults
                                             .filter(r => r.isReadyForMigration && !r.isMigrated)
                                             .map(r => r.id);
-                                        setSelectedRows(readyIds);
+
+                                        // Check if all ready rows are already selected
+                                        const allReadySelected = readyRows.length > 0 &&
+                                            readyRows.every(id => selectedRows.includes(id));
+
+                                        if (allReadySelected) {
+                                            // Deselect all ready rows
+                                            setSelectedRows(selectedRows.filter(id => !readyRows.includes(id)));
+                                        } else {
+                                            // Select all ready rows
+                                            const newSelection = [...new Set([...selectedRows, ...readyRows])];
+                                            setSelectedRows(newSelection);
+                                        }
                                     }}
                                     variant="outline"
                                     size="sm"
                                 >
-                                    Select Ready
+                                    {(() => {
+                                        const readyRows = comparisonResults
+                                            .filter(r => r.isReadyForMigration && !r.isMigrated)
+                                            .map(r => r.id);
+                                        const allReadySelected = readyRows.length > 0 &&
+                                            readyRows.every(id => selectedRows.includes(id));
+
+                                        return allReadySelected
+                                            ? `Deselect All Ready (${readyRows.length})`
+                                            : `Select All Ready (${readyRows.length})`;
+                                    })()}
                                 </Button>
+
+
                                 <Button
                                     onClick={downloadBackups}
                                     disabled={loading || comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
@@ -622,10 +796,21 @@ export default function AssignmentRolloutPage() {
                                 </Button>
                                 <Button
                                     onClick={migrateSelectedAssignments}
-                                    disabled={!selectedRows.length || loading}
+                                    disabled={
+                                        selectedRows.filter(id => {
+                                            const result = comparisonResults.find(r => r.id === id);
+                                            return result?.isReadyForMigration && !result?.isMigrated;
+                                        }).length === 0 || loading
+                                    }
                                 >
-                                    {loading ? 'Migrating...' : `Migrate ${selectedRows.length} Selected`}
+                                    {loading ? 'Migrating...' : `Migrate ${
+                                        selectedRows.filter(id => {
+                                            const result = comparisonResults.find(r => r.id === id);
+                                            return result?.isReadyForMigration && !result?.isMigrated;
+                                        }).length
+                                    } Selected`}
                                 </Button>
+
                             </div>
                         </div>
                     </CardHeader>
@@ -645,6 +830,7 @@ export default function AssignmentRolloutPage() {
                             </div>
                         )}
 
+                        {/* Comparison Results Table */}
                         {comparisonResults.length > 0 ? (
                             <div className="space-y-4">
                                 <h3 className="font-semibold">Comparison Results ({comparisonResults.length} policies)</h3>
@@ -652,100 +838,175 @@ export default function AssignmentRolloutPage() {
                                     <table className="w-full text-sm">
                                         <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-4 py-2">
+                                            <th className="text-left p-3">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedRows.length === comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length && comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length > 0}
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
-                                                            setSelectedRows(comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).map(r => r.id));
+                                                            // Only select rows that are ready for migration and not already migrated
+                                                            const readyRows = comparisonResults
+                                                                .filter(r => r.isReadyForMigration && !r.isMigrated)
+                                                                .map(r => r.id);
+                                                            setSelectedRows(readyRows);
                                                         } else {
                                                             setSelectedRows([]);
                                                         }
                                                     }}
+                                                    checked={
+                                                        comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length > 0 &&
+                                                        selectedRows.length === comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length
+                                                    }
                                                 />
                                             </th>
-                                            <th className="px-4 py-2 text-left">Policy Name</th>
-                                            <th className="px-4 py-2 text-left">Type</th>
-                                            <th className="px-4 py-2 text-left">Action</th>
-                                            <th className="px-4 py-2 text-left">Status</th>
-                                            <th className="px-4 py-2 text-left">Ready</th>
-                                            <th className="px-4 py-2 text-left">Backup</th>
+
+                                            <th className="text-left p-3">Policy Name</th>
+                                            <th className="text-left p-3">Current Assignments</th>
+                                            <th className="text-left p-3">Target Group</th>
+                                            <th className="text-left p-3">Direction</th>
+                                            <th className="text-left p-3">Action</th>
+                                            <th className="text-left p-3">Filter</th>
+                                            <th className="text-left p-3">Status</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {comparisonResults.map((result) => (
-                                            <tr key={result.id} className="border-b">
-                                                <td className="px-4 py-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedRows.includes(result.id)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedRows(prev => [...prev, result.id]);
-                                                            } else {
-                                                                setSelectedRows(prev => prev.filter(id => id !== result.id));
-                                                            }
-                                                        }}
-                                                        disabled={!result.isReadyForMigration || result.isMigrated}
-                                                    />
+                                        {(() => {
+                                            const startIndex = (currentPage - 1) * itemsPerPage;
+                                            const endIndex = startIndex + itemsPerPage;
+                                            const paginatedResults = comparisonResults.slice(startIndex, endIndex);
+
+                                            return paginatedResults.map((result, index) => (
+                                                <tr key={result.id} className={`border-t ${(startIndex + index) % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                    <td className="p-3">
+                                                        <input
+                                                            type="checkbox"
+                                                            disabled={!result.isReadyForMigration || result.isMigrated}
+                                                            checked={selectedRows.includes(result.id)}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    setSelectedRows([...selectedRows, result.id]);
+                                                                } else {
+                                                                    setSelectedRows(selectedRows.filter(id => id !== result.id));
+                                                                }
+                                                            }}
+                                                        />
+                                                    </td>
+                                                <td className="p-3">
+                                                    {result.policy ? (
+                                                        <>
+                                                            <div className="max-w-xs truncate"
+                                                                 title={result.policy.name || 'Unknown Policy'}>
+                                                                {result.policy.name || 'Unknown Policy'}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500">
+                                                                {result.policy.policyType || 'Unknown Type'} • {result.policy.platforms || 'Unknown Platform'}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="text-red-600 text-sm">
+                                                            <XCircle className="h-4 w-4 inline mr-1"/>
+                                                            <div>
+                                                                <div className="font-medium"> {result.csvRow?.PolicyName || 'Unknown policy name'}</div>
+                                                                <div className="text-xs text-red-500">
+                                                                    Policy not found
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </td>
-                                                <td className="px-4 py-2 font-medium">{result.policy.name}</td>
-                                                <td className="px-4 py-2">{result.policy.policySubType}</td>
-                                                <td className="px-4 py-2">
-                                                    <Badge variant={result.csvRow?.AssignmentAction === 'Add' ? 'default' : 'destructive'}>
-                                                        {result.csvRow?.AssignmentAction}
-                                                    </Badge>
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    {result.isMigrated ? (
-                                                        <Badge variant="default" className="bg-green-100 text-green-800">
-                                                            Migrated
+
+                                                <td className="p-3">
+                                                    {result.policy ? (
+                                                        <Badge variant="outline">
+                                                            {result.policy.assignments?.length || 0} groups
                                                         </Badge>
                                                     ) : (
-                                                        <Badge variant="secondary">
-                                                            Pending
+                                                        <Badge variant="destructive">
+                                                            N/A
                                                         </Badge>
                                                     )}
                                                 </td>
-                                                <td className="px-4 py-2">
-                                                    {result.isReadyForMigration ? (
-                                                        <CheckCircle2 className="h-4 w-4 text-green-500" />
-                                                    ) : (
-                                                        <XCircle className="h-4 w-4 text-red-500" />
+
+                                                <td className="p-3">
+                                                    {result.csvRow?.AssignmentDirection && (
+                                                        <Badge
+                                                            variant={result.csvRow.AssignmentDirection === 'Include' ? 'default' : 'destructive'}>
+                                                            {result.csvRow.AssignmentDirection}
+                                                        </Badge>
                                                     )}
                                                 </td>
-                                                <td className="px-4 py-2">
-                                                    {result.isBackedUp ? (
-                                                        <CheckCircle2 className="h-4 w-4 text-green-500" />
-                                                    ) : (
-                                                        <span className="text-gray-400">-</span>
+
+                                                <td className="p-3">
+                                                    {result.csvRow?.AssignmentAction && (
+                                                        <Badge
+                                                            variant={result.csvRow.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
+                                                            {result.csvRow.AssignmentAction}
+                                                        </Badge>
                                                     )}
+                                                </td>
+                                                <td className="p-3">
+                                                    {result.csvRow?.FilterName || '-'}
+                                                </td>
+                                                <td className="p-3">
+                                                    <div className="flex flex-col gap-1">
+                                                        {!result.policy && (
+                                                            <Badge variant="destructive" className="text-xs w-fit">
+                                                                <XCircle className="h-3 w-3 mr-1"/>
+                                                                Policy Missing
+                                                            </Badge>
+                                                        )}
+                                                        {result.policy && result.isReadyForMigration && !result.isMigrated && (
+                                                            <Badge variant="default" className="text-xs w-fit">
+                                                                <CheckCircle2 className="h-3 w-3 mr-1"/>
+                                                                Ready
+                                                            </Badge>
+                                                        )}
+                                                        {result.isMigrated && (
+                                                            <Badge variant="default"
+                                                                   className="text-xs bg-green-100 text-green-800 w-fit">
+                                                                <CheckCircle2 className="h-3 w-3 mr-1"/>
+                                                                Migrated
+                                                            </Badge>
+                                                        )}
+                                                        {/* Always show backup badge */}
+                                                        {result.isBackedUp ? (
+                                                            <Badge variant="default" className="text-xs bg-green-100 text-green-800 w-fit">
+                                                                <Shield className="h-3 w-3 mr-1"/>
+                                                                Backed Up
+                                                            </Badge>
+                                                        ) : (
+                                                            <Badge variant="outline" className="text-xs w-fit">
+                                                                <Shield className="h-3 w-3 mr-1"/>
+                                                                No Backup
+                                                            </Badge>
+                                                        )}
+
+                                                        {result.policy && !result.isReadyForMigration && !result.isMigrated && (
+                                                            <Badge variant="secondary" className="text-xs w-fit">
+                                                                <AlertTriangle className="h-3 w-3 mr-1"/>
+                                                                Not Ready
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                 </td>
                                             </tr>
-                                        ))}
+                                            ));
+                                        })()}
                                         </tbody>
                                     </table>
                                 </div>
 
+                                {/* Summary */}
                                 <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                                    <div className="grid grid-cols-4 gap-4 text-sm">
-                                        <div>
-                                            <span className="font-medium">Total: </span>
-                                            <span>{comparisonResults.length}</span>
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">Ready: </span>
-                                            <span className="text-green-600">{comparisonResults.filter(r => r.isReadyForMigration).length}</span>
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">Selected: </span>
-                                            <span className="text-blue-600">{selectedRows.length}</span>
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">Migrated: </span>
-                                            <span className="text-purple-600">{comparisonResults.filter(r => r.isMigrated).length}</span>
-                                        </div>
+                                    <div className="flex gap-4 text-sm">
+                            <span>
+                                <strong>{comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length}</strong> ready for migration
+                            </span>
+                                        <span>
+                                <strong>{comparisonResults.filter(r => r.isMigrated).length}</strong> migrated
+                            </span>
+                                        <span>
+                                <strong>{selectedRows.length}</strong> selected
+                            </span>
                                     </div>
                                 </div>
                             </div>
@@ -758,6 +1019,7 @@ export default function AssignmentRolloutPage() {
                 </Card>
             )}
 
+
             {currentStep === 'validate' && (
                 <Card>
                     <CardHeader>
@@ -768,18 +1030,24 @@ export default function AssignmentRolloutPage() {
                                     Verify migrated assignments
                                 </p>
                             </div>
-                            <Button
-                                onClick={validateAssignments}
-                                disabled={loading || (
-                                    comparisonResults.filter(r => r.isMigrated).length > 0 &&
-                                    validationResults.length > 0 &&
-                                    comparisonResults.filter(r => r.isMigrated).every(r =>
-                                        r.validationStatus && r.validationStatus !== 'pending'
-                                    )
-                                )}
-                            >
-                                {loading ? 'Validating...' : 'Run Validation'}
-                            </Button>
+                            {!validationComplete && (
+                                <Button onClick={validateAssignments} disabled={loading}>
+                                    {loading ? (
+                                        <div className="flex items-center">
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                            Validating...
+                                        </div>
+                                    ) : (
+                                        'Run Validation'
+                                    )}
+                                </Button>
+                            )}
+                            {validationComplete && (
+                                <div className="flex items-center gap-2 text-green-600">
+                                    <CheckCircle2 className="h-5 w-5" />
+                                    <span className="font-medium">Validation Complete</span>
+                                </div>
+                            )}
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -813,6 +1081,7 @@ export default function AssignmentRolloutPage() {
                             </div>
                         </div>
 
+                        {/* Validation Results Table */}
                         {comparisonResults.filter(r => r.isMigrated).length > 0 && (
                             <div className="space-y-4">
                                 <h3 className="font-semibold">Validated Assignments ({comparisonResults.filter(r => r.isMigrated).length} items)</h3>
@@ -820,57 +1089,255 @@ export default function AssignmentRolloutPage() {
                                     <table className="w-full text-sm">
                                         <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-4 py-2 text-left">Policy Name</th>
-                                            <th className="px-4 py-2 text-left">Action</th>
-                                            <th className="px-4 py-2 text-left">Validation Status</th>
-                                            <th className="px-4 py-2 text-left">Message</th>
+                                            <th className="text-left p-3">Policy Name</th>
+                                            <th className="text-left p-3">Group</th>
+                                            <th className="text-left p-3">Action</th>
+                                            <th className="text-left p-3">Validation Status</th>
+                                            <th className="text-left p-3">Message</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {comparisonResults.filter(r => r.isMigrated).map((result) => (
-                                            <tr key={result.id} className="border-b">
-                                                <td className="px-4 py-2 font-medium">{result.policy.name}</td>
-                                                <td className="px-4 py-2">
-                                                    <Badge variant={result.csvRow?.AssignmentAction === 'Add' ? 'default' : 'destructive'}>
-                                                        {result.csvRow?.AssignmentAction}
-                                                    </Badge>
-                                                </td>
-                                                <td className="px-4 py-2">
-                                                    {result.validationStatus === 'valid' && (
-                                                        <Badge className="bg-green-100 text-green-800">
-                                                            <CheckCircle2 className="h-3 w-3 mr-1" />
-                                                            Valid
-                                                        </Badge>
-                                                    )}
-                                                    {result.validationStatus === 'invalid' && (
-                                                        <Badge variant="destructive">
-                                                            <XCircle className="h-3 w-3 mr-1" />
-                                                            Invalid
-                                                        </Badge>
-                                                    )}
-                                                    {result.validationStatus === 'warning' && (
-                                                        <Badge className="bg-yellow-100 text-yellow-800">
-                                                            <AlertTriangle className="h-3 w-3 mr-1" />
-                                                            Warning
-                                                        </Badge>
-                                                    )}
-                                                    {result.validationStatus === 'pending' && (
-                                                        <Badge variant="secondary">Pending</Badge>
-                                                    )}
-                                                </td>
-                                                <td className="px-4 py-2 text-gray-600">
-                                                    {result.validationMessage || '-'}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {(() => {
+                                            const migratedResults = comparisonResults.filter(r => r.isMigrated);
+                                            const startIndex = (validationCurrentPage - 1) * itemsPerPage;
+                                            const endIndex = startIndex + itemsPerPage;
+                                            const paginatedResults = migratedResults.slice(startIndex, endIndex);
+
+                                            return paginatedResults.map((result, index) => (
+                                                <tr key={result.id} className={`border-t ${(startIndex + index) % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                    <td className="p-3">
+                                                        {result.policy ? (
+                                                            <div className="max-w-xs truncate" title={result.policy.name}>
+                                                                {result.policy.name}
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-red-600">Policy not found</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-3">{result.csvRow?.GroupName || '-'}</td>
+                                                    <td className="p-3">
+                                                        {result.csvRow?.AssignmentAction && (
+                                                            <Badge variant={result.csvRow.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
+                                                                {result.csvRow.AssignmentAction}
+                                                            </Badge>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-3">
+                                                        {result.validationStatus === 'valid' && (
+                                                            <Badge variant="default" className="bg-green-100 text-green-800">
+                                                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                                                Valid
+                                                            </Badge>
+                                                        )}
+                                                        {result.validationStatus === 'invalid' && (
+                                                            <Badge variant="destructive">
+                                                                <XCircle className="h-3 w-3 mr-1" />
+                                                                Invalid
+                                                            </Badge>
+                                                        )}
+                                                        {result.validationStatus === 'warning' && (
+                                                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                                                                <AlertTriangle className="h-3 w-3 mr-1" />
+                                                                Warning
+                                                            </Badge>
+                                                        )}
+                                                        {result.validationStatus === 'pending' && (
+                                                            <Badge variant="outline">Pending</Badge>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-3">
+                                    <span className="text-sm text-gray-600">
+                                        {result.validationMessage || '-'}
+                                    </span>
+                                                    </td>
+                                                </tr>
+                                            ));
+                                        })()}
                                         </tbody>
                                     </table>
+
+                                    {/* Validation Pagination Controls */}
+                                    {(() => {
+                                        const migratedResults = comparisonResults.filter(r => r.isMigrated);
+                                        const totalPages = Math.ceil(migratedResults.length / itemsPerPage);
+
+                                        return totalPages > 1 && (
+                                            <div className="flex items-center justify-between p-4 border-t">
+                                                <div className="text-sm text-gray-600">
+                                                    Showing {((validationCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(validationCurrentPage * itemsPerPage, migratedResults.length)} of {migratedResults.length} results
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => setValidationCurrentPage(Math.max(1, validationCurrentPage - 1))}
+                                                        disabled={validationCurrentPage === 1}
+                                                    >
+                                                        <ChevronLeft className="h-4 w-4" />
+                                                        Previous
+                                                    </Button>
+
+                                                    <div className="flex items-center gap-1">
+                                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                                            let pageNum;
+                                                            if (totalPages <= 5) {
+                                                                pageNum = i + 1;
+                                                            } else if (validationCurrentPage <= 3) {
+                                                                pageNum = i + 1;
+                                                            } else if (validationCurrentPage >= totalPages - 2) {
+                                                                pageNum = totalPages - 4 + i;
+                                                            } else {
+                                                                pageNum = validationCurrentPage - 2 + i;
+                                                            }
+
+                                                            return (
+                                                                <Button
+                                                                    key={pageNum}
+                                                                    variant={validationCurrentPage === pageNum ? "default" : "outline"}
+                                                                    size="sm"
+                                                                    onClick={() => setValidationCurrentPage(pageNum)}
+                                                                    className="w-8 h-8 p-0"
+                                                                >
+                                                                    {pageNum}
+                                                                </Button>
+                                                            );
+                                                        })}
+                                                    </div>
+
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => setValidationCurrentPage(Math.min(totalPages, validationCurrentPage + 1))}
+                                                        disabled={validationCurrentPage === totalPages}
+                                                    >
+                                                        Next
+                                                        <ChevronRight className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             </div>
                         )}
+
                     </CardContent>
                 </Card>
             )}
+            {/* Group Details Dialog */}
+            <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Users className="h-5 w-5" />
+                            Group Details
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    {groupLoading && (
+                        <div className="flex items-center justify-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span className="ml-2">Loading group details...</span>
+                        </div>
+                    )}
+
+                    {groupError && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div className="flex items-center gap-2 text-red-600">
+                                <AlertTriangle className="h-5 w-5" />
+                                <span>{groupError}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {selectedGroup && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500">Display Name</label>
+                                    <p className="text-sm font-semibold">{selectedGroup.displayName}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500">Group ID</label>
+                                    <p className="text-sm font-mono text-gray-600">{selectedGroup.id}</p>
+                                </div>
+                            </div>
+
+                            {selectedGroup.description && (
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500">Description</label>
+                                    <p className="text-sm text-gray-600">{selectedGroup.description}</p>
+                                </div>
+                            )}
+
+                            {selectedGroup.groupCount && (
+                                <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-blue-600">
+                                            {selectedGroup.groupCount.userCount}
+                                        </div>
+                                        <div className="text-sm text-gray-600">Users</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-green-600">
+                                            {selectedGroup.groupCount.deviceCount}
+                                        </div>
+                                        <div className="text-sm text-gray-600">Devices</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-purple-600">
+                                            {selectedGroup.groupCount.groupCount}
+                                        </div>
+                                        <div className="text-sm text-gray-600">Groups</div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedGroup.members && selectedGroup.members.length > 0 ? (
+                                <div>
+                                    <label className="text-sm font-medium text-gray-500 mb-2 block">
+                                        Members ({selectedGroup.members.length})
+                                    </label>
+                                    <div className="border rounded-lg overflow-hidden max-h-60 overflow-y-auto">
+                                        <table className="w-full text-sm">
+                                            <thead className="bg-gray-50 sticky top-0">
+                                            <tr>
+                                                <th className="text-left p-3 border-b">Name</th>
+                                                <th className="text-left p-3 border-b">Type</th>
+                                                <th className="text-left p-3 border-b">Status</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {selectedGroup.members.map((member, index) => (
+                                                <tr key={member.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                    <td className="p-3 border-b">
+                                                        <div className="font-medium">{member.displayName || 'Unknown'}</div>
+                                                        <div className="text-xs text-gray-500">{member.id || 'No ID'}</div>
+                                                    </td>
+                                                    <td className="p-3 border-b">
+                                                        <Badge variant="outline">{member.type || 'Unknown'}</Badge>
+                                                    </td>
+                                                    <td className="p-3 border-b">
+                                                        <Badge variant={member.accountEnabled ? 'default' : 'secondary'}>
+                                                            {member.accountEnabled ? 'Enabled' : 'Disabled'}
+                                                        </Badge>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                                    <p className="text-sm text-gray-600">No members found or unable to load member details.</p>
+                                </div>
+                            )}
+
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

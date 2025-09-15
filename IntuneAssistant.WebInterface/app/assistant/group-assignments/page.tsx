@@ -12,6 +12,7 @@ import {apiScope} from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
+import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
@@ -79,11 +80,6 @@ export default function AssignmentsOverview() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Dialog states
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState<GroupDetails | null>(null);
-    const [groupLoading, setGroupLoading] = useState(false);
-    const [groupError, setGroupError] = useState<string | null>(null);
 
     const [groupSearchInput, setGroupSearchInput] = useState<string>('');
     const [searchedGroup, setSearchedGroup] = useState<GroupDetails | null>(null);
@@ -94,6 +90,10 @@ export default function AssignmentsOverview() {
         const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         return guidRegex.test(str);
     };
+
+    // Group details dialog states
+    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+    const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
 
 
     // Filter dialog states
@@ -394,10 +394,11 @@ export default function AssignmentsOverview() {
     };
 
 
+    // Group dialog handlers
     const handleResourceClick = (resourceId: string, assignmentType: string) => {
-        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && resourceId) {
-            setIsDialogOpen(true);
-            fetchGroupDetails(resourceId);
+        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
+            setSelectedGroupId(resourceId);
+            setIsGroupDialogOpen(true);
         }
     };
 
@@ -672,7 +673,6 @@ export default function AssignmentsOverview() {
             width: 180,
             minWidth: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
-                // ... existing render logic with updated classes for truncation
                 const targetName = String(value);
                 const assignmentType = String(row.assignmentType);
                 const isAssigned = Boolean(row.isAssigned);
@@ -691,18 +691,21 @@ export default function AssignmentsOverview() {
                             </button>
                             {group?.groupCount && (
                                 <div className="flex gap-1 text-xs text-gray-500">
-                                    <span>{group.groupCount.userCount}u</span>
-                                    <span>{group.groupCount.deviceCount}d</span>
+                                    <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
+                                    <span>{group.groupCount.deviceCount} {group.groupCount.deviceCount === 1 ? 'device' : 'devices'}</span>
+                                    <span>{group.groupCount.groupCount} {group.groupCount.groupCount === 1 ? 'group' : 'groups'}</span>
                                 </div>
                             )}
+
+
                         </div>
                     );
                 }
 
                 return (
                     <span className="text-sm truncate block w-full" title={targetName}>
-                    {targetName}
-                </span>
+                        {targetName}
+                    </span>
                 );
             }
         },
@@ -782,9 +785,9 @@ export default function AssignmentsOverview() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Assignments Overview</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Group assignments Overview</h1>
                     <p className="text-gray-600 mt-2">
-                        View and manage all Intune assignments across your organization
+                        View all Intune assignments across your organization for a specific group. Search for a group or load all assignments to get started.
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -1198,95 +1201,16 @@ export default function AssignmentsOverview() {
                 </>
             )}
 
-            {/* Group Details Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Users className="h-5 w-5" />
-                            {selectedGroup?.displayName || 'Group Details'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {selectedGroup?.description || 'Group information and members'}
-                        </DialogDescription>
-                    </DialogHeader>
+            <GroupDetailsDialog
+                groupId={selectedGroupId}
+                isOpen={isGroupDialogOpen}
+                onClose={() => {
+                    setIsGroupDialogOpen(false);
+                    setSelectedGroupId(null);
+                }}
+            />
 
-                    {groupLoading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <div className="flex items-center gap-2">
-                                <RefreshCw className="h-5 w-5 animate-spin" />
-                                <span>Loading group details...</span>
-                            </div>
-                        </div>
-                    ) : groupError ? (
-                        <div className="flex items-center gap-2 text-red-800 p-4 bg-red-50 rounded-md">
-                            <span className="font-medium">Error:</span>
-                            <span>{groupError}</span>
-                        </div>
-                    ) : selectedGroup ? (
-                        <div className="space-y-6">
-                            {/* Group Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">Group ID</label>
-                                    <p className="font-mono text-sm">{selectedGroup.id}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">Created</label>
-                                    <p className="text-sm">{new Date(selectedGroup.createdDateTime).toLocaleDateString()}</p>
-                                </div>
-                                {selectedGroup.membershipRule && (
-                                    <div className="md:col-span-2">
-                                        <label className="text-sm font-medium text-gray-600">Membership Rule</label>
-                                        <p className="text-sm bg-gray-100 p-2 rounded font-mono">{selectedGroup.membershipRule}</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Group Counts */}
-                            {selectedGroup.groupCount && (
-                                <div className="grid grid-cols-3 gap-4">
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-blue-600">{selectedGroup.groupCount.userCount}</div>
-                                            <div className="text-sm text-gray-600">Users</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-green-600">{selectedGroup.groupCount.deviceCount}</div>
-                                            <div className="text-sm text-gray-600">Devices</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-purple-600">{selectedGroup.groupCount.groupCount}</div>
-                                            <div className="text-sm text-gray-600">Groups</div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            )}
-
-                            {/* Members Table */}
-                            {selectedGroup.members && selectedGroup.members.length > 0 ? (
-                                <div>
-                                    <h4 className="text-lg font-medium mb-4">Group Members</h4>
-                                    <DataTable
-                                        data={selectedGroup.members}
-                                        columns={groupMemberColumns}
-                                    />
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                    <p>No members found or unable to load member details.</p>
-                                </div>
-                            )}
-                        </div>
-                    ) : null}
-                </DialogContent>
-            </Dialog>
-
+            {/* Filter Details Dialog */}
             {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
@@ -1303,21 +1227,21 @@ export default function AssignmentsOverview() {
                     {selectedFilter ? (
                         <div className="space-y-6">
                             {/* Filter Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600">Filter ID</label>
-                                    <p className="font-mono text-sm break-all">{selectedFilter.id}</p>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
+                                    <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600">Management Type</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
                                     <div className="flex items-center gap-2">
                                         {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                                            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
                                                 <Shield className="h-3 w-3 mr-1" />
                                                 Include
                                             </Badge>
                                         ) : (
-                                            <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200">
+                                            <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
                                                 <ShieldCheck className="h-3 w-3 mr-1" />
                                                 Exclude
                                             </Badge>
@@ -1325,8 +1249,8 @@ export default function AssignmentsOverview() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600">Platform</label>
-                                    <p className="text-sm">
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
+                                    <p className="text-sm text-gray-900 dark:text-gray-100">
                                         {selectedFilter.platform === 0 ? 'All' :
                                             selectedFilter.platform === 1 ? 'Android' :
                                                 selectedFilter.platform === 2 ? 'iOS' :
@@ -1340,18 +1264,23 @@ export default function AssignmentsOverview() {
                             {/* Description */}
                             {selectedFilter.description && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 block mb-2">Description</label>
-                                    <p className="text-sm p-3 bg-gray-50 rounded-md">{selectedFilter.description}</p>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                         <code className="whitespace-pre-wrap break-all">
+                                             {selectedFilter.description}
+
+                                         </code>
+                                    </pre>
                                 </div>
                             )}
 
                             {/* Filter Rule */}
                             {selectedFilter.rule && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 block mb-2">Filter Rule</label>
-                                    <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto border">
-                            <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
-                        </pre>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                        <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
+                                    </pre>
                                 </div>
                             )}
 
