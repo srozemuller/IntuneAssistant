@@ -13,6 +13,7 @@ import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { useGroupDetails } from '@/hooks/useGroupDetails';
+import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 
 
 // Simple interface instead of complex schema
@@ -59,16 +60,6 @@ export default function AssignmentsOverview() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Group details states from the hook
-    const {
-        selectedGroup,
-        groupLoading,
-        groupError,
-        isDialogOpen,
-        fetchGroupDetails,
-        closeDialog
-    } = useGroupDetails();
-
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
@@ -90,6 +81,9 @@ export default function AssignmentsOverview() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedAssignments = filteredAssignments.slice(startIndex, endIndex);
+
+    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+    const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -362,16 +356,11 @@ export default function AssignmentsOverview() {
         setSearchQuery('');
     };
 
+    // Group dialog handlers
     const handleResourceClick = (resourceId: string, assignmentType: string) => {
-        console.log('=== handleResourceClick DEBUG ===');
-        console.log('resourceId:', resourceId);
-        console.log('assignmentType:', assignmentType);
-
         if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
-            console.log('Calling fetchGroupDetails...');
-            fetchGroupDetails(resourceId); // This now uses resourceId instead of groupId
-        } else {
-            console.log('Not calling fetchGroupDetails - conditions not met');
+            setSelectedGroupId(resourceId);
+            setIsGroupDialogOpen(true);
         }
     };
 
@@ -889,93 +878,15 @@ export default function AssignmentsOverview() {
                 </>
             )}
 
-            {/* Group Details Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-                <DialogContent className="!w-[75vw] h-[75vh] max-w-none max-h-none overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Users className="h-5 w-5" />
-                            {selectedGroup?.displayName || 'Group Details'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {selectedGroup?.description || 'Group information and members'}
-                        </DialogDescription>
-                    </DialogHeader>
-                    {groupLoading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <div className="flex items-center gap-2">
-                                <RefreshCw className="h-5 w-5 animate-spin" />
-                                <span>Loading group details...</span>
-                            </div>
-                        </div>
-                    ) : groupError ? (
-                        <div className="flex items-center gap-2 text-red-800 p-4 bg-red-50 rounded-md">
-                            <span className="font-medium">Error:</span>
-                            <span>{groupError}</span>
-                        </div>
-                    ) : selectedGroup ? (
-                        <div className="space-y-6">
-                            {/* Group Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">Group ID</label>
-                                    <p className="font-mono text-sm">{selectedGroup.id}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">Created</label>
-                                    <p className="text-sm">{selectedGroup.createdDateTime ? new Date(selectedGroup.createdDateTime).toLocaleDateString() : 'N/A'}</p>
-                                </div>
-                                {selectedGroup.membershipRule && (
-                                    <div className="md:col-span-2">
-                                        <label className="text-sm font-medium text-gray-600">Membership Rule</label>
-                                        <p className="text-sm bg-gray-100 p-2 rounded font-mono">{selectedGroup.membershipRule}</p>
-                                    </div>
-                                )}
-                            </div>
+            <GroupDetailsDialog
+                groupId={selectedGroupId}
+                isOpen={isGroupDialogOpen}
+                onClose={() => {
+                    setIsGroupDialogOpen(false);
+                    setSelectedGroupId(null);
+                }}
+            />
 
-                            {/* Group Counts */}
-                            {selectedGroup.groupCount && (
-                                <div className="grid grid-cols-3 gap-4">
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-blue-600">{selectedGroup.groupCount.userCount}</div>
-                                            <div className="text-sm text-gray-600">Users</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-green-600">{selectedGroup.groupCount.deviceCount}</div>
-                                            <div className="text-sm text-gray-600">Devices</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-purple-600">{selectedGroup.groupCount.groupCount}</div>
-                                            <div className="text-sm text-gray-600">Groups</div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            )}
-
-                            {/* Members Table */}
-                            {selectedGroup.members && selectedGroup.members.length > 0 ? (
-                                <div>
-                                    <h4 className="text-lg font-medium mb-4">Group Members</h4>
-                                    <DataTable
-                                        data={selectedGroup.members}
-                                        columns={groupMemberColumns}
-                                    />
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                    <p>No members found or unable to load member details.</p>
-                                </div>
-                            )}
-                        </div>
-                    ) : null}
-                </DialogContent>
-            </Dialog>
 
             {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>

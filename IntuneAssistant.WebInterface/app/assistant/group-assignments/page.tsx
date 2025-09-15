@@ -12,6 +12,7 @@ import {apiScope} from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
+import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
@@ -79,11 +80,6 @@ export default function AssignmentsOverview() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Dialog states
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState<GroupDetails | null>(null);
-    const [groupLoading, setGroupLoading] = useState(false);
-    const [groupError, setGroupError] = useState<string | null>(null);
 
     const [groupSearchInput, setGroupSearchInput] = useState<string>('');
     const [searchedGroup, setSearchedGroup] = useState<GroupDetails | null>(null);
@@ -94,6 +90,10 @@ export default function AssignmentsOverview() {
         const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         return guidRegex.test(str);
     };
+
+    // Group details dialog states
+    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+    const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
 
 
     // Filter dialog states
@@ -394,10 +394,11 @@ export default function AssignmentsOverview() {
     };
 
 
+    // Group dialog handlers
     const handleResourceClick = (resourceId: string, assignmentType: string) => {
-        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && resourceId) {
-            setIsDialogOpen(true);
-            fetchGroupDetails(resourceId);
+        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
+            setSelectedGroupId(resourceId);
+            setIsGroupDialogOpen(true);
         }
     };
 
@@ -672,7 +673,6 @@ export default function AssignmentsOverview() {
             width: 180,
             minWidth: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
-                // ... existing render logic with updated classes for truncation
                 const targetName = String(value);
                 const assignmentType = String(row.assignmentType);
                 const isAssigned = Boolean(row.isAssigned);
@@ -691,18 +691,21 @@ export default function AssignmentsOverview() {
                             </button>
                             {group?.groupCount && (
                                 <div className="flex gap-1 text-xs text-gray-500">
-                                    <span>{group.groupCount.userCount}u</span>
-                                    <span>{group.groupCount.deviceCount}d</span>
+                                    <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
+                                    <span>{group.groupCount.deviceCount} {group.groupCount.deviceCount === 1 ? 'device' : 'devices'}</span>
+                                    <span>{group.groupCount.groupCount} {group.groupCount.groupCount === 1 ? 'group' : 'groups'}</span>
                                 </div>
                             )}
+
+
                         </div>
                     );
                 }
 
                 return (
                     <span className="text-sm truncate block w-full" title={targetName}>
-                    {targetName}
-                </span>
+                        {targetName}
+                    </span>
                 );
             }
         },
@@ -1198,94 +1201,14 @@ export default function AssignmentsOverview() {
                 </>
             )}
 
-            {/* Group Details Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Users className="h-5 w-5" />
-                            {selectedGroup?.displayName || 'Group Details'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {selectedGroup?.description || 'Group information and members'}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    {groupLoading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <div className="flex items-center gap-2">
-                                <RefreshCw className="h-5 w-5 animate-spin" />
-                                <span>Loading group details...</span>
-                            </div>
-                        </div>
-                    ) : groupError ? (
-                        <div className="flex items-center gap-2 text-red-800 p-4 bg-red-50 rounded-md">
-                            <span className="font-medium">Error:</span>
-                            <span>{groupError}</span>
-                        </div>
-                    ) : selectedGroup ? (
-                        <div className="space-y-6">
-                            {/* Group Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">Group ID</label>
-                                    <p className="font-mono text-sm">{selectedGroup.id}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600">Created</label>
-                                    <p className="text-sm">{new Date(selectedGroup.createdDateTime).toLocaleDateString()}</p>
-                                </div>
-                                {selectedGroup.membershipRule && (
-                                    <div className="md:col-span-2">
-                                        <label className="text-sm font-medium text-gray-600">Membership Rule</label>
-                                        <p className="text-sm bg-gray-100 p-2 rounded font-mono">{selectedGroup.membershipRule}</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Group Counts */}
-                            {selectedGroup.groupCount && (
-                                <div className="grid grid-cols-3 gap-4">
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-blue-600">{selectedGroup.groupCount.userCount}</div>
-                                            <div className="text-sm text-gray-600">Users</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-green-600">{selectedGroup.groupCount.deviceCount}</div>
-                                            <div className="text-sm text-gray-600">Devices</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card>
-                                        <CardContent className="pt-6 text-center">
-                                            <div className="text-2xl font-bold text-purple-600">{selectedGroup.groupCount.groupCount}</div>
-                                            <div className="text-sm text-gray-600">Groups</div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            )}
-
-                            {/* Members Table */}
-                            {selectedGroup.members && selectedGroup.members.length > 0 ? (
-                                <div>
-                                    <h4 className="text-lg font-medium mb-4">Group Members</h4>
-                                    <DataTable
-                                        data={selectedGroup.members}
-                                        columns={groupMemberColumns}
-                                    />
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                    <p>No members found or unable to load member details.</p>
-                                </div>
-                            )}
-                        </div>
-                    ) : null}
-                </DialogContent>
-            </Dialog>
+            <GroupDetailsDialog
+                groupId={selectedGroupId}
+                isOpen={isGroupDialogOpen}
+                onClose={() => {
+                    setIsGroupDialogOpen(false);
+                    setSelectedGroupId(null);
+                }}
+            />
 
             {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
@@ -1317,7 +1240,7 @@ export default function AssignmentsOverview() {
                                                 Include
                                             </Badge>
                                         ) : (
-                                            <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200">
+                                            <Badge variant="destructive" className="bg-red-100 text-red-500 border-red-200">
                                                 <ShieldCheck className="h-3 w-3 mr-1" />
                                                 Exclude
                                             </Badge>
