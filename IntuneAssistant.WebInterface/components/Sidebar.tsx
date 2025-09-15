@@ -43,7 +43,10 @@ import {
     HelpCircle,
     PanelLeftClose,
     PanelLeft,
-    LogIn
+    LogIn,
+    FileQuestion,
+    Info,
+    BookOpen
 } from 'lucide-react';
 
 const iconMap = {
@@ -55,7 +58,10 @@ const iconMap = {
     Settings,
     Users,
     Key,
-    TrendingUp
+    TrendingUp,
+    FileQuestion,
+    Info,
+    BookOpen
 };
 
 interface MenuItem {
@@ -238,10 +244,10 @@ export function Sidebar() {
                 {
                     title: "Assignments Manager",
                     icon: "Rocket",
-                    href: "/rollout",
+                    href: "/deployment",
                     isPaid: true,
                     submenu: [
-                        { title: "Deploy Assignments", href: "/rollout/assignments" }
+                        { title: "Deploy Assignments", href: "/deployment/assignments" }
                     ]
                 }
             ]
@@ -269,6 +275,26 @@ export function Sidebar() {
         //         }
         //     ]
         // }
+        {
+            title: "Support",
+            items: [
+                {
+                    title: "FAQ",
+                    icon: "FileQuestion",
+                    href: "https://docs.intuneassistant.cloud/faq"
+                },
+                {
+                    title: "About",
+                    icon: "Info",
+                    href: "/about"
+                },
+                {
+                    title: "Docs",
+                    icon: "BookOpen",
+                    href: "https://docs.intuneassistant.cloud"
+                }
+            ]
+        }
     ];
 
     return (

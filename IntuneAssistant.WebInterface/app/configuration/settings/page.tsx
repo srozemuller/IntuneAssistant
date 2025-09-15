@@ -25,7 +25,7 @@ interface PolicySetting extends Record<string, unknown> {
     settingName: string;
     settingValue: string;
     childSettingInfo: ChildSettingInfo[] | null;
-    settingDefinitions: any | null;
+    settingDefinitions: unknown | null;
     source?: 'configuration' | 'groupPolicy';
 }
 
@@ -347,8 +347,6 @@ export default function PolicySettingsPage() {
             minWidth: 300,
             render: (value: unknown, row: Record<string, unknown>, index: number) => {
                 const childSettings = value as ChildSettingInfo[] | null;
-                const setting = row as PolicySetting;
-
                 if (!childSettings || childSettings.length === 0) {
                     return (
                         <span className="text-sm text-gray-400">No child settings</span>
@@ -361,9 +359,9 @@ export default function PolicySettingsPage() {
                     <div className="space-y-2">
                         {/* Header with collapse toggle */}
                         <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {childSettings.length} child setting{childSettings.length > 1 ? 's' : ''}
-                        </span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {childSettings.length} child setting{childSettings.length > 1 ? 's' : ''}
+                    </span>
                             <button
                                 onClick={() => toggleRowExpansion(index)}
                                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
@@ -406,13 +404,14 @@ export default function PolicySettingsPage() {
                 );
             }
         }
+
     ];
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Policy Settings</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Configuration Policies Settings Overview</h1>
                     <p className="text-gray-600 mt-2">
                         View and manage configuration and group policy settings
                     </p>
@@ -455,7 +454,7 @@ export default function PolicySettingsPage() {
                                 Ready to view your policy settings
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the "Load Settings" button above to fetch all configuration and group policy settings from your Intune environment.
+                                Click the &quot;Load Settings&quot; button above to fetch all configuration and group policy settings from your Intune environment.
                             </p>
                             <Button onClick={fetchSettings} className="flex items-center gap-2 mx-auto" size="lg">
                                 <List className="h-5 w-5" />
@@ -519,7 +518,7 @@ export default function PolicySettingsPage() {
                             {searchQuery && (
                                 <div className="mt-2">
                                     <Badge variant="secondary" className="flex items-center gap-1 w-fit">
-                                        Search: "{searchQuery}"
+                                        Search: &quot;{searchQuery}&quot;
                                         <X className="h-3 w-3 cursor-pointer" onClick={clearSearch} />
                                     </Badge>
                                 </div>

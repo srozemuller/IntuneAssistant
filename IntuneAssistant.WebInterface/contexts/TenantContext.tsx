@@ -1,7 +1,8 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
-
+import {ASSIGNMENTS_ENDPOINT, CUSTOMER_ENDPOINT} from '@/lib/constants';
+import {apiScope} from "@/lib/msalConfig";
 interface TenantContextType {
     selectedTenant: string | null;
     availableTenants: Array<{ id: string; name: string }>;
@@ -11,9 +12,9 @@ interface TenantContextType {
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
 export function TenantProvider({ children }: { children: React.ReactNode }) {
-    const { accounts } = useMsal();
     const [selectedTenant, setSelectedTenant] = useState<string | null>(null);
     const [availableTenants, setAvailableTenants] = useState<Array<{ id: string; name: string }>>([]);
+    const { instance, accounts } = useMsal();
 
     useEffect(() => {
         if (accounts.length > 0) {
@@ -22,15 +23,25 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
             setSelectedTenant(tenantId);
 
             // Fetch available tenants from your API
-            fetchUserTenants(account.homeAccountId);
+            fetchUserTenants(account.tenantId);
         }
     }, [accounts]);
 
     const fetchUserTenants = async (userId: string) => {
         try {
             // Replace with your API endpoint
-            const response = await fetch(`/api/users/${userId}/tenants`);
-            const tenants = await response.json();
+            const response = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            const apiResponse = await fetch(`${CUSTOMER_ENDPOINT}/${userId}/overview`, {
+                headers: {
+                    'Authorization': `Bearer ${response.accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const tenants = await apiResponse.json();
             setAvailableTenants(tenants);
         } catch (error) {
             console.error('Failed to fetch tenants:', error);

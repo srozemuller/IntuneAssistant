@@ -7,13 +7,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck } from 'lucide-react';
+import { RefreshCw, Filter, Search, X, Users, Shield } from 'lucide-react';
 import { CA_POLICIES_ENDPOINT, ITEMS_PER_PAGE } from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+
+interface CAGrantControls {
+    operator: 'OR' | 'AND';
+    builtInControls: string[];
+    customAuthenticationFactors: string[];
+    termsOfUse: string[];
+    authenticationStrengthODataContext: string | null;
+    authenticationStrength: Record<string, unknown> | null;
+}
 
 interface CAConditions {
     userRiskLevels: string[];
@@ -31,21 +40,44 @@ interface CAConditions {
     };
     users: {
         includeUsers: string[];
-        includeUsersReadable: any[];
+        includeUsersReadable: ReadableUser[];
         excludeUsers: string[];
-        excludeUsersReadable: any[];
+        excludeUsersReadable: ReadableUser[];
         includeGroups: string[];
-        includeGroupsReadable: any[];
+        includeGroupsReadable: ReadableGroup[];
         includeRoles: string[];
         excludeRoles: string[];
     };
+    locations: unknown | null;
+    times: unknown | null;
+    deviceStates: unknown | null;
+    devices: unknown | null;
+    clientApplications: unknown | null;
 }
 
-interface CAGrantControls {
-    operator: 'OR' | 'AND';
-    builtInControls: string[];
-    customAuthenticationFactors: string[];
-    termsOfUse: string[];
+interface ReadableUser {
+    id: string;
+    displayName: string;
+    userPrincipalName: string;
+    accountEnabled: boolean;
+}
+
+interface ReadableGroup {
+    id: string;
+    displayName: string;
+    description: string | null;
+    groupCount?: {
+        userCount: number;
+        deviceCount: number;
+        groupCount: number;
+    };
+}
+
+interface ApiResponse {
+    status: string;
+    message: string;
+    details: string[];
+    data: CAPolicy[];
 }
 
 interface CAPolicy extends Record<string, unknown> {
@@ -56,16 +88,9 @@ interface CAPolicy extends Record<string, unknown> {
     modifiedDateTime: string;
     state: 'enabled' | 'disabled' | 'enabledForReportingButNotEnforced';
     partialEnablementStrategy: string | null;
-    sessionControls: any | null;
+    sessionControls: Record<string, unknown> | null;
     conditions: CAConditions;
     grantControls: CAGrantControls;
-}
-
-interface ApiResponse {
-    status: string;
-    message: string;
-    details: any[];
-    data: CAPolicy[];
 }
 
 export default function ConditionalAccessPage() {
@@ -104,6 +129,16 @@ export default function ConditionalAccessPage() {
         setSelectedPolicy(policy);
         setIsPolicyDialogOpen(true);
     };
+
+    const getStateVariant = (state: string) => {
+        switch (state) {
+            case 'enabled': return 'default'; // This will be styled as green
+            case 'disabled': return 'destructive'; // This will be styled as red
+            case 'enabledForReportingButNotEnforced': return 'secondary'; // This will be styled as orange
+            default: return 'secondary';
+        }
+    };
+
 
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
@@ -226,8 +261,8 @@ export default function ConditionalAccessPage() {
             filtered = filtered.filter(policy =>
                 policy.displayName?.toLowerCase().includes(query) ||
                 policy.state.toLowerCase().includes(query) ||
-                policy.conditions?.platforms?.includePlatforms?.some(p => p.toLowerCase().includes(query)) ||
-                policy.grantControls?.builtInControls?.some(c => c.toLowerCase().includes(query))
+                policy.conditions?.platforms?.includePlatforms?.some((p: string) => p.toLowerCase().includes(query)) ||
+                policy.grantControls?.builtInControls?.some((c: string) => c.toLowerCase().includes(query))
             );
         }
 
@@ -252,7 +287,6 @@ export default function ConditionalAccessPage() {
 
         setFilteredPolicies(filtered);
     }, [policies, stateFilter, platformFilter, controlFilter, searchQuery]);
-
     // Get unique values for filters
     const getUniqueStates = (): Option[] => [
         { label: 'Enabled', value: 'enabled' },
@@ -273,11 +307,11 @@ export default function ConditionalAccessPage() {
     const getUniqueControls = (): Option[] => {
         const controls = new Set<string>();
         policies.forEach(policy => {
-            policy.grantControls?.builtInControls?.forEach(control => {
+            policy.grantControls?.builtInControls?.forEach((control: string) => {
                 controls.add(control);
             });
         });
-        return Array.from(controls).sort().map(control => ({ label: control, value: control }));
+        return Array.from(controls).sort().map((control: string) => ({ label: control, value: control }));
     };
 
     const clearFilters = () => {
@@ -296,15 +330,6 @@ export default function ConditionalAccessPage() {
         if (groupId) {
             setSelectedGroupId(groupId);
             setIsGroupDialogOpen(true);
-        }
-    };
-
-    const getStateVariant = (state: string) => {
-        switch (state) {
-            case 'enabled': return 'default';
-            case 'disabled': return 'secondary';
-            case 'enabledForReportingButNotEnforced': return 'outline';
-            default: return 'secondary';
         }
     };
 
@@ -347,21 +372,38 @@ export default function ConditionalAccessPage() {
             minWidth: 100,
             render: (value: unknown) => {
                 const state = String(value);
+
+                const getStateStyle = (state: string) => {
+                    switch (state) {
+                        case 'enabled':
+                            return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700';
+                        case 'disabled':
+                            return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700';
+                        case 'enabledForReportingButNotEnforced':
+                            return 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-700';
+                        default:
+                            return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700';
+                    }
+                };
+
                 return (
-                    <Badge variant={getStateVariant(state)} className="text-xs whitespace-nowrap">
+                    <Badge
+                        variant="outline"
+                        className={`text-xs whitespace-nowrap ${getStateStyle(state)}`}
+                    >
                         {getStateLabel(state)}
                     </Badge>
                 );
             }
         },
         {
-            key: 'conditions' as string,
+            key: 'platforms' as string, // Changed from 'conditions' to 'platforms'
             label: 'Platforms',
             width: 150,
             minWidth: 120,
-            render: (value: unknown) => {
-                const conditions = value as CAConditions;
-                const platforms = conditions?.platforms?.includePlatforms || [];
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const policy = row as CAPolicy;
+                const platforms = policy.conditions?.platforms?.includePlatforms || [];
 
                 if (platforms.length === 0) {
                     return <span className="text-sm text-gray-500">All platforms</span>;
@@ -376,7 +418,7 @@ export default function ConditionalAccessPage() {
                         ))}
                         {platforms.length > 2 && (
                             <Badge variant="outline" className="text-xs">
-                                +{platforms.length - 2} more
+                                +{platforms.length - 2}
                             </Badge>
                         )}
                     </div>
@@ -398,14 +440,14 @@ export default function ConditionalAccessPage() {
 
                 return (
                     <div className="flex flex-wrap gap-1">
-                        {controls.slice(0, 2).map((control, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
+                        {controls.slice(0, 2).map((control: string, index: number) => (
+                            <Badge key={index} variant="outline" className="text-xs">
                                 {control}
                             </Badge>
                         ))}
                         {controls.length > 2 && (
-                            <Badge variant="secondary" className="text-xs">
-                                +{controls.length - 2} more
+                            <Badge variant="outline" className="text-xs">
+                                +{controls.length - 2}
                             </Badge>
                         )}
                     </div>
@@ -413,12 +455,13 @@ export default function ConditionalAccessPage() {
             }
         },
         {
-            key: 'conditions' as string,
+            key: 'targetUsers' as string, // Changed from 'conditions' to 'targetUsers'
             label: 'Target Users/Groups',
             width: 160,
             minWidth: 140,
-            render: (value: unknown) => {
-                const conditions = value as CAConditions;
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const policy = row as CAPolicy;
+                const conditions = policy.conditions;
                 const includeUsers = conditions?.users?.includeUsers?.length || 0;
                 const includeGroups = conditions?.users?.includeGroups?.length || 0;
                 const includeGroupsReadable = conditions?.users?.includeGroupsReadable || [];
@@ -438,21 +481,19 @@ export default function ConditionalAccessPage() {
                             <Users className="h-4 w-4 text-blue-600" />
                             <span className="text-sm">{includeUsers + includeGroups} targets</span>
                         </div>
-                        {includeGroupsReadable.slice(0, 2).map((group: any, index: number) => (
+                        {includeGroupsReadable.slice(0, 2).map((group: ReadableGroup, index: number) => (
                             <div key={index} className="flex items-center gap-2">
                                 <button
                                     onClick={() => handleGroupClick(group.id)}
-                                    className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate max-w-32"
-                                    title={group.displayName}
+                                    className="text-xs text-blue-600 hover:underline truncate"
+                                    title={`Click to view group: ${group.displayName}`}
                                 >
                                     {group.displayName}
                                 </button>
                             </div>
                         ))}
                         {includeGroupsReadable.length > 2 && (
-                            <div className="text-xs text-gray-500">
-                                +{includeGroupsReadable.length - 2} more groups
-                            </div>
+                            <span className="text-xs text-gray-500">+{includeGroupsReadable.length - 2} more</span>
                         )}
                     </div>
                 );
@@ -467,16 +508,17 @@ export default function ConditionalAccessPage() {
                 const date = new Date(String(value));
                 return (
                     <span className="text-sm text-muted-foreground whitespace-nowrap">
-                        {date.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                        })}
-                    </span>
+                    {date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    })}
+                </span>
                 );
             }
         }
     ];
+
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -525,7 +567,7 @@ export default function ConditionalAccessPage() {
                                 Ready to view your Conditional Access policies
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the "Load Policies" button above to fetch all Conditional Access policies from your Azure AD environment.
+                                Click the &apos;Load Policies&apos; button above to fetch all Conditional Access policies from your Azure AD environment.
                             </p>
                             <Button onClick={fetchPolicies} className="flex items-center gap-2 mx-auto" size="lg">
                                 <Shield className="h-5 w-5" />
@@ -587,7 +629,7 @@ export default function ConditionalAccessPage() {
                                 <div className="mt-2">
                                     <Badge variant="secondary" className="flex items-center gap-1 w-fit">
                                         <Search className="h-3 w-3" />
-                                        Searching: "{searchQuery}"
+                                        Searching: &apos;{searchQuery}&apos;
                                         <button onClick={clearSearch} className="ml-1 hover:text-red-600">
                                             <X className="h-3 w-3" />
                                         </button>
@@ -722,20 +764,19 @@ export default function ConditionalAccessPage() {
                                 </div>
                             ) : (
                                 <div className="w-full">
-                                    <div className="overflow-x-auto">
-                                        <DataTable
-                                            data={paginatedPolicies}
-                                            columns={columns}
-                                        />
-                                    </div>
-
-                                    {/* Pagination */}
+                                    <DataTable
+                                        data={paginatedPolicies}
+                                        columns={columns}
+                                    />
                                     {totalPages > 1 && (
-                                        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                                        <div className="mt-4">
                                             <Pagination
                                                 currentPage={currentPage}
                                                 totalPages={totalPages}
+                                                totalItems={filteredPolicies.length}
+                                                itemsPerPage={itemsPerPage}
                                                 onPageChange={setCurrentPage}
+                                                onItemsPerPageChange={setItemsPerPage}
                                             />
                                         </div>
                                     )}
@@ -864,7 +905,7 @@ export default function ConditionalAccessPage() {
                                             <div>
                                                 <span className="text-xs font-medium text-gray-500">Include Groups:</span>
                                                 <div className="space-y-1 mt-1">
-                                                    {selectedPolicy.conditions.users.includeGroupsReadable.map((group: any, index: number) => (
+                                                    {selectedPolicy.conditions.users.includeGroupsReadable.map((group: ReadableGroup, index: number) => (
                                                         <div key={index} className="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 rounded border">
                                                             <button
                                                                 onClick={() => handleGroupClick(group.id)}
@@ -873,8 +914,8 @@ export default function ConditionalAccessPage() {
                                                                 {group.displayName}
                                                             </button>
                                                             <span className="text-xs text-gray-500">
-                                                                ({group.groupCount?.userCount || 0} users)
-                                                            </span>
+                        ({group.groupCount?.userCount || 0} users)
+                    </span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -884,7 +925,7 @@ export default function ConditionalAccessPage() {
                                             <div>
                                                 <span className="text-xs font-medium text-gray-500">Exclude Users:</span>
                                                 <div className="space-y-1 mt-1">
-                                                    {selectedPolicy.conditions.users.excludeUsersReadable.map((user: any, index: number) => (
+                                                    {selectedPolicy.conditions.users.excludeUsersReadable.map((user: ReadableUser, index: number) => (
                                                         <div key={index} className="p-2 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-700">
                                                             <span className="text-sm font-medium">{user.displayName}</span>
                                                             <span className="text-xs text-gray-500 ml-2">({user.userPrincipalName})</span>
@@ -901,24 +942,14 @@ export default function ConditionalAccessPage() {
                             <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border border-orange-200 dark:border-orange-700">
                                 <h4 className="font-medium text-lg text-gray-900 dark:text-gray-100 mb-3">Grant Controls</h4>
                                 <div className="space-y-2">
-                                    <div>
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Operator:</span>
-                                        <Badge variant="outline" className="ml-2 text-xs">
-                                            {selectedPolicy.grantControls?.operator || 'OR'}
-                                        </Badge>
-                                    </div>
-                                    <div>
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Built-in Controls:</span>
-                                        <div className="flex flex-wrap gap-2 mt-1">
-                                            {selectedPolicy.grantControls?.builtInControls?.length > 0 ? (
-                                                selectedPolicy.grantControls.builtInControls.map((control, index) => (
-                                                    <Badge key={index} variant="secondary" className="text-xs">
-                                                        {control}
-                                                    </Badge>
-                                                ))
-                                            ) : (
-                                                <span className="text-sm text-gray-500">No built-in controls</span>
-                                            )}
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium">Controls ({selectedPolicy.grantControls?.operator}):</span>
+                                        <div className="flex flex-wrap gap-1">
+                                            {selectedPolicy.grantControls?.builtInControls?.map((control: string, index: number) => (
+                                                <Badge key={index} variant="outline" className="text-xs">
+                                                    {control}
+                                                </Badge>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
