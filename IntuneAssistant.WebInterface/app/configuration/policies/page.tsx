@@ -40,7 +40,7 @@ interface ConfigurationPolicy extends Record<string, unknown> {
     id: string;
     isAssigned: boolean;
     assignments: PolicyAssignment[];
-    settings: any[];
+    settings: unknown[];
 }
 
 interface AssignmentFilter {
@@ -62,7 +62,7 @@ interface AssignmentFilter {
 interface ApiResponse {
     status: string;
     message: string;
-    details: any[];
+    details: unknown[];
     data: ConfigurationPolicy[];
 }
 
@@ -543,7 +543,7 @@ export default function ConfigurationPoliciesPage() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Configuration Policies</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Intune Policy Overview</h1>
                     <p className="text-gray-600 mt-2">
                         Manage and monitor your Intune configuration policies
                     </p>

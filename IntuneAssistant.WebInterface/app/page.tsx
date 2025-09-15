@@ -22,8 +22,9 @@ export default function LandingPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
             {/* Hero Section */}
-            <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+            <section className="relative overflow-hidden bg-gradient-to-r from-yellow-500 via-yellow-400 to-blue-500">
+
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                 <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between py-16 md:py-24 gap-8 relative">
                     <div className="flex flex-col space-y-6 max-w-[640px] text-white">
                         <div className="inline-block">
@@ -43,9 +44,6 @@ export default function LandingPage() {
                             <Button size="lg" className="bg-white text-gray-900 hover:bg-white/90 shadow-xl">
                                 Get Started Free
                                 <ArrowRight className="ml-2 w-5 h-5" />
-                            </Button>
-                            <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                                Learn More
                             </Button>
                         </div>
                     </div>
@@ -112,7 +110,7 @@ export default function LandingPage() {
                                 <CardDescription className="mb-4">
                                     Plan, schedule, and track phased rollouts of policies and configurations across your organization.
                                 </CardDescription>
-                                <Link href="/rollout" className="text-green-600 font-medium inline-flex items-center hover:text-green-800">
+                                <Link href="/app/deployment" className="text-green-600 font-medium inline-flex items-center hover:text-green-800">
                                     Learn more
                                     <ArrowRight className="ml-1 w-4 h-4" />
                                 </Link>
@@ -221,11 +219,11 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Step 1 */}
                         <div className="relative flex flex-col items-center text-center">
-                            <div className="absolute -top-4 bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
+                            <div className="absolute -top-4 bg-yellow-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                                 1
                             </div>
                             <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                                <Users className="text-blue-600" size={32} />
+                                <Users className="text-yellow-400" size={32} />
                             </div>
                             <h3 className="text-xl font-bold mb-2 text-gray-900">Create Your Account</h3>
                             <p className="text-gray-600">Sign up with your Microsoft account for seamless integration with your tenant.</p>
@@ -233,11 +231,11 @@ export default function LandingPage() {
 
                         {/* Step 2 */}
                         <div className="relative flex flex-col items-center text-center">
-                            <div className="absolute -top-4 bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
+                            <div className="absolute -top-4 bg-yellow-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                                 2
                             </div>
                             <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                                <Shield className="text-blue-600" size={32} />
+                                <Shield className="text-yellow-400" size={32} />
                             </div>
                             <h3 className="text-xl font-bold mb-2 text-gray-900">Connect Your Tenant</h3>
                             <p className="text-gray-600">Grant necessary permissions to allow Intune Assistant to analyze your environment.</p>
@@ -245,11 +243,11 @@ export default function LandingPage() {
 
                         {/* Step 3 */}
                         <div className="relative flex flex-col items-center text-center">
-                            <div className="absolute -top-4 bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
+                            <div className="absolute -top-4 bg-yellow-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                                 3
                             </div>
                             <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                                <CheckCircle className="text-blue-600" size={32} />
+                                <CheckCircle className="text-yellow-400" size={32} />
                             </div>
                             <h3 className="text-xl font-bold mb-2 text-gray-900">Start Optimizing</h3>
                             <p className="text-gray-600">Access your dashboard and begin exploring insights and recommendations.</p>
@@ -257,7 +255,7 @@ export default function LandingPage() {
                     </div>
 
                     <div className="flex justify-center mt-12">
-                        <Button size="lg" className="bg-blue-600 hover:bg-blue-700 shadow-lg">
+                        <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 shadow-lg">
                             Start Your Free Onboarding
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </Button>
@@ -266,7 +264,7 @@ export default function LandingPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 md:py-24 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <section className="py-16 md:py-24 bg-gradient-to-r from-yellow-500 via-yellow-400 to-blue-500 text-white">
                 <div className="container mx-auto px-4 md:px-6 text-center">
                     <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-6">
                         Ready to Transform Your Intune Management?
@@ -279,9 +277,9 @@ export default function LandingPage() {
                             Get Started Free
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </Button>
-                        <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                            Schedule Demo
-                        </Button>
+                        {/*<Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">*/}
+                        {/*    Schedule Demo*/}
+                        {/*</Button>*/}
                     </div>
                 </div>
             </section>

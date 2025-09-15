@@ -80,6 +80,9 @@ export default function AssignmentsOverview() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [groupLoading, setGroupLoading] = useState(false);
+    const [groupError, setGroupError] = useState<string | null>(null);
+    const [selectedGroup, setSelectedGroup] = useState<GroupDetails | null>(null);
 
     const [groupSearchInput, setGroupSearchInput] = useState<string>('');
     const [searchedGroup, setSearchedGroup] = useState<GroupDetails | null>(null);
@@ -392,6 +395,7 @@ export default function AssignmentsOverview() {
             setGroupLoading(false);
         }
     };
+
 
 
     // Group dialog handlers

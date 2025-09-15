@@ -77,7 +77,7 @@ export default function AssignmentRolloutPage() {
     const [error, setError] = useState<string | null>(null);
     const [migrationProgress, setMigrationProgress] = useState(0);
     const [validationComplete, setValidationComplete] = useState(false);
-    const [validationResults, setValidationResults] = useState<any[]>([]);
+    const [validationResults, setValidationResults] = useState<unknown[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
@@ -258,7 +258,7 @@ export default function AssignmentRolloutPage() {
             const responseData = await apiResponse.json();
 
             // Process and enhance the comparison results - use API response values directly
-            const enhancedResults = responseData.data.map((item: any, index: number) => ({
+            const enhancedResults = responseData.data.map((item: ComparisonResult, index: number) => ({
                 ...item,
                 csvRow: {
                     ...csvData[index],
@@ -395,9 +395,10 @@ export default function AssignmentRolloutPage() {
             setValidationResults(validationData.data || []);
 
             // Update comparison results with validation status
+            // Update comparison results with validation status
             setComparisonResults(prev =>
                 prev.map(result => {
-                    const validation = validationData.data?.find((v: any) => v.id === result.id);
+                    const validation = validationData.data?.find((v: { id: string; hasCorrectAssignment: boolean; message?: { reason?: string; status?: string } }) => v.id === result.id);
                     if (validation) {
                         return {
                             ...result,
@@ -408,6 +409,7 @@ export default function AssignmentRolloutPage() {
                     return result;
                 })
             );
+
 
             // Mark validation as complete
             setValidationComplete(true);

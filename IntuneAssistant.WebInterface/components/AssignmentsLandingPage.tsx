@@ -15,7 +15,7 @@ import {
     Zap,
     Shield,
     Globe,
-    Settings
+    Settings, CheckCircle
 } from 'lucide-react';
 
 export function AssignmentsLandingPage() {
@@ -34,14 +34,13 @@ export function AssignmentsLandingPage() {
                 "View all assignments in one place",
                 "Filter by type, status, and target",
                 "Export assignment reports",
-                "Track deployment status"
             ],
-            stats: "2,847 Total Assignments",
+            //stats: "2,847 Total Assignments",
             badge: "OVERVIEW"
         },
         {
             title: "App Assignments",
-            description: "Manage and monitor application deployments, installations, and distribution across your organization.",
+            description: "Monitor application deployments, installations, and distribution across your organization.",
             href: "/assistant/app-assignments",
             icon: Smartphone,
             gradient: "from-emerald-500 to-teal-500",
@@ -49,28 +48,26 @@ export function AssignmentsLandingPage() {
             borderColor: "border-emerald-200 dark:border-emerald-800",
             features: [
                 "Application deployment tracking",
-                "Install success rates",
-                "Device compatibility checks",
-                "App update management"
+                "Filter by type, status, and target",
+                "Application assignment by install type",
             ],
-            stats: "1,234 App Assignments",
+            //stats: "1,234 App Assignments",
             badge: "APPS"
         },
         {
             title: "Group Assignments",
-            description: "Organize and deploy policies, apps, and configurations to specific user and device groups efficiently.",
+            description: "Get insights of all Intune policies, apps, and configurations for a specific groups efficiently.",
             href: "/assistant/group-assignments",
             icon: Users,
             gradient: "from-purple-500 to-pink-500",
             bgGradient: "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
             borderColor: "border-purple-200 dark:border-purple-800",
             features: [
-                "Group-based deployment",
-                "Automated group assignments",
+                "Group-based assignment checker",
                 "Membership insights",
-                "Compliance tracking"
+                "Group insights"
             ],
-            stats: "156 Active Groups",
+            //stats: "156 Active Groups",
             badge: "GROUPS"
         }
     ];
@@ -123,14 +120,14 @@ export function AssignmentsLandingPage() {
                         monitoring, and analytics across your entire organization.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                        <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100">
-                            <BarChart3 className="mr-2 h-4 w-4" />
-                            View Analytics
-                        </Button>
-                        <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                            <Settings className="mr-2 h-4 w-4" />
-                            Configure Settings
-                        </Button>
+                        {/*<Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100">*/}
+                        {/*    <BarChart3 className="mr-2 h-4 w-4" />*/}
+                        {/*    View Analytics*/}
+                        {/*</Button>*/}
+                        {/*<Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">*/}
+                        {/*    <Settings className="mr-2 h-4 w-4" />*/}
+                        {/*    Configure Settings*/}
+                        {/*</Button>*/}
                     </div>
                 </div>
 
@@ -141,24 +138,24 @@ export function AssignmentsLandingPage() {
                 </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {quickStats.map((stat, index) => (
-                    <Card key={index} className="relative overflow-hidden">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                                    <p className="text-2xl font-bold">{stat.value}</p>
-                                </div>
-                                <div className={`p-3 rounded-full bg-gray-100 dark:bg-gray-800 ${stat.color}`}>
-                                    <stat.icon className="h-6 w-6" />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+            {/*/!* Quick Stats *!/*/}
+            {/*<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">*/}
+            {/*    {quickStats.map((stat, index) => (*/}
+            {/*        <Card key={index} className="relative overflow-hidden">*/}
+            {/*            <CardContent className="p-6">*/}
+            {/*                <div className="flex items-center justify-between">*/}
+            {/*                    <div>*/}
+            {/*                        <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>*/}
+            {/*                        <p className="text-2xl font-bold">{stat.value}</p>*/}
+            {/*                    </div>*/}
+            {/*                    <div className={`p-3 rounded-full bg-gray-100 dark:bg-gray-800 ${stat.color}`}>*/}
+            {/*                        <stat.icon className="h-6 w-6" />*/}
+            {/*                    </div>*/}
+            {/*                </div>*/}
+            {/*            </CardContent>*/}
+            {/*        </Card>*/}
+            {/*    ))}*/}
+            {/*</div>*/}
 
             {/* Assignment Blocks */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -187,7 +184,7 @@ export function AssignmentsLandingPage() {
                                 <div className="space-y-2">
                                     {block.features.map((feature, featureIndex) => (
                                         <div key={featureIndex} className="flex items-center gap-2 text-sm">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-current opacity-60"></div>
+                                            <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                                             <span>{feature}</span>
                                         </div>
                                     ))}
@@ -195,9 +192,9 @@ export function AssignmentsLandingPage() {
 
                                 {/* Stats */}
                                 <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                                    <span className="text-sm font-medium text-muted-foreground">
-                                        {block.stats}
-                                    </span>
+                                    {/*<span className="text-sm font-medium text-muted-foreground">*/}
+                                    {/*    {block.stats}*/}
+                                    {/*</span>*/}
                                     <Link href={block.href}>
                                         <Button size="sm" className={`bg-gradient-to-r ${block.gradient} text-white shadow-md hover:shadow-lg transition-all duration-200`}>
                                             Explore
@@ -221,12 +218,15 @@ export function AssignmentsLandingPage() {
                             Access tutorials, best practices, and expert guidance to optimize your deployments.
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
-                            <Button variant="outline" size="lg">
-                                View Documentation
-                                <ArrowRight className="ml-2 h-4 w-4" />
+                            <Button variant="outline" size="lg" asChild>
+                                <a href="https://docs.intuneassistant.cloud" target="_blank" rel="noopener noreferrer">
+                                    View Documentation
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </a>
                             </Button>
-                            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                                Contact Support
+
+                            <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500">
+                                Go to GitHub
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </div>
