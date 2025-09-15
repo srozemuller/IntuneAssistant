@@ -600,7 +600,7 @@ export default function AssignmentsOverview() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Assignments Overview</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Assignments Overview</h1>
                     <p className="text-gray-600 mt-2">
                         View all Intune applications assignments across your organization
                     </p>
@@ -893,6 +893,7 @@ export default function AssignmentsOverview() {
             />
 
             {/* Filter Details Dialog */}
+            {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
@@ -908,21 +909,21 @@ export default function AssignmentsOverview() {
                     {selectedFilter ? (
                         <div className="space-y-6">
                             {/* Filter Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600">Filter ID</label>
-                                    <p className="font-mono text-sm break-all">{selectedFilter.id}</p>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
+                                    <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600">Management Type</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
                                     <div className="flex items-center gap-2">
                                         {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                                            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
                                                 <Shield className="h-3 w-3 mr-1" />
                                                 Include
                                             </Badge>
                                         ) : (
-                                            <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200">
+                                            <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
                                                 <ShieldCheck className="h-3 w-3 mr-1" />
                                                 Exclude
                                             </Badge>
@@ -930,8 +931,8 @@ export default function AssignmentsOverview() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600">Platform</label>
-                                    <p className="text-sm">
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
+                                    <p className="text-sm text-gray-900 dark:text-gray-100">
                                         {selectedFilter.platform === 0 ? 'All' :
                                             selectedFilter.platform === 1 ? 'Android' :
                                                 selectedFilter.platform === 2 ? 'iOS' :
@@ -945,16 +946,21 @@ export default function AssignmentsOverview() {
                             {/* Description */}
                             {selectedFilter.description && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 block mb-2">Description</label>
-                                    <p className="text-sm p-3 bg-gray-50 rounded-md">{selectedFilter.description}</p>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                         <code className="whitespace-pre-wrap break-all">
+                                             {selectedFilter.description}
+
+                                         </code>
+                                    </pre>
                                 </div>
                             )}
 
                             {/* Filter Rule */}
                             {selectedFilter.rule && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 block mb-2">Filter Rule</label>
-                                    <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto border">
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                                         <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
                                     </pre>
                                 </div>
