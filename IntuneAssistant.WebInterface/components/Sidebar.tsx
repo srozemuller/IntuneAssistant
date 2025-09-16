@@ -140,7 +140,7 @@ export function Sidebar() {
                     isSubmenuItem && !isCollapsed && "pl-6",
                     isCollapsed && "justify-center px-2",
                     item.isPaid && !isSubmenuItem && "relative",
-                    !isAuthenticated && "opacity-50 pointer-events-none"
+                    // !isAuthenticated && "opacity-50 pointer-events-none"
                 )}
             >
                 {!isSubmenuItem && Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
@@ -321,16 +321,45 @@ export function Sidebar() {
                 </div>
 
                 {/* Authentication Notice */}
-                {!isAuthenticated && !isCollapsed && (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 flex-shrink-0">
-                        <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-                            Sign in to access all features
-                        </p>
-                    </div>
-                )}
+                {/*{!isAuthenticated && !isCollapsed && (*/}
+                {/*    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 flex-shrink-0">*/}
+                {/*        <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">*/}
+                {/*            Sign in to access all features*/}
+                {/*        </p>*/}
+                {/*    </div>*/}
+                {/*)}*/}
 
                 {/* Navigation Menu - This takes up the remaining space */}
                 <div className="flex-1 overflow-y-auto p-4 min-h-0">
+                    {/* Onboarding banner - show when not authenticated */}
+                    {!isAuthenticated && !isCollapsed && (
+                        <div className="mb-6 p-4 bg-gradient-to-br from-yellow-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <div className="flex items-center gap-2 mb-2">
+                                <User className="h-4 w-4 text-gray-600" />
+                                <span className="text-sm font-medium text-gray-600 dark:text-blue-100">
+                    Start Your Journey
+                </span>
+                            </div>
+                            <p className="text-xs text-gray-700 dark:text-gray-500 mb-3">
+                                Sign in or register to unlock all Intune Assistant features and manage your environment.
+                            </p>
+                            <div className="flex gap-2">
+                                <Button
+                                    onClick={handleLogin}
+                                    className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-medium py-2 px-3 rounded-md transition-colors"
+                                >
+                                    Sign In
+                                </Button>
+                                <Link
+                                    href="/onboarding/customer"
+                                    className="flex-1 text-center bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-400/50 dark:hover:bg-yellow-500 text-yellow-700 dark:text-yellow-200 text-xs font-medium py-2 px-3 rounded-md transition-colors"
+                                >
+                                    Register
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+
                     <nav className="space-y-6">
                         {menuSections.map((section, index) => (
                             <div key={index} className="space-y-2">
@@ -356,8 +385,8 @@ export function Sidebar() {
                             <div className="flex items-center gap-2 mb-2">
                                 <Crown className="h-4 w-4 text-amber-600" />
                                 <span className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                                Unlock Pro Features
-                            </span>
+                    Unlock Pro Features
+                </span>
                             </div>
                             <p className="text-xs text-amber-700 dark:text-amber-200 mb-3">
                                 Get access to deployment tools, advanced rollout management, and more.
@@ -371,6 +400,7 @@ export function Sidebar() {
                         </div>
                     )}
                 </div>
+
 
                 {/* Bottom Section - Sign In or User Menu - Fixed at bottom */}
                 <div className="p-4 border-t border-gray-200 dark:border-gray-800 flex-shrink-0 mt-auto">

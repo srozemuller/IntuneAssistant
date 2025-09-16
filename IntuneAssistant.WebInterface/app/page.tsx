@@ -41,10 +41,12 @@ export default function LandingPage() {
                             providing clear insights and streamlined management processes.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Button size="lg" className="bg-white text-gray-900 hover:bg-white/90 shadow-xl">
-                                Get Started Free
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </Button>
+                            <Link href="/onboarding/customer">
+                                <Button size="lg" className="bg-white text-gray-900 hover:bg-white/90 shadow-xl">
+                                    Get Started Free
+                                    <ArrowRight className="ml-2 w-5 h-5" />
+                                </Button>
+                            </Link>
                         </div>
                     </div>
 
@@ -255,10 +257,12 @@ export default function LandingPage() {
                     </div>
 
                     <div className="flex justify-center mt-12">
-                        <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 shadow-lg">
-                            Start Your Free Onboarding
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </Button>
+                        <Link href="/onboarding/customer">
+                            <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 shadow-lg">
+                                Start Your Free Onboarding
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -273,10 +277,12 @@ export default function LandingPage() {
                         Join thousands of IT administrators who have already streamlined their Intune operations with our powerful platform.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button size="lg" className="bg-white text-gray-900 hover:bg-white/90 shadow-xl">
-                            Get Started Free
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </Button>
+                        <Link href="/onboarding/customer">
+                            <Button size="lg" className="bg-white text-gray-900 hover:bg-white/90 shadow-xl">
+                                Get Started Free
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </Button>
+                        </Link>
                         {/*<Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">*/}
                         {/*    Schedule Demo*/}
                         {/*</Button>*/}
