@@ -7,6 +7,7 @@ import { SidebarProvider } from '@/contexts/SidebarContext';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Sidebar } from '@/components/Sidebar';
 import './globals.css';
+import {CustomerProvider} from "@/contexts/CustomerContext";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,16 +25,18 @@ export default function RootLayout({
             enableSystem
         >
             <MsalProvider instance={msalInstance}>
-                <TenantProvider>
-                    <SidebarProvider>
-                        <div className="flex min-h-screen bg-background text-foreground">
-                            <Sidebar />
-                            <main className="flex-1 p-8 transition-all duration-300">
-                                {children}
-                            </main>
-                        </div>
-                    </SidebarProvider>
-                </TenantProvider>
+                <CustomerProvider>
+                    <TenantProvider>
+                        <SidebarProvider>
+                            <div className="flex min-h-screen bg-background text-foreground">
+                                <Sidebar />
+                                <main className="flex-1 p-8 transition-all duration-300">
+                                    {children}
+                                </main>
+                            </div>
+                        </SidebarProvider>
+                    </TenantProvider>
+                </CustomerProvider>
             </MsalProvider>
         </ThemeProvider>
         </body>

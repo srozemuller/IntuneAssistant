@@ -8,6 +8,8 @@ import { useSidebar } from '@/contexts/SidebarContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import {useCustomer} from "@/contexts/CustomerContext";
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -90,6 +92,7 @@ export function Sidebar() {
     const isAuthenticated = useIsAuthenticated();
     const { isCollapsed, toggleSidebar } = useSidebar();
     const router = useRouter();
+    const { isActiveCustomer, customerLoading } = useCustomer();
 
     const account = accounts[0];
     const displayName = account?.name || account?.username || 'User';
@@ -380,13 +383,13 @@ export function Sidebar() {
                     </nav>
 
                     {/* Upgrade prompt - hide when collapsed or not authenticated */}
-                    {!isCollapsed && isAuthenticated && (
+                    {!isCollapsed && isAuthenticated && !customerLoading && !isActiveCustomer && (
                         <div className="mt-8 p-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
                             <div className="flex items-center gap-2 mb-2">
                                 <Crown className="h-4 w-4 text-amber-600" />
                                 <span className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                    Unlock Pro Features
-                </span>
+                                    Unlock Pro Features
+                                </span>
                             </div>
                             <p className="text-xs text-amber-700 dark:text-amber-200 mb-3">
                                 Get access to deployment tools, advanced rollout management, and more.
