@@ -1,12 +1,13 @@
-// app/customer/page.tsx
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
+import { useCustomer } from '@/contexts/CustomerContext';
+
 import {
     Building,
     Mail,
@@ -19,7 +20,7 @@ import {
     Plus
 } from 'lucide-react';
 import { CUSTOMER_ENDPOINT } from '@/lib/constants';
-import {apiScope} from "@/lib/msalConfig";
+import { apiScope } from "@/lib/msalConfig";
 import TenantOnboardingModal from '@/components/onboarding/tenant-onboarding';
 
 interface Tenant {
@@ -31,94 +32,28 @@ interface Tenant {
     lastLogin: string | null;
 }
 
-interface CustomerData {
-    id: string;
-    name: string;
-    address: string | null;
-    iban: string | null;
-    isMsp: boolean;
-    isActive: boolean;
-    primaryContactEmail: string | null;
-    homeTenantId: string;
-    licenses: string[];
-    tenants: Tenant[];
-}
-
-interface ApiResponse {
-    status: string;
-    message: string;
-    details: string[];
-    data: CustomerData;
-}
-
 export default function CustomerPage() {
     const { accounts, instance } = useMsal();
     const router = useRouter();
-    const [customerData, setCustomerData] = useState<CustomerData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { customerData, customerLoading: loading, customerError: error, refetchCustomerData } = useCustomer();
+
     const [updatingTenants, setUpdatingTenants] = useState<Set<string>>(new Set());
     const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+    const [updateError, setUpdateError] = useState<string | null>(null);
 
     const currentTenantId = accounts[0]?.tenantId;
-
-    useEffect(() => {
-        if (currentTenantId) {
-            fetchCustomerData();
-        }
-    }, [currentTenantId]);
-
-    const getAccessToken = async () => {
-        try {
-            const response = await instance.acquireTokenSilent({
-                scopes: ['User.Read'],
-                account: accounts[0],
-            });
-            return response.accessToken;
-        } catch (error) {
-            console.error('Failed to acquire token:', error);
-            throw error;
-        }
-    };
-
-    const fetchCustomerData = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-            const apiResponse = await fetch(`${CUSTOMER_ENDPOINT}/${currentTenantId}/overview`, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to fetch customer data: ${apiResponse.statusText}`);
-            }
-
-            const result: ApiResponse = await apiResponse.json();
-            setCustomerData(result.data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const updateTenantStatus = async (tenantId: string, isEnabled: boolean) => {
         try {
             setUpdatingTenants(prev => new Set(prev).add(tenantId));
+            setUpdateError(null);
 
-            const response =  await instance.acquireTokenSilent({
+            const response = await instance.acquireTokenSilent({
                 scopes: [apiScope],
                 account: accounts[0]
             });
-            const apiRsponse = await fetch(`${CUSTOMER_ENDPOINT}/${currentTenantId}/tenants/update-status`, {
+
+            const apiResponse = await fetch(`${CUSTOMER_ENDPOINT}/${currentTenantId}/tenants/update-status`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${response.accessToken}`,
@@ -130,23 +65,16 @@ export default function CustomerPage() {
                 }),
             });
 
-            if (!apiRsponse.ok) {
-                throw new Error(`Failed to update tenant status: ${apiRsponse.statusText}`);
+            if (!apiResponse.ok) {
+                throw new Error(`Failed to update tenant status: ${apiResponse.statusText}`);
             }
 
-            // Update local state
-            setCustomerData(prev => {
-                if (!prev) return prev;
-                return {
-                    ...prev,
-                    tenants: prev.tenants.map(tenant =>
-                        tenant.id === tenantId ? { ...tenant, isEnabled } : tenant
-                    )
-                };
-            });
+            // Refresh customer data to get updated tenant status
+            await refetchCustomerData();
+
         } catch (err) {
             console.error('Failed to update tenant status:', err);
-            setError(err instanceof Error ? err.message : 'Failed to update tenant status');
+            setUpdateError(err instanceof Error ? err.message : 'Failed to update tenant status');
         } finally {
             setUpdatingTenants(prev => {
                 const newSet = new Set(prev);
@@ -154,6 +82,11 @@ export default function CustomerPage() {
                 return newSet;
             });
         }
+    };
+
+    const handleTenantOnboardingSuccess = async () => {
+        setShowOnboardingModal(false);
+        await refetchCustomerData();
     };
 
     if (loading) {
@@ -176,7 +109,7 @@ export default function CustomerPage() {
                             <AlertCircle className="h-5 w-5" />
                             <span>Error: {error}</span>
                         </div>
-                        <Button onClick={fetchCustomerData} className="mt-4">
+                        <Button onClick={refetchCustomerData} className="mt-4">
                             Retry
                         </Button>
                     </CardContent>
@@ -213,6 +146,18 @@ export default function CustomerPage() {
                 <h1 className="text-3xl font-bold text-gray-900">Customer Information</h1>
                 <p className="text-gray-600 mt-2">Manage customer details and tenant access</p>
             </div>
+
+            {/* Show update error if any */}
+            {updateError && (
+                <Card className="border-red-200 mb-6">
+                    <CardContent className="p-4">
+                        <div className="flex items-center gap-2 text-red-600">
+                            <AlertCircle className="h-4 w-4" />
+                            <span className="text-sm">{updateError}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Customer Basic Information */}
@@ -296,7 +241,7 @@ export default function CustomerPage() {
                             </div>
                             <div className="text-center p-4 bg-green-50 rounded-lg">
                                 <div className="text-2xl font-bold text-green-600">
-                                    {customerData.tenants.filter(t => t.isEnabled).length}
+                                    {customerData.tenants.filter((t: Tenant) => t.isEnabled).length}
                                 </div>
                                 <div className="text-sm text-green-600">Enabled Tenants</div>
                             </div>
@@ -336,7 +281,7 @@ export default function CustomerPage() {
                             </tr>
                             </thead>
                             <tbody>
-                            {customerData.tenants.map((tenant) => (
+                            {customerData.tenants.map((tenant: Tenant) => (
                                 <tr key={tenant.id} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="py-3 px-4 font-medium">
                                         {tenant.displayName}
@@ -396,9 +341,8 @@ export default function CustomerPage() {
                 onClose={() => setShowOnboardingModal(false)}
                 customerId={customerData.id}
                 customerName={customerData.name}
-                onSuccess={fetchCustomerData} // Refresh data after successful onboarding
+                onSuccess={handleTenantOnboardingSuccess}
             />
         </div>
-
     );
 }
