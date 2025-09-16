@@ -60,7 +60,7 @@ function OnboardingCallbackContent() {
 
                     if (callbackResponse.ok) {
                         const result = await callbackResponse.json();
-                        console.log('✅ Consent callback successful:', result);
+                        console.log('Consent callback successful:', result);
 
                         setStatus('success');
                         setMessage('Admin consent has been successfully granted and processed.');
@@ -78,7 +78,7 @@ function OnboardingCallbackContent() {
                         throw new Error(errorResult?.message || `Callback failed: ${callbackResponse.statusText}`);
                     }
                 } catch (callbackError) {
-                    console.error('❌ Error processing consent callback:', callbackError);
+                    console.error('Error processing consent callback:', callbackError);
                     setStatus('error');
                     setMessage(callbackError instanceof Error ? callbackError.message : 'Failed to process consent callback');
 
