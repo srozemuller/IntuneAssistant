@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield, Users
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
 import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
@@ -20,7 +20,7 @@ interface CSVRow {
     PolicyName: string;
     GroupName: string;
     AssignmentDirection: 'Include' | 'Exclude';
-    AssignmentAction: 'Add' | 'Remove';
+    AssignmentAction: 'Add' | 'Remove' | 'NoAssignment';
     FilterName: string | null;
     FilterType: string | null;
 }
@@ -116,9 +116,11 @@ export default function AssignmentRolloutPage() {
             };
 
             // Helper function to validate and convert action
-            const getAssignmentAction = (value: string): 'Add' | 'Remove' => {
+            const getAssignmentAction = (value: string): 'Add' | 'Remove' | 'NoAssignment' => {
                 const normalized = value?.trim().toLowerCase();
-                return normalized === 'remove' ? 'Remove' : 'Add'; // Default to Add
+                if (normalized === 'remove') return 'Remove';
+                if (normalized === 'noassignment') return 'NoAssignment';
+                return 'Add'; // Default to Add
             };
 
             // Map based on actual CSV structure
@@ -369,7 +371,8 @@ export default function AssignmentRolloutPage() {
                 SubResourceType: result.policy?.policySubType || '',
                 ResourceId: result.policy?.id || result.id,
                 AssignmentId: result.assignmentId,
-                AssignmentAction: result.csvRow?.AssignmentAction || "Add",
+                AssignmentType: result.csvRow?.AssignmentDirection,
+                AssignmentAction: result.csvRow?.AssignmentAction || '',
                 FilterId: result.filterToMigrate?.id && result.filterToMigrate.id !== "00000000-0000-0000-0000-000000000000"
                     ? result.filterToMigrate.id
                     : null,
@@ -394,7 +397,6 @@ export default function AssignmentRolloutPage() {
             const validationData = await apiResponse.json();
             setValidationResults(validationData.data || []);
 
-            // Update comparison results with validation status
             // Update comparison results with validation status
             setComparisonResults(prev =>
                 prev.map(result => {
@@ -568,7 +570,7 @@ export default function AssignmentRolloutPage() {
                                 </div>
 
                                 {/* Summary Stats */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-gray-50 p-4 rounded-lg">
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-blue-600">{csvData.length}</div>
                                         <div className="text-sm text-gray-600">Total Rows</div>
@@ -580,10 +582,16 @@ export default function AssignmentRolloutPage() {
                                         <div className="text-sm text-gray-600">Add Actions</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-red-600">
+                                        <div className="text-2xl font-bold text-orange-600">
                                             {csvData.filter(r => r.AssignmentAction === 'Remove').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Remove Actions</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-red-600">
+                                            {csvData.filter(r => r.AssignmentAction === 'NoAssignment').length}
+                                        </div>
+                                        <div className="text-sm text-gray-600">Clear Actions</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-purple-600">
@@ -593,8 +601,8 @@ export default function AssignmentRolloutPage() {
                                     </div>
                                 </div>
 
-                                <div className="border rounded-lg overflow-hidden">
-                                    <div className="overflow-x-auto">
+                                <div className="border rounded-lg overflow-visible">
+                                    <div className="overflow-x-auto overflow-y-visible">
                                         <table className="w-full text-sm">
                                             <thead className="bg-gray-50 sticky top-0">
                                             <tr>
@@ -615,28 +623,45 @@ export default function AssignmentRolloutPage() {
 
                                                 return paginatedData.map((row, index) => (
                                                     <tr key={startIndex + index} className={`border-b ${(startIndex + index) % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                                                        <td className="p-3 text-gray-500">{startIndex + index + 1}</td>
+                                                        <td className="p-3 text-gray-500 relative overflow-visible">
+                                                            <div className="flex items-center gap-2">
+                                                                {startIndex + index + 1}
+                                                                {row.AssignmentAction === 'NoAssignment' && (
+                                                                    <div className="group relative">
+                                                                        <Info className="h-4 w-4 text-blue-500 cursor-help" />
+                                                                        <div className="absolute invisible group-hover:visible bg-gray-900 text-white text-xs rounded py-2 px-3 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap z-50 shadow-lg">
+                                                                            This row will remove ALL assignments from the policy
+                                                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </td>
                                                         <td className="p-3">
                                                             <div className="max-w-xs truncate" title={row.PolicyName}>
                                                                 {row.PolicyName}
                                                             </div>
                                                         </td>
-                                                        <td className="p-3">
+                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`}>
                                                             <div className="max-w-xs truncate" title={row.GroupName}>
                                                                 {row.GroupName}
                                                             </div>
                                                         </td>
-                                                        <td className="p-3">
-                                                            <Badge variant={row.AssignmentDirection === 'Include' ? 'default' : 'destructive'}>
+                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}`}>
+                                                            <Badge variant={row.AssignmentDirection === 'Include' ? 'default' : 'destructive'}
+                                                                   className={row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}>
                                                                 {row.AssignmentDirection}
                                                             </Badge>
                                                         </td>
                                                         <td className="p-3">
-                                                            <Badge variant={row.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
+                                                            <Badge variant={
+                                                                row.AssignmentAction === 'Add' ? 'default' :
+                                                                    row.AssignmentAction === 'NoAssignment' ? 'destructive' : 'secondary'
+                                                            }>
                                                                 {row.AssignmentAction}
                                                             </Badge>
                                                         </td>
-                                                        <td className="p-3">
+                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`}>
                                                             {row.FilterName ? (
                                                                 <div className="max-w-xs truncate" title={row.FilterName}>
                                                                     {row.FilterName}
@@ -645,9 +670,10 @@ export default function AssignmentRolloutPage() {
                                                                 <span className="text-gray-400">-</span>
                                                             )}
                                                         </td>
-                                                        <td className="p-3">
+                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}`}>
                                                             {row.FilterType ? (
-                                                                <Badge variant={row.FilterType === 'Include' ? 'default' : 'secondary'}>
+                                                                <Badge variant={row.FilterType === 'Include' ? 'default' : 'secondary'}
+                                                                       className={row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}>
                                                                     {row.FilterType}
                                                                 </Badge>
                                                             ) : (
