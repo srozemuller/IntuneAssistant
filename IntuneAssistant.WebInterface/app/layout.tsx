@@ -3,13 +3,34 @@ import { Inter } from 'next/font/google';
 import { MsalProvider } from '@azure/msal-react';
 import { msalInstance } from '@/lib/msalConfig';
 import { TenantProvider } from '@/contexts/TenantContext';
-import { SidebarProvider } from '@/contexts/SidebarContext';
+import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Sidebar } from '@/components/Sidebar';
+import { cn } from '@/lib/utils';
 import './globals.css';
 import {CustomerProvider} from "@/contexts/CustomerContext";
 
 const inter = Inter({ subsets: ['latin'] });
+
+// Create a component that uses the sidebar context
+function MainContent({ children }: { children: React.ReactNode }) {
+    const { isCollapsed } = useSidebar();
+
+    return (
+        <div className="flex min-h-screen">
+            <Sidebar />
+            <main className={cn(
+                "flex-1 min-h-screen transition-all duration-300",
+                isCollapsed ? "ml-16" : "ml-64"
+            )}>
+                <div className="max-w-8xl mx-auto p-6 space-y-6">
+                    {children}
+                </div>
+            </main>
+        </div>
+    );
+}
+
 
 export default function RootLayout({
                                        children,
@@ -28,12 +49,9 @@ export default function RootLayout({
                 <CustomerProvider>
                     <TenantProvider>
                         <SidebarProvider>
-                            <div className="flex min-h-screen bg-background text-foreground">
-                                <Sidebar />
-                                <main className="flex-1 p-8 transition-all duration-300">
-                                    {children}
-                                </main>
-                            </div>
+                            <MainContent>
+                                {children}
+                            </MainContent>
                         </SidebarProvider>
                     </TenantProvider>
                 </CustomerProvider>

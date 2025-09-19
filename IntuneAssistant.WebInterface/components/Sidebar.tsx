@@ -303,11 +303,11 @@ export function Sidebar() {
     return (
         <TooltipProvider>
             <div className={cn(
-                "bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col transition-all duration-300",
+                "bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 h-screen flex flex-col transition-all duration-300 fixed left-0 top-0 z-50",
                 isCollapsed ? "w-16" : "w-64"
             )}>
                 {/* Header with Logo and Collapse Toggle */}
-                <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between flex-shrink-0">
+                <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between flex-shrink-0">
                     {!isCollapsed && (
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             Intune Assistant
