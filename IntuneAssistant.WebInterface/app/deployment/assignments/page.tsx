@@ -15,7 +15,7 @@ import {apiScope} from "@/lib/msalConfig";
 import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
+import { ConsentDialog } from '@/components/ConsentDialog';
 interface CSVRow {
     PolicyName: string;
     GroupName: string;
@@ -134,6 +134,11 @@ export default function AssignmentRolloutPage() {
     const paginatedResults = comparisonResults.slice(startIndex, endIndex);
     const totalPages = Math.ceil(comparisonResults.length / itemsPerPage);
 
+    // Consent dialog state when not enough permissions
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
+    const [consentUrl, setConsentUrl] = useState('');
+
+    const [migrationSuccessful, setMigrationSuccessful] = useState(false);
 
     const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
@@ -174,7 +179,17 @@ export default function AssignmentRolloutPage() {
                 if (normalized === 'remove') return { action: 'Remove', isValid: true };
                 if (normalized === 'noassignment') return { action: 'NoAssignment', isValid: true };
 
-                return { action: 'Add', isValid: false, originalValue: value?.trim() };
+                // If empty, default to 'Add' and mark as valid
+                if (!value || value.trim() === '') {
+                    return { action: 'Add', isValid: true };
+                }
+
+                // If invalid value provided, mark as invalid and don't allow migration
+                return {
+                    action: 'Add', // Still need to set something for type safety
+                    isValid: false,
+                    originalValue: value?.trim()
+                };
             };
 
             const actionResult = getAssignmentAction(values[3]);
@@ -183,7 +198,7 @@ export default function AssignmentRolloutPage() {
                 PolicyName: values[0] || '',
                 GroupName: values[1] || '',
                 AssignmentDirection: getAssignmentDirection(values[2]),
-                AssignmentAction: actionResult.action, // Extract just the action string
+                AssignmentAction: actionResult.action,
                 FilterName: nullIfEmpty(values[4]),
                 FilterType: nullIfEmpty(values[5]),
                 isValidAction: actionResult.isValid,
@@ -191,6 +206,7 @@ export default function AssignmentRolloutPage() {
             };
         });
     };
+
 
     // Backup rows
     const downloadBackups = async () => {
@@ -290,6 +306,20 @@ export default function AssignmentRolloutPage() {
     const compareAssignments = async () => {
         if (!accounts.length || !csvData.length) return;
 
+        // Filter out invalid rows before sending to API
+        const validCsvData = csvData.filter(row => row.isValidAction);
+        const invalidRowCount = csvData.length - validCsvData.length;
+
+        if (invalidRowCount > 0) {
+            setError(`Error: ${invalidRowCount} rows with invalid assignment actions have been excluded from processing. Please correct these values and re-upload the CSV.`);
+        }
+
+        if (validCsvData.length === 0) {
+            setError('No valid rows found in CSV. All rows contain invalid assignment action values. Please check your data and try again.');
+            return;
+        }
+
+
         setLoading(true);
         setError(null);
 
@@ -305,7 +335,7 @@ export default function AssignmentRolloutPage() {
                     'Authorization': `Bearer ${response.accessToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(csvData)
+                body: JSON.stringify(validCsvData) // Send only valid data
             });
 
             if (!apiResponse.ok) {
@@ -314,13 +344,12 @@ export default function AssignmentRolloutPage() {
 
             const responseData = await apiResponse.json();
 
-            // Process and enhance the comparison results - use API response values directly
+            // Process and enhance the comparison results
             const enhancedResults = responseData.data.map((item: ComparisonResult, index: number) => ({
                 ...item,
                 csvRow: {
-                    ...csvData[index],
+                    ...validCsvData[index], // Use validCsvData instead of csvData
                 },
-                // Use the API's isReadyForMigration value directly
                 isReadyForMigration: item.isReadyForMigration,
                 isMigrated: item.isMigrated || false,
                 isBackedUp: false,
@@ -328,7 +357,6 @@ export default function AssignmentRolloutPage() {
             }));
 
             setComparisonResults(enhancedResults);
-            // Move to migrate step after successful comparison
             setCurrentStep('migrate');
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to compare assignments');
@@ -336,6 +364,13 @@ export default function AssignmentRolloutPage() {
             setLoading(false);
         }
     };
+
+    const handleMigrationSuccess = () => {
+        setMigrationSuccessful(true);
+        // Reset after clearing error
+        setTimeout(() => setMigrationSuccessful(false), 100);
+    };
+
 
     const migrateSelectedAssignments = async () => {
         if (!accounts.length || !selectedRows.length) return;
@@ -363,7 +398,18 @@ export default function AssignmentRolloutPage() {
             });
 
             if (!apiResponse.ok) {
-                throw new Error(`Migration failed: ${apiResponse.statusText}`);
+                const errorData = await apiResponse.json();
+
+                // Check if this is a consent required error
+                if (errorData.status === 'Error' &&
+                    errorData.message === 'User challenge required' &&
+                    errorData.data?.includes('adminconsent')) {
+
+                    setConsentUrl(errorData.data);
+                    setShowConsentDialog(true);
+                    setLoading(false);
+                    return;
+                }
             }
 
             // Simulate migration progress
@@ -395,6 +441,14 @@ export default function AssignmentRolloutPage() {
             setLoading(false);
         }
     };
+
+    const handleConsentComplete = async () => {
+        setShowConsentDialog(false);
+        setConsentUrl('');
+        // Retry the migration after consent is complete
+        await migrateSelectedAssignments();
+    };
+
 
     const validateMigratedAssignments = async (results?: ComparisonResult[]) => {
         if (!accounts.length) return;
@@ -617,6 +671,30 @@ export default function AssignmentRolloutPage() {
 
                         {csvData.length > 0 && (
                             <div className="space-y-4">
+                                {/* Show warning if there are invalid rows */}
+                                {csvData.filter(r => !r.isValidAction).length > 0 && (
+                                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                        <div className="flex items-start gap-2">
+                                            <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                                            <div className="text-sm text-red-800">
+                                                <p className="font-medium mb-1">Invalid Assignment Actions Detected</p>
+                                                <p>
+                                                    {csvData.filter(r => !r.isValidAction).length} rows contain invalid assignment action values
+                                                    and will be <strong>excluded from migration</strong>.
+                                                </p>
+                                                <p className="mt-2">
+                                                    Valid actions are: <code className="bg-red-100 px-1 rounded">Add</code>,
+                                                    <code className="bg-red-100 px-1 rounded ml-1">Remove</code>,
+                                                    <code className="bg-red-100 px-1 rounded ml-1">NoAssignment</code>
+                                                </p>
+                                                <p className="mt-2 font-medium">
+                                                    Please correct these values in your CSV and re-upload to include all rows.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold">CSV Data Overview ({csvData.length} rows)</h3>
                                     <Button onClick={compareAssignments} disabled={loading}>
@@ -709,24 +787,23 @@ export default function AssignmentRolloutPage() {
                                                             </Badge>
                                                         </td>
                                                         <td className="p-3">
-                                                            <div className="flex items-center gap-2">
+                                                            {!row.isValidAction ? (
+                                                                <div className="flex items-center gap-2">
+                                                                    <Badge variant="destructive">Excluded</Badge>
+                                                                    <span className="text-xs text-red-600">
+                Invalid: "{row.originalActionValue}"
+            </span>
+                                                                </div>
+                                                            ) : (
                                                                 <Badge variant={
                                                                     row.AssignmentAction === 'Add' ? 'default' :
-                                                                        row.AssignmentAction === 'NoAssignment' ? 'destructive' : 'secondary'
-                                                                } className={!row.isValidAction ? 'border-red-500 bg-red-50' : ''}>
+                                                                        row.AssignmentAction === 'Remove' ? 'destructive' : 'secondary'
+                                                                }>
                                                                     {row.AssignmentAction}
                                                                 </Badge>
-                                                                {!row.isValidAction && (
-                                                                    <div className="group relative">
-                                                                        <AlertTriangle className="h-4 w-4 text-red-500 cursor-help" />
-                                                                        <div className="absolute invisible group-hover:visible bg-red-900 text-white text-xs rounded py-2 px-3 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap z-50 shadow-lg">
-                                                                            Invalid value: "{row.originalActionValue}" - Only Add, Remove, or NoAssignment allowed
-                                                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-red-900"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
+                                                            )}
                                                         </td>
+
                                                         <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`}>
                                                             {row.FilterName ? (
                                                                 <div className="max-w-xs truncate" title={row.FilterName}>
@@ -827,9 +904,14 @@ export default function AssignmentRolloutPage() {
                         </p>
                     </CardHeader>
                     <CardContent>
-                        <Button onClick={compareAssignments} disabled={loading} className="mb-4">
-                            {loading ? 'Comparing...' : 'Run Comparison'}
+                        <Button onClick={compareAssignments} disabled={loading || csvData.filter(r => r.isValidAction).length === 0}>
+                            {loading ? 'Comparing...' :
+                                csvData.filter(r => !r.isValidAction).length > 0
+                                    ? `Compare ${csvData.filter(r => r.isValidAction).length} Valid Rows (${csvData.filter(r => !r.isValidAction).length} Excluded)`
+                                    : `Compare ${csvData.filter(r => r.isValidAction).length} Assignments`
+                            }
                         </Button>
+
                     </CardContent>
                 </Card>
             )}
@@ -1536,6 +1618,15 @@ export default function AssignmentRolloutPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <ConsentDialog
+                isOpen={showConsentDialog}
+                onClose={() => setShowConsentDialog(false)}
+                consentUrl={consentUrl}
+                onConsentComplete={handleConsentComplete}
+                clearError={migrationSuccessful}
+            />
+
         </div>
     );
 }

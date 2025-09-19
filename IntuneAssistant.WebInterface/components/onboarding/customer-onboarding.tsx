@@ -191,17 +191,11 @@ export default function CustomerOnboardingModal({
             setLoading(true);
             setError(null);
 
-            const token = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
             const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantName=${encodeURIComponent(tenantDomainName)}&assistantLicense=1`;
 
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token.accessToken}`,
                     'Content-Type': 'application/json',
                 },
             });
