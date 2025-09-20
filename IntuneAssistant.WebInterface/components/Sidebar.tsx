@@ -48,7 +48,8 @@ import {
     LogIn,
     FileQuestion,
     Info,
-    BookOpen
+    BookOpen,
+    Monitor
 } from 'lucide-react';
 
 const iconMap = {
@@ -221,12 +222,13 @@ export function Sidebar() {
                     ]
                 },
                 {
-                    title: "Device Configuration",
-                    icon: "Settings",
-                    href: "/configuration",
+                    title: "Devices",
+                    icon: "Monitor", // Changed from "Device" to "Monitor"
+                    href: "/devices",
                     submenu: [
-                        { title: "Config Policies", href: "/configuration/policies" },
-                        { title: "Config Settings overview", href: "/configuration/settings" }
+                        { title: "Device Overview", href: "/devices/overview" },
+                        { title: "Config Policies", href: "/devices/configuration/policies" },
+                        { title: "Config Settings", href: "/devices/configuration/settings" }
                     ]
                 },
                 {

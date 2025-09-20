@@ -893,7 +893,6 @@ export default function AssignmentsOverview() {
             />
 
             {/* Filter Details Dialog */}
-            {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
