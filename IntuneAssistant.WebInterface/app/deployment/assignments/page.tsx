@@ -26,7 +26,25 @@ interface CSVRow {
     isValidAction?: boolean;
     originalActionValue?: string;
 }
+interface Assignment {
+    id: string;
+    target: {
+        groupId: string;
+        '@odata.type': string;
+        deviceAndAppManagementAssignmentFilterId: string | null;
+        deviceAndAppManagementAssignmentFilterType: string;
+    };
+}
 
+interface PolicySettings {
+    [key: string]: unknown;
+}
+
+interface AssignedGroup {
+    id: string;
+    displayName: string;
+    type: string;
+}
 
 interface ComparisonResult {
     id: string;
@@ -36,18 +54,9 @@ interface ComparisonResult {
         name: string;
         policyType: string;
         policySubType: string;
-        assignments: Array<{
-            id: string;
-            target: {
-                groupId: string;
-                '@odata.type': string;
-                deviceAndAppManagementAssignmentFilterId: string | null;
-                deviceAndAppManagementAssignmentFilterType: string;
-            };
-        }>;
+        assignments: Assignment[];
         platforms: string;
     };
-    // Add the new properties from your API response
     policies?: Array<{
         '@odata.type': string | null;
         type: string | null;
@@ -59,13 +68,13 @@ interface ComparisonResult {
         description: string;
         lastModifiedDateTime: string;
         name: string;
-        assignments: any[];
+        assignments: Assignment[];
         settingCount: number;
         platforms: string;
-        settings: any;
+        settings: PolicySettings;
     }>;
     providedPolicyName?: string;
-    assignedGroups?: any[];
+    assignedGroups?: AssignedGroup[];
     groupToMigrate?: string;
     assignmentType?: string;
     assignmentDirection?: 'Include' | 'Exclude';
@@ -104,7 +113,14 @@ interface ComparisonResult {
     validationMessage?: string;
 }
 
-
+interface ValidationResult {
+    id: string;
+    hasCorrectAssignment: boolean;
+    message?: {
+        reason?: string;
+        status?: string;
+    };
+}
 
 
 export default function AssignmentRolloutPage() {
@@ -120,7 +136,7 @@ export default function AssignmentRolloutPage() {
     const [error, setError] = useState<string | null>(null);
     const [migrationProgress, setMigrationProgress] = useState(0);
     const [validationComplete, setValidationComplete] = useState(false);
-    const [validationResults, setValidationResults] = useState<unknown[]>([]);
+    const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
@@ -791,7 +807,7 @@ export default function AssignmentRolloutPage() {
                                                                 <div className="flex items-center gap-2">
                                                                     <Badge variant="destructive">Excluded</Badge>
                                                                     <span className="text-xs text-red-600">
-                Invalid: "{row.originalActionValue}"
+                Invalid: &quot;{row.originalActionValue}&quot;
             </span>
                                                                 </div>
                                                             ) : (

@@ -123,6 +123,39 @@ interface DeviceFilters {
     lastSyncDays?: number;
 }
 
+interface GroupSearchResult {
+    id: string;
+    displayName: string;
+    description?: string;
+    groupCount?: {
+        totalMembers: number;
+        deviceMembers: number;
+        userMembers: number;
+    };
+}
+interface AddMembersResult {
+    status: number;
+    message: string;
+    data: {
+        totalRequested: number;
+        totalSuccessful: number;
+        totalFailed: number;
+        successfulDeviceIds: string[];
+        failedDeviceIds: string[];
+        errors: { [deviceId: string]: string };
+        failureDetails?: Array<{
+            deviceId: string;
+            error: string;
+        }>;
+    };
+}
+
+interface FilterOption {
+    label: string;
+    value: string | boolean | number;
+    count: number;
+}
+
 export default function DeviceStatsPage() {
     const {instance, accounts} = useMsal();
 
@@ -154,13 +187,13 @@ export default function DeviceStatsPage() {
     const [groupDescription, setGroupDescription] = useState('');
     const [isCreatingGroup, setIsCreatingGroup] = useState(false);
 
-    const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>({});
+    const [activeFilters, setActiveFilters] = useState<{ [key: string]: string | boolean | number }>({});
     const [filterHierarchy, setFilterHierarchy] = useState<string[]>([]);
     const [availableFilterTypes, setAvailableFilterTypes] = useState<string[]>([]);
 
     // Add devices to group constants
     const [showAddToGroupDialog, setShowAddToGroupDialog] = useState(false);
-    const [searchedGroup, setSearchedGroup] = useState<any>(null);
+    const [searchedGroup, setSearchedGroup] = useState<GroupSearchResult | null>(null);
 
     const [groupSearchInput, setGroupSearchInput] = useState(''); // Change this line
     const [groupSearchLoading, setGroupSearchLoading] = useState(false);
@@ -168,7 +201,7 @@ export default function DeviceStatsPage() {
     const [groupSearchError, setGroupSearchError] = useState<string | null>(null);
     const [addMembersError, setAddMembersError] = useState<string | null>(null);
     const [addToGroupStep, setAddToGroupStep] = useState(1);
-    const [addMembersResult, setAddMembersResult] = useState<any>(null);
+    const [addMembersResult, setAddMembersResult] = useState<AddMembersResult | null>(null);
 
 
     const isValidGuid = (str: string): boolean => {
@@ -246,8 +279,8 @@ export default function DeviceStatsPage() {
         return filtered;
     };
 
-// Enhanced matching function for all filter types
-    const matchesFilter = (device: DeviceStats, property: string, value: any): boolean => {
+    // Enhanced matching function for all filter types
+    const matchesFilter = (device: DeviceStats, property: string, value: string | boolean | number): boolean => {
         switch (property) {
             case 'storageUsage':
                 const storagePercent = ((device.totalStorageSpaceInBytes - device.freeStorageSpaceInBytes) / device.totalStorageSpaceInBytes) * 100;
@@ -326,7 +359,7 @@ export default function DeviceStatsPage() {
     };
 
 // Enhanced function to get available options for a specific filter
-    const getAvailableFilterOptions = (filterType: string) => {
+    const getAvailableFilterOptions = (filterType: string): FilterOption[] => {
         const filteredDevices = getFilteredDevicesForDrillDown(filterType);
 
         switch (filterType) {
@@ -441,13 +474,13 @@ export default function DeviceStatsPage() {
                     }
                 ];
             default:
-                // For standard property filters
                 const uniqueValues = [...new Set(filteredDevices.map(device => getNestedProperty(device, filterType)))]
-                    .filter(value => value !== null && value !== undefined);
+                    .filter(value => value !== null && value !== undefined)
+                    .filter(value => typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean');
 
                 return uniqueValues.map(value => ({
                     label: String(value),
-                    value: value,
+                    value: value as string | number | boolean,
                     count: filteredDevices.filter(device => getNestedProperty(device, filterType) === value).length
                 }));
         }
@@ -590,12 +623,12 @@ export default function DeviceStatsPage() {
     };
 
     // Enhanced device selection function
-    const selectDevicesByProperty = (propertyPath: string, value: any) => {
+    const selectDevicesByProperty = (propertyPath: string, value: string | boolean | number) => {
         const newFilters = {...activeFilters, [propertyPath]: value};
         setActiveFilters(newFilters);
 
         // Get devices that match ALL active filters
-        let matchingDevices = deviceStats.filter(device => {
+        const matchingDevices = deviceStats.filter(device => {
             return Object.entries(newFilters).every(([filterProperty, filterValue]) => {
                 const propertyValue = getNestedProperty(device, filterProperty);
                 return propertyValue === filterValue;
@@ -605,7 +638,7 @@ export default function DeviceStatsPage() {
         setSelectedDevices(matchingDevices);
     };
 
-// Function to clear a specific filter
+    // Function to clear a specific filter
     const clearFilter = (propertyPath: string) => {
         const newFilters = {...activeFilters};
         delete newFilters[propertyPath];
@@ -630,8 +663,7 @@ export default function DeviceStatsPage() {
         setSelectedDevices([]);
     };
 
-// Function to get count for a specific property value
-    const getCountForPropertyValue = (propertyPath: string, value: any) => {
+    const getCountForPropertyValue = (propertyPath: string, value: string | boolean | number) => {
         const filteredDevices = getFilteredDevicesForProperty(propertyPath);
         return filteredDevices.filter(device => {
             const propertyValue = getNestedProperty(device, propertyPath);
@@ -707,11 +739,15 @@ export default function DeviceStatsPage() {
         }
     };
 
-
-// Helper function to get nested properties
-    const getNestedProperty = (obj: any, path: string): any => {
-        return path.split('.').reduce((current, key) => current?.[key], obj);
+    const getNestedProperty = (obj: DeviceStats | Record<string, unknown>, path: string): unknown => {
+        return path.split('.').reduce((current: unknown, key: string) => {
+            if (current && typeof current === 'object' && key in current) {
+                return (current as Record<string, unknown>)[key];
+            }
+            return undefined;
+        }, obj as Record<string, unknown>);
     };
+
 
 // Add this function to get unique values from nested properties
     const getUniqueNestedValues = (propertyPath: string) => {
@@ -936,7 +972,7 @@ export default function DeviceStatsPage() {
                                 Ready to view your device overview
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the "Load Devices" button above to fetch all device information and statistics
+                                Click the &quot;Load Devices&quot; button above to fetch all device information and statistics
                                 from your Intune environment.
                             </p>
                             <Button onClick={fetchDeviceStats} className="flex items-center gap-2 mx-auto" size="lg">
@@ -1129,7 +1165,7 @@ export default function DeviceStatsPage() {
                                                     <div className="space-y-1 max-h-32 overflow-y-auto">
                                                         {options.slice(0, 8).map(option => (
                                                             <Button
-                                                                key={option.value}
+                                                                key={String(option.value)}
                                                                 variant="outline"
                                                                 size="sm"
                                                                 className={`w-full justify-between text-xs ${option.count === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -1170,7 +1206,7 @@ export default function DeviceStatsPage() {
                                                     <div className="space-y-1">
                                                         {options.map(option => (
                                                             <Button
-                                                                key={option.value}
+                                                                key={String(option.value)}
                                                                 variant="outline"
                                                                 size="sm"
                                                                 className={`w-full justify-between text-xs ${option.count === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -1214,7 +1250,7 @@ export default function DeviceStatsPage() {
                                                     <div className="space-y-1 max-h-32 overflow-y-auto">
                                                         {options.slice(0, 6).map(option => (
                                                             <Button
-                                                                key={option.value}
+                                                                key={String(option.value)}
                                                                 variant="outline"
                                                                 size="sm"
                                                                 className={`w-full justify-between text-xs ${option.count === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -1264,7 +1300,7 @@ export default function DeviceStatsPage() {
                                                     <div className="space-y-1">
                                                         {options.map(option => (
                                                             <Button
-                                                                key={option.value}
+                                                                key={String(option.value)}
                                                                 variant="outline"
                                                                 size="sm"
                                                                 className={`w-full justify-between text-xs ${option.count === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -1310,7 +1346,7 @@ export default function DeviceStatsPage() {
                                                     <div className="space-y-1 max-h-32 overflow-y-auto">
                                                         {options.slice(0, 8).map(option => (
                                                             <Button
-                                                                key={option.value}
+                                                                key={String(option.value)}
                                                                 variant="outline"
                                                                 size="sm"
                                                                 className={`w-full justify-between text-xs ${option.count === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -2260,9 +2296,9 @@ export default function DeviceStatsPage() {
                                         </p>
                                         {searchedGroup.groupCount && (
                                             <div className="flex gap-4 mt-2 text-xs text-blue-600">
-                                                <span>{searchedGroup.groupCount.userCount} users</span>
-                                                <span>{searchedGroup.groupCount.deviceCount} devices</span>
-                                                <span>{searchedGroup.groupCount.groupCount} groups</span>
+                                                <span>{searchedGroup.groupCount.userMembers} users</span>
+                                                <span>{searchedGroup.groupCount.deviceMembers} devices</span>
+                                                <span>{searchedGroup.groupCount.totalMembers} total members</span>
                                             </div>
                                         )}
                                     </div>
