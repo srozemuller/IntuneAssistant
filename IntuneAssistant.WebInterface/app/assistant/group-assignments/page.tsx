@@ -804,7 +804,7 @@ export default function AssignmentsOverview() {
                             <div className="text-center">
                                 <h3 className="text-lg font-semibold mb-2">Search for a Group</h3>
                                 <p className="text-sm text-gray-600 mb-4">
-                                    Enter a group name or GUID to find and view its assignments
+                                    Enter the exact group name or GUID to find and view its assignments
                                 </p>
                             </div>
 

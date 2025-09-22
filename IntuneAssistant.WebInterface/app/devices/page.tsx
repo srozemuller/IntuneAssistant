@@ -193,8 +193,10 @@ export default function DeviceConfigurationLandingPage() {
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" className="bg-white text-yellow-600 hover:bg-gray-100 font-semibold">
-                            <FileText className="mr-2 h-4 w-4" />
-                            View Documentation
+                            <Link href="https://docs.intuneassistant.cloud" target="_blank" rel="noopener noreferrer" className="flex items-center">
+                                <FileText className="mr-2 h-4 w-4" />
+                                    View Documentation
+                            </Link>
                         </Button>
                     </div>
                 </div>
