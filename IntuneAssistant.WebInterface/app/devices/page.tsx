@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+
 import {
     Settings,
     Smartphone,
@@ -14,14 +15,31 @@ import {
     Layers,
     Zap,
     Target,
-    Globe,
     Users,
     CheckCircle,
-    FileText
+    FileText,
+    BarChart3
 } from 'lucide-react';
 
 export default function DeviceConfigurationLandingPage() {
     const configurationBlocks = [
+        {
+            title: "Device Overview & Analytics",
+            description: "Comprehensive dashboard for all your Intune-managed devices with detailed analytics, health monitoring, and advanced filtering capabilities.",
+            href: "/devices/overview",
+            icon: BarChart3,
+            gradient: "from-purple-500 to-pink-500",
+            bgGradient: "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
+            borderColor: "border-purple-200 dark:border-purple-800",
+            features: [
+                "Real-time device inventory",
+                "Health and compliance analytics",
+                "Advanced filtering and drill-down",
+                "Advanced device to group assignment"
+            ],
+            badge: "OVERVIEW",
+            highlight: "New"
+        },
         {
             title: "Intune Policy Overview",
             description: "Comprehensive visibility into all your Intune policies with detailed analytics, compliance status, and deployment insights.",
@@ -116,6 +134,37 @@ export default function DeviceConfigurationLandingPage() {
         }
     ];
 
+    const deviceStats = [
+        {
+            platform: "Windows 10/11",
+            devices: "2,847 Devices",
+            compliance: "94.2%",
+            icon: Monitor,
+            color: "bg-blue-500"
+        },
+        {
+            platform: "iOS/iPadOS",
+            devices: "1,532 Devices",
+            compliance: "96.8%",
+            icon: Smartphone,
+            color: "bg-gray-700"
+        },
+        {
+            platform: "Android",
+            devices: "987 Devices",
+            compliance: "91.5%",
+            icon: Smartphone,
+            color: "bg-green-500"
+        },
+        {
+            platform: "macOS",
+            devices: "456 Devices",
+            compliance: "97.1%",
+            icon: Monitor,
+            color: "bg-purple-500"
+        }
+    ];
+
     return (
         <div className="space-y-8">
             {/* Hero Section */}
@@ -123,25 +172,27 @@ export default function DeviceConfigurationLandingPage() {
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                            <Settings className="h-6 w-6" />
+                            <Monitor className="h-6 w-6" />
                         </div>
                         <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                            Device Configuration
+                            Device Management
                         </Badge>
                     </div>
                     <h1 className="text-4xl font-bold mb-4">
-                        Device Configuration Center
+                        Device Management Center
                     </h1>
                     <p className="text-xl text-yellow-100 mb-6 max-w-2xl">
-                        Master your Microsoft Intune device configurations with comprehensive policy management,
-                        settings analysis, and optimization tools for seamless device governance.
+                        Comprehensive device oversight and policy management for your Microsoft Intune environment.
+                        Monitor, analyze, and optimize your entire device fleet with powerful analytics and insights.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                        <Button size="lg" className="bg-white text-yellow-600 hover:bg-gray-100 font-semibold">
-                            <Shield className="mr-2 h-4 w-4" />
-                            Explore Policies
+                        <Button size="lg" className="bg-white text-yellow-600 hover:bg-gray-100 font-semibold" asChild>
+                            <Link href="/devices/overview">
+                                <BarChart3 className="mr-2 h-4 w-4" />
+                                View Device Overview
+                            </Link>
                         </Button>
-                        <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                        <Button size="lg" variant="outline" className="bg-white text-yellow-600 hover:bg-gray-100 font-semibold">
                             <FileText className="mr-2 h-4 w-4" />
                             View Documentation
                         </Button>
@@ -175,7 +226,7 @@ export default function DeviceConfigurationLandingPage() {
             </div>
 
             {/* Main Configuration Blocks */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {configurationBlocks.map((block, index) => (
                     <Card key={index} className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] ${block.borderColor}`}>
                         <div className={`absolute inset-0 bg-gradient-to-br ${block.bgGradient}`}></div>
@@ -262,6 +313,7 @@ export default function DeviceConfigurationLandingPage() {
             {/*        </div>*/}
             {/*    </CardContent>*/}
             {/*</Card>*/}
+            {/* Device Statistics */}
 
             {/* Call to Action */}
             <Card className="bg-gradient-to-r from-gray-50 to-yellow-50 dark:from-gray-900 dark:to-yellow-900/20 border-yellow-200 dark:border-yellow-800">

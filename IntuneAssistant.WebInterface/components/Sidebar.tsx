@@ -64,7 +64,8 @@ const iconMap = {
     TrendingUp,
     FileQuestion,
     Info,
-    BookOpen
+    BookOpen,
+    Monitor
 };
 
 interface MenuItem {

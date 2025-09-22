@@ -10,7 +10,6 @@ export const INTUNEASSISTANT_TENANT_INFO = `${API_BASE_URL}/tenant/license-info`
 export const INTUNEASSISTANT_TENANT_STYLE = `${API_BASE_URL}/tenant/style`;
 
 export const GROUPS_ENDPOINT = `${API_BASE_URL}/groups`;
-
 export const DEVICES_ENDPOINT = `${API_BASE_URL}/devices`;
 
 // lib/constants.ts
