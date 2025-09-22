@@ -98,7 +98,6 @@ export default function AssignmentsOverview() {
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
     const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
 
-
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
@@ -362,41 +361,6 @@ export default function AssignmentsOverview() {
             throw new Error('Invalid data format received from API');
         }
     };
-
-    const fetchGroupDetails = async (resourceId: string) => {
-        if (!accounts.length) return;
-
-        setGroupLoading(true);
-        setGroupError(null);
-
-        try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(`${GROUPS_ENDPOINT}/${resourceId}/members`, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to fetch group details: ${apiResponse.statusText}`);
-            }
-
-            const groupData = await apiResponse.json();
-            setSelectedGroup(groupData);
-        } catch (error) {
-            console.error('Failed to fetch group details:', error);
-            setGroupError(error instanceof Error ? error.message : 'Failed to fetch group details');
-        } finally {
-            setGroupLoading(false);
-        }
-    };
-
-
 
     // Group dialog handlers
     const handleResourceClick = (resourceId: string, assignmentType: string) => {
