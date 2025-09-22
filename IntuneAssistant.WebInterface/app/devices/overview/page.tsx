@@ -617,15 +617,14 @@ export default function DeviceStatsPage() {
         } else {
             const matchingDevices = deviceStats.filter(device => {
                 return Object.entries(newFilters).every(([filterProperty, filterValue]) => {
-                    const propertyValue = getNestedProperty(device, filterProperty);
-                    return propertyValue === filterValue;
+                    return matchesFilter(device, filterProperty, filterValue);
                 });
             }).map(device => device.id);
             setSelectedDevices(matchingDevices);
         }
     };
 
-// Function to clear all filters
+    // Function to clear all filters
     const clearAllFilters = () => {
         setActiveFilters({});
         setSelectedDevices([]);
@@ -787,10 +786,17 @@ export default function DeviceStatsPage() {
                 return lastSync >= cutoffDate;
             });
         }
+        if (Object.keys(activeFilters).length > 0) {
+            filtered = filtered.filter(device => {
+                return Object.entries(activeFilters).every(([filterProperty, filterValue]) => {
+                    return matchesFilter(device, filterProperty, filterValue);
+                });
+            });
+        }
 
         setFilteredStats(filtered);
         setCurrentPage(1); // Reset to first page when filtering
-    }, [deviceStats, filters]);
+    }, [deviceStats, filters, activeFilters]);
 
     // Apply filters when filters change
     React.useEffect(() => {
@@ -1342,15 +1348,26 @@ export default function DeviceStatsPage() {
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
-                            <CardTitle>Device List</CardTitle>
+                            <div className="flex items-center gap-3">
+                                <CardTitle>Device List</CardTitle>
+                                {Object.keys(activeFilters).length > 0 && (
+                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                        Filtered View ({filteredStats.length} of {deviceStats.length})
+                                    </Badge>
+                                )}
+                            </div>
                             <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => {
-                                    if (selectedDevices.length === paginatedResults.length) {
-                                        setSelectedDevices([]);
+                                    const currentPageDeviceIds = paginatedResults.map(d => d.id);
+                                    const allSelected = currentPageDeviceIds.every(id => selectedDevices.includes(id));
+
+                                    if (allSelected) {
+                                        setSelectedDevices(prev => prev.filter(id => !currentPageDeviceIds.includes(id)));
                                     } else {
-                                        setSelectedDevices(paginatedResults.map(d => d.id));
+                                        const newSelection = [...new Set([...selectedDevices, ...currentPageDeviceIds])];
+                                        setSelectedDevices(newSelection);
                                     }
                                 }}
                             >
