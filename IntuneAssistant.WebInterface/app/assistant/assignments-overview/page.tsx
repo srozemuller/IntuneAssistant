@@ -72,6 +72,7 @@ export default function AssignmentsOverview() {
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
+    const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -87,7 +88,7 @@ export default function AssignmentsOverview() {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery]);
+    }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter]);
 
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
@@ -210,6 +211,14 @@ export default function AssignmentsOverview() {
         }
     };
 
+    const getUniqueResourceTypes = (): Option[] => {
+        const types = new Set<string>();
+        assignments.forEach(assignment => {
+            types.add(assignment.resourceType);
+        });
+        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+    };
+
     const handleFilterClick = (filterId: string) => {
         if (filterId && filterId !== 'None') {
             // Find the filter in the already loaded filters
@@ -278,7 +287,7 @@ export default function AssignmentsOverview() {
         // Apply search filter
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase().trim();
-            filtered = filtered.filter(assignment =>
+            filtered = filtered.filter((assignment: Assignments) =>
                 assignment.resourceName?.toLowerCase().includes(query) ||
                 assignment.resourceType.toLowerCase().includes(query) ||
                 assignment.targetName.toLowerCase().includes(query) ||
@@ -289,8 +298,14 @@ export default function AssignmentsOverview() {
         }
 
         // Apply dropdown filters
+        if (resourceTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) =>
+                resourceTypeFilter.includes(assignment.resourceType)
+            );
+        }
+
         if (assignmentTypeFilter.length > 0) {
-            filtered = filtered.filter(assignment => {
+            filtered = filtered.filter((assignment: Assignments) => {
                 if (assignmentTypeFilter.includes('Not Assigned')) {
                     return !assignment.isAssigned || assignmentTypeFilter.includes(assignment.assignmentType);
                 }
@@ -299,7 +314,7 @@ export default function AssignmentsOverview() {
         }
 
         if (statusFilter.length > 0) {
-            filtered = filtered.filter(assignment => {
+            filtered = filtered.filter((assignment: Assignments) => {
                 if (statusFilter.includes('Assigned') && statusFilter.includes('Not Assigned')) {
                     return true;
                 }
@@ -310,14 +325,15 @@ export default function AssignmentsOverview() {
         }
 
         if (platformFilter.length > 0) {
-            filtered = filtered.filter(assignment => {
+            filtered = filtered.filter((assignment: Assignments) => {
                 const platform = assignment.platform || 'All';
                 return platformFilter.includes(platform);
             });
         }
 
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, statusFilter, platformFilter, searchQuery]);
+    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, searchQuery]);
+
 
     // Get unique values for filters
     const getUniqueAssignmentTypes = (): Option[] => {
@@ -347,6 +363,7 @@ export default function AssignmentsOverview() {
 
     const clearFilters = () => {
         setAssignmentTypeFilter([]);
+        setResourceTypeFilter([]);
         setStatusFilter([]);
         setPlatformFilter([]);
         setSearchQuery('');
@@ -718,7 +735,7 @@ export default function AssignmentsOverview() {
                                     <Filter className="h-5 w-5" />
                                     Filters
                                 </span>
-                                {(assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
+                                {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
                                     <Button variant="ghost" size="sm" onClick={clearFilters}>
                                         Clear All
                                     </Button>
@@ -727,6 +744,16 @@ export default function AssignmentsOverview() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {/* Resource Type Filter */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Resource Type</label>
+                                    <MultiSelect
+                                        options={getUniqueResourceTypes()}
+                                        selected={resourceTypeFilter}
+                                        onChange={setResourceTypeFilter}
+                                        placeholder="Select resource types..."
+                                    />
+                                </div>
                                 {/* Assignment Type Filter */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Assignment Type</label>
@@ -765,6 +792,14 @@ export default function AssignmentsOverview() {
                             {(assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
                                 <div className="flex flex-wrap gap-2 pt-2 border-t">
                                     <span className="text-sm text-gray-600">Active filters:</span>
+                                    {resourceTypeFilter.map(filter => (
+                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                            {filter}
+                                            <button onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
                                     {assignmentTypeFilter.map(filter => (
                                         <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                                             {filter}
