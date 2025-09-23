@@ -70,14 +70,11 @@ export function MultiSelect({
                                     variant="secondary"
                                     key={item}
                                     className="mr-1 mb-1"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        handleUnselect(item)
-                                    }}
+                                    onClick={(e) => e.stopPropagation()}
                                 >
                                     {option?.label}
-                                    <button
-                                        className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+                                    <span
+                                        className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer hover:bg-destructive/10"
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") {
                                                 handleUnselect(item)
@@ -92,9 +89,12 @@ export function MultiSelect({
                                             e.stopPropagation();
                                             handleUnselect(item)
                                         }}
+                                        tabIndex={0}
+                                        role="button"
+                                        aria-label={`Remove ${option?.label}`}
                                     >
                                         <X className="h-3 w-3 text-gray-500 hover:text-gray-700" />
-                                    </button>
+                                    </span>
                                 </Badge>
                             )
                         })}

@@ -106,6 +106,8 @@ export default function AssignmentsOverview() {
 
     // Filter states
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
+    const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
+
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
@@ -122,7 +124,7 @@ export default function AssignmentsOverview() {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery]);
+    }, [assignmentTypeFilter, statusFilter, platformFilter,resourceTypeFilter, searchQuery]);
 
     const searchGroup = async () => {
         if (!accounts.length || !groupSearchInput.trim()) return;
@@ -448,6 +450,13 @@ export default function AssignmentsOverview() {
             );
         }
 
+        if (resourceTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) =>
+                resourceTypeFilter.includes(assignment.resourceType)
+            );
+        }
+
+
         // Apply dropdown filters
         if (assignmentTypeFilter.length > 0) {
             filtered = filtered.filter(assignment => {
@@ -491,6 +500,13 @@ export default function AssignmentsOverview() {
         });
         return Array.from(types).sort().map(type => ({ label: type, value: type }));
     };
+    const getUniqueResourceTypes = (): Option[] => {
+        const types = new Set<string>();
+        assignments.forEach(assignment => {
+            types.add(assignment.resourceType);
+        });
+        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+    };
 
     const getUniqueStatuses = (): Option[] => [
         { label: 'Assigned', value: 'Assigned' },
@@ -507,6 +523,7 @@ export default function AssignmentsOverview() {
 
     const clearFilters = () => {
         setAssignmentTypeFilter([]);
+        setResourceTypeFilter([]);
         setStatusFilter([]);
         setPlatformFilter([]);
         setSearchQuery('');
@@ -527,44 +544,6 @@ export default function AssignmentsOverview() {
         clearFilters();
     };
 
-    const groupMemberColumns = [
-        {
-            key: 'displayName' as string,
-            label: 'Display Name',
-            render: (value: unknown) => (
-                <span className="font-medium">{String(value)}</span>
-            )
-        },
-        {
-            key: 'type' as string,
-            label: 'Type',
-            render: (value: unknown) => (
-                <Badge variant="outline" className="text-xs">
-                    {String(value)}
-                </Badge>
-            )
-        },
-        {
-            key: 'accountEnabled' as string,
-            label: 'Account Status',
-            render: (value: unknown) => {
-                const isEnabled = Boolean(value);
-                return (
-                    <Badge variant={isEnabled ? 'default' : 'secondary'}
-                           className={isEnabled ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}>
-                        {isEnabled ? 'Enabled' : 'Disabled'}
-                    </Badge>
-                );
-            }
-        },
-        {
-            key: 'id' as string,
-            label: 'ID',
-            render: (value: unknown) => (
-                <span className="font-mono text-xs text-gray-500">{String(value)}</span>
-            )
-        }
-    ];
 
     const columns = [
         {
@@ -746,8 +725,6 @@ export default function AssignmentsOverview() {
             }
         }
     ];
-
-
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -1008,7 +985,7 @@ export default function AssignmentsOverview() {
                                     <Filter className="h-5 w-5" />
                                     Filters
                                 </span>
-                                {(assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
+                                {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
                                     <Button variant="ghost" size="sm" onClick={clearFilters}>
                                         Clear All
                                     </Button>
@@ -1017,6 +994,16 @@ export default function AssignmentsOverview() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {/* Resource Type Filter */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Resource Type</label>
+                                    <MultiSelect
+                                        options={getUniqueResourceTypes()}
+                                        selected={resourceTypeFilter}
+                                        onChange={setResourceTypeFilter}
+                                        placeholder="Select resource types..."
+                                    />
+                                </div>
                                 {/* Assignment Type Filter */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Assignment Type</label>
@@ -1055,6 +1042,14 @@ export default function AssignmentsOverview() {
                             {(assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
                                 <div className="flex flex-wrap gap-2 pt-2 border-t">
                                     <span className="text-sm text-gray-600">Active filters:</span>
+                                    {resourceTypeFilter.map(filter => (
+                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                            {filter}
+                                            <button onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
                                     {assignmentTypeFilter.map(filter => (
                                         <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                                             {filter}

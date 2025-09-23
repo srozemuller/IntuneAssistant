@@ -2119,86 +2119,119 @@ export default function DeviceStatsPage() {
                         </DialogTitle>
                     </DialogHeader>
 
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-sm font-medium text-gray-700 mb-2 block">Group Name</label>
-                            <input
-                                type="text"
-                                className="w-full p-2 border rounded-md"
-                                placeholder="Enter group name..."
-                                value={groupName}
-                                onChange={(e) => setGroupName(e.target.value)}
-                            />
-                        </div>
+                    {/* Enhanced Progress Bar with Icons */}
+                    <div className="mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                            {/* Step 1: Search */}
+                            <div className="flex items-center">
+                                <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                                    addToGroupStep >= 1
+                                        ? 'bg-blue-600 border-blue-600 text-white'
+                                        : 'border-gray-300 text-gray-400'
+                                }`}>
+                                    {addToGroupStep > 1 ? (
+                                        <CheckCircle className="w-4 h-4" />
+                                    ) : (
+                                        <Search className="w-4 h-4" />
+                                    )}
+                                </div>
+                                <div className="ml-3 hidden sm:block">
+                                    <p className={`text-sm font-medium ${
+                                        addToGroupStep >= 1 ? 'text-blue-600' : 'text-gray-400'
+                                    }`}>
+                                        Search Group
+                                    </p>
+                                    <p className="text-xs text-gray-500">Find existing group</p>
+                                </div>
+                            </div>
 
-                        <div>
-                            <label className="text-sm font-medium text-gray-700 mb-2 block">Description
-                                (Optional)</label>
-                            <textarea
-                                className="w-full p-2 border rounded-md"
-                                rows={3}
-                                placeholder="Enter group description..."
-                                value={groupDescription}
-                                onChange={(e) => setGroupDescription(e.target.value)}
-                            />
-                        </div>
+                            {/* Connector Line */}
+                            <div className={`flex-1 h-0.5 mx-4 transition-all duration-200 ${
+                                addToGroupStep >= 2 ? 'bg-blue-600' : 'bg-gray-300'
+                            }`}></div>
 
-                        <div className="bg-gray-50 p-4 rounded-md">
-                            <h4 className="font-medium mb-2">Selected Devices ({selectedDevices.length})</h4>
-                            <div className="max-h-32 overflow-y-auto space-y-1">
-                                {deviceStats
-                                    .filter(device => selectedDevices.includes(device.id))
-                                    .slice(0, 10)
-                                    .map(device => (
-                                        <div key={device.id} className="text-sm text-gray-600">
-                                            {device.deviceName} - {device.userDisplayName}
-                                        </div>
-                                    ))
-                                }
-                                {selectedDevices.length > 10 && (
-                                    <div className="text-sm text-gray-500">
-                                        ... and {selectedDevices.length - 10} more devices
-                                    </div>
-                                )}
+                            {/* Step 2: Add Members */}
+                            <div className="flex items-center">
+                                <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                                    addToGroupStep >= 2
+                                        ? 'bg-blue-600 border-blue-600 text-white'
+                                        : 'border-gray-300 text-gray-400'
+                                }`}>
+                                    {addToGroupStep > 2 ? (
+                                        <CheckCircle className="w-4 h-4" />
+                                    ) : (
+                                        <Users className="w-4 h-4" />
+                                    )}
+                                </div>
+                                <div className="ml-3 hidden sm:block">
+                                    <p className={`text-sm font-medium ${
+                                        addToGroupStep >= 2 ? 'text-blue-600' : 'text-gray-400'
+                                    }`}>
+                                        Add Members
+                                    </p>
+                                    <p className="text-xs text-gray-500">Review & confirm</p>
+                                </div>
+                            </div>
+
+                            {/* Connector Line */}
+                            <div className={`flex-1 h-0.5 mx-4 transition-all duration-200 ${
+                                addToGroupStep >= 3 ? 'bg-blue-600' : 'bg-gray-300'
+                            }`}></div>
+
+                            {/* Step 3: Results */}
+                            <div className="flex items-center">
+                                <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                                    addToGroupStep >= 3
+                                        ? 'bg-green-600 border-green-600 text-white'
+                                        : 'border-gray-300 text-gray-400'
+                                }`}>
+                                    {addToGroupStep >= 3 ? (
+                                        <CheckCircle className="w-4 h-4" />
+                                    ) : (
+                                        <AlertCircle className="w-4 h-4" />
+                                    )}
+                                </div>
+                                <div className="ml-3 hidden sm:block">
+                                    <p className={`text-sm font-medium ${
+                                        addToGroupStep >= 3 ? 'text-green-600' : 'text-gray-400'
+                                    }`}>
+                                        Results
+                                    </p>
+                                    <p className="text-xs text-gray-500">View outcome</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex gap-2 justify-end">
-                            <Button
-                                variant="outline"
-                                onClick={() => {
-                                    setGroupCreationMode(false);
-                                    setGroupName('');
-                                    setGroupDescription('');
-                                }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={createEntraIdGroup}
-                                disabled={!groupName.trim() || selectedDevices.length === 0 || isCreatingGroup}
-                            >
-                                {isCreatingGroup ? (
-                                    <>
-                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin"/>
-                                        Creating...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Users className="h-4 w-4 mr-2"/>
-                                        Create Group
-                                    </>
-                                )}
-                            </Button>
+                        {/* Mobile Progress Indicator */}
+                        <div className="sm:hidden mb-4">
+                            <div className="flex justify-center">
+            <span className="text-sm font-medium text-blue-600">
+                Step {addToGroupStep} of 3: {
+                addToGroupStep === 1 ? 'Search Group' :
+                    addToGroupStep === 2 ? 'Add Members' : 'Results'
+            }
+            </span>
+                            </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                                className={`h-2 rounded-full transition-all duration-300 ease-in-out ${
+                                    addToGroupStep === 3 ? 'bg-green-600' : 'bg-blue-600'
+                                }`}
+                                style={{ width: `${(addToGroupStep / 3) * 100}%` }}
+                            ></div>
                         </div>
                     </div>
+
                 </DialogContent>
             </Dialog>
 
             {/* Create Group Dialog */}
             <Dialog open={showAddToGroupDialog} onOpenChange={setShowAddToGroupDialog}>
                 <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
-                    <DialogHeader>
+                    <DialogHeader className="pb-2">
                         <DialogTitle className="flex items-center gap-3">
                             <Users className="h-5 w-5 text-blue-600"/>
                             Add Devices to Group
@@ -2208,39 +2241,100 @@ export default function DeviceStatsPage() {
                         </DialogDescription>
                     </DialogHeader>
 
-                    {/* Progress Bar */}
-                    <div className="mb-6">
-                        <div className="flex justify-between text-sm mb-2">
-        <span className={addToGroupStep >= 1 ? "text-blue-600 font-medium" : "text-gray-400"}>
-            1. Search Group
-        </span>
-                            <span className={addToGroupStep >= 2 ? "text-blue-600 font-medium" : "text-gray-400"}>
-            2. Add Members
-        </span>
-                            <span className={addToGroupStep >= 3 ? "text-blue-600 font-medium" : "text-gray-400"}>
-            3. Results
-        </span>
+                    {/* Enhanced Progress Steps - Reduced margins */}
+                    <div className="mb-4">
+                        <div className="flex items-center justify-between">
+                            {[
+                                {
+                                    step: 1,
+                                    title: "Search Group",
+                                    description: "Find existing group",
+                                    icon: Search
+                                },
+                                {
+                                    step: 2,
+                                    title: "Add Members",
+                                    description: "Review & confirm",
+                                    icon: Users
+                                },
+                                {
+                                    step: 3,
+                                    title: "Results",
+                                    description: "View outcome",
+                                    icon: CheckCircle2
+                                }
+                            ].map(({ step, title, description, icon: Icon }, index) => (
+                                <div key={step} className="flex items-center flex-1">
+                                    <div className="flex flex-col items-center">
+                                        <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-300 ${
+                                            addToGroupStep >= step
+                                                ? 'bg-blue-600 border-blue-600 text-white'
+                                                : 'border-gray-300 text-gray-400'
+                                        }`}>
+                                            {addToGroupStep > step ? (
+                                                <CheckCircle className="h-4 w-4" />
+                                            ) : (
+                                                <Icon className="h-4 w-4" />
+                                            )}
+                                        </div>
+
+                                        <div className="mt-1 text-center max-w-[120px]">
+                                            <h4 className={`text-xs font-medium transition-colors ${
+                                                addToGroupStep >= step ? 'text-blue-600' : 'text-gray-400'
+                                            }`}>{title}</h4>
+                                            <p className={`text-xs mt-0.5 transition-colors ${
+                                                addToGroupStep >= step ? 'text-blue-500' : 'text-gray-400'
+                                            }`}>{description}</p>
+                                        </div>
+                                    </div>
+
+                                    {index < 2 && (
+                                        <div className="flex-1 h-px mx-3 mt-[-25px] relative">
+                                            <div className={`absolute inset-0 transition-all duration-500 ${
+                                                addToGroupStep > step ? 'bg-blue-600' : 'bg-gray-300'
+                                            }`}></div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-                        <Progress value={(addToGroupStep / 3) * 100} className="h-2"/>
+
+                        {/* Compact Progress Bar */}
+                        <div className="mt-3 w-full bg-gray-200 rounded-full h-1">
+                            <div
+                                className={`h-1 rounded-full transition-all duration-700 ease-out ${
+                                    addToGroupStep === 3
+                                        ? 'bg-gradient-to-r from-green-500 to-green-600'
+                                        : 'bg-gradient-to-r from-blue-500 to-blue-600'
+                                }`}
+                                style={{
+                                    width: `${(addToGroupStep / 3) * 100}%`,
+                                    boxShadow: addToGroupStep > 0 ? '0 0 8px rgba(59, 130, 246, 0.4)' : 'none'
+                                }}
+                            ></div>
+                        </div>
                     </div>
 
-                    {/* Step 1: Search for Group */}
+                    {/* Step 1: Search for Group - Better aligned input */}
                     {addToGroupStep === 1 && (
                         <div className="space-y-6">
-                            <div className="space-y-4">
+                            <div className="max-w-2xl mx-auto space-y-4">
                                 <div>
-                                    <Label htmlFor="groupSearch">Group Name or ID</Label>
-                                    <Input
-                                        id="groupSearch"
-                                        type="text"
-                                        value={groupSearchInput}
-                                        onChange={(e) => setGroupSearchInput(e.target.value)}
-                                        placeholder="Enter group name or GUID..."
-                                        onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                                            if (e.key === 'Enter') searchGroup();
-                                        }}
-                                    />
-                                    <p className="text-sm text-gray-500 mt-1">
+                                    <Label htmlFor="groupSearch" className="text-sm font-medium">Group Name or ID</Label>
+                                    <div className="mt-1">
+                                        <Input
+                                            id="groupSearch"
+                                            type="text"
+                                            value={groupSearchInput}
+                                            onChange={(e) => setGroupSearchInput(e.target.value)}
+                                            placeholder="Enter group name or GUID..."
+                                            className="w-full"
+                                            onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                                if (e.key === 'Enter') searchGroup();
+                                            }}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-2">
                                         You can search by group display name or GUID
                                     </p>
                                 </div>
@@ -2248,20 +2342,21 @@ export default function DeviceStatsPage() {
                                 {groupSearchError && (
                                     <div className="p-3 bg-red-50 border border-red-200 rounded-md">
                                         <div className="flex items-center gap-2 text-red-800">
-                                            <AlertCircle className="h-4 w-4"/>
+                                            <AlertCircle className="h-4 w-4 flex-shrink-0"/>
                                             <span className="text-sm">{groupSearchError}</span>
                                         </div>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="flex gap-2 justify-end">
+                            <div className="flex gap-3 justify-center pt-4">
                                 <Button variant="outline" onClick={resetAddToGroupDialog}>
                                     Cancel
                                 </Button>
                                 <Button
                                     onClick={searchGroup}
                                     disabled={!groupSearchInput.trim() || groupSearchLoading}
+                                    className="min-w-[120px]"
                                 >
                                     {groupSearchLoading ? (
                                         <>
