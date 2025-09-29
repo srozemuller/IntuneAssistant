@@ -11,6 +11,7 @@ import { apiScope } from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
+import { useApiRequest } from '@/hooks/useApiRequest';
 
 interface ChildSettingInfo {
     '@odata.type': string;
@@ -38,6 +39,8 @@ interface ApiResponse {
 
 export default function PolicySettingsPage() {
     const { instance, accounts } = useMsal();
+    const apiRequestWithConsent = useApiRequest();
+
     const [settings, setSettings] = useState<PolicySetting[]>([]);
     const [filteredSettings, setFilteredSettings] = useState<PolicySetting[]>([]);
     const [loading, setLoading] = useState(false);
@@ -149,29 +152,14 @@ export default function PolicySettingsPage() {
             });
 
             // Fetch both endpoints simultaneously
-            const [configResponse, groupResponse] = await Promise.all([
-                fetch(POLICY_SETTINGS_ENDPOINT, {
-                    headers: {
-                        'Authorization': `Bearer ${response.accessToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                }),
-                fetch(GROUP_POLICY_SETTINGS_ENDPOINT, {
-                    headers: {
-                        'Authorization': `Bearer ${response.accessToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                })
+            const [configData, groupData] = await Promise.all([
+                apiRequestWithConsent<ApiResponse>(POLICY_SETTINGS_ENDPOINT, {}, response.accessToken),
+                apiRequestWithConsent<ApiResponse>(GROUP_POLICY_SETTINGS_ENDPOINT, {}, response.accessToken)
             ]);
 
-            if (!configResponse.ok || !groupResponse.ok) {
-                throw new Error('Failed to fetch policy settings');
+            if (!configData || !groupData) {
+                return;
             }
-
-            const [configData, groupData]: [ApiResponse, ApiResponse] = await Promise.all([
-                configResponse.json(),
-                groupResponse.json()
-            ]);
 
             // Combine and mark source
             const configSettings = (configData.data || []).map(setting => ({

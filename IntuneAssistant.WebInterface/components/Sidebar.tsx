@@ -49,11 +49,13 @@ import {
     FileQuestion,
     Info,
     BookOpen,
-    Monitor
+    Monitor,
+    ArrowLeftRight
 } from 'lucide-react';
 
 const iconMap = {
     LayoutDashboard,
+    ArrowLeftRight,
     GitBranch,
     BarChart3,
     Rocket,
@@ -254,6 +256,22 @@ export function Sidebar() {
                     isPaid: true,
                     submenu: [
                         { title: "Deploy Assignments", href: "/deployment/assignments" }
+                    ]
+                }
+            ]
+        },
+        {
+            title: "Compare",
+            // badge: "PRO",
+            badgeColor: "bg-amber-500",
+            items: [
+                {
+                    title: "Compare Policies",
+                    icon: "ArrowLeftRight",
+                    href: "/compare",
+                    isPaid: false,
+                    submenu: [
+                        { title: "Policies & Settings", href: "/compare/policies" }
                     ]
                 }
             ]

@@ -38,7 +38,7 @@ import {apiScope} from "@/lib/msalConfig";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
-import {Progress} from '@/components/ui/progress';
+import { useApiRequest } from '@/hooks/useApiRequest';
 
 interface DeviceHardwareInfo {
     serialNumber: string;
@@ -158,6 +158,7 @@ interface FilterOption {
 
 export default function DeviceStatsPage() {
     const {instance, accounts} = useMsal();
+    const apiRequestWithConsent = useApiRequest();
 
     // State management
     const [deviceStats, setDeviceStats] = useState<DeviceStats[]>([]);
@@ -534,21 +535,24 @@ export default function DeviceStatsPage() {
                 account: accounts[0]
             });
 
-            const apiResponse = await fetch(`${GROUPS_ENDPOINT}/${searchedGroup.id}/members/devices`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
+            const data = await apiRequestWithConsent<AddMembersResult>(
+                `${GROUPS_ENDPOINT}/${searchedGroup.id}/members/devices`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        groupId: searchedGroup.id,
+                        deviceIds: selectedDeviceObjects.map(device => device.azureAdDeviceId),
+                    }),
                 },
-                body: JSON.stringify({
-                    groupId: searchedGroup.id,
-                    deviceIds: selectedDeviceObjects.map(device => device.azureAdDeviceId)
-                })
-            });
+                response.accessToken
+            );
 
-            const data = await apiResponse.json();
+            // Handle the case where data might be undefined (consent required)
+            if (!data) {
+                return;
+            }
 
-            if (apiResponse.ok && data.status === 0) {
+            if (data.status === 0) {
                 // Store the result and move to step 3
                 setAddMembersResult(data);
                 setAddToGroupStep(3);

@@ -12,7 +12,6 @@ import {apiScope} from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
-import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 
 
