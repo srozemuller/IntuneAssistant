@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 
 export function AssignmentsLandingPage() {
-    // ... (rest of the component code from the previous response)
 
     const assignmentBlocks = [
         {

@@ -9,6 +9,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { cn } from '@/lib/utils';
 import './globals.css';
 import {CustomerProvider} from "@/contexts/CustomerContext";
+import { ConsentProvider } from "@/contexts/ConsentContext";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -46,15 +47,17 @@ export default function RootLayout({
             enableSystem
         >
             <MsalProvider instance={msalInstance}>
-                <CustomerProvider>
-                    <TenantProvider>
-                        <SidebarProvider>
-                            <MainContent>
-                                {children}
-                            </MainContent>
-                        </SidebarProvider>
-                    </TenantProvider>
-                </CustomerProvider>
+                <ConsentProvider>
+                    <CustomerProvider>
+                        <TenantProvider>
+                            <SidebarProvider>
+                                <MainContent>
+                                    {children}
+                                </MainContent>
+                            </SidebarProvider>
+                        </TenantProvider>
+                    </CustomerProvider>
+                </ConsentProvider>
             </MsalProvider>
         </ThemeProvider>
         </body>

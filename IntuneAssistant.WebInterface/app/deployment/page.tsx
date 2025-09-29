@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { useAuth } from '@/hooks/useAuth';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +30,7 @@ import {
 } from 'lucide-react';
 
 export default function AssignmentManagerLandingPage() {
+    const { isAuthenticated } = useAuth();
     const workflowFeatures = [
         {
             title: "CSV Upload",
@@ -151,12 +154,23 @@ export default function AssignmentManagerLandingPage() {
                         with comprehensive validation.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                        <Link href="/deployment/assignments">
-                            <Button size="lg" className="bg-white text-amber-600 hover:bg-gray-100 font-semibold">
+                        {isAuthenticated ? (
+                            <Link href="/deployment/assignments">
+                                <Button size="lg" className="bg-white text-amber-600 hover:bg-gray-100 font-semibold">
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    Start Bulk Assignment
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Button
+                                size="lg"
+                                disabled
+                                className="bg-white/50 text-amber-600/50 cursor-not-allowed font-semibold"
+                            >
                                 <Upload className="mr-2 h-4 w-4" />
-                                Start Bulk Assignment
+                                Start Bulk Assignment (Login Required)
                             </Button>
-                        </Link>
+                        )}
                         {/*<Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">*/}
                         {/*    <FileText className="mr-2 h-4 w-4" />*/}
                         {/*    CSV Template*/}
