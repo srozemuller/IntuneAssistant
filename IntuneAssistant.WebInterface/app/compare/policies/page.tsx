@@ -221,7 +221,7 @@ export default function PolicyComparison() {
                                 ))
                             ) : (
                                 <div className="p-3 text-gray-500 text-sm text-center">
-                                    No policies found matching "{searchTerm}"
+                                    No policies found matching &quot;{searchTerm}&quot;
                                 </div>
                             )}
                         </div>
@@ -355,7 +355,7 @@ export default function PolicyComparison() {
                                 ))
                             ) : (
                                 <div className="p-3 text-gray-500 text-sm text-center">
-                                    No keywords found matching "{searchTerm}"
+                                    No keywords found matching &quot;{searchTerm}&quot;
                                 </div>
                             )}
                         </div>
@@ -1293,7 +1293,7 @@ export default function PolicyComparison() {
                                             <div className="flex flex-wrap gap-2">
                                                 {filter && (
                                                     <Badge variant="secondary" className="flex items-center gap-1">
-                                                        Search: "{filter}"
+                                                        Search: &quot;{filter}&quot;
                                                         <button onClick={() => setFilter('')} className="ml-1">
                                                             <X className="h-3 w-3" />
                                                         </button>
@@ -1433,7 +1433,6 @@ export default function PolicyComparison() {
                                                             <div className="space-y-3">
                                                                 {result.childSettings.map((child, index) => {
                                                                     const isDifferent = child.sourceValue !== child.targetValue;
-                                                                    const isEmpty = (value: string) => !value || value === '' || value === '[Not Set]';
 
                                                                     return (
                                                                         <div key={index} className={`p-3 rounded-lg border ${

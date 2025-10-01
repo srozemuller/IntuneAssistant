@@ -89,7 +89,7 @@ export default function CustomerPage() {
         }
     };
 
-    const handleTenantSelect = (tenant: any) => {
+    const handleTenantSelect = (tenant: Tenant) => {
         setSelectedTenant(tenant);
         // Just update the URL to show tenant context
         router.push(`/${tenant.domainName}`);

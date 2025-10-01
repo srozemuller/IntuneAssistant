@@ -67,7 +67,7 @@ export default function TenantPage({ params }: TenantPageProps) {
 
                 if (customerData?.tenants) {
                     const foundTenant = customerData.tenants.find(
-                        (tenant: any) => tenant.domainName === resolvedParams.tenantDomain
+                        (tenant: TenantDetails) => tenant.domainName === resolvedParams.tenantDomain
                     );
 
                     if (foundTenant) {

@@ -38,7 +38,7 @@ import {apiScope} from "@/lib/msalConfig";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
-import { useApiRequest } from '@/hooks/useApiRequest';
+import {useApiRequest} from '@/hooks/useApiRequest';
 
 interface DeviceHardwareInfo {
     serialNumber: string;
@@ -133,6 +133,7 @@ interface GroupSearchResult {
         userMembers: number;
     };
 }
+
 interface AddMembersResult {
     status: number;
     message: string;
@@ -187,6 +188,10 @@ export default function DeviceStatsPage() {
     const [groupName, setGroupName] = useState('');
     const [groupDescription, setGroupDescription] = useState('');
     const [isCreatingGroup, setIsCreatingGroup] = useState(false);
+    const [showCreateGroupOption, setShowCreateGroupOption] = useState(false);
+    const [newGroupName, setNewGroupName] = useState('');
+    const [newGroupDescription, setNewGroupDescription] = useState('');
+    const [createGroupError, setCreateGroupError] = useState<string | null>(null);
 
     const [activeFilters, setActiveFilters] = useState<{ [key: string]: string | boolean | number }>({});
     const [filterHierarchy, setFilterHierarchy] = useState<string[]>([]);
@@ -203,18 +208,145 @@ export default function DeviceStatsPage() {
     const [addMembersError, setAddMembersError] = useState<string | null>(null);
     const [addToGroupStep, setAddToGroupStep] = useState(1);
     const [addMembersResult, setAddMembersResult] = useState<AddMembersResult | null>(null);
+    const [allGroups, setAllGroups] = useState<GroupSearchResult[]>([]);
+    const [filteredGroups, setFilteredGroups] = useState<GroupSearchResult[]>([]);
+    const [loadingGroups, setLoadingGroups] = useState(false);
+    const [groupsError, setGroupsError] = useState<string | null>(null);
 
+    const createNewGroup = async () => {
+        if (!newGroupName.trim()) return;
 
-    const isValidGuid = (str: string): boolean => {
-        const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        return guidRegex.test(str);
+        setIsCreatingGroup(true);
+        setCreateGroupError(null);
+
+        try {
+            const response = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            const apiResponse = await fetch(`${GROUPS_ENDPOINT}/create`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${response.accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    displayName: newGroupName.trim(),
+                    description: newGroupDescription.trim() || undefined
+                })
+            });
+
+            if (!apiResponse.ok) {
+                throw new Error(`API call failed: ${apiResponse.statusText}`);
+            }
+
+            const responseData = await apiResponse.json();
+
+            if (responseData.message === "Group already exists") {
+                // Show subtle warning and switch to search mode
+                setCreateGroupError("Group already exists");
+                // Auto-switch to search mode and filter by the attempted group name
+                setTimeout(() => {
+                    setShowCreateGroupOption(false);
+                    setGroupSearchInput(newGroupName.trim());
+                    filterGroups(newGroupName.trim());
+                    setCreateGroupError(null);
+                    setNewGroupName('');
+                    setNewGroupDescription('');
+                }, 2000); // Show warning for 2 seconds then switch
+            } else if (responseData.status === 0 && responseData.data) {
+                const newGroup = responseData.data;
+                setSearchedGroup(newGroup);
+                setAddToGroupStep(2);
+                // Reset create form
+                setNewGroupName('');
+                setNewGroupDescription('');
+                setShowCreateGroupOption(false);
+            } else {
+                throw new Error(responseData.message || 'Failed to create group');
+            }
+        } catch (error) {
+            console.error('Failed to create group:', error);
+            setCreateGroupError(error instanceof Error ? error.message : 'Failed to create group');
+        } finally {
+            setIsCreatingGroup(false);
+        }
     };
 
+
+    const fetchAllGroups = async () => {
+        if (!accounts.length) return;
+
+        setLoadingGroups(true);
+        setGroupsError(null);
+
+        try {
+            const response = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            const apiResponse = await fetch(`${GROUPS_ENDPOINT}/list`, {
+                headers: {
+                    'Authorization': `Bearer ${response.accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+
+            if (!apiResponse.ok) {
+                throw new Error(`API call failed: ${apiResponse.statusText}`);
+            }
+
+            const responseData = await apiResponse.json();
+
+            if (responseData.status === 0 && responseData.data) {
+                const groups = Array.isArray(responseData.data) ? responseData.data : [responseData.data];
+                setAllGroups(groups);
+                setFilteredGroups(groups);
+            } else {
+                throw new Error(responseData.message || 'Failed to fetch groups');
+            }
+        } catch (error) {
+            console.error('Failed to fetch groups:', error);
+            setGroupsError(error instanceof Error ? error.message : 'Failed to fetch groups');
+        } finally {
+            setLoadingGroups(false);
+        }
+    };
+    const filterGroups = (searchTerm: string) => {
+        if (!searchTerm.trim()) {
+            setFilteredGroups(allGroups);
+            return;
+        }
+
+        const filtered = allGroups.filter(group => {
+            const searchLower = searchTerm.toLowerCase();
+            return (
+                group.displayName.toLowerCase().includes(searchLower) ||
+                group.id.toLowerCase().includes(searchLower) ||
+                (group.description && group.description.toLowerCase().includes(searchLower))
+            );
+        });
+
+        setFilteredGroups(filtered);
+    };
 
 // Update your default collapsed state
     const [filtersExpanded, setFiltersExpanded] = useState(false);
 
+// Update the group search input handler
+    const handleGroupSearchChange = (value: string) => {
+        setGroupSearchInput(value);
+        filterGroups(value);
+    };
 
+// Update the group selection function
+    const selectGroup = (group: GroupSearchResult) => {
+        setSearchedGroup(group);
+        setAddToGroupStep(2);
+    };
     // Enhanced function to apply dynamic filtering
     const getFilteredDevicesForProperty = (excludeProperty?: string) => {
         let filtered = [...deviceStats];
@@ -580,51 +712,22 @@ export default function DeviceStatsPage() {
         setGroupSearchError(null);
         setAddMembersError(null);
         setAddMembersResult(null);
+        setAllGroups([]);
+        setFilteredGroups([]);
+        setGroupsError(null);
+        setShowCreateGroupOption(false);
+        setNewGroupName('');
+        setNewGroupDescription('');
+        setCreateGroupError(null);
     };
 
-    const searchGroup = async () => {
-        if (!accounts.length || !groupSearchInput.trim()) return;
-
-        setGroupSearchLoading(true);
-        setGroupSearchError(null);
-        setSearchedGroup(null);
-
-        try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const queryParam = isValidGuid(groupSearchInput.trim())
-                ? `groupId=${groupSearchInput.trim()}`
-                : `groupName=${encodeURIComponent(groupSearchInput.trim())}`;
-
-            const apiResponse = await fetch(`${GROUPS_ENDPOINT}?${queryParam}`, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`API call failed: ${apiResponse.statusText}`);
-            }
-
-            const responseData = await apiResponse.json();
-
-            if (responseData.status === 0 && responseData.data) {
-                setSearchedGroup(responseData.data);
-                setAddToGroupStep(2); // Move to next step
-            } else {
-                throw new Error(responseData.message || 'Failed to find group');
-            }
-        } catch (error) {
-            console.error('Failed to search group:', error);
-            setGroupSearchError(error instanceof Error ? error.message : 'Failed to search group');
-        } finally {
-            setGroupSearchLoading(false);
+// Fetch groups when dialog opens
+    React.useEffect(() => {
+        if (showAddToGroupDialog && addToGroupStep === 1) {
+            fetchAllGroups();
         }
-    };
+    }, [showAddToGroupDialog, addToGroupStep]);
+
 
     // Enhanced device selection function
     const selectDevicesByProperty = (propertyPath: string, value: string | boolean | number) => {
@@ -683,65 +786,7 @@ export default function DeviceStatsPage() {
     };
 
     // Add this function to create an Entra ID group
-    const createEntraIdGroup = async () => {
-        if (!accounts.length || selectedDevices.length === 0 || !groupName.trim()) return;
 
-        setIsCreatingGroup(true);
-        setError(null);
-
-        try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const selectedDeviceData = deviceStats.filter(device =>
-                selectedDevices.includes(device.id)
-            );
-
-            const createGroupPayload = {
-                groupName: groupName.trim(),
-                description: groupDescription.trim() || `Device group created on ${new Date().toLocaleDateString()}`,
-                devices: selectedDeviceData.map(device => ({
-                    id: device.id,
-                    deviceName: device.deviceName,
-                    userPrincipalName: device.userPrincipalName,
-                    serialNumber: device.serialNumber,
-                    platform: device.platform,
-                    // Add other relevant device properties as needed
-                    hardwareInfo: device.hardwareInfo
-                }))
-            };
-
-            const apiResponse = await fetch(`${DEVICES_STATS_ENDPOINT}/create-group`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(createGroupPayload)
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to create group: ${apiResponse.statusText}`);
-            }
-
-            const result = await apiResponse.json();
-
-            // Reset form and selections
-            setGroupName('');
-            setGroupDescription('');
-            setSelectedDevices([]);
-            setGroupCreationMode(false);
-
-            alert(`Successfully created group "${groupName}" with ${selectedDevices.length} devices`);
-
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to create Entra ID group');
-        } finally {
-            setIsCreatingGroup(false);
-        }
-    };
 
     const getNestedProperty = (obj: DeviceStats | Record<string, unknown>, path: string): unknown => {
         return path.split('.').reduce((current: unknown, key: string) => {
@@ -976,7 +1021,8 @@ export default function DeviceStatsPage() {
                                 Ready to view your device overview
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the &quot;Load Devices&quot; button above to fetch all device information and statistics
+                                Click the &quot;Load Devices&quot; button above to fetch all device information and
+                                statistics
                                 from your Intune environment.
                             </p>
                             <Button onClick={fetchDeviceStats} className="flex items-center gap-2 mx-auto" size="lg">
@@ -2128,15 +2174,16 @@ export default function DeviceStatsPage() {
                         <div className="flex items-center justify-between mb-4">
                             {/* Step 1: Search */}
                             <div className="flex items-center">
-                                <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                                    addToGroupStep >= 1
-                                        ? 'bg-blue-600 border-blue-600 text-white'
-                                        : 'border-gray-300 text-gray-400'
-                                }`}>
+                                <div
+                                    className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                                        addToGroupStep >= 1
+                                            ? 'bg-blue-600 border-blue-600 text-white'
+                                            : 'border-gray-300 text-gray-400'
+                                    }`}>
                                     {addToGroupStep > 1 ? (
-                                        <CheckCircle className="w-4 h-4" />
+                                        <CheckCircle className="w-4 h-4"/>
                                     ) : (
-                                        <Search className="w-4 h-4" />
+                                        <Search className="w-4 h-4"/>
                                     )}
                                 </div>
                                 <div className="ml-3 hidden sm:block">
@@ -2156,15 +2203,16 @@ export default function DeviceStatsPage() {
 
                             {/* Step 2: Add Members */}
                             <div className="flex items-center">
-                                <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                                    addToGroupStep >= 2
-                                        ? 'bg-blue-600 border-blue-600 text-white'
-                                        : 'border-gray-300 text-gray-400'
-                                }`}>
+                                <div
+                                    className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                                        addToGroupStep >= 2
+                                            ? 'bg-blue-600 border-blue-600 text-white'
+                                            : 'border-gray-300 text-gray-400'
+                                    }`}>
                                     {addToGroupStep > 2 ? (
-                                        <CheckCircle className="w-4 h-4" />
+                                        <CheckCircle className="w-4 h-4"/>
                                     ) : (
-                                        <Users className="w-4 h-4" />
+                                        <Users className="w-4 h-4"/>
                                     )}
                                 </div>
                                 <div className="ml-3 hidden sm:block">
@@ -2184,15 +2232,16 @@ export default function DeviceStatsPage() {
 
                             {/* Step 3: Results */}
                             <div className="flex items-center">
-                                <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                                    addToGroupStep >= 3
-                                        ? 'bg-green-600 border-green-600 text-white'
-                                        : 'border-gray-300 text-gray-400'
-                                }`}>
+                                <div
+                                    className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                                        addToGroupStep >= 3
+                                            ? 'bg-green-600 border-green-600 text-white'
+                                            : 'border-gray-300 text-gray-400'
+                                    }`}>
                                     {addToGroupStep >= 3 ? (
-                                        <CheckCircle className="w-4 h-4" />
+                                        <CheckCircle className="w-4 h-4"/>
                                     ) : (
-                                        <AlertCircle className="w-4 h-4" />
+                                        <AlertCircle className="w-4 h-4"/>
                                     )}
                                 </div>
                                 <div className="ml-3 hidden sm:block">
@@ -2224,7 +2273,7 @@ export default function DeviceStatsPage() {
                                 className={`h-2 rounded-full transition-all duration-300 ease-in-out ${
                                     addToGroupStep === 3 ? 'bg-green-600' : 'bg-blue-600'
                                 }`}
-                                style={{ width: `${(addToGroupStep / 3) * 100}%` }}
+                                style={{width: `${(addToGroupStep / 3) * 100}%`}}
                             ></div>
                         </div>
                     </div>
@@ -2267,18 +2316,19 @@ export default function DeviceStatsPage() {
                                     description: "View outcome",
                                     icon: CheckCircle2
                                 }
-                            ].map(({ step, title, description, icon: Icon }, index) => (
+                            ].map(({step, title, description, icon: Icon}, index) => (
                                 <div key={step} className="flex items-center flex-1">
                                     <div className="flex flex-col items-center">
-                                        <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-300 ${
-                                            addToGroupStep >= step
-                                                ? 'bg-blue-600 border-blue-600 text-white'
-                                                : 'border-gray-300 text-gray-400'
-                                        }`}>
+                                        <div
+                                            className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-300 ${
+                                                addToGroupStep >= step
+                                                    ? 'bg-blue-600 border-blue-600 text-white'
+                                                    : 'border-gray-300 text-gray-400'
+                                            }`}>
                                             {addToGroupStep > step ? (
-                                                <CheckCircle className="h-4 w-4" />
+                                                <CheckCircle className="h-4 w-4"/>
                                             ) : (
-                                                <Icon className="h-4 w-4" />
+                                                <Icon className="h-4 w-4"/>
                                             )}
                                         </div>
 
@@ -2319,64 +2369,268 @@ export default function DeviceStatsPage() {
                         </div>
                     </div>
 
-                    {/* Step 1: Search for Group - Better aligned input */}
+                    {/* Step 1: Search for Group - Updated with group list */}
                     {addToGroupStep === 1 && (
                         <div className="space-y-6">
-                            <div className="max-w-2xl mx-auto space-y-4">
-                                <div>
-                                    <Label htmlFor="groupSearch" className="text-sm font-medium">Group Name or ID</Label>
-                                    <div className="mt-1">
-                                        <Input
-                                            id="groupSearch"
-                                            type="text"
-                                            value={groupSearchInput}
-                                            onChange={(e) => setGroupSearchInput(e.target.value)}
-                                            placeholder="Enter group name or GUID..."
-                                            className="w-full"
-                                            onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                                                if (e.key === 'Enter') searchGroup();
-                                            }}
-                                        />
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-2">
-                                        You can search by group display name or GUID
-                                    </p>
-                                </div>
-
-                                {groupSearchError && (
-                                    <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                                        <div className="flex items-center gap-2 text-red-800">
-                                            <AlertCircle className="h-4 w-4 flex-shrink-0"/>
-                                            <span className="text-sm">{groupSearchError}</span>
-                                        </div>
-                                    </div>
-                                )}
+                            {/* Toggle between Search and Create */}
+                            <div className="flex items-center justify-center gap-4 p-2 bg-gray-50 rounded-lg">
+                                <Button
+                                    variant={!showCreateGroupOption ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => setShowCreateGroupOption(false)}
+                                    className="flex-1"
+                                >
+                                    <Search className="mr-2 h-4 w-4"/>
+                                    Search Existing
+                                </Button>
+                                <Button
+                                    variant={showCreateGroupOption ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => setShowCreateGroupOption(true)}
+                                    className="flex-1"
+                                >
+                                    <Plus className="mr-2 h-4 w-4"/>
+                                    Create New
+                                </Button>
                             </div>
 
+                            {/* Search Existing Groups */}
+                            {!showCreateGroupOption && (
+                                <div className="max-w-2xl mx-auto space-y-4">
+                                    <div>
+                                        <Label htmlFor="groupSearch" className="text-sm font-medium">Search
+                                            Groups</Label>
+                                        <div className="mt-1">
+                                            <Input
+                                                id="groupSearch"
+                                                type="text"
+                                                value={groupSearchInput}
+                                                onChange={(e) => handleGroupSearchChange(e.target.value)}
+                                                placeholder="Search by group name, ID, or description..."
+                                                className="w-full"
+                                                disabled={loadingGroups}
+                                            />
+                                        </div>
+                                        <p className="text-xs text-gray-500 mt-2">
+                                            Search through all available groups by name, ID, or description
+                                        </p>
+                                    </div>
+
+                                    {/* Loading State */}
+                                    {loadingGroups && (
+                                        <div className="flex items-center justify-center py-8">
+                                            <RefreshCw className="h-6 w-6 animate-spin text-blue-600 mr-3"/>
+                                            <span className="text-sm text-gray-600">Loading groups...</span>
+                                        </div>
+                                    )}
+
+                                    {/* Error State */}
+                                    {groupsError && (
+                                        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                                            <div className="flex items-center gap-2 text-red-800">
+                                                <AlertCircle className="h-4 w-4 flex-shrink-0"/>
+                                                <span className="text-sm">{groupsError}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Groups List */}
+                                    {!loadingGroups && !groupsError && allGroups.length > 0 && (
+                                        <div className="border rounded-lg max-h-96 overflow-y-auto">
+                                            <div className="sticky top-0 bg-gray-50 px-4 py-2 border-b">
+                                                <div className="text-sm font-medium text-gray-700">
+                                                    {filteredGroups.length} of {allGroups.length} groups
+                                                </div>
+                                            </div>
+
+                                            {filteredGroups.length > 0 ? (
+                                                <div className="divide-y">
+                                                    {filteredGroups.map((group) => (
+                                                        <div
+                                                            key={group.id}
+                                                            className="p-4 hover:bg-blue-50 cursor-pointer transition-colors"
+                                                            onClick={() => selectGroup(group)}
+                                                        >
+                                                            <div className="flex items-start justify-between">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <h3 className="font-medium text-gray-900 truncate">
+                                                                        {group.displayName}
+                                                                    </h3>
+                                                                    {group.description && (
+                                                                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                                                                            {group.description}
+                                                                        </p>
+                                                                    )}
+                                                                    <p className="text-xs text-gray-500 mt-2 font-mono truncate">
+                                                                        {group.id}
+                                                                    </p>
+                                                                    {group.groupCount && (
+                                                                        <div
+                                                                            className="flex gap-4 mt-2 text-xs text-gray-500">
+                                                                            <span>Total: {group.groupCount.totalMembers}</span>
+                                                                            <span>Devices: {group.groupCount.deviceMembers}</span>
+                                                                            <span>Users: {group.groupCount.userMembers}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                <ArrowRight
+                                                                    className="h-5 w-5 text-gray-400 ml-4 flex-shrink-0"/>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="p-8 text-center text-gray-500">
+                                                    <Search className="h-8 w-8 mx-auto mb-3 text-gray-400"/>
+                                                    <p className="text-sm">
+                                                        {groupSearchInput.trim()
+                                                            ? `No groups found matching "${groupSearchInput}"`
+                                                            : 'Start typing to search groups'
+                                                        }
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* No Groups Available */}
+                                    {!loadingGroups && !groupsError && allGroups.length === 0 && (
+                                        <div className="p-8 text-center text-gray-500">
+                                            <Users className="h-8 w-8 mx-auto mb-3 text-gray-400"/>
+                                            <p className="text-sm">No groups available</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                            )}
+                            {/* Create New Group */}
+                            {showCreateGroupOption && (
+                                <div className="max-w-2xl mx-auto space-y-4">
+                                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Plus className="h-5 w-5 text-blue-600"/>
+                                            <h3 className="font-medium text-blue-900">Create New Group</h3>
+                                        </div>
+                                        <p className="text-sm text-blue-700">
+                                            Create a new Entra ID group and add your selected devices as members.
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <Label htmlFor="newGroupName" className="text-sm font-medium">
+                                                Group Name <span className="text-red-500">*</span>
+                                            </Label>
+                                            <div className="mt-1">
+                                                <Input
+                                                    id="newGroupName"
+                                                    type="text"
+                                                    value={newGroupName}
+                                                    onChange={(e) => setNewGroupName(e.target.value)}
+                                                    placeholder="Enter group name..."
+                                                    className="w-full"
+                                                    disabled={isCreatingGroup}
+                                                />
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Choose a descriptive name for your new group
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <Label htmlFor="newGroupDescription" className="text-sm font-medium">
+                                                Description (Optional)
+                                            </Label>
+                                            <div className="mt-1">
+                                                <Input
+                                                    id="newGroupDescription"
+                                                    type="text"
+                                                    value={newGroupDescription}
+                                                    onChange={(e) => setNewGroupDescription(e.target.value)}
+                                                    placeholder="Enter group description..."
+                                                    className="w-full"
+                                                    disabled={isCreatingGroup}
+                                                />
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Optional description to help identify this group
+                                            </p>
+                                        </div>
+
+                                        {/* Preview selected devices count */}
+                                        <div className="p-3 bg-gray-50 border rounded-md">
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <Users className="h-4 w-4 text-gray-600"/>
+                                                <span className="font-medium">{selectedDevices.length} devices</span>
+                                                <span className="text-gray-600">will be added to this group</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Create Group Error */}
+                                        {/* Create Group Error - Subtle warning for existing group */}
+                                        {createGroupError && (
+                                            <div className={`p-3 border rounded-md ${
+                                                createGroupError === "Group already exists"
+                                                    ? "bg-amber-50 border-amber-200"
+                                                    : "bg-red-50 border-red-200"
+                                            }`}>
+                                                <div className={`flex items-center gap-2 ${
+                                                    createGroupError === "Group already exists"
+                                                        ? "text-amber-700"
+                                                        : "text-red-800"
+                                                }`}>
+                                                    {createGroupError === "Group already exists" ? (
+                                                        <AlertTriangle className="h-4 w-4 flex-shrink-0"/>
+                                                    ) : (
+                                                        <AlertCircle className="h-4 w-4 flex-shrink-0"/>
+                                                    )}
+                                                    <span className="text-sm">
+                {createGroupError === "Group already exists"
+                    ? "Group already exists. Switching to search mode..."
+                    : createGroupError
+                }
+            </span>
+                                                </div>
+                                            </div>
+                                        )}
+
+
+                                        {/* Create Button */}
+                                        <Button
+                                            onClick={createNewGroup}
+                                            disabled={!newGroupName.trim() || isCreatingGroup}
+                                            className="w-full"
+                                        >
+                                            {isCreatingGroup ? (
+                                                <>
+                                                    <RefreshCw className="mr-2 h-4 w-4 animate-spin"/>
+                                                    Creating Group...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Plus className="mr-2 h-4 w-4"/>
+                                                    Create Group & Continue
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                             <div className="flex gap-3 justify-center pt-4">
                                 <Button variant="outline" onClick={resetAddToGroupDialog}>
                                     Cancel
                                 </Button>
-                                <Button
-                                    onClick={searchGroup}
-                                    disabled={!groupSearchInput.trim() || groupSearchLoading}
-                                    className="min-w-[120px]"
-                                >
-                                    {groupSearchLoading ? (
-                                        <>
-                                            <RefreshCw className="mr-2 h-4 w-4 animate-spin"/>
-                                            Searching...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Search className="mr-2 h-4 w-4"/>
-                                            Search Group
-                                        </>
-                                    )}
-                                </Button>
+                                {!loadingGroups && groupsError && (
+                                    <Button onClick={fetchAllGroups} variant="outline">
+                                        <RefreshCw className="mr-2 h-4 w-4"/>
+                                        Retry
+                                    </Button>
+                                )}
                             </div>
                         </div>
+
                     )}
+
 
                     {/* Step 2: Add Members */}
                     {addToGroupStep === 2 && searchedGroup && (
@@ -2465,7 +2719,7 @@ export default function DeviceStatsPage() {
                             {/* Results Overview */}
                             <div className="p-4 bg-gray-50 border rounded-lg">
                                 <h3 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-green-600" />
+                                    <CheckCircle className="h-5 w-5 text-green-600"/>
                                     Operation Complete
                                 </h3>
 
@@ -2496,15 +2750,16 @@ export default function DeviceStatsPage() {
                             {addMembersResult.data.successfulDeviceIds.length > 0 && (
                                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                                     <h4 className="font-medium text-green-900 mb-3 flex items-center gap-2">
-                                        <CheckCircle className="h-4 w-4" />
+                                        <CheckCircle className="h-4 w-4"/>
                                         Successfully Added ({addMembersResult.data.successfulDeviceIds.length})
                                     </h4>
                                     <div className="space-y-2">
                                         {addMembersResult.data.successfulDeviceIds.map((deviceId: string) => {
                                             const device = deviceStats.find(d => d.azureAdDeviceId === deviceId);
                                             return (
-                                                <div key={deviceId} className="flex items-center gap-2 text-sm text-green-800">
-                                                    <CheckCircle className="h-3 w-3" />
+                                                <div key={deviceId}
+                                                     className="flex items-center gap-2 text-sm text-green-800">
+                                                    <CheckCircle className="h-3 w-3"/>
                                                     <span>{device?.deviceName || 'Unknown Device'}</span>
                                                     <span className="text-green-600">({deviceId})</span>
                                                 </div>
@@ -2518,7 +2773,7 @@ export default function DeviceStatsPage() {
                             {addMembersResult.data.failedDeviceIds.length > 0 && (
                                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                                     <h4 className="font-medium text-red-900 mb-3 flex items-center gap-2">
-                                        <XCircle className="h-4 w-4" />
+                                        <XCircle className="h-4 w-4"/>
                                         Failed to Add ({addMembersResult.data.failedDeviceIds.length})
                                     </h4>
                                     <div className="space-y-3">
@@ -2526,13 +2781,15 @@ export default function DeviceStatsPage() {
                                             const device = deviceStats.find(d => d.azureAdDeviceId === deviceId);
                                             const error = addMembersResult.data.errors[deviceId];
                                             return (
-                                                <div key={deviceId} className="border border-red-200 rounded-md p-3 bg-white">
+                                                <div key={deviceId}
+                                                     className="border border-red-200 rounded-md p-3 bg-white">
                                                     <div className="flex items-center gap-2 mb-2">
-                                                        <XCircle className="h-3 w-3 text-red-600" />
+                                                        <XCircle className="h-3 w-3 text-red-600"/>
                                                         <span className="font-medium text-red-800">
                                         {device?.deviceName || 'Unknown Device'}
                                     </span>
-                                                        <span className="text-xs text-red-600 font-mono">({deviceId})</span>
+                                                        <span
+                                                            className="text-xs text-red-600 font-mono">({deviceId})</span>
                                                     </div>
                                                     <div className="text-sm text-red-700 pl-5">
                                                         {error === "One or more added object references already exist for the following modified properties: 'members'."
