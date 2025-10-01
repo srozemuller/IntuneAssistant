@@ -1,62 +1,61 @@
+// contexts/TenantContext.tsx
 'use client';
-import { createContext, useContext, useState, useEffect } from 'react';
-import { useMsal } from '@azure/msal-react';
-import {ASSIGNMENTS_ENDPOINT, CUSTOMER_ENDPOINT} from '@/lib/constants';
-import {apiScope} from "@/lib/msalConfig";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
+interface Tenant {
+    id: string;
+    tenantId: string;
+    displayName: string;
+    domainName: string;
+    isEnabled: boolean;
+    isPrimary: boolean;
+    lastLogin: string | null;
+}
+
 interface TenantContextType {
-    selectedTenant: string | null;
-    availableTenants: Array<{ id: string; name: string }>;
-    setSelectedTenant: (tenantId: string) => void;
+    selectedTenant: Tenant | null;
+    setSelectedTenant: (tenant: Tenant | null) => void;
 }
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
-export function TenantProvider({ children }: { children: React.ReactNode }) {
-    const [selectedTenant, setSelectedTenant] = useState<string | null>(null);
-    const [availableTenants, setAvailableTenants] = useState<Array<{ id: string; name: string }>>([]);
-    const { instance, accounts } = useMsal();
+export function TenantProvider({ children }: { children: ReactNode }) {
+    const [selectedTenant, setSelectedTenantState] = useState<Tenant | null>(null);
 
+    // Load tenant from localStorage on mount
     useEffect(() => {
-        if (accounts.length > 0) {
-            const account = accounts[0];
-            const tenantId = account.tenantId;
-            setSelectedTenant(tenantId);
-
-            // Fetch available tenants from your API
-            fetchUserTenants(account.tenantId);
+        const savedTenant = localStorage.getItem('selectedTenant');
+        if (savedTenant) {
+            try {
+                setSelectedTenantState(JSON.parse(savedTenant));
+            } catch (error) {
+                console.error('Failed to parse saved tenant:', error);
+                localStorage.removeItem('selectedTenant');
+            }
         }
-    }, [accounts]);
+    }, []);
 
-    const fetchUserTenants = async (userId: string) => {
-        try {
-            // Replace with your API endpoint
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(`${CUSTOMER_ENDPOINT}/${userId}/overview`, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const tenants = await apiResponse.json();
-            setAvailableTenants(tenants);
-        } catch (error) {
-            console.error('Failed to fetch tenants:', error);
+    // Save tenant to localStorage when it changes
+    const setSelectedTenant = (tenant: Tenant | null) => {
+        setSelectedTenantState(tenant);
+        if (tenant) {
+            localStorage.setItem('selectedTenant', JSON.stringify(tenant));
+        } else {
+            localStorage.removeItem('selectedTenant');
         }
     };
 
     return (
-        <TenantContext.Provider value={{ selectedTenant, availableTenants, setSelectedTenant }}>
+        <TenantContext.Provider value={{ selectedTenant, setSelectedTenant }}>
             {children}
         </TenantContext.Provider>
     );
 }
 
-export const useTenant = () => {
+export function useTenant() {
     const context = useContext(TenantContext);
-    if (!context) throw new Error('useTenant must be used within TenantProvider');
+    if (context === undefined) {
+        throw new Error('useTenant must be used within a TenantProvider');
+    }
     return context;
-};
+}
