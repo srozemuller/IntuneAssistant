@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
+import { useTenant } from '@/contexts/TenantContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/DataTable';
@@ -95,6 +96,7 @@ interface CAPolicy extends Record<string, unknown> {
 
 export default function ConditionalAccessPage() {
     const { instance, accounts } = useMsal();
+    const { selectedTenant } = useTenant();
     const [policies, setPolicies] = useState<CAPolicy[]>([]);
     const [filteredPolicies, setFilteredPolicies] = useState<CAPolicy[]>([]);
     const [loading, setLoading] = useState(false);
@@ -120,6 +122,7 @@ export default function ConditionalAccessPage() {
 
     const [selectedPolicy, setSelectedPolicy] = useState<CAPolicy | null>(null);
     const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
+
 
     useEffect(() => {
         setCurrentPage(1);
@@ -208,27 +211,43 @@ export default function ConditionalAccessPage() {
         };
     };
 
+    const getAuthHeaders = async () => {
+        if (!accounts.length) {
+            throw new Error('No account found');
+        }
+
+        try {
+            const response = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0],
+            });
+
+            return {
+                'Authorization': `Bearer ${response.accessToken}`,
+                'Content-Type': 'application/json',
+                ...(selectedTenant && { 'X-Tenant-Id': selectedTenant.tenantId })
+            };
+        } catch (error) {
+            console.error('Failed to acquire token:', error);
+            throw new Error('Authentication failed');
+        }
+    };
+
     const fetchPolicies = async () => {
-        if (!accounts.length) return;
+        if (!accounts.length || !selectedTenant) return;
 
         setLoading(true);
         setError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
+            const headers = await getAuthHeaders();
 
             const apiResponse = await fetch(CA_POLICIES_ENDPOINT, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                }
+                headers
             });
 
             if (!apiResponse.ok) {
-                throw new Error(`API call failed: ${apiResponse.statusText}`);
+                throw new Error(`Failed to fetch policies: ${apiResponse.statusText}`);
             }
 
             const responseData: ApiResponse = await apiResponse.json();
@@ -236,12 +255,8 @@ export default function ConditionalAccessPage() {
 
             if (Array.isArray(policiesData)) {
                 setPolicies(policiesData);
-                setFilteredPolicies(policiesData);
             } else {
-                console.error('API response data is not an array:', policiesData);
-                setPolicies([]);
-                setFilteredPolicies([]);
-                throw new Error('Invalid data format received from API');
+                throw new Error('Invalid response format');
             }
         } catch (error) {
             console.error('Failed to fetch policies:', error);
@@ -519,14 +534,34 @@ export default function ConditionalAccessPage() {
         }
     ];
 
-
+    if (!selectedTenant) {
+        return (
+            <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
+                <Card className="shadow-sm">
+                    <CardContent className="pt-6">
+                        <div className="text-center py-12">
+                            <div className="text-gray-400 mb-6">
+                                <Shield className="h-16 w-16 mx-auto" />
+                            </div>
+                            <h3 className="text-xl font-medium text-gray-900 mb-4">
+                                No Tenant Selected
+                            </h3>
+                            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                                Please select a tenant to view Conditional Access policies.
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Conditional Access Policies</h1>
                     <p className="text-gray-600 mt-2">
-                        Manage and monitor your Azure AD Conditional Access policies
+                        Manage and monitor your Azure AD Conditional Access policies for {selectedTenant.displayName}
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -564,10 +599,10 @@ export default function ConditionalAccessPage() {
                                 <Shield className="h-16 w-16 mx-auto" />
                             </div>
                             <h3 className="text-xl font-medium text-gray-900 mb-4">
-                                Ready to view your Conditional Access policies
+                                Ready to view Conditional Access policies
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the &apos;Load Policies&apos; button above to fetch all Conditional Access policies from your Azure AD environment.
+                                Click &apos;Load Policies&apos; to fetch all Conditional Access policies from {selectedTenant.displayName}.
                             </p>
                             <Button onClick={fetchPolicies} className="flex items-center gap-2 mx-auto" size="lg">
                                 <Shield className="h-5 w-5" />
@@ -577,7 +612,6 @@ export default function ConditionalAccessPage() {
                     </CardContent>
                 </Card>
             )}
-
             {/* Loading state */}
             {loading && policies.length === 0 && (
                 <Card className="shadow-sm">
@@ -588,12 +622,34 @@ export default function ConditionalAccessPage() {
                                 Loading Conditional Access Policies
                             </h3>
                             <p className="text-gray-600">
-                                Fetching policy data from your Azure AD environment...
+                                Fetching policy data from {selectedTenant.displayName}...
                             </p>
                         </div>
                     </CardContent>
                 </Card>
             )}
+
+            {/* Error state with GDAP context */}
+            {error && (
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-2 text-red-600">
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
+                            <span>{error}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                            Error occurred while accessing policies from {selectedTenant.displayName}
+                        </p>
+                        <Button onClick={fetchPolicies} className="mt-4" variant="outline">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+
+
 
             {/* Search and filters section */}
             {(policies.length > 0 || loading) && (

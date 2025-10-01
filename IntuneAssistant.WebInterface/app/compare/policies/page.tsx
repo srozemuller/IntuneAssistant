@@ -5,7 +5,7 @@ import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, ChevronDown, Filter, Search, X, GitCompare, ArrowLeftRight, Settings } from 'lucide-react';
+import {RefreshCw, ChevronDown, Filter, Search, X, GitCompare, ArrowLeftRight, Settings, Download} from 'lucide-react';
 import { CONFIGURATION_POLICIES_ENDPOINT, COMPARE_ENDPOINT } from '@/lib/constants';
 import { apiScope } from '@/lib/msalConfig';
 import { useApiRequest } from '@/hooks/useApiRequest';
@@ -221,7 +221,7 @@ export default function PolicyComparison() {
                                 ))
                             ) : (
                                 <div className="p-3 text-gray-500 text-sm text-center">
-                                    No policies found matching "{searchTerm}"
+                                    No policies found matching &quot;{searchTerm}&quot;
                                 </div>
                             )}
                         </div>
@@ -355,7 +355,7 @@ export default function PolicyComparison() {
                                 ))
                             ) : (
                                 <div className="p-3 text-gray-500 text-sm text-center">
-                                    No keywords found matching "{searchTerm}"
+                                    No keywords found matching &quot;{searchTerm}&quot;
                                 </div>
                             )}
                         </div>
@@ -1293,7 +1293,7 @@ export default function PolicyComparison() {
                                             <div className="flex flex-wrap gap-2">
                                                 {filter && (
                                                     <Badge variant="secondary" className="flex items-center gap-1">
-                                                        Search: "{filter}"
+                                                        Search: &quot;{filter}&quot;
                                                         <button onClick={() => setFilter('')} className="ml-1">
                                                             <X className="h-3 w-3" />
                                                         </button>
@@ -1349,7 +1349,7 @@ export default function PolicyComparison() {
                                                 size="sm"
                                                 className="flex items-center gap-2 whitespace-nowrap"
                                             >
-                                                <ArrowLeftRight className="h-4 w-4" />
+                                                <Download className="h-4 w-4" />
                                                 Export HTML
                                             </Button>
                                         </div>
@@ -1360,7 +1360,7 @@ export default function PolicyComparison() {
                                 </CardHeader>
                                 <CardContent className="p-0">
                                     {/* Policy Names Header */}
-                                    <div className="p-6 bg-gray-50 border-b">
+                                    <div className="sticky top-0 z-10 p-6 bg-white border-b shadow-sm">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
                                                 <h3 className="font-medium text-blue-900">Source Policy</h3>
@@ -1433,7 +1433,6 @@ export default function PolicyComparison() {
                                                             <div className="space-y-3">
                                                                 {result.childSettings.map((child, index) => {
                                                                     const isDifferent = child.sourceValue !== child.targetValue;
-                                                                    const isEmpty = (value: string) => !value || value === '' || value === '[Not Set]';
 
                                                                     return (
                                                                         <div key={index} className={`p-3 rounded-lg border ${

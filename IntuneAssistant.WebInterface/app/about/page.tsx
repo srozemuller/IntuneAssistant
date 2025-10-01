@@ -21,6 +21,7 @@ import {
     History,
     Zap
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AboutPage() {
     const features = [
@@ -282,9 +283,9 @@ export default function AboutPage() {
                         </p>
                         <div className="flex flex-wrap gap-4 justify-center">
                             <Button size="lg" asChild>
-                                <a href="/dashboard">
+                                <Link href="/dashboard">
                                     Get Started
-                                </a>
+                                </Link>
                             </Button>
                             <Button variant="outline" size="lg" asChild>
                                 <a href="https://docs.intuneassistant.cloud" target="_blank" rel="noopener noreferrer">

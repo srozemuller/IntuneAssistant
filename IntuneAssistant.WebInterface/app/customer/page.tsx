@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useMsal } from '@azure/msal-react';
+import { useTenant } from '@/contexts/TenantContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,13 +28,17 @@ interface Tenant {
     id: string;
     tenantId: string;
     displayName: string;
+    domainName: string;
     isEnabled: boolean;
     isPrimary: boolean;
+    isGdap: boolean;
     lastLogin: string | null;
 }
 
 export default function CustomerPage() {
     const { accounts, instance } = useMsal();
+    const { setSelectedTenant, selectedTenant } = useTenant();
+
     const router = useRouter();
     const { customerData, customerLoading: loading, customerError: error, refetchCustomerData } = useCustomer();
 
@@ -82,6 +87,12 @@ export default function CustomerPage() {
                 return newSet;
             });
         }
+    };
+
+    const handleTenantSelect = (tenant: Tenant) => {
+        setSelectedTenant(tenant);
+        // Just update the URL to show tenant context
+        router.push(`/${tenant.domainName}`);
     };
 
     const handleTenantOnboardingSuccess = async () => {
@@ -209,6 +220,9 @@ export default function CustomerPage() {
                                         <Badge variant={customerData.isActive ? "default" : "destructive"}>
                                             {customerData.isActive ? 'Active' : 'Inactive'}
                                         </Badge>
+                                        <Badge variant={customerData.isGdap ? "default" : "secondary"}>
+                                            {customerData.isGdap ? 'Gdap' : 'No Gdap'}
+                                        </Badge>
                                     </div>
                                 </div>
                             </div>
@@ -276,15 +290,27 @@ export default function CustomerPage() {
                                 <th className="text-left py-3 px-4 font-medium">Tenant ID</th>
                                 <th className="text-left py-3 px-4 font-medium">Status</th>
                                 <th className="text-left py-3 px-4 font-medium">Primary</th>
-                                <th className="text-left py-3 px-4 font-medium">Last Login</th>
-                                <th className="text-left py-3 px-4 font-medium">Actions</th>
+                                <th className="text-left py-3 px-4 font-medium">Gdap</th>
+                                <th className="text-left py-3 px-4 font-medium">Domain</th>
+                                <th className="text-left py-3 px-4 font-medium">Rollout Enabled</th>
                             </tr>
                             </thead>
                             <tbody>
                             {customerData.tenants.map((tenant: Tenant) => (
-                                <tr key={tenant.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                <tr
+                                    key={tenant.id}
+                                    className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                        selectedTenant?.id === tenant.id ? 'bg-blue-50 border-blue-200' : ''
+                                    }`}
+                                    onClick={() => handleTenantSelect(tenant)}
+                                >
                                     <td className="py-3 px-4 font-medium">
-                                        {tenant.displayName}
+                                        <div className="flex items-center gap-2">
+                                            {selectedTenant?.id === tenant.id && (
+                                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            )}
+                                            {tenant.displayName}
+                                        </div>
                                     </td>
                                     <td className="py-3 px-4">
                                         <code className="text-xs bg-gray-100 px-2 py-1 rounded">
@@ -308,13 +334,17 @@ export default function CustomerPage() {
                                             {tenant.isPrimary ? 'Primary' : 'Secondary'}
                                         </Badge>
                                     </td>
-                                    <td className="py-3 px-4 text-gray-600">
-                                        {tenant.lastLogin ?
-                                            new Date(tenant.lastLogin).toLocaleDateString() :
-                                            'Never'
-                                        }
+                                    <td className="py-3 px-4">
+                                        <Badge variant={tenant.isGdap ? "default" : "outline"}>
+                                            {tenant.isGdap ? 'Enabled' : 'Disabled'}
+                                        </Badge>
                                     </td>
                                     <td className="py-3 px-4">
+                                        <code className="text-xs bg-gray-100 px-2 py-1 rounded font-medium text-blue-600">
+                                            {tenant.domainName}
+                                        </code>
+                                    </td>
+                                    <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
                                         <div className="flex items-center gap-2">
                                             <Switch
                                                 checked={tenant.isEnabled}
