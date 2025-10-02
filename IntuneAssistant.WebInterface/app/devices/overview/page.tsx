@@ -675,7 +675,10 @@ export default function DeviceStatsPage() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        devices: selectedDevices.map(deviceId => ({ deviceId }))
+                        deviceIds: selectedDevices.map(deviceId => {
+                            const device = deviceStats.find(d => d.id === deviceId);
+                            return device?.azureAdDeviceId;
+                        }).filter(Boolean)
                     })
                 }
             );
