@@ -667,16 +667,17 @@ export default function DeviceStatsPage() {
                 account: accounts[0]
             });
 
-            const data = await apiRequestWithConsent<AddMembersResult>(
+            const data = await apiRequestWithConsent.request<AddMembersResult>(
                 `${GROUPS_ENDPOINT}/${searchedGroup.id}/members/devices`,
                 {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
-                        groupId: searchedGroup.id,
-                        deviceIds: selectedDeviceObjects.map(device => device.azureAdDeviceId),
-                    }),
-                },
-                response.accessToken
+                        devices: selectedDevices.map(deviceId => ({ deviceId }))
+                    })
+                }
             );
 
             // Handle the case where data might be undefined (consent required)
