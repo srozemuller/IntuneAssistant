@@ -153,10 +153,9 @@ export default function PolicySettingsPage() {
 
             // Fetch both endpoints simultaneously
             const [configData, groupData] = await Promise.all([
-                apiRequestWithConsent<ApiResponse>(POLICY_SETTINGS_ENDPOINT, {}, response.accessToken),
-                apiRequestWithConsent<ApiResponse>(GROUP_POLICY_SETTINGS_ENDPOINT, {}, response.accessToken)
+                apiRequestWithConsent.request<ApiResponse>(POLICY_SETTINGS_ENDPOINT),
+                apiRequestWithConsent.request<ApiResponse>(GROUP_POLICY_SETTINGS_ENDPOINT)
             ]);
-
             if (!configData || !groupData) {
                 return;
             }
