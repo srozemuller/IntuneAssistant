@@ -91,8 +91,6 @@ export default function CustomerPage() {
 
     const handleTenantSelect = (tenant: Tenant) => {
         setSelectedTenant(tenant);
-        // Just update the URL to show tenant context
-        router.push(`/${tenant.domainName}`);
     };
 
     const handleTenantOnboardingSuccess = async () => {
@@ -282,6 +280,11 @@ export default function CustomerPage() {
                     )}
                 </CardHeader>
                 <CardContent>
+                    <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                        <p className="text-sm text-gray-600">
+                            Overview of all tenants associated with this customer. Click on any row to set it as the active tenant context for operations.
+                        </p>
+                    </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>

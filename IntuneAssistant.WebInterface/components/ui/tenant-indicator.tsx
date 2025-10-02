@@ -2,7 +2,7 @@
 'use client';
 import { useTenant } from '@/contexts/TenantContext';
 import { Badge } from '@/components/ui/badge';
-import { Building, X } from 'lucide-react';
+import { Building, X, ArrowLeftRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
@@ -45,6 +45,15 @@ export function TenantIndicator() {
                                     Disabled
                                 </Badge>
                             )}
+                            <Button
+                                variant="link"
+                                size="sm"
+                                onClick={() => router.push('/customer')}
+                                className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                                <ArrowLeftRight className="h-3 w-3 mr-1" />
+                                Change
+                            </Button>
                         </div>
                     </div>
                     <Button

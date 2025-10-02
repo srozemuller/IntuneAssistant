@@ -15,6 +15,9 @@ import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import { NoTenantSelected } from "@/components/NoTenantSelected";
+import {useApiRequest} from "@/hooks/useApiRequest";
+
 
 interface CAGrantControls {
     operator: 'OR' | 'AND';
@@ -96,6 +99,9 @@ interface CAPolicy extends Record<string, unknown> {
 
 export default function ConditionalAccessPage() {
     const { instance, accounts } = useMsal();
+
+    const { request, cancel } = useApiRequest();
+
     const { selectedTenant } = useTenant();
     const [policies, setPolicies] = useState<CAPolicy[]>([]);
     const [filteredPolicies, setFilteredPolicies] = useState<CAPolicy[]>([]);
@@ -210,61 +216,21 @@ export default function ConditionalAccessPage() {
             stats
         };
     };
-
-    const getAuthHeaders = async () => {
-        if (!accounts.length) {
-            throw new Error('No account found');
-        }
-
-        try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0],
-            });
-
-            return {
-                'Authorization': `Bearer ${response.accessToken}`,
-                'Content-Type': 'application/json',
-                ...(selectedTenant && { 'X-Tenant-Id': selectedTenant.tenantId })
-            };
-        } catch (error) {
-            console.error('Failed to acquire token:', error);
-            throw new Error('Authentication failed');
-        }
-    };
-
     const fetchPolicies = async () => {
-        if (!accounts.length || !selectedTenant) return;
-
-        setLoading(true);
-        setError(null);
-
         try {
-            const headers = await getAuthHeaders();
-
-            const apiResponse = await fetch(CA_POLICIES_ENDPOINT, {
-                headers
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to fetch policies: ${apiResponse.statusText}`);
-            }
-
-            const responseData: ApiResponse = await apiResponse.json();
-            const policiesData = responseData.data;
-
-            if (Array.isArray(policiesData)) {
-                setPolicies(policiesData);
-            } else {
-                throw new Error('Invalid response format');
+            const response = await request<ApiResponse>(CA_POLICIES_ENDPOINT);
+            if (Array.isArray(response?.data)) {
+                setPolicies(response.data);
             }
         } catch (error) {
             console.error('Failed to fetch policies:', error);
-            setError(error instanceof Error ? error.message : 'Failed to fetch policies');
-        } finally {
-            setLoading(false);
         }
     };
+
+// Cleanup on unmount
+    useEffect(() => {
+        return () => cancel();
+    }, [cancel]);
 
     // Filter and search function
     useEffect(() => {
@@ -536,23 +502,10 @@ export default function ConditionalAccessPage() {
 
     if (!selectedTenant) {
         return (
-            <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
-                <Card className="shadow-sm">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-12">
-                            <div className="text-gray-400 mb-6">
-                                <Shield className="h-16 w-16 mx-auto" />
-                            </div>
-                            <h3 className="text-xl font-medium text-gray-900 mb-4">
-                                No Tenant Selected
-                            </h3>
-                            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Please select a tenant to view Conditional Access policies.
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+            <NoTenantSelected
+                icon={Shield}
+                feature="Conditional Access policies"
+            />
         );
     }
     return (
