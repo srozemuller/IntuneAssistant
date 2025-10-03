@@ -95,6 +95,7 @@ export default function AssignmentsOverview() {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
+    const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -111,7 +112,7 @@ export default function AssignmentsOverview() {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [assignmentTypeFilter, statusFilter, platformFilter,resourceTypeFilter, searchQuery]);
+    }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter, filterTypeFilter]);
 
     const getUniqueResourceTypes = (): Option[] => {
         const types = new Set<string>();
@@ -120,6 +121,12 @@ export default function AssignmentsOverview() {
         });
         return Array.from(types).sort().map(type => ({ label: type, value: type }));
     };
+
+    const getUniqueFilterTypes = (): Option[] => [
+        { label: 'No Filter', value: 'None' },
+        { label: 'Include Filter', value: 'include' },
+        { label: 'Exclude Filter', value: 'exclude' }
+    ];
 
 
     const prepareExportData = (): ExportData => {
@@ -363,8 +370,33 @@ export default function AssignmentsOverview() {
             });
         }
 
+        if (filterTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                const filterType = assignment.filterType;
+
+                // Check for "No Filter" selection
+                if (filterTypeFilter.includes('None')) {
+                    if (!filterType || filterType === 'None') {
+                        return true;
+                    }
+                }
+
+                // Check for include filter
+                if (filterTypeFilter.includes('include') && filterType === 'Include') {
+                    return true;
+                }
+
+                // Check for exclude filter
+                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') {
+                    return true;
+                }
+
+                return false;
+            });
+        }
+
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, searchQuery]);
+    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, searchQuery, filterTypeFilter]);
 
 
     // Get unique values for filters
@@ -399,6 +431,7 @@ export default function AssignmentsOverview() {
         setStatusFilter([]);
         setPlatformFilter([]);
         setSearchQuery('');
+        setFilterTypeFilter([]);
     };
 
     const clearSearch = () => {
@@ -545,8 +578,7 @@ export default function AssignmentsOverview() {
                     return <span className="text-xs text-gray-500">None</span>;
                 }
 
-                const isInclude = filterInfo.managementType === 'include';
-
+                const isInclude = filterType === 'include';
                 return (
                     <div className="space-y-1">
                         <button
@@ -751,6 +783,17 @@ export default function AssignmentsOverview() {
                                         selected={platformFilter}
                                         onChange={setPlatformFilter}
                                         placeholder="Select platforms..."
+                                    />
+                                </div>
+
+                                {/* Filters Filter */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Filter Type</label>
+                                    <MultiSelect
+                                        options={getUniqueFilterTypes()}
+                                        selected={filterTypeFilter}
+                                        onChange={setFilterTypeFilter}
+                                        placeholder="Select filter types..."
                                     />
                                 </div>
                             </div>
