@@ -1082,6 +1082,8 @@ export default function AssignmentsOverview() {
                                                     {searchedGroup.description || 'No description available'}
                                                 </p>
 
+                                                {/*Does not work yet, need to update orchestrator to fetch groups counter per group. Dont know if its needed here*/}
+                                                
                                                 {/*<div className="grid grid-cols-3 gap-4 mb-3">*/}
                                                 {/*    <div className="text-center p-2 bg-blue-100 rounded border">*/}
                                                 {/*        <div className="text-lg font-bold text-blue-600">{searchedGroup.groupCount?.userCount || 0}</div>*/}
