@@ -83,11 +83,15 @@ export default function AssignmentsOverview() {
     const [groupLoading, setGroupLoading] = useState(false);
     const [groupError, setGroupError] = useState<string | null>(null);
     const [selectedGroup, setSelectedGroup] = useState<GroupDetails | null>(null);
+    const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
 
+    const [groupSearchResults, setGroupSearchResults] = useState<GroupDetails[]>([]);
     const [groupSearchInput, setGroupSearchInput] = useState<string>('');
     const [searchedGroup, setSearchedGroup] = useState<GroupDetails | null>(null);
     const [groupSearchLoading, setGroupSearchLoading] = useState(false);
     const [groupSearchError, setGroupSearchError] = useState<string | null>(null);
+    const [groupResultsSearch, setGroupResultsSearch] = useState<string>('');
+
 
     const isValidGuid = (str: string): boolean => {
         const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -124,7 +128,23 @@ export default function AssignmentsOverview() {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [assignmentTypeFilter, statusFilter, platformFilter,resourceTypeFilter, searchQuery]);
+    }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter, filterTypeFilter]);
+
+    const getUniqueFilterTypes = (): Option[] => [
+        { label: 'No Filter', value: 'None' },
+        { label: 'Include Filter', value: 'include' },
+        { label: 'Exclude Filter', value: 'exclude' }
+    ];
+
+    const filteredGroupResults = groupSearchResults.filter(group => {
+        if (!groupResultsSearch.trim()) return true;
+        const search = groupResultsSearch.toLowerCase();
+        return (
+            group.displayName.toLowerCase().includes(search) ||
+            group.description?.toLowerCase().includes(search) ||
+            group.id.toLowerCase().includes(search)
+        );
+    });
 
     const searchGroup = async () => {
         if (!accounts.length || !groupSearchInput.trim()) return;
@@ -132,6 +152,7 @@ export default function AssignmentsOverview() {
         setGroupSearchLoading(true);
         setGroupSearchError(null);
         setSearchedGroup(null);
+        setGroupSearchResults([]);
 
         try {
             const response = await instance.acquireTokenSilent({
@@ -141,7 +162,7 @@ export default function AssignmentsOverview() {
 
             const queryParam = isValidGuid(groupSearchInput.trim())
                 ? `groupId=${groupSearchInput.trim()}`
-                : `groupName=${encodeURIComponent(groupSearchInput.trim())}`;
+                : `search=${encodeURIComponent(groupSearchInput.trim())}`;
 
             const apiResponse = await fetch(`${GROUPS_ENDPOINT}?${queryParam}`, {
                 headers: {
@@ -156,18 +177,30 @@ export default function AssignmentsOverview() {
 
             const responseData = await apiResponse.json();
 
-            if (responseData.status === 0 && responseData.data) {
-                setSearchedGroup(responseData.data);
+            if (responseData.status === 0) {
+                if (responseData.data && responseData.data.length > 0) {
+                    if (Array.isArray(responseData.data)) {
+                        // Multiple groups found - show selection
+                        setGroupSearchResults(responseData.data);
+                    } else {
+                        // Single group found - set as selected
+                        setSearchedGroup(responseData.data);
+                    }
+                } else {
+                    // No groups found - show message
+                    setGroupSearchError(`No groups found matching "${groupSearchInput.trim()}"`);
+                }
             } else {
-                throw new Error(responseData.message || 'Failed to find group');
+                throw new Error(responseData.message || 'Failed to find groups');
             }
         } catch (error) {
-            console.error('Failed to search group:', error);
-            setGroupSearchError(error instanceof Error ? error.message : 'Failed to search group');
+            console.error('Failed to search groups:', error);
+            setGroupSearchError(error instanceof Error ? error.message : 'Failed to search groups');
         } finally {
             setGroupSearchLoading(false);
         }
     };
+
 
     const fetchGroupAssignments = async (groupId: string) => {
         if (!accounts.length) return;
@@ -440,14 +473,29 @@ export default function AssignmentsOverview() {
         // Apply search filter
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase().trim();
-            filtered = filtered.filter(assignment =>
-                assignment.resourceName?.toLowerCase().includes(query) ||
-                assignment.resourceType.toLowerCase().includes(query) ||
-                assignment.targetName.toLowerCase().includes(query) ||
-                assignment.assignmentType.toLowerCase().includes(query) ||
-                assignment.platform?.toLowerCase().includes(query) ||
-                assignment.filterType.toLowerCase().includes(query)
-            );
+
+            // Check if it's a potential group search (contains "group" keyword or is a GUID)
+            const isGroupSearch = query.includes('group') || isValidGuid(query);
+
+            if (isGroupSearch) {
+                // For group searches, filter assignments that have group targets
+                filtered = filtered.filter((assignment: Assignments) =>
+                    assignment.targetName?.toLowerCase().includes(query) ||
+                    assignment.targetId?.toLowerCase().includes(query) ||
+                    (assignment.assignmentType.toLowerCase().includes('group') &&
+                        assignment.targetName?.toLowerCase().includes(query))
+                );
+            } else {
+                // Regular search for other fields
+                filtered = filtered.filter((assignment: Assignments) =>
+                    assignment.resourceName?.toLowerCase().includes(query) ||
+                    assignment.resourceType.toLowerCase().includes(query) ||
+                    assignment.targetName?.toLowerCase().includes(query) ||
+                    assignment.assignmentType.toLowerCase().includes(query) ||
+                    assignment.platform?.toLowerCase().includes(query) ||
+                    assignment.filterType.toLowerCase().includes(query)
+                );
+            }
         }
 
         if (resourceTypeFilter.length > 0) {
@@ -455,7 +503,6 @@ export default function AssignmentsOverview() {
                 resourceTypeFilter.includes(assignment.resourceType)
             );
         }
-
 
         // Apply dropdown filters
         if (assignmentTypeFilter.length > 0) {
@@ -485,8 +532,79 @@ export default function AssignmentsOverview() {
             });
         }
 
+        if (filterTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                const filterType = assignment.filterType;
+
+                // Check for "No Filter" selection
+                if (filterTypeFilter.includes('None')) {
+                    if (!filterType || filterType === 'None') {
+                        return true;
+                    }
+                }
+
+                // Check for include filter
+                if (filterTypeFilter.includes('include') && filterType === 'Include') {
+                    return true;
+                }
+
+                // Check for exclude filter
+                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') {
+                    return true;
+                }
+
+                return false;
+            });
+        }
+
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, statusFilter, platformFilter, searchQuery]);
+    }, [assignments, assignmentTypeFilter, statusFilter, platformFilter, searchQuery, filterTypeFilter]);
+
+    // For dynamic group search
+    const searchGroupInAssignments = async (searchTerm: string) => {
+        if (!accounts.length || !searchTerm.trim()) return;
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            const queryParam = isValidGuid(searchTerm.trim())
+                ? `groupId=${searchTerm.trim()}`
+                : `groupName=${encodeURIComponent(searchTerm.trim())}`;
+
+            const apiResponse = await fetch(`${GROUPS_ENDPOINT}?${queryParam}`, {
+                headers: {
+                    'Authorization': `Bearer ${response.accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!apiResponse.ok) {
+                throw new Error(`API call failed: ${apiResponse.statusText}`);
+            }
+
+            const responseData = await apiResponse.json();
+
+            if (responseData.status === 0 && responseData.data) {
+                // Found group, now fetch its assignments
+                await fetchGroupAssignments(responseData.data.id);
+            } else {
+                // No group found, fall back to regular search
+                setSearchQuery(searchTerm);
+            }
+        } catch (error) {
+            console.error('Failed to search group:', error);
+            // Fall back to regular search
+            setSearchQuery(searchTerm);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Get unique values for filters
     const getUniqueAssignmentTypes = (): Option[] => {
@@ -527,6 +645,7 @@ export default function AssignmentsOverview() {
         setStatusFilter([]);
         setPlatformFilter([]);
         setSearchQuery('');
+        setFilterTypeFilter([]);
     };
 
     const clearSearch = () => {
@@ -540,8 +659,9 @@ export default function AssignmentsOverview() {
         setGroupSearchInput('');
         setGroupSearchError(null);
         setError(null);
-        // Also clear any applied filters
+        setGroupSearchResults([]);
         clearFilters();
+        setGroupResultsSearch('');
     };
 
 
@@ -696,7 +816,7 @@ export default function AssignmentsOverview() {
                     return <span className="text-xs text-gray-500">None</span>;
                 }
 
-                const isInclude = filterInfo.managementType === 'include';
+                const isInclude = filterType === 'include';
 
                 return (
                     <div className="space-y-1">
@@ -821,75 +941,186 @@ export default function AssignmentsOverview() {
                                 </div>
                             )}
 
-                            {searchedGroup && (
-                                <div className="max-w-2xl mx-auto">
-                                    <Card className="border-blue-200 bg-blue-50">
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-2">
-                                                <Users className="h-5 w-5 text-blue-600" />
-                                                {searchedGroup.displayName}
-                                            </CardTitle>
-                                            <CardDescription>
-                                                {searchedGroup.description || 'No description available'}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                                <div>
-                                                    <span className="font-medium text-gray-600">Group ID:</span>
-                                                    <p className="font-mono text-xs mt-1 break-all">{searchedGroup.id}</p>
+                            {/* Group Search Results - Multiple Groups */}
+                            {/* Group Search Results - Multiple Groups */}
+                            {groupSearchResults.length > 0 && (
+                                <div className="max-w-4xl mx-auto space-y-3">
+                                    <div className="text-center mb-4">
+                                        <h3 className="text-lg font-semibold">Found {groupSearchResults.length} groups</h3>
+                                        <p className="text-sm text-gray-600">Search and click on a group to view its assignments</p>
+                                    </div>
+
+                                    {/* Search within results */}
+                                    <div className="relative max-w-md mx-auto">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                        <input
+                                            type="text"
+                                            value={groupResultsSearch}
+                                            onChange={(e) => setGroupResultsSearch(e.target.value)}
+                                            placeholder="Search within results..."
+                                            className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                        />
+                                        {groupResultsSearch && (
+                                            <button
+                                                onClick={() => setGroupResultsSearch('')}
+                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Show filtered count if searching */}
+                                    {groupResultsSearch && (
+                                        <div className="text-center text-sm text-gray-600">
+                                            Showing {filteredGroupResults.length} of {groupSearchResults.length} groups
+                                        </div>
+                                    )}
+
+                                    {filteredGroupResults.map((group) => (
+                                        <Card key={group.id} className="border hover:border-blue-300 transition-colors cursor-pointer">
+                                            <CardContent className="p-4">
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <Users className="h-4 w-4 text-blue-600" />
+                                                            <h4 className="font-semibold text-lg">{group.displayName}</h4>
+                                                        </div>
+                                                        <p className="text-gray-600 text-sm mb-3">
+                                                            {group.description || 'No description available'}
+                                                        </p>
+
+                                                        {/*<div className="grid grid-cols-3 gap-4 mb-3">*/}
+                                                        {/*    <div className="text-center p-2 bg-blue-50 rounded border">*/}
+                                                        {/*        <div className="text-lg font-bold text-blue-600">{group.groupCount?.userCount || 0}</div>*/}
+                                                        {/*        <div className="text-xs text-gray-600">Users</div>*/}
+                                                        {/*    </div>*/}
+                                                        {/*    <div className="text-center p-2 bg-green-50 rounded border">*/}
+                                                        {/*        <div className="text-lg font-bold text-green-600">{group.groupCount?.deviceCount || 0}</div>*/}
+                                                        {/*        <div className="text-xs text-gray-600">Devices</div>*/}
+                                                        {/*    </div>*/}
+                                                        {/*    <div className="text-center p-2 bg-purple-50 rounded border">*/}
+                                                        {/*        <div className="text-lg font-bold text-purple-600">{group.groupCount?.groupCount || 0}</div>*/}
+                                                        {/*        <div className="text-xs text-gray-600">Groups</div>*/}
+                                                        {/*    </div>*/}
+                                                        {/*</div>*/}
+
+                                                        <div className="text-xs text-gray-500 font-mono break-all mb-3">
+                                                            ID: {group.id}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex flex-col gap-2 ml-4">
+                                                        <Button
+                                                            onClick={() => {
+                                                                setSearchedGroup(group);
+                                                                setGroupSearchResults([]);
+                                                                setGroupResultsSearch('');
+                                                            }}
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="whitespace-nowrap"
+                                                        >
+                                                            <ExternalLink className="h-3 w-3 mr-1" />
+                                                            Select
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => fetchGroupAssignments(group.id)}
+                                                            size="sm"
+                                                            className="whitespace-nowrap"
+                                                            disabled={loading}
+                                                        >
+                                                            {loading ? (
+                                                                <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+                                                            ) : (
+                                                                <Database className="h-3 w-3 mr-1" />
+                                                            )}
+                                                            Load
+                                                        </Button>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <span className="font-medium text-gray-600">Created:</span>
-                                                    <p className="mt-1">{new Date(searchedGroup.createdDateTime).toLocaleDateString()}</p>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+
+                                    {/* No results after filtering */}
+                                    {groupResultsSearch && filteredGroupResults.length === 0 && (
+                                        <div className="text-center py-8 text-gray-500">
+                                            <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                                            <p>No groups found matching "{groupResultsSearch}"</p>
+                                        </div>
+                                    )}
+
+                                    <div className="text-center pt-4">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => {
+                                                setGroupSearchResults([]);
+                                                setGroupSearchInput('');
+                                                setGroupSearchError(null);
+                                                setGroupResultsSearch('');
+                                            }}
+                                        >
+                                            Clear Results
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+
+                            {/* Keep the existing single group display for when a group is selected */}
+                            {searchedGroup && groupSearchResults.length === 0 && (
+                                <Card className="border-2 border-blue-300 bg-blue-50">
+                                    <CardContent className="p-4">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <Users className="h-4 w-4 text-blue-600" />
+                                                    <h4 className="font-semibold text-lg">{searchedGroup.displayName}</h4>
+                                                </div>
+                                                <p className="text-gray-600 text-sm mb-3">
+                                                    {searchedGroup.description || 'No description available'}
+                                                </p>
+
+                                                {/*<div className="grid grid-cols-3 gap-4 mb-3">*/}
+                                                {/*    <div className="text-center p-2 bg-blue-100 rounded border">*/}
+                                                {/*        <div className="text-lg font-bold text-blue-600">{searchedGroup.groupCount?.userCount || 0}</div>*/}
+                                                {/*        <div className="text-xs text-gray-600">Users</div>*/}
+                                                {/*    </div>*/}
+                                                {/*    <div className="text-center p-2 bg-green-100 rounded border">*/}
+                                                {/*        <div className="text-lg font-bold text-green-600">{searchedGroup.groupCount?.deviceCount || 0}</div>*/}
+                                                {/*        <div className="text-xs text-gray-600">Devices</div>*/}
+                                                {/*    </div>*/}
+                                                {/*    <div className="text-center p-2 bg-purple-100 rounded border">*/}
+                                                {/*        <div className="text-lg font-bold text-purple-600">{searchedGroup.groupCount?.groupCount || 0}</div>*/}
+                                                {/*        <div className="text-xs text-gray-600">Groups</div>*/}
+                                                {/*    </div>*/}
+                                                {/*</div>*/}
+
+                                                <div className="text-xs text-gray-500 font-mono break-all">
+                                                    ID: {searchedGroup.id}
                                                 </div>
                                             </div>
 
-                                            {searchedGroup.groupCount && (
-                                                <div className="grid grid-cols-3 gap-4">
-                                                    <div className="text-center p-3 bg-white rounded-lg border">
-                                                        <div className="text-2xl font-bold text-blue-600">{searchedGroup.groupCount.userCount}</div>
-                                                        <div className="text-xs text-gray-600">Users</div>
-                                                    </div>
-                                                    <div className="text-center p-3 bg-white rounded-lg border">
-                                                        <div className="text-2xl font-bold text-green-600">{searchedGroup.groupCount.deviceCount}</div>
-                                                        <div className="text-xs text-gray-600">Devices</div>
-                                                    </div>
-                                                    <div className="text-center p-3 bg-white rounded-lg border">
-                                                        <div className="text-2xl font-bold text-purple-600">{searchedGroup.groupCount.groupCount}</div>
-                                                        <div className="text-xs text-gray-600">Groups</div>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            <div className="flex gap-2 justify-center pt-4">
+                                            <div className="flex gap-2 ml-4">
                                                 <Button
                                                     onClick={() => fetchGroupAssignments(searchedGroup.id)}
-                                                    className="inline-flex items-center gap-2"
+                                                    size="sm"
                                                     disabled={loading}
                                                 >
                                                     {loading ? (
-                                                        <RefreshCw className="h-4 w-4 animate-spin" />
+                                                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
                                                     ) : (
-                                                        <Database className="h-4 w-4" />
+                                                        <Database className="h-4 w-4 mr-2" />
                                                     )}
-                                                    Load Group Assignments
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={() => {
-                                                        setSearchedGroup(null);
-                                                        setGroupSearchInput('');
-                                                        setGroupSearchError(null);
-                                                    }}
-                                                >
-                                                    Clear
+                                                    Load Assignments
                                                 </Button>
                                             </div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             )}
+
                         </div>
 
                         {/* Divider */}
@@ -949,9 +1180,18 @@ export default function AssignmentsOverview() {
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                                 <input
                                     type="text"
-                                    placeholder="Search by resource name, type, target, assignment type, platform, or filter..."
+                                    placeholder="Search by resource name, type, target, assignment type, platform, filter, or group name/ID..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyPress={(e) => {
+                                        if (e.key === 'Enter') {
+                                            const query = searchQuery.trim();
+                                            // If it looks like a group search, use the dedicated function
+                                            if (query.includes('group') || isValidGuid(query)) {
+                                                searchGroupInAssignments(query);
+                                            }
+                                        }
+                                    }}
                                     className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                                 {searchQuery && (
@@ -1036,6 +1276,18 @@ export default function AssignmentsOverview() {
                                         placeholder="Select platforms..."
                                     />
                                 </div>
+
+                                {/* Filters Filter */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Filter Type</label>
+                                    <MultiSelect
+                                        options={getUniqueFilterTypes()}
+                                        selected={filterTypeFilter}
+                                        onChange={setFilterTypeFilter}
+                                        placeholder="Select filter types..."
+                                    />
+                                </div>
+
                             </div>
 
                             {/* Active Filters Display */}
@@ -1173,7 +1425,6 @@ export default function AssignmentsOverview() {
                 }}
             />
 
-            {/* Filter Details Dialog */}
             {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
