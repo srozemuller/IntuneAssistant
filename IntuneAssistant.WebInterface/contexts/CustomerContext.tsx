@@ -122,6 +122,7 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
 
     // Replace your current tenant selection useEffect with these two:
     useEffect(() => {
+        // Only auto-select if we have tenants and no current selection
         if (customerData?.tenants && customerData.tenants.length > 0 && !selectedTenant) {
             console.log('Auto-selecting tenant...');
 
@@ -137,9 +138,13 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
                 setSelectedTenant(defaultTenant);
             }
         }
-    }, [customerData, selectedTenant]);
+        // If no tenants available, ensure selectedTenant is null
+        else if (customerData?.tenants && customerData.tenants.length === 0 && selectedTenant) {
+            console.log('No tenants available, clearing selection');
+            setSelectedTenant(null);
+        }
+    }, [customerData?.tenants]);
 
-// Separate validation effect
     useEffect(() => {
         if (customerData?.tenants && selectedTenant) {
             const isCurrentTenantValid = customerData.tenants.some(tenant =>
@@ -151,7 +156,7 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
                 setSelectedTenant(null);
             }
         }
-    }, [customerData?.tenants, selectedTenant?.id]); // Only depend on tenant ID, not full object
+    }, [customerData?.tenants, selectedTenant?.id]);
 
 
 
