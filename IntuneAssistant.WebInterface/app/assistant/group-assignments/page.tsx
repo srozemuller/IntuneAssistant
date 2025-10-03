@@ -1047,7 +1047,7 @@ export default function AssignmentsOverview() {
                                     {groupResultsSearch && filteredGroupResults.length === 0 && (
                                         <div className="text-center py-8 text-gray-500">
                                             <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                                            <p>No groups found matching "{groupResultsSearch}"</p>
+                                            <p>No groups found matching &quot;{groupResultsSearch}&quot;</p>
                                         </div>
                                     )}
 
