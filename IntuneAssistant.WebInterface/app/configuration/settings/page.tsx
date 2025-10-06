@@ -146,11 +146,6 @@ export default function PolicySettingsPage() {
         setError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
             // Fetch both endpoints simultaneously
             const [configData, groupData] = await Promise.all([
                 apiRequestWithConsent.request<ApiResponse>(POLICY_SETTINGS_ENDPOINT),

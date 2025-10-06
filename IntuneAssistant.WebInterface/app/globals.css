@@ -244,4 +244,7 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(250, 204, 22, 0.7);
   }
+  .row-selected {
+    background-color: #eff6ff !important; /* blue-50 */
+  }
 }

@@ -2,7 +2,7 @@ export const API_BASE_PRD_URL = 'https://api.intuneassistant.cloud/v1';
 export const API_BASE_DEV_URL = 'https://localhost:7224/v1';
 
 export const API_BASE_URL = process.env.NODE_ENV === 'development' ? API_BASE_DEV_URL : API_BASE_PRD_URL;
-
+export const PARTNER_TENANTS_ENDPOINT = `${API_BASE_URL}/partner/customers`;
 export const ASSIGNMENTS_ENDPOINT = `${API_BASE_URL}/assignments`;
 export const CONSENT_URL_ENDPOINT = `${API_BASE_URL}/buildconsenturl`;
 export const CONSENT_CALLBACK = `${API_BASE_URL}/consent-callback`;
@@ -23,6 +23,7 @@ export const CUSTOMER_ENDPOINT = `${API_BASE_URL}/customer`;
 export const POLICIES_ENDPOINT = `${API_BASE_URL}/policies`;
 export const EXPORT_ENDPOINT = `${API_BASE_URL}/export`;
 export const CONFIGURATION_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/configuration`;
+export const CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT = `${POLICIES_ENDPOINT}/configuration/bulk`;
 export const CA_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/ca`;
 export const ASSIGNMENTS_GROUP_ENDPOINT = `${API_BASE_URL}/assignments/groups`;
 export const ASSIGNMENTS_FILTERS_ENDPOINT = `${API_BASE_URL}/assignments/filters`;

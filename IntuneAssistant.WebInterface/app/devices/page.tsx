@@ -39,40 +39,6 @@ export default function DeviceConfigurationLandingPage() {
             ],
             badge: "OVERVIEW",
             highlight: "New"
-        },
-        {
-            title: "Intune Policy Overview",
-            description: "Comprehensive visibility into all your Intune policies with detailed analytics, compliance status, and deployment insights.",
-            href: "/configuration/policies",
-            icon: Shield,
-            gradient: "from-blue-500 to-indigo-500",
-            bgGradient: "from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
-            borderColor: "border-blue-200 dark:border-blue-800",
-            features: [
-                "Complete policy inventory",
-                "Compliance and deployment status",
-                "Policy effectiveness analytics",
-                "Backup your policies"
-            ],
-            badge: "POLICIES",
-            highlight: "Most Popular"
-        },
-        {
-            title: "Configuration Policies Settings Overview",
-            description: "Deep dive into individual configuration policies with granular settings analysis, conflict detection, and optimization recommendations.",
-            href: "/configuration/settings",
-            icon: Settings,
-            gradient: "from-emerald-500 to-cyan-500",
-            bgGradient: "from-emerald-50 to-cyan-50 dark:from-emerald-900/20 dark:to-cyan-900/20",
-            borderColor: "border-emerald-200 dark:border-emerald-800",
-            features: [
-                "Granular settings breakdown",
-                "Configuration conflict detection (soon)",
-                "Policy optimization insights",
-                "Settings comparison tools"
-            ],
-            badge: "SETTINGS",
-            highlight: "Advanced"
         }
     ];
 

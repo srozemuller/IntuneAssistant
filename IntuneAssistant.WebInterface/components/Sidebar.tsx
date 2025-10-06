@@ -50,7 +50,8 @@ import {
     Info,
     BookOpen,
     Monitor,
-    ArrowLeftRight
+    ArrowLeftRight,
+    MonitorCog
 } from 'lucide-react';
 
 const iconMap = {
@@ -67,7 +68,8 @@ const iconMap = {
     FileQuestion,
     Info,
     BookOpen,
-    Monitor
+    Monitor,
+    MonitorCog
 };
 
 interface MenuItem {
@@ -226,12 +228,19 @@ export function Sidebar() {
                 },
                 {
                     title: "Devices",
-                    icon: "Monitor", // Changed from "Device" to "Monitor"
+                    icon: "Monitor",
                     href: "/devices",
                     submenu: [
                         { title: "Device Overview", href: "/devices/overview" },
-                        { title: "Config Policies", href: "/devices/configuration/policies" },
-                        { title: "Config Settings", href: "/devices/configuration/settings" }
+                    ]
+                },
+                {
+                    title: "Configuration",
+                    icon: "MonitorCog",
+                    href: "/configuration",
+                    submenu: [
+                        { title: "Config Policies", href: "/configuration/policies" },
+                        { title: "Config Settings", href: "/configuration/settings" }
                     ]
                 },
                 {
