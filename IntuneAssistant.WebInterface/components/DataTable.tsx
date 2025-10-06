@@ -1,28 +1,22 @@
 // components/DataTable.tsx
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 interface Column {
     key: string;
-    label: string | React.ReactElement;
+    label: string;
     width?: number;
     minWidth?: number;
-    render?: (value: unknown, row: Record<string, unknown>) => React.ReactElement;
+    render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
 }
 
 interface DataTableProps {
-    data: any[];
-    columns: any[];
+    data: Record<string, unknown>[];
+    columns: Column[];
     className?: string;
-    onRowClick?: (row: any) => void;
 }
 
-export function DataTable({
-                              data,
-                              columns: initialColumns,
-                              className,
-                              onRowClick
-                          }: DataTableProps) {
+export function DataTable({ data, columns: initialColumns, className }: DataTableProps) {
     const [columns, setColumns] = useState(initialColumns.map(col => ({
         ...col,
         width: col.width || 150,
@@ -79,9 +73,7 @@ export function DataTable({
                             style={{ width: `${column.width}px` }}
                         >
                             <div className="flex items-center justify-between">
-                                <span className="truncate pr-2">
-                                    {React.isValidElement(column.label) ? column.label : column.label}
-                                </span>
+                                <span className="truncate pr-2">{column.label}</span>
                             </div>
 
                             {/* Resize handle */}
@@ -96,19 +88,20 @@ export function DataTable({
                 </tr>
                 </thead>
                 <tbody>
-                {data.map((row, i) => (
-                    <tr
-                        key={i}
-                        onClick={(e) => {
-                            // Don't select row when clicking on checkboxes
-                            if (!(e.target as HTMLElement).closest('.checkbox-cell')) {
-                                onRowClick?.(row);
-                            }
-                        }}
-                    >
-                        {columns.map((column, j) => (
-                            <td key={j}>
-                                {column.render ? column.render(row[column.key], row) : row[column.key]}
+                {data.map((row, rowIndex) => (
+                    <tr key={rowIndex} className="border-b hover:bg-gray-50">
+                        {columns.map((column) => (
+                            <td
+                                key={column.key}
+                                className="p-3 text-sm"
+                                style={{ width: `${column.width}px` }}
+                            >
+                                <div className="overflow-hidden">
+                                    {column.render
+                                        ? column.render(row[column.key], row)
+                                        : String(row[column.key] || '')
+                                    }
+                                </div>
                             </td>
                         ))}
                     </tr>
