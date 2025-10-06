@@ -7,24 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck, ChevronDown, Trash2, AlertTriangle } from 'lucide-react';
-import { CONFIGURATION_POLICIES_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE, EXPORT_ENDPOINT, CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT } from '@/lib/constants';
+import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck } from 'lucide-react';
+import { CONFIGURATION_POLICIES_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE } from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
-import { useApiRequest } from "@/hooks/useApiRequest";
+import {useApiRequest} from "@/hooks/useApiRequest";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -32,8 +22,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
+
 
 interface PolicyAssignment {
     id: string;
@@ -56,7 +45,6 @@ interface ConfigurationPolicy extends Record<string, unknown> {
     platforms: string;
     lastModifiedDateTime: string;
     name: string;
-    displayName?: string;
     settingCount: number;
     id: string;
     isAssigned: boolean;
@@ -85,177 +73,6 @@ interface ApiResponse {
     message: string;
     details: unknown[];
     data: ConfigurationPolicy[];
-}
-
-interface PolicyActionsProps {
-    selectedPolicies: ConfigurationPolicy[];
-    onPoliciesDeleted: () => void;
-    backupStates: Record<string, boolean>;
-    setBackupStates: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-}
-
-function PolicyActions({ selectedPolicies, onPoliciesDeleted, backupStates, setBackupStates }: PolicyActionsProps) {
-    const { request } = useApiRequest();
-    const [isBackingUp, setIsBackingUp] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-    const createBackup = async () => {
-        if (selectedPolicies.length === 0) return;
-
-        setIsBackingUp(true);
-        const zip = new JSZip();
-
-
-        try {
-            for (const policy of selectedPolicies) {
-                try {
-                    const backupData = await request(
-                        `${EXPORT_ENDPOINT}/configuration/${policy.id}`,
-                        {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }
-                    );
-
-                    if (backupData) {
-                        const fileName = `${policy.name || policy.displayName || policy.id}.json`;
-                        zip.file(fileName, JSON.stringify(backupData, null, 2));
-
-                    }
-                } catch (error) {
-                    console.error(`Failed to backup policy ${policy.id}:`, error);
-
-                }
-            }
-
-
-
-            const zipContent = await zip.generateAsync({ type: 'blob' });
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            saveAs(zipContent, `configuration-policies-backup-${timestamp}.zip`);
-        } catch (error) {
-            console.error('Failed to create backup:', error);
-        } finally {
-            setIsBackingUp(false);
-        }
-    };
-
-    const deletePolicies = async () => {
-        if (selectedPolicies.length === 0) return;
-
-        setIsDeleting(true);
-        try {
-            const response = await request(
-                CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(selectedPolicies)
-                }
-            );
-
-            if (response) {
-                // Clear backup states for deleted policies
-                const newBackupStates = { ...backupStates };
-                selectedPolicies.forEach(policy => {
-                    delete newBackupStates[policy.id];
-                });
-                setBackupStates(newBackupStates);
-
-                onPoliciesDeleted();
-            }
-        } catch (error) {
-            console.error('Failed to delete policies:', error);
-        } finally {
-            setIsDeleting(false);
-            setShowDeleteDialog(false);
-        }
-    };
-
-    const getUnbackedUpPolicies = () => {
-        return selectedPolicies.filter(policy => !backupStates[policy.id]);
-    };
-
-    const unbackedUpPolicies = getUnbackedUpPolicies();
-
-    if (selectedPolicies.length === 0) {
-        return null;
-    }
-
-    return (
-        <>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                    onClick={createBackup}
-                    disabled={isBackingUp || selectedPolicies.length === 0}
-                >
-                    <Download className="mr-2 h-4 w-4" />
-                    {isBackingUp ? 'Creating Backup...' : 'Backup Selected'}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                    onClick={() => setShowDeleteDialog(true)}
-                    disabled={isDeleting || selectedPolicies.length === 0}
-                    className="text-red-600 focus:text-red-600"
-                >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {isDeleting ? 'Deleting...' : 'Delete Selected'}
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-red-500" />
-                            Delete Configuration Policies
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className="space-y-3">
-                            <p>
-                                You are about to delete {selectedPolicies.length} configuration {selectedPolicies.length === 1 ? 'policy' : 'policies'}.
-                                This action cannot be undone.
-                            </p>
-
-                            {unbackedUpPolicies.length > 0 && (
-                                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                                    <p className="font-medium text-red-800 mb-2">
-                                        ⚠️ Warning: {unbackedUpPolicies.length} {unbackedUpPolicies.length === 1 ? 'policy is' : 'policies are'} not backed up:
-                                    </p>
-                                    <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
-                                        {unbackedUpPolicies.slice(0, 5).map(policy => (
-                                            <li key={policy.id}>
-                                                {policy.name || policy.displayName || policy.id}
-                                            </li>
-                                        ))}
-                                        {unbackedUpPolicies.length > 5 && (
-                                            <li>...and {unbackedUpPolicies.length - 5} more</li>
-                                        )}
-                                    </ul>
-                                    <p className="text-sm text-red-700 mt-2">
-                                        Consider creating a backup before deletion.
-                                    </p>
-                                </div>
-                            )}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={deletePolicies}
-                            disabled={isDeleting}
-                            className="bg-red-600 hover:bg-red-700"
-                        >
-                            {isDeleting ? 'Deleting...' : 'Delete Policies'}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </>
-    );
 }
 
 export default function ConfigurationPoliciesPage() {
@@ -292,19 +109,10 @@ export default function ConfigurationPoliciesPage() {
     const [selectedPolicy, setSelectedPolicy] = useState<ConfigurationPolicy | null>(null);
     const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
 
-    const [selectedPolicies, setSelectedPolicies] = useState<ConfigurationPolicy[]>([]);
-    const [backupStates, setBackupStates] = useState<Record<string, boolean>>({});
-
-
-    // Reset to first page when filters or search query change
     useEffect(() => {
         setCurrentPage(1);
     }, [policyTypeFilter, statusFilter, platformFilter, searchQuery]);
 
-    const onPoliciesDeleted = () => {
-        setSelectedPolicies([]);
-        fetchPolicies(); // Refresh the list
-    };
 
     const handlePolicyClick = (policy: ConfigurationPolicy) => {
         setSelectedPolicy(policy);
@@ -425,6 +233,7 @@ export default function ConfigurationPoliciesPage() {
             setFilteredPolicies([]);
             throw new Error('Invalid data format received from API');
         }
+
     };
 
     const fetchFilters = async () => {
@@ -444,7 +253,7 @@ export default function ConfigurationPoliciesPage() {
             if (Array.isArray(filtersData)) {
                 setFilters(filtersData);
             } else if (filtersData && typeof filtersData === 'object' && 'data' in filtersData) {
-                setFilters((filtersData as { data: AssignmentFilter[] }).data);
+                setFilters((filtersData as any).data);
             } else {
                 console.error('Filters API response is not an array:', filtersData);
                 setFilters([]);
@@ -557,65 +366,7 @@ export default function ConfigurationPoliciesPage() {
         }
     };
 
-    const isAllSelected = paginatedPolicies.length > 0 &&
-        paginatedPolicies.every(policy => selectedPolicies.some(selected => selected.id === policy.id));
-    const isIndeterminate = selectedPolicies.some(selected =>
-        paginatedPolicies.some(policy => policy.id === selected.id)
-    ) && !isAllSelected;
-
     const columns = [
-        {
-            key: 'select',
-            label: (
-                <div className="checkbox-cell" onClick={(e) => {
-                    e.stopPropagation();
-                    if (isAllSelected) {
-                        setSelectedPolicies([]);
-                    } else {
-                        setSelectedPolicies([...paginatedPolicies]);
-                    }
-                }}>
-                    <input
-                        type="checkbox"
-                        checked={isAllSelected}
-                        ref={(input) => {
-                            if (input) {
-                                input.indeterminate = isIndeterminate;
-                            }
-                        }}
-                        onChange={() => {}}
-                        className="rounded border-gray-300"
-                    />
-                </div>
-            ),
-            width: 50,
-            minWidth: 50,
-            render: (value: unknown, row: Record<string, unknown>) => {
-                const policy = row as ConfigurationPolicy;
-                const isSelected = selectedPolicies.some(p => p.id === policy.id);
-
-                return (
-                    <div className="checkbox-cell" onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedPolicies(prev => {
-                            const isAlreadySelected = prev.some(p => p.id === policy.id);
-                            if (isAlreadySelected) {
-                                return prev.filter(p => p.id !== policy.id);
-                            } else {
-                                return [...prev, policy];
-                            }
-                        });
-                    }}>
-                        <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => {}}
-                            className="rounded border-gray-300"
-                        />
-                    </div>
-                );
-            }
-        },
         {
             key: 'name' as string,
             label: 'Policy Name',
@@ -637,8 +388,8 @@ export default function ConfigurationPoliciesPage() {
                         </button>
                         {description && (
                             <span className="text-xs text-gray-500 line-clamp-2 max-w-md">
-                                {description.replace(/\|/g, '').replace(/\n/g, ' ').substring(0, 100)}...
-                            </span>
+                        {description.replace(/\|/g, '').replace(/\n/g, ' ').substring(0, 100)}...
+                    </span>
                         )}
                     </div>
                 );
@@ -809,24 +560,6 @@ export default function ConfigurationPoliciesPage() {
                                 variant="outline"
                                 size="sm"
                             />
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={selectedPolicies.length === 0}
-                                    >
-                                        Actions ({selectedPolicies.length})
-                                        <ChevronDown className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <PolicyActions
-                                    selectedPolicies={selectedPolicies}
-                                    onPoliciesDeleted={onPoliciesDeleted}
-                                    backupStates={backupStates}
-                                    setBackupStates={setBackupStates}
-                                />
-                            </DropdownMenu>
                         </>
                     ) : (
                         <Button
@@ -1046,13 +779,6 @@ export default function ConfigurationPoliciesPage() {
                                             data={paginatedPolicies}
                                             columns={columns}
                                             className="min-w-full"
-                                            onRowClick={(row) => {
-                                                const policy = row as ConfigurationPolicy;
-                                                setSelectedPolicies(prev => {
-                                                    const isSelected = prev.some(p => p.id === policy.id);
-                                                    return isSelected ? prev.filter(p => p.id !== policy.id) : [...prev, policy];
-                                                });
-                                            }}
                                         />
                                     </div>
 
@@ -1218,7 +944,6 @@ export default function ConfigurationPoliciesPage() {
                     )}
                 </DialogContent>
             </Dialog>
-
             {/* Policy Details Dialog */}
             <Dialog open={isPolicyDialogOpen} onOpenChange={setIsPolicyDialogOpen}>
                 <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
@@ -1317,7 +1042,7 @@ export default function ConfigurationPoliciesPage() {
                                         Assignments ({selectedPolicy.assignments.length})
                                     </label>
                                     <div className="space-y-3">
-                                        {selectedPolicy.assignments.map((assignment) => {
+                                        {selectedPolicy.assignments.map((assignment, index) => {
                                             const filterInfo = getFilterInfo(
                                                 assignment.target.deviceAndAppManagementAssignmentFilterId,
                                                 assignment.target.deviceAndAppManagementAssignmentFilterType
@@ -1410,6 +1135,7 @@ export default function ConfigurationPoliciesPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
         </div>
     );
 }
