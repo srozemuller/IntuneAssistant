@@ -16,6 +16,8 @@ import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ConsentDialog } from '@/components/ConsentDialog';
+import { DataTable } from '@/components/DataTable';
+
 interface CSVRow {
     PolicyName: string;
     GroupName: string;
@@ -25,6 +27,7 @@ interface CSVRow {
     FilterType: string | null;
     isValidAction?: boolean;
     originalActionValue?: string;
+    [key: string]: unknown;
 }
 interface Assignment {
     id: string;
@@ -142,9 +145,10 @@ export default function AssignmentRolloutPage() {
     const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
     const [compareCurrentPage, setCompareCurrentPage] = useState(1);
     const [validationCurrentPage, setValidationCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(ITEMS_PER_PAGE);
+
 
     // Add pagination logic before the return statement
+    const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedResults = comparisonResults.slice(startIndex, endIndex);
@@ -157,6 +161,101 @@ export default function AssignmentRolloutPage() {
     const [migrationSuccessful, setMigrationSuccessful] = useState(false);
 
     const [expandedRows, setExpandedRows] = useState<string[]>([]);
+
+    const uploadColumns = [
+        {
+            key: 'PolicyName',
+            label: 'Policy Name',
+            minWidth: 200,
+            render: (value: unknown) => (
+                <div className="underline text-sm font-medium cursor-pointer truncate block w-full text-left" title={String(value)}>
+                    {String(value)}
+                </div>
+            )
+        },
+        {
+            key: 'GroupName',
+            label: 'Group Name',
+            minWidth: 150,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return (
+                    <div className={`underline text-sm font-medium cursor-pointer truncate block w-full text-left ${csvRow.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`} title={String(value)}>
+                        {String(value)}
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'AssignmentDirection',
+            label: 'Direction',
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return (
+                    <Badge
+                        variant={csvRow.AssignmentDirection === 'Include' ? 'default' : 'destructive'}
+                        className={csvRow.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}
+                    >
+                        {csvRow.AssignmentDirection}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'AssignmentAction',
+            label: 'Action',
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return !csvRow.isValidAction ? (
+                    <div className="flex items-center gap-2">
+                        <Badge variant="destructive">Excluded</Badge>
+                        <span className="text-xs text-red-600">
+            Invalid: &quot;{csvRow.originalActionValue}&quot;
+          </span>
+                    </div>
+                ) : (
+                    <Badge variant={
+                        csvRow.AssignmentAction === 'Add' ? 'default' :
+                            csvRow.AssignmentAction === 'Remove' ? 'destructive' : 'secondary'
+                    }>
+                        {csvRow.AssignmentAction}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'FilterName',
+            label: 'Filter Name',
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return csvRow.FilterName ? (
+                    <div className={`max-w-xs truncate ${csvRow.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`} title={csvRow.FilterName}>
+                        {csvRow.FilterName}
+                    </div>
+                ) : (
+                    <span className="text-gray-400">-</span>
+                );
+            }
+        },
+        {
+            key: 'FilterType',
+            label: 'Filter Type',
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return csvRow.FilterType ? (
+                    <Badge
+                        variant={csvRow.FilterType === 'Include' ? 'default' : 'secondary'}
+                        className={csvRow.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}
+                    >
+                        {csvRow.FilterType}
+                    </Badge>
+                ) : (
+                    <span className="text-gray-400">-</span>
+                );
+            }
+        }
+    ];
+
 
     const toggleExpanded = (resultId: string) => {
         setExpandedRows(prev =>
@@ -762,157 +861,22 @@ export default function AssignmentRolloutPage() {
 
                                 <div className="border rounded-lg overflow-visible">
                                     <div className="overflow-x-auto overflow-y-visible">
-                                        <table className="w-full text-sm">
-                                            <thead className="bg-gray-50 sticky top-0">
-                                            <tr>
-                                                <th className="text-left p-3 border-b">#</th>
-                                                <th className="text-left p-3 border-b">Policy Name</th>
-                                                <th className="text-left p-3 border-b">Group Name</th>
-                                                <th className="text-left p-3 border-b">Direction</th>
-                                                <th className="text-left p-3 border-b">Action</th>
-                                                <th className="text-left p-3 border-b">Filter Name</th>
-                                                <th className="text-left p-3 border-b">Filter Type</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {(() => {
-                                                const startIndex = (uploadCurrentPage - 1) * itemsPerPage;
-                                                const endIndex = startIndex + itemsPerPage;
-                                                const paginatedData = csvData.slice(startIndex, endIndex);
+                                        <DataTable
+                                            data={csvData}
+                                            columns={uploadColumns}
+                                            className="text-sm"
+                                            currentPage={uploadCurrentPage}
+                                            totalPages={Math.ceil(csvData.length / itemsPerPage)}
+                                            itemsPerPage={itemsPerPage}
+                                            onPageChange={setUploadCurrentPage}
+                                            onItemsPerPageChange={(newItemsPerPage) => {
+                                                setItemsPerPage(newItemsPerPage);
+                                                setUploadCurrentPage(1); // Reset to first page when changing items per page
+                                            }}
+                                            showPagination={true}
+                                        />
 
-                                                return paginatedData.map((row, index) => (
-                                                    <tr key={startIndex + index} className={`border-b ${(startIndex + index) % 2 === 0 ? 'bg-white dark:bg-neutral-900' : 'bg-gray-50 dark:bg-neutral-800'}`}>
-                                                        <td className="p-3 text-gray-500 relative overflow-visible">
-                                                            <div className="flex items-center gap-2">
-                                                                {startIndex + index + 1}
-                                                                {row.AssignmentAction === 'NoAssignment' && (
-                                                                    <div className="group relative">
-                                                                        <Info className="h-4 w-4 text-blue-500 cursor-help" />
-                                                                        <div className="absolute invisible group-hover:visible bg-gray-900 text-white text-xs rounded py-2 px-3 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap z-50 shadow-lg">
-                                                                            This row will remove ALL assignments from the policy
-                                                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-3">
-                                                            <div className="max-w-xs truncate" title={row.PolicyName}>
-                                                                {row.PolicyName}
-                                                            </div>
-                                                        </td>
-                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`}>
-                                                            <div className="max-w-xs truncate" title={row.GroupName}>
-                                                                {row.GroupName}
-                                                            </div>
-                                                        </td>
-                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}`}>
-                                                            <Badge variant={row.AssignmentDirection === 'Include' ? 'default' : 'destructive'}
-                                                                   className={row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}>
-                                                                {row.AssignmentDirection}
-                                                            </Badge>
-                                                        </td>
-                                                        <td className="p-3">
-                                                            {!row.isValidAction ? (
-                                                                <div className="flex items-center gap-2">
-                                                                    <Badge variant="destructive">Excluded</Badge>
-                                                                    <span className="text-xs text-red-600">
-                Invalid: &quot;{row.originalActionValue}&quot;
-            </span>
-                                                                </div>
-                                                            ) : (
-                                                                <Badge variant={
-                                                                    row.AssignmentAction === 'Add' ? 'default' :
-                                                                        row.AssignmentAction === 'Remove' ? 'destructive' : 'secondary'
-                                                                }>
-                                                                    {row.AssignmentAction}
-                                                                </Badge>
-                                                            )}
-                                                        </td>
-
-                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`}>
-                                                            {row.FilterName ? (
-                                                                <div className="max-w-xs truncate" title={row.FilterName}>
-                                                                    {row.FilterName}
-                                                                </div>
-                                                            ) : (
-                                                                <span className="text-gray-400">-</span>
-                                                            )}
-                                                        </td>
-                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}`}>
-                                                            {row.FilterType ? (
-                                                                <Badge variant={row.FilterType === 'Include' ? 'default' : 'secondary'}
-                                                                       className={row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}>
-                                                                    {row.FilterType}
-                                                                </Badge>
-                                                            ) : (
-                                                                <span className="text-gray-400">-</span>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-                                                ));
-                                            })()}
-                                            </tbody>
-                                        </table>
                                     </div>
-
-                                    {/* Upload Pagination Controls */}
-                                    {Math.ceil(csvData.length / itemsPerPage) > 1 && (
-                                        <div className="flex items-center justify-between p-4 border-t">
-                                            <div className="text-sm text-gray-600">
-                                                Showing {((uploadCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(uploadCurrentPage * itemsPerPage, csvData.length)} of {csvData.length} results
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => setUploadCurrentPage(Math.max(1, uploadCurrentPage - 1))}
-                                                    disabled={uploadCurrentPage === 1}
-                                                >
-                                                    <ChevronLeft className="h-4 w-4" />
-                                                    Previous
-                                                </Button>
-
-                                                <div className="flex items-center gap-1">
-                                                    {Array.from({ length: Math.min(5, Math.ceil(csvData.length / itemsPerPage)) }, (_, i) => {
-                                                        const totalPages = Math.ceil(csvData.length / itemsPerPage);
-                                                        let pageNum;
-                                                        if (totalPages <= 5) {
-                                                            pageNum = i + 1;
-                                                        } else if (uploadCurrentPage <= 3) {
-                                                            pageNum = i + 1;
-                                                        } else if (uploadCurrentPage >= totalPages - 2) {
-                                                            pageNum = totalPages - 4 + i;
-                                                        } else {
-                                                            pageNum = uploadCurrentPage - 2 + i;
-                                                        }
-
-                                                        return (
-                                                            <Button
-                                                                key={pageNum}
-                                                                variant={uploadCurrentPage === pageNum ? "default" : "outline"}
-                                                                size="sm"
-                                                                onClick={() => setUploadCurrentPage(pageNum)}
-                                                                className="w-8 h-8 p-0"
-                                                            >
-                                                                {pageNum}
-                                                            </Button>
-                                                        );
-                                                    })}
-                                                </div>
-
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => setUploadCurrentPage(Math.min(Math.ceil(csvData.length / itemsPerPage), uploadCurrentPage + 1))}
-                                                    disabled={uploadCurrentPage === Math.ceil(csvData.length / itemsPerPage)}
-                                                >
-                                                    Next
-                                                    <ChevronRight className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         )}
