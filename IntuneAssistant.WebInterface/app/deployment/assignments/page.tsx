@@ -353,9 +353,19 @@ export default function AssignmentRolloutPage() {
                 },
                 body: JSON.stringify(validCsvData) // Send only valid data
             });
-
             if (!apiResponse.ok) {
-                throw new Error(`API call failed: ${apiResponse.statusText}`);
+                const errorData = await apiResponse.json();
+
+                // Check if this is a consent required error
+                if (errorData.status === 'Error' &&
+                    errorData.message === 'User challenge required' &&
+                    errorData.data?.includes('adminconsent')) {
+
+                    setConsentUrl(errorData.data);
+                    setShowConsentDialog(true);
+                    setLoading(false);
+                    return;
+                }
             }
 
             const responseData = await apiResponse.json();
