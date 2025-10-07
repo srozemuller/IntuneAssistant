@@ -104,7 +104,7 @@ function MigrationPage() {
                     ]);
 
                     // Extract the `data` key from the API response
-                    const migrationData = migrationResponse?.data || [];
+                    const migrationData = migrationResponse || [];
                     console.log('Migration data:', migrationData);
                     // Parse the extracted data
                     const parsedMigrationData = z.array(assignmentMigrationSchema).parse(migrationData);
