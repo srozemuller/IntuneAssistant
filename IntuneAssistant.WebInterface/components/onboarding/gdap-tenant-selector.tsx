@@ -14,13 +14,12 @@ interface GdapTenantSelectorProps {
     onBack: () => void;
     onConsentStarted: (popup: Window) => void;
 }
-
 export const GdapTenantSelector: React.FC<GdapTenantSelectorProps> = ({
                                                                           isVisible,
                                                                           customerName,
                                                                           onTenantSelected,
                                                                           onBack,
-                                                                          onConsentStarted
+                                                                           onConsentStarted
                                                                       }) => {
     const {
         partnerTenants,
@@ -29,9 +28,9 @@ export const GdapTenantSelector: React.FC<GdapTenantSelectorProps> = ({
         loading,
         error,
         fetchPartnerTenants,
-        startTenantOnboarding,
         resetSelection
     } = useGdapTenantOnboarding();
+
 
     useEffect(() => {
         if (isVisible) {
@@ -48,13 +47,8 @@ export const GdapTenantSelector: React.FC<GdapTenantSelectorProps> = ({
     const handleProceedToOnboarding = () => {
         if (selectedTenant) {
             onTenantSelected(selectedTenant);
-            const popup = startTenantOnboarding(selectedTenant, customerName);
-            if (popup) {
-                onConsentStarted(popup);
-            }
         }
     };
-
     if (!isVisible) return null;
 
     return (

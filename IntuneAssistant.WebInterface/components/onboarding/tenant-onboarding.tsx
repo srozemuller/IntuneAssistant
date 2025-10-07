@@ -1,16 +1,22 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useMsal } from '@azure/msal-react'; // adding this to get the home tenant id for onboarding
+import { useMsal } from '@azure/msal-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import {Info, Users, Building, Lock, AlertCircle, Loader2, CheckCircle, RefreshCw} from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Info, Users, Building, Lock, AlertCircle, Loader2, CheckCircle,
+    Shield, ExternalLink, X
+} from 'lucide-react';
 import { useGdapTenantOnboarding, type PartnerTenant } from '@/hooks/useGdapTenantOnboarding';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import {CONSENT_URL_ENDPOINT, CONSENT_CALLBACK, CUSTOMER_ENDPOINT} from '@/lib/constants';
+import { apiScope } from '@/lib/msalConfig';
 
 interface TenantOnboardingModalProps {
     isOpen: boolean;
@@ -18,124 +24,656 @@ interface TenantOnboardingModalProps {
     customerId: string;
     customerName: string;
     onSuccess: () => void;
+    gdapTenant?: PartnerTenant;
+    type?: 'regular' | 'gdap';
 }
 
-interface AvailableApp {
-    id: string;
-    name: string;
-    description: string;
-    version: string;
-}
+const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
+                                                                         isOpen,
+                                                                         onClose,
+                                                                         customerId,
+                                                                         customerName,
+                                                                         onSuccess,
+                                                                         gdapTenant,
+                                                                         type = 'regular'
+                                                                     }) => {
+    // State management
+    const {instance, accounts} = useMsal();
+    const [consentState, setConsentState] = useState<string | null>(null);
+    const [onboardingResult, setOnboardingResult] = useState<any>(null);
 
-const AVAILABLE_APPS: AvailableApp[] = [
-    {
-        id: 'app-1',
-        name: 'Security Dashboard',
-        description: 'Complete security monitoring and threat detection',
-        version: '2.1.0'
-    },
-    {
-        id: 'app-2',
-        name: 'Compliance Manager',
-        description: 'Automated compliance reporting and auditing',
-        version: '1.8.3'
-    },
-    {
-        id: 'app-3',
-        name: 'Identity Governance',
-        description: 'Identity and access management solutions',
-        version: '3.0.1'
-    }
-];
+    const [currentStep, setCurrentStep] = useState(0);
+    const [isGdapMode, setIsGdapMode] = useState(type === 'gdap');
+    const [tenantId, setTenantId] = useState(gdapTenant?.tenantId || '');
+    const [tenantDomainName, setTenantDomainName] = useState(gdapTenant?.domain || '');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [consentWindow, setConsentWindow] = useState<Window | null>(null);
+    const [consentCompleted, setConsentCompleted] = useState(false);
 
-export default function TenantOnboardingModal({
-                                                  isOpen,
-                                                  onClose,
-                                                  customerId,
-                                                  customerName,
-                                                  onSuccess
-                                              }: TenantOnboardingModalProps) {
-    const [activeTab, setActiveTab] = useState('onboarding');
-    const [isGdapMode, setIsGdapMode] = useState(false);
-    const [selectedApp, setSelectedApp] = useState<string>('');
-    const [isCustomAppGdap, setIsCustomAppGdap] = useState(false);
-    const { accounts } = useMsal();
-
-    // Get the logged-in user's tenant ID from MSAL account
     const loggedInUserTenantId = accounts[0]?.tenantId || accounts[0]?.homeAccountId?.split('.')[1];
-    console.log('Logged in user tenant ID (home):', loggedInUserTenantId);
-    console.log('Account info:', accounts[0]);
+
     const {
         partnerTenants,
         selectedTenant,
         setSelectedTenant,
-        loading,
-        error,
+        loading: gdapLoading,
+        error: gdapError,
         fetchPartnerTenants,
         resetSelection
     } = useGdapTenantOnboarding(loggedInUserTenantId);
 
-    // Fetch partner tenants when GDAP mode is enabled
+    // Initialize component when opening
     useEffect(() => {
-        if (!isGdapMode) {
+        if (isOpen) {
+            if (gdapTenant) {
+                setIsGdapMode(true);
+                setTenantId(gdapTenant.tenantId);
+                setTenantDomainName(gdapTenant.domain);
+                setCurrentStep(1); // Skip step 0 for pre-selected GDAP tenant
+            } else {
+                setCurrentStep(0);
+                setIsGdapMode(type === 'gdap');
+                setTenantId('');
+                setTenantDomainName('');
+            }
+            setError(null);
+            setConsentCompleted(false);
             resetSelection();
         }
-    }, [isGdapMode, resetSelection]);
+    }, [isOpen, gdapTenant, type, resetSelection]);
 
+    // Handle consent window messages
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin) {
+                console.log('Message from different origin ignored:', event.origin);
+                return;
+            }
+            if (event.data.type === 'CONSENT_SUCCESS') {
+                console.log('Consent success received');
+                setConsentCompleted(true);
+                setLoading(false);
 
-    const handleGdapToggle = (checked: boolean) => {
-        setIsGdapMode(checked);
-        if (!checked) {
-            setSelectedTenant(null);
-        }
-    };
+                if (consentWindow) {
+                    consentWindow.close();
+                    setConsentWindow(null);
+                }
+                handleConsentCallback();
 
-    const handleOnboardingSubmit = async () => {
-        if (isGdapMode && !selectedTenant) {
-            alert('Please select a partner tenant');
-            return;
-        }
+            } else if (event.data.type === 'CONSENT_ERROR') {
+                console.log('Consent error received:', event.data);
+                setError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
+                setLoading(false);
 
-        if (!loggedInUserTenantId) {
-            alert('Unable to determine your tenant ID. Please try logging in again.');
-            return;
-        }
+                if (consentWindow) {
+                    consentWindow.close();
+                    setConsentWindow(null);
+                }
+            }
+        };
 
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [consentWindow]);
+
+    // Monitor consent window closure
+    useEffect(() => {
+        if (!consentWindow) return;
+
+        const checkClosed = setInterval(() => {
+            if (consentWindow.closed && !consentCompleted) {
+                console.log('⚠️ Consent window closed without completion');
+                setError('Consent window was closed. Please try again.');
+                setLoading(false);
+                setConsentWindow(null);
+            }
+        }, 1000);
+
+        return () => clearInterval(checkClosed);
+    }, [consentWindow, consentCompleted]);
+
+    const handleConsentCallback = async () => {
         try {
-            const onboardingData = {
-                customerTenantId: isGdapMode ? selectedTenant?.tenantId : customerId,
-                partnerTenantId: loggedInUserTenantId, // Use logged-in user's tenant ID
-                authMethod: isGdapMode ? 'GDAP' : 'Interactive',
-                customerName,
-                ...(isGdapMode && selectedTenant && {
-                    selectedPartnerTenant: {
-                        tenantId: selectedTenant.tenantId,
-                        displayName: selectedTenant.displayName,
-                        domain: selectedTenant.domain
+            setLoading(true);
+            setError(null);
+
+            console.log('Processing consent callback...');
+
+            // Wait a moment for the consent to be processed
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const token = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            // Check onboarding status or complete the process
+            const response = await fetch(
+                `${CONSENT_CALLBACK}${consentState ? `?state=${consentState}` : ''}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token.accessToken}`,
+                        'Content-Type': 'application/json',
                     }
-                })
-            };
+                }
+            );
 
-            console.log('Onboarding with partner tenant:', loggedInUserTenantId);
-            console.log('Onboarding data:', onboardingData);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || `Failed to complete onboarding: ${response.statusText}`);
+            }
 
-            // Make your API call here
-            // const response = await request('/api/tenant/onboard', {
-            //     method: 'POST',
-            //     body: JSON.stringify(onboardingData)
-            // });
+            let result = null;
+            if (response.status === 204) {
+                console.log('Onboarding completed (204 No Content)');
+                result = { status: 'success', message: 'Onboarding completed successfully' };
+            } else {
+                result = await response.json();
+                console.log('Onboarding completed:', result);
+            }
 
-            onSuccess();
-        } catch (error) {
-            console.error('Onboarding failed:', error);
-            alert('Onboarding failed. Please try again.');
+            setOnboardingResult(result);
+            setCurrentStep(3);
+        } catch (err) {
+            console.error('Error completing onboarding:', err);
+            setError(err instanceof Error ? err.message : 'Failed to complete onboarding');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleCustomAppSubmit = () => {
-        // Handle custom app logic here
-        console.log('Custom app:', selectedApp, 'with GDAP:', isCustomAppGdap);
+
+    // Step navigation
+    const handleNext = () => {
+        setError(null);
+
+        if (currentStep === 0) {
+            // Step 1: Method selection and data entry
+            if (isGdapMode && !selectedTenant) {
+                setError('Please select a partner tenant for GDAP onboarding');
+                return;
+            }
+            if (!isGdapMode && (!tenantId || !tenantDomainName)) {
+                setError('Please enter tenant ID and domain name');
+                return;
+            }
+            setCurrentStep(1);
+        } else if (currentStep === 1) {
+            // Step 2: Validation -> Admin Consent
+            setCurrentStep(2);
+            initiateConsent();
+        } else if (currentStep === 2) {
+            // This step is handled by consent completion
+            setCurrentStep(3);
+        }
+    };
+
+    const handleBack = () => {
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
+    const initiateConsent = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const finalTenantId = isGdapMode ? selectedTenant?.tenantId : tenantId;
+            const finalDomainName = isGdapMode ? selectedTenant?.domain : tenantDomainName;
+            const finalDisplayName = isGdapMode ? selectedTenant?.displayName : undefined;
+
+            console.log('Initiating consent for tenant:', {
+                tenantId: finalTenantId,
+                domainName: finalDomainName,
+                displayName: finalDisplayName,
+                isGdap: isGdapMode
+            });
+
+            if (!finalTenantId || !finalDomainName) {
+                throw new Error('Missing tenant information');
+            }
+            const tokenResponse = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            // Build API URL to get consent URL
+            const apiUrl = `${CUSTOMER_ENDPOINT}/${customerId}/tenants/onboarding?tenantid=${finalTenantId}&tenantName=${finalDisplayName}&domainName=${encodeURIComponent(finalDomainName)}&isGdap=${isGdapMode}`;
+            console.log('🔵 API URL:', apiUrl);
+
+            // Make API call to get consent URL
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${tokenResponse.accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || `Failed to get consent URL: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log('🔵 API Response:', result);
+
+            // Extract consent URL from API response
+            const consentUrl = result.data?.url || result.url;
+            if (!consentUrl) {
+                throw new Error('No consent URL received from API');
+            }
+            const state = extractStateFromConsentUrl(result.data.url);
+            setConsentState(state);
+            console.log('🔵 Opening consent URL:', consentUrl);
+
+            // Open consent window with the URL from API
+            const popup = window.open(
+                consentUrl,
+                'consentWindow',
+                'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no'
+            );
+
+            if (popup) {
+                setConsentWindow(popup);
+                popup.focus();
+            } else {
+                throw new Error('Failed to open consent window. Please check your popup blocker settings.');
+            }
+
+        } catch (err) {
+            console.error('Error initiating consent:', err);
+            setError(err instanceof Error ? err.message : 'Failed to initiate consent');
+            setLoading(false);
+        }
+    };
+
+    const extractStateFromConsentUrl = (url: string): string | null => {
+        try {
+            const urlObj = new URL(url);
+            return urlObj.searchParams.get('state');
+        } catch (error) {
+            console.error('Failed to parse consent URL:', error);
+            return null;
+        }
+    };
+
+    const handleComplete = () => {
         onSuccess();
+        onClose();
+    };
+
+    // Step content rendering
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 0:
+                return (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Step 1: Choose Onboarding Method</CardTitle>
+                            <CardDescription>Select how you want to onboard this tenant</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Method Selection */}
+                            {/* Method Selection */}
+                            <div className="flex items-center justify-between p-4 border rounded-lg">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <h4 className="font-medium">Authentication Method</h4>
+                                        <Info className="h-4 w-4 text-blue-500" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-3">
+                                            <Switch
+                                                checked={isGdapMode}
+                                                onCheckedChange={(checked) => {
+                                                    setIsGdapMode(checked);
+                                                    setError(null);
+                                                    // Reset selections when switching modes
+                                                    if (!checked) {
+                                                        setSelectedTenant(null);
+                                                        resetSelection();
+                                                    }
+                                                    setTenantId('');
+                                                    setTenantDomainName('');
+                                                }}
+                                            />
+
+                                            <span className="font-medium">
+                    {isGdapMode ? 'GDAP (Recommended)' : 'Interactive Authentication'}
+                </span>
+                                        </div>
+                                        <div className="text-sm text-gray-600 ml-8">
+                                            {isGdapMode ? (
+                                                <span>
+                        Use Granular Delegated Admin Privileges for secure partner access.
+                        Select from your existing GDAP relationships.
+                    </span>
+                                            ) : (
+                                                <span>
+                        Traditional interactive authentication requiring customer admin consent.
+                        Enter tenant details manually.
+                    </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            {/* GDAP Tenant Selection */}
+                            {isGdapMode && (
+                                <Card className="border-primary/20 bg-primary/5">
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <Shield className="h-5 w-5" />
+                                                    Select Partner Tenant
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Choose from your available GDAP partner tenants
+                                                </CardDescription>
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={fetchPartnerTenants}
+                                                disabled={gdapLoading}
+                                            >
+                                                {gdapLoading ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    'Refresh'
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        {partnerTenants.length === 0 && !gdapLoading && !gdapError && (
+                                            <Button onClick={fetchPartnerTenants} className="w-full">
+                                                Load Partner Tenants
+                                            </Button>
+                                        )}
+
+                                        {gdapLoading && (
+                                            <div className="text-center py-4">
+                                                <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                                                <p className="text-sm text-gray-600">Loading partner tenants...</p>
+                                            </div>
+                                        )}
+
+                                        {gdapError && (
+                                            <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-md">
+                                                <AlertCircle className="h-4 w-4" />
+                                                {gdapError}
+                                            </div>
+                                        )}
+
+                                        {!gdapLoading && !gdapError && partnerTenants.length > 0 && (
+                                            <Command className="rounded-lg border shadow-md">
+                                                <CommandInput placeholder="Search tenants..." />
+                                                <CommandList className="max-h-[300px]">
+                                                    <CommandEmpty>No tenants found.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {partnerTenants.map((tenant) => (
+                                                            <CommandItem
+                                                                key={tenant.tenantId}
+                                                                value={`${tenant.domain} ${tenant.displayName || ''}`}
+                                                                onSelect={() => {
+                                                                    setSelectedTenant(tenant);
+                                                                    setTenantId(tenant.tenantId);
+                                                                    setTenantDomainName(tenant.domain);
+                                                                }}
+                                                                className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50"
+                                                            >
+                                                                <div className="flex-1">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <p className="font-medium">{tenant.domain}</p>
+                                                                        {tenant.displayName && (
+                                                                            <span className="text-sm text-gray-500">
+                        ({tenant.displayName})
+                    </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-xs text-gray-400 font-mono">
+                                                                        {tenant.tenantId}
+                                                                    </p>
+                                                                    <div className="flex gap-1 mt-1">
+                                                                        <Badge
+                                                                            variant={tenant.isOnboarded ? "default" : "secondary"}
+                                                                            className="text-xs"
+                                                                        >
+                                                                            {tenant.isOnboarded ? 'Onboarded' : 'Not Onboarded'}
+                                                                        </Badge>
+                                                                    </div>
+                                                                </div>
+                                                                {selectedTenant?.tenantId === tenant.tenantId && (
+                                                                    <CheckCircle className="h-5 w-5 text-green-600" />
+                                                                )}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        )}
+
+                                        {selectedTenant && (
+                                            <Card className="bg-green-50 border-green-200">
+                                                <CardContent className="p-4">
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <p className="font-medium text-green-800">
+                                                                Selected: {selectedTenant.domain}
+                                                            </p>
+                                                            <p className="text-sm text-green-600">
+                                                                {selectedTenant.displayName || 'No display name'}
+                                                            </p>
+                                                            <p className="text-xs text-green-500 font-mono">
+                                                                {selectedTenant.tenantId}
+                                                            </p>
+                                                        </div>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setSelectedTenant(null);
+                                                                setTenantId('');
+                                                                setTenantDomainName('');
+                                                            }}
+                                                        >
+                                                            <X className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            {/* Manual Entry for Interactive Mode */}
+                            {!isGdapMode && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <Label htmlFor="tenantId">Tenant ID</Label>
+                                        <Input
+                                            id="tenantId"
+                                            value={tenantId}
+                                            onChange={(e) => setTenantId(e.target.value)}
+                                            placeholder="Enter tenant ID (UUID format)"
+                                            className="font-mono"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            The Azure AD tenant ID in UUID format
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="domain">Domain Name</Label>
+                                        <Input
+                                            id="domain"
+                                            value={tenantDomainName}
+                                            onChange={(e) => setTenantDomainName(e.target.value)}
+                                            placeholder="Enter domain name (e.g., contoso.onmicrosoft.com)"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            The primary domain name of the tenant
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                        </CardContent>
+                    </Card>
+                );
+
+            case 1:
+                return (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Step 2: Validation</CardTitle>
+                            <CardDescription>Verify and confirm information</CardDescription>
+                        </CardHeader>
+                         {/*Validation step display*/}
+                        <CardContent className="space-y-4">
+                            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                                <div className="flex justify-between">
+                                    <span className="font-medium">Customer:</span>
+                                    <span>{customerName}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="font-medium">Method:</span>
+                                    <Badge variant={isGdapMode ? "default" : "secondary"}>
+                                        {isGdapMode ? 'GDAP' : 'Interactive'}
+                                    </Badge>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="font-medium">Tenant ID:</span>
+                                    <span className="font-mono text-sm">
+            {isGdapMode ? selectedTenant?.tenantId : tenantId}
+        </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="font-medium">Domain:</span>
+                                    <span>{isGdapMode ? selectedTenant?.domain : tenantDomainName}</span>
+                                </div>
+                                {isGdapMode && selectedTenant?.displayName && (
+                                    <div className="flex justify-between">
+                                        <span className="font-medium">Display Name:</span>
+                                        <span>{selectedTenant.displayName}</span>
+                                    </div>
+                                )}
+                                {isGdapMode && selectedTenant && (
+                                    <div className="flex justify-between">
+                                        <span className="font-medium">Status:</span>
+                                        <Badge variant="outline" className="text-xs">
+                                            {selectedTenant.isOnboarded ? 'Previously Onboarded' : 'New Tenant'}
+                                        </Badge>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="bg-blue-50 p-4 rounded-lg">
+                                <div className="flex items-start gap-2">
+                                    <Info className="h-5 w-5 text-blue-600 mt-0.5" />
+                                    <div className="text-sm text-blue-800">
+                                        <p className="font-medium">Next Step:</p>
+                                        <p>Admin consent will be initiated to grant necessary permissions for monitoring and management.</p>
+                                        {isGdapMode && (
+                                            <p className="mt-1">Using GDAP relationship for secure delegated access.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </CardContent>
+                    </Card>
+                );
+
+            case 2:
+                return (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Step 3: Admin Consent</CardTitle>
+                            <CardDescription>Grant necessary permissions</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {loading && (
+                                <div className="text-center py-6">
+                                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+                                    <p className="font-medium">Initiating consent process...</p>
+                                    <p className="text-sm text-gray-600 mt-2">
+                                        A popup window will open for admin consent
+                                    </p>
+                                </div>
+                            )}
+
+                            {consentWindow && !consentCompleted && (
+                                <div className="text-center py-6">
+                                    <ExternalLink className="h-8 w-8 mx-auto mb-4 text-blue-600" />
+                                    <p className="font-medium">Consent window is open</p>
+                                    <p className="text-sm text-gray-600 mt-2">
+                                        Please complete the consent process in the popup window
+                                    </p>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            if (consentWindow) {
+                                                consentWindow.focus();
+                                            }
+                                        }}
+                                        className="mt-4"
+                                    >
+                                        Focus Consent Window
+                                    </Button>
+                                </div>
+                            )}
+
+                            {!loading && !consentWindow && !consentCompleted && (
+                                <div className="text-center py-6">
+                                    <Shield className="h-8 w-8 mx-auto mb-4 text-gray-400" />
+                                    <p className="text-gray-600">Consent process will start automatically</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                );
+
+            case 3:
+                return (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Step 4: Complete</CardTitle>
+                            <CardDescription>Onboarding completed successfully</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="text-center py-6">
+                                <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-600" />
+                                <p className="text-lg font-medium mb-2">Onboarding Complete!</p>
+                                <p className="text-gray-600">
+                                    {customerName} has been successfully onboarded and is ready for monitoring.
+                                </p>
+                            </div>
+                            <div className="bg-green-50 p-4 rounded-lg">
+                                <div className="text-sm text-green-800">
+                                    <p className="font-medium mb-1">What happens next:</p>
+                                    <ul className="space-y-1 list-disc list-inside">
+                                        <li>Tenant monitoring will begin shortly</li>
+                                        <li>Security alerts and reports will be available</li>
+                                        <li>Customer will appear in your dashboard</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+
+            default:
+                return null;
+        }
     };
 
     return (
@@ -144,394 +682,100 @@ export default function TenantOnboardingModal({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Building className="h-5 w-5" />
-                        Add Tenant - {customerName}
+                        Tenant Onboarding - {customerName}
                     </DialogTitle>
                 </DialogHeader>
 
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="onboarding">
-                            <Users className="h-4 w-4 mr-2" />
-                            Tenant Onboarding
-                        </TabsTrigger>
-                        <TabsTrigger value="custom-app" disabled>
-                            <Lock className="h-4 w-4 mr-2" />
-                            Custom Application
-                            <Badge variant="secondary" className="ml-2">Coming Soon</Badge>
-                        </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="onboarding" className="space-y-4 mt-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Users className="h-5 w-5" />
-                                    Tenant Onboarding Options
-                                </CardTitle>
-                                <CardDescription>
-                                    Choose how you want to onboard this tenant to your services
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                {/* GDAP Toggle */}
-                                <div className="flex items-center justify-between p-4 border rounded-lg">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <h4 className="font-medium">Authentication Method (Interactive/GDAP)</h4>
-                                            <Info className="h-4 w-4 text-blue-500" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-3">
-                                                <Switch
-                                                    checked={isGdapMode}
-                                                    onCheckedChange={handleGdapToggle}
-                                                />
-                                                <span className="font-medium">
-                                                    {isGdapMode ? 'GDAP Relationship' : 'User Interactive Mode'}
-                                                </span>
-                                            </div>
-                                            <div className="text-sm text-gray-600 ml-8">
-                                                {isGdapMode ? (
-                                                    <div className="space-y-1">
-                                                        <p className="font-medium text-orange-700">GDAP Relationship Mode:</p>
-                                                        <p>• Uses Granular Delegated Admin Privileges (GDAP)</p>
-                                                        <p>• Requires pre-established partner relationship in Partner Center</p>
-                                                        <p>• Provides role-based access with specific permissions</p>
-                                                        <p>• More secure and compliant for MSP scenarios</p>
-                                                    </div>
-                                                ) : (
-                                                    <div className="space-y-1">
-                                                        <p className="font-medium text-blue-700">User Interactive Mode:</p>
-                                                        <p>• Requires customer admin to manually consent</p>
-                                                        <p>• User will be redirected to Microsoft login</p>
-                                                        <p>• Suitable for direct customer onboarding</p>
-                                                        <p>• Provides immediate access after consent</p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* GDAP Tenant Selection - Show when GDAP is enabled */}
-                                {isGdapMode && (
-                                    <Card className="border-blue-200 bg-blue-50">
-                                        <CardContent className="p-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                                                    <Users className="h-4 w-4 text-white" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-blue-800">Your Partner Tenant</p>
-                                                    <p className="text-sm text-blue-600">
-                                                        Tenant ID: {loggedInUserTenantId || 'Not available'}
-                                                    </p>
-                                                    <p className="text-xs text-blue-500">
-                                                        This is your logged-in tenant that will provide services
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                )}
-                                {isGdapMode && (
-                                    <Card className="border-primary/20 bg-primary/5">
-                                        <CardHeader>
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <CardTitle className="text-lg">Select Partner Tenant</CardTitle>
-                                                    <CardDescription>
-                                                        Choose which partner tenant to add to {customerName}
-                                                    </CardDescription>
-                                                </div>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={fetchPartnerTenants}
-                                                    disabled={loading || !loggedInUserTenantId}
-                                                    className="flex items-center gap-2"
-                                                >
-                                                    <Loader2 className={`h-4 w-4 ${loading ? 'animate-spin' : 'hidden'}`} />
-                                                    Refresh
-                                                </Button>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
-                                            {partnerTenants.length === 0 && !loading && !error && (
-                                                <Button
-                                                    onClick={fetchPartnerTenants}
-                                                    className="w-full"
-                                                    disabled={!loggedInUserTenantId}
-                                                >
-                                                    {loggedInUserTenantId
-                                                        ? `Load Partner Tenants for ${loggedInUserTenantId.slice(0, 8)}...`
-                                                        : 'Tenant ID not available'
-                                                    }
-                                                </Button>
-                                            )}
-                                            {/* Option 3: Skeleton Loading Animation */}
-                                            {loading && (
-                                                <div className="space-y-4">
-                                                    {/* Header skeleton */}
-                                                    <div className="flex items-center space-x-3">
-                                                        <div className="w-8 h-8 bg-primary/20 rounded-lg animate-pulse flex items-center justify-center">
-                                                            <Building className="h-4 w-4 text-primary animate-pulse" />
-                                                        </div>
-                                                        <div className="space-y-2 flex-1">
-                                                            <div className="h-5 bg-primary/20 rounded animate-pulse w-48"></div>
-                                                            <div className="h-4 bg-primary/10 rounded animate-pulse w-64"></div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Skeleton tenant items */}
-                                                    {[1, 2, 3].map((i) => (
-                                                        <div key={i} className="border rounded-lg p-4 space-y-3">
-                                                            <div className="flex items-center space-x-3">
-                                                                <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-                                                                <div className="space-y-2 flex-1">
-                                                                    <div className="h-4 bg-gray-200 rounded animate-pulse w-40"></div>
-                                                                    <div className="h-3 bg-gray-100 rounded animate-pulse w-32"></div>
-                                                                </div>
-                                                                <div className="w-16 h-6 bg-gray-200 rounded animate-pulse"></div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-
-                                                    <div className="text-center">
-                                                        <div className="inline-flex items-center space-x-2 text-primary">
-                                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                                            <span className="text-sm font-medium">Loading tenant data...</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {error && (
-                                                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-md">
-                                                    <AlertCircle className="h-4 w-4" />
-                                                    {error}
-                                                </div>
-                                            )}
-                                            {/*Tenant selection area*/}
-                                            {!loading && !error && partnerTenants.length > 0 && (
-                                                <div className="space-y-3">
-                                                    <label className="text-sm font-medium">Available Partner Tenants</label>
-
-                                                    {/* Searchable Command Component */}
-                                                    <Command className="rounded-lg border shadow-md">
-                                                        <CommandInput
-                                                            placeholder="Search tenants by name or domain..."
-                                                            className="h-9"
-                                                        />
-                                                        <CommandEmpty>No tenants found matching your search.</CommandEmpty>
-                                                        <CommandList className="max-h-60 overflow-y-auto">
-                                                            <CommandGroup>
-                                                                {partnerTenants.map((tenant) => (
-                                                                    <CommandItem
-                                                                        key={tenant.tenantId}
-                                                                        value={`${tenant.displayName} ${tenant.domain}`}
-                                                                        onSelect={() => {
-                                                                            // Only allow selection of non-onboarded tenants
-                                                                            if (!tenant.isOnboarded) {
-                                                                                setSelectedTenant(tenant);
-                                                                            }
-                                                                        }}
-                                                                        disabled={tenant.isOnboarded}
-                                                                        className={`cursor-pointer ${tenant.isOnboarded ? "opacity-50 cursor-not-allowed" : ""}`}
-                                                                    >
-                                                                        <div className="flex items-center justify-between w-full">
-                                                                            <div className="flex items-center space-x-3">
-                                                                                <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-lg flex items-center justify-center">
-                                                                                    <Building className="h-4 w-4 text-white" />
-                                                                                </div>
-                                                                                <div className="flex flex-col">
-                                                                                    <span className="font-medium">{tenant.displayName}</span>
-                                                                                    <span className="text-xs text-gray-500">{tenant.domain}</span>
-                                                                                    <span className="text-xs text-gray-400">ID: {tenant.tenantId.slice(0, 8)}...</span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="flex items-center space-x-2">
-                                                                                {tenant.isOnboarded ? (
-                                                                                    <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                                                                        <CheckCircle className="h-3 w-3 mr-1" />
-                                                                                        Onboarded
-                                                                                    </Badge>
-                                                                                ) : (
-                                                                                    <Badge variant="outline" className="text-blue-600 border-blue-200">
-                                                                                        Available
-                                                                                    </Badge>
-                                                                                )}
-                                                                                {selectedTenant?.tenantId === tenant.tenantId && !tenant.isOnboarded && (
-                                                                                    <CheckCircle className="h-4 w-4 text-green-600" />
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-                                                                    </CommandItem>
-                                                                ))}
-                                                            </CommandGroup>
-                                                        </CommandList>
-                                                    </Command>
-
-                                                    {/* Search Results Summary */}
-                                                    <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
-                                                        <div className="flex items-center gap-4">
-                <span>
-                    <strong>{partnerTenants.filter(t => !t.isOnboarded).length}</strong> available
-                </span>
-                                                            <span>
-                    <strong>{partnerTenants.filter(t => t.isOnboarded).length}</strong> already onboarded
-                </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-xs">Total: {partnerTenants.length}</span>
-                                                            {partnerTenants.length >= 100 && (
-                                                                <Badge variant="outline" className="text-xs">
-                                                                    Use search to find tenants quickly
-                                                                </Badge>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    {selectedTenant && (
-                                                        <Card className="bg-green-50 border-green-200">
-                                                            <CardContent className="p-4">
-                                                                <div className="flex items-center gap-3">
-                                                                    <CheckCircle className="h-5 w-5 text-green-600" />
-                                                                    <div>
-                                                                        <p className="font-medium">{selectedTenant.displayName}</p>
-                                                                        <p className="text-sm text-gray-600">{selectedTenant.domain}</p>
-                                                                        <p className="text-xs text-gray-500">Tenant ID: {selectedTenant.tenantId}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </CardContent>
-                                                        </Card>
-                                                    )}
-                                                </div>
-                                            )}
-
-
-                                            {!loading && !error && partnerTenants.length === 0 && (
-                                                <div className="text-center py-6 text-gray-500">
-                                                    <Building className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                                                    <p className="text-sm">No partner tenants found</p>
-                                                </div>
-                                            )}
-
-                                            {!loading && !error && partnerTenants.length > 0 && partnerTenants.every(t => t.isOnboarded) && (
-                                                <div className="text-center py-6 text-amber-600 bg-amber-50 rounded-md">
-                                                    <AlertCircle className="h-8 w-8 mx-auto mb-2" />
-                                                    <p className="text-sm font-medium">All partner tenants are already onboarded</p>
-                                                    <p className="text-xs mt-1">No new tenants available for onboarding</p>
-                                                </div>
-                                            )}
-
-
-                                            {!loading && !error && partnerTenants.length === 0 && (
-                                                <div className="text-center py-6 text-gray-500">
-                                                    <Building className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                                                    <p className="text-sm">No available partner tenants found</p>
-                                                </div>
-                                            )}
-                                        </CardContent>
-                                    </Card>
-                                )}
-
-                                {/* Additional Information Card */}
-                                <Card className="bg-blue-50 border-blue-200">
-                                    <CardContent className="p-4">
-                                        <div className="flex items-start gap-2">
-                                            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-                                            <div className="text-sm text-blue-800">
-                                                <p className="font-medium mb-1">Important Notes:</p>
-                                                <ul className="space-y-1 list-disc list-inside">
-                                                    <li>GDAP relationships must be pre-configured in Partner Center</li>
-                                                    <li>User Interactive mode requires customer admin participation</li>
-                                                    <li>Both methods will provision the tenant for monitoring services</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-
-                                <div className="flex gap-3 pt-4">
-                                    <Button
-                                        onClick={handleOnboardingSubmit}
-                                        className="flex-1"
-                                        disabled={isGdapMode && !selectedTenant}
-                                    >
-                                        {isGdapMode ? 'Setup GDAP Onboarding' : 'Start Interactive Onboarding'}
-                                    </Button>
-                                    <Button variant="outline" onClick={onClose}>
-                                        Cancel
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    <TabsContent value="custom-app" className="space-y-4 mt-6">
-                        <Card className="opacity-50">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Lock className="h-5 w-5" />
-                                    Custom Application Deployment
-                                    <Badge variant="secondary">Coming Soon</Badge>
-                                </CardTitle>
-                                <CardDescription>
-                                    Deploy specific applications to the tenant (Feature under development)
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                {/* App Selection */}
-                                <div className="space-y-3">
-                                    <label className="text-sm font-medium">Select Application</label>
-                                    <Select value={selectedApp} onValueChange={setSelectedApp} disabled>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Choose an application to deploy" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {AVAILABLE_APPS.map((app) => (
-                                                <SelectItem key={app.id} value={app.id}>
-                                                    <div className="flex flex-col">
-                                                        <span className="font-medium">{app.name}</span>
-                                                        <span className="text-xs text-gray-500">{app.description}</span>
-                                                    </div>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                {/* Process Overview */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Onboarding Process</CardTitle>
+                        <CardDescription>4-step process to onboard your customer</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className={`text-center p-4 ${currentStep >= 0 ? 'opacity-100' : 'opacity-50'}`}>
+                                <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
+                                    currentStep >= 0 ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-100'
+                                }`}>
+                                    <Building className={`h-6 w-6 ${currentStep >= 0 ? 'text-blue-600' : 'text-gray-400'}`} />
                                 </div>
 
-                                {/* GDAP Toggle for Custom App */}
-                                <div className="flex items-center justify-between p-4 border rounded-lg">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <h4 className="font-medium">Authentication Method</h4>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <Switch
-                                                checked={isCustomAppGdap}
-                                                onCheckedChange={setIsCustomAppGdap}
-                                                disabled
-                                            />
-                                            <span className="font-medium">
-                                                {isCustomAppGdap ? 'GDAP Relationship' : 'User Interactive Mode'}
-                                            </span>
-                                        </div>
-                                    </div>
+                                <h4 className="font-semibold mb-2">1. Method Selection</h4>
+                                <p className="text-sm text-muted-foreground">Choose onboarding method</p>
+                            </div>
+                            <div className={`text-center p-4 ${currentStep >= 1 ? 'opacity-100' : 'opacity-50'}`}>
+                                <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
+                                    currentStep >= 1 ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-100'
+                                }`}>
+                                    <CheckCircle className={`h-6 w-6 ${currentStep >= 1 ? 'text-green-600' : 'text-gray-400'}`} />
                                 </div>
 
-                                <div className="flex gap-3 pt-4">
-                                    <Button onClick={handleCustomAppSubmit} disabled className="flex-1">
-                                        Deploy Application
-                                    </Button>
-                                    <Button variant="outline" onClick={onClose}>
-                                        Cancel
-                                    </Button>
+                                <h4 className="font-semibold mb-2">2. Validation</h4>
+                                <p className="text-sm text-muted-foreground">Verify information</p>
+                            </div>
+                            <div className={`text-center p-4 ${currentStep >= 2 ? 'opacity-100' : 'opacity-50'}`}>
+                                <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
+                                    currentStep >= 2 ? 'bg-purple-100 dark:bg-purple-900' : 'bg-gray-100'
+                                }`}>
+                                    <Lock className={`h-6 w-6 ${currentStep >= 2 ? 'text-purple-600' : 'text-gray-400'}`} />
                                 </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
+
+                                <h4 className="font-semibold mb-2">3. Admin Consent</h4>
+                                <p className="text-sm text-muted-foreground">Grant permissions</p>
+                            </div>
+                            <div className={`text-center p-4 ${currentStep >= 3 ? 'opacity-100' : 'opacity-50'}`}>
+                                <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
+                                    currentStep >= 3 ? 'bg-yellow-100 dark:bg-yellow-900' : 'bg-gray-100'
+                                }`}>
+                                    <Users className={`h-6 w-6 ${currentStep >= 3 ? 'text-yellow-600' : 'text-gray-400'}`} />
+                                </div>
+
+                                <h4 className="font-semibold mb-2">4. Complete</h4>
+                                <p className="text-sm text-muted-foreground">Ready for monitoring</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Current Step Content */}
+                {renderStepContent()}
+
+                {/* Error Display */}
+                {error && (
+                    <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-md">
+                        <AlertCircle className="h-4 w-4" />
+                        {error}
+                    </div>
+                )}
+
+                {/* Navigation Buttons */}
+                <div className="flex gap-3 pt-4">
+                    {currentStep > 0 && currentStep < 3 && (
+                        <Button variant="outline" onClick={handleBack} disabled={loading}>
+                            Back
+                        </Button>
+                    )}
+
+                    {currentStep < 2 && (
+                        <Button onClick={handleNext} className="flex-1" disabled={loading}>
+                            {currentStep === 1 ? 'Start Consent' : 'Next'}
+                        </Button>
+                    )}
+
+                    {currentStep === 3 && (
+                        <Button onClick={handleComplete} className="flex-1">
+                            Complete Onboarding
+                        </Button>
+                    )}
+
+                    <Button variant="outline" onClick={onClose} disabled={loading}>
+                        {currentStep === 3 ? 'Close' : 'Cancel'}
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     );
-}
+};
+
+export default TenantOnboardingModal;
