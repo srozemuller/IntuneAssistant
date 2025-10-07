@@ -103,14 +103,15 @@ function MigrationPage() {
                         fetchData(cancelSource)
                     ]);
 
-                    // Extract the `data` key from the API response
-                    const migrationData = migrationResponse || [];
+                    // Fix: Extract the data property from the response
+                    const migrationData = migrationResponse?.data || [];
                     console.log('Migration data:', migrationData);
-                    // Parse the extracted data
+
+                    // Parse the extracted data array
                     const parsedMigrationData = z.array(assignmentMigrationSchema).parse(migrationData);
 
-                    setGroups(groupsData);
-                    setFilters(filtersData);
+                    setGroups(groupsData || []);
+                    setFilters(filtersData || []);
                     setData(parsedMigrationData);
 
                     toast.update(toastId, {
