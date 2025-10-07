@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck } from 'lucide-react';
-import { CONFIGURATION_POLICIES_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE } from '@/lib/constants';
+import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck, Trash2, FileText} from 'lucide-react';
+import { CONFIGURATION_POLICIES_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE, CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT } from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
@@ -22,7 +22,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
 
 interface PolicyAssignment {
     id: string;
@@ -109,14 +108,94 @@ export default function ConfigurationPoliciesPage() {
     const [selectedPolicy, setSelectedPolicy] = useState<ConfigurationPolicy | null>(null);
     const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
 
+    // Selection states - matching device selection exactly
+    const [selectedPolicies, setSelectedPolicies] = useState<string[]>([]);
+    const [bulkActionLoading, setBulkActionLoading] = useState(false);
+
     useEffect(() => {
         setCurrentPage(1);
     }, [policyTypeFilter, statusFilter, platformFilter, searchQuery]);
 
-
     const handlePolicyClick = (policy: ConfigurationPolicy) => {
         setSelectedPolicy(policy);
         setIsPolicyDialogOpen(true);
+    };
+
+    // Individual policy selection handler
+    const handlePolicySelection = (policyId: string, isChecked: boolean) => {
+        if (isChecked) {
+            setSelectedPolicies(prev => [...prev, policyId]);
+        } else {
+            setSelectedPolicies(prev => prev.filter(id => id !== policyId));
+        }
+    };
+
+    // Select all/deselect all for current page
+    const handleSelectAllToggle = () => {
+        const currentPagePolicyIds = paginatedPolicies.map(p => p.id);
+        const allSelected = currentPagePolicyIds.every(id => selectedPolicies.includes(id));
+
+        if (allSelected) {
+            // Deselect all on current page
+            setSelectedPolicies(prev => prev.filter(id => !currentPagePolicyIds.includes(id)));
+        } else {
+            // Select all on current page
+            setSelectedPolicies(prev => [...new Set([...prev, ...currentPagePolicyIds])]);
+        }
+    };
+
+    const clearSelection = () => {
+        setSelectedPolicies([]);
+    };
+
+    const handleBulkExport = () => {
+        const selectedPolicyData = policies.filter(policy => selectedPolicies.includes(policy.id));
+        const exportData: ExportData = {
+            ...prepareExportData(),
+            data: selectedPolicyData,
+            filename: `selected-configuration-policies-${selectedPolicyData.length}`,
+            title: `Selected Configuration Policies (${selectedPolicyData.length})`,
+            description: `Export of ${selectedPolicyData.length} selected configuration policies`
+        };
+        // Trigger export with selected data
+    };
+
+    const handleBulkDelete = async () => {
+        if (!window.confirm(`Are you sure you want to delete ${selectedPolicies.length} selected policies? This action cannot be undone.`)) {
+            return;
+        }
+
+        setBulkActionLoading(true);
+        try {
+            const selectedPolicyData = policies.filter(policy => selectedPolicies.includes(policy.id));
+
+            const response = await request<ConfigurationPolicy>(
+                CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(selectedPolicyData)
+                }
+            );
+
+            if (!response) {
+                throw new Error('No response received from API');
+            }
+            if (response.ok) {
+                console.log(`Successfully deleted ${selectedPolicyData.length} policies`);
+                await fetchPolicies();
+                clearSelection();
+            } else {
+                throw new Error(`Failed to delete policies: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Failed to delete policies:', error);
+            setError(`Failed to delete selected policies: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setBulkActionLoading(false);
+        }
     };
 
     const prepareExportData = (): ExportData => {
@@ -233,7 +312,6 @@ export default function ConfigurationPoliciesPage() {
             setFilteredPolicies([]);
             throw new Error('Invalid data format received from API');
         }
-
     };
 
     const fetchFilters = async () => {
@@ -388,8 +466,8 @@ export default function ConfigurationPoliciesPage() {
                         </button>
                         {description && (
                             <span className="text-xs text-gray-500 line-clamp-2 max-w-md">
-                        {description.replace(/\|/g, '').replace(/\n/g, ' ').substring(0, 100)}...
-                    </span>
+                                {description.replace(/\|/g, '').replace(/\n/g, ' ').substring(0, 100)}...
+                            </span>
                         )}
                     </div>
                 );
@@ -574,6 +652,54 @@ export default function ConfigurationPoliciesPage() {
                 </div>
             </div>
 
+            {/* Bulk Actions Bar */}
+            {selectedPolicies.length > 0 && (
+                <Card className="shadow-sm border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+                    <CardContent className="py-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                    {selectedPolicies.length} policy{selectedPolicies.length !== 1 ? 'ies' : ''} selected
+                                </span>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={clearSelection}
+                                    className="text-blue-700 hover:text-blue-900 dark:text-blue-300"
+                                >
+                                    Clear selection
+                                </Button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleBulkExport}
+                                    className="flex items-center gap-2"
+                                >
+                                    <FileText className="h-4 w-4" />
+                                    Export Selected
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={handleBulkDelete}
+                                    disabled={bulkActionLoading}
+                                    className="flex items-center gap-2"
+                                >
+                                    {bulkActionLoading ? (
+                                        <RefreshCw className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Trash2 className="h-4 w-4" />
+                                    )}
+                                    Delete Selected
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Show welcome card when no policies are loaded and not loading */}
             {policies.length === 0 && !loading && !error && (
                 <Card className="shadow-sm">
@@ -586,7 +712,7 @@ export default function ConfigurationPoliciesPage() {
                                 Ready to view your configuration policies
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the &quot;Load Policies&quot; button above to fetch all configuration policies from your Intune environment.
+                                Click the "Load Policies" button above to fetch all configuration policies from your Intune environment.
                             </p>
                             <Button onClick={fetchPolicies} className="flex items-center gap-2 mx-auto" size="lg">
                                 <Settings className="h-5 w-5" />
@@ -648,7 +774,7 @@ export default function ConfigurationPoliciesPage() {
                                 <div className="mt-2">
                                     <Badge variant="secondary" className="flex items-center gap-1 w-fit">
                                         <Search className="h-3 w-3" />
-                                        Searching: &quot;{searchQuery}&quot;
+                                        Searching: "{searchQuery}"
                                         <button onClick={clearSearch} className="ml-1 hover:text-red-600">
                                             <X className="h-3 w-3" />
                                         </button>
@@ -757,7 +883,20 @@ export default function ConfigurationPoliciesPage() {
                     <Card className="shadow-sm w-full overflow-hidden">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                <span>Configuration Policy Details</span>
+                                <div className="flex items-center gap-4">
+                                    <span>Configuration Policy Details</span>
+                                    {paginatedPolicies.length > 0 && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleSelectAllToggle}
+                                            className="flex items-center gap-2"
+                                        >
+                                            {paginatedPolicies.every(policy => selectedPolicies.includes(policy.id)) ?
+                                                'Deselect All' : 'Select All'}
+                                        </Button>
+                                    )}
+                                </div>
                                 <div className="flex items-center gap-2 text-sm text-gray-600">
                                     <span>Showing {startIndex + 1}-{Math.min(endIndex, filteredPolicies.length)} of {filteredPolicies.length}</span>
                                 </div>
@@ -775,11 +914,51 @@ export default function ConfigurationPoliciesPage() {
                             ) : (
                                 <div className="w-full">
                                     <div className="overflow-x-auto">
-                                        <DataTable
-                                            data={paginatedPolicies}
-                                            columns={columns}
-                                            className="min-w-full"
-                                        />
+                                        <table className="min-w-full">
+                                            <thead className="bg-gray-50 dark:bg-gray-800">
+                                            <tr>
+                                                <th className="text-left p-3 w-12">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={paginatedPolicies.length > 0 && paginatedPolicies.every(policy => selectedPolicies.includes(policy.id))}
+                                                        onChange={handleSelectAllToggle}
+                                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                                    />
+                                                </th>
+                                                {columns.map((column) => (
+                                                    <th key={column.key} className="text-left p-3 font-medium text-gray-900 dark:text-gray-100">
+                                                        {column.label}
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                            </thead>
+                                            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                                            {paginatedPolicies.map((policy, index) => (
+                                                <tr key={policy.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                    <td className="text-left p-3">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedPolicies.includes(policy.id)}
+                                                            onChange={(e) => handlePolicySelection(policy.id, e.target.checked)}
+                                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                                        />
+                                                    </td>
+                                                    {columns.map((column) => (
+                                                        <td
+                                                            key={column.key}
+                                                            className="p-3 cursor-pointer"
+                                                            onClick={() => handlePolicyClick(policy)}
+                                                        >
+                                                            {column.render ?
+                                                                column.render(policy[column.key], policy) :
+                                                                String(policy[column.key] || '')
+                                                            }
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
                                     </div>
 
                                     {/* Pagination */}
@@ -944,6 +1123,7 @@ export default function ConfigurationPoliciesPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
             {/* Policy Details Dialog */}
             <Dialog open={isPolicyDialogOpen} onOpenChange={setIsPolicyDialogOpen}>
                 <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
@@ -1135,7 +1315,6 @@ export default function ConfigurationPoliciesPage() {
                     )}
                 </DialogContent>
             </Dialog>
-
         </div>
     );
 }

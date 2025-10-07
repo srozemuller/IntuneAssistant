@@ -14,9 +14,10 @@ interface DataTableProps {
     data: Record<string, unknown>[];
     columns: Column[];
     className?: string;
+    onRowClick?: (row: Record<string, unknown>) => void;
 }
 
-export function DataTable({ data, columns: initialColumns, className }: DataTableProps) {
+export function DataTable({ data, columns: initialColumns, className, onRowClick }: DataTableProps) {
     const [columns, setColumns] = useState(initialColumns.map(col => ({
         ...col,
         width: col.width || 150,
@@ -61,6 +62,26 @@ export function DataTable({ data, columns: initialColumns, className }: DataTabl
         });
     };
 
+    const handleRowClick = (e: React.MouseEvent, row: Record<string, unknown>) => {
+        if (resizing) return;
+
+        const target = e.target as HTMLElement;
+        // Check for interactive elements including checkboxes, buttons, and links
+        const isInteractive = target.closest('input[type="checkbox"], input[type="radio"], button, a, [role="button"], [tabindex="0"]');
+
+        if (!isInteractive && onRowClick) {
+            onRowClick(row);
+        }
+    };
+
+    const getCellValue = (row: Record<string, unknown>, column: Column) => {
+        // For the selection column, we don't need to get a value from the row data
+        if (column.key === '_select') {
+            return null;
+        }
+        return row[column.key];
+    };
+
     return (
         <div className="overflow-x-auto">
             <table ref={tableRef} className={`w-full table-fixed ${className || ''}`}>
@@ -76,20 +97,26 @@ export function DataTable({ data, columns: initialColumns, className }: DataTabl
                                 <span className="truncate pr-2">{column.label}</span>
                             </div>
 
-                            {/* Resize handle */}
-                            <div
-                                className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500 group"
-                                onMouseDown={(e) => handleResizeStart(e, index)}
-                            >
-                                <div className="h-full w-px bg-gray-300 group-hover:bg-blue-500 transition-colors" />
-                            </div>
+                            {/* Only show resize handle for non-selection columns */}
+                            {column.key !== '_select' && (
+                                <div
+                                    className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500 group"
+                                    onMouseDown={(e) => handleResizeStart(e, index)}
+                                >
+                                    <div className="h-full w-px bg-gray-300 group-hover:bg-blue-500 transition-colors" />
+                                </div>
+                            )}
                         </th>
                     ))}
                 </tr>
                 </thead>
                 <tbody>
                 {data.map((row, rowIndex) => (
-                    <tr key={rowIndex} className="border-b hover:bg-gray-50">
+                    <tr
+                        key={rowIndex}
+                        className={`border-b hover:bg-gray-50 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+                        onClick={(e) => handleRowClick(e, row)}
+                    >
                         {columns.map((column) => (
                             <td
                                 key={column.key}
@@ -98,8 +125,8 @@ export function DataTable({ data, columns: initialColumns, className }: DataTabl
                             >
                                 <div className="overflow-hidden">
                                     {column.render
-                                        ? column.render(row[column.key], row)
-                                        : String(row[column.key] || '')
+                                        ? column.render(getCellValue(row, column), row)
+                                        : String(getCellValue(row, column) || '')
                                     }
                                 </div>
                             </td>

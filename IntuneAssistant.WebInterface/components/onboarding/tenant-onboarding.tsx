@@ -43,7 +43,7 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
     const [onboardingResult, setOnboardingResult] = useState<any>(null);
 
     const [currentStep, setCurrentStep] = useState(0);
-    const [isGdapMode, setIsGdapMode] = useState(type === 'gdap');
+    const [isGdapMode, setIsGdapMode] = useState(true);
     const [tenantId, setTenantId] = useState(gdapTenant?.tenantId || '');
     const [tenantDomainName, setTenantDomainName] = useState(gdapTenant?.domain || '');
     const [loading, setLoading] = useState(false);
@@ -73,7 +73,7 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                 setCurrentStep(1); // Skip step 0 for pre-selected GDAP tenant
             } else {
                 setCurrentStep(0);
-                setIsGdapMode(type === 'gdap');
+                setIsGdapMode(true); // Always default to GDAP
                 setTenantId('');
                 setTenantDomainName('');
             }
@@ -340,6 +340,7 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                                                     setTenantId('');
                                                     setTenantDomainName('');
                                                 }}
+                                                disabled={true}
                                             />
 
                                             <span className="font-medium">
