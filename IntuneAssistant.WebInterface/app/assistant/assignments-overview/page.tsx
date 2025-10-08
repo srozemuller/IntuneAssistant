@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +13,15 @@ import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import {useApiRequest} from "@/hooks/useApiRequest";
+import {ConsentDialog} from "@/components/ConsentDialog";
+
+interface ApiResponse {
+    status: string;
+    message: string;
+    details: unknown[];
+    data: Assignments[] | { url: string; message: string }; // Updated to handle both cases
+}
 
 
 // Simple interface instead of complex schema
@@ -52,7 +61,14 @@ interface AssignmentFilter {
 }
 
 export default function AssignmentsOverview() {
+    // API CALLS
     const { instance, accounts } = useMsal();
+    const { request, cancel } = useApiRequest();
+    // Consent dialog state when not enough permissions
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
+    const [consentUrl, setConsentUrl] = useState('');
+
+
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
     const [filters, setFilters] = useState<AssignmentFilter[]>([]);
@@ -89,6 +105,13 @@ export default function AssignmentsOverview() {
     useEffect(() => {
         setCurrentPage(1);
     }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter, filterTypeFilter]);
+
+    const handleConsentComplete = () => {
+        setShowConsentDialog(false);
+        setConsentUrl('');
+        // Optionally retry fetching assignments after consent
+        fetchAssignments();
+    };
 
     const getUniqueFilterTypes = (): Option[] => [
         { label: 'No Filter', value: 'None' },
@@ -185,36 +208,41 @@ export default function AssignmentsOverview() {
     const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
 
-        // Get access token
-        const response = await instance.acquireTokenSilent({
-            scopes: [apiScope],
-            account: accounts[0]
-        });
-
-        // Call your API
-        const apiResponse = await fetch(ASSIGNMENTS_ENDPOINT, {
-            headers: {
-                'Authorization': `Bearer ${response.accessToken}`,
-                'Content-Type': 'application/json'
+        const response = await request<ApiResponse>(
+            ASSIGNMENTS_ENDPOINT,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }
-        });
+        );
 
-        if (!apiResponse.ok) {
-            throw new Error(`API call failed: ${apiResponse.statusText}`);
+        if (!response) {
+            throw new Error('No response received from API');
         }
 
-        const responseData = await apiResponse.json();
-        const assignmentsData = responseData.data;
+        // Check if this is a consent required error - updated logic
+        if (response.status === 'Error' &&
+            response.message === 'User challenge required' &&
+            typeof response.data === 'object' &&
+            response.data !== null &&
+            'url' in response.data) {
 
-        if (Array.isArray(assignmentsData)) {
-            setAssignments(assignmentsData);
-            setFilteredAssignments(assignmentsData);
-        } else {
-            console.error('API response data is not an array:', assignmentsData);
-            setAssignments([]);
-            setFilteredAssignments([]);
+            setConsentUrl(response.data.url); // Access the url property
+            setShowConsentDialog(true);
+            setLoading(false);
+            return;
+        }
+
+        // Add type guard to ensure data is an array before processing
+        if (!Array.isArray(response.data)) {
             throw new Error('Invalid data format received from API');
         }
+
+        const assignmentsData = response.data;
+        setAssignments(assignmentsData);
+        setFilteredAssignments(assignmentsData);
     };
 
     const getUniqueResourceTypes = (): Option[] => {
@@ -240,20 +268,33 @@ export default function AssignmentsOverview() {
         if (!accounts.length) return;
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
 
-            const apiResponse = await fetch(ASSIGNMENTS_FILTERS_ENDPOINT, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
+
+            const response = await request<ApiResponse>(
+                ASSIGNMENTS_FILTERS_ENDPOINT,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 }
-            });
+            );
 
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to fetch filters: ${apiResponse.statusText}`);
+            if (!response) {
+                throw new Error('No response received from API');
+            }
+
+            // Check if this is a consent required error - updated logic
+            if (response.status === 'Error' &&
+                response.message === 'User challenge required' &&
+                typeof response.data === 'object' &&
+                response.data !== null &&
+                'url' in response.data) {
+
+                setConsentUrl(response.data.url); // Access the url property
+                setShowConsentDialog(true);
+                setLoading(false);
+                return;
             }
 
             const filtersData = await apiResponse.json();
@@ -1084,6 +1125,14 @@ export default function AssignmentsOverview() {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <ConsentDialog
+                isOpen={showConsentDialog}
+                onClose={() => setShowConsentDialog(false)}
+                consentUrl={consentUrl}
+                onConsentComplete={handleConsentComplete}
+                clearError={() => setError(null)}
+            />
         </div>
     );
 }

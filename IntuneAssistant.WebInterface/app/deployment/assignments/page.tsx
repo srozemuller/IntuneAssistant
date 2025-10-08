@@ -14,9 +14,19 @@ import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUP
 import {apiScope} from "@/lib/msalConfig";
 import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 import { ConsentDialog } from '@/components/ConsentDialog';
 import { DataTable } from '@/components/DataTable';
+import {useApiRequest} from "@/hooks/useApiRequest";
+
+interface AssignmentCompareApiResponse {
+    status: string;
+    message?: string;
+    data?: ComparisonResult[] | string;
+    errors?: {
+        [key: string]: string[];
+    };
+}
 
 interface CSVRow {
     PolicyName: string;
@@ -127,7 +137,14 @@ interface ValidationResult {
 
 
 export default function AssignmentRolloutPage() {
+    // API CALLS
     const { instance, accounts } = useMsal();
+    const { request, cancel } = useApiRequest();
+    // Consent dialog state when not enough permissions
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
+    const [consentUrl, setConsentUrl] = useState('');
+
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // State management
@@ -154,9 +171,7 @@ export default function AssignmentRolloutPage() {
     const paginatedResults = comparisonResults.slice(startIndex, endIndex);
     const totalPages = Math.ceil(comparisonResults.length / itemsPerPage);
 
-    // Consent dialog state when not enough permissions
-    const [showConsentDialog, setShowConsentDialog] = useState(false);
-    const [consentUrl, setConsentUrl] = useState('');
+
 
     const [migrationSuccessful, setMigrationSuccessful] = useState(false);
 
@@ -721,41 +736,41 @@ export default function AssignmentRolloutPage() {
         setError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(`${ASSIGNMENTS_COMPARE_ENDPOINT}`, {
+            const apiResponse = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT,{
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(validCsvData) // Send only valid data
+                body: JSON.stringify(validCsvData)
             });
-            if (!apiResponse.ok) {
-                const errorData = await apiResponse.json();
-
-                // Check if this is a consent required error
-                if (errorData.status === 'Error' &&
-                    errorData.message === 'User challenge required' &&
-                    errorData.data?.includes('adminconsent')) {
-
-                    setConsentUrl(errorData.data);
-                    setShowConsentDialog(true);
-                    setLoading(false);
-                    return;
-                }
+            // Add null check for apiResponse
+            if (!apiResponse) {
+                setError('Failed to get response from server');
+                return;
             }
 
-            const responseData = await apiResponse.json();
+            // Check if this is an error response
+            if (apiResponse.status === 'Error' &&
+                apiResponse.message === 'User challenge required') {
 
-            // Process and enhance the comparison results
-            const enhancedResults = responseData.data.map((item: ComparisonResult, index: number) => ({
+                setConsentUrl(apiResponse.data as string);
+                setShowConsentDialog(true);
+                setLoading(false);
+                return;
+            }
+
+            // Add null check for apiResponse.data
+            if (!apiResponse.data) {
+                setError('No data received from server');
+                return;
+            }
+            if (!Array.isArray(apiResponse.data)) {
+                setError('Invalid data format received from server');
+                return;
+            }
+
+
+            const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => ({
                 ...item,
                 csvRow: {
-                    ...validCsvData[index], // Use validCsvData instead of csvData
+                    ...validCsvData[index],
                 },
                 isReadyForMigration: item.isReadyForMigration,
                 isMigrated: item.isMigrated || false,

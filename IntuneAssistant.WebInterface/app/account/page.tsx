@@ -30,7 +30,7 @@ export default function AccountOverview() {
     };
 
     return (
-        <div className="p-6 max-w-4xl mx-auto">
+        <div className="p-6 max-w-7xl mx-auto">
             <div className="mb-6">
                 <Button
                     variant="outline"

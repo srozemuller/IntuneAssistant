@@ -8,6 +8,15 @@ module.exports = {
     ],
     theme: {
         extend: {
+            animation: {
+                shimmer: 'shimmer 0.6s ease-out',
+            },
+            keyframes: {
+                shimmer: {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(100%)' },
+                },
+            },
             colors: {
                 background: 'hsl(var(--background))',
                 foreground: 'hsl(var(--foreground))',

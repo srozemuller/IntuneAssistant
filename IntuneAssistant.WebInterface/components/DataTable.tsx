@@ -18,6 +18,7 @@ interface DataTableProps {
     columns: Column[];
     className?: string;
     onRowClick?: (row: Record<string, unknown>) => void;
+    rowClassName?: (row: Record<string, unknown>) => string;
     currentPage?: number;
     totalPages?: number;
     itemsPerPage?: number;
@@ -34,6 +35,7 @@ export function DataTable({     data,
                               totalPages = 1,
                               itemsPerPage = ITEMS_PER_PAGE,
                               onPageChange,
+                              rowClassName,
                               onItemsPerPageChange,
                               showPagination = false}: DataTableProps) {
     const [columns, setColumns] = useState(initialColumns.map(col => ({
@@ -137,7 +139,9 @@ export function DataTable({     data,
                 {paginatedData.map((row, rowIndex) => (
                     <tr
                         key={rowIndex}
-                        className={`border-b hover:bg-gray-50 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+                        className={`border-b hover:bg-gray-50 transition-colors ${
+                            onRowClick ? 'cursor-pointer' : ''
+                        } ${rowClassName ? rowClassName(row) : ''}`}
                         onClick={(e) => handleRowClick(e, row)}
                     >
                         {columns.map((column) => (

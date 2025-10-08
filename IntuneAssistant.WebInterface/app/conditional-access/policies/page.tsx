@@ -98,8 +98,6 @@ interface CAPolicy extends Record<string, unknown> {
 }
 
 export default function ConditionalAccessPage() {
-    const { instance, accounts } = useMsal();
-
     const { request, cancel } = useApiRequest();
 
     const { selectedTenant } = useTenant();

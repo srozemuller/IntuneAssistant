@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useRouter } from 'next/navigation';
 import { useCustomer } from '@/contexts/CustomerContext';
+import { DataTable } from '@/components/DataTable';
 
 import {
     Building,
@@ -20,7 +21,7 @@ import {
     Loader2,
     Plus
 } from 'lucide-react';
-import { CUSTOMER_ENDPOINT } from '@/lib/constants';
+import {CUSTOMER_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
 import TenantOnboardingModal from '@/components/onboarding/tenant-onboarding';
 
@@ -38,6 +39,8 @@ interface Tenant {
 export default function CustomerPage() {
     const { accounts, instance } = useMsal();
     const { setSelectedTenant, selectedTenant } = useTenant();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
     const router = useRouter();
     const { customerData, customerLoading: loading, customerError: error, refetchCustomerData } = useCustomer();
@@ -45,8 +48,118 @@ export default function CustomerPage() {
     const [updatingTenants, setUpdatingTenants] = useState<Set<string>>(new Set());
     const [showOnboardingModal, setShowOnboardingModal] = useState(false);
     const [updateError, setUpdateError] = useState<string | null>(null);
+    const [showClickOverlay, setShowClickOverlay] = useState(false);
 
     const currentTenantId = accounts[0]?.tenantId;
+
+    const columns = [
+        {
+            key: "displayName",
+            label: "Display Name",
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const tenant = row as unknown as Tenant;
+
+                return (
+                    <div className="flex items-center gap-2 text-sm font-medium truncate w-full text-left">
+                        <div
+                        />
+                        <span
+                            className={`font-medium truncate transition-colors duration-200 ${
+                                selectedTenant?.id === tenant.id ? 'text-blue-600' : 'text-gray-900'
+                            }`}
+                        >
+                    {tenant.displayName}
+                </span>
+                    </div>
+                );
+            },
+        },
+        {
+            key: "tenantId",
+            label: "Tenant ID",
+            render: (value: unknown) => (
+                <code className="text-sm font-medium cursor-pointer truncate block w-full text-left">
+                    {value as string}
+                </code>
+            ),
+        },
+        {
+            key: "isEnabled",
+            label: "Status",
+            render: (value: unknown) => {
+                const isEnabled = value as boolean;
+                return (
+                    <div className="flex items-center gap-2">
+                        {isEnabled ? (
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                            <AlertCircle className="h-4 w-4 text-red-500" />
+                        )}
+                        <Badge variant={isEnabled ? "default" : "secondary"}>
+                            {isEnabled ? 'Enabled' : 'Disabled'}
+                        </Badge>
+                    </div>
+                );
+            },
+        },
+        {
+            key: "isPrimary",
+            label: "Primary",
+            render: (value: unknown) => {
+                const isPrimary = value as boolean;
+                return (
+                    <Badge variant={isPrimary ? "default" : "outline"}>
+                        {isPrimary ? 'Primary' : 'Secondary'}
+                    </Badge>
+                );
+            },
+        },
+        {
+            key: "isGdap",
+            label: "Gdap",
+            render: (value: unknown) => {
+                const isGdap = value as boolean;
+                return (
+                    <Badge variant={isGdap ? "default" : "outline"}>
+                        {isGdap ? 'Enabled' : 'Disabled'}
+                    </Badge>
+                );
+            },
+        },
+        {
+            key: "domainName",
+            label: "Domain",
+            render: (value: unknown) => (
+                <code className="text-xs bg-gray-100 px-2 py-1 rounded font-medium text-blue-600">
+                    {value as string}
+                </code>
+            ),
+        },
+        {
+            key: "rolloutEnabled",
+            label: "Rollout Enabled",
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const tenant = row as unknown as Tenant;
+                return (
+                    <div
+                        className="flex items-center gap-2"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <Switch
+                            checked={tenant.isEnabled}
+                            onCheckedChange={(checked) =>
+                                updateTenantStatus(tenant.id, checked)
+                            }
+                            disabled={updatingTenants.has(tenant.id)}
+                        />
+                        {updatingTenants.has(tenant.id) && (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        )}
+                    </div>
+                );
+            },
+        },
+    ];
 
     const updateTenantStatus = async (tenantId: string, isEnabled: boolean) => {
         try {
@@ -90,7 +203,11 @@ export default function CustomerPage() {
     };
 
     const handleTenantSelect = (tenant: Tenant) => {
+        setShowClickOverlay(true);
         setSelectedTenant(tenant);
+        setTimeout(() => {
+            setShowClickOverlay(false);
+        }, 200);
     };
 
     const handleTenantOnboardingSuccess = async () => {
@@ -143,7 +260,7 @@ export default function CustomerPage() {
     }
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
+        <div className="p-6 w-full max-w-none mx-auto px-8">
             <div className="mb-6">
                 <Button
                     variant="outline"
@@ -279,88 +396,35 @@ export default function CustomerPage() {
                         </Button>
                     )}
                 </CardHeader>
-                <CardContent>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 px-4 font-medium">Display Name</th>
-                                <th className="text-left py-3 px-4 font-medium">Tenant ID</th>
-                                <th className="text-left py-3 px-4 font-medium">Status</th>
-                                <th className="text-left py-3 px-4 font-medium">Primary</th>
-                                <th className="text-left py-3 px-4 font-medium">Gdap</th>
-                                <th className="text-left py-3 px-4 font-medium">Domain</th>
-                                <th className="text-left py-3 px-4 font-medium">Rollout Enabled</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {customerData.tenants.map((tenant: Tenant) => (
-                                <tr
-                                    key={tenant.id}
-                                    className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                        selectedTenant?.id === tenant.id ? 'bg-blue-50 border-blue-200' : ''
-                                    }`}
-                                    onClick={() => handleTenantSelect(tenant)}
-                                >
-                                    <td className="py-3 px-4 font-medium">
-                                        <div className="flex items-center gap-2">
-                                            {selectedTenant?.id === tenant.id && (
-                                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            )}
-                                            {tenant.displayName}
-                                        </div>
-                                    </td>
-                                    <td className="py-3 px-4">
-                                        <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-                                            {tenant.tenantId}
-                                        </code>
-                                    </td>
-                                    <td className="py-3 px-4">
-                                        <div className="flex items-center gap-2">
-                                            {tenant.isEnabled ? (
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                            ) : (
-                                                <AlertCircle className="h-4 w-4 text-red-500" />
-                                            )}
-                                            <Badge variant={tenant.isEnabled ? "default" : "secondary"}>
-                                                {tenant.isEnabled ? 'Enabled' : 'Disabled'}
-                                            </Badge>
-                                        </div>
-                                    </td>
-                                    <td className="py-3 px-4">
-                                        <Badge variant={tenant.isPrimary ? "default" : "outline"}>
-                                            {tenant.isPrimary ? 'Primary' : 'Secondary'}
-                                        </Badge>
-                                    </td>
-                                    <td className="py-3 px-4">
-                                        <Badge variant={tenant.isGdap ? "default" : "outline"}>
-                                            {tenant.isGdap ? 'Enabled' : 'Disabled'}
-                                        </Badge>
-                                    </td>
-                                    <td className="py-3 px-4">
-                                        <code className="text-xs bg-gray-100 px-2 py-1 rounded font-medium text-blue-600">
-                                            {tenant.domainName}
-                                        </code>
-                                    </td>
-                                    <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={tenant.isEnabled}
-                                                onCheckedChange={(checked) =>
-                                                    updateTenantStatus(tenant.id, checked)
-                                                }
-                                                disabled={updatingTenants.has(tenant.id)}
-                                            />
-                                            {updatingTenants.has(tenant.id) && (
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
+                <CardContent className="relative">
+                    {showClickOverlay && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200 to-transparent opacity-60 animate-shimmer" />
+                    )}
+
+                    <DataTable
+                        data={customerData.tenants.map(tenant => tenant as unknown as Record<string, unknown>)}
+                        columns={columns}
+                        className="text-sm"
+                        currentPage={currentPage}
+                        totalPages={Math.ceil(customerData.tenants.length / itemsPerPage)}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={setCurrentPage}
+                        onItemsPerPageChange={(newItemsPerPage) => {
+                            setItemsPerPage(newItemsPerPage);
+                            setCurrentPage(1);
+                        }}
+                        onRowClick={(row) => {
+                            const tenant = row as unknown as Tenant;
+                            handleTenantSelect(tenant);
+                        }}
+                        rowClassName={(row) => {
+                            const tenant = row as unknown as Tenant;
+                            return selectedTenant?.id === tenant.id
+                                ? 'bg-blue-50 border-l-4 border-blue-500 transition-all duration-300 ease-in-out'
+                                : 'transition-all duration-200 ease-in-out';
+                        }}
+                        showPagination={true}
+                    />
                 </CardContent>
             </Card>
 

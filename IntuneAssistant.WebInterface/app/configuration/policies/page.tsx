@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,8 @@ import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import { ConsentDialog } from '@/components/ConsentDialog';
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,6 +24,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 
 interface PolicyAssignment {
     id: string;
@@ -71,7 +74,7 @@ interface ApiResponse {
     status: string;
     message: string;
     details: unknown[];
-    data: ConfigurationPolicy[];
+    data: ConfigurationPolicy[] | { url: string; message: string }; // Updated to handle both cases
 }
 
 export default function ConfigurationPoliciesPage() {
@@ -111,6 +114,10 @@ export default function ConfigurationPoliciesPage() {
     // Selection states - matching device selection exactly
     const [selectedPolicies, setSelectedPolicies] = useState<string[]>([]);
     const [bulkActionLoading, setBulkActionLoading] = useState(false);
+
+
+    const [consentUrl, setConsentUrl] = useState<string>('');
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -301,18 +308,37 @@ export default function ConfigurationPoliciesPage() {
             throw new Error('No response received from API');
         }
 
-        const policiesData = response.data;
+        // Check if this is a consent required error - updated logic
+        if (response.status === 'Error' &&
+            response.message === 'User challenge required' &&
+            typeof response.data === 'object' &&
+            response.data !== null &&
+            'url' in response.data) {
 
-        if (Array.isArray(policiesData)) {
-            setPolicies(policiesData);
-            setFilteredPolicies(policiesData);
-        } else {
-            console.error('API response data is not an array:', policiesData);
-            setPolicies([]);
-            setFilteredPolicies([]);
+            setConsentUrl(response.data.url); // Access the url property
+            setShowConsentDialog(true);
+            setLoading(false);
+            return;
+        }
+
+        // Add type guard to ensure data is an array before processing
+        if (!Array.isArray(response.data)) {
             throw new Error('Invalid data format received from API');
         }
+
+        const policiesData = response.data;
+        setPolicies(policiesData);
+        setFilteredPolicies(policiesData);
     };
+
+
+    const handleConsentComplete = () => {
+        setShowConsentDialog(false);
+        setConsentUrl('');
+        // Optionally retry fetching policies after consent
+        fetchPolicies();
+    };
+
 
     const fetchFilters = async () => {
         if (!accounts.length) return;
@@ -1315,6 +1341,15 @@ export default function ConfigurationPoliciesPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <ConsentDialog
+                isOpen={showConsentDialog}
+                onClose={() => setShowConsentDialog(false)}
+                consentUrl={consentUrl}
+                onConsentComplete={handleConsentComplete}
+                clearError={() => setError(null)}
+            />
+
         </div>
     );
 }
