@@ -217,15 +217,32 @@ export default function ConditionalAccessPage() {
         };
     };
     const fetchPolicies = async () => {
+        setLoading(true);
+        setError(null); // Clear previous errors
+
         try {
             const response = await request<ApiResponse>(CA_POLICIES_ENDPOINT);
-            if (Array.isArray(response?.data)) {
-                setPolicies(response.data);
+            if (response && response.status === 'Success') {
+                if (Array.isArray(response.data)) {
+                    setPolicies(response.data);
+                    // If data is empty but response is successful, don't show error
+                    if (response.data.length === 0) {
+                        setError(null); // Ensure no error is shown for empty but successful response
+                    }
+                } else {
+                    setError('Invalid response format received');
+                }
+            } else {
+                setError(response?.message || 'Failed to fetch policies');
             }
         } catch (error) {
             console.error('Failed to fetch policies:', error);
+            setError('Failed to fetch policies');
+        } finally {
+            setLoading(false);
         }
     };
+
 
 // Cleanup on unmount
     useEffect(() => {
@@ -536,7 +553,7 @@ export default function ConditionalAccessPage() {
                             disabled={loading}
                             className="flex items-center gap-2"
                         >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={loading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
                             Load Policies
                         </Button>
                     )}
@@ -552,14 +569,14 @@ export default function ConditionalAccessPage() {
                                 <Shield className="h-16 w-16 mx-auto" />
                             </div>
                             <h3 className="text-xl font-medium text-gray-900 mb-4">
-                                Ready to view Conditional Access policies
+                                No Conditional Access policies found
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click &apos;Load Policies&apos; to fetch all Conditional Access policies from {selectedTenant.displayName}.
+                                No conditional access policies are currently configured in your Entra ID environment for {selectedTenant?.displayName}.
                             </p>
-                            <Button onClick={fetchPolicies} className="flex items-center gap-2 mx-auto" size="lg">
-                                <Shield className="h-5 w-5" />
-                                Load Policies
+                            <Button onClick={fetchPolicies} className="flex items-center gap-2 mx-auto" size="lg" variant="outline">
+                                <RefreshCw className="h-5 w-5" />
+                                Refresh
                             </Button>
                         </div>
                     </CardContent>
@@ -572,10 +589,10 @@ export default function ConditionalAccessPage() {
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                Loading Conditional Access Policies
+                                Loading Policies
                             </h3>
                             <p className="text-gray-600">
-                                Fetching policy data from {selectedTenant.displayName}...
+                                Fetching conditional access data from your Entra ID environment...
                             </p>
                         </div>
                     </CardContent>
