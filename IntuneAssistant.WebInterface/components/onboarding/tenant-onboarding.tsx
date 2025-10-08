@@ -28,6 +28,12 @@ interface TenantOnboardingModalProps {
     type?: 'regular' | 'gdap';
 }
 
+interface OnboardingResult {
+    status: string;
+    message: string;
+    data?: string;
+}
+
 const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                                                                          isOpen,
                                                                          onClose,
@@ -40,7 +46,7 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
     // State management
     const {instance, accounts} = useMsal();
     const [consentState, setConsentState] = useState<string | null>(null);
-    const [onboardingResult, setOnboardingResult] = useState<any>(null);
+    const [onboardingResult, setOnboardingResult] = useState<OnboardingResult | null>(null);
 
     const [currentStep, setCurrentStep] = useState(0);
     const [isGdapMode, setIsGdapMode] = useState(true);

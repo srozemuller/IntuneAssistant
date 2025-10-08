@@ -331,7 +331,7 @@ export default function ConfigurationPoliciesPage() {
             if (Array.isArray(filtersData)) {
                 setFilters(filtersData);
             } else if (filtersData && typeof filtersData === 'object' && 'data' in filtersData) {
-                setFilters((filtersData as any).data);
+                setFilters((filtersData as { data: AssignmentFilter[] }).data);
             } else {
                 console.error('Filters API response is not an array:', filtersData);
                 setFilters([]);
@@ -712,7 +712,7 @@ export default function ConfigurationPoliciesPage() {
                                 Ready to view your configuration policies
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the "Load Policies" button above to fetch all configuration policies from your Intune environment.
+                                Click the &quot;`Load Policies&quot;` button above to fetch all configuration policies from your Intune environment.
                             </p>
                             <Button onClick={fetchPolicies} className="flex items-center gap-2 mx-auto" size="lg">
                                 <Settings className="h-5 w-5" />
@@ -774,7 +774,7 @@ export default function ConfigurationPoliciesPage() {
                                 <div className="mt-2">
                                     <Badge variant="secondary" className="flex items-center gap-1 w-fit">
                                         <Search className="h-3 w-3" />
-                                        Searching: "{searchQuery}"
+                                        Searching: &quot;`{searchQuery}&quot;`
                                         <button onClick={clearSearch} className="ml-1 hover:text-red-600">
                                             <X className="h-3 w-3" />
                                         </button>
