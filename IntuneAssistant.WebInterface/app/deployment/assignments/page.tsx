@@ -450,6 +450,102 @@ export default function AssignmentRolloutPage() {
         }
     ];
 
+    const validationColumns = [
+        {
+            key: 'policyName',
+            label: 'Policy Name',
+            minWidth: 200,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.policy ? (
+                    <div className="text-sm font-medium cursor-pointer truncate block w-full text-left" title={result.policy.name}>
+                        {result.policy.name}
+                    </div>
+                ) : (
+                    <span className="text-red-600">Policy not found</span>
+                );
+            }
+        },
+        {
+            key: 'groupName',
+            label: 'Group',
+            minWidth: 150,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.csvRow?.GroupName ? (
+                    <div className="text-sm font-medium cursor-pointer truncate block w-full text-left" title={result.csvRow?.GroupName}>
+                        {result.csvRow?.GroupName}
+                    </div>
+                ) : (
+                    <span className="text-red-600">-</span>
+                );
+            }
+        },
+        {
+            key: 'assignmentAction',
+            label: 'Action',
+            width: 120,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.csvRow?.AssignmentAction ? (
+                    <Badge variant={result.csvRow.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
+                        {result.csvRow.AssignmentAction}
+                    </Badge>
+                ) : null;
+            }
+        },
+        {
+            key: 'validationStatus',
+            label: 'Validation Status',
+            minWidth: 150,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+
+                if (result.validationStatus === 'valid') {
+                    return (
+                        <Badge variant="default" className="bg-green-100 text-green-800">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Valid
+                        </Badge>
+                    );
+                }
+                if (result.validationStatus === 'invalid') {
+                    return (
+                        <Badge variant="destructive">
+                            <XCircle className="h-3 w-3 mr-1" />
+                            Invalid
+                        </Badge>
+                    );
+                }
+                if (result.validationStatus === 'warning') {
+                    return (
+                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            Warning
+                        </Badge>
+                    );
+                }
+                if (result.validationStatus === 'pending') {
+                    return <Badge variant="outline">Pending</Badge>;
+                }
+                return null;
+            }
+        },
+        {
+            key: 'validationMessage',
+            label: 'Message',
+            minWidth: 200,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return (
+                    <span className="text-sm font-medium cursor-pointer truncate block w-full text-left">
+                    {result.validationMessage || '-'}
+                </span>
+                );
+            }
+        }
+    ];
+
 
     const toggleExpanded = (resultId: string) => {
         setExpandedRows(prev =>
@@ -459,14 +555,6 @@ export default function AssignmentRolloutPage() {
         );
     };
 
-
-    const goToPreviousPage = () => {
-        setCurrentPage((prev) => Math.max(prev - 1, 1));
-    };
-
-    const goToNextPage = () => {
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-    };
     // CSV File Processing
     const parseCSV = (content: string): CSVRow[] => {
         const lines = content.split('\n').filter(line => line.trim());
@@ -1326,138 +1414,23 @@ export default function AssignmentRolloutPage() {
                         {comparisonResults.filter(r => r.isMigrated).length > 0 && (
                             <div className="space-y-4">
                                 <h3 className="font-semibold">Validated Assignments ({comparisonResults.filter(r => r.isMigrated).length} items)</h3>
-                                <div className="border rounded-lg overflow-hidden">
-                                    <table className="w-full text-sm">
-                                        <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="text-left p-3">Policy Name</th>
-                                            <th className="text-left p-3">Group</th>
-                                            <th className="text-left p-3">Action</th>
-                                            <th className="text-left p-3">Validation Status</th>
-                                            <th className="text-left p-3">Message</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {(() => {
-                                            const migratedResults = comparisonResults.filter(r => r.isMigrated);
-                                            const startIndex = (validationCurrentPage - 1) * itemsPerPage;
-                                            const endIndex = startIndex + itemsPerPage;
-                                            const paginatedResults = migratedResults.slice(startIndex, endIndex);
-
-                                            return paginatedResults.map((result, index) => (
-                                                <tr key={result.id} className={`border-t ${(startIndex + index) % 2 === 0 ? 'bg-white dark:bg-neutral-900' : 'bg-gray-50 dark:bg-neutral-800' }`}>
-                                                    <td className="p-3">
-                                                        {result.policy ? (
-                                                            <div className="max-w-xs truncate" title={result.policy.name}>
-                                                                {result.policy.name}
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-red-600">Policy not found</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3">{result.csvRow?.GroupName || '-'}</td>
-                                                    <td className="p-3">
-                                                        {result.csvRow?.AssignmentAction && (
-                                                            <Badge variant={result.csvRow.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
-                                                                {result.csvRow.AssignmentAction}
-                                                            </Badge>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3">
-                                                        {result.validationStatus === 'valid' && (
-                                                            <Badge variant="default" className="bg-green-100 text-green-800">
-                                                                <CheckCircle2 className="h-3 w-3 mr-1" />
-                                                                Valid
-                                                            </Badge>
-                                                        )}
-                                                        {result.validationStatus === 'invalid' && (
-                                                            <Badge variant="destructive">
-                                                                <XCircle className="h-3 w-3 mr-1" />
-                                                                Invalid
-                                                            </Badge>
-                                                        )}
-                                                        {result.validationStatus === 'warning' && (
-                                                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                                                                <AlertTriangle className="h-3 w-3 mr-1" />
-                                                                Warning
-                                                            </Badge>
-                                                        )}
-                                                        {result.validationStatus === 'pending' && (
-                                                            <Badge variant="outline">Pending</Badge>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3">
-                                    <span className="text-sm text-gray-600">
-                                        {result.validationMessage || '-'}
-                                    </span>
-                                                    </td>
-                                                </tr>
-                                            ));
-                                        })()}
-                                        </tbody>
-                                    </table>
-
-                                    {/* Validation Pagination Controls */}
-                                    {(() => {
-                                        const migratedResults = comparisonResults.filter(r => r.isMigrated);
-                                        const totalPages = Math.ceil(migratedResults.length / itemsPerPage);
-
-                                        return totalPages > 1 && (
-                                            <div className="flex items-center justify-between p-4 border-t">
-                                                <div className="text-sm text-gray-600">
-                                                    Showing {((validationCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(validationCurrentPage * itemsPerPage, migratedResults.length)} of {migratedResults.length} results
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={() => setValidationCurrentPage(Math.max(1, validationCurrentPage - 1))}
-                                                        disabled={validationCurrentPage === 1}
-                                                    >
-                                                        <ChevronLeft className="h-4 w-4" />
-                                                        Previous
-                                                    </Button>
-
-                                                    <div className="flex items-center gap-1">
-                                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                                            let pageNum;
-                                                            if (totalPages <= 5) {
-                                                                pageNum = i + 1;
-                                                            } else if (validationCurrentPage <= 3) {
-                                                                pageNum = i + 1;
-                                                            } else if (validationCurrentPage >= totalPages - 2) {
-                                                                pageNum = totalPages - 4 + i;
-                                                            } else {
-                                                                pageNum = validationCurrentPage - 2 + i;
-                                                            }
-
-                                                            return (
-                                                                <Button
-                                                                    key={pageNum}
-                                                                    variant={validationCurrentPage === pageNum ? "default" : "outline"}
-                                                                    size="sm"
-                                                                    onClick={() => setValidationCurrentPage(pageNum)}
-                                                                    className="w-8 h-8 p-0"
-                                                                >
-                                                                    {pageNum}
-                                                                </Button>
-                                                            );
-                                                        })}
-                                                    </div>
-
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={() => setValidationCurrentPage(Math.min(totalPages, validationCurrentPage + 1))}
-                                                        disabled={validationCurrentPage === totalPages}
-                                                    >
-                                                        Next
-                                                        <ChevronRight className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })()}
+                                <div className="border rounded-lg overflow-visible">
+                                    <div className="overflow-x-auto overflow-y-visible">
+                                        <DataTable
+                                            data={comparisonResults.filter(r => r.isMigrated).map(result => result as unknown as Record<string, unknown>)}
+                                            columns={validationColumns}
+                                            className="text-sm"
+                                            currentPage={validationCurrentPage}
+                                            totalPages={Math.ceil(comparisonResults.filter(r => r.isMigrated).length / itemsPerPage)}
+                                            itemsPerPage={itemsPerPage}
+                                            onPageChange={setValidationCurrentPage}
+                                            onItemsPerPageChange={(newItemsPerPage) => {
+                                                setItemsPerPage(newItemsPerPage);
+                                                setValidationCurrentPage(1);
+                                            }}
+                                            showPagination={true}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         )}
