@@ -13,6 +13,15 @@ import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import {useApiRequest} from "@/hooks/useApiRequest";
+
+interface ApiResponse {
+    status: string;
+    message: string;
+    details: unknown[];
+    data: Assignments[] | { url: string; message: string }; // Updated to handle both cases
+}
+
 
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
@@ -75,6 +84,9 @@ interface AssignmentFilter {
 
 export default function AssignmentsOverview() {
     const { instance, accounts } = useMsal();
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
+    const [consentUrl, setConsentUrl] = useState('');
+    const { request } = useApiRequest();
 
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
@@ -109,6 +121,21 @@ export default function AssignmentsOverview() {
 
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
     const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
+
+    const handleConsentCheck = (response: ApiResponse): boolean => {
+        if (response.status === 'Error' &&
+            response.message === 'User challenge required' &&
+            typeof response.data === 'object' &&
+            response.data !== null &&
+            'url' in response.data) {
+
+            setConsentUrl(response.data.url);
+            setShowConsentDialog(true);
+            return true;
+        }
+        return false;
+    };
+
 
     useEffect(() => {
         setCurrentPage(1);
@@ -218,37 +245,46 @@ export default function AssignmentsOverview() {
     const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
 
-        // Get access token
-        const response = await instance.acquireTokenSilent({
-            scopes: [apiScope],
-            account: accounts[0]
-        });
+        try {
+            const responseData = await request<ApiResponse>(`${ASSIGNMENTS_ENDPOINT}/apps`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        // Call your API
-        const apiResponse = await fetch(`${ASSIGNMENTS_ENDPOINT}/apps`, {
-            headers: {
-                'Authorization': `Bearer ${response.accessToken}`,
-                'Content-Type': 'application/json'
+            // Check if response exists and for consent requirements
+            if (!responseData) {
+                throw new Error('No response received from API');
             }
-        });
 
-        if (!apiResponse.ok) {
-            throw new Error(`API call failed: ${apiResponse.statusText}`);
-        }
+            if (handleConsentCheck(responseData)) {
+                return;
+            }
 
-        const responseData = await apiResponse.json();
-        const assignmentsData = responseData.data;
+            // Handle successful response
+            if (responseData.status === 'Success' && responseData.data) {
+                const assignments = responseData.data;
 
-        if (Array.isArray(assignmentsData)) {
-            setAssignments(assignmentsData);
-            setFilteredAssignments(assignmentsData);
-        } else {
-            console.error('API response data is not an array:', assignmentsData);
-            setAssignments([]);
-            setFilteredAssignments([]);
-            throw new Error('Invalid data format received from API');
+                if (Array.isArray(assignments)) {
+                    setAssignments(assignments);
+                    setFilteredAssignments(assignments);
+                } else {
+                    console.error('API response data is not an array:', assignments);
+                    setAssignments([]);
+                    setFilteredAssignments([]);
+                    throw new Error('Invalid data format received from API');
+                }
+            } else {
+                throw new Error(responseData.message || 'Failed to fetch assignments');
+            }
+        } catch (error) {
+            console.error('Failed to fetch assignments:', error);
+            throw error;
         }
     };
+
+
 
     const handleFilterClick = (filterId: string) => {
         if (filterId && filterId !== 'None') {
@@ -265,31 +301,30 @@ export default function AssignmentsOverview() {
         if (!accounts.length) return;
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(ASSIGNMENTS_FILTERS_ENDPOINT, {
+            const responseData = await request<AssignmentFilter[]>(`${ASSIGNMENTS_FILTERS_ENDPOINT}`, {
+                method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
                     'Content-Type': 'application/json'
                 }
             });
 
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to fetch filters: ${apiResponse.statusText}`);
+            // Check if response exists
+            if (!responseData) {
+                console.error('No response received from filters API');
+                setFilters([]);
+                return;
             }
 
-            const filtersData = await apiResponse.json();
-
-            // Handle direct array response (not wrapped in .data)
-            if (Array.isArray(filtersData)) {
-                setFilters(filtersData);
-            } else if (filtersData.data && Array.isArray(filtersData.data)) {
-                setFilters(filtersData.data);
+            // Handle successful response - filters endpoint returns array directly
+            if (Array.isArray(responseData)) {
+                setFilters(responseData);
             } else {
-                console.error('Filters API response is not an array:', filtersData);
+                // If it's not an array, it might be an error response with consent info
+                const errorResponse = responseData as unknown as ApiResponse;
+                if (handleConsentCheck(errorResponse)) {
+                    return;
+                }
+                console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
             }
         } catch (error) {
@@ -297,6 +332,7 @@ export default function AssignmentsOverview() {
             setFilters([]);
         }
     };
+
 
     const getFilterInfo = (filterId: string | null, filterType: string) => {
         if (!filterId || filterId === 'None' || filterType === 'None') {

@@ -60,6 +60,7 @@ interface AssignmentFilter {
     odataType: string | null;
 }
 
+
 export default function AssignmentsOverview() {
     // API CALLS
     const { instance, accounts } = useMsal();
@@ -268,44 +269,37 @@ export default function AssignmentsOverview() {
         if (!accounts.length) return;
 
         try {
-
-
-            const response = await request<ApiResponse>(
-                ASSIGNMENTS_FILTERS_ENDPOINT,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+            const responseData = await request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            );
+            });
 
-            if (!response) {
-                throw new Error('No response received from API');
-            }
-
-            // Check if this is a consent required error - updated logic
-            if (response.status === 'Error' &&
-                response.message === 'User challenge required' &&
-                typeof response.data === 'object' &&
-                response.data !== null &&
-                'url' in response.data) {
-
-                setConsentUrl(response.data.url); // Access the url property
-                setShowConsentDialog(true);
-                setLoading(false);
+            // Check if response exists
+            if (!responseData) {
+                console.error('No response received from filters API');
+                setFilters([]);
                 return;
             }
 
-            const filtersData = await apiResponse.json();
-
-            // Handle direct array response (not wrapped in .data)
-            if (Array.isArray(filtersData)) {
-                setFilters(filtersData);
-            } else if (filtersData.data && Array.isArray(filtersData.data)) {
-                setFilters(filtersData.data);
+            // Handle successful response - filters endpoint returns array directly
+            if (Array.isArray(responseData)) {
+                setFilters(responseData);
             } else {
-                console.error('Filters API response is not an array:', filtersData);
+                // If it's not an array, it might be an error response with consent info
+                const errorResponse = responseData as unknown as ApiResponse;
+                if (errorResponse.status === 'Error' &&
+                    errorResponse.message === 'User challenge required' &&
+                    typeof errorResponse.data === 'object' &&
+                    errorResponse.data !== null &&
+                    'url' in errorResponse.data) {
+
+                    setConsentUrl(errorResponse.data.url);
+                    setShowConsentDialog(true);
+                    return;
+                }
+                console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
             }
         } catch (error) {
@@ -313,6 +307,7 @@ export default function AssignmentsOverview() {
             setFilters([]);
         }
     };
+
 
     const getFilterInfo = (filterId: string | null, filterType: string) => {
         if (!filterId || filterId === 'None' || filterType === 'None') {
@@ -1131,7 +1126,7 @@ export default function AssignmentsOverview() {
                 onClose={() => setShowConsentDialog(false)}
                 consentUrl={consentUrl}
                 onConsentComplete={handleConsentComplete}
-                clearError={() => setError(null)}
+                clearError={error !== null}
             />
         </div>
     );

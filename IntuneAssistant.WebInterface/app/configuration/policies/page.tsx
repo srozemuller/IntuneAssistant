@@ -1347,7 +1347,6 @@ export default function ConfigurationPoliciesPage() {
                 onClose={() => setShowConsentDialog(false)}
                 consentUrl={consentUrl}
                 onConsentComplete={handleConsentComplete}
-                clearError={() => setError(null)}
             />
 
         </div>
