@@ -16,6 +16,8 @@ import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ConsentDialog } from '@/components/ConsentDialog';
+import { DataTable } from '@/components/DataTable';
+
 interface CSVRow {
     PolicyName: string;
     GroupName: string;
@@ -25,6 +27,7 @@ interface CSVRow {
     FilterType: string | null;
     isValidAction?: boolean;
     originalActionValue?: string;
+    [key: string]: unknown;
 }
 interface Assignment {
     id: string;
@@ -142,9 +145,10 @@ export default function AssignmentRolloutPage() {
     const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
     const [compareCurrentPage, setCompareCurrentPage] = useState(1);
     const [validationCurrentPage, setValidationCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(ITEMS_PER_PAGE);
+
 
     // Add pagination logic before the return statement
+    const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedResults = comparisonResults.slice(startIndex, endIndex);
@@ -158,6 +162,391 @@ export default function AssignmentRolloutPage() {
 
     const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
+    const uploadColumns = [
+        {
+            key: 'PolicyName',
+            label: 'Policy Name',
+            minWidth: 200,
+            render: (value: unknown) => (
+                <div className="text-sm font-medium cursor-pointer truncate block w-full text-left" title={String(value)}>
+                    {String(value)}
+                </div>
+            )
+        },
+        {
+            key: 'GroupName',
+            label: 'Group Name',
+            minWidth: 150,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as unknown as CSVRow;
+                return (
+                    <div className={`text-sm font-medium cursor-pointer truncate block w-full text-left ${csvRow.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`} title={String(value)}>
+                        {String(value)}
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'AssignmentDirection',
+            label: 'Direction',
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return (
+                    <Badge
+                        variant={csvRow.AssignmentDirection === 'Include' ? 'default' : 'destructive'}
+                        className={csvRow.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}
+                    >
+                        {csvRow.AssignmentDirection}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'AssignmentAction',
+            label: 'Action',
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return !csvRow.isValidAction ? (
+                    <div className="flex items-center gap-2">
+                        <Badge variant="destructive">Excluded</Badge>
+                        <span className="text-xs text-red-600">
+            Invalid: &quot;{csvRow.originalActionValue}&quot;
+          </span>
+                    </div>
+                ) : (
+                    <Badge variant={
+                        csvRow.AssignmentAction === 'Add' ? 'default' :
+                            csvRow.AssignmentAction === 'Remove' ? 'destructive' : 'secondary'
+                    }>
+                        {csvRow.AssignmentAction}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'FilterName',
+            label: 'Filter Name',
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return csvRow.FilterName ? (
+                    <div className={`max-w-xs truncate ${csvRow.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`} title={csvRow.FilterName}>
+                        {csvRow.FilterName}
+                    </div>
+                ) : (
+                    <span className="text-gray-400">-</span>
+                );
+            }
+        },
+        {
+            key: 'FilterType',
+            label: 'Filter Type',
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as CSVRow;
+                return csvRow.FilterType ? (
+                    <Badge
+                        variant={csvRow.FilterType === 'Include' ? 'default' : 'secondary'}
+                        className={csvRow.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}
+                    >
+                        {csvRow.FilterType}
+                    </Badge>
+                ) : (
+                    <span className="text-gray-400">-</span>
+                );
+            }
+        }
+    ];
+    const comparisonColumns = [
+        {
+            key: '_select',
+            label: '',
+            width: 50,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                const isSelected = selectedRows.includes(result.id);
+                const isDisabled = !result.isReadyForMigration || result.isMigrated;
+
+                return (
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <input
+                            type="checkbox"
+                            disabled={isDisabled}
+                            checked={isSelected}
+                            onChange={(e) => {
+                                e.stopPropagation();
+
+                                const newChecked = e.target.checked;
+                                console.log('Before update:', {
+                                    resultId: result.id,
+                                    newChecked,
+                                    currentSelectedRows: selectedRows
+                                });
+
+                                setSelectedRows(prev => {
+                                    const updated = newChecked
+                                        ? (prev.includes(result.id) ? prev : [...prev, result.id])
+                                        : prev.filter(id => id !== result.id);
+
+                                    console.log('After update:', updated);
+                                    return updated;
+                                });
+                            }}
+                            className={isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                        />
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'policyName',
+            label: 'Policy Name',
+            minWidth: 250,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                const hasDuplicates = result.policies && result.policies.length > 1;
+                const isExpanded = expandedRows.includes(result.id);
+                const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
+
+                return displayPolicy ? (
+                    <div className="flex items-center gap-2">
+                        {hasDuplicates && (
+                            <button
+                                onClick={() => toggleExpanded(result.id)}
+                                className="text-blue-500 hover:text-blue-700"
+                            >
+                                {isExpanded ? '▼' : '▶'}
+                            </button>
+                        )}
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <div className="text-sm font-medium cursor-pointer truncate block w-full text-left" title={displayPolicy.name || 'Unknown Policy'}>
+                                    {displayPolicy.name || 'Unknown Policy'}
+                                </div>
+                                {hasDuplicates && (
+                                    <Badge variant="secondary" className="text-xs">
+                                        {result.policies?.length || 0} duplicates
+                                    </Badge>
+                                )}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                {displayPolicy.policyType || 'Unknown Type'} • {displayPolicy.platforms || 'Unknown Platform'}
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-red-600 text-sm">
+                        <XCircle className="h-4 w-4 inline mr-1"/>
+                        <div>
+                            <div className="text-sm font-medium cursor-pointer truncate block w-full text-left">{result.providedPolicyName || 'Unknown policy name'}</div>
+                            <div className="text-xs text-red-500">Policy not found</div>
+                        </div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'currentAssignments',
+            label: 'Current Assignments',
+            width: 150,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
+                return displayPolicy ? (
+                    <Badge variant="outline">
+                        {displayPolicy.assignments?.length || 0} groups
+                    </Badge>
+                ) : (
+                    <Badge variant="destructive">N/A</Badge>
+                );
+            }
+        },
+        {
+            key: 'targetGroup',
+            label: 'Target Group',
+            minWidth: 150,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.groupToMigrate || result.csvRow?.GroupName || '-';
+            }
+        },
+        {
+            key: 'direction',
+            label: 'Direction',
+            width: 100,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.assignmentDirection ? (
+                    <Badge variant={result.assignmentDirection === 'Include' ? 'default' : 'destructive'}>
+                        {result.assignmentDirection}
+                    </Badge>
+                ) : null;
+            }
+        },
+        {
+            key: 'action',
+            label: 'Action',
+            width: 120,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.assignmentAction ? (
+                    <Badge variant={
+                        result.assignmentAction === 'Add' ? 'default' :
+                            result.assignmentAction === 'NoAssignment' ? 'destructive' : 'secondary'
+                    }>
+                        {result.assignmentAction}
+                    </Badge>
+                ) : null;
+            }
+        },
+        {
+            key: 'filter',
+            label: 'Filter',
+            minWidth: 120,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.filterName || result.csvRow?.FilterName || '-';
+            }
+        },
+        {
+            key: 'status',
+            label: 'Status',
+            minWidth: 150,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return (
+                    <div className="flex flex-col gap-1">
+                        {result.isMigrated ? (
+                            <Badge variant="default" className="bg-green-100 text-green-800">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Migrated
+                            </Badge>
+                        ) : result.isReadyForMigration ? (
+                            <Badge variant="default" className="bg-blue-100 text-blue-800">
+                                <Shield className="h-3 w-3 mr-1" />
+                                Ready
+                            </Badge>
+                        ) : (
+                            <Badge variant="destructive">
+                                <XCircle className="h-3 w-3 mr-1" />
+                                Not Ready
+                            </Badge>
+                        )}
+
+                        {result.isBackedUp && (
+                            <Badge variant="outline" className="text-xs">
+                                Backed Up
+                            </Badge>
+                        )}
+
+                        {!result.isReadyForMigration && result.migrationCheckResult && (
+                            <div className="text-xs text-gray-500 mt-1">
+                                {!result.migrationCheckResult.policyExists && "Policy not found"}
+                                {!result.migrationCheckResult.groupExists && "Group not found"}
+                                {!result.migrationCheckResult.policyIsUnique && "Multiple policies found"}
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+        }
+    ];
+
+    const validationColumns = [
+        {
+            key: 'policyName',
+            label: 'Policy Name',
+            minWidth: 200,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.policy ? (
+                    <div className="text-sm font-medium cursor-pointer truncate block w-full text-left" title={result.policy.name}>
+                        {result.policy.name}
+                    </div>
+                ) : (
+                    <span className="text-red-600">Policy not found</span>
+                );
+            }
+        },
+        {
+            key: 'groupName',
+            label: 'Group',
+            minWidth: 150,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.csvRow?.GroupName ? (
+                    <div className="text-sm font-medium cursor-pointer truncate block w-full text-left" title={result.csvRow?.GroupName}>
+                        {result.csvRow?.GroupName}
+                    </div>
+                ) : (
+                    <span className="text-red-600">-</span>
+                );
+            }
+        },
+        {
+            key: 'assignmentAction',
+            label: 'Action',
+            width: 120,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.csvRow?.AssignmentAction ? (
+                    <Badge variant={result.csvRow.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
+                        {result.csvRow.AssignmentAction}
+                    </Badge>
+                ) : null;
+            }
+        },
+        {
+            key: 'validationStatus',
+            label: 'Validation Status',
+            minWidth: 150,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+
+                if (result.validationStatus === 'valid') {
+                    return (
+                        <Badge variant="default" className="bg-green-100 text-green-800">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Valid
+                        </Badge>
+                    );
+                }
+                if (result.validationStatus === 'invalid') {
+                    return (
+                        <Badge variant="destructive">
+                            <XCircle className="h-3 w-3 mr-1" />
+                            Invalid
+                        </Badge>
+                    );
+                }
+                if (result.validationStatus === 'warning') {
+                    return (
+                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            Warning
+                        </Badge>
+                    );
+                }
+                if (result.validationStatus === 'pending') {
+                    return <Badge variant="outline">Pending</Badge>;
+                }
+                return null;
+            }
+        },
+        {
+            key: 'validationMessage',
+            label: 'Message',
+            minWidth: 200,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return (
+                    <span className="text-sm font-medium cursor-pointer truncate block w-full text-left">
+                    {result.validationMessage || '-'}
+                </span>
+                );
+            }
+        }
+    ];
+
+
     const toggleExpanded = (resultId: string) => {
         setExpandedRows(prev =>
             prev.includes(resultId)
@@ -166,14 +555,6 @@ export default function AssignmentRolloutPage() {
         );
     };
 
-
-    const goToPreviousPage = () => {
-        setCurrentPage((prev) => Math.max(prev - 1, 1));
-    };
-
-    const goToNextPage = () => {
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-    };
     // CSV File Processing
     const parseCSV = (content: string): CSVRow[] => {
         const lines = content.split('\n').filter(line => line.trim());
@@ -353,9 +734,19 @@ export default function AssignmentRolloutPage() {
                 },
                 body: JSON.stringify(validCsvData) // Send only valid data
             });
-
             if (!apiResponse.ok) {
-                throw new Error(`API call failed: ${apiResponse.statusText}`);
+                const errorData = await apiResponse.json();
+
+                // Check if this is a consent required error
+                if (errorData.status === 'Error' &&
+                    errorData.message === 'User challenge required' &&
+                    errorData.data?.includes('adminconsent')) {
+
+                    setConsentUrl(errorData.data);
+                    setShowConsentDialog(true);
+                    setLoading(false);
+                    return;
+                }
             }
 
             const responseData = await apiResponse.json();
@@ -752,157 +1143,22 @@ export default function AssignmentRolloutPage() {
 
                                 <div className="border rounded-lg overflow-visible">
                                     <div className="overflow-x-auto overflow-y-visible">
-                                        <table className="w-full text-sm">
-                                            <thead className="bg-gray-50 sticky top-0">
-                                            <tr>
-                                                <th className="text-left p-3 border-b">#</th>
-                                                <th className="text-left p-3 border-b">Policy Name</th>
-                                                <th className="text-left p-3 border-b">Group Name</th>
-                                                <th className="text-left p-3 border-b">Direction</th>
-                                                <th className="text-left p-3 border-b">Action</th>
-                                                <th className="text-left p-3 border-b">Filter Name</th>
-                                                <th className="text-left p-3 border-b">Filter Type</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {(() => {
-                                                const startIndex = (uploadCurrentPage - 1) * itemsPerPage;
-                                                const endIndex = startIndex + itemsPerPage;
-                                                const paginatedData = csvData.slice(startIndex, endIndex);
+                                        <DataTable
+                                            data={csvData}
+                                            columns={uploadColumns}
+                                            className="text-sm"
+                                            currentPage={uploadCurrentPage}
+                                            totalPages={Math.ceil(csvData.length / itemsPerPage)}
+                                            itemsPerPage={itemsPerPage}
+                                            onPageChange={setUploadCurrentPage}
+                                            onItemsPerPageChange={(newItemsPerPage) => {
+                                                setItemsPerPage(newItemsPerPage);
+                                                setUploadCurrentPage(1); // Reset to first page when changing items per page
+                                            }}
+                                            showPagination={true}
+                                        />
 
-                                                return paginatedData.map((row, index) => (
-                                                    <tr key={startIndex + index} className={`border-b ${(startIndex + index) % 2 === 0 ? 'bg-white dark:bg-neutral-900' : 'bg-gray-50 dark:bg-neutral-800'}`}>
-                                                        <td className="p-3 text-gray-500 relative overflow-visible">
-                                                            <div className="flex items-center gap-2">
-                                                                {startIndex + index + 1}
-                                                                {row.AssignmentAction === 'NoAssignment' && (
-                                                                    <div className="group relative">
-                                                                        <Info className="h-4 w-4 text-blue-500 cursor-help" />
-                                                                        <div className="absolute invisible group-hover:visible bg-gray-900 text-white text-xs rounded py-2 px-3 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap z-50 shadow-lg">
-                                                                            This row will remove ALL assignments from the policy
-                                                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-3">
-                                                            <div className="max-w-xs truncate" title={row.PolicyName}>
-                                                                {row.PolicyName}
-                                                            </div>
-                                                        </td>
-                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`}>
-                                                            <div className="max-w-xs truncate" title={row.GroupName}>
-                                                                {row.GroupName}
-                                                            </div>
-                                                        </td>
-                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}`}>
-                                                            <Badge variant={row.AssignmentDirection === 'Include' ? 'default' : 'destructive'}
-                                                                   className={row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}>
-                                                                {row.AssignmentDirection}
-                                                            </Badge>
-                                                        </td>
-                                                        <td className="p-3">
-                                                            {!row.isValidAction ? (
-                                                                <div className="flex items-center gap-2">
-                                                                    <Badge variant="destructive">Excluded</Badge>
-                                                                    <span className="text-xs text-red-600">
-                Invalid: &quot;{row.originalActionValue}&quot;
-            </span>
-                                                                </div>
-                                                            ) : (
-                                                                <Badge variant={
-                                                                    row.AssignmentAction === 'Add' ? 'default' :
-                                                                        row.AssignmentAction === 'Remove' ? 'destructive' : 'secondary'
-                                                                }>
-                                                                    {row.AssignmentAction}
-                                                                </Badge>
-                                                            )}
-                                                        </td>
-
-                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`}>
-                                                            {row.FilterName ? (
-                                                                <div className="max-w-xs truncate" title={row.FilterName}>
-                                                                    {row.FilterName}
-                                                                </div>
-                                                            ) : (
-                                                                <span className="text-gray-400">-</span>
-                                                            )}
-                                                        </td>
-                                                        <td className={`p-3 ${row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}`}>
-                                                            {row.FilterType ? (
-                                                                <Badge variant={row.FilterType === 'Include' ? 'default' : 'secondary'}
-                                                                       className={row.AssignmentAction === 'NoAssignment' ? 'opacity-50' : ''}>
-                                                                    {row.FilterType}
-                                                                </Badge>
-                                                            ) : (
-                                                                <span className="text-gray-400">-</span>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-                                                ));
-                                            })()}
-                                            </tbody>
-                                        </table>
                                     </div>
-
-                                    {/* Upload Pagination Controls */}
-                                    {Math.ceil(csvData.length / itemsPerPage) > 1 && (
-                                        <div className="flex items-center justify-between p-4 border-t">
-                                            <div className="text-sm text-gray-600">
-                                                Showing {((uploadCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(uploadCurrentPage * itemsPerPage, csvData.length)} of {csvData.length} results
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => setUploadCurrentPage(Math.max(1, uploadCurrentPage - 1))}
-                                                    disabled={uploadCurrentPage === 1}
-                                                >
-                                                    <ChevronLeft className="h-4 w-4" />
-                                                    Previous
-                                                </Button>
-
-                                                <div className="flex items-center gap-1">
-                                                    {Array.from({ length: Math.min(5, Math.ceil(csvData.length / itemsPerPage)) }, (_, i) => {
-                                                        const totalPages = Math.ceil(csvData.length / itemsPerPage);
-                                                        let pageNum;
-                                                        if (totalPages <= 5) {
-                                                            pageNum = i + 1;
-                                                        } else if (uploadCurrentPage <= 3) {
-                                                            pageNum = i + 1;
-                                                        } else if (uploadCurrentPage >= totalPages - 2) {
-                                                            pageNum = totalPages - 4 + i;
-                                                        } else {
-                                                            pageNum = uploadCurrentPage - 2 + i;
-                                                        }
-
-                                                        return (
-                                                            <Button
-                                                                key={pageNum}
-                                                                variant={uploadCurrentPage === pageNum ? "default" : "outline"}
-                                                                size="sm"
-                                                                onClick={() => setUploadCurrentPage(pageNum)}
-                                                                className="w-8 h-8 p-0"
-                                                            >
-                                                                {pageNum}
-                                                            </Button>
-                                                        );
-                                                    })}
-                                                </div>
-
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => setUploadCurrentPage(Math.min(Math.ceil(csvData.length / itemsPerPage), uploadCurrentPage + 1))}
-                                                    disabled={uploadCurrentPage === Math.ceil(csvData.length / itemsPerPage)}
-                                                >
-                                                    Next
-                                                    <ChevronRight className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         )}
@@ -1025,284 +1281,60 @@ export default function AssignmentRolloutPage() {
                         {/* Comparison Results Table */}
                         {comparisonResults.length > 0 ? (
                             <div className="space-y-4">
-                                <h3 className="font-semibold">Comparison Results ({comparisonResults.length} policies)</h3>
-                                <div className="border rounded-lg overflow-hidden">
-                                    <table className="w-full text-sm">
-                                        <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="text-left p-3">
-                                                <input
-                                                    type="checkbox"
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            const readyRows = comparisonResults
-                                                                .filter(r => r.isReadyForMigration && !r.isMigrated)
-                                                                .map(r => r.id);
-                                                            setSelectedRows(readyRows);
-                                                        } else {
-                                                            setSelectedRows([]);
-                                                        }
-                                                    }}
-                                                    checked={
-                                                        comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length > 0 &&
-                                                        selectedRows.length === comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length
-                                                    }
-                                                />
-                                            </th>
-                                            <th className="text-left p-3">Policy Name</th>
-                                            <th className="text-left p-3">Current Assignments</th>
-                                            <th className="text-left p-3">Target Group</th>
-                                            <th className="text-left p-3">Direction</th>
-                                            <th className="text-left p-3">Action</th>
-                                            <th className="text-left p-3">Filter</th>
-                                            <th className="text-left p-3">Status</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {(() => {
-                                            const startIndex = (currentPage - 1) * itemsPerPage;
-                                            const endIndex = startIndex + itemsPerPage;
-                                            const paginatedResults = comparisonResults.slice(startIndex, endIndex);
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-semibold">Comparison Results ({comparisonResults.length} policies)</h3>
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            onChange={(e) => {
+                                                const readyRows = comparisonResults
+                                                    .filter(r => r.isReadyForMigration && !r.isMigrated)
+                                                    .map(r => r.id);
 
-                                            return paginatedResults.flatMap((result, index) => {
-                                                const hasDuplicates = result.policies && result.policies.length > 1;
-                                                const isExpanded = expandedRows.includes(result.id);
-                                                const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
-
-                                                const mainRow = (
-                                                    <tr key={result.id} className={`border-t ${(startIndex + index) % 2 === 0 ? 'bg-white dark:bg-neutral-900' : 'bg-gray-50 dark:bg-neutral-800'}`}>
-                                                    <td className="p-3">
-                                                            <input
-                                                                type="checkbox"
-                                                                disabled={!result.isReadyForMigration || result.isMigrated}
-                                                                checked={selectedRows.includes(result.id)}
-                                                                onChange={(e) => {
-                                                                    if (e.target.checked) {
-                                                                        setSelectedRows([...selectedRows, result.id]);
-                                                                    } else {
-                                                                        setSelectedRows(selectedRows.filter(id => id !== result.id));
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </td>
-                                                        <td className="p-3">
-                                                            {displayPolicy ? (
-                                                                <div className="flex items-center gap-2">
-                                                                    {hasDuplicates && (
-                                                                        <button
-                                                                            onClick={() => toggleExpanded(result.id)}
-                                                                            className="text-blue-500 hover:text-blue-700"
-                                                                        >
-                                                                            {isExpanded ? '▼' : '▶'}
-                                                                        </button>
-                                                                    )}
-                                                                    <div>
-                                                                        <div className="flex items-center gap-2">
-                                                                            <div className="max-w-xs truncate" title={displayPolicy.name || 'Unknown Policy'}>
-                                                                                {displayPolicy.name || 'Unknown Policy'}
-                                                                            </div>
-                                                                            {hasDuplicates && (
-                                                                                <Badge variant="secondary" className="text-xs">
-                                                                                    {result.policies?.length || 0} duplicates
-                                                                                </Badge>
-                                                                            )}
-                                                                        </div>
-                                                                        <div className="text-xs text-gray-500">
-                                                                            {displayPolicy.policyType || 'Unknown Type'} • {displayPolicy.platforms || 'Unknown Platform'}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            ) : (
-                                                                <div className="text-red-600 text-sm">
-                                                                    <XCircle className="h-4 w-4 inline mr-1"/>
-                                                                    <div>
-                                                                        <div className="font-medium">{result.providedPolicyName || 'Unknown policy name'}</div>
-                                                                        <div className="text-xs text-red-500">Policy not found</div>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </td>
-                                                        {/* Rest of your table cells... */}
-                                                        <td className="p-3">
-                                                            {displayPolicy ? (
-                                                                <Badge variant="outline">
-                                                                    {displayPolicy.assignments?.length || 0} groups
-                                                                </Badge>
-                                                            ) : (
-                                                                <Badge variant="destructive">N/A</Badge>
-                                                            )}
-                                                        </td>
-                                                        <td className="p-3">{result.groupToMigrate || result.csvRow?.GroupName || '-'}</td>
-                                                        <td className="p-3">
-                                                            {result.assignmentDirection && (
-                                                                <Badge variant={result.assignmentDirection === 'Include' ? 'default' : 'destructive'}>
-                                                                    {result.assignmentDirection}
-                                                                </Badge>
-                                                            )}
-                                                        </td>
-                                                        <td className="p-3">
-                                                            {result.assignmentAction && (
-                                                                <Badge variant={
-                                                                    result.assignmentAction === 'Add' ? 'default' :
-                                                                        result.assignmentAction === 'NoAssignment' ? 'destructive' : 'secondary'
-                                                                }>
-                                                                    {result.assignmentAction}
-                                                                </Badge>
-                                                            )}
-                                                        </td>
-                                                        <td className="p-3">{result.filterName || result.csvRow?.FilterName || '-'}</td>
-                                                        <td className="p-3">
-                                                            <td className="p-3">
-                                                                <div className="flex flex-col gap-1">
-                                                                    {result.isMigrated ? (
-                                                                        <Badge variant="default" className="bg-green-100 text-green-800">
-                                                                            <CheckCircle2 className="h-3 w-3 mr-1" />
-                                                                            Migrated
-                                                                        </Badge>
-                                                                    ) : result.isReadyForMigration ? (
-                                                                        <Badge variant="default" className="bg-blue-100 text-blue-800">
-                                                                            <Shield className="h-3 w-3 mr-1" />
-                                                                            Ready
-                                                                        </Badge>
-                                                                    ) : (
-                                                                        <Badge variant="destructive">
-                                                                            <XCircle className="h-3 w-3 mr-1" />
-                                                                            Not Ready
-                                                                        </Badge>
-                                                                    )}
-
-                                                                    {result.isBackedUp && (
-                                                                        <Badge variant="outline" className="text-xs">
-                                                                            Backed Up
-                                                                        </Badge>
-                                                                    )}
-
-                                                                    {!result.isReadyForMigration && result.migrationCheckResult && (
-                                                                        <div className="text-xs text-gray-500 mt-1">
-                                                                            {!result.migrationCheckResult.policyExists && "Policy not found"}
-                                                                            {!result.migrationCheckResult.groupExists && "Group not found"}
-                                                                            {!result.migrationCheckResult.policyIsUnique && "Multiple policies found"}
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            </td>
-
-                                                        </td>
-                                                    </tr>
-                                                );
-
-                                                // Add expanded rows for duplicates (renamed variable to avoid conflict)
-                                                const duplicateRows = hasDuplicates && isExpanded ?
-                                                    result.policies?.map((policy, policyIndex) => (
-                                                        <tr key={`${result.id}-${policyIndex}`} className="bg-blue-50 border-t border-blue-200">
-                                                            <td className="p-3 pl-8"></td>
-                                                            <td className="p-3">
-                                                                <div className="flex items-center gap-2">
-                                                                    <div className="w-2 h-2 bg-blue-400 rounded-full flex-shrink-0"></div>
-                                                                    <div>
-                                                                        <div className="max-w-xs truncate font-medium" title={policy.name}>
-                                                                            {policy.name}
-                                                                        </div>
-                                                                        <div className="text-xs text-blue-600">
-                                                                            ID: {policy.id}
-                                                                        </div>
-                                                                        <div className="text-xs text-gray-500">
-                                                                            Created: {new Date(policy.createdDateTime).toLocaleDateString()}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-3">
-                                                                <Badge variant="outline">
-                                                                    {policy.assignments?.length || 0} groups
-                                                                </Badge>
-                                                            </td>
-                                                            <td className="p-3 text-gray-500">-</td>
-                                                            <td className="p-3 text-gray-500">-</td>
-                                                            <td className="p-3 text-gray-500">-</td>
-                                                            <td className="p-3 text-gray-500">-</td>
-                                                            <td className="p-3">
-                                                                <Badge variant="outline" className="text-xs">
-                                                                    Duplicate Option
-                                                                </Badge>
-                                                            </td>
-                                                        </tr>
-                                                    )) || [] : [];
-
-                                                return [mainRow, ...duplicateRows];
-                                            });
-                                        })()}
-                                        </tbody>
-                                    </table>
-                                    {totalPages > 1 && (
-                                        <div className="flex items-center justify-between p-4 border-t">
-                                            <div className="text-sm text-gray-600">
-                                                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, comparisonResults.length)} of {comparisonResults.length} results
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={goToPreviousPage}
-                                                    disabled={currentPage === 1}
-                                                >
-                                                    <ChevronLeft className="h-4 w-4" />
-                                                    Previous
-                                                </Button>
-
-                                                <div className="flex items-center gap-1">
-                                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                                        let pageNum;
-                                                        if (totalPages <= 5) {
-                                                            pageNum = i + 1;
-                                                        } else if (currentPage <= 3) {
-                                                            pageNum = i + 1;
-                                                        } else if (currentPage >= totalPages - 2) {
-                                                            pageNum = totalPages - 4 + i;
-                                                        } else {
-                                                            pageNum = currentPage - 2 + i;
-                                                        }
-
-                                                        return (
-                                                            <Button
-                                                                key={pageNum}
-                                                                variant={currentPage === pageNum ? "default" : "outline"}
-                                                                size="sm"
-                                                                onClick={() => setCurrentPage(pageNum)}
-                                                                className="w-8 h-8 p-0"
-                                                            >
-                                                                {pageNum}
-                                                            </Button>
-                                                        );
-                                                    })}
-                                                </div>
-
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={goToNextPage}
-                                                    disabled={currentPage === totalPages}
-                                                >
-                                                    Next
-                                                    <ChevronRight className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    )}
+                                                if (e.target.checked) {
+                                                    setSelectedRows([...selectedRows, ...readyRows.filter(id => !selectedRows.includes(id))]);
+                                                } else {
+                                                    setSelectedRows(selectedRows.filter(id => !readyRows.includes(id)));
+                                                }
+                                            }}
+                                            checked={(() => {
+                                                const readyRows = comparisonResults
+                                                    .filter(r => r.isReadyForMigration && !r.isMigrated)
+                                                    .map(r => r.id);
+                                                return readyRows.length > 0 && readyRows.every(id => selectedRows.includes(id));
+                                            })()}
+                                            className="mr-2"
+                                        />
+                                        <label className="text-sm text-gray-600">Select all ready for migration</label>
+                                    </div>
                                 </div>
-
+                                <DataTable
+                                    data={comparisonResults.map(result => result as unknown as Record<string, unknown>)}
+                                    columns={comparisonColumns}
+                                    className="text-sm"
+                                    key={selectedRows.join(',')}
+                                    currentPage={compareCurrentPage}  // Use compareCurrentPage instead of currentPage
+                                    totalPages={Math.ceil(comparisonResults.length / itemsPerPage)}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCompareCurrentPage}  // Update compareCurrentPage
+                                    onItemsPerPageChange={(newItemsPerPage) => {
+                                        setItemsPerPage(newItemsPerPage);
+                                        setCompareCurrentPage(1);  // Reset compareCurrentPage
+                                    }}
+                                    showPagination={true}
+                                />
                                 {/* Summary */}
                                 <div className="flex items-center justify-between bg-gray-50 p-4 dark:bg-neutral-900 rounded-lg">
                                     <div className="flex gap-4 text-sm">
-                            <span>
-                                <strong>{comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length}</strong> ready for migration
-                            </span>
+                <span>
+                    <strong>{comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length}</strong> ready for migration
+                </span>
                                         <span>
-                                <strong>{comparisonResults.filter(r => r.isMigrated).length}</strong> migrated
-                            </span>
+                    <strong>{comparisonResults.filter(r => r.isMigrated).length}</strong> migrated
+                </span>
                                         <span>
-                                <strong>{selectedRows.length}</strong> selected
-                            </span>
+                    <strong>{selectedRows.length}</strong> selected
+                </span>
                                     </div>
                                 </div>
                             </div>
@@ -1311,6 +1343,7 @@ export default function AssignmentRolloutPage() {
                                 <p>No comparison results available. Please run the comparison first.</p>
                             </div>
                         )}
+
                     </CardContent>
                 </Card>
             )}
@@ -1381,138 +1414,23 @@ export default function AssignmentRolloutPage() {
                         {comparisonResults.filter(r => r.isMigrated).length > 0 && (
                             <div className="space-y-4">
                                 <h3 className="font-semibold">Validated Assignments ({comparisonResults.filter(r => r.isMigrated).length} items)</h3>
-                                <div className="border rounded-lg overflow-hidden">
-                                    <table className="w-full text-sm">
-                                        <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="text-left p-3">Policy Name</th>
-                                            <th className="text-left p-3">Group</th>
-                                            <th className="text-left p-3">Action</th>
-                                            <th className="text-left p-3">Validation Status</th>
-                                            <th className="text-left p-3">Message</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {(() => {
-                                            const migratedResults = comparisonResults.filter(r => r.isMigrated);
-                                            const startIndex = (validationCurrentPage - 1) * itemsPerPage;
-                                            const endIndex = startIndex + itemsPerPage;
-                                            const paginatedResults = migratedResults.slice(startIndex, endIndex);
-
-                                            return paginatedResults.map((result, index) => (
-                                                <tr key={result.id} className={`border-t ${(startIndex + index) % 2 === 0 ? 'bg-white dark:bg-neutral-900' : 'bg-gray-50 dark:bg-neutral-800' }`}>
-                                                    <td className="p-3">
-                                                        {result.policy ? (
-                                                            <div className="max-w-xs truncate" title={result.policy.name}>
-                                                                {result.policy.name}
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-red-600">Policy not found</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3">{result.csvRow?.GroupName || '-'}</td>
-                                                    <td className="p-3">
-                                                        {result.csvRow?.AssignmentAction && (
-                                                            <Badge variant={result.csvRow.AssignmentAction === 'Add' ? 'default' : 'secondary'}>
-                                                                {result.csvRow.AssignmentAction}
-                                                            </Badge>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3">
-                                                        {result.validationStatus === 'valid' && (
-                                                            <Badge variant="default" className="bg-green-100 text-green-800">
-                                                                <CheckCircle2 className="h-3 w-3 mr-1" />
-                                                                Valid
-                                                            </Badge>
-                                                        )}
-                                                        {result.validationStatus === 'invalid' && (
-                                                            <Badge variant="destructive">
-                                                                <XCircle className="h-3 w-3 mr-1" />
-                                                                Invalid
-                                                            </Badge>
-                                                        )}
-                                                        {result.validationStatus === 'warning' && (
-                                                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                                                                <AlertTriangle className="h-3 w-3 mr-1" />
-                                                                Warning
-                                                            </Badge>
-                                                        )}
-                                                        {result.validationStatus === 'pending' && (
-                                                            <Badge variant="outline">Pending</Badge>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3">
-                                    <span className="text-sm text-gray-600">
-                                        {result.validationMessage || '-'}
-                                    </span>
-                                                    </td>
-                                                </tr>
-                                            ));
-                                        })()}
-                                        </tbody>
-                                    </table>
-
-                                    {/* Validation Pagination Controls */}
-                                    {(() => {
-                                        const migratedResults = comparisonResults.filter(r => r.isMigrated);
-                                        const totalPages = Math.ceil(migratedResults.length / itemsPerPage);
-
-                                        return totalPages > 1 && (
-                                            <div className="flex items-center justify-between p-4 border-t">
-                                                <div className="text-sm text-gray-600">
-                                                    Showing {((validationCurrentPage - 1) * itemsPerPage) + 1} to {Math.min(validationCurrentPage * itemsPerPage, migratedResults.length)} of {migratedResults.length} results
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={() => setValidationCurrentPage(Math.max(1, validationCurrentPage - 1))}
-                                                        disabled={validationCurrentPage === 1}
-                                                    >
-                                                        <ChevronLeft className="h-4 w-4" />
-                                                        Previous
-                                                    </Button>
-
-                                                    <div className="flex items-center gap-1">
-                                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                                            let pageNum;
-                                                            if (totalPages <= 5) {
-                                                                pageNum = i + 1;
-                                                            } else if (validationCurrentPage <= 3) {
-                                                                pageNum = i + 1;
-                                                            } else if (validationCurrentPage >= totalPages - 2) {
-                                                                pageNum = totalPages - 4 + i;
-                                                            } else {
-                                                                pageNum = validationCurrentPage - 2 + i;
-                                                            }
-
-                                                            return (
-                                                                <Button
-                                                                    key={pageNum}
-                                                                    variant={validationCurrentPage === pageNum ? "default" : "outline"}
-                                                                    size="sm"
-                                                                    onClick={() => setValidationCurrentPage(pageNum)}
-                                                                    className="w-8 h-8 p-0"
-                                                                >
-                                                                    {pageNum}
-                                                                </Button>
-                                                            );
-                                                        })}
-                                                    </div>
-
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={() => setValidationCurrentPage(Math.min(totalPages, validationCurrentPage + 1))}
-                                                        disabled={validationCurrentPage === totalPages}
-                                                    >
-                                                        Next
-                                                        <ChevronRight className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })()}
+                                <div className="border rounded-lg overflow-visible">
+                                    <div className="overflow-x-auto overflow-y-visible">
+                                        <DataTable
+                                            data={comparisonResults.filter(r => r.isMigrated).map(result => result as unknown as Record<string, unknown>)}
+                                            columns={validationColumns}
+                                            className="text-sm"
+                                            currentPage={validationCurrentPage}
+                                            totalPages={Math.ceil(comparisonResults.filter(r => r.isMigrated).length / itemsPerPage)}
+                                            itemsPerPage={itemsPerPage}
+                                            onPageChange={setValidationCurrentPage}
+                                            onItemsPerPageChange={(newItemsPerPage) => {
+                                                setItemsPerPage(newItemsPerPage);
+                                                setValidationCurrentPage(1);
+                                            }}
+                                            showPagination={true}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         )}

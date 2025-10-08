@@ -24,21 +24,38 @@ import {
 export default function DeviceConfigurationLandingPage() {
     const configurationBlocks = [
         {
-            title: "Device Overview & Analytics",
-            description: "Comprehensive dashboard for all your Intune-managed devices with detailed analytics, health monitoring, and advanced filtering capabilities.",
-            href: "/devices/overview",
-            icon: BarChart3,
-            gradient: "from-purple-500 to-pink-500",
-            bgGradient: "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
-            borderColor: "border-purple-200 dark:border-purple-800",
+            title: "Intune Policy Overview",
+            description: "Comprehensive visibility into all your Intune policies with detailed analytics, compliance status, and deployment insights.",
+            href: "/policies",
+            icon: Shield,
+            gradient: "from-blue-500 to-indigo-500",
+            bgGradient: "from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
+            borderColor: "border-blue-200 dark:border-blue-800",
             features: [
-                "Real-time device inventory",
-                "Health and compliance analytics",
-                "Advanced filtering and drill-down",
-                "Advanced device to group assignment"
+                "Complete policy inventory",
+                "Compliance and deployment status",
+                "Policy effectiveness analytics",
+                "Backup your policies"
             ],
-            badge: "OVERVIEW",
-            highlight: "New"
+            badge: "POLICIES",
+            highlight: "Most Popular"
+        },
+        {
+            title: "Configuration Policies Settings Overview",
+            description: "Deep dive into individual configuration policies with granular settings analysis, conflict detection, and optimization recommendations.",
+            href: "/settings",
+            icon: Settings,
+            gradient: "from-emerald-500 to-cyan-500",
+            bgGradient: "from-emerald-50 to-cyan-50 dark:from-emerald-900/20 dark:to-cyan-900/20",
+            borderColor: "border-emerald-200 dark:border-emerald-800",
+            features: [
+                "Granular settings breakdown",
+                "Configuration conflict detection (soon)",
+                "Policy optimization insights",
+                "Settings comparison tools"
+            ],
+            badge: "SETTINGS",
+            highlight: "Advanced"
         }
     ];
 
@@ -134,31 +151,31 @@ export default function DeviceConfigurationLandingPage() {
     return (
         <div className="space-y-8">
             {/* Hero Section */}
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 p-8 text-white">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 p-8 text-white">
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
                             <Monitor className="h-6 w-6" />
                         </div>
                         <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                            Device Management
+                            Configuration Management
                         </Badge>
                     </div>
                     <h1 className="text-4xl font-bold mb-4">
-                        Device Management Center
+                        Configuration Management Center
                     </h1>
-                    <p className="text-xl text-yellow-100 mb-6 max-w-2xl">
-                        Comprehensive device oversight and policy management for your Microsoft Intune environment.
-                        Monitor, analyze, and optimize your entire device fleet with powerful analytics and insights.
+                    <p className="text-xl text-purple-100 mb-6 max-w-2xl">
+                        Comprehensive Configuration oversight and policy management for your Microsoft Intune environment.
+                        Monitor, analyze, and optimize your entire configuration with powerful analytics and insights.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                        <Button size="lg" className="bg-white text-yellow-600 hover:bg-gray-100 font-semibold" asChild>
-                            <Link href="/devices/overview">
+                        <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-semibold" asChild>
+                            <Link href="/policies">
                                 <BarChart3 className="mr-2 h-4 w-4" />
-                                View Device Overview
+                                View Policy Overview
                             </Link>
                         </Button>
-                        <Button size="lg" variant="outline" className="bg-white text-yellow-600 hover:bg-gray-100 font-semibold">
+                        <Button size="lg" variant="outline" className="bg-white text-purple-600 hover:bg-gray-100 font-semibold">
                             <Link href="https://docs.intuneassistant.cloud" target="_blank" rel="noopener noreferrer" className="flex items-center">
                                 <FileText className="mr-2 h-4 w-4" />
                                     View Documentation
