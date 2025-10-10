@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,13 +8,21 @@ import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck, Trash2, FileText} from 'lucide-react';
-import { CONFIGURATION_POLICIES_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE, CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT } from '@/lib/constants';
+import {
+    CONFIGURATION_POLICIES_ENDPOINT,
+    ASSIGNMENTS_FILTERS_ENDPOINT,
+    ITEMS_PER_PAGE,
+    CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT,
+    GROUPS_ENDPOINT
+} from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import { ConsentDialog } from '@/components/ConsentDialog';
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,6 +30,21 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {UserMember} from "@/hooks/useGroupDetails";
+
+interface GroupDetails {
+    id: string;
+    displayName: string;
+    description: string | null;
+    membershipRule: string | null;
+    createdDateTime: string;
+    groupCount: {
+        userCount: number;
+        deviceCount: number;
+        groupCount: number;
+    } | null;
+    members: UserMember[] | null;
+}
 
 interface PolicyAssignment {
     id: string;
@@ -71,7 +94,7 @@ interface ApiResponse {
     status: string;
     message: string;
     details: unknown[];
-    data: ConfigurationPolicy[];
+    data: ConfigurationPolicy[] | { url: string; message: string }; // Updated to handle both cases
 }
 
 export default function ConfigurationPoliciesPage() {
@@ -96,6 +119,8 @@ export default function ConfigurationPoliciesPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
+    const [groups, setGroups] = useState<GroupDetails[]>([]);
+
     // Add pagination calculations
     const totalPages = Math.ceil(filteredPolicies.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -111,6 +136,10 @@ export default function ConfigurationPoliciesPage() {
     // Selection states - matching device selection exactly
     const [selectedPolicies, setSelectedPolicies] = useState<string[]>([]);
     const [bulkActionLoading, setBulkActionLoading] = useState(false);
+
+
+    const [consentUrl, setConsentUrl] = useState<string>('');
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -275,7 +304,7 @@ export default function ConfigurationPoliciesPage() {
         setError(null);
 
         try {
-            await Promise.all([fetchPoliciesData(), fetchFilters()]);
+            await Promise.all([fetchPoliciesData(), fetchFilters(),fetchGroups()]);
         } catch (error) {
             console.error('Failed to fetch data:', error);
             setError(error instanceof Error ? error.message : 'Failed to fetch data');
@@ -301,16 +330,62 @@ export default function ConfigurationPoliciesPage() {
             throw new Error('No response received from API');
         }
 
-        const policiesData = response.data;
+        // Check if this is a consent required error - updated logic
+        if (response.status === 'Error' &&
+            response.message === 'User challenge required' &&
+            typeof response.data === 'object' &&
+            response.data !== null &&
+            'url' in response.data) {
 
-        if (Array.isArray(policiesData)) {
-            setPolicies(policiesData);
-            setFilteredPolicies(policiesData);
-        } else {
-            console.error('API response data is not an array:', policiesData);
-            setPolicies([]);
-            setFilteredPolicies([]);
+            setConsentUrl(response.data.url); // Access the url property
+            setShowConsentDialog(true);
+            setLoading(false);
+            return;
+        }
+
+        // Add type guard to ensure data is an array before processing
+        if (!Array.isArray(response.data)) {
             throw new Error('Invalid data format received from API');
+        }
+
+        const policiesData = response.data;
+        setPolicies(policiesData);
+        setFilteredPolicies(policiesData);
+    };
+
+
+    const handleConsentComplete = () => {
+        setShowConsentDialog(false);
+        setConsentUrl('');
+        // Optionally retry fetching policies after consent
+        fetchPolicies();
+    };
+
+    const fetchGroups = async () => {
+        if (!accounts.length) return;
+
+        try {
+            const groupResponseData = await request<GroupDetails[]>(
+                `${GROUPS_ENDPOINT}/list`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (Array.isArray(groupResponseData)) {
+                setGroups(groupResponseData);
+            } else if (groupResponseData && typeof groupResponseData === 'object' && 'data' in groupResponseData) {
+                setGroups((groupResponseData as { data: GroupDetails[] }).data);
+            } else {
+                console.error('Filters API response is not an array:', groupResponseData);
+                setGroups([]);
+            }
+        } catch (error) {
+            console.error('Failed to fetch filters:', error);
+            setGroups([]);
         }
     };
 
@@ -1315,6 +1390,14 @@ export default function ConfigurationPoliciesPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <ConsentDialog
+                isOpen={showConsentDialog}
+                onClose={() => setShowConsentDialog(false)}
+                consentUrl={consentUrl}
+                onConsentComplete={handleConsentComplete}
+            />
+
         </div>
     );
 }

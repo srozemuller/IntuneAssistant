@@ -26,7 +26,7 @@ export default function DeviceConfigurationLandingPage() {
         {
             title: "Intune Policy Overview",
             description: "Comprehensive visibility into all your Intune policies with detailed analytics, compliance status, and deployment insights.",
-            href: "/policies",
+            href: "/configuration/policies",
             icon: Shield,
             gradient: "from-blue-500 to-indigo-500",
             bgGradient: "from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
@@ -43,7 +43,7 @@ export default function DeviceConfigurationLandingPage() {
         {
             title: "Configuration Policies Settings Overview",
             description: "Deep dive into individual configuration policies with granular settings analysis, conflict detection, and optimization recommendations.",
-            href: "/settings",
+            href: "/configuration/settings",
             icon: Settings,
             gradient: "from-emerald-500 to-cyan-500",
             bgGradient: "from-emerald-50 to-cyan-50 dark:from-emerald-900/20 dark:to-cyan-900/20",
@@ -170,7 +170,7 @@ export default function DeviceConfigurationLandingPage() {
                     </p>
                     <div className="flex flex-wrap gap-4">
                         <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-semibold" asChild>
-                            <Link href="/policies">
+                            <Link href="/configuration/policies">
                                 <BarChart3 className="mr-2 h-4 w-4" />
                                 View Policy Overview
                             </Link>

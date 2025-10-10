@@ -6,13 +6,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck } from 'lucide-react';
+import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck, ChevronDown, ChevronUp  } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import {useApiRequest} from "@/hooks/useApiRequest";
+
+interface ApiResponse {
+    status: string;
+    message: string;
+    details: unknown[];
+    data: Assignments[] | { url: string; message: string }; // Updated to handle both cases
+}
+
 
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
@@ -20,7 +29,7 @@ interface Assignments extends Record<string, unknown> {
     assignmentType: string;
     platform: string | null;
     isAssigned: boolean;
-    enrollmentType: string | null;
+    enrollmentType: string;
     targetId: string | null;
     targetName: string;
     resourceId: string;
@@ -75,6 +84,9 @@ interface AssignmentFilter {
 
 export default function AssignmentsOverview() {
     const { instance, accounts } = useMsal();
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
+    const [consentUrl, setConsentUrl] = useState('');
+    const { request } = useApiRequest();
 
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
@@ -87,6 +99,8 @@ export default function AssignmentsOverview() {
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
     const [filterLoading, setFilterLoading] = useState(false);
     const [filterError, setFilterError] = useState<string | null>(null);
+    const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
+
 
     // Filter states
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
@@ -96,28 +110,45 @@ export default function AssignmentsOverview() {
     const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
     const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
+    const [installTypeFilter, setInstallTypeFilter] = useState<string[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
-    // Add pagination calculations
-    const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedAssignments = filteredAssignments.slice(startIndex, endIndex);
-
-
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
     const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
 
+    const handleConsentCheck = (response: ApiResponse): boolean => {
+        if (response.status === 'Error' &&
+            response.message === 'User challenge required' &&
+            typeof response.data === 'object' &&
+            response.data !== null &&
+            'url' in response.data) {
+
+            setConsentUrl(response.data.url);
+            setShowConsentDialog(true);
+            return true;
+        }
+        return false;
+    };
+
+
     useEffect(() => {
         setCurrentPage(1);
-    }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter, filterTypeFilter]);
+    }, [assignmentTypeFilter, statusFilter, platformFilter, installTypeFilter, resourceTypeFilter, filterTypeFilter]);
 
     const getUniqueResourceTypes = (): Option[] => {
         const types = new Set<string>();
         assignments.forEach(assignment => {
             types.add(assignment.resourceType);
+        });
+        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+    };
+
+    const getUniqueInstallTypes = (): Option[] => {
+        const types = new Set<string>();
+        assignments.forEach(assignment => {
+            types.add(assignment.enrollmentType);
         });
         return Array.from(types).sort().map(type => ({ label: type, value: type }));
     };
@@ -218,37 +249,46 @@ export default function AssignmentsOverview() {
     const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
 
-        // Get access token
-        const response = await instance.acquireTokenSilent({
-            scopes: [apiScope],
-            account: accounts[0]
-        });
+        try {
+            const responseData = await request<ApiResponse>(`${ASSIGNMENTS_ENDPOINT}/apps`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        // Call your API
-        const apiResponse = await fetch(`${ASSIGNMENTS_ENDPOINT}/apps`, {
-            headers: {
-                'Authorization': `Bearer ${response.accessToken}`,
-                'Content-Type': 'application/json'
+            // Check if response exists and for consent requirements
+            if (!responseData) {
+                throw new Error('No response received from API');
             }
-        });
 
-        if (!apiResponse.ok) {
-            throw new Error(`API call failed: ${apiResponse.statusText}`);
-        }
+            if (handleConsentCheck(responseData)) {
+                return;
+            }
 
-        const responseData = await apiResponse.json();
-        const assignmentsData = responseData.data;
+            // Handle successful response
+            if (responseData.status === 'Success' && responseData.data) {
+                const assignments = responseData.data;
 
-        if (Array.isArray(assignmentsData)) {
-            setAssignments(assignmentsData);
-            setFilteredAssignments(assignmentsData);
-        } else {
-            console.error('API response data is not an array:', assignmentsData);
-            setAssignments([]);
-            setFilteredAssignments([]);
-            throw new Error('Invalid data format received from API');
+                if (Array.isArray(assignments)) {
+                    setAssignments(assignments);
+                    setFilteredAssignments(assignments);
+                } else {
+                    console.error('API response data is not an array:', assignments);
+                    setAssignments([]);
+                    setFilteredAssignments([]);
+                    throw new Error('Invalid data format received from API');
+                }
+            } else {
+                throw new Error(responseData.message || 'Failed to fetch assignments');
+            }
+        } catch (error) {
+            console.error('Failed to fetch assignments:', error);
+            throw error;
         }
     };
+
+
 
     const handleFilterClick = (filterId: string) => {
         if (filterId && filterId !== 'None') {
@@ -265,31 +305,30 @@ export default function AssignmentsOverview() {
         if (!accounts.length) return;
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(ASSIGNMENTS_FILTERS_ENDPOINT, {
+            const responseData = await request<AssignmentFilter[]>(`${ASSIGNMENTS_FILTERS_ENDPOINT}`, {
+                method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
                     'Content-Type': 'application/json'
                 }
             });
 
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to fetch filters: ${apiResponse.statusText}`);
+            // Check if response exists
+            if (!responseData) {
+                console.error('No response received from filters API');
+                setFilters([]);
+                return;
             }
 
-            const filtersData = await apiResponse.json();
-
-            // Handle direct array response (not wrapped in .data)
-            if (Array.isArray(filtersData)) {
-                setFilters(filtersData);
-            } else if (filtersData.data && Array.isArray(filtersData.data)) {
-                setFilters(filtersData.data);
+            // Handle successful response - filters endpoint returns array directly
+            if (Array.isArray(responseData)) {
+                setFilters(responseData);
             } else {
-                console.error('Filters API response is not an array:', filtersData);
+                // If it's not an array, it might be an error response with consent info
+                const errorResponse = responseData as unknown as ApiResponse;
+                if (handleConsentCheck(errorResponse)) {
+                    return;
+                }
+                console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
             }
         } catch (error) {
@@ -297,6 +336,7 @@ export default function AssignmentsOverview() {
             setFilters([]);
         }
     };
+
 
     const getFilterInfo = (filterId: string | null, filterType: string) => {
         if (!filterId || filterId === 'None' || filterType === 'None') {
@@ -322,19 +362,6 @@ export default function AssignmentsOverview() {
     // Filter and search function
     useEffect(() => {
         let filtered = assignments;
-
-        // Apply search filter
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase().trim();
-            filtered = filtered.filter((assignment: Assignments) =>
-                assignment.resourceName?.toLowerCase().includes(query) ||
-                assignment.resourceType.toLowerCase().includes(query) ||
-                assignment.targetName.toLowerCase().includes(query) ||
-                assignment.assignmentType.toLowerCase().includes(query) ||
-                assignment.platform?.toLowerCase().includes(query) ||
-                assignment.filterType.toLowerCase().includes(query)
-            );
-        }
 
         // Apply dropdown filters
         if (resourceTypeFilter.length > 0) {
@@ -394,9 +421,15 @@ export default function AssignmentsOverview() {
                 return false;
             });
         }
+        if (installTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                const enrollmentType = assignment.enrollmentType || 'All';
+                return installTypeFilter.includes(enrollmentType);
+            });
+        }
 
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, searchQuery, filterTypeFilter]);
+    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, filterTypeFilter, installTypeFilter]);
 
 
     // Get unique values for filters
@@ -430,13 +463,10 @@ export default function AssignmentsOverview() {
         setResourceTypeFilter([]);
         setStatusFilter([]);
         setPlatformFilter([]);
-        setSearchQuery('');
         setFilterTypeFilter([]);
+        setInstallTypeFilter([]);
     };
 
-    const clearSearch = () => {
-        setSearchQuery('');
-    };
 
     const columns = [
         {
@@ -685,159 +715,237 @@ export default function AssignmentsOverview() {
             {/* Only show search, filters, and table when assignments are loaded or loading */}
             {(assignments.length > 0 || loading) && (
                 <>
-                    {/* Search Section */}
-                    <Card className="shadow-sm">
-                        <CardHeader className="pb-4">
-                            <CardTitle className="flex items-center gap-2">
-                                <Search className="h-5 w-5" />
-                                Search
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                <input
-                                    type="text"
-                                    placeholder="Search by resource name, type, target, assignment type, platform, or filter..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                {searchQuery && (
-                                    <button
-                                        onClick={clearSearch}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </button>
-                                )}
-                            </div>
-                            {searchQuery && (
-                                <div className="mt-2">
-                                    <Badge variant="secondary" className="flex items-center gap-1 w-fit">
-                                        <Search className="h-3 w-3" />
-                                        Searching: &quot;{searchQuery}&quot;
-                                        <button onClick={clearSearch} className="ml-1 hover:text-red-600">
-                                            <X className="h-3 w-3" />
-                                        </button>
-                                    </Badge>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
                     {/* Filters Section */}
                     <Card className="shadow-sm">
-                        <CardHeader className="pb-4">
+                        <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
-                                <span className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
+                                    className="flex items-center gap-2 hover:text-blue-600 transition-colors"
+                                >
                                     <Filter className="h-5 w-5" />
                                     Filters
-                                </span>
-                                {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
-                                    <Button variant="ghost" size="sm" onClick={clearFilters}>
-                                        Clear All
-                                    </Button>
-                                )}
+                                    {isFiltersExpanded ? (
+                                        <ChevronUp className="h-4 w-4" />
+                                    ) : (
+                                        <ChevronDown className="h-4 w-4" />
+                                    )}
+                                </button>
+                                <div className="flex items-center gap-2">
+                                    {/* Show active filter count when collapsed */}
+                                    {!isFiltersExpanded && (
+                                        <Badge variant="secondary" className="text-xs">
+                                            {resourceTypeFilter.length + assignmentTypeFilter.length + statusFilter.length + platformFilter.length + filterTypeFilter.length + installTypeFilter.length} active
+                                        </Badge>
+                                    )}
+                                    {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0 || installTypeFilter.length > 0) && (
+                                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                                            Clear All
+                                        </Button>
+                                    )}
+                                </div>
                             </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {/* Resource Type Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Resource Type</label>
-                                    <MultiSelect
-                                        options={getUniqueResourceTypes()}
-                                        selected={resourceTypeFilter}
-                                        onChange={setResourceTypeFilter}
-                                        placeholder="Select resource types..."
-                                    />
-                                </div>
-                                {/* Assignment Type Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Assignment Type</label>
-                                    <MultiSelect
-                                        options={getUniqueAssignmentTypes()}
-                                        selected={assignmentTypeFilter}
-                                        onChange={setAssignmentTypeFilter}
-                                        placeholder="Select assignment types..."
-                                    />
-                                </div>
-
-                                {/* Status Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Status</label>
-                                    <MultiSelect
-                                        options={getUniqueStatuses()}
-                                        selected={statusFilter}
-                                        onChange={setStatusFilter}
-                                        placeholder="Select status..."
-                                    />
-                                </div>
-
-                                {/* Platform Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Platform</label>
-                                    <MultiSelect
-                                        options={getUniquePlatforms()}
-                                        selected={platformFilter}
-                                        onChange={setPlatformFilter}
-                                        placeholder="Select platforms..."
-                                    />
-                                </div>
-
-                                {/* Filters Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Filter Type</label>
-                                    <MultiSelect
-                                        options={getUniqueFilterTypes()}
-                                        selected={filterTypeFilter}
-                                        onChange={setFilterTypeFilter}
-                                        placeholder="Select filter types..."
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Active Filters Display */}
-                            {(assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
-                                <div className="flex flex-wrap gap-2 pt-2 border-t">
-                                    <span className="text-sm text-gray-600">Active filters:</span>
+                            {/* Show active filters summary when collapsed */}
+                            {!isFiltersExpanded && (resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0 || installTypeFilter.length > 0) && (
+                                <div className="flex flex-wrap gap-1 pt-2">
                                     {resourceTypeFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter}
-                                            <button onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Resource: {filter}
+                                            <button
+                                                onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
                                                 <X className="h-3 w-3" />
                                             </button>
                                         </Badge>
                                     ))}
                                     {assignmentTypeFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter}
-                                            <button onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Assignment: {filter}
+                                            <button
+                                                onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
                                                 <X className="h-3 w-3" />
                                             </button>
                                         </Badge>
                                     ))}
                                     {statusFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter}
-                                            <button onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Status: {filter}
+                                            <button
+                                                onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
                                                 <X className="h-3 w-3" />
                                             </button>
                                         </Badge>
                                     ))}
                                     {platformFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter}
-                                            <button onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Platform: {filter}
+                                            <button
+                                                onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {filterTypeFilter.map(filter => (
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Filter: {filter}
+                                            <button
+                                                onClick={() => setFilterTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                    {installTypeFilter.map(filter => (
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Install: {filter}
+                                            <button
+                                                onClick={() => setInstallTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                className="ml-1 hover:text-red-600"
+                                            >
                                                 <X className="h-3 w-3" />
                                             </button>
                                         </Badge>
                                     ))}
                                 </div>
                             )}
-                        </CardContent>
+                        </CardHeader>
+
+                        {/* Collapsible Content */}
+                        {isFiltersExpanded && (
+                            <CardContent className="space-y-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {/* Resource Type Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Resource Type</label>
+                                        <MultiSelect
+                                            options={getUniqueResourceTypes()}
+                                            selected={resourceTypeFilter}
+                                            onChange={setResourceTypeFilter}
+                                            placeholder="Select resource types..."
+                                        />
+                                    </div>
+                                    {/* Assignment Type Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Assignment Type</label>
+                                        <MultiSelect
+                                            options={getUniqueAssignmentTypes()}
+                                            selected={assignmentTypeFilter}
+                                            onChange={setAssignmentTypeFilter}
+                                            placeholder="Select assignment types..."
+                                        />
+                                    </div>
+
+                                    {/* Status Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Status</label>
+                                        <MultiSelect
+                                            options={getUniqueStatuses()}
+                                            selected={statusFilter}
+                                            onChange={setStatusFilter}
+                                            placeholder="Select status..."
+                                        />
+                                    </div>
+
+                                    {/* Platform Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Platform</label>
+                                        <MultiSelect
+                                            options={getUniquePlatforms()}
+                                            selected={platformFilter}
+                                            onChange={setPlatformFilter}
+                                            placeholder="Select platforms..."
+                                        />
+                                    </div>
+
+                                    {/* Filters Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Filter Type</label>
+                                        <MultiSelect
+                                            options={getUniqueFilterTypes()}
+                                            selected={filterTypeFilter}
+                                            onChange={setFilterTypeFilter}
+                                            placeholder="Select filter types..."
+                                        />
+                                    </div>
+
+                                    {/* Installation Type Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Install Type</label>
+                                        <MultiSelect
+                                            options={getUniqueInstallTypes()}
+                                            selected={installTypeFilter}
+                                            onChange={setInstallTypeFilter}
+                                            placeholder="Select install types..."
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Active Filters Display */}
+                                {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0 || installTypeFilter.length > 0) && (
+                                    <div className="flex flex-wrap gap-2 pt-2 border-t">
+                                        <span className="text-sm text-gray-600">Active filters:</span>
+                                        {resourceTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {assignmentTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {statusFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {platformFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {filterTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setFilterTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {installTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="secondary" className="flex items-center gap-1">
+                                                {filter}
+                                                <button onClick={() => setInstallTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        )}
                     </Card>
+
 
                     {error && (
                         <Card className="border-red-200 bg-red-50">
@@ -856,7 +964,6 @@ export default function AssignmentsOverview() {
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
                                 <div className="flex items-center gap-2 text-sm text-gray-600">
-                                    <span>Showing {startIndex + 1}-{Math.min(endIndex, filteredAssignments.length)} of {filteredAssignments.length}</span>
                                 </div>
                             </CardTitle>
                             <CardDescription>
@@ -870,29 +977,17 @@ export default function AssignmentsOverview() {
                                     <span className="ml-2 text-gray-600">Loading assignments...</span>
                                 </div>
                             ) : (
-                                <div className="w-full">
-                                    <div className="overflow-x-auto">
-                                        <DataTable
-                                            data={paginatedAssignments}
-                                            columns={columns}
-                                            className="min-w-full"
-                                        />
-                                    </div>
+                                <DataTable
+                                    data={filteredAssignments}
+                                    columns={columns}
+                                    className="min-w-full"
+                                    showPagination={true}
+                                    currentPage={currentPage}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
+                                    onItemsPerPageChange={setItemsPerPage}
+                                />
 
-                                    {/* Pagination */}
-                                    {totalPages > 1 && (
-                                        <div className="border-t p-4">
-                                            <Pagination
-                                                currentPage={currentPage}
-                                                totalPages={totalPages}
-                                                onPageChange={setCurrentPage}
-                                                itemsPerPage={itemsPerPage}
-                                                onItemsPerPageChange={setItemsPerPage}
-                                                totalItems={filteredAssignments.length}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
                             )}
                         </CardContent>
                     </Card>

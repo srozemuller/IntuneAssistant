@@ -6,6 +6,7 @@ import { useTenant } from "@/contexts/TenantContext";
 import { apiRequest, UserConsentRequiredError } from "@/lib/apiRequest";
 import { apiScope } from '@/lib/msalConfig';
 
+
 export function useApiRequest() {
     const { instance, accounts } = useMsal();
     const { showConsent } = useConsent();

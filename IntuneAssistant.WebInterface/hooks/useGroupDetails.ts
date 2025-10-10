@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { GROUPS_ENDPOINT } from '@/lib/constants';
 import { apiScope } from '@/lib/msalConfig';
+import { useApiRequest } from '@/hooks/useApiRequest';
 
 export interface UserMember extends Record<string, unknown> {
     id: string;
@@ -31,6 +32,24 @@ export const useGroupDetails = () => {
     const [groupLoading, setGroupLoading] = useState(false);
     const [groupError, setGroupError] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const { request } = useApiRequest();
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
+    const [consentUrl, setConsentUrl] = useState('');
+
+    const handleConsentCheck = (response: any): boolean => {
+        if (response.status === 'Error' &&
+            response.message === 'User challenge required' &&
+            typeof response.data === 'object' &&
+            response.data !== null &&
+            'url' in response.data) {
+
+            setConsentUrl(response.data.url);
+            setShowConsentDialog(true);
+            setGroupLoading(false);
+            return true;
+        }
+        return false;
+    };
 
     const fetchGroupDetails = async (resourceId: string) => {
         if (!accounts.length) return;
@@ -50,37 +69,29 @@ export const useGroupDetails = () => {
         setGroupError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            // Make both API calls in parallel
-            const [groupResponse, membersResponse] = await Promise.all([
-                fetch(`${GROUPS_ENDPOINT}?groupId=${resourceId}`, {
+            const [groupData, membersArray] = await Promise.all([
+                request<any>(`${GROUPS_ENDPOINT}?groupId=${resourceId}`, {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${response.accessToken}`,
                         'Content-Type': 'application/json'
                     }
                 }),
-                fetch(`${GROUPS_ENDPOINT}/${resourceId}/members`, {
+                request<UserMember[]>(`${GROUPS_ENDPOINT}/${resourceId}/members`, {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${response.accessToken}`,
                         'Content-Type': 'application/json'
                     }
                 })
             ]);
 
-            if (!groupResponse.ok) {
-                throw new Error(`Failed to fetch group details: ${groupResponse.statusText}`);
+// Check for consent requirements
+            if (handleConsentCheck(groupData) || handleConsentCheck(membersArray)) {
+                return;
             }
 
-            if (!membersResponse.ok) {
-                throw new Error(`Failed to fetch group members: ${membersResponse.statusText}`);
+            if (!groupData || !membersArray) {
+                throw new Error('Failed to fetch group data or members');
             }
-
-            const groupData = await groupResponse.json();
-            const membersArray = await membersResponse.json();
 
             // Extract group details from the API response structure
             const group = groupData.data;
@@ -115,6 +126,11 @@ export const useGroupDetails = () => {
             setGroupLoading(false);
         }
     };
+    const handleConsentComplete = () => {
+        setShowConsentDialog(false);
+        setConsentUrl('');
+        // Optionally retry fetching the group details
+    };
 
     const closeDialog = () => {
         setIsDialogOpen(false);
@@ -127,7 +143,10 @@ export const useGroupDetails = () => {
         groupLoading,
         groupError,
         isDialogOpen,
+        showConsentDialog,
+        consentUrl,
         fetchGroupDetails,
-        closeDialog
+        closeDialog,
+        handleConsentComplete
     };
 };
