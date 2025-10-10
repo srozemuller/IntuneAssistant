@@ -41,11 +41,27 @@ import {Label} from '@/components/ui/label';
 import {useApiRequest} from '@/hooks/useApiRequest';
 import {ConsentDialog} from "@/components/ConsentDialog";
 
+import {UserMember} from "@/hooks/useGroupDetails";
 interface ApiResponse {
     status: string;
     message: string;
     details: unknown[];
     data: DeviceStats[] ; // Updated to handle both cases
+}
+
+
+interface GroupDetails {
+    id: string;
+    displayName: string;
+    description: string | null;
+    membershipRule: string | null;
+    createdDateTime: string;
+    groupCount: {
+        userCount: number;
+        deviceCount: number;
+        groupCount: number;
+    } | null;
+    members: UserMember[] | null;
 }
 
 interface DeviceHardwareInfo {
@@ -135,6 +151,7 @@ interface GroupSearchResult {
     id: string;
     displayName: string;
     description?: string;
+    membershipRule?: string | null;
     groupCount?: {
         totalMembers: number;
         deviceMembers: number;
@@ -167,7 +184,7 @@ interface FilterOption {
 
 export default function DeviceStatsPage() {
     const {instance, accounts} = useMsal();
-    const apiRequestWithConsent = useApiRequest();
+    const { request } = useApiRequest();
     // Consent dialog state when not enough permissions
     const [showConsentDialog, setShowConsentDialog] = useState(false);
     const [consentUrl, setConsentUrl] = useState('');
@@ -195,7 +212,7 @@ export default function DeviceStatsPage() {
     const paginatedResults = filteredStats.slice(startIndex, endIndex);
     const totalPages = Math.ceil(filteredStats.length / itemsPerPage);
 
-
+    const [groups, setGroups] = useState<GroupDetails[]>([]);
     const [groupCreationMode, setGroupCreationMode] = useState(false);
     const [groupName, setGroupName] = useState('');
     const [groupDescription, setGroupDescription] = useState('');
@@ -232,28 +249,37 @@ export default function DeviceStatsPage() {
         setCreateGroupError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
+            const responseData = await request<{status: string, message: string, data?: GroupSearchResult}>(
+                `${GROUPS_ENDPOINT}/create`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        displayName: newGroupName.trim(),
+                        description: newGroupDescription.trim() || undefined
+                    })
+                }
+            );
 
-            const apiResponse = await fetch(`${GROUPS_ENDPOINT}/create`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    displayName: newGroupName.trim(),
-                    description: newGroupDescription.trim() || undefined
-                })
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`API call failed: ${apiResponse.statusText}`);
+            if (!responseData) {
+                throw new Error('No response received from API');
             }
 
-            const responseData = await apiResponse.json();
+            // Check if this is a consent required error with proper type checking
+            if (responseData.status === 'Error' &&
+                responseData.message === 'User challenge required' &&
+                typeof responseData.data === 'object' &&
+                responseData.data !== null &&
+                'url' in responseData.data &&
+                typeof responseData.data.url === 'string') {
+
+                setConsentUrl(responseData.data.url);
+                setShowConsentDialog(true);
+                setIsCreatingGroup(false);
+                return;
+            }
 
             if (responseData.message === "Group already exists") {
                 // Show subtle warning and switch to search mode
@@ -267,7 +293,7 @@ export default function DeviceStatsPage() {
                     setNewGroupName('');
                     setNewGroupDescription('');
                 }, 2000); // Show warning for 2 seconds then switch
-            } else if (responseData.status === 0 && responseData.data) {
+            } else if (responseData.status === 'Error' && responseData.data) {
                 const newGroup = responseData.data;
                 setSearchedGroup(newGroup);
                 setAddToGroupStep(2);
@@ -294,39 +320,39 @@ export default function DeviceStatsPage() {
         setGroupsError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(`${GROUPS_ENDPOINT}/list`, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
+            const response = await request<{status: number, data: GroupSearchResult[]}>(
+                `${GROUPS_ENDPOINT}/list`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 }
-            });
+            );
 
-
-            if (!apiResponse.ok) {
-                throw new Error(`API call failed: ${apiResponse.statusText}`);
+            if (!response) {
+                throw new Error('No response received from API');
             }
 
-            const responseData = await apiResponse.json();
-
-            if (responseData.status === 0 && responseData.data) {
-                const groups = Array.isArray(responseData.data) ? responseData.data : [responseData.data];
+            if (response.status === 0 && response.data) {
+                const groups = Array.isArray(response.data) ? response.data : [response.data];
                 setAllGroups(groups);
                 setFilteredGroups(groups);
             } else {
-                throw new Error(responseData.message || 'Failed to fetch groups');
+                throw new Error('Failed to fetch groups');
             }
         } catch (error) {
             console.error('Failed to fetch groups:', error);
             setGroupsError(error instanceof Error ? error.message : 'Failed to fetch groups');
+            setAllGroups([]);
+            setFilteredGroups([]);
         } finally {
             setLoadingGroups(false);
         }
     };
+
+
+
     const filterGroups = (searchTerm: string) => {
         if (!searchTerm.trim()) {
             setFilteredGroups(allGroups);
@@ -680,12 +706,7 @@ export default function DeviceStatsPage() {
                 selectedDevices.includes(device.id)
             );
 
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const data = await apiRequestWithConsent.request<AddMembersResult>(
+            const data = await request<AddMembersResult>(
                 `${GROUPS_ENDPOINT}/${searchedGroup.id}/members/devices`,
                 {
                     method: 'POST',
@@ -835,7 +856,7 @@ export default function DeviceStatsPage() {
         setError(null);
 
         try {
-            const response = await apiRequestWithConsent.request<ApiResponse>(
+            const response = await request<ApiResponse>(
                 DEVICES_STATS_ENDPOINT,
                 {
                     method: 'GET',
@@ -2484,40 +2505,67 @@ export default function DeviceStatsPage() {
                                             </div>
 
                                             {filteredGroups.length > 0 ? (
-                                                <div className="divide-y">
-                                                    {filteredGroups.map((group) => (
-                                                        <div
-                                                            key={group.id}
-                                                            className="p-4 hover:bg-blue-50 cursor-pointer transition-colors"
-                                                            onClick={() => selectGroup(group)}
-                                                        >
-                                                            <div className="flex items-start justify-between">
-                                                                <div className="flex-1 min-w-0">
-                                                                    <h3 className="font-medium text-gray-900 truncate">
-                                                                        {group.displayName}
-                                                                    </h3>
-                                                                    {group.description && (
-                                                                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                                                                            {group.description}
-                                                                        </p>
-                                                                    )}
-                                                                    <p className="text-xs text-gray-500 mt-2 font-mono truncate">
-                                                                        {group.id}
-                                                                    </p>
-                                                                    {group.groupCount && (
-                                                                        <div
-                                                                            className="flex gap-4 mt-2 text-xs text-gray-500">
-                                                                            <span>Total: {group.groupCount.totalMembers}</span>
-                                                                            <span>Devices: {group.groupCount.deviceMembers}</span>
-                                                                            <span>Users: {group.groupCount.userMembers}</span>
+                                                <div className="max-h-64 overflow-y-auto border rounded-md divide-y">
+                                                    {filteredGroups.map(group => {
+                                                        const isDynamicGroup = group.membershipRule !== null && group.membershipRule !== undefined;
+
+                                                        return (
+                                                            <div
+                                                                key={group.id}
+                                                                className={`p-3 transition-colors ${
+                                                                    isDynamicGroup
+                                                                        ? 'bg-gray-100 cursor-not-allowed opacity-60'
+                                                                        : 'hover:bg-blue-50 cursor-pointer'
+                                                                }`}
+                                                                onClick={() => {
+                                                                    if (!isDynamicGroup) {
+                                                                        selectGroup(group);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <div className="flex items-center justify-between">
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <h4 className={`font-medium text-sm ${
+                                                                                isDynamicGroup ? 'text-gray-500' : 'text-gray-900'
+                                                                            }`}>
+                                                                                {group.displayName}
+                                                                            </h4>
+                                                                            {isDynamicGroup && (
+                                                                                <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">
+                                                                                    Dynamic
+                                                                                </Badge>
+                                                                            )}
                                                                         </div>
-                                                                    )}
+                                                                        {group.description && (
+                                                                            <p className={`text-xs mt-1 ${
+                                                                                isDynamicGroup ? 'text-gray-400' : 'text-gray-600'
+                                                                            }`}>
+                                                                                {group.description}
+                                                                            </p>
+                                                                        )}
+                                                                        {isDynamicGroup && (
+                                                                            <p className="text-xs text-orange-600 mt-1 italic">
+                                                                                Membership managed automatically - cannot add devices manually
+                                                                            </p>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        {/*{group.groupCount && (*/}
+                                                                        {/*    <div className={`text-xs ${*/}
+                                                                        {/*        isDynamicGroup ? 'text-gray-400' : 'text-gray-500'*/}
+                                                                        {/*    }`}>*/}
+                                                                        {/*        {group.groupCount.totalMembers || 0} members*/}
+                                                                        {/*    </div>*/}
+                                                                        {/*)}*/}
+                                                                        {!isDynamicGroup && (
+                                                                            <ArrowRight className="h-4 w-4 text-gray-400" />
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                                <ArrowRight
-                                                                    className="h-5 w-5 text-gray-400 ml-4 flex-shrink-0"/>
                                                             </div>
-                                                        </div>
-                                                    ))}
+                                                        );
+                                                    })}
                                                 </div>
                                             ) : (
                                                 <div className="p-8 text-center text-gray-500">
@@ -2530,6 +2578,7 @@ export default function DeviceStatsPage() {
                                                     </p>
                                                 </div>
                                             )}
+
                                         </div>
                                     )}
 
@@ -2607,7 +2656,6 @@ export default function DeviceStatsPage() {
                                         </div>
 
                                         {/* Create Group Error */}
-                                        {/* Create Group Error - Subtle warning for existing group */}
                                         {createGroupError && (
                                             <div className={`p-3 border rounded-md ${
                                                 createGroupError === "Group already exists"
@@ -2670,7 +2718,6 @@ export default function DeviceStatsPage() {
                         </div>
 
                     )}
-
 
                     {/* Step 2: Add Members */}
                     {addToGroupStep === 2 && searchedGroup && (
@@ -2789,19 +2836,28 @@ export default function DeviceStatsPage() {
                             {/* Success Details */}
                             {addMembersResult.data.successfulDeviceIds.length > 0 && (
                                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                                    <h4 className="font-medium text-green-900 mb-3 flex items-center gap-2">
+                                    <h4 className="font-medium text-green-800 mb-3 flex items-center gap-2">
                                         <CheckCircle className="h-4 w-4"/>
                                         Successfully Added ({addMembersResult.data.successfulDeviceIds.length})
                                     </h4>
-                                    <div className="space-y-2">
-                                        {addMembersResult.data.successfulDeviceIds.map((deviceId: string) => {
-                                            const device = deviceStats.find(d => d.azureAdDeviceId === deviceId);
+                                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                                        {addMembersResult.data.successfulDeviceIds.map(azureDeviceId => {
+                                            // Find device by Azure AD Device ID instead of regular ID
+                                            const device = deviceStats.find(d => d.azureAdDeviceId === azureDeviceId);
                                             return (
-                                                <div key={deviceId}
-                                                     className="flex items-center gap-2 text-sm text-green-800">
-                                                    <CheckCircle className="h-3 w-3"/>
-                                                    <span>{device?.deviceName || 'Unknown Device'}</span>
-                                                    <span className="text-green-600">({deviceId})</span>
+                                                <div key={azureDeviceId} className="flex items-center gap-2 text-sm">
+                                                    <CheckCircle2 className="h-3 w-3 text-green-600 flex-shrink-0"/>
+                                                    <span className="font-medium">
+                            {device ? device.deviceName : 'Unknown Device'}
+                        </span>
+                                                    <span className="text-green-600 font-mono text-xs">
+                            ({azureDeviceId})
+                        </span>
+                                                    {device && (
+                                                        <span className="text-gray-500 text-xs">
+                                - {device.userDisplayName}
+                            </span>
+                                                    )}
                                                 </div>
                                             );
                                         })}
@@ -2812,30 +2868,35 @@ export default function DeviceStatsPage() {
                             {/* Failure Details */}
                             {addMembersResult.data.failedDeviceIds.length > 0 && (
                                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                                    <h4 className="font-medium text-red-900 mb-3 flex items-center gap-2">
+                                    <h4 className="font-medium text-red-800 mb-3 flex items-center gap-2">
                                         <XCircle className="h-4 w-4"/>
                                         Failed to Add ({addMembersResult.data.failedDeviceIds.length})
                                     </h4>
-                                    <div className="space-y-3">
-                                        {addMembersResult.data.failedDeviceIds.map((deviceId: string) => {
-                                            const device = deviceStats.find(d => d.azureAdDeviceId === deviceId);
-                                            const error = addMembersResult.data.errors[deviceId];
+                                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                                        {addMembersResult.data.failedDeviceIds.map(azureDeviceId => {
+                                            // Find device by Azure AD Device ID
+                                            const device = deviceStats.find(d => d.azureAdDeviceId === azureDeviceId);
+                                            const error = addMembersResult.data.errors[azureDeviceId];
                                             return (
-                                                <div key={deviceId}
-                                                     className="border border-red-200 rounded-md p-3 bg-white">
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <XCircle className="h-3 w-3 text-red-600"/>
-                                                        <span className="font-medium text-red-800">
-                                        {device?.deviceName || 'Unknown Device'}
-                                    </span>
-                                                        <span
-                                                            className="text-xs text-red-600 font-mono">({deviceId})</span>
-                                                    </div>
-                                                    <div className="text-sm text-red-700 pl-5">
-                                                        {error === "One or more added object references already exist for the following modified properties: 'members'."
-                                                            ? "This device is already a member of the group"
-                                                            : error
-                                                        }
+                                                <div key={azureDeviceId} className="flex items-start gap-2 text-sm">
+                                                    <XCircle className="h-3 w-3 text-red-600 flex-shrink-0 mt-0.5"/>
+                                                    <div className="flex-1">
+                            <span className="font-medium">
+                                {device ? device.deviceName : 'Unknown Device'}
+                            </span>
+                                                        <span className="text-red-600 font-mono text-xs ml-2">
+                                ({azureDeviceId})
+                            </span>
+                                                        {device && (
+                                                            <span className="text-gray-500 text-xs ml-2">
+                                    - {device.userDisplayName}
+                                </span>
+                                                        )}
+                                                        {error && (
+                                                            <div className="text-red-700 text-xs mt-1">
+                                                                Error: {error}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );
@@ -2843,7 +2904,6 @@ export default function DeviceStatsPage() {
                                     </div>
                                 </div>
                             )}
-
                             {/* Action Buttons */}
                             <div className="flex gap-2 justify-between">
                                 <Button
