@@ -41,7 +41,7 @@ function CompareLandingPage() {
         {
             title: "Baseline Analysis",
             description: "Compare your policies against security baselines and best practice templates to identify configuration gaps.",
-            href: "/compare/baselines",
+            href: "#",
             icon: Shield,
             gradient: "from-emerald-500 to-teal-500",
             bgGradient: "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20",
@@ -51,12 +51,13 @@ function CompareLandingPage() {
                 "Compliance gap analysis",
                 "Best practice recommendations",
             ],
-            badge: "SECURITY"
+            badge: "COMING SOON",
+            disabled: true // Marked as coming soon
         },
         {
             title: "Bulk Comparison",
             description: "Compare multiple policies at once to identify patterns, inconsistencies, and standardization opportunities across your environment.",
-            href: "/compare/bulk",
+            href: "#",
             icon: ArrowLeftRight,
             gradient: "from-purple-500 to-pink-500",
             bgGradient: "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
@@ -66,7 +67,8 @@ function CompareLandingPage() {
                 "Standardization insights",
                 "Configuration pattern analysis"
             ],
-            badge: "ADVANCED"
+            badge: "COMING SOON",
+            disabled: true // Marked as coming soon
         }
     ];
 
@@ -180,12 +182,18 @@ function CompareLandingPage() {
 
                                 {/* Action Button */}
                                 <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                                    <Link href={block.href}>
-                                        <Button size="sm" className={`bg-gradient-to-r ${block.gradient} text-white shadow-md hover:shadow-lg transition-all duration-200`}>
-                                            Explore
-                                            <ArrowRight className="ml-1 h-3 w-3" />
+                                    {block.disabled ? (
+                                        <Button size="sm" disabled className="bg-gray-400 text-white cursor-not-allowed">
+                                            Coming Soon
                                         </Button>
-                                    </Link>
+                                    ) : (
+                                        <Link href={block.href}>
+                                            <Button size="sm" className={`bg-gradient-to-r ${block.gradient} text-white shadow-md hover:shadow-lg transition-all duration-200`}>
+                                                Explore
+                                                <ArrowRight className="ml-1 h-3 w-3" />
+                                            </Button>
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </CardContent>
