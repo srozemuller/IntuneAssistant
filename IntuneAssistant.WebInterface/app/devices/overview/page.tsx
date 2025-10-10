@@ -39,6 +39,14 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} fro
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {useApiRequest} from '@/hooks/useApiRequest';
+import {ConsentDialog} from "@/components/ConsentDialog";
+
+interface ApiResponse {
+    status: string;
+    message: string;
+    details: unknown[];
+    data: DeviceStats[] ; // Updated to handle both cases
+}
 
 interface DeviceHardwareInfo {
     serialNumber: string;
@@ -160,6 +168,10 @@ interface FilterOption {
 export default function DeviceStatsPage() {
     const {instance, accounts} = useMsal();
     const apiRequestWithConsent = useApiRequest();
+    // Consent dialog state when not enough permissions
+    const [showConsentDialog, setShowConsentDialog] = useState(false);
+    const [consentUrl, setConsentUrl] = useState('');
+
 
     // State management
     const [deviceStats, setDeviceStats] = useState<DeviceStats[]>([]);
@@ -340,6 +352,12 @@ export default function DeviceStatsPage() {
     const handleGroupSearchChange = (value: string) => {
         setGroupSearchInput(value);
         filterGroups(value);
+    };
+    const handleConsentComplete = async () => {
+        setShowConsentDialog(false);
+        setConsentUrl('');
+        // Retry the migration after consent is complete
+        await fetchDeviceStats();
     };
 
 // Update the group selection function
@@ -817,31 +835,49 @@ export default function DeviceStatsPage() {
         setError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(DEVICES_STATS_ENDPOINT, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
+            const response = await apiRequestWithConsent.request<ApiResponse>(
+                DEVICES_STATS_ENDPOINT,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 }
-            });
+            );
 
-            if (!apiResponse.ok) {
-                throw new Error(`API call failed: ${apiResponse.statusText}`);
+            if (!response) {
+                throw new Error('No response received from API');
             }
 
-            const responseData = await apiResponse.json();
-            setDeviceStats(responseData.data || []);
-            setFilteredStats(responseData.data || []);
+            // Check if this is a consent required error with proper type checking
+            if (response.status === 'Error' &&
+                response.message === 'User challenge required' &&
+                typeof response.data === 'object' &&
+                response.data !== null &&
+                'url' in response.data &&
+                typeof response.data.url === 'string') {
+
+                // You'll need to add these state variables if they don't exist
+                setConsentUrl(response.data.url);
+                setShowConsentDialog(true);
+                setLoading(false);
+                return;
+            }
+
+            // Add type guard to ensure data is an array before processing
+            if (!Array.isArray(response.data)) {
+                throw new Error('Invalid data format received from API');
+            }
+
+            setDeviceStats(response.data);
+            setFilteredStats(response.data);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to fetch device statistics');
         } finally {
             setLoading(false);
         }
     };
+
 
     // Apply filters
     const applyFilters = useCallback(() => {
@@ -2827,7 +2863,13 @@ export default function DeviceStatsPage() {
                     )}
                 </DialogContent>
             </Dialog>
-
+            <ConsentDialog
+                isOpen={showConsentDialog}
+                onClose={() => setShowConsentDialog(false)}
+                consentUrl={consentUrl}
+                onConsentComplete={handleConsentComplete}
+                clearError={true}
+            />
         </div>
     );
 }

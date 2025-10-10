@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck } from 'lucide-react';
+import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck, ChevronDown, ChevronUp  } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
@@ -69,7 +69,7 @@ export default function AssignmentsOverview() {
     const [showConsentDialog, setShowConsentDialog] = useState(false);
     const [consentUrl, setConsentUrl] = useState('');
 
-
+    const [searchQuery, setSearchQuery] = useState('');
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
     const [filters, setFilters] = useState<AssignmentFilter[]>([]);
@@ -82,11 +82,11 @@ export default function AssignmentsOverview() {
     const [filterLoading, setFilterLoading] = useState(false);
     const [filterError, setFilterError] = useState<string | null>(null);
 
+    const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
     // Filter states
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>('');
     const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
     const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
@@ -94,18 +94,12 @@ export default function AssignmentsOverview() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
-    // Add pagination calculations
-    const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedAssignments = filteredAssignments.slice(startIndex, endIndex);
-
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
     const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter, filterTypeFilter]);
+    }, [assignmentTypeFilter, statusFilter, platformFilter, resourceTypeFilter, filterTypeFilter]);
 
     const handleConsentComplete = () => {
         setShowConsentDialog(false);
@@ -322,22 +316,9 @@ export default function AssignmentsOverview() {
         };
     };
 
-    // Filter and search function
+    // Filter function
     useEffect(() => {
         let filtered = assignments;
-
-        // Apply search filter
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase().trim();
-            filtered = filtered.filter((assignment: Assignments) =>
-                assignment.resourceName?.toLowerCase().includes(query) ||
-                assignment.resourceType.toLowerCase().includes(query) ||
-                assignment.targetName.toLowerCase().includes(query) ||
-                assignment.assignmentType.toLowerCase().includes(query) ||
-                assignment.platform?.toLowerCase().includes(query) ||
-                assignment.filterType.toLowerCase().includes(query)
-            );
-        }
 
         // Apply dropdown filters
         if (resourceTypeFilter.length > 0) {
@@ -399,7 +380,7 @@ export default function AssignmentsOverview() {
         }
 
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, searchQuery, filterTypeFilter]);
+    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, filterTypeFilter]);
 
 
     // Get unique values for filters
@@ -434,11 +415,6 @@ export default function AssignmentsOverview() {
         setStatusFilter([]);
         setPlatformFilter([]);
         setFilterTypeFilter([]);
-        setSearchQuery('');
-    };
-
-    const clearSearch = () => {
-        setSearchQuery('');
     };
 
     // Group dialog handlers
@@ -754,166 +730,169 @@ export default function AssignmentsOverview() {
             {/* Only show search, filters, and table when assignments are loaded or loading */}
             {(assignments.length > 0 || loading) && (
                 <>
-                    {/* Search Section */}
-                    <Card className="shadow-sm">
-                        <CardHeader className="pb-4">
-                            <CardTitle className="flex items-center gap-2">
-                                <Search className="h-5 w-5" />
-                                Search
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                <input
-                                    type="text"
-                                    placeholder="Search by resource name, type, target, assignment type, platform, or filter..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                {searchQuery && (
-                                    <button
-                                        onClick={clearSearch}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </button>
-                                )}
-                            </div>
-                            {searchQuery && (
-                                <div className="mt-2">
-                                    <Badge variant="secondary" className="flex items-center gap-1 w-fit">
-                                        <Search className="h-3 w-3" />
-                                        Searching: &quot;{searchQuery}&quot;
-                                        <button onClick={clearSearch} className="ml-1 hover:text-red-600">
-                                            <X className="h-3 w-3" />
-                                        </button>
-                                    </Badge>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
                     {/* Filters Section */}
                     <Card className="shadow-sm">
-                        <CardHeader className="pb-4">
+                        <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
-                                <span className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
+                                    className="flex items-center gap-2 hover:text-blue-600 transition-colors"
+                                >
                                     <Filter className="h-5 w-5" />
                                     Filters
-                                </span>
-                                {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
-                                    <Button variant="ghost" size="sm" onClick={clearFilters}>
-                                        Clear All
-                                    </Button>
-                                )}
+                                    {isFiltersExpanded ? (
+                                        <ChevronUp className="h-4 w-4" />
+                                    ) : (
+                                        <ChevronDown className="h-4 w-4" />
+                                    )}
+                                </button>
+                                <div className="flex items-center gap-2">
+                                    {/* Show active filter count when collapsed */}
+                                    {!isFiltersExpanded && (
+                                        <Badge variant="secondary" className="text-xs">
+                                            {resourceTypeFilter.length + assignmentTypeFilter.length + statusFilter.length + platformFilter.length + filterTypeFilter.length} active
+                                        </Badge>
+                                    )}
+                                    {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0) && (
+                                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                                            <X className="h-4 w-4 mr-1" />
+                                            Clear All
+                                        </Button>
+                                    )}
+                                </div>
                             </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {/* Resource Type Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Resource Type</label>
-                                    <MultiSelect
-                                        options={getUniqueResourceTypes()}
-                                        selected={resourceTypeFilter}
-                                        onChange={setResourceTypeFilter}
-                                        placeholder="Select resource types..."
-                                    />
-                                </div>
-                                {/* Assignment Type Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Assignment Type</label>
-                                    <MultiSelect
-                                        options={getUniqueAssignmentTypes()}
-                                        selected={assignmentTypeFilter}
-                                        onChange={setAssignmentTypeFilter}
-                                        placeholder="Select assignment types..."
-                                    />
-                                </div>
-
-                                {/* Status Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Status</label>
-                                    <MultiSelect
-                                        options={getUniqueStatuses()}
-                                        selected={statusFilter}
-                                        onChange={setStatusFilter}
-                                        placeholder="Select status..."
-                                    />
-                                </div>
-
-                                {/* Platform Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Platform</label>
-                                    <MultiSelect
-                                        options={getUniquePlatforms()}
-                                        selected={platformFilter}
-                                        onChange={setPlatformFilter}
-                                        placeholder="Select platforms..."
-                                    />
-                                </div>
-
-                                {/* Filters Filter */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Filter Type</label>
-                                    <MultiSelect
-                                        options={getUniqueFilterTypes()}
-                                        selected={filterTypeFilter}
-                                        onChange={setFilterTypeFilter}
-                                        placeholder="Select filter types..."
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Active Filters Display */}
-                            {(assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
-                                <div className="flex flex-wrap gap-2 pt-2 border-t">
-                                    <span className="text-sm text-gray-600">Active filters:</span>
+                            {/* Show active filters summary when collapsed */}
+                            {!isFiltersExpanded && (resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0) && (
+                                <div className="flex flex-wrap gap-1 pt-2">
                                     {resourceTypeFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter}
-                                            <button onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}>
-                                                <X className="h-3 w-3" />
-                                            </button>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Type: {filter}
                                         </Badge>
                                     ))}
                                     {assignmentTypeFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter}
-                                            <button onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}>
-                                                <X className="h-3 w-3" />
-                                            </button>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Assignment: {filter}
                                         </Badge>
                                     ))}
                                     {statusFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter}
-                                            <button onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}>
-                                                <X className="h-3 w-3" />
-                                            </button>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Status: {filter}
                                         </Badge>
                                     ))}
                                     {platformFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter}
-                                            <button onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}>
-                                                <X className="h-3 w-3" />
-                                            </button>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Platform: {filter}
                                         </Badge>
                                     ))}
                                     {filterTypeFilter.map(filter => (
-                                        <Badge key={filter} variant="secondary" className="flex items-center gap-1">
-                                            {filter === 'None' ? 'No Filter' : filter === 'include' ? 'Include Filter' : 'Exclude Filter'}
-                                            <button onClick={() => setFilterTypeFilter(prev => prev.filter(f => f !== filter))}>
-                                                <X className="h-3 w-3" />
-                                            </button>
+                                        <Badge key={filter} variant="outline" className="text-xs">
+                                            Filter: {filter}
                                         </Badge>
                                     ))}
                                 </div>
                             )}
-                        </CardContent>
+                        </CardHeader>
+
+                        {/* Collapsible Content */}
+                        {isFiltersExpanded && (
+                            <CardContent className="space-y-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {/* Resource Type Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Resource Type</label>
+                                        <MultiSelect
+                                            options={getUniqueResourceTypes()}
+                                            selected={resourceTypeFilter}
+                                            onChange={setResourceTypeFilter}
+                                            placeholder="Select resource types..."
+                                        />
+                                    </div>
+                                    {/* Assignment Type Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Assignment Type</label>
+                                        <MultiSelect
+                                            options={getUniqueAssignmentTypes()}
+                                            selected={assignmentTypeFilter}
+                                            onChange={setAssignmentTypeFilter}
+                                            placeholder="Select assignment types..."
+                                        />
+                                    </div>
+
+                                    {/* Status Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Status</label>
+                                        <MultiSelect
+                                            options={getUniqueStatuses()}
+                                            selected={statusFilter}
+                                            onChange={setStatusFilter}
+                                            placeholder="Select status..."
+                                        />
+                                    </div>
+
+                                    {/* Platform Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Platform</label>
+                                        <MultiSelect
+                                            options={getUniquePlatforms()}
+                                            selected={platformFilter}
+                                            onChange={setPlatformFilter}
+                                            placeholder="Select platforms..."
+                                        />
+                                    </div>
+
+                                    {/* Filters Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Filter Type</label>
+                                        <MultiSelect
+                                            options={getUniqueFilterTypes()}
+                                            selected={filterTypeFilter}
+                                            onChange={setFilterTypeFilter}
+                                            placeholder="Select filter types..."
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Active Filters Display */}
+                                {(assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && (
+                                    <div className="flex flex-wrap gap-2 pt-2 border-t">
+                                        <span className="text-sm text-gray-600">Active filters:</span>
+                                        {assignmentTypeFilter.map(filter => (
+                                            <Badge key={filter} variant="outline" className="text-xs">
+                                                Assignment: {filter}
+                                                <button
+                                                    onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}
+                                                    className="ml-1 hover:text-red-600"
+                                                >
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {statusFilter.map(filter => (
+                                            <Badge key={filter} variant="outline" className="text-xs">
+                                                Status: {filter}
+                                                <button
+                                                    onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}
+                                                    className="ml-1 hover:text-red-600"
+                                                >
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                        {platformFilter.map(filter => (
+                                            <Badge key={filter} variant="outline" className="text-xs">
+                                                Platform: {filter}
+                                                <button
+                                                    onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}
+                                                    className="ml-1 hover:text-red-600"
+                                                >
+                                                    <X className="h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        )}
                     </Card>
 
                     {error && (
@@ -932,9 +911,6 @@ export default function AssignmentsOverview() {
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                    <span>Showing {startIndex + 1}-{Math.min(endIndex, filteredAssignments.length)} of {filteredAssignments.length}</span>
-                                </div>
                             </CardTitle>
                             <CardDescription>
                                 Detailed view of all assignments with their targets and configurations
@@ -947,29 +923,16 @@ export default function AssignmentsOverview() {
                                     <span className="ml-2 text-gray-600">Loading assignments...</span>
                                 </div>
                             ) : (
-                                <div className="w-full">
-                                    <div className="overflow-x-auto">
-                                        <DataTable
-                                            data={paginatedAssignments}
-                                            columns={columns}
-                                            className="min-w-full"
-                                        />
-                                    </div>
-
-                                    {/* Pagination */}
-                                    {totalPages > 1 && (
-                                        <div className="border-t p-4">
-                                            <Pagination
-                                                currentPage={currentPage}
-                                                totalPages={totalPages}
-                                                onPageChange={setCurrentPage}
-                                                itemsPerPage={itemsPerPage}
-                                                onItemsPerPageChange={setItemsPerPage}
-                                                totalItems={filteredAssignments.length}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
+                                <DataTable
+                                    data={filteredAssignments}
+                                    columns={columns}
+                                    className="min-w-full"
+                                    showPagination={true}
+                                    currentPage={currentPage}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
+                                    onItemsPerPageChange={setItemsPerPage}
+                                />
                             )}
                         </CardContent>
                     </Card>

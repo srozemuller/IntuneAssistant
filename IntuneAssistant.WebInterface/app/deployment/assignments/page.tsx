@@ -28,6 +28,15 @@ interface AssignmentCompareApiResponse {
     };
 }
 
+interface ValidationApiResponse {
+    status: string;
+    message?: string;
+    data?: ValidationResult[] | string;
+    errors?: {
+        [key: string]: string[];
+    };
+}
+
 interface CSVRow {
     PolicyName: string;
     GroupName: string;
@@ -133,6 +142,21 @@ interface ValidationResult {
         reason?: string;
         status?: string;
     };
+    policy?: {
+        id: string;
+        name: string;
+        policyType: string;
+        "policySubType": string;
+        "createdDateTime": string,
+        "creationSource": string,
+        "description": string,
+        "lastModifiedDateTime": string,
+        "isAssigned": boolean,
+        assignments: Assignment[];
+        settingCount: number;
+        platforms: string;
+        settings: PolicySettings;
+}
 }
 
 
@@ -561,6 +585,49 @@ export default function AssignmentRolloutPage() {
         }
     ];
 
+    // Drag and drop
+    const [isDragOver, setIsDragOver] = useState(false);
+
+// Add these drag and drop handlers
+    const handleDragOver = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(false);
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(false);
+
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const content = e.target?.result as string;
+                        const parsed = parseCSV(content);
+                        setCsvData(parsed);
+                        setError(null);
+                    } catch (err) {
+                        setError('Failed to parse CSV file. Please check the format.');
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                setError('Please drop a CSV file.');
+            }
+        }
+    }, []);
+
 
     const toggleExpanded = (resultId: string) => {
         setExpandedRows(prev =>
@@ -801,37 +868,39 @@ export default function AssignmentRolloutPage() {
         setMigrationProgress(0);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
             const selectedData = comparisonResults.filter(result =>
                 selectedRows.includes(result.id)
             );
 
-            const apiResponse = await fetch(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
+            const apiResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify(selectedData)
             });
 
-            if (!apiResponse.ok) {
-                const errorData = await apiResponse.json();
+            // Add null check for apiResponse
+            if (!apiResponse) {
+                setError('Failed to get response from server');
+                return;
+            }
 
-                // Check if this is a consent required error
-                if (errorData.status === 'Error' &&
-                    errorData.message === 'User challenge required' &&
-                    errorData.data?.includes('adminconsent')) {
+            // Check if this is an error response
+            if (apiResponse.status === 'Error' &&
+                apiResponse.message === 'User challenge required') {
 
-                    setConsentUrl(errorData.data);
-                    setShowConsentDialog(true);
-                    setLoading(false);
-                    return;
-                }
+                setConsentUrl(apiResponse.data as string);
+                setShowConsentDialog(true);
+                setLoading(false);
+                return;
+            }
+
+            // Add null check for apiResponse.data
+            if (!apiResponse.data) {
+                setError('No data received from server');
+                return;
+            }
+            if (!Array.isArray(apiResponse.data)) {
+                setError('Invalid data format received from server');
+                return;
             }
 
             // Simulate migration progress
@@ -874,17 +943,10 @@ export default function AssignmentRolloutPage() {
 
     const validateMigratedAssignments = async (results?: ComparisonResult[]) => {
         if (!accounts.length) return;
-
         setLoading(true);
-        setValidationComplete(false); // Reset completion status
+        setValidationComplete(false);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            // Use passed results or current state
             const currentResults = results || comparisonResults;
             const migratedData = currentResults.filter(result => result.isMigrated);
 
@@ -895,7 +957,6 @@ export default function AssignmentRolloutPage() {
 
             console.log(`Validating ${migratedData.length} migrated assignments`);
 
-            // Transform the data to match the expected payload format
             const validationPayload = migratedData.map(result => ({
                 Id: result.id,
                 ResourceType: result.policy?.policyType || '',
@@ -912,26 +973,38 @@ export default function AssignmentRolloutPage() {
 
             console.log('Validation payload:', validationPayload);
 
-            const apiResponse = await fetch(`${ASSIGNMENTS_ENDPOINT}/validate`, {
+            // Use AssignmentCompareApiResponse since that's what the API returns
+            const validationData = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/validate`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify(validationPayload)
             });
 
-            if (!apiResponse.ok) {
-                throw new Error(`Validation failed: ${apiResponse.statusText}`);
+            if (!validationData) {
+                setError('Failed to get response from server');
+                return;
             }
 
-            const validationData = await apiResponse.json();
-            setValidationResults(validationData.data || []);
+            if (validationData.status === 'Error' && validationData.message === 'User challenge required') {
+                setConsentUrl(validationData.data as string);
+                setShowConsentDialog(true);
+                setLoading(false);
+                return;
+            }
 
-            // Update comparison results with validation status
+            if (!validationData.data || !Array.isArray(validationData.data)) {
+                setError('Invalid data format received from server');
+                return;
+            }
+
+            // Cast the data to ValidationResult[] since the API response structure matches
+            setValidationResults(validationData.data as unknown as ValidationResult[]);
+
             setComparisonResults(prev =>
                 prev.map(result => {
-                    const validation = validationData.data?.find((v: { id: string; hasCorrectAssignment: boolean; message?: { reason?: string; status?: string } }) => v.id === result.id);
+                    const validation = (validationData.data as unknown as ValidationResult[]).find(
+                        (v: ValidationResult) => v.id === result.id
+                    );
+
                     if (validation) {
                         return {
                             ...result,
@@ -943,10 +1016,7 @@ export default function AssignmentRolloutPage() {
                 })
             );
 
-
-            // Mark validation as complete
             setValidationComplete(true);
-
             console.log(`Validation completed for ${validationData.data?.length || 0} items`);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Validation failed');
@@ -955,6 +1025,7 @@ export default function AssignmentRolloutPage() {
             setLoading(false);
         }
     };
+
 
     // Keep the original function for manual validation
     const validateAssignments = async () => {
@@ -995,7 +1066,7 @@ export default function AssignmentRolloutPage() {
 
 
     return (
-        <div className="container mx-auto p-6 space-y-6">
+        <div className="mx-auto p-2 space-y-2 w-full">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -1074,10 +1145,23 @@ export default function AssignmentRolloutPage() {
                         </p>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                            <FileText className="h-8 w-8 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600 mb-4">
-                                Drop your CSV file here or click to browse
+                        <div
+                            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                                isDragOver
+                                    ? 'border-blue-500 bg-blue-50'
+                                    : 'border-gray-300'
+                            }`}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                        >
+                            <FileText className={`h-8 w-8 mx-auto mb-4 ${
+                                isDragOver ? 'text-blue-500' : 'text-gray-400'
+                            }`} />
+                            <p className={`mb-4 ${
+                                isDragOver ? 'text-blue-600' : 'text-gray-600'
+                            }`}>
+                                {isDragOver ? 'Drop your CSV file here' : 'Drop your CSV file here or click to browse'}
                             </p>
                             <input
                                 ref={fileInputRef}
@@ -1090,6 +1174,7 @@ export default function AssignmentRolloutPage() {
                                 Select CSV File
                             </Button>
                         </div>
+
 
                         {csvData.length > 0 && (
                             <div className="space-y-4">
@@ -1127,29 +1212,29 @@ export default function AssignmentRolloutPage() {
                                 {/* Summary Stats */}
                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-gray-50 dark:bg-neutral-800 p-4 rounded-lg">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-blue-600">{csvData.length}</div>
+                                        <div className="text-2xl font-bold text-blue-500">{csvData.length}</div>
                                         <div className="text-sm text-gray-600">Total Rows</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-green-600">
+                                        <div className="text-2xl font-bold text-green-500">
                                             {csvData.filter(r => r.AssignmentAction === 'Add').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Add Actions</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-orange-600">
+                                        <div className="text-2xl font-bold text-orange-500">
                                             {csvData.filter(r => r.AssignmentAction === 'Remove').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Remove Actions</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-red-600">
+                                        <div className="text-2xl font-bold text-red-500">
                                             {csvData.filter(r => r.AssignmentAction === 'NoAssignment').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Clear Actions</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-purple-600">
+                                        <div className="text-2xl font-bold text-purple-500">
                                             {csvData.filter(r => r.FilterName).length}
                                         </div>
                                         <div className="text-sm text-gray-600">With Filters</div>
