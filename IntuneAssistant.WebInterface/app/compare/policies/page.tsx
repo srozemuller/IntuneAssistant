@@ -10,6 +10,13 @@ import { CONFIGURATION_POLICIES_ENDPOINT, COMPARE_ENDPOINT } from '@/lib/constan
 import { apiScope } from '@/lib/msalConfig';
 import { useApiRequest } from '@/hooks/useApiRequest';
 
+interface ApiResponse {
+    status: string;
+    message: string;
+    details: unknown[];
+    data: Policy[] | { url: string; message: string }; // Updated to handle both cases
+}
+
 interface Policy {
     id: string;
     name: string;
@@ -71,7 +78,7 @@ export default function PolicyComparison() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
 
-    const apiRequest = useApiRequest();
+    const { request, cancel } = useApiRequest();
 
     const fetchPolicies = async () => {
         if (!accounts.length) return;
@@ -80,24 +87,27 @@ export default function PolicyComparison() {
         setError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
+            const response = await request<ApiResponse>(CONFIGURATION_POLICIES_ENDPOINT);
 
-            const apiResponse = await fetch(CONFIGURATION_POLICIES_ENDPOINT, {
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`API call failed: ${apiResponse.statusText}`);
+            if (!response) {
+                throw new Error('No response received from API');
             }
 
-            const data = await apiResponse.json();
-            setPolicies(Array.isArray(data) ? data : data.data || []);
+            // Handle the response data properly
+            if (Array.isArray(response)) {
+                // Direct array response
+                setPolicies(response);
+            } else if (response.data) {
+                // Response with data field
+                if (Array.isArray(response.data)) {
+                    setPolicies(response.data);
+                } else {
+                    // data is { url: string; message: string }
+                    throw new Error(response.data.message || 'Failed to fetch policies');
+                }
+            } else {
+                throw new Error('Invalid response format');
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch policies');
             console.error('Error fetching policies:', err);
@@ -105,6 +115,7 @@ export default function PolicyComparison() {
             setLoading(false);
         }
     };
+
 
     const SearchableSelect: React.FC<SearchableSelectProps> = ({
                                                                    value,
@@ -372,28 +383,24 @@ export default function PolicyComparison() {
         setError(null);
 
         try {
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
+            const data = await request<ComparisonResponse>(
+                `${COMPARE_ENDPOINT}/${sourcePolicy.policyType}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        PolicyId: sourcePolicy.id,
+                        ComparePolicyId: targetPolicy.id,
+                    })
+                }
+            );
 
-            const apiResponse = await fetch(`${COMPARE_ENDPOINT}/${sourcePolicy.policyType}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    PolicyId: sourcePolicy.id,
-                    ComparePolicyId: targetPolicy.id,
-                })
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Comparison failed: ${apiResponse.statusText}`);
+            if (!data) {
+                throw new Error('No response received from comparison API');
             }
 
-            const data = await apiResponse.json();
             setComparisonResult(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to compare policies');
@@ -402,6 +409,7 @@ export default function PolicyComparison() {
             setCompareLoading(false);
         }
     };
+
     const getAllKeywords = () => {
         if (!comparisonResult?.results?.checkResults) return [];
 
@@ -1147,7 +1155,7 @@ export default function PolicyComparison() {
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center gap-2">
                                 <Settings className="h-5 w-5 text-gray-600" />
-                                Select Policies to Compare
+                                Select Policies to Compare (Warning: Currently only supports configuration setting catalog policies)
                             </CardTitle>
                             <CardDescription>
                                 Choose two policies to compare their configurations and identify differences
