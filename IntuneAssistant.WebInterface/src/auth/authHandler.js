@@ -48,7 +48,7 @@ function showOnboardingNotification(tenantId, tenantName) {
         description: `Your tenant ${tenantName || tenantId} needs to be onboarded before using this application.`,
         action: {
             label: "Onboard Now",
-            onClick: () => window.location.href = `/onboarding?tenantId=${tenantId}`
+            onClick: () => window.location.href = `https://test.intuneassistant.cloud/onboarding/customer/`
         },
         duration: 0 // Don't auto-dismiss
     });
