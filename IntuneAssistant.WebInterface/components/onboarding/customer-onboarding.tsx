@@ -140,15 +140,40 @@ export default function CustomerOnboardingModal({
         if (!consentWindow) return;
 
         const checkClosed = setInterval(() => {
-            if (consentWindow.closed && !consentCompleted) {
-                setError('Consent window was closed. Please try again.');
-                setLoading(false);
+            try {
+                let isWindowClosed = false;
+
+                // Check if window is closed (handle COOP policy)
+                try {
+                    isWindowClosed = consentWindow.closed;
+                } catch (error) {
+                    console.log('Cannot access consentWindow.closed due to COOP policy, assuming closed');
+                    isWindowClosed = true;
+                }
+
+                if (isWindowClosed && !consentCompleted) {
+                    console.log('Consent window closed, calling callback...');
+
+                    setConsentCompleted(true);
+                    setConsentWindow(null);
+                    clearInterval(checkClosed);
+
+                    // Call the callback after a short delay
+                    setTimeout(() => {
+                        handleConsentCallback();
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Error checking consent window:', error);
+                clearInterval(checkClosed);
                 setConsentWindow(null);
+                setLoading(false);
             }
         }, 1000);
 
         return () => clearInterval(checkClosed);
     }, [consentWindow, consentCompleted]);
+
 
     const validateTenantId = (id: string) => {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -191,7 +216,7 @@ export default function CustomerOnboardingModal({
             setLoading(true);
             setError(null);
 
-            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantName=${encodeURIComponent(tenantDomainName)}&assistantLicense=1`;
+            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=1`;
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -263,24 +288,21 @@ export default function CustomerOnboardingModal({
             setLoading(true);
             setError(null);
 
-            // Wait a moment for the consent to be processed
+            console.log('Starting consent callback...');
+
+            // Wait a moment for consent to be processed on the server side
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const token = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            // Call the callback endpoint to update the database
-            const callbackUrl = `${CONSENT_URL_ENDPOINT}/callback`; // or your specific callback endpoint
+            // Call the callback endpoint WITHOUT authentication
+            // The server will handle the consent verification using the state parameter
             const response = await fetch(
                 `${CONSENT_CALLBACK}${consentState ? `?state=${consentState}` : ''}`,
                 {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token.accessToken}`,
                         'Content-Type': 'application/json',
                     }
+                    // No Authorization header needed - the server uses the state parameter
                 }
             );
 
@@ -289,20 +311,17 @@ export default function CustomerOnboardingModal({
                 throw new Error(errorData?.message || `Failed to complete onboarding: ${response.statusText}`);
             }
 
-            // Handle 204 No Content response
+            // Handle response
             let result = null;
             if (response.status === 204) {
-                // 204 means success with no content
                 result = {
                     status: 'success',
                     message: 'Onboarding completed successfully'
                 };
             } else {
-                // Try to parse JSON response for other success status codes
                 try {
                     result = await response.json();
                 } catch (parseError) {
-                    // If JSON parsing fails, assume success
                     result = {
                         status: 'success',
                         message: 'Onboarding completed successfully'
@@ -324,7 +343,10 @@ export default function CustomerOnboardingModal({
             });
 
             setCurrentStep(3);
+            console.log('Onboarding completed successfully');
+
         } catch (err) {
+            console.error('Consent callback error:', err);
             setError(err instanceof Error ? err.message : 'Failed to complete onboarding');
         } finally {
             setLoading(false);
@@ -418,9 +440,7 @@ export default function CustomerOnboardingModal({
                                         placeholder="e.g. Acme Corporation"
                                     />
                                 </div>
-
                                 <Separator />
-
                                 <div className="space-y-2">
                                     <Label htmlFor="tenantId">Tenant ID</Label>
                                     <Input
