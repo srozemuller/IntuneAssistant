@@ -1,51 +1,26 @@
 ---
 import MainLayout from "../../layouts/main-layout.astro";
-import ConsentCard from "../../components/onboarding";
 
-// TODO: Retrieve a list of active environments from the API
-const intuneAssistantEnvironments = [
-    {
-        "environment": "1",
-        "displayName": "Community (default)",
-        "url": "https://api.intuneassistant.cloud"
-    },
-    {
-        "environment": "2",
-        "displayName": "Basic",
-        "url": "https://api.intuneassistant.cloud"
-    },
-]
-
+// Check if redirect should happen based on conditions
+const shouldRedirect = true; // Add your logic here if needed
 ---
 
-<MainLayout title="Onboarding" mainClass="flex-1 bg-background-200">
+<MainLayout title="Redirecting..." mainClass="flex-1 bg-background-200">
     <div class="flex items-center justify-center h-[calc(100vh-25vh)]">
-        <div class="md:1/2 xl:w-1/3">
-            <ConsentCard environments={intuneAssistantEnvironments} client:only="react" />
+        <div class="text-center">
+            <h2 class="text-xl font-semibold mb-4">Redirecting to Customer Onboarding...</h2>
+            <p class="text-gray-600">Intune Assistant is migrating to a new onboarding experience.</p>
+            <p class="text-gray-600">If you are not redirected automatically,
+                <a href="https://test.intuneassistant.cloud/onboarding/customer/"
+                   class="text-blue-600 hover:underline">click here</a>
+            </p>
         </div>
     </div>
 </MainLayout>
 
 <script>
     if (typeof window !== "undefined") {
-        window.addEventListener('DOMContentLoaded', (event) => {
-            const urlParams = new URLSearchParams(window.location.search);
-            console.log(urlParams.get('error'));
-            console.log(urlParams.get('error_description'));
-            const error = urlParams.get('error');
-            const tenant = urlParams.get('tenant');
-            const state = urlParams.get('state');
-            sessionStorage.removeItem('isOnboarding')
-            sessionStorage.removeItem('isMigrating')
-            const token = localStorage.getItem('consentToken') || '';
-
-            if (error) {
-                window.location.href = `/onboarding/error?error=${error}&error_description=${urlParams.get('error_description')}`;
-                console.log(urlParams);
-            } else if (state) {
-                const stateParam = state ? `&state=${state}` : '';
-                window.location.href = `/onboarding/onboarded?tenant=${tenant}${stateParam}`;
-            }
-        });
+        // Immediate redirect
+        window.location.href = 'https://test.intuneassistant.cloud/onboarding/customer/';
     }
 </script>
