@@ -53,8 +53,8 @@ jobs:
 
       - name: Create deployment package
         run: |
-          cd node-app
-          zip -r ../intuneassistant-web.zip .
+          ls -al
+          zip -r intuneassistant-web.zip .
       
       - name: Login to Azure
         uses: azure/login@v2
