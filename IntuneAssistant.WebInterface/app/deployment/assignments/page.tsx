@@ -141,6 +141,7 @@ interface ComparisonResult {
     isBackedUp?: boolean;
     validationStatus?: 'pending' | 'valid' | 'invalid' | 'warning';
     validationMessage?: string;
+    isCurrentSessionValidation?: boolean;
 }
 
 interface ValidationResult {
@@ -344,7 +345,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'policyName',
+            key: 'providedPolicyName',
             label: 'Policy Name',
             minWidth: 250,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -391,7 +392,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'currentAssignments',
+            key: 'assignedGroups',
             label: 'Current Assignments',
             width: 150,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -407,7 +408,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'targetGroup',
+            key: 'groupToMigrate',
             label: 'Target Group',
             minWidth: 150,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -416,7 +417,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'direction',
+            key: 'assignmentDirection',
             label: 'Direction',
             width: 100,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -429,7 +430,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'action',
+            key: 'assignmentAction',
             label: 'Action',
             width: 120,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -445,7 +446,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'filter',
+            key: 'filterType',
             label: 'Filter',
             minWidth: 120,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -454,7 +455,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'status',
+            key: 'validationStatus',
             label: 'Status',
             minWidth: 150,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -901,21 +902,24 @@ export default function AssignmentRolloutPage() {
                 await new Promise(resolve => setTimeout(resolve, 200));
             }
 
-            // Update migrated status and wait for state to update
-            const updatedResults = comparisonResults.map(result =>
-                selectedRows.includes(result.id)
-                    ? { ...result, isMigrated: true }
-                    : result
+            // Update migrated status
+            setComparisonResults(prev =>
+                prev.map(result =>
+                    selectedRows.includes(result.id)
+                        ? { ...result, isMigrated: true }
+                        : result
+                )
             );
-
-            setComparisonResults(updatedResults);
 
             // Move to validation step
             setCurrentStep('validate');
 
-            // Use the updated results for validation instead of relying on state
+            // Clear selected rows to prevent confusion
+            setSelectedRows([]);
+
+            // Validate only the items that were just migrated
             setTimeout(() => {
-                validateMigratedAssignments(updatedResults);
+                validateMigratedAssignments(selectedData);
             }, 500);
 
         } catch (error) {
@@ -925,31 +929,23 @@ export default function AssignmentRolloutPage() {
         }
     };
 
-    const handleConsentComplete = async () => {
-        setShowConsentDialog(false);
-        setConsentUrl('');
-        // Retry the migration after consent is complete
-        await migrateSelectedAssignments();
-    };
-
 
     const validateMigratedAssignments = async (results?: ComparisonResult[]) => {
         if (!accounts.length) return;
+
+        // If no specific results are passed, don't validate anything
+        if (!results || results.length === 0) {
+            setError('No specific assignments provided for validation');
+            return;
+        }
+
         setLoading(true);
         setValidationComplete(false);
 
         try {
-            const currentResults = results || comparisonResults;
-            const migratedData = currentResults.filter(result => result.isMigrated);
+            console.log(`Validating ${results.length} specific assignments`);
 
-            if (migratedData.length === 0) {
-                setError('No migrated assignments to validate');
-                return;
-            }
-
-            console.log(`Validating ${migratedData.length} migrated assignments`);
-
-            const validationPayload = migratedData.map(result => ({
+            const validationPayload = results.map(result => ({
                 Id: result.id,
                 ResourceType: result.policy?.policyType || '',
                 SubResourceType: result.policy?.policySubType || '',
@@ -965,7 +961,6 @@ export default function AssignmentRolloutPage() {
 
             console.log('Validation payload:', validationPayload);
 
-            // Use AssignmentCompareApiResponse since that's what the API returns
             const validationData = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/validate`, {
                 method: 'POST',
                 body: JSON.stringify(validationPayload)
@@ -990,9 +985,9 @@ export default function AssignmentRolloutPage() {
                 return;
             }
 
-            // Cast the data to ValidationResult[] since the API response structure matches
             setValidationResults(validationData.data as unknown as ValidationResult[]);
 
+            // Only update the specific results that were validated
             setComparisonResults(prev =>
                 prev.map(result => {
                     const validation = (validationData.data as unknown as ValidationResult[]).find(
@@ -1003,7 +998,8 @@ export default function AssignmentRolloutPage() {
                         return {
                             ...result,
                             validationStatus: validation.hasCorrectAssignment ? 'valid' : 'invalid',
-                            validationMessage: validation.message?.reason || validation.message?.status || ''
+                            validationMessage: validation.message?.reason || validation.message?.status || '',
+                            isCurrentSessionValidation: true // Mark as current session
                         };
                     }
                     return result;
@@ -1021,9 +1017,18 @@ export default function AssignmentRolloutPage() {
     };
 
 
-    // Keep the original function for manual validation
     const validateAssignments = async () => {
-        await validateMigratedAssignments();
+        // Only validate items that were just migrated in this session
+        const recentlyMigrated = comparisonResults.filter(result =>
+            result.isMigrated && result.validationStatus === 'pending'
+        );
+
+        if (recentlyMigrated.length === 0) {
+            setError('No recently migrated assignments to validate');
+            return;
+        }
+
+        await validateMigratedAssignments(recentlyMigrated);
     };
 
     const resetProcess = () => {
@@ -1550,7 +1555,7 @@ export default function AssignmentRolloutPage() {
                                     <span className="font-medium text-green-800">Successful</span>
                                 </div>
                                 <div className="text-2xl font-bold text-green-600 mt-2">
-                                    {comparisonResults.filter(r => r.validationStatus === 'valid').length}
+                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'valid').length}
                                 </div>
                             </div>
                             <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
@@ -1559,7 +1564,7 @@ export default function AssignmentRolloutPage() {
                                     <span className="font-medium text-yellow-800">Warnings</span>
                                 </div>
                                 <div className="text-2xl font-bold text-yellow-600 mt-2">
-                                    {comparisonResults.filter(r => r.validationStatus === 'warning').length}
+                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'warning').length}
                                 </div>
                             </div>
                             <div className="bg-red-50 p-4 rounded-lg border border-red-200">
@@ -1568,23 +1573,24 @@ export default function AssignmentRolloutPage() {
                                     <span className="font-medium text-red-800">Failed</span>
                                 </div>
                                 <div className="text-2xl font-bold text-red-600 mt-2">
-                                    {comparisonResults.filter(r => r.validationStatus === 'invalid').length}
+                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'invalid').length}
                                 </div>
                             </div>
                         </div>
 
+
                         {/* Validation Results Table */}
-                        {comparisonResults.filter(r => r.isMigrated).length > 0 && (
+                        {comparisonResults.filter(r => r.isCurrentSessionValidation).length > 0 && (
                             <div className="space-y-4">
-                                <h3 className="font-semibold">Validated Assignments ({comparisonResults.filter(r => r.isMigrated).length} items)</h3>
+                                <h3 className="font-semibold">Validated Assignments ({comparisonResults.filter(r => r.isCurrentSessionValidation).length} items)</h3>
                                 <div className="border rounded-lg overflow-visible">
                                     <div className="overflow-x-auto overflow-y-visible">
                                         <DataTable
-                                            data={comparisonResults.filter(r => r.isMigrated).map(result => result as unknown as Record<string, unknown>)}
+                                            data={comparisonResults.filter(r => r.isCurrentSessionValidation).map(result => result as unknown as Record<string, unknown>)}
                                             columns={validationColumns}
                                             className="text-sm"
                                             currentPage={validationCurrentPage}
-                                            totalPages={Math.ceil(comparisonResults.filter(r => r.isMigrated).length / itemsPerPage)}
+                                            totalPages={Math.ceil(comparisonResults.filter(r => r.isCurrentSessionValidation).length / itemsPerPage)}
                                             itemsPerPage={itemsPerPage}
                                             onPageChange={setValidationCurrentPage}
                                             onItemsPerPageChange={(newItemsPerPage) => {
@@ -1597,7 +1603,6 @@ export default function AssignmentRolloutPage() {
                                 </div>
                             </div>
                         )}
-
                     </CardContent>
                 </Card>
             )}

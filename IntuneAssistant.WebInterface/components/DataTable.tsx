@@ -1,6 +1,6 @@
 // components/DataTable.tsx
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import {ITEMS_PER_PAGE} from "@/lib/constants";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -55,17 +55,6 @@ export function DataTable({
                               onSelectionChange,
                               selectedRows = [],
                           }: DataTableProps) {
-    const [columns, setColumns] = useState(initialColumns.map(col => ({
-        ...col,
-        width: col.width || 150,
-        minWidth: col.minWidth || 100,
-        searchable: col.searchable !== false && col.key !== '_select' // Default to searchable unless explicitly disabled
-    })));
-
-    const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [resizing, setResizing] = useState<{ columnIndex: number; startX: number; startWidth: number } | null>(null);
-    const tableRef = useRef<HTMLTableElement>(null);
 
     const isRowSelected = (row: Record<string, unknown>) => {
         if (!selectedRows || selectedRows.length === 0) return false;
@@ -74,12 +63,9 @@ export function DataTable({
     };
 
     const handleRowSelection = (e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>, row: Record<string, unknown>) => {
-        e.stopPropagation(); // Prevent row click from firing
-
-        // Get the ID or unique identifier from the row
+        e.stopPropagation();
         const rowId = String(row.id);
 
-        // Toggle selection
         if (onSelectionChange) {
             const isCurrentlySelected = isRowSelected(row);
             if (isCurrentlySelected) {
@@ -90,32 +76,117 @@ export function DataTable({
         }
     };
 
+    const columnsWithSelection = useMemo(() => {
+        if (onSelectionChange && !initialColumns.some(col => col.key === '_select')) {
+            return [
+                {
+                    key: '_select',
+                    label: '',
+                    width: 50,
+                    minWidth: 40,
+                    sortable: false,
+                    searchable: false,
+                    render: (_, row) => (
+                        <input
+                            type="checkbox"
+                            checked={isRowSelected(row)}
+                            onChange={(e) => handleRowSelection(e, row)}
+                            className="rounded border-gray-300"
+                        />
+                    )
+                },
+                ...initialColumns
+            ];
+        }
+        return initialColumns;
+    }, [onSelectionChange, selectedRows, initialColumns]);
+
+    const [columns, setColumns] = useState(columnsWithSelection.map(col => ({
+        ...col,
+        width: col.width || 150,
+        minWidth: col.minWidth || 100,
+        searchable: col.searchable !== false && col.key !== '_select'
+    })));
+
+    const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [resizing, setResizing] = useState<{ columnIndex: number; startX: number; startWidth: number } | null>(null);
+    const tableRef = useRef<HTMLTableElement>(null);
+
+    useEffect(() => {
+        setColumns(columnsWithSelection.map(col => ({
+            ...col,
+            width: col.width || 150,
+            minWidth: col.minWidth || 100,
+            searchable: col.searchable !== false && col.key !== '_select'
+        })));
+    }, [columnsWithSelection]);
+
+    // Filter data based on search term
     // Filter data based on search term
     const filteredData = data.filter(row => {
         if (!searchTerm.trim()) return true;
 
         const searchLower = searchTerm.toLowerCase();
 
-        return columns.some(column => {
-            if (!column.searchable || column.key === '_select') return false;
+        // Debug: Show the actual structure
+        console.log('Actual row keys:', Object.keys(row));
+        console.log('Column keys we\'re looking for:', initialColumns.map(col => col.key));
 
-            const value = row[column.key];
+        // Search through ALL properties in the row, not just the column keys
+        return Object.entries(row).some(([key, value]) => {
+            // Skip null, undefined, and non-searchable values
             if (value === null || value === undefined) return false;
 
-            return String(value).toLowerCase().includes(searchLower);
+            // Convert value to string and search
+            const stringValue = String(value).toLowerCase();
+            const matches = stringValue.includes(searchLower);
+
+            if (matches) {
+                console.log(`Found match in key "${key}" with value "${stringValue}"`);
+            }
+
+            return matches;
         });
     });
 
+
+
     // Sort filtered data
+    // Sort filtered data - replace the existing sorting logic with this:
     const sortedData = [...filteredData].sort((a, b) => {
         if (!sortConfig) return 0;
 
+        // Debug: Check if the sort key exists in the data
         const aValue = a[sortConfig.key];
         const bValue = b[sortConfig.key];
+
+        // If the column key doesn't exist in the data, try to find a matching key
+        if (aValue === undefined && bValue === undefined) {
+            console.warn(`Sort key "${sortConfig.key}" not found in data. Available keys:`, Object.keys(a));
+            return 0;
+        }
 
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
 
+        // If values are numbers, compare as numbers
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+            return sortConfig.direction === 'asc'
+                ? aValue - bValue
+                : bValue - aValue;
+        }
+
+        // If values are dates, compare as dates
+        const aDate = new Date(aValue as string);
+        const bDate = new Date(bValue as string);
+        if (!isNaN(aDate.getTime()) && !isNaN(bDate.getTime())) {
+            return sortConfig.direction === 'asc'
+                ? aDate.getTime() - bDate.getTime()
+                : bDate.getTime() - aDate.getTime();
+        }
+
+        // Default to string comparison - fix ESLint errors by using const
         const aStr = String(aValue).toLowerCase();
         const bStr = String(bValue).toLowerCase();
 
@@ -124,11 +195,13 @@ export function DataTable({
         return 0;
     });
 
+
+
     // Update pagination to work with filtered/sorted data
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedData = sortedData.slice(startIndex, endIndex);
-    const totalFilteredPages = Math.max(1, Math.ceil(sortedData.length / itemsPerPage)); // Ensure at least 1 page
+    const totalFilteredPages = Math.max(1, Math.ceil(sortedData.length / itemsPerPage));
 
     const handleSort = (columnKey: string) => {
         let direction: 'asc' | 'desc' = 'asc';
@@ -152,13 +225,11 @@ export function DataTable({
 
     const clearSearch = () => {
         setSearchTerm('');
-        // Reset to first page when clearing search
         if (onPageChange) {
             onPageChange(1);
         }
     };
 
-    // Reset to first page when search changes
     useEffect(() => {
         if (onPageChange && currentPage > 1) {
             onPageChange(1);
@@ -166,7 +237,6 @@ export function DataTable({
     }, [searchTerm]);
 
     useEffect(() => {
-        // Reset to first page when items per page changes and current page would be invalid
         const maxPage = Math.max(1, Math.ceil(sortedData.length / itemsPerPage));
         if (onPageChange && currentPage > maxPage) {
             onPageChange(1);
@@ -223,64 +293,13 @@ export function DataTable({
 
     const getCellValue = (row: Record<string, unknown>, column: Column) => {
         if (column.key === '_select') {
-            return null; // The render function will handle this
+            return null;
         }
         return row[column.key];
     };
 
-    // Before rendering the DataTable, add a selection column if onSelectionChange is provided
-    useEffect(() => {
-        if (onSelectionChange) {
-            const hasSelectColumn = columns.some(col => col.key === '_select');
-
-            if (!hasSelectColumn) {
-                // Only add the column if it doesn't exist
-                setColumns(prevColumns => [
-                    {
-                        key: '_select',
-                        label: '',
-                        width: 50,
-                        minWidth: 40,
-                        sortable: false,
-                        searchable: false,
-                        render: (_, row) => (
-                            <input
-                                type="checkbox"
-                                checked={isRowSelected(row)}
-                                onChange={(e) => handleRowSelection(e, row)}
-                                className="rounded border-gray-300"
-                            />
-                        )
-                    },
-                    ...prevColumns
-                ]);
-            } else {
-                // Update existing select column to refresh the render function
-                setColumns(prevColumns =>
-                    prevColumns.map(col =>
-                        col.key === '_select'
-                            ? {
-                                ...col,
-                                render: (_, row) => (
-                                    <input
-                                        type="checkbox"
-                                        checked={isRowSelected(row)}
-                                        onChange={(e) => handleRowSelection(e, row)}
-                                        className="rounded border-gray-300"
-                                    />
-                                )
-                            }
-                            : col
-                    )
-                );
-            }
-        }
-    }, [onSelectionChange, selectedRows]);
-
-
     return (
         <div className="border rounded-lg overflow-hidden">
-            {/* Search Bar */}
             {showSearch && (
                 <div className="p-4 border-b bg-gray-50">
                     <div className="relative max-w-sm">
@@ -403,7 +422,6 @@ export function DataTable({
                                 onChange={(e) => {
                                     const newItemsPerPage = Number(e.target.value);
                                     onItemsPerPageChange?.(newItemsPerPage);
-                                    // Reset to page 1 when changing items per page
                                     onPageChange?.(1);
                                 }}
                                 className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
