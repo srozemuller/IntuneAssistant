@@ -1,5 +1,5 @@
-//export const API_BASE_PRD_URL = 'https://api.intuneassistant.cloud/v1';
-const API_BASE_PRD_URL = 'https://intuneassistant-api-test.azurewebsites.net/v1';
+export const API_BASE_PRD_URL = 'https://api.intuneassistant.cloud/v1';
+
 export const API_BASE_DEV_URL = 'https://localhost:7224/v1';
 
 export const API_BASE_URL = process.env.NODE_ENV === 'development' ? API_BASE_DEV_URL : API_BASE_PRD_URL;
