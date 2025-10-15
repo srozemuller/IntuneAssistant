@@ -13,7 +13,7 @@ This document provides the technical and security background of **IntuneAssistan
 
 ---
 
-## 🧭 Purpose
+## Purpose
 
 This page explains:
 
@@ -156,7 +156,7 @@ No elevation or privilege escalation occurs within IntuneAssistant itself.
 
 ---
 
-## 🧾 Compliance Highlights
+## Compliance Highlights
 
 - ✅ **OAuth 2.0 / OpenID Connect compliant**
 - ✅ **Uses only Microsoft Graph API**
@@ -167,7 +167,7 @@ No elevation or privilege escalation occurs within IntuneAssistant itself.
 
 ---
 
-## 🧠 Summary
+## Summary
 
 **IntuneAssistant** follows Microsoft’s **Zero-Trust and Least-Privilege principles**:
 
@@ -183,6 +183,6 @@ IntuneAssistant provides enterprise-grade security while maintaining simplicity 
 import DocCardList from '@theme/DocCardList';
 import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
 
-## 📚 Continue Reading
+## Continue Reading
 
 <DocCardList items={useCurrentSidebarCategory().items}/>
