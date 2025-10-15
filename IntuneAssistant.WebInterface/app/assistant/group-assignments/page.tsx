@@ -1,18 +1,32 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useMsal } from '@azure/msal-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DataTable } from '@/components/DataTable';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck,  ChevronDown, ChevronUp} from 'lucide-react';
+import React, {useState, useEffect} from 'react';
+import {useMsal} from '@azure/msal-react';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {DataTable} from '@/components/DataTable';
+import {Badge} from '@/components/ui/badge';
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
+import {
+    RefreshCw,
+    Download,
+    Filter,
+    Database,
+    Search,
+    X,
+    Users,
+    ExternalLink,
+    Settings,
+    Shield,
+    ShieldCheck,
+    ChevronDown,
+    ChevronUp, XCircle
+} from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
-import { MultiSelect, Option } from '@/components/ui/multi-select';
-import { Pagination } from '@/components/ui/pagination';
-import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
-import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import {MultiSelect, Option} from '@/components/ui/multi-select';
+
+import {ExportButton, ExportData, ExportColumn} from '@/components/ExportButton';
+import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
 
 interface ApiResponse {
@@ -88,10 +102,10 @@ interface AssignmentFilter {
 }
 
 export default function AssignmentsOverview() {
-    const { instance, accounts } = useMsal();
+    const {instance, accounts} = useMsal();
     const [showConsentDialog, setShowConsentDialog] = useState(false);
     const [consentUrl, setConsentUrl] = useState('');
-    const { request } = useApiRequest();
+    const {request} = useApiRequest();
 
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
@@ -151,9 +165,9 @@ export default function AssignmentsOverview() {
     }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter, filterTypeFilter]);
 
     const getUniqueFilterTypes = (): Option[] => [
-        { label: 'No Filter', value: 'None' },
-        { label: 'Include Filter', value: 'include' },
-        { label: 'Exclude Filter', value: 'exclude' }
+        {label: 'No Filter', value: 'None'},
+        {label: 'Include Filter', value: 'include'},
+        {label: 'Exclude Filter', value: 'exclude'}
     ];
 
     const filteredGroupResults = groupSearchResults.filter(group => {
@@ -209,33 +223,21 @@ export default function AssignmentsOverview() {
             if (handleConsentCheck(responseData as ApiResponse)) {
                 return;
             }
+            const groupData = responseData.data as GroupDetails | GroupDetails[];
 
-            if (responseData.status === 'Success' && responseData.data) {
-                // Check if data is consent URL object
-                if (typeof responseData.data === 'object' && 'url' in responseData.data) {
-                    // This should have been caught by handleConsentCheck, but handle it here too
-                    setConsentUrl(responseData.data.url);
-                    setShowConsentDialog(true);
-                    return;
-                }
-
-                const groupData = responseData.data as GroupDetails | GroupDetails[];
-
-                if (Array.isArray(groupData)) {
-                    if (groupData.length > 0) {
-                        // Multiple groups found - show selection
-                        setGroupSearchResults(groupData);
-                    } else {
-                        // No groups found - show message
-                        setGroupSearchError(`No groups found matching "${groupSearchInput.trim()}"`);
-                    }
+            if (Array.isArray(groupData)) {
+                if (groupData.length > 0) {
+                    // Multiple groups found - show selection
+                    setGroupSearchResults(groupData);
                 } else {
-                    // Single group found - set as selected
-                    setSearchedGroup(groupData);
+                    // No groups found - show message
+                    setGroupSearchError(`No groups found matching "${groupSearchInput.trim()}"`);
                 }
             } else {
-                throw new Error(responseData.message || 'Failed to find groups');
+                // Single group found - set as selected
+                setSearchedGroup(groupData);
             }
+
         } catch (error) {
             console.error('Failed to search groups:', error);
             setGroupSearchError(error instanceof Error ? error.message : 'Failed to search groups');
@@ -387,11 +389,11 @@ export default function AssignmentsOverview() {
         ];
 
         const stats = [
-            { label: 'Total Assignments', value: filteredAssignments.length },
-            { label: 'Assigned', value: filteredAssignments.filter(a => a.isAssigned).length },
-            { label: 'Not Assigned', value: filteredAssignments.filter(a => !a.isAssigned).length },
-            { label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size },
-            { label: 'Platforms', value: new Set(filteredAssignments.map(a => a.platform)).size }
+            {label: 'Total Assignments', value: filteredAssignments.length},
+            {label: 'Assigned', value: filteredAssignments.filter(a => a.isAssigned).length},
+            {label: 'Not Assigned', value: filteredAssignments.filter(a => !a.isAssigned).length},
+            {label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size},
+            {label: 'Platforms', value: new Set(filteredAssignments.map(a => a.platform)).size}
         ];
 
         return {
@@ -519,7 +521,7 @@ export default function AssignmentsOverview() {
 
     const getFilterInfo = (filterId: string | null, filterType: string) => {
         if (!filterId || filterId === 'None' || filterType === 'None') {
-            return { displayName: 'None', managementType: null, platform: null };
+            return {displayName: 'None', managementType: null, platform: null};
         }
 
         const filter = filters.find(f => f.id === filterId);
@@ -659,19 +661,19 @@ export default function AssignmentsOverview() {
                 types.add('Not Assigned');
             }
         });
-        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+        return Array.from(types).sort().map(type => ({label: type, value: type}));
     };
     const getUniqueResourceTypes = (): Option[] => {
         const types = new Set<string>();
         assignments.forEach(assignment => {
             types.add(assignment.resourceType);
         });
-        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+        return Array.from(types).sort().map(type => ({label: type, value: type}));
     };
 
     const getUniqueStatuses = (): Option[] => [
-        { label: 'Assigned', value: 'Assigned' },
-        { label: 'Not Assigned', value: 'Not Assigned' }
+        {label: 'Assigned', value: 'Assigned'},
+        {label: 'Not Assigned', value: 'Not Assigned'}
     ];
 
     const getUniquePlatforms = (): Option[] => {
@@ -679,7 +681,7 @@ export default function AssignmentsOverview() {
         assignments.forEach(assignment => {
             platforms.add(assignment.platform || 'All');
         });
-        return Array.from(platforms).sort().map(platform => ({ label: platform, value: platform }));
+        return Array.from(platforms).sort().map(platform => ({label: platform, value: platform}));
     };
 
     const clearFilters = () => {
@@ -787,7 +789,9 @@ export default function AssignmentsOverview() {
                 const assignmentType = String(row.assignmentType);
                 const isAssigned = Boolean(row.isAssigned);
                 const targetId = row.targetId as string;
-                const group = row.group as { groupCount?: { userCount: number; deviceCount: number; groupCount: number } } | undefined;
+                const group = row.group as {
+                    groupCount?: { userCount: number; deviceCount: number; groupCount: number }
+                } | undefined;
 
                 if (isAssigned && (assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && targetId) {
                     return (
@@ -872,13 +876,15 @@ export default function AssignmentsOverview() {
                         </button>
                         <div className="flex items-center">
                             {isInclude ? (
-                                <Badge variant="default" className="text-xs bg-green-100 text-green-800 border-green-200 px-1 py-0">
-                                    <Shield className="h-2 w-2 mr-1" />
+                                <Badge variant="default"
+                                       className="text-xs bg-green-100 text-green-800 border-green-200 px-1 py-0">
+                                    <Shield className="h-2 w-2 mr-1"/>
                                     Inc
                                 </Badge>
                             ) : (
-                                <Badge variant="destructive" className="text-xs bg-red-100 text-red-800 border-red-200 px-1 py-0">
-                                    <ShieldCheck className="h-2 w-2 mr-1" />
+                                <Badge variant="destructive"
+                                       className="text-xs bg-red-100 text-red-800 border-red-200 px-1 py-0">
+                                    <ShieldCheck className="h-2 w-2 mr-1"/>
                                     Exc
                                 </Badge>
                             )}
@@ -895,18 +901,19 @@ export default function AssignmentsOverview() {
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Group assignments Overview</h1>
                     <p className="text-gray-600 mt-2">
-                        View all Intune assignments across your organization for a specific group. Search for a group or load all assignments to get started.
+                        View all Intune assignments across your organization for a specific group. Search for a group or
+                        load all assignments to get started.
                     </p>
                 </div>
                 <div className="flex gap-2">
                     {assignments.length > 0 ? (
                         <>
                             <Button onClick={fetchAssignments} variant="outline" size="sm" disabled={loading}>
-                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}/>
                                 Refresh
                             </Button>
                             <Button onClick={clearAssignments} variant="outline" size="sm">
-                                <X className="h-4 w-4 mr-2" />
+                                <X className="h-4 w-4 mr-2"/>
                                 Clear
                             </Button>
                             <ExportButton
@@ -921,21 +928,42 @@ export default function AssignmentsOverview() {
                             disabled={loading}
                             className="flex items-center gap-2"
                         >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
                             Load Assignments
                         </Button>
                     )}
                 </div>
             </div>
 
+            {/* Error Display */}
+            {error && (
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-2 text-red-600">
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
+                            <span>{error}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                            Error occurred while fetching assignments. Please try again.
+                        </p>
+                        <Button onClick={fetchAssignments} className="mt-4" variant="outline">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Show welcome card when no assignments are loaded and not loading */}
             {assignments.length === 0 && !loading && !error && (
                 <Card className="shadow-sm">
                     <CardHeader className="text-center pb-4">
-                        <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <Users className="h-12 w-12 text-gray-400 mx-auto mb-4"/>
                         <CardTitle className="text-xl">Group Assignments</CardTitle>
                         <CardDescription className="text-gray-600 max-w-md mx-auto">
-                            Search for a specific group to view its assignments, or load all assignments to get a comprehensive overview.
+                            Search for a specific group to view its assignments, or load all assignments to get a
+                            comprehensive overview.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -950,7 +978,8 @@ export default function AssignmentsOverview() {
 
                             <div className="flex gap-2 max-w-md mx-auto">
                                 <div className="relative flex-1">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                    <Search
+                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
                                     <input
                                         type="text"
                                         value={groupSearchInput}
@@ -970,7 +999,7 @@ export default function AssignmentsOverview() {
                                     className="px-6"
                                 >
                                     {groupSearchLoading ? (
-                                        <RefreshCw className="h-4 w-4 animate-spin" />
+                                        <RefreshCw className="h-4 w-4 animate-spin"/>
                                     ) : (
                                         'Search'
                                     )}
@@ -989,12 +1018,14 @@ export default function AssignmentsOverview() {
                                 <div className="max-w-4xl mx-auto space-y-3">
                                     <div className="text-center mb-4">
                                         <h3 className="text-lg font-semibold">Found {groupSearchResults.length} groups</h3>
-                                        <p className="text-sm text-gray-600">Search and click on a group to view its assignments</p>
+                                        <p className="text-sm text-gray-600">Search and click on a group to view its
+                                            assignments</p>
                                     </div>
 
                                     {/* Search within results */}
                                     <div className="relative max-w-md mx-auto">
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                        <Search
+                                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
                                         <input
                                             type="text"
                                             value={groupResultsSearch}
@@ -1007,7 +1038,7 @@ export default function AssignmentsOverview() {
                                                 onClick={() => setGroupResultsSearch('')}
                                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                             >
-                                                <X className="h-4 w-4" />
+                                                <X className="h-4 w-4"/>
                                             </button>
                                         )}
                                     </div>
@@ -1020,12 +1051,13 @@ export default function AssignmentsOverview() {
                                     )}
 
                                     {filteredGroupResults.map((group) => (
-                                        <Card key={group.id} className="border hover:border-blue-300 transition-colors cursor-pointer">
+                                        <Card key={group.id}
+                                              className="border hover:border-blue-300 transition-colors cursor-pointer">
                                             <CardContent className="p-4">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-2">
-                                                            <Users className="h-4 w-4 text-blue-600" />
+                                                            <Users className="h-4 w-4 text-blue-600"/>
                                                             <h4 className="font-semibold text-lg">{group.displayName}</h4>
                                                         </div>
                                                         <p className="text-gray-600 text-sm mb-3">
@@ -1063,7 +1095,7 @@ export default function AssignmentsOverview() {
                                                             size="sm"
                                                             className="whitespace-nowrap"
                                                         >
-                                                            <ExternalLink className="h-3 w-3 mr-1" />
+                                                            <ExternalLink className="h-3 w-3 mr-1"/>
                                                             Select
                                                         </Button>
                                                         <Button
@@ -1073,9 +1105,9 @@ export default function AssignmentsOverview() {
                                                             disabled={loading}
                                                         >
                                                             {loading ? (
-                                                                <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+                                                                <RefreshCw className="h-3 w-3 animate-spin mr-1"/>
                                                             ) : (
-                                                                <Database className="h-3 w-3 mr-1" />
+                                                                <Database className="h-3 w-3 mr-1"/>
                                                             )}
                                                             Load
                                                         </Button>
@@ -1088,7 +1120,7 @@ export default function AssignmentsOverview() {
                                     {/* No results after filtering */}
                                     {groupResultsSearch && filteredGroupResults.length === 0 && (
                                         <div className="text-center py-8 text-gray-500">
-                                            <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                                            <Search className="h-8 w-8 mx-auto mb-2 text-gray-300"/>
                                             <p>No groups found matching &quot;{groupResultsSearch}&quot;</p>
                                         </div>
                                     )}
@@ -1117,7 +1149,7 @@ export default function AssignmentsOverview() {
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <Users className="h-4 w-4 text-blue-600" />
+                                                    <Users className="h-4 w-4 text-blue-600"/>
                                                     <h4 className="font-semibold text-lg">{searchedGroup.displayName}</h4>
                                                 </div>
                                                 <p className="text-gray-600 text-sm mb-3">
@@ -1125,7 +1157,7 @@ export default function AssignmentsOverview() {
                                                 </p>
 
                                                 {/*Does not work yet, need to update orchestrator to fetch groups counter per group. Dont know if its needed here*/}
-                                                
+
                                                 {/*<div className="grid grid-cols-3 gap-4 mb-3">*/}
                                                 {/*    <div className="text-center p-2 bg-blue-100 rounded border">*/}
                                                 {/*        <div className="text-lg font-bold text-blue-600">{searchedGroup.groupCount?.userCount || 0}</div>*/}
@@ -1153,9 +1185,9 @@ export default function AssignmentsOverview() {
                                                     disabled={loading}
                                                 >
                                                     {loading ? (
-                                                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                                                        <RefreshCw className="h-4 w-4 animate-spin mr-2"/>
                                                     ) : (
-                                                        <Database className="h-4 w-4 mr-2" />
+                                                        <Database className="h-4 w-4 mr-2"/>
                                                     )}
                                                     Load Assignments
                                                 </Button>
@@ -1180,7 +1212,7 @@ export default function AssignmentsOverview() {
                         {/* Load All Assignments */}
                         <div className="text-center">
                             <Button onClick={fetchAssignments} className="inline-flex items-center gap-2">
-                                <Database className="h-4 w-4" />
+                                <Database className="h-4 w-4"/>
                                 Load All Assignments
                             </Button>
                             <p className="text-xs text-gray-500 mt-2">
@@ -1196,7 +1228,7 @@ export default function AssignmentsOverview() {
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4" />
+                            <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4"/>
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
                                 Loading Assignments
                             </h3>
@@ -1219,12 +1251,12 @@ export default function AssignmentsOverview() {
                                     onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
                                     className="flex items-center gap-2 hover:text-blue-600 transition-colors"
                                 >
-                                    <Filter className="h-5 w-5" />
+                                    <Filter className="h-5 w-5"/>
                                     Filters
                                     {isFiltersExpanded ? (
-                                        <ChevronUp className="h-4 w-4" />
+                                        <ChevronUp className="h-4 w-4"/>
                                     ) : (
-                                        <ChevronDown className="h-4 w-4" />
+                                        <ChevronDown className="h-4 w-4"/>
                                     )}
                                 </button>
                                 <div className="flex items-center gap-2">
@@ -1251,7 +1283,7 @@ export default function AssignmentsOverview() {
                                                 onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}
                                                 className="ml-1 hover:text-red-600"
                                             >
-                                                <X className="h-3 w-3" />
+                                                <X className="h-3 w-3"/>
                                             </button>
                                         </Badge>
                                     ))}
@@ -1262,7 +1294,7 @@ export default function AssignmentsOverview() {
                                                 onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}
                                                 className="ml-1 hover:text-red-600"
                                             >
-                                                <X className="h-3 w-3" />
+                                                <X className="h-3 w-3"/>
                                             </button>
                                         </Badge>
                                     ))}
@@ -1273,7 +1305,7 @@ export default function AssignmentsOverview() {
                                                 onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}
                                                 className="ml-1 hover:text-red-600"
                                             >
-                                                <X className="h-3 w-3" />
+                                                <X className="h-3 w-3"/>
                                             </button>
                                         </Badge>
                                     ))}
@@ -1284,7 +1316,7 @@ export default function AssignmentsOverview() {
                                                 onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}
                                                 className="ml-1 hover:text-red-600"
                                             >
-                                                <X className="h-3 w-3" />
+                                                <X className="h-3 w-3"/>
                                             </button>
                                         </Badge>
                                     ))}
@@ -1295,7 +1327,7 @@ export default function AssignmentsOverview() {
                                                 onClick={() => setFilterTypeFilter(prev => prev.filter(f => f !== filter))}
                                                 className="ml-1 hover:text-red-600"
                                             >
-                                                <X className="h-3 w-3" />
+                                                <X className="h-3 w-3"/>
                                             </button>
                                         </Badge>
                                     ))}
@@ -1369,32 +1401,36 @@ export default function AssignmentsOverview() {
                                         {resourceTypeFilter.map(filter => (
                                             <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                                                 {filter}
-                                                <button onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}>
-                                                    <X className="h-3 w-3" />
+                                                <button
+                                                    onClick={() => setResourceTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3"/>
                                                 </button>
                                             </Badge>
                                         ))}
                                         {assignmentTypeFilter.map(filter => (
                                             <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                                                 {filter}
-                                                <button onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}>
-                                                    <X className="h-3 w-3" />
+                                                <button
+                                                    onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3"/>
                                                 </button>
                                             </Badge>
                                         ))}
                                         {statusFilter.map(filter => (
                                             <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                                                 {filter}
-                                                <button onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}>
-                                                    <X className="h-3 w-3" />
+                                                <button
+                                                    onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3"/>
                                                 </button>
                                             </Badge>
                                         ))}
                                         {platformFilter.map(filter => (
                                             <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                                                 {filter}
-                                                <button onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}>
-                                                    <X className="h-3 w-3" />
+                                                <button
+                                                    onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}>
+                                                    <X className="h-3 w-3"/>
                                                 </button>
                                             </Badge>
                                         ))}
@@ -1428,7 +1464,7 @@ export default function AssignmentsOverview() {
                         <CardContent className="p-0">
                             {loading ? (
                                 <div className="flex items-center justify-center h-32">
-                                    <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                                    <RefreshCw className="h-6 w-6 animate-spin text-blue-500"/>
                                     <span className="ml-2 text-gray-600">Loading assignments...</span>
                                 </div>
                             ) : (
@@ -1453,7 +1489,8 @@ export default function AssignmentsOverview() {
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
                                     <div className="text-gray-400 mb-4">
-                                        {searchQuery ? <Search className="h-12 w-12 mx-auto" /> : <Filter className="h-12 w-12 mx-auto" />}
+                                        {searchQuery ? <Search className="h-12 w-12 mx-auto"/> :
+                                            <Filter className="h-12 w-12 mx-auto"/>}
                                     </div>
                                     <h3 className="text-lg font-medium text-gray-900 mb-2">
                                         {searchQuery ? 'No assignments match your search' : 'No assignments match your filters'}
@@ -1487,7 +1524,7 @@ export default function AssignmentsOverview() {
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <Settings className="h-5 w-5" />
+                            <Settings className="h-5 w-5"/>
                             {selectedFilter?.displayName || 'Filter Details'}
                         </DialogTitle>
                         <DialogDescription>
@@ -1498,29 +1535,35 @@ export default function AssignmentsOverview() {
                     {selectedFilter ? (
                         <div className="space-y-6">
                             {/* Filter Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
+                            <div
+                                className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter
+                                        ID</label>
                                     <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management
+                                        Type</label>
                                     <div className="flex items-center gap-2">
                                         {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
-                                                <Shield className="h-3 w-3 mr-1" />
+                                            <Badge variant="default"
+                                                   className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
+                                                <Shield className="h-3 w-3 mr-1"/>
                                                 Include
                                             </Badge>
                                         ) : (
-                                            <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
-                                                <ShieldCheck className="h-3 w-3 mr-1" />
+                                            <Badge variant="destructive"
+                                                   className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
+                                                <ShieldCheck className="h-3 w-3 mr-1"/>
                                                 Exclude
                                             </Badge>
                                         )}
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
+                                    <label
+                                        className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
                                     <p className="text-sm text-gray-900 dark:text-gray-100">
                                         {selectedFilter.platform === 0 ? 'All' :
                                             selectedFilter.platform === 1 ? 'Android' :
@@ -1535,8 +1578,10 @@ export default function AssignmentsOverview() {
                             {/* Description */}
                             {selectedFilter.description && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
-                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <label
+                                        className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
+                                    <pre
+                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                                          <code className="whitespace-pre-wrap break-all">
                                              {selectedFilter.description}
 
@@ -1548,8 +1593,10 @@ export default function AssignmentsOverview() {
                             {/* Filter Rule */}
                             {selectedFilter.rule && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
-                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter
+                                        Rule</label>
+                                    <pre
+                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                                         <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
                                     </pre>
                                 </div>
@@ -1570,7 +1617,8 @@ export default function AssignmentsOverview() {
 
                                 {/* Role Scope Tags */}
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 block mb-2">Role Scope Tags</label>
+                                    <label className="text-sm font-medium text-gray-600 block mb-2">Role Scope
+                                        Tags</label>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
                                             selectedFilter.roleScopeTags.map((tag, index) => (

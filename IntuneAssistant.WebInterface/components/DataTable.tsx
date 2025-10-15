@@ -34,6 +34,8 @@ interface DataTableProps {
     showPagination?: boolean;
     showSearch?: boolean;
     searchPlaceholder?: string;
+    selectedRows?: string[];
+    onSelectionChange?: (rowIds: string[]) => void;
 }
 
 export function DataTable({
@@ -49,7 +51,9 @@ export function DataTable({
                               onItemsPerPageChange,
                               showPagination = false,
                               showSearch = true,
-                              searchPlaceholder = "Search..."
+                              searchPlaceholder = "Search...",
+                              onSelectionChange,
+                              selectedRows = [],
                           }: DataTableProps) {
     const [columns, setColumns] = useState(initialColumns.map(col => ({
         ...col,
@@ -62,6 +66,29 @@ export function DataTable({
     const [searchTerm, setSearchTerm] = useState('');
     const [resizing, setResizing] = useState<{ columnIndex: number; startX: number; startWidth: number } | null>(null);
     const tableRef = useRef<HTMLTableElement>(null);
+
+    const isRowSelected = (row: Record<string, unknown>) => {
+        if (!selectedRows || selectedRows.length === 0) return false;
+        const rowId = String(row.id);
+        return selectedRows.includes(rowId);
+    };
+
+    const handleRowSelection = (e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>, row: Record<string, unknown>) => {
+        e.stopPropagation(); // Prevent row click from firing
+
+        // Get the ID or unique identifier from the row
+        const rowId = String(row.id);
+
+        // Toggle selection
+        if (onSelectionChange) {
+            const isCurrentlySelected = isRowSelected(row);
+            if (isCurrentlySelected) {
+                onSelectionChange(selectedRows.filter(id => id !== rowId));
+            } else {
+                onSelectionChange([...selectedRows, rowId]);
+            }
+        }
+    };
 
     // Filter data based on search term
     const filteredData = data.filter(row => {
@@ -196,10 +223,60 @@ export function DataTable({
 
     const getCellValue = (row: Record<string, unknown>, column: Column) => {
         if (column.key === '_select') {
-            return null;
+            return null; // The render function will handle this
         }
         return row[column.key];
     };
+
+    // Before rendering the DataTable, add a selection column if onSelectionChange is provided
+    useEffect(() => {
+        if (onSelectionChange) {
+            const hasSelectColumn = columns.some(col => col.key === '_select');
+
+            if (!hasSelectColumn) {
+                // Only add the column if it doesn't exist
+                setColumns(prevColumns => [
+                    {
+                        key: '_select',
+                        label: '',
+                        width: 50,
+                        minWidth: 40,
+                        sortable: false,
+                        searchable: false,
+                        render: (_, row) => (
+                            <input
+                                type="checkbox"
+                                checked={isRowSelected(row)}
+                                onChange={(e) => handleRowSelection(e, row)}
+                                className="rounded border-gray-300"
+                            />
+                        )
+                    },
+                    ...prevColumns
+                ]);
+            } else {
+                // Update existing select column to refresh the render function
+                setColumns(prevColumns =>
+                    prevColumns.map(col =>
+                        col.key === '_select'
+                            ? {
+                                ...col,
+                                render: (_, row) => (
+                                    <input
+                                        type="checkbox"
+                                        checked={isRowSelected(row)}
+                                        onChange={(e) => handleRowSelection(e, row)}
+                                        className="rounded border-gray-300"
+                                    />
+                                )
+                            }
+                            : col
+                    )
+                );
+            }
+        }
+    }, [onSelectionChange, selectedRows]);
+
 
     return (
         <div className="border rounded-lg overflow-hidden">
@@ -281,7 +358,9 @@ export function DataTable({
                                 key={rowIndex}
                                 className={`border-b hover:bg-gray-50 transition-colors ${
                                     onRowClick ? 'cursor-pointer' : ''
-                                } ${rowClassName ? rowClassName(row) : ''}`}
+                                } ${isRowSelected(row) ? 'bg-blue-50' : ''} ${
+                                    rowClassName ? rowClassName(row) : ''
+                                }`}
                                 onClick={(e) => handleRowClick(e, row)}
                             >
                                 {columns.map((column) => (

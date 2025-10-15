@@ -1106,6 +1106,25 @@ export default function PolicyComparison() {
                     )}
                 </div>
             </div>
+            {/* Error Display */}
+            {error && (
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-2 text-red-600">
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
+                            <span>{error}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                            Error occurred while fetching policies. Please try again.
+                        </p>
+                        <Button onClick={fetchPolicies} className="mt-4" variant="outline">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Show welcome card when no policies are loaded and not loading */}
             {policies.length === 0 && !loading && !error && (

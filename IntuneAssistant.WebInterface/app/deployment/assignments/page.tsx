@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
 import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
@@ -15,13 +15,18 @@ import {apiScope} from "@/lib/msalConfig";
 import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-import { ConsentDialog } from '@/components/ConsentDialog';
 import { DataTable } from '@/components/DataTable';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import { UserConsentRequiredError } from '@/lib/errors';
+
+import { useConsent } from "@/contexts/ConsentContext";
 
 interface AssignmentCompareApiResponse {
     status: string;
-    message?: string;
+    message?: {
+        url?: string;
+        message?: string;
+    }
     data?: ComparisonResult[] | string;
     errors?: {
         [key: string]: string[];
@@ -30,7 +35,10 @@ interface AssignmentCompareApiResponse {
 
 interface ValidationApiResponse {
     status: string;
-    message?: string;
+    message?: {
+        url?: string;
+        message?: string;
+    }
     data?: ValidationResult[] | string;
     errors?: {
         [key: string]: string[];
@@ -139,9 +147,9 @@ interface ValidationResult {
     id: string;
     hasCorrectAssignment: boolean;
     message?: {
-        reason?: string;
         status?: string;
-    };
+        reason?: string;
+    }
     policy?: {
         id: string;
         name: string;
@@ -195,7 +203,7 @@ export default function AssignmentRolloutPage() {
     const paginatedResults = comparisonResults.slice(startIndex, endIndex);
     const totalPages = Math.ceil(comparisonResults.length / itemsPerPage);
 
-
+    const { showConsent } = useConsent();
 
     const [migrationSuccessful, setMigrationSuccessful] = useState(false);
 
@@ -798,41 +806,22 @@ export default function AssignmentRolloutPage() {
             return;
         }
 
-
         setLoading(true);
         setError(null);
 
         try {
-            const apiResponse = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT,{
+            // The UserConsentRequiredError will be caught and handled by the useApiRequest hook
+            // which will automatically call showConsent with the consentUrl
+            const apiResponse = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT, {
                 method: 'POST',
                 body: JSON.stringify(validCsvData)
             });
-            // Add null check for apiResponse
-            if (!apiResponse) {
-                setError('Failed to get response from server');
-                return;
-            }
 
-            // Check if this is an error response
-            if (apiResponse.status === 'Error' &&
-                apiResponse.message === 'User challenge required') {
-
-                setConsentUrl(apiResponse.data as string);
-                setShowConsentDialog(true);
+            if (!apiResponse?.data || !Array.isArray(apiResponse.data)) {
+                setError('Invalid data format received from server');
                 setLoading(false);
                 return;
             }
-
-            // Add null check for apiResponse.data
-            if (!apiResponse.data) {
-                setError('No data received from server');
-                return;
-            }
-            if (!Array.isArray(apiResponse.data)) {
-                setError('Invalid data format received from server');
-                return;
-            }
-
 
             const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => ({
                 ...item,
@@ -848,7 +837,10 @@ export default function AssignmentRolloutPage() {
             setComparisonResults(enhancedResults);
             setCurrentStep('migrate');
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to compare assignments');
+            // Don't set an error if it was a consent error (already handled)
+            if (!(error instanceof UserConsentRequiredError)) {
+                setError(error instanceof Error ? error.message : 'Failed to compare assignments');
+            }
         } finally {
             setLoading(false);
         }
@@ -885,9 +877,9 @@ export default function AssignmentRolloutPage() {
 
             // Check if this is an error response
             if (apiResponse.status === 'Error' &&
-                apiResponse.message === 'User challenge required') {
+                apiResponse.message?.message === 'User challenge required') {
 
-                setConsentUrl(apiResponse.data as string);
+                setConsentUrl(apiResponse.message.url || '');
                 setShowConsentDialog(true);
                 setLoading(false);
                 return;
@@ -984,8 +976,10 @@ export default function AssignmentRolloutPage() {
                 return;
             }
 
-            if (validationData.status === 'Error' && validationData.message === 'User challenge required') {
-                setConsentUrl(validationData.data as string);
+            if (validationData.status === 'Error' &&
+                validationData.message?.message === 'Additional permissions required') {
+
+                setConsentUrl(validationData.message.url || '');
                 setShowConsentDialog(true);
                 setLoading(false);
                 return;
@@ -1122,17 +1116,84 @@ export default function AssignmentRolloutPage() {
                 </CardContent>
             </Card>
 
-            {/* Error Display */}
+            {/* Step-specific Error Display */}
             {error && (
-                <Card className="border-red-200 bg-red-50">
-                    <CardContent className="p-4">
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
                         <div className="flex items-center gap-2 text-red-600">
-                            <XCircle className="h-5 w-5" />
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
                             <span>{error}</span>
                         </div>
+
+                        {/* Step-specific error content */}
+                        {currentStep === 'upload' && (
+                            <>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Error occurred while processing the CSV file. Please check the file format and try again.
+                                </p>
+                                <Button
+                                    onClick={() => setError(null)}
+                                    className="mt-4"
+                                    variant="outline"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Clear Error
+                                </Button>
+                            </>
+                        )}
+
+                        {currentStep === 'compare' && (
+                            <>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Error occurred while comparing assignments. Please check your connection and try again.
+                                </p>
+                                <Button
+                                    onClick={compareAssignments}
+                                    className="mt-4"
+                                    variant="outline"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Try Comparison Again
+                                </Button>
+                            </>
+                        )}
+
+                        {currentStep === 'migrate' && (
+                            <>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Error occurred during migration. The operation may be partially completed.
+                                </p>
+                                <Button
+                                    onClick={migrateSelectedAssignments}
+                                    className="mt-4"
+                                    variant="outline"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Retry Migration
+                                </Button>
+                            </>
+                        )}
+
+                        {currentStep === 'validate' && (
+                            <>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Error occurred while validating assignments. This doesn&apos;t affect your migrations.
+                                </p>
+                                <Button
+                                    onClick={validateAssignments}
+                                    className="mt-4"
+                                    variant="outline"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Retry Validation
+                                </Button>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
             )}
+
 
             {/* Step Content */}
             {currentStep === 'upload' && (
@@ -1265,7 +1326,6 @@ export default function AssignmentRolloutPage() {
                     </CardContent>
                 </Card>
             )}
-
 
             {currentStep === 'compare' && (
                 <Card>
@@ -1412,16 +1472,19 @@ export default function AssignmentRolloutPage() {
                                     data={comparisonResults.map(result => result as unknown as Record<string, unknown>)}
                                     columns={comparisonColumns}
                                     className="text-sm"
-                                    key={selectedRows.join(',')}
-                                    currentPage={compareCurrentPage}  // Use compareCurrentPage instead of currentPage
+                                    // Instead of using key, pass selectedRows as a prop
+                                    selectedRows={selectedRows}
+                                    currentPage={compareCurrentPage}
                                     totalPages={Math.ceil(comparisonResults.length / itemsPerPage)}
                                     itemsPerPage={itemsPerPage}
-                                    onPageChange={setCompareCurrentPage}  // Update compareCurrentPage
+                                    onPageChange={setCompareCurrentPage}
                                     onItemsPerPageChange={(newItemsPerPage) => {
                                         setItemsPerPage(newItemsPerPage);
-                                        setCompareCurrentPage(1);  // Reset compareCurrentPage
+                                        setCompareCurrentPage(1);
                                     }}
                                     showPagination={true}
+                                    onSelectionChange={setSelectedRows}
+                                    searchPlaceholder="Search policies..."
                                 />
                                 {/* Summary */}
                                 <div className="flex items-center justify-between bg-gray-50 p-4 dark:bg-neutral-900 rounded-lg">
@@ -1652,15 +1715,6 @@ export default function AssignmentRolloutPage() {
                     )}
                 </DialogContent>
             </Dialog>
-
-            <ConsentDialog
-                isOpen={showConsentDialog}
-                onClose={() => setShowConsentDialog(false)}
-                consentUrl={consentUrl}
-                onConsentComplete={handleConsentComplete}
-                clearError={migrationSuccessful}
-            />
-
         </div>
     );
 }

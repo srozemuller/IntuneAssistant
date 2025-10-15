@@ -1,12 +1,27 @@
 'use client';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck, ChevronDown, ChevronUp  } from 'lucide-react';
+import {
+    RefreshCw,
+    Download,
+    Filter,
+    Database,
+    Search,
+    X,
+    Users,
+    ExternalLink,
+    Settings,
+    Shield,
+    ShieldCheck,
+    ChevronDown,
+    ChevronUp,
+    XCircle
+} from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
@@ -117,20 +132,6 @@ export default function AssignmentsOverview() {
 
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
     const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
-
-    const handleConsentCheck = (response: ApiResponse): boolean => {
-        if (response.status === 'Error' &&
-            response.message === 'User challenge required' &&
-            typeof response.data === 'object' &&
-            response.data !== null &&
-            'url' in response.data) {
-
-            setConsentUrl(response.data.url);
-            setShowConsentDialog(true);
-            return true;
-        }
-        return false;
-    };
 
 
     useEffect(() => {
@@ -262,10 +263,6 @@ export default function AssignmentsOverview() {
                 throw new Error('No response received from API');
             }
 
-            if (handleConsentCheck(responseData)) {
-                return;
-            }
-
             // Handle successful response
             if (responseData.status === 'Success' && responseData.data) {
                 const assignments = responseData.data;
@@ -325,9 +322,7 @@ export default function AssignmentsOverview() {
             } else {
                 // If it's not an array, it might be an error response with consent info
                 const errorResponse = responseData as unknown as ApiResponse;
-                if (handleConsentCheck(errorResponse)) {
-                    return;
-                }
+
                 console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
             }
@@ -671,6 +666,25 @@ export default function AssignmentsOverview() {
                     )}
                 </div>
             </div>
+            {/* Error Display */}
+            {error && (
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-2 text-red-600">
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
+                            <span>{error}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                            Error occurred while fetching assignments. Please try again.
+                        </p>
+                        <Button onClick={fetchAssignments} className="mt-4" variant="outline">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Show welcome card when no assignments are loaded and not loading */}
             {assignments.length === 0 && !loading && !error && (

@@ -3,9 +3,9 @@ import { useRef, useCallback } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useConsent } from "@/contexts/ConsentContext";
 import { useTenant } from "@/contexts/TenantContext";
-import { apiRequest, UserConsentRequiredError } from "@/lib/apiRequest";
+import { apiRequest } from "@/lib/apiRequest";
 import { apiScope } from '@/lib/msalConfig';
-
+import { UserConsentRequiredError } from '@/lib/errors';
 
 export function useApiRequest() {
     const { instance, accounts } = useMsal();
@@ -15,7 +15,8 @@ export function useApiRequest() {
 
     const request = useCallback(async function<T>(
         url: string,
-        options: RequestInit = {}
+        options: RequestInit = {},
+        onConsentComplete?: () => Promise<T>
     ): Promise<T | undefined> {
         // Cancel previous request if still running
         if (abortControllerRef.current) {
@@ -51,10 +52,27 @@ export function useApiRequest() {
             if (err instanceof Error && err.name === 'AbortError') {
                 return;
             }
+
             if (err instanceof UserConsentRequiredError) {
-                showConsent(err.consentUrl);
+                console.log("Consent required, showing consent dialog with URL:", err.consentUrl);
+                // Pass the callback to be executed after consent is complete
+                showConsent(err.consentUrl, onConsentComplete ?
+                    async () => {
+                        try {
+                            // Re-attempt the request after consent is given
+                            if (onConsentComplete) {
+                                return await onConsentComplete();
+                            }
+                        } catch (retryError) {
+                            console.error("Error retrying request after consent:", retryError);
+                            throw retryError;
+                        }
+                    } : undefined
+                );
                 return;
             }
+
+            // Rethrow all other errors
             throw err;
         }
     }, [instance, accounts, showConsent, selectedTenant]);

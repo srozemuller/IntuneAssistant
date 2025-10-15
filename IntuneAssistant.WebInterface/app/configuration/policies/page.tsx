@@ -7,7 +7,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck, Trash2, FileText} from 'lucide-react';
+import {
+    RefreshCw,
+    Download,
+    Filter,
+    Database,
+    Search,
+    X,
+    Users,
+    ExternalLink,
+    Settings,
+    Shield,
+    ShieldCheck,
+    Trash2,
+    FileText,
+    XCircle
+} from 'lucide-react';
 import {
     CONFIGURATION_POLICIES_ENDPOINT,
     ASSIGNMENTS_FILTERS_ENDPOINT,
@@ -330,18 +345,6 @@ export default function ConfigurationPoliciesPage() {
             throw new Error('No response received from API');
         }
 
-        // Check if this is a consent required error - updated logic
-        if (response.status === 'Error' &&
-            response.message === 'User challenge required' &&
-            typeof response.data === 'object' &&
-            response.data !== null &&
-            'url' in response.data) {
-
-            setConsentUrl(response.data.url); // Access the url property
-            setShowConsentDialog(true);
-            setLoading(false);
-            return;
-        }
 
         // Add type guard to ensure data is an array before processing
         if (!Array.isArray(response.data)) {
@@ -727,8 +730,28 @@ export default function ConfigurationPoliciesPage() {
                 </div>
             </div>
 
+            {/* Error Display */}
+            {error && (
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-2 text-red-600">
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
+                            <span>{error}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                            Error occurred while accessing policies
+                        </p>
+                        <Button onClick={fetchPolicies} className="mt-4" variant="outline">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Bulk Actions Bar */}
-            {selectedPolicies.length > 0 && (
+            {selectedPolicies.length > 0 && !loading && !error && (
                 <Card className="shadow-sm border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
                     <CardContent className="py-3">
                         <div className="flex items-center justify-between">
@@ -1390,14 +1413,6 @@ export default function ConfigurationPoliciesPage() {
                     )}
                 </DialogContent>
             </Dialog>
-
-            <ConsentDialog
-                isOpen={showConsentDialog}
-                onClose={() => setShowConsentDialog(false)}
-                consentUrl={consentUrl}
-                onConsentComplete={handleConsentComplete}
-            />
-
         </div>
     );
 }
