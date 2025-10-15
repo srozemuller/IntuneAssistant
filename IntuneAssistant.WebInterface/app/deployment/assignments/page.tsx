@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
 import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
@@ -15,13 +15,18 @@ import {apiScope} from "@/lib/msalConfig";
 import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-import { ConsentDialog } from '@/components/ConsentDialog';
 import { DataTable } from '@/components/DataTable';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import { UserConsentRequiredError } from '@/lib/errors';
+
+import { useConsent } from "@/contexts/ConsentContext";
 
 interface AssignmentCompareApiResponse {
     status: string;
-    message?: string;
+    message?: {
+        url?: string;
+        message?: string;
+    }
     data?: ComparisonResult[] | string;
     errors?: {
         [key: string]: string[];
@@ -30,7 +35,10 @@ interface AssignmentCompareApiResponse {
 
 interface ValidationApiResponse {
     status: string;
-    message?: string;
+    message?: {
+        url?: string;
+        message?: string;
+    }
     data?: ValidationResult[] | string;
     errors?: {
         [key: string]: string[];
@@ -133,15 +141,16 @@ interface ComparisonResult {
     isBackedUp?: boolean;
     validationStatus?: 'pending' | 'valid' | 'invalid' | 'warning';
     validationMessage?: string;
+    isCurrentSessionValidation?: boolean;
 }
 
 interface ValidationResult {
     id: string;
     hasCorrectAssignment: boolean;
     message?: {
-        reason?: string;
         status?: string;
-    };
+        reason?: string;
+    }
     policy?: {
         id: string;
         name: string;
@@ -195,7 +204,7 @@ export default function AssignmentRolloutPage() {
     const paginatedResults = comparisonResults.slice(startIndex, endIndex);
     const totalPages = Math.ceil(comparisonResults.length / itemsPerPage);
 
-
+    const { showConsent } = useConsent();
 
     const [migrationSuccessful, setMigrationSuccessful] = useState(false);
 
@@ -336,7 +345,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'policyName',
+            key: 'providedPolicyName',
             label: 'Policy Name',
             minWidth: 250,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -383,7 +392,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'currentAssignments',
+            key: 'assignedGroups',
             label: 'Current Assignments',
             width: 150,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -399,7 +408,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'targetGroup',
+            key: 'groupToMigrate',
             label: 'Target Group',
             minWidth: 150,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -408,7 +417,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'direction',
+            key: 'assignmentDirection',
             label: 'Direction',
             width: 100,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -421,7 +430,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'action',
+            key: 'assignmentAction',
             label: 'Action',
             width: 120,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -437,7 +446,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'filter',
+            key: 'filterType',
             label: 'Filter',
             minWidth: 120,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -446,7 +455,7 @@ export default function AssignmentRolloutPage() {
             }
         },
         {
-            key: 'status',
+            key: 'validationStatus',
             label: 'Status',
             minWidth: 150,
             render: (_: unknown, row: Record<string, unknown>) => {
@@ -798,41 +807,22 @@ export default function AssignmentRolloutPage() {
             return;
         }
 
-
         setLoading(true);
         setError(null);
 
         try {
-            const apiResponse = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT,{
+            // The UserConsentRequiredError will be caught and handled by the useApiRequest hook
+            // which will automatically call showConsent with the consentUrl
+            const apiResponse = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT, {
                 method: 'POST',
                 body: JSON.stringify(validCsvData)
             });
-            // Add null check for apiResponse
-            if (!apiResponse) {
-                setError('Failed to get response from server');
-                return;
-            }
 
-            // Check if this is an error response
-            if (apiResponse.status === 'Error' &&
-                apiResponse.message === 'User challenge required') {
-
-                setConsentUrl(apiResponse.data as string);
-                setShowConsentDialog(true);
+            if (!apiResponse?.data || !Array.isArray(apiResponse.data)) {
+                setError('Invalid data format received from server');
                 setLoading(false);
                 return;
             }
-
-            // Add null check for apiResponse.data
-            if (!apiResponse.data) {
-                setError('No data received from server');
-                return;
-            }
-            if (!Array.isArray(apiResponse.data)) {
-                setError('Invalid data format received from server');
-                return;
-            }
-
 
             const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => ({
                 ...item,
@@ -848,7 +838,10 @@ export default function AssignmentRolloutPage() {
             setComparisonResults(enhancedResults);
             setCurrentStep('migrate');
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to compare assignments');
+            // Don't set an error if it was a consent error (already handled)
+            if (!(error instanceof UserConsentRequiredError)) {
+                setError(error instanceof Error ? error.message : 'Failed to compare assignments');
+            }
         } finally {
             setLoading(false);
         }
@@ -885,9 +878,9 @@ export default function AssignmentRolloutPage() {
 
             // Check if this is an error response
             if (apiResponse.status === 'Error' &&
-                apiResponse.message === 'User challenge required') {
+                apiResponse.message?.message === 'User challenge required') {
 
-                setConsentUrl(apiResponse.data as string);
+                setConsentUrl(apiResponse.message.url || '');
                 setShowConsentDialog(true);
                 setLoading(false);
                 return;
@@ -909,21 +902,24 @@ export default function AssignmentRolloutPage() {
                 await new Promise(resolve => setTimeout(resolve, 200));
             }
 
-            // Update migrated status and wait for state to update
-            const updatedResults = comparisonResults.map(result =>
-                selectedRows.includes(result.id)
-                    ? { ...result, isMigrated: true }
-                    : result
+            // Update migrated status
+            setComparisonResults(prev =>
+                prev.map(result =>
+                    selectedRows.includes(result.id)
+                        ? { ...result, isMigrated: true }
+                        : result
+                )
             );
-
-            setComparisonResults(updatedResults);
 
             // Move to validation step
             setCurrentStep('validate');
 
-            // Use the updated results for validation instead of relying on state
+            // Clear selected rows to prevent confusion
+            setSelectedRows([]);
+
+            // Validate only the items that were just migrated
             setTimeout(() => {
-                validateMigratedAssignments(updatedResults);
+                validateMigratedAssignments(selectedData);
             }, 500);
 
         } catch (error) {
@@ -933,31 +929,23 @@ export default function AssignmentRolloutPage() {
         }
     };
 
-    const handleConsentComplete = async () => {
-        setShowConsentDialog(false);
-        setConsentUrl('');
-        // Retry the migration after consent is complete
-        await migrateSelectedAssignments();
-    };
-
 
     const validateMigratedAssignments = async (results?: ComparisonResult[]) => {
         if (!accounts.length) return;
+
+        // If no specific results are passed, don't validate anything
+        if (!results || results.length === 0) {
+            setError('No specific assignments provided for validation');
+            return;
+        }
+
         setLoading(true);
         setValidationComplete(false);
 
         try {
-            const currentResults = results || comparisonResults;
-            const migratedData = currentResults.filter(result => result.isMigrated);
+            console.log(`Validating ${results.length} specific assignments`);
 
-            if (migratedData.length === 0) {
-                setError('No migrated assignments to validate');
-                return;
-            }
-
-            console.log(`Validating ${migratedData.length} migrated assignments`);
-
-            const validationPayload = migratedData.map(result => ({
+            const validationPayload = results.map(result => ({
                 Id: result.id,
                 ResourceType: result.policy?.policyType || '',
                 SubResourceType: result.policy?.policySubType || '',
@@ -973,7 +961,6 @@ export default function AssignmentRolloutPage() {
 
             console.log('Validation payload:', validationPayload);
 
-            // Use AssignmentCompareApiResponse since that's what the API returns
             const validationData = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/validate`, {
                 method: 'POST',
                 body: JSON.stringify(validationPayload)
@@ -984,8 +971,10 @@ export default function AssignmentRolloutPage() {
                 return;
             }
 
-            if (validationData.status === 'Error' && validationData.message === 'User challenge required') {
-                setConsentUrl(validationData.data as string);
+            if (validationData.status === 'Error' &&
+                validationData.message?.message === 'Additional permissions required') {
+
+                setConsentUrl(validationData.message.url || '');
                 setShowConsentDialog(true);
                 setLoading(false);
                 return;
@@ -996,9 +985,9 @@ export default function AssignmentRolloutPage() {
                 return;
             }
 
-            // Cast the data to ValidationResult[] since the API response structure matches
             setValidationResults(validationData.data as unknown as ValidationResult[]);
 
+            // Only update the specific results that were validated
             setComparisonResults(prev =>
                 prev.map(result => {
                     const validation = (validationData.data as unknown as ValidationResult[]).find(
@@ -1009,7 +998,8 @@ export default function AssignmentRolloutPage() {
                         return {
                             ...result,
                             validationStatus: validation.hasCorrectAssignment ? 'valid' : 'invalid',
-                            validationMessage: validation.message?.reason || validation.message?.status || ''
+                            validationMessage: validation.message?.reason || validation.message?.status || '',
+                            isCurrentSessionValidation: true // Mark as current session
                         };
                     }
                     return result;
@@ -1027,9 +1017,18 @@ export default function AssignmentRolloutPage() {
     };
 
 
-    // Keep the original function for manual validation
     const validateAssignments = async () => {
-        await validateMigratedAssignments();
+        // Only validate items that were just migrated in this session
+        const recentlyMigrated = comparisonResults.filter(result =>
+            result.isMigrated && result.validationStatus === 'pending'
+        );
+
+        if (recentlyMigrated.length === 0) {
+            setError('No recently migrated assignments to validate');
+            return;
+        }
+
+        await validateMigratedAssignments(recentlyMigrated);
     };
 
     const resetProcess = () => {
@@ -1122,17 +1121,84 @@ export default function AssignmentRolloutPage() {
                 </CardContent>
             </Card>
 
-            {/* Error Display */}
+            {/* Step-specific Error Display */}
             {error && (
-                <Card className="border-red-200 bg-red-50">
-                    <CardContent className="p-4">
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
                         <div className="flex items-center gap-2 text-red-600">
-                            <XCircle className="h-5 w-5" />
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
                             <span>{error}</span>
                         </div>
+
+                        {/* Step-specific error content */}
+                        {currentStep === 'upload' && (
+                            <>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Error occurred while processing the CSV file. Please check the file format and try again.
+                                </p>
+                                <Button
+                                    onClick={() => setError(null)}
+                                    className="mt-4"
+                                    variant="outline"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Clear Error
+                                </Button>
+                            </>
+                        )}
+
+                        {currentStep === 'compare' && (
+                            <>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Error occurred while comparing assignments. Please check your connection and try again.
+                                </p>
+                                <Button
+                                    onClick={compareAssignments}
+                                    className="mt-4"
+                                    variant="outline"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Try Comparison Again
+                                </Button>
+                            </>
+                        )}
+
+                        {currentStep === 'migrate' && (
+                            <>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Error occurred during migration. The operation may be partially completed.
+                                </p>
+                                <Button
+                                    onClick={migrateSelectedAssignments}
+                                    className="mt-4"
+                                    variant="outline"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Retry Migration
+                                </Button>
+                            </>
+                        )}
+
+                        {currentStep === 'validate' && (
+                            <>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Error occurred while validating assignments. This doesn&apos;t affect your migrations.
+                                </p>
+                                <Button
+                                    onClick={validateAssignments}
+                                    className="mt-4"
+                                    variant="outline"
+                                >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Retry Validation
+                                </Button>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
             )}
+
 
             {/* Step Content */}
             {currentStep === 'upload' && (
@@ -1265,7 +1331,6 @@ export default function AssignmentRolloutPage() {
                     </CardContent>
                 </Card>
             )}
-
 
             {currentStep === 'compare' && (
                 <Card>
@@ -1412,16 +1477,19 @@ export default function AssignmentRolloutPage() {
                                     data={comparisonResults.map(result => result as unknown as Record<string, unknown>)}
                                     columns={comparisonColumns}
                                     className="text-sm"
-                                    key={selectedRows.join(',')}
-                                    currentPage={compareCurrentPage}  // Use compareCurrentPage instead of currentPage
+                                    // Instead of using key, pass selectedRows as a prop
+                                    selectedRows={selectedRows}
+                                    currentPage={compareCurrentPage}
                                     totalPages={Math.ceil(comparisonResults.length / itemsPerPage)}
                                     itemsPerPage={itemsPerPage}
-                                    onPageChange={setCompareCurrentPage}  // Update compareCurrentPage
+                                    onPageChange={setCompareCurrentPage}
                                     onItemsPerPageChange={(newItemsPerPage) => {
                                         setItemsPerPage(newItemsPerPage);
-                                        setCompareCurrentPage(1);  // Reset compareCurrentPage
+                                        setCompareCurrentPage(1);
                                     }}
                                     showPagination={true}
+                                    onSelectionChange={setSelectedRows}
+                                    searchPlaceholder="Search policies..."
                                 />
                                 {/* Summary */}
                                 <div className="flex items-center justify-between bg-gray-50 p-4 dark:bg-neutral-900 rounded-lg">
@@ -1487,7 +1555,7 @@ export default function AssignmentRolloutPage() {
                                     <span className="font-medium text-green-800">Successful</span>
                                 </div>
                                 <div className="text-2xl font-bold text-green-600 mt-2">
-                                    {comparisonResults.filter(r => r.validationStatus === 'valid').length}
+                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'valid').length}
                                 </div>
                             </div>
                             <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
@@ -1496,7 +1564,7 @@ export default function AssignmentRolloutPage() {
                                     <span className="font-medium text-yellow-800">Warnings</span>
                                 </div>
                                 <div className="text-2xl font-bold text-yellow-600 mt-2">
-                                    {comparisonResults.filter(r => r.validationStatus === 'warning').length}
+                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'warning').length}
                                 </div>
                             </div>
                             <div className="bg-red-50 p-4 rounded-lg border border-red-200">
@@ -1505,23 +1573,24 @@ export default function AssignmentRolloutPage() {
                                     <span className="font-medium text-red-800">Failed</span>
                                 </div>
                                 <div className="text-2xl font-bold text-red-600 mt-2">
-                                    {comparisonResults.filter(r => r.validationStatus === 'invalid').length}
+                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'invalid').length}
                                 </div>
                             </div>
                         </div>
 
+
                         {/* Validation Results Table */}
-                        {comparisonResults.filter(r => r.isMigrated).length > 0 && (
+                        {comparisonResults.filter(r => r.isCurrentSessionValidation).length > 0 && (
                             <div className="space-y-4">
-                                <h3 className="font-semibold">Validated Assignments ({comparisonResults.filter(r => r.isMigrated).length} items)</h3>
+                                <h3 className="font-semibold">Validated Assignments ({comparisonResults.filter(r => r.isCurrentSessionValidation).length} items)</h3>
                                 <div className="border rounded-lg overflow-visible">
                                     <div className="overflow-x-auto overflow-y-visible">
                                         <DataTable
-                                            data={comparisonResults.filter(r => r.isMigrated).map(result => result as unknown as Record<string, unknown>)}
+                                            data={comparisonResults.filter(r => r.isCurrentSessionValidation).map(result => result as unknown as Record<string, unknown>)}
                                             columns={validationColumns}
                                             className="text-sm"
                                             currentPage={validationCurrentPage}
-                                            totalPages={Math.ceil(comparisonResults.filter(r => r.isMigrated).length / itemsPerPage)}
+                                            totalPages={Math.ceil(comparisonResults.filter(r => r.isCurrentSessionValidation).length / itemsPerPage)}
                                             itemsPerPage={itemsPerPage}
                                             onPageChange={setValidationCurrentPage}
                                             onItemsPerPageChange={(newItemsPerPage) => {
@@ -1534,7 +1603,6 @@ export default function AssignmentRolloutPage() {
                                 </div>
                             </div>
                         )}
-
                     </CardContent>
                 </Card>
             )}
@@ -1652,15 +1720,6 @@ export default function AssignmentRolloutPage() {
                     )}
                 </DialogContent>
             </Dialog>
-
-            <ConsentDialog
-                isOpen={showConsentDialog}
-                onClose={() => setShowConsentDialog(false)}
-                consentUrl={consentUrl}
-                onConsentComplete={handleConsentComplete}
-                clearError={migrationSuccessful}
-            />
-
         </div>
     );
 }

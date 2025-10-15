@@ -6,15 +6,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RefreshCw, Download, Filter, Database, Search, X, Users, ExternalLink, Settings, Shield, ShieldCheck, ChevronDown, ChevronUp  } from 'lucide-react';
-import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
-import {apiScope} from "@/lib/msalConfig";
+import {
+    RefreshCw,
+    Filter,
+    Database,
+    Search,
+    X,
+    Settings,
+    Shield,
+    ShieldCheck,
+    ChevronDown,
+    ChevronUp,
+    XCircle
+} from 'lucide-react';
+import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+
 import { MultiSelect, Option } from '@/components/ui/multi-select';
-import { Pagination } from '@/components/ui/pagination';
+
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
-import {ConsentDialog} from "@/components/ConsentDialog";
+
 
 interface ApiResponse {
     status: string;
@@ -66,8 +78,6 @@ export default function AssignmentsOverview() {
     const { instance, accounts } = useMsal();
     const { request, cancel } = useApiRequest();
     // Consent dialog state when not enough permissions
-    const [showConsentDialog, setShowConsentDialog] = useState(false);
-    const [consentUrl, setConsentUrl] = useState('');
 
     const [searchQuery, setSearchQuery] = useState('');
     const [assignments, setAssignments] = useState<Assignments[]>([]);
@@ -100,13 +110,6 @@ export default function AssignmentsOverview() {
     useEffect(() => {
         setCurrentPage(1);
     }, [assignmentTypeFilter, statusFilter, platformFilter, resourceTypeFilter, filterTypeFilter]);
-
-    const handleConsentComplete = () => {
-        setShowConsentDialog(false);
-        setConsentUrl('');
-        // Optionally retry fetching assignments after consent
-        fetchAssignments();
-    };
 
     const getUniqueFilterTypes = (): Option[] => [
         { label: 'No Filter', value: 'None' },
@@ -217,19 +220,6 @@ export default function AssignmentsOverview() {
             throw new Error('No response received from API');
         }
 
-        // Check if this is a consent required error - updated logic
-        if (response.status === 'Error' &&
-            response.message === 'User challenge required' &&
-            typeof response.data === 'object' &&
-            response.data !== null &&
-            'url' in response.data) {
-
-            setConsentUrl(response.data.url); // Access the url property
-            setShowConsentDialog(true);
-            setLoading(false);
-            return;
-        }
-
         // Add type guard to ensure data is an array before processing
         if (!Array.isArray(response.data)) {
             throw new Error('Invalid data format received from API');
@@ -280,21 +270,6 @@ export default function AssignmentsOverview() {
             // Handle successful response - filters endpoint returns array directly
             if (Array.isArray(responseData)) {
                 setFilters(responseData);
-            } else {
-                // If it's not an array, it might be an error response with consent info
-                const errorResponse = responseData as unknown as ApiResponse;
-                if (errorResponse.status === 'Error' &&
-                    errorResponse.message === 'User challenge required' &&
-                    typeof errorResponse.data === 'object' &&
-                    errorResponse.data !== null &&
-                    'url' in errorResponse.data) {
-
-                    setConsentUrl(errorResponse.data.url);
-                    setShowConsentDialog(true);
-                    return;
-                }
-                console.error('Filters API response is not an array:', responseData);
-                setFilters([]);
             }
         } catch (error) {
             console.error('Failed to fetch filters:', error);
@@ -661,6 +636,7 @@ export default function AssignmentsOverview() {
                         View and manage all Intune assignments across your organization
                     </p>
                 </div>
+
                 <div className="flex gap-2">
                     {assignments.length > 0 ? (
                         <>
@@ -709,7 +685,25 @@ export default function AssignmentsOverview() {
                     </CardContent>
                 </Card>
             )}
-
+            {/* Error Display */}
+            {error && (
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-2 text-red-600">
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
+                            <span>{error}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                            Error occurred while fetching assignments. Please try again.
+                        </p>
+                        <Button onClick={fetchAssignments} className="mt-4" variant="outline">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
             {/* Show loading state */}
             {loading && assignments.length === 0 && (
                 <Card className="shadow-sm">
@@ -1083,14 +1077,6 @@ export default function AssignmentsOverview() {
                     )}
                 </DialogContent>
             </Dialog>
-
-            <ConsentDialog
-                isOpen={showConsentDialog}
-                onClose={() => setShowConsentDialog(false)}
-                consentUrl={consentUrl}
-                onConsentComplete={handleConsentComplete}
-                clearError={error !== null}
-            />
         </div>
     );
 }

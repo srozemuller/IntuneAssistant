@@ -515,21 +515,21 @@ export default function ConditionalAccessPage() {
         }
     ];
 
-    if (!selectedTenant) {
-        return (
-            <NoTenantSelected
-                icon={Shield}
-                feature="Conditional Access policies"
-            />
-        );
-    }
+    // if (!selectedTenant) {
+    //     return (
+    //         <NoTenantSelected
+    //             icon={Shield}
+    //             feature="Conditional Access policies"
+    //         />
+    //     );
+    // }
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Conditional Access Policies</h1>
                     <p className="text-gray-600 mt-2">
-                        Manage and monitor your Azure AD Conditional Access policies for {selectedTenant.displayName}
+                        Manage and monitor your Azure AD Conditional Access policies
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -607,7 +607,7 @@ export default function ConditionalAccessPage() {
                             <span>{error}</span>
                         </div>
                         <p className="text-sm text-gray-600 mt-2">
-                            Error occurred while accessing policies from {selectedTenant.displayName}
+                            Error occurred while accessing policies
                         </p>
                         <Button onClick={fetchPolicies} className="mt-4" variant="outline">
                             <RefreshCw className="h-4 w-4 mr-2" />

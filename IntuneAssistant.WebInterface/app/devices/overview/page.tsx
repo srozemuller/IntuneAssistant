@@ -870,21 +870,6 @@ export default function DeviceStatsPage() {
                 throw new Error('No response received from API');
             }
 
-            // Check if this is a consent required error with proper type checking
-            if (response.status === 'Error' &&
-                response.message === 'User challenge required' &&
-                typeof response.data === 'object' &&
-                response.data !== null &&
-                'url' in response.data &&
-                typeof response.data.url === 'string') {
-
-                // You'll need to add these state variables if they don't exist
-                setConsentUrl(response.data.url);
-                setShowConsentDialog(true);
-                setLoading(false);
-                return;
-            }
-
             // Add type guard to ensure data is an array before processing
             if (!Array.isArray(response.data)) {
                 throw new Error('Invalid data format received from API');
@@ -1060,12 +1045,20 @@ export default function DeviceStatsPage() {
 
             {/* Error Display */}
             {error && (
-                <Card className="border-red-200 bg-red-50">
-                    <CardContent className="p-4">
+                <Card className="border-red-200">
+                    <CardContent className="p-6">
                         <div className="flex items-center gap-2 text-red-600">
-                            <XCircle className="h-5 w-5"/>
+                            <X className="h-5 w-5" />
+                            <span className="font-medium">Error:</span>
                             <span>{error}</span>
                         </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                            Error occurred while fetching settings. Please try again.
+                        </p>
+                        <Button onClick={fetchDeviceStats} className="mt-4" variant="outline">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                        </Button>
                     </CardContent>
                 </Card>
             )}
