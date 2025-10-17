@@ -129,7 +129,7 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
 
         const checkClosed = setInterval(() => {
             if (consentWindow.closed && !consentCompleted) {
-                console.log('⚠️ Consent window closed without completion');
+                console.log('Consent window closed without completion');
                 setError('Consent window was closed. Please try again.');
                 setLoading(false);
                 setConsentWindow(null);
