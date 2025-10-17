@@ -1,11 +1,11 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { useMsal } from '@azure/msal-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DataTable } from '@/components/DataTable';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, {useState, useEffect} from 'react';
+import {useMsal} from '@azure/msal-react';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {DataTable} from '@/components/DataTable';
+import {Badge} from '@/components/ui/badge';
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {
     RefreshCw,
     Filter,
@@ -21,10 +21,10 @@ import {
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 
-import { MultiSelect, Option } from '@/components/ui/multi-select';
+import {MultiSelect, Option} from '@/components/ui/multi-select';
 
-import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
-import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import {ExportButton, ExportData, ExportColumn} from '@/components/ExportButton';
+import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
 
 
@@ -56,6 +56,7 @@ interface Assignments extends Record<string, unknown> {
         description: string;
     };
 }
+
 interface AssignmentFilter {
     id: string;
     createdDateTime: string;
@@ -75,8 +76,8 @@ interface AssignmentFilter {
 
 export default function AssignmentsOverview() {
     // API CALLS
-    const { instance, accounts } = useMsal();
-    const { request, cancel } = useApiRequest();
+    const {instance, accounts} = useMsal();
+    const {request, cancel} = useApiRequest();
     // Consent dialog state when not enough permissions
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -112,9 +113,9 @@ export default function AssignmentsOverview() {
     }, [assignmentTypeFilter, statusFilter, platformFilter, resourceTypeFilter, filterTypeFilter]);
 
     const getUniqueFilterTypes = (): Option[] => [
-        { label: 'No Filter', value: 'None' },
-        { label: 'Include Filter', value: 'include' },
-        { label: 'Exclude Filter', value: 'exclude' }
+        {label: 'No Filter', value: 'None'},
+        {label: 'Include Filter', value: 'include'},
+        {label: 'Exclude Filter', value: 'exclude'}
     ];
 
     const prepareExportData = (): ExportData => {
@@ -169,11 +170,11 @@ export default function AssignmentsOverview() {
         ];
 
         const stats = [
-            { label: 'Total Assignments', value: filteredAssignments.length },
-            { label: 'Assigned', value: filteredAssignments.filter(a => a.isAssigned).length },
-            { label: 'Not Assigned', value: filteredAssignments.filter(a => !a.isAssigned).length },
-            { label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size },
-            { label: 'Platforms', value: new Set(filteredAssignments.map(a => a.platform)).size }
+            {label: 'Total Assignments', value: filteredAssignments.length},
+            {label: 'Assigned', value: filteredAssignments.filter(a => a.isAssigned).length},
+            {label: 'Not Assigned', value: filteredAssignments.filter(a => !a.isAssigned).length},
+            {label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size},
+            {label: 'Platforms', value: new Set(filteredAssignments.map(a => a.platform)).size}
         ];
 
         return {
@@ -235,7 +236,7 @@ export default function AssignmentsOverview() {
         assignments.forEach(assignment => {
             types.add(assignment.resourceType);
         });
-        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+        return Array.from(types).sort().map(type => ({label: type, value: type}));
     };
 
     const handleFilterClick = (filterId: string) => {
@@ -280,7 +281,7 @@ export default function AssignmentsOverview() {
 
     const getFilterInfo = (filterId: string | null, filterType: string) => {
         if (!filterId || filterId === 'None' || filterType === 'None') {
-            return { displayName: 'None', managementType: null, platform: null };
+            return {displayName: 'None', managementType: null, platform: null};
         }
 
         const filter = filters.find(f => f.id === filterId);
@@ -368,12 +369,12 @@ export default function AssignmentsOverview() {
                 types.add('Not Assigned');
             }
         });
-        return Array.from(types).sort().map(type => ({ label: type, value: type }));
+        return Array.from(types).sort().map(type => ({label: type, value: type}));
     };
 
     const getUniqueStatuses = (): Option[] => [
-        { label: 'Assigned', value: 'Assigned' },
-        { label: 'Not Assigned', value: 'Not Assigned' }
+        {label: 'Assigned', value: 'Assigned'},
+        {label: 'Not Assigned', value: 'Not Assigned'}
     ];
 
     const getUniquePlatforms = (): Option[] => {
@@ -381,7 +382,7 @@ export default function AssignmentsOverview() {
         assignments.forEach(assignment => {
             platforms.add(assignment.platform || 'All');
         });
-        return Array.from(platforms).sort().map(platform => ({ label: platform, value: platform }));
+        return Array.from(platforms).sort().map(platform => ({label: platform, value: platform}));
     };
 
     const clearFilters = () => {
@@ -525,14 +526,16 @@ export default function AssignmentsOverview() {
                 const assignmentType = String(row.assignmentType);
                 const isAssigned = Boolean(row.isAssigned);
                 const targetId = row.targetId as string;
-                const group = row.group as { groupCount?: { userCount: number; deviceCount: number; groupCount: number } } | undefined;
+                const group = row.group as {
+                    groupCount?: { userCount: number; deviceCount: number; groupCount: number }
+                } | undefined;
 
                 if (isAssigned && (assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && targetId) {
                     return (
                         <div className="space-y-1">
                             <button
                                 onClick={() => handleResourceClick(targetId, assignmentType)}
-                                className="text-blue-600 hover:text-blue-800 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
                                 title={targetName}
                             >
                                 {targetName}
@@ -603,20 +606,22 @@ export default function AssignmentsOverview() {
                     <div className="space-y-1">
                         <button
                             onClick={() => handleFilterClick(filterId)}
-                            className="text-blue-600 hover:text-blue-800 underline text-xs font-medium cursor-pointer truncate block w-full text-left"
+                            className="text-yellow-400 hover:text-yellow-500 underline text-xs font-medium cursor-pointer truncate block w-full text-left"
                             title={filterInfo.displayName}
                         >
                             {filterInfo.displayName}
                         </button>
                         <div className="flex items-center">
                             {isInclude ? (
-                                <Badge variant="default" className="text-xs bg-green-100 text-green-800 border-green-200 px-1 py-0">
-                                    <Shield className="h-2 w-2 mr-1" />
+                                <Badge variant="default"
+                                       className="text-xs bg-green-100 text-green-800 border-green-200 px-1 py-0">
+                                    <Shield className="h-2 w-2 mr-1"/>
                                     Inc
                                 </Badge>
                             ) : (
-                                <Badge variant="destructive" className="text-xs bg-red-100 text-red-800 border-red-200 px-1 py-0">
-                                    <ShieldCheck className="h-2 w-2 mr-1" />
+                                <Badge variant="destructive"
+                                       className="text-xs bg-red-100 text-red-800 border-red-200 px-1 py-0">
+                                    <ShieldCheck className="h-2 w-2 mr-1"/>
                                     Exc
                                 </Badge>
                             )}
@@ -631,17 +636,19 @@ export default function AssignmentsOverview() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Assignments Overview</h1>
-                    <p className="text-gray-600 mt-2">
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600 dark:text-white">Assignments
+                        Overview</h1>
+                    <p className="text-gray-600 dark:text-gray-300 mt-2">
                         View and manage all Intune assignments across your organization
                     </p>
                 </div>
+
 
                 <div className="flex gap-2">
                     {assignments.length > 0 ? (
                         <>
                             <Button onClick={fetchAssignments} variant="outline" size="sm" disabled={loading}>
-                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}/>
                                 Refresh
                             </Button>
                             <ExportButton
@@ -656,7 +663,7 @@ export default function AssignmentsOverview() {
                             disabled={loading}
                             className="flex items-center gap-2"
                         >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
                             Load Assignments
                         </Button>
                     )}
@@ -669,16 +676,17 @@ export default function AssignmentsOverview() {
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 mb-6">
-                                <Database className="h-16 w-16 mx-auto" />
+                                <Database className="h-16 w-16 mx-auto"/>
                             </div>
-                            <h3 className="text-xl font-medium text-gray-900 mb-4">
+                            <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
                                 Ready to view your Intune assignments
                             </h3>
-                            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the &quot;Load Assignments&quot; button above to fetch all assignment configurations from your Intune environment.
+                            <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
+                                Click the &quot;Load Assignments&quot; button above to fetch all assignment
+                                configurations from your Intune environment.
                             </p>
                             <Button onClick={fetchAssignments} className="flex items-center gap-2 mx-auto" size="lg">
-                                <Database className="h-5 w-5" />
+                                <Database className="h-5 w-5"/>
                                 Load Assignments
                             </Button>
                         </div>
@@ -690,15 +698,15 @@ export default function AssignmentsOverview() {
                 <Card className="border-red-200">
                     <CardContent className="p-6">
                         <div className="flex items-center gap-2 text-red-600">
-                            <X className="h-5 w-5" />
+                            <X className="h-5 w-5"/>
                             <span className="font-medium">Error:</span>
                             <span>{error}</span>
                         </div>
-                        <p className="text-sm text-gray-600 mt-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                             Error occurred while fetching assignments. Please try again.
-                        </p>
+                        </span>
                         <Button onClick={fetchAssignments} className="mt-4" variant="outline">
-                            <RefreshCw className="h-4 w-4 mr-2" />
+                            <RefreshCw className="h-4 w-4 mr-2"/>
                             Try Again
                         </Button>
                     </CardContent>
@@ -709,11 +717,11 @@ export default function AssignmentsOverview() {
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4"/>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                                 Loading Assignments
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Fetching assignment data from your Intune environment...
                             </p>
                         </div>
@@ -732,12 +740,12 @@ export default function AssignmentsOverview() {
                                     onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
                                     className="flex items-center gap-2 hover:text-blue-600 transition-colors"
                                 >
-                                    <Filter className="h-5 w-5" />
+                                    <Filter className="h-5 w-5"/>
                                     Filters
                                     {isFiltersExpanded ? (
-                                        <ChevronUp className="h-4 w-4" />
+                                        <ChevronUp className="h-4 w-4"/>
                                     ) : (
-                                        <ChevronDown className="h-4 w-4" />
+                                        <ChevronDown className="h-4 w-4"/>
                                     )}
                                 </button>
                                 <div className="flex items-center gap-2">
@@ -749,7 +757,7 @@ export default function AssignmentsOverview() {
                                     )}
                                     {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0) && (
                                         <Button variant="ghost" size="sm" onClick={clearFilters}>
-                                            <X className="h-4 w-4 mr-1" />
+                                            <X className="h-4 w-4 mr-1"/>
                                             Clear All
                                         </Button>
                                     )}
@@ -793,7 +801,7 @@ export default function AssignmentsOverview() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {/* Resource Type Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Resource Type</label>
+                                        <label className="text-sm font-medium dark:text-gray-200">Resource Type</label>
                                         <MultiSelect
                                             options={getUniqueResourceTypes()}
                                             selected={resourceTypeFilter}
@@ -803,7 +811,8 @@ export default function AssignmentsOverview() {
                                     </div>
                                     {/* Assignment Type Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Assignment Type</label>
+                                        <label className="text-sm font-medium dark:text-gray-200">Assignment
+                                            Type</label>
                                         <MultiSelect
                                             options={getUniqueAssignmentTypes()}
                                             selected={assignmentTypeFilter}
@@ -814,7 +823,7 @@ export default function AssignmentsOverview() {
 
                                     {/* Status Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Status</label>
+                                        <label className="text-sm font-medium dark:text-gray-200">Status</label>
                                         <MultiSelect
                                             options={getUniqueStatuses()}
                                             selected={statusFilter}
@@ -825,7 +834,7 @@ export default function AssignmentsOverview() {
 
                                     {/* Platform Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Platform</label>
+                                        <label className="text-sm font-medium dark:text-gray-200">Platform</label>
                                         <MultiSelect
                                             options={getUniquePlatforms()}
                                             selected={platformFilter}
@@ -836,7 +845,7 @@ export default function AssignmentsOverview() {
 
                                     {/* Filters Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Filter Type</label>
+                                        <label className="text-sm font-medium dark:text-gray-200">Filter Type</label>
                                         <MultiSelect
                                             options={getUniqueFilterTypes()}
                                             selected={filterTypeFilter}
@@ -857,7 +866,7 @@ export default function AssignmentsOverview() {
                                                     onClick={() => setAssignmentTypeFilter(prev => prev.filter(f => f !== filter))}
                                                     className="ml-1 hover:text-red-600"
                                                 >
-                                                    <X className="h-3 w-3" />
+                                                    <X className="h-3 w-3"/>
                                                 </button>
                                             </Badge>
                                         ))}
@@ -868,7 +877,7 @@ export default function AssignmentsOverview() {
                                                     onClick={() => setStatusFilter(prev => prev.filter(f => f !== filter))}
                                                     className="ml-1 hover:text-red-600"
                                                 >
-                                                    <X className="h-3 w-3" />
+                                                    <X className="h-3 w-3"/>
                                                 </button>
                                             </Badge>
                                         ))}
@@ -879,7 +888,7 @@ export default function AssignmentsOverview() {
                                                     onClick={() => setPlatformFilter(prev => prev.filter(f => f !== filter))}
                                                     className="ml-1 hover:text-red-600"
                                                 >
-                                                    <X className="h-3 w-3" />
+                                                    <X className="h-3 w-3"/>
                                                 </button>
                                             </Badge>
                                         ))}
@@ -913,7 +922,7 @@ export default function AssignmentsOverview() {
                         <CardContent className="p-0">
                             {loading ? (
                                 <div className="flex items-center justify-center h-32">
-                                    <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                                    <RefreshCw className="h-6 w-6 animate-spin text-yellow-500"/>
                                     <span className="ml-2 text-gray-600">Loading assignments...</span>
                                 </div>
                             ) : (
@@ -937,7 +946,8 @@ export default function AssignmentsOverview() {
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
                                     <div className="text-gray-400 mb-4">
-                                        {searchQuery ? <Search className="h-12 w-12 mx-auto" /> : <Filter className="h-12 w-12 mx-auto" />}
+                                        {searchQuery ? <Search className="h-12 w-12 mx-auto"/> :
+                                            <Filter className="h-12 w-12 mx-auto"/>}
                                     </div>
                                     <h3 className="text-lg font-medium text-gray-900 mb-2">
                                         {searchQuery ? 'No assignments match your search' : 'No assignments match your filters'}
@@ -972,7 +982,7 @@ export default function AssignmentsOverview() {
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <Settings className="h-5 w-5" />
+                            <Settings className="h-5 w-5"/>
                             {selectedFilter?.displayName || 'Filter Details'}
                         </DialogTitle>
                         <DialogDescription>
@@ -983,29 +993,35 @@ export default function AssignmentsOverview() {
                     {selectedFilter ? (
                         <div className="space-y-6">
                             {/* Filter Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
+                            <div
+                                className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter
+                                        ID</label>
                                     <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management
+                                        Type</label>
                                     <div className="flex items-center gap-2">
                                         {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
-                                                <Shield className="h-3 w-3 mr-1" />
+                                            <Badge variant="default"
+                                                   className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
+                                                <Shield className="h-3 w-3 mr-1"/>
                                                 Include
                                             </Badge>
                                         ) : (
-                                            <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
-                                                <ShieldCheck className="h-3 w-3 mr-1" />
+                                            <Badge variant="destructive"
+                                                   className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
+                                                <ShieldCheck className="h-3 w-3 mr-1"/>
                                                 Exclude
                                             </Badge>
                                         )}
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
+                                    <label
+                                        className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
                                     <p className="text-sm text-gray-900 dark:text-gray-100">
                                         {selectedFilter.platform === 0 ? 'All' :
                                             selectedFilter.platform === 1 ? 'Android' :
@@ -1020,8 +1036,10 @@ export default function AssignmentsOverview() {
                             {/* Description */}
                             {selectedFilter.description && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
-                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <label
+                                        className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
+                                    <pre
+                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                                          <code className="whitespace-pre-wrap break-all">
                                              {selectedFilter.description}
 
@@ -1033,8 +1051,10 @@ export default function AssignmentsOverview() {
                             {/* Filter Rule */}
                             {selectedFilter.rule && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
-                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter
+                                        Rule</label>
+                                    <pre
+                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                                         <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
                                     </pre>
                                 </div>
@@ -1055,7 +1075,8 @@ export default function AssignmentsOverview() {
 
                                 {/* Role Scope Tags */}
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 block mb-2">Role Scope Tags</label>
+                                    <label className="text-sm font-medium text-gray-600 block mb-2">Role Scope
+                                        Tags</label>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
                                             selectedFilter.roleScopeTags.map((tag, index) => (

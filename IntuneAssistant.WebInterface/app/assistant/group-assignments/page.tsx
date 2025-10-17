@@ -275,34 +275,12 @@ export default function AssignmentsOverview() {
                 throw new Error('No response received from assignments API');
             }
 
-            // Check for consent requirements on assignments
-            if (handleConsentCheck(assignmentsData)) {
-                return;
-            }
-
             // Check if filters response exists and handle consent
             if (!filtersData) {
                 console.warn('No response received from filters API, continuing with assignments only');
                 setFilters([]);
             } else if (Array.isArray(filtersData)) {
                 setFilters(filtersData);
-            } else {
-                // If filtersData is not an array, it might be an error response
-                const errorResponse = filtersData as unknown as ApiResponse;
-                if (errorResponse.status === 'Error' &&
-                    errorResponse.message === 'User challenge required' &&
-                    typeof errorResponse.data === 'object' &&
-                    errorResponse.data !== null &&
-                    'url' in errorResponse.data) {
-
-                    console.warn('Consent required for filters, continuing with assignments only');
-                    setConsentUrl(errorResponse.data.url);
-                    setShowConsentDialog(true);
-                    setFilters([]);
-                } else {
-                    console.error('Filters API response is not an array:', filtersData);
-                    setFilters([]);
-                }
             }
 
             // Process assignments
@@ -328,13 +306,6 @@ export default function AssignmentsOverview() {
         } finally {
             setLoading(false);
         }
-    };
-
-
-    const handleConsentComplete = () => {
-        setShowConsentDialog(false);
-        setConsentUrl('');
-        // Optionally retry the search
     };
 
     const prepareExportData = (): ExportData => {
@@ -425,26 +396,21 @@ export default function AssignmentsOverview() {
     const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
 
-        // Get access token
-        const response = await instance.acquireTokenSilent({
-            scopes: [apiScope],
-            account: accounts[0]
-        });
 
-        // Call your API this is the fallback for all assignments
-        const apiResponse = await fetch(ASSIGNMENTS_ENDPOINT, {
-            headers: {
-                'Authorization': `Bearer ${response.accessToken}`,
-                'Content-Type': 'application/json'
+        const response = await request<ApiResponse>(
+            ASSIGNMENTS_ENDPOINT,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }
-        });
+        );
 
-        if (!apiResponse.ok) {
-            throw new Error(`API call failed: ${apiResponse.statusText}`);
+        if (!response) {
+            throw new Error('No response received from API');
         }
-
-        const responseData = await apiResponse.json();
-        const assignmentsData = responseData.data;
+        const assignmentsData = response.data;
 
         if (Array.isArray(assignmentsData)) {
             setAssignments(assignmentsData);

@@ -91,7 +91,7 @@ export function DataTable({
                             type="checkbox"
                             checked={isRowSelected(row)}
                             onChange={(e) => handleRowSelection(e, row)}
-                            className="rounded border-gray-300"
+                            className="rounded border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-gray-500 dark:focus:ring-gray-400"
                         />
                     )
                 },
@@ -215,12 +215,12 @@ export function DataTable({
 
     const getSortIcon = (columnKey: string) => {
         if (!sortConfig || sortConfig.key !== columnKey) {
-            return <ChevronsUpDown className="h-4 w-4 text-gray-400" />;
+            return <ChevronsUpDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />;
         }
 
         return sortConfig.direction === 'asc'
-            ? <ChevronUp className="h-4 w-4 text-blue-600" />
-            : <ChevronDown className="h-4 w-4 text-blue-600" />;
+            ? <ChevronUp className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+            : <ChevronDown className="h-4 w-4 text-gray-600 dark:text-gray-300" />;
     };
 
     const clearSearch = () => {
@@ -301,48 +301,50 @@ export function DataTable({
     return (
         <div className="border rounded-lg overflow-hidden">
             {showSearch && (
-                <div className="p-4 border-b bg-gray-50">
+                <div className="p-4 border-b bg-gray-50 dark:bg-gray-400/10 border-gray-200 dark:border-gray-700">
                     <div className="relative max-w-sm">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                         <input
                             type="text"
                             placeholder={searchPlaceholder}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700/20 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500 focus:border-transparent"
                         />
                         {searchTerm && (
                             <button
                                 onClick={clearSearch}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                             >
                                 <X className="h-4 w-4" />
                             </button>
                         )}
                     </div>
                     {searchTerm && (
-                        <div className="mt-2 text-sm text-gray-600">
+                        <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                             {sortedData.length} of {data.length} results
                         </div>
                     )}
                 </div>
             )}
 
-            <div className="overflow-auto max-h-[60vh]">
-                <table ref={tableRef} className={`w-full text-sm`}>
-                    <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
-                    <tr className="border-b bg-gray-50">
-                        {columns.map((column, index) => (
-                            <th
-                                key={column.key}
-                                className="relative text-left p-3 font-medium text-gray-900"
-                                style={{ width: `${column.width}px` }}
-                            >
+            <div className="border rounded-lg overflow-hidden border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <table ref={tableRef} className={`w-full text-sm bg-white dark:bg-gray-800`}>
+
+                    <thead className="bg-gray-50 dark:bg-gray-900 sticky top-0 z-10 shadow-sm">
+                    <tr className="border-b bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+
+                    {columns.map((column, index) => (
+                        <th
+                            key={column.key}
+                            className="relative text-left p-3 font-medium text-gray-900 dark:text-white"
+                            style={{ width: `${column.width}px` }}
+                        >
                                 <div className="flex items-center justify-between">
                                     <div
                                         className={`flex items-center gap-2 flex-1 ${
                                             column.sortable !== false && column.key !== '_select'
-                                                ? 'cursor-pointer hover:text-blue-600 transition-colors'
+                                                ? 'cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors'
                                                 : ''
                                         }`}
                                         onClick={() => {
@@ -360,10 +362,10 @@ export function DataTable({
 
                                 {column.key !== '_select' && (
                                     <div
-                                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500 group"
+                                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-yellow-400 group"
                                         onMouseDown={(e) => handleResizeStart(e, index)}
                                     >
-                                        <div className="h-full w-px bg-gray-300 group-hover:bg-blue-500 transition-colors" />
+                                        <div className="h-full w-px bg-gray-300 group-hover:bg-yellow-500 transition-colors" />
                                     </div>
                                 )}
                             </th>
@@ -375,17 +377,22 @@ export function DataTable({
                         paginatedData.map((row, rowIndex) => (
                             <tr
                                 key={rowIndex}
-                                className={`border-b hover:bg-gray-50 transition-colors ${
+                                className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors ${
                                     onRowClick ? 'cursor-pointer' : ''
-                                } ${isRowSelected(row) ? 'bg-blue-50' : ''} ${
+                                } ${isRowSelected(row) ? 'bg-gray-100 dark:bg-gray-200' :
+                                    rowIndex % 2 === 0 ? 'bg-white dark:bg-grey-100' : 'bg-gray-500 dark:bg-gray-400'
+                                } ${
                                     rowClassName ? rowClassName(row) : ''
                                 }`}
+
                                 onClick={(e) => handleRowClick(e, row)}
                             >
-                                {columns.map((column) => (
+
+
+                            {columns.map((column) => (
                                     <td
                                         key={column.key}
-                                        className="p-3 text-sm"
+                                        className="p-3 text-sm text-gray-900/40 dark:text-gray-100"
                                         style={{ width: `${column.width}px` }}
                                     >
                                         <div className="overflow-hidden">
@@ -400,7 +407,7 @@ export function DataTable({
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={columns.length} className="p-8 text-center text-gray-500">
+                            <td colSpan={columns.length} className="p-8 text-center text-gray-500 dark:text-gray-400">
                                 {searchTerm ? 'No results found for your search.' : 'No data available.'}
                             </td>
                         </tr>
@@ -409,14 +416,14 @@ export function DataTable({
                 </table>
             </div>
             {showPagination && sortedData.length > 0 && (
-                <div className="flex items-center justify-between p-4 border-t">
+                <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <div className="flex items-center gap-4">
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
                             Showing {Math.min(startIndex + 1, sortedData.length)} to {Math.min(endIndex, sortedData.length)} of {sortedData.length} results
                             {searchTerm && ` (filtered from ${data.length} total)`}
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">Items per page:</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-300">Items per page:</span>
                             <select
                                 value={itemsPerPage}
                                 onChange={(e) => {
@@ -424,7 +431,7 @@ export function DataTable({
                                     onItemsPerPageChange?.(newItemsPerPage);
                                     onPageChange?.(1);
                                 }}
-                                className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
                             >
                                 <option value={10}>10</option>
                                 <option value={25}>25</option>

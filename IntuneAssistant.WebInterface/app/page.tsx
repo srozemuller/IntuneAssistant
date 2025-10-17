@@ -20,9 +20,10 @@ import Link from 'next/link';
 
 export default function LandingPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
             {/* Hero Section */}
-            <section className="relative overflow-hidden bg-gradient-to-r from-yellow-500 via-yellow-400 to-blue-500">
+            <section className="relative overflow-hidden bg-gradient-to-r from-yellow-500 via-yellow-400 to-blue-500 dark:from-yellow-600 dark:via-yellow-500 dark:to-blue-600">
+
 
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                 <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between py-16 md:py-24 gap-8 relative">
@@ -65,18 +66,18 @@ export default function LandingPage() {
             </section>
 
             {/* Features Section */}
-            <section className="py-16 md:py-24">
+            <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
                 <div className="container mx-auto px-4 md:px-6">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-gray-900">
+                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-gray-900 dark:text-white">
                             Powerful Features
                         </h2>
-                        <p className="mt-4 text-xl text-gray-600">Everything you need to master Intune management</p>
+                        <p className="mt-4 text-xl text-gray-600 dark:text-gray-300">Everything you need to master Intune management</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {/* Feature 1 */}
-                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-blue-500">
+                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-blue-500 dark:bg-gray-800 dark:border-gray-700">
                             <div className="absolute top-4 right-4">
                                 <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">Assistant</Badge>
                             </div>
@@ -98,7 +99,7 @@ export default function LandingPage() {
                         </Card>
 
                         {/* Feature 2 */}
-                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-green-500">
+                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-green-500  dark:bg-gray-800 dark:border-gray-700">
                             <div className="absolute top-4 right-4">
                                 <Badge className="bg-green-100 text-green-700 hover:bg-green-200">Rollout</Badge>
                             </div>
@@ -120,7 +121,7 @@ export default function LandingPage() {
                         </Card>
 
                         {/* Feature 3 */}
-                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-amber-500">
+                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-amber-500  dark:bg-gray-800 dark:border-gray-700">
                             <div className="absolute top-4 right-4">
                                 <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200">Coming Soon</Badge>
                             </div>
@@ -142,7 +143,7 @@ export default function LandingPage() {
                         </Card>
 
                         {/* Additional Features */}
-                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-purple-500">
+                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-purple-500  dark:bg-gray-800 dark:border-gray-700">
                             <div className="absolute top-4 right-4">
                                 <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200">Coming Soon</Badge>
                             </div>
@@ -163,7 +164,7 @@ export default function LandingPage() {
                             </CardContent>
                         </Card>
 
-                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-indigo-500">
+                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-indigo-500  dark:bg-gray-800 dark:border-gray-700">
                             <div className="absolute top-4 right-4">
                                 <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200">Coming Soon</Badge>
                             </div>
@@ -184,7 +185,7 @@ export default function LandingPage() {
                             </CardContent>
                         </Card>
 
-                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-rose-500">
+                        <Card className="relative hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-rose-500  dark:bg-gray-800 dark:border-gray-700">
                             <div className="absolute top-4 right-4">
                                 <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-200">Coming Soon</Badge>
                             </div>
@@ -209,13 +210,13 @@ export default function LandingPage() {
             </section>
 
             {/* How to Get Started Section */}
-            <section className="py-16 md:py-24 bg-gray-50">
+            <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
                 <div className="container mx-auto px-4 md:px-6">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-gray-900">
+                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-gray-900 dark:text-white">
                             Get Started in Minutes
                         </h2>
-                        <p className="mt-4 text-xl text-gray-600">Simple steps to transform your Intune management</p>
+                        <p className="mt-4 text-xl text-gray-600 dark:text-gray-300">Simple steps to transform your Intune management</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -224,11 +225,11 @@ export default function LandingPage() {
                             <div className="absolute -top-4 bg-yellow-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                                 1
                             </div>
-                            <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
                                 <Users className="text-yellow-400" size={32} />
                             </div>
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">Create Your Account</h3>
-                            <p className="text-gray-600">Sign up with your Microsoft account for seamless integration with your tenant.</p>
+                            <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Create Your Account</h3>
+                            <p className="text-gray-600 dark:text-gray-300">Sign up with your Microsoft account for seamless integration with your tenant.</p>
                         </div>
 
                         {/* Step 2 */}
@@ -236,11 +237,11 @@ export default function LandingPage() {
                             <div className="absolute -top-4 bg-yellow-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                                 2
                             </div>
-                            <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
                                 <Shield className="text-yellow-400" size={32} />
                             </div>
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">Connect Your Tenant</h3>
-                            <p className="text-gray-600">Grant necessary permissions to allow Intune Assistant to analyze your environment.</p>
+                            <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Connect Your Tenant</h3>
+                            <p className="text-gray-600 dark:text-gray-300">Grant necessary permissions to allow Intune Assistant to analyze your environment.</p>
                         </div>
 
                         {/* Step 3 */}
@@ -248,17 +249,17 @@ export default function LandingPage() {
                             <div className="absolute -top-4 bg-yellow-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                                 3
                             </div>
-                            <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
                                 <CheckCircle className="text-yellow-400" size={32} />
                             </div>
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">Start Optimizing</h3>
-                            <p className="text-gray-600">Access your dashboard and begin exploring insights and recommendations.</p>
+                            <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Start Optimizing</h3>
+                            <p className="text-gray-600 dark:text-gray-300">Access your dashboard and begin exploring insights and recommendations.</p>
                         </div>
                     </div>
 
                     <div className="flex justify-center mt-12">
                         <Link href="/onboarding/customer">
-                            <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 shadow-lg">
+                            <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black shadow-lg">
                                 Start Your Free Onboarding
                                 <ArrowRight className="ml-2 w-5 h-5" />
                             </Button>
@@ -266,6 +267,7 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
+
 
             {/* CTA Section */}
             <section className="py-16 md:py-24 bg-gradient-to-r from-yellow-500 via-yellow-400 to-blue-500 text-white">
