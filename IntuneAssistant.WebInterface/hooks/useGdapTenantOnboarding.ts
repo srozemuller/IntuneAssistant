@@ -14,7 +14,7 @@ export interface PartnerTenant {
 }
 
 interface ApiResponse {
-    message: string;
+    message: string | { url: string; message: string }; // Updated to handle both cases
     details: string;
     data: PartnerTenant[];
     status: string;
@@ -25,53 +25,55 @@ export const useGdapTenantOnboarding = (partnerTenantId?: string) => {
     const [selectedTenant, setSelectedTenant] = useState<PartnerTenant | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { instance, accounts } = useMsal();
+    const { request } = useApiRequest();
 
-    const fetchPartnerTenants = useCallback(async () => {
+    const fetchPartnerTenants = useCallback(async (): Promise<ApiResponse> => {
         if (!partnerTenantId) {
             setError('Your tenant ID is required to fetch partner tenants');
-            return;
+            throw new Error('Your tenant ID is required to fetch partner tenants');
         }
 
         setLoading(true);
         setError(null);
 
         try {
-            let accessToken: string | undefined;
-            if (accounts.length > 0) {
-                const response = await instance.acquireTokenSilent({
-                    scopes: [apiScope],
-                    account: accounts[0],
-                });
-                accessToken = response.accessToken;
+            const data = await request<ApiResponse>(
+                PARTNER_TENANTS_ENDPOINT,
+                {
+                    method: 'GET',
+                    headers: {
+                        'X-Tenant-ID': partnerTenantId,
+                        'Content-Type': 'application/json'
+                    }
+                },
+                fetchPartnerTenants
+            );
+
+            // Handle the case where data might be undefined
+            if (!data) {
+                throw new Error('No data received from API');
             }
 
-            // Using fetch directly here instead of useApiRequest to have more control over headers
-            // and to avoid adding the X-Tenant-ID header automatically
-            // since we need to set it to the partnerTenantId
-            const response = await fetch(PARTNER_TENANTS_ENDPOINT, {
-                method: 'GET',
-                headers: {
-                    'X-Tenant-ID': partnerTenantId,
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            });
-
-            const data = await response.json() as ApiResponse;
-
-            if (data?.status === 'Success' && Array.isArray(data?.data)) {
+            if (data.status === 'Success' && Array.isArray(data.data)) {
                 setPartnerTenants(data.data);
-            } else {
-                setError(data?.message || 'Failed to fetch partner tenants');
+                setError(null);
+            } else if (data.message) {
+                const errorMessage = typeof data.message === 'string'
+                    ? data.message
+                    : 'Failed to fetch partner tenants';
+                setError(errorMessage);
             }
+
+            return data;
         } catch (error) {
             console.error('Failed to fetch partner tenants:', error);
             setError('Failed to fetch partner tenants');
+            throw error;
         } finally {
             setLoading(false);
         }
-    }, [partnerTenantId]);
+    }, [partnerTenantId, request]);
+
 
 
     const resetSelection = useCallback(() => {
