@@ -332,7 +332,7 @@ export function DataTable({
                 <table ref={tableRef} className={`w-full text-sm bg-white dark:bg-gray-800`}>
 
                     <thead className="bg-gray-50 dark:bg-gray-900 sticky top-0 z-10 shadow-sm">
-                    <tr className="border-b bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                    <tr className="border-b bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-700">
 
                     {columns.map((column, index) => (
                         <th
@@ -379,8 +379,8 @@ export function DataTable({
                                 key={rowIndex}
                                 className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors ${
                                     onRowClick ? 'cursor-pointer' : ''
-                                } ${isRowSelected(row) ? 'bg-gray-100 dark:bg-gray-200' :
-                                    rowIndex % 2 === 0 ? 'bg-white dark:bg-grey-100' : 'bg-gray-500 dark:bg-gray-400'
+                                } ${isRowSelected(row) ? 'bg-gray-100 dark:bg-gray-950/50' :
+                                    rowIndex % 2 === 0 ? 'bg-white dark:bg-grey-100' : 'bg-gray-200/10 dark:bg-gray-950'
                                 } ${
                                     rowClassName ? rowClassName(row) : ''
                                 }`}
@@ -392,7 +392,7 @@ export function DataTable({
                             {columns.map((column) => (
                                     <td
                                         key={column.key}
-                                        className="p-3 text-sm text-gray-900/40 dark:text-gray-100"
+                                        className="p-3 text-sm text-gray-900 dark:text-gray-100"
                                         style={{ width: `${column.width}px` }}
                                     >
                                         <div className="overflow-hidden">
