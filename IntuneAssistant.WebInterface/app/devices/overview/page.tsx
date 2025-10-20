@@ -1015,7 +1015,7 @@ export default function DeviceStatsPage() {
     };
 
     return (
-        <div className="container mx-auto p-6 space-y-6">
+        <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -2336,11 +2336,12 @@ export default function DeviceStatsPage() {
             </Dialog>
 
             {/* Create Group Dialog */}
+            {/* Create Group Dialog */}
             <Dialog open={showAddToGroupDialog} onOpenChange={setShowAddToGroupDialog}>
                 <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
                     <DialogHeader className="pb-2">
                         <DialogTitle className="flex items-center gap-3">
-                            <Users className="h-5 w-5 text-blue-600"/>
+                            <Users className="h-5 w-5 text-yellow-400 dark:text-yellow-400"/>
                             Add Devices to Group
                         </DialogTitle>
                         <DialogDescription>
@@ -2376,8 +2377,8 @@ export default function DeviceStatsPage() {
                                         <div
                                             className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-300 ${
                                                 addToGroupStep >= step
-                                                    ? 'bg-blue-600 border-blue-600 text-white'
-                                                    : 'border-gray-300 text-gray-400'
+                                                    ? 'bg-blue-600 border-blue-600 text-white dark:bg-blue-500 dark:border-blue-500'
+                                                    : 'border-gray-300 text-gray-400 dark:border-gray-600 dark:text-gray-500'
                                             }`}>
                                             {addToGroupStep > step ? (
                                                 <CheckCircle className="h-4 w-4"/>
@@ -2388,10 +2389,14 @@ export default function DeviceStatsPage() {
 
                                         <div className="mt-1 text-center max-w-[120px]">
                                             <h4 className={`text-xs font-medium transition-colors ${
-                                                addToGroupStep >= step ? 'text-blue-600' : 'text-gray-400'
+                                                addToGroupStep >= step
+                                                    ? 'text-blue-600 dark:text-blue-400'
+                                                    : 'text-gray-400 dark:text-gray-500'
                                             }`}>{title}</h4>
                                             <p className={`text-xs mt-0.5 transition-colors ${
-                                                addToGroupStep >= step ? 'text-blue-500' : 'text-gray-400'
+                                                addToGroupStep >= step
+                                                    ? 'text-blue-500 dark:text-blue-400'
+                                                    : 'text-gray-400 dark:text-gray-500'
                                             }`}>{description}</p>
                                         </div>
                                     </div>
@@ -2399,7 +2404,9 @@ export default function DeviceStatsPage() {
                                     {index < 2 && (
                                         <div className="flex-1 h-px mx-3 mt-[-25px] relative">
                                             <div className={`absolute inset-0 transition-all duration-500 ${
-                                                addToGroupStep > step ? 'bg-blue-600' : 'bg-gray-300'
+                                                addToGroupStep > step
+                                                    ? 'bg-blue-600 dark:bg-blue-500'
+                                                    : 'bg-gray-300 dark:bg-gray-600'
                                             }`}></div>
                                         </div>
                                     )}
@@ -2408,12 +2415,12 @@ export default function DeviceStatsPage() {
                         </div>
 
                         {/* Compact Progress Bar */}
-                        <div className="mt-3 w-full bg-gray-200 rounded-full h-1">
+                        <div className="mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
                             <div
                                 className={`h-1 rounded-full transition-all duration-700 ease-out ${
                                     addToGroupStep === 3
-                                        ? 'bg-gradient-to-r from-green-500 to-green-600'
-                                        : 'bg-gradient-to-r from-blue-500 to-blue-600'
+                                        ? 'bg-gradient-to-r from-green-500 to-green-600 dark:from-green-400 dark:to-green-500'
+                                        : 'bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500'
                                 }`}
                                 style={{
                                     width: `${(addToGroupStep / 3) * 100}%`,
@@ -2427,7 +2434,7 @@ export default function DeviceStatsPage() {
                     {addToGroupStep === 1 && (
                         <div className="space-y-6">
                             {/* Toggle between Search and Create */}
-                            <div className="flex items-center justify-center gap-4 p-2 bg-gray-50 rounded-lg">
+                            <div className="flex items-center justify-center gap-4 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                                 <Button
                                     variant={!showCreateGroupOption ? "default" : "outline"}
                                     size="sm"
@@ -2452,8 +2459,7 @@ export default function DeviceStatsPage() {
                             {!showCreateGroupOption && (
                                 <div className="max-w-2xl mx-auto space-y-4">
                                     <div>
-                                        <Label htmlFor="groupSearch" className="text-sm font-medium">Search
-                                            Groups</Label>
+                                        <Label htmlFor="groupSearch" className="text-sm font-medium">Search Groups</Label>
                                         <div className="mt-1">
                                             <Input
                                                 id="groupSearch"
@@ -2465,7 +2471,7 @@ export default function DeviceStatsPage() {
                                                 disabled={loadingGroups}
                                             />
                                         </div>
-                                        <p className="text-xs text-gray-500 mt-2">
+                                        <p className="text-xs text-muted-foreground mt-2">
                                             Search through all available groups by name, ID, or description
                                         </p>
                                     </div>
@@ -2473,15 +2479,15 @@ export default function DeviceStatsPage() {
                                     {/* Loading State */}
                                     {loadingGroups && (
                                         <div className="flex items-center justify-center py-8">
-                                            <RefreshCw className="h-6 w-6 animate-spin text-blue-600 mr-3"/>
-                                            <span className="text-sm text-gray-600">Loading groups...</span>
+                                            <RefreshCw className="h-6 w-6 animate-spin text-yellow-400 dark:text-yellow-400 mr-3"/>
+                                            <span className="text-sm text-muted-foreground">Loading groups...</span>
                                         </div>
                                     )}
 
                                     {/* Error State */}
                                     {groupsError && (
-                                        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                                            <div className="flex items-center gap-2 text-red-800">
+                                        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                                            <div className="flex items-center gap-2 text-red-800 dark:text-red-300">
                                                 <AlertCircle className="h-4 w-4 flex-shrink-0"/>
                                                 <span className="text-sm">{groupsError}</span>
                                             </div>
@@ -2490,15 +2496,15 @@ export default function DeviceStatsPage() {
 
                                     {/* Groups List */}
                                     {!loadingGroups && !groupsError && allGroups.length > 0 && (
-                                        <div className="border rounded-lg max-h-96 overflow-y-auto">
-                                            <div className="sticky top-0 bg-gray-50 px-4 py-2 border-b">
-                                                <div className="text-sm font-medium text-gray-700">
+                                        <div className="border dark:border-gray-700 rounded-lg max-h-96 overflow-y-auto">
+                                            <div className="sticky top-0 bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b dark:border-gray-700">
+                                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                                     {filteredGroups.length} of {allGroups.length} groups
                                                 </div>
                                             </div>
 
                                             {filteredGroups.length > 0 ? (
-                                                <div className="max-h-64 overflow-y-auto border rounded-md divide-y">
+                                                <div className="max-h-64 overflow-y-auto border dark:border-gray-700 rounded-md divide-y dark:divide-gray-700">
                                                     {filteredGroups.map(group => {
                                                         const isDynamicGroup = group.membershipRule !== null && group.membershipRule !== undefined;
 
@@ -2507,8 +2513,8 @@ export default function DeviceStatsPage() {
                                                                 key={group.id}
                                                                 className={`p-3 transition-colors ${
                                                                     isDynamicGroup
-                                                                        ? 'bg-gray-100 cursor-not-allowed opacity-60'
-                                                                        : 'hover:bg-blue-50 cursor-pointer'
+                                                                        ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-60'
+                                                                        : 'hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer'
                                                                 }`}
                                                                 onClick={() => {
                                                                     if (!isDynamicGroup) {
@@ -2520,39 +2526,36 @@ export default function DeviceStatsPage() {
                                                                     <div className="flex-1 min-w-0">
                                                                         <div className="flex items-center gap-2">
                                                                             <h4 className={`font-medium text-sm ${
-                                                                                isDynamicGroup ? 'text-gray-500' : 'text-gray-900'
+                                                                                isDynamicGroup
+                                                                                    ? 'text-gray-500 dark:text-gray-400'
+                                                                                    : 'text-gray-900 dark:text-gray-100'
                                                                             }`}>
                                                                                 {group.displayName}
                                                                             </h4>
                                                                             {isDynamicGroup && (
-                                                                                <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">
+                                                                                <Badge variant="secondary" className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300">
                                                                                     Dynamic
                                                                                 </Badge>
                                                                             )}
                                                                         </div>
                                                                         {group.description && (
                                                                             <p className={`text-xs mt-1 ${
-                                                                                isDynamicGroup ? 'text-gray-400' : 'text-gray-600'
+                                                                                isDynamicGroup
+                                                                                    ? 'text-gray-400 dark:text-gray-500'
+                                                                                    : 'text-gray-600 dark:text-gray-400'
                                                                             }`}>
                                                                                 {group.description}
                                                                             </p>
                                                                         )}
                                                                         {isDynamicGroup && (
-                                                                            <p className="text-xs text-orange-600 mt-1 italic">
+                                                                            <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 italic">
                                                                                 Membership managed automatically - cannot add devices manually
                                                                             </p>
                                                                         )}
                                                                     </div>
                                                                     <div className="flex items-center gap-2">
-                                                                        {/*{group.groupCount && (*/}
-                                                                        {/*    <div className={`text-xs ${*/}
-                                                                        {/*        isDynamicGroup ? 'text-gray-400' : 'text-gray-500'*/}
-                                                                        {/*    }`}>*/}
-                                                                        {/*        {group.groupCount.totalMembers || 0} members*/}
-                                                                        {/*    </div>*/}
-                                                                        {/*)}*/}
                                                                         {!isDynamicGroup && (
-                                                                            <ArrowRight className="h-4 w-4 text-gray-400" />
+                                                                            <ArrowRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -2561,8 +2564,8 @@ export default function DeviceStatsPage() {
                                                     })}
                                                 </div>
                                             ) : (
-                                                <div className="p-8 text-center text-gray-500">
-                                                    <Search className="h-8 w-8 mx-auto mb-3 text-gray-400"/>
+                                                <div className="p-8 text-center text-muted-foreground">
+                                                    <Search className="h-8 w-8 mx-auto mb-3 text-gray-400 dark:text-gray-500"/>
                                                     <p className="text-sm">
                                                         {groupSearchInput.trim()
                                                             ? `No groups found matching "${groupSearchInput}"`
@@ -2571,29 +2574,28 @@ export default function DeviceStatsPage() {
                                                     </p>
                                                 </div>
                                             )}
-
                                         </div>
                                     )}
 
                                     {/* No Groups Available */}
                                     {!loadingGroups && !groupsError && allGroups.length === 0 && (
-                                        <div className="p-8 text-center text-gray-500">
-                                            <Users className="h-8 w-8 mx-auto mb-3 text-gray-400"/>
+                                        <div className="p-8 text-center text-muted-foreground">
+                                            <Users className="h-8 w-8 mx-auto mb-3 text-gray-400 dark:text-gray-500"/>
                                             <p className="text-sm">No groups available</p>
                                         </div>
                                     )}
                                 </div>
-
                             )}
+
                             {/* Create New Group */}
                             {showCreateGroupOption && (
                                 <div className="max-w-2xl mx-auto space-y-4">
-                                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <Plus className="h-5 w-5 text-blue-600"/>
-                                            <h3 className="font-medium text-blue-900">Create New Group</h3>
+                                            <Plus className="h-5 w-5 text-blue-600 dark:text-blue-400"/>
+                                            <h3 className="font-medium text-blue-900 dark:text-blue-100">Create New Group</h3>
                                         </div>
-                                        <p className="text-sm text-blue-700">
+                                        <p className="text-sm text-blue-700 dark:text-blue-300">
                                             Create a new Entra ID group and add your selected devices as members.
                                         </p>
                                     </div>
@@ -2601,7 +2603,7 @@ export default function DeviceStatsPage() {
                                     <div className="space-y-4">
                                         <div>
                                             <Label htmlFor="newGroupName" className="text-sm font-medium">
-                                                Group Name <span className="text-red-500">*</span>
+                                                Group Name <span className="text-red-500 dark:text-red-400">*</span>
                                             </Label>
                                             <div className="mt-1">
                                                 <Input
@@ -2614,7 +2616,7 @@ export default function DeviceStatsPage() {
                                                     disabled={isCreatingGroup}
                                                 />
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-1">
+                                            <p className="text-xs text-muted-foreground mt-1">
                                                 Choose a descriptive name for your new group
                                             </p>
                                         </div>
@@ -2634,17 +2636,17 @@ export default function DeviceStatsPage() {
                                                     disabled={isCreatingGroup}
                                                 />
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-1">
+                                            <p className="text-xs text-muted-foreground mt-1">
                                                 Optional description to help identify this group
                                             </p>
                                         </div>
 
                                         {/* Preview selected devices count */}
-                                        <div className="p-3 bg-gray-50 border rounded-md">
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border dark:border-gray-700 rounded-md">
                                             <div className="flex items-center gap-2 text-sm">
-                                                <Users className="h-4 w-4 text-gray-600"/>
+                                                <Users className="h-4 w-4 text-gray-600 dark:text-gray-400"/>
                                                 <span className="font-medium">{selectedDevices.length} devices</span>
-                                                <span className="text-gray-600">will be added to this group</span>
+                                                <span className="text-gray-600 dark:text-gray-400">will be added to this group</span>
                                             </div>
                                         </div>
 
@@ -2652,13 +2654,13 @@ export default function DeviceStatsPage() {
                                         {createGroupError && (
                                             <div className={`p-3 border rounded-md ${
                                                 createGroupError === "Group already exists"
-                                                    ? "bg-amber-50 border-amber-200"
-                                                    : "bg-red-50 border-red-200"
+                                                    ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"
+                                                    : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
                                             }`}>
                                                 <div className={`flex items-center gap-2 ${
                                                     createGroupError === "Group already exists"
-                                                        ? "text-amber-700"
-                                                        : "text-red-800"
+                                                        ? "text-amber-700 dark:text-amber-300"
+                                                        : "text-red-800 dark:text-red-300"
                                                 }`}>
                                                     {createGroupError === "Group already exists" ? (
                                                         <AlertTriangle className="h-4 w-4 flex-shrink-0"/>
@@ -2666,15 +2668,14 @@ export default function DeviceStatsPage() {
                                                         <AlertCircle className="h-4 w-4 flex-shrink-0"/>
                                                     )}
                                                     <span className="text-sm">
-                {createGroupError === "Group already exists"
-                    ? "Group already exists. Switching to search mode..."
-                    : createGroupError
-                }
-            </span>
+                                            {createGroupError === "Group already exists"
+                                                ? "Group already exists. Switching to search mode..."
+                                                : createGroupError
+                                            }
+                                        </span>
                                                 </div>
                                             </div>
                                         )}
-
 
                                         {/* Create Button */}
                                         <Button
@@ -2697,6 +2698,7 @@ export default function DeviceStatsPage() {
                                     </div>
                                 </div>
                             )}
+
                             <div className="flex gap-3 justify-center pt-4">
                                 <Button variant="outline" onClick={resetAddToGroupDialog}>
                                     Cancel
@@ -2709,26 +2711,25 @@ export default function DeviceStatsPage() {
                                 )}
                             </div>
                         </div>
-
                     )}
 
                     {/* Step 2: Add Members */}
                     {addToGroupStep === 2 && searchedGroup && (
                         <div className="space-y-6">
                             {/* Group Info */}
-                            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                                 <div className="flex items-start gap-3">
-                                    <Users className="h-5 w-5 text-blue-600 mt-0.5"/>
+                                    <Users className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5"/>
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-medium text-blue-900">{searchedGroup.displayName}</h3>
-                                        <p className="text-sm text-blue-700 mt-1">
+                                        <h3 className="font-medium text-blue-900 dark:text-blue-100">{searchedGroup.displayName}</h3>
+                                        <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
                                             {searchedGroup.description || 'No description available'}
                                         </p>
-                                        <p className="text-xs text-blue-600 mt-2 font-mono">
+                                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-2 font-mono">
                                             ID: {searchedGroup.id}
                                         </p>
                                         {searchedGroup.groupCount && (
-                                            <div className="flex gap-4 mt-2 text-xs text-blue-600">
+                                            <div className="flex gap-4 mt-2 text-xs text-blue-600 dark:text-blue-400">
                                                 <span>{searchedGroup.groupCount.userMembers} users</span>
                                                 <span>{searchedGroup.groupCount.deviceMembers} devices</span>
                                                 <span>{searchedGroup.groupCount.totalMembers} total members</span>
@@ -2741,22 +2742,22 @@ export default function DeviceStatsPage() {
                             {/* Selected Devices */}
                             <div>
                                 <h4 className="font-medium mb-3">Selected Devices ({selectedDevices.length})</h4>
-                                <div className="max-h-48 overflow-y-auto border rounded-md p-3 space-y-2 bg-gray-50">
+                                <div className="max-h-48 overflow-y-auto border dark:border-gray-700 rounded-md p-3 space-y-2 bg-gray-50 dark:bg-gray-800/50">
                                     {deviceStats
                                         .filter(device => selectedDevices.includes(device.id))
                                         .map(device => (
                                             <div key={device.id} className="flex items-center gap-2 text-sm">
-                                                <Monitor className="h-4 w-4 text-gray-400"/>
+                                                <Monitor className="h-4 w-4 text-gray-400 dark:text-gray-500"/>
                                                 <span className="font-medium">{device.deviceName}</span>
-                                                <span className="text-gray-500">({device.platform})</span>
+                                                <span className="text-gray-500 dark:text-gray-400">({device.platform})</span>
                                             </div>
                                         ))}
                                 </div>
                             </div>
 
                             {addMembersError && (
-                                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                                    <div className="flex items-center gap-2 text-red-800">
+                                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                                    <div className="flex items-center gap-2 text-red-800 dark:text-red-300">
                                         <AlertCircle className="h-4 w-4"/>
                                         <span className="text-sm">{addMembersError}</span>
                                     </div>
@@ -2793,63 +2794,63 @@ export default function DeviceStatsPage() {
                             </div>
                         </div>
                     )}
-                    {/* Add Step 3: Results after Step 2 */}
+
+                    {/* Step 3: Results */}
                     {addToGroupStep === 3 && addMembersResult && (
                         <div className="space-y-6">
                             {/* Results Overview */}
-                            <div className="p-4 bg-gray-50 border rounded-lg">
-                                <h3 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-green-600"/>
+                            <div className="p-4 bg-gray-50 dark:bg-gray-800/50 border dark:border-gray-700 rounded-lg">
+                                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400"/>
                                     Operation Complete
                                 </h3>
 
                                 {/* Summary Cards */}
                                 <div className="grid grid-cols-3 gap-4 mb-4">
-                                    <div className="bg-white p-3 rounded-md border text-center">
-                                        <div className="text-2xl font-bold text-blue-600">
+                                    <div className="bg-white dark:bg-gray-800 p-3 rounded-md border dark:border-gray-700 text-center">
+                                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                                             {addMembersResult.data.totalRequested}
                                         </div>
-                                        <div className="text-xs text-gray-600">Total Requested</div>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">Total Requested</div>
                                     </div>
-                                    <div className="bg-white p-3 rounded-md border text-center">
-                                        <div className="text-2xl font-bold text-green-600">
+                                    <div className="bg-white dark:bg-gray-800 p-3 rounded-md border dark:border-gray-700 text-center">
+                                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                                             {addMembersResult.data.totalSuccessful}
                                         </div>
-                                        <div className="text-xs text-gray-600">Successful</div>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">Successful</div>
                                     </div>
-                                    <div className="bg-white p-3 rounded-md border text-center">
-                                        <div className="text-2xl font-bold text-red-600">
+                                    <div className="bg-white dark:bg-gray-800 p-3 rounded-md border dark:border-gray-700 text-center">
+                                        <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                                             {addMembersResult.data.totalFailed}
                                         </div>
-                                        <div className="text-xs text-gray-600">Failed</div>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">Failed</div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Success Details */}
                             {addMembersResult.data.successfulDeviceIds.length > 0 && (
-                                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                                    <h4 className="font-medium text-green-800 mb-3 flex items-center gap-2">
+                                <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                    <h4 className="font-medium text-green-800 dark:text-green-300 mb-3 flex items-center gap-2">
                                         <CheckCircle className="h-4 w-4"/>
                                         Successfully Added ({addMembersResult.data.successfulDeviceIds.length})
                                     </h4>
                                     <div className="space-y-2 max-h-32 overflow-y-auto">
                                         {addMembersResult.data.successfulDeviceIds.map(azureDeviceId => {
-                                            // Find device by Azure AD Device ID instead of regular ID
                                             const device = deviceStats.find(d => d.azureAdDeviceId === azureDeviceId);
                                             return (
                                                 <div key={azureDeviceId} className="flex items-center gap-2 text-sm">
-                                                    <CheckCircle2 className="h-3 w-3 text-green-600 flex-shrink-0"/>
+                                                    <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400 flex-shrink-0"/>
                                                     <span className="font-medium">
-                            {device ? device.deviceName : 'Unknown Device'}
-                        </span>
-                                                    <span className="text-green-600 font-mono text-xs">
-                            ({azureDeviceId})
-                        </span>
+                                            {device ? device.deviceName : 'Unknown Device'}
+                                        </span>
+                                                    <span className="text-green-600 dark:text-green-400 font-mono text-xs">
+                                            ({azureDeviceId})
+                                        </span>
                                                     {device && (
-                                                        <span className="text-gray-500 text-xs">
-                                - {device.userDisplayName}
-                            </span>
+                                                        <span className="text-gray-500 dark:text-gray-400 text-xs">
+                                                - {device.userDisplayName}
+                                            </span>
                                                     )}
                                                 </div>
                                             );
@@ -2860,33 +2861,32 @@ export default function DeviceStatsPage() {
 
                             {/* Failure Details */}
                             {addMembersResult.data.failedDeviceIds.length > 0 && (
-                                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                                    <h4 className="font-medium text-red-800 mb-3 flex items-center gap-2">
+                                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                    <h4 className="font-medium text-red-800 dark:text-red-300 mb-3 flex items-center gap-2">
                                         <XCircle className="h-4 w-4"/>
                                         Failed to Add ({addMembersResult.data.failedDeviceIds.length})
                                     </h4>
                                     <div className="space-y-2 max-h-32 overflow-y-auto">
                                         {addMembersResult.data.failedDeviceIds.map(azureDeviceId => {
-                                            // Find device by Azure AD Device ID
                                             const device = deviceStats.find(d => d.azureAdDeviceId === azureDeviceId);
                                             const error = addMembersResult.data.errors[azureDeviceId];
                                             return (
                                                 <div key={azureDeviceId} className="flex items-start gap-2 text-sm">
-                                                    <XCircle className="h-3 w-3 text-red-600 flex-shrink-0 mt-0.5"/>
+                                                    <XCircle className="h-3 w-3 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"/>
                                                     <div className="flex-1">
-                            <span className="font-medium">
-                                {device ? device.deviceName : 'Unknown Device'}
-                            </span>
-                                                        <span className="text-red-600 font-mono text-xs ml-2">
-                                ({azureDeviceId})
-                            </span>
+                                            <span className="font-medium">
+                                                {device ? device.deviceName : 'Unknown Device'}
+                                            </span>
+                                                        <span className="text-red-600 dark:text-red-400 font-mono text-xs ml-2">
+                                                ({azureDeviceId})
+                                            </span>
                                                         {device && (
-                                                            <span className="text-gray-500 text-xs ml-2">
-                                    - {device.userDisplayName}
-                                </span>
+                                                            <span className="text-gray-500 dark:text-gray-400 text-xs ml-2">
+                                                    - {device.userDisplayName}
+                                                </span>
                                                         )}
                                                         {error && (
-                                                            <div className="text-red-700 text-xs mt-1">
+                                                            <div className="text-red-700 dark:text-red-300 text-xs mt-1">
                                                                 Error: {error}
                                                             </div>
                                                         )}
@@ -2897,6 +2897,7 @@ export default function DeviceStatsPage() {
                                     </div>
                                 </div>
                             )}
+
                             {/* Action Buttons */}
                             <div className="flex gap-2 justify-between">
                                 <Button
@@ -2916,6 +2917,7 @@ export default function DeviceStatsPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
             <ConsentDialog
                 isOpen={showConsentDialog}
                 onClose={() => setShowConsentDialog(false)}

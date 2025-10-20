@@ -478,7 +478,7 @@ export default function AssignmentsOverview() {
                     return (
                         <button
                             onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
-                            className="text-blue-600 hover:text-blue-800 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                            className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
                             title={resourceName}
                         >
                             {resourceName}
@@ -538,7 +538,7 @@ export default function AssignmentsOverview() {
                         <div className="space-y-1">
                             <button
                                 onClick={() => handleResourceClick(targetId, assignmentType)}
-                                className="text-blue-600 hover:text-blue-800 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
                                 title={targetName}
                             >
                                 {targetName}
@@ -608,7 +608,7 @@ export default function AssignmentsOverview() {
                     <div className="space-y-1">
                         <button
                             onClick={() => handleFilterClick(filterId)}
-                            className="text-blue-600 hover:text-blue-800 underline text-xs font-medium cursor-pointer truncate block w-full text-left"
+                            className="text-yellow-400 hover:text-yellow-500 underline text-xs font-medium cursor-pointer truncate block w-full text-left"
                             title={filterInfo.displayName}
                         >
                             {filterInfo.displayName}
@@ -636,8 +636,8 @@ export default function AssignmentsOverview() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Assignments Overview</h1>
-                    <p className="text-gray-600 mt-2">
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">Assignments Overview</h1>
+                    <p className="text-gray-600 dark:text-gray-300 mt-2">
                         View all Intune applications assignments across your organization
                     </p>
                 </div>
@@ -675,7 +675,7 @@ export default function AssignmentsOverview() {
                             <span className="font-medium">Error:</span>
                             <span>{error}</span>
                         </div>
-                        <p className="text-sm text-gray-600 mt-2">
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                             Error occurred while fetching assignments. Please try again.
                         </p>
                         <Button onClick={fetchAssignments} className="mt-4" variant="outline">
@@ -686,18 +686,18 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
-            {/* Show welcome card when no assignments are loaded and not loading */}
+            {/* Welcome card */}
             {assignments.length === 0 && !loading && !error && (
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
-                            <div className="text-gray-400 mb-6">
+                            <div className="text-gray-400 dark:text-gray-500 mb-6">
                                 <Database className="h-16 w-16 mx-auto" />
                             </div>
-                            <h3 className="text-xl font-medium text-gray-900 mb-4">
+                            <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-4">
                                 Ready to view your Intune assignments
                             </h3>
-                            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                            <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
                                 Click the &quot;Load Assignments&quot; button above to fetch all assignment configurations from your Intune environment.
                             </p>
                             <Button onClick={fetchAssignments} className="flex items-center gap-2 mx-auto" size="lg">
@@ -709,16 +709,16 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
-            {/* Show loading state */}
+            {/* Loading state */}
             {loading && assignments.length === 0 && (
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 Loading Assignments
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Fetching assignment data from your Intune environment...
                             </p>
                         </div>
@@ -726,7 +726,7 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
-            {/* Only show search, filters, and table when assignments are loaded or loading */}
+            {/* Filters and content sections */}
             {(assignments.length > 0 || loading) && (
                 <>
                     {/* Filters Section */}
@@ -735,7 +735,7 @@ export default function AssignmentsOverview() {
                             <CardTitle className="flex items-center justify-between">
                                 <button
                                     onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
-                                    className="flex items-center gap-2 hover:text-blue-600 transition-colors"
+                                    className="flex items-center gap-2 hover:text-yellow-400 transition-colors"
                                 >
                                     <Filter className="h-5 w-5" />
                                     Filters
@@ -746,7 +746,6 @@ export default function AssignmentsOverview() {
                                     )}
                                 </button>
                                 <div className="flex items-center gap-2">
-                                    {/* Show active filter count when collapsed */}
                                     {!isFiltersExpanded && (
                                         <Badge variant="secondary" className="text-xs">
                                             {resourceTypeFilter.length + assignmentTypeFilter.length + statusFilter.length + platformFilter.length + filterTypeFilter.length + installTypeFilter.length} active
@@ -836,9 +835,8 @@ export default function AssignmentsOverview() {
                         {isFiltersExpanded && (
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {/* Resource Type Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Resource Type</label>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Resource Type</label>
                                         <MultiSelect
                                             options={getUniqueResourceTypes()}
                                             selected={resourceTypeFilter}
@@ -846,9 +844,8 @@ export default function AssignmentsOverview() {
                                             placeholder="Select resource types..."
                                         />
                                     </div>
-                                    {/* Assignment Type Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Assignment Type</label>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Assignment Type</label>
                                         <MultiSelect
                                             options={getUniqueAssignmentTypes()}
                                             selected={assignmentTypeFilter}
@@ -856,10 +853,8 @@ export default function AssignmentsOverview() {
                                             placeholder="Select assignment types..."
                                         />
                                     </div>
-
-                                    {/* Status Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Status</label>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Status</label>
                                         <MultiSelect
                                             options={getUniqueStatuses()}
                                             selected={statusFilter}
@@ -867,10 +862,8 @@ export default function AssignmentsOverview() {
                                             placeholder="Select status..."
                                         />
                                     </div>
-
-                                    {/* Platform Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Platform</label>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Platform</label>
                                         <MultiSelect
                                             options={getUniquePlatforms()}
                                             selected={platformFilter}
@@ -878,10 +871,8 @@ export default function AssignmentsOverview() {
                                             placeholder="Select platforms..."
                                         />
                                     </div>
-
-                                    {/* Filters Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Filter Type</label>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Filter Type</label>
                                         <MultiSelect
                                             options={getUniqueFilterTypes()}
                                             selected={filterTypeFilter}
@@ -889,10 +880,8 @@ export default function AssignmentsOverview() {
                                             placeholder="Select filter types..."
                                         />
                                     </div>
-
-                                    {/* Installation Type Filter */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Install Type</label>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Install Type</label>
                                         <MultiSelect
                                             options={getUniqueInstallTypes()}
                                             selected={installTypeFilter}
@@ -902,10 +891,9 @@ export default function AssignmentsOverview() {
                                     </div>
                                 </div>
 
-                                {/* Active Filters Display */}
                                 {(resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0 || installTypeFilter.length > 0) && (
-                                    <div className="flex flex-wrap gap-2 pt-2 border-t">
-                                        <span className="text-sm text-gray-600">Active filters:</span>
+                                    <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Active filters:</span>
                                         {resourceTypeFilter.map(filter => (
                                             <Badge key={filter} variant="secondary" className="flex items-center gap-1">
                                                 {filter}
@@ -977,18 +965,18 @@ export default function AssignmentsOverview() {
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                                 </div>
                             </CardTitle>
-                            <CardDescription>
+                            <CardDescription className="text-gray-600 dark:text-gray-300">
                                 Detailed view of all assignments with their targets and configurations
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
                             {loading ? (
                                 <div className="flex items-center justify-center h-32">
-                                    <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
-                                    <span className="ml-2 text-gray-600">Loading assignments...</span>
+                                    <RefreshCw className="h-6 w-6 animate-spin text-yellow-400" />
+                                    <span className="ml-2 text-gray-600 dark:text-gray-300">Loading assignments...</span>
                                 </div>
                             ) : (
                                 <DataTable
@@ -1001,7 +989,6 @@ export default function AssignmentsOverview() {
                                     onPageChange={setCurrentPage}
                                     onItemsPerPageChange={setItemsPerPage}
                                 />
-
                             )}
                         </CardContent>
                     </Card>
@@ -1011,13 +998,13 @@ export default function AssignmentsOverview() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
-                                    <div className="text-gray-400 mb-4">
+                                    <div className="text-gray-400 dark:text-gray-500 mb-4">
                                         {searchQuery ? <Search className="h-12 w-12 mx-auto" /> : <Filter className="h-12 w-12 mx-auto" />}
                                     </div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                         {searchQuery ? 'No assignments match your search' : 'No assignments match your filters'}
                                     </h3>
-                                    <p className="text-gray-600 mb-4">
+                                    <p className="text-gray-600 dark:text-gray-300 mb-4">
                                         {searchQuery
                                             ? 'Try adjusting your search terms or clearing filters.'
                                             : 'Try adjusting your filter criteria or clear all filters to see more results.'}
@@ -1049,15 +1036,14 @@ export default function AssignmentsOverview() {
                             <Settings className="h-5 w-5" />
                             {selectedFilter?.displayName || 'Filter Details'}
                         </DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="text-gray-600 dark:text-gray-300">
                             {selectedFilter?.description || 'Assignment filter information and rules'}
                         </DialogDescription>
                     </DialogHeader>
 
                     {selectedFilter ? (
                         <div className="space-y-6">
-                            {/* Filter Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div>
                                     <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
                                     <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
@@ -1080,8 +1066,7 @@ export default function AssignmentsOverview() {
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
-                                    <p className="text-sm text-gray-900 dark:text-gray-100">
-                                        {selectedFilter.platform === 0 ? 'All' :
+                                    <p className="text-sm text-gray-900 dark:text-gray-100">    {selectedFilter.platform === 0 ? 'All' :
                                             selectedFilter.platform === 1 ? 'Android' :
                                                 selectedFilter.platform === 2 ? 'iOS' :
                                                     selectedFilter.platform === 3 ? 'macOS' :
@@ -1096,40 +1081,36 @@ export default function AssignmentsOverview() {
                                 <div>
                                     <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
                                     <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                         <code className="whitespace-pre-wrap break-all">
-                                             {selectedFilter.description}
-
-                                         </code>
-                                    </pre>
+                                    <code className="whitespace-pre-wrap break-all">
+                                        {selectedFilter.description}
+                                    </code>
+                                </pre>
                                 </div>
                             )}
 
-                            {/* Filter Rule */}
                             {selectedFilter.rule && (
                                 <div>
                                     <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
                                     <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                        <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
-                                    </pre>
+                                    <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
+                                </pre>
                                 </div>
                             )}
 
-                            {/* Additional Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="text-sm font-medium text-gray-600">Created</label>
-                                        <p className="text-sm">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
+                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Created</label>
+                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-600">Last Modified</label>
-                                        <p className="text-sm">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
+                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Last Modified</label>
+                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
                                     </div>
                                 </div>
 
-                                {/* Role Scope Tags */}
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 block mb-2">Role Scope Tags</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Role Scope Tags</label>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
                                             selectedFilter.roleScopeTags.map((tag, index) => (
@@ -1138,7 +1119,7 @@ export default function AssignmentsOverview() {
                                                 </Badge>
                                             ))
                                         ) : (
-                                            <span className="text-sm text-gray-500">No role scope tags</span>
+                                            <span className="text-sm text-gray-500 dark:text-gray-400">No role scope tags</span>
                                         )}
                                     </div>
                                 </div>
@@ -1146,7 +1127,7 @@ export default function AssignmentsOverview() {
                         </div>
                     ) : (
                         <div className="text-center py-8">
-                            <p className="text-gray-500">Filter not found</p>
+                            <p className="text-gray-500 dark:text-gray-400">Filter not found</p>
                         </div>
                     )}
                 </DialogContent>

@@ -473,7 +473,7 @@ export default function AssignmentsOverview() {
                     return (
                         <button
                             onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
-                            className="text-blue-600 hover:text-blue-800 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                            className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
                             title={resourceName}
                         >
                             {resourceName}
@@ -717,7 +717,7 @@ export default function AssignmentsOverview() {
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4"/>
+                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"/>
                             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                                 Loading Assignments
                             </h3>
@@ -738,7 +738,7 @@ export default function AssignmentsOverview() {
                             <CardTitle className="flex items-center justify-between">
                                 <button
                                     onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
-                                    className="flex items-center gap-2 hover:text-blue-600 transition-colors"
+                                    className="flex items-center gap-2 hover:text-yellow-400 transition-colors"
                                 >
                                     <Filter className="h-5 w-5"/>
                                     Filters
