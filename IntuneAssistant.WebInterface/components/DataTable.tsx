@@ -41,7 +41,7 @@ interface DataTableProps {
 export function DataTable({
                               data,
                               columns: initialColumns,
-                              className,
+                              className = '',
                               onRowClick,
                               currentPage = 1,
                               totalPages = 1,
@@ -91,9 +91,10 @@ export function DataTable({
                             type="checkbox"
                             checked={isRowSelected(row)}
                             onChange={(e) => handleRowSelection(e, row)}
-                            className="rounded border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-gray-500 dark:focus:ring-gray-400"
+                            className="rounded border-input text-primary focus:ring-ring"
                         />
                     )
+
                 },
                 ...initialColumns
             ];
@@ -215,13 +216,14 @@ export function DataTable({
 
     const getSortIcon = (columnKey: string) => {
         if (!sortConfig || sortConfig.key !== columnKey) {
-            return <ChevronsUpDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />;
+            return <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />;
         }
 
         return sortConfig.direction === 'asc'
-            ? <ChevronUp className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-            : <ChevronDown className="h-4 w-4 text-gray-600 dark:text-gray-300" />;
+            ? <ChevronUp className="h-4 w-4 text-foreground" />
+            : <ChevronDown className="h-4 w-4 text-foreground" />;
     };
+
 
     const clearSearch = () => {
         setSearchTerm('');
@@ -299,52 +301,51 @@ export function DataTable({
     };
 
     return (
-        <div className="border rounded-lg overflow-hidden">
+        <div className={`bg-background border rounded-lg overflow-hidden shadow-sm ${className}`}>
             {showSearch && (
-                <div className="p-4 border-b bg-gray-50 dark:bg-gray-400/10 border-gray-200 dark:border-gray-700">
+                <div className="p-4 bg-muted border-b">
                     <div className="relative max-w-sm">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <input
                             type="text"
                             placeholder={searchPlaceholder}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700/20 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500 focus:border-transparent"
+                            className="w-full pl-10 pr-10 py-2 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
                         />
                         {searchTerm && (
                             <button
                                 onClick={clearSearch}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 <X className="h-4 w-4" />
                             </button>
                         )}
                     </div>
                     {searchTerm && (
-                        <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                        <div className="mt-2 text-sm text-muted-foreground">
                             {sortedData.length} of {data.length} results
                         </div>
                     )}
                 </div>
             )}
 
-            <div className="border rounded-lg overflow-hidden border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                <table ref={tableRef} className={`w-full text-sm bg-white dark:bg-gray-800`}>
+            <div className="overflow-auto">
+                <table ref={tableRef} className="w-full text-sm">
+                    <thead className="bg-background sticky top-0 z-10 border-b">
 
-                    <thead className="bg-gray-50 dark:bg-gray-900 sticky top-0 z-10 shadow-sm">
-                    <tr className="border-b bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-700">
-
-                    {columns.map((column, index) => (
-                        <th
-                            key={column.key}
-                            className="relative text-left p-3 font-medium text-gray-900 dark:text-white"
-                            style={{ width: `${column.width}px` }}
-                        >
+                    <tr className="border-b">
+                        {columns.map((column, index) => (
+                            <th
+                                key={column.key}
+                                className="relative text-left p-3 font-medium text-foreground"
+                                style={{ width: `${column.width}px` }}
+                            >
                                 <div className="flex items-center justify-between">
                                     <div
                                         className={`flex items-center gap-2 flex-1 ${
                                             column.sortable !== false && column.key !== '_select'
-                                                ? 'cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors'
+                                                ? 'cursor-pointer hover:text-primary transition-colors'
                                                 : ''
                                         }`}
                                         onClick={() => {
@@ -362,37 +363,37 @@ export function DataTable({
 
                                 {column.key !== '_select' && (
                                     <div
-                                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-yellow-400 group"
+                                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary group"
                                         onMouseDown={(e) => handleResizeStart(e, index)}
                                     >
-                                        <div className="h-full w-px bg-gray-300 group-hover:bg-yellow-500 transition-colors" />
+                                        <div className="h-full w-px bg-border group-hover:bg-primary transition-colors" />
                                     </div>
                                 )}
                             </th>
                         ))}
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="bg-background divide-y divide-border">
                     {paginatedData.length > 0 ? (
                         paginatedData.map((row, rowIndex) => (
                             <tr
                                 key={rowIndex}
-                                className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors ${
-                                    onRowClick ? 'cursor-pointer' : ''
-                                } ${isRowSelected(row) ? 'bg-gray-100 dark:bg-gray-950/50' :
-                                    rowIndex % 2 === 0 ? 'bg-white dark:bg-grey-100' : 'bg-gray-200/10 dark:bg-gray-950'
-                                } ${
-                                    rowClassName ? rowClassName(row) : ''
-                                }`}
+                                className={`
+    transition-colors
+    ${onRowClick ? 'cursor-pointer' : ''}
+    ${isRowSelected(row)
+                                    ? 'bg-yellow-400 dark:bg-yellow-400/80 text-foreground border-l-4 border-l-yellow-600 dark:border-l-yellow-400 shadow-md ring-1 ring-yellow-500/30'
+                                    : 'hover:bg-muted/50'
+                                }
+    ${rowClassName ? rowClassName(row) : ''}
+`}
 
                                 onClick={(e) => handleRowClick(e, row)}
                             >
-
-
-                            {columns.map((column) => (
+                                {columns.map((column) => (
                                     <td
                                         key={column.key}
-                                        className="p-3 text-sm text-gray-900 dark:text-gray-100"
+                                        className="p-3 text-foreground"
                                         style={{ width: `${column.width}px` }}
                                     >
                                         <div className="overflow-hidden">
@@ -407,7 +408,10 @@ export function DataTable({
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={columns.length} className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <td
+                                colSpan={columns.length}
+                                className="p-8 text-center text-muted-foreground bg-muted/50"
+                            >
                                 {searchTerm ? 'No results found for your search.' : 'No data available.'}
                             </td>
                         </tr>
@@ -415,15 +419,16 @@ export function DataTable({
                     </tbody>
                 </table>
             </div>
+
             {showPagination && sortedData.length > 0 && (
-                <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="flex items-center justify-between p-4 border-t bg-muted">
                     <div className="flex items-center gap-4">
-                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                        <div className="text-sm text-muted-foreground">
                             Showing {Math.min(startIndex + 1, sortedData.length)} to {Math.min(endIndex, sortedData.length)} of {sortedData.length} results
                             {searchTerm && ` (filtered from ${data.length} total)`}
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-300">Items per page:</span>
+                            <span className="text-sm text-muted-foreground">Items per page:</span>
                             <select
                                 value={itemsPerPage}
                                 onChange={(e) => {
@@ -431,7 +436,7 @@ export function DataTable({
                                     onItemsPerPageChange?.(newItemsPerPage);
                                     onPageChange?.(1);
                                 }}
-                                className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
+                                className="border rounded px-2 py-1 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
                             >
                                 <option value={10}>10</option>
                                 <option value={25}>25</option>

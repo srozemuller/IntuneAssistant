@@ -1065,12 +1065,13 @@ export default function AssignmentRolloutPage() {
 
 
     return (
-        <div className="mx-auto p-2 space-y-2 w-full">
-            {/* Header */}
-            <div className="flex items-center justify-between">
+        <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Assignment Rollout</h1>
-                    <p className="text-gray-600 mt-2">Upload, compare, and migrate policy assignments</p>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Assignment Rollout</h1>
+                    <p className="text-muted-foreground mt-2">
+                        Upload, compare, and migrate policy assignments
+                    </p>
                 </div>
                 <Button onClick={resetProcess} variant="outline">
                     <RotateCcw className="h-4 w-4 mr-2" />
@@ -1100,13 +1101,13 @@ export default function AssignmentRolloutPage() {
                                 <div key={step.key} className="flex items-center">
                                     <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
                                         isCompleted || isValidateComplete ? 'bg-green-500 border-green-500 text-white' :
-                                            isActive ? 'bg-blue-500 border-blue-500 text-white' :
+                                            isActive ? 'bgyellow-500 border-yellow-500 text-white' :
                                                 'border-gray-300 text-gray-400'
                                     }`}>
                                         <Icon className="h-5 w-5" />
                                     </div>
                                     <span className={`ml-2 text-sm font-medium ${
-                                        isActive && !isValidateComplete ? 'text-blue-600' :
+                                        isActive && !isValidateComplete ? 'text-yellow-600' :
                                             isCompleted || isValidateComplete ? 'text-green-600' : 'text-gray-400'
                                     }`}>
                             {step.label}
@@ -1204,7 +1205,7 @@ export default function AssignmentRolloutPage() {
             {currentStep === 'upload' && (
                 <Card>
                     <CardHeader className="text-center">
-                        <Upload className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+                        <Upload className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
                         <CardTitle>Upload Assignment CSV</CardTitle>
                         <p className="text-gray-600">
                             Upload a CSV file containing policy assignments to compare and migrate
@@ -1214,7 +1215,7 @@ export default function AssignmentRolloutPage() {
                         <div
                             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                                 isDragOver
-                                    ? 'border-blue-500 bg-blue-50'
+                                    ? 'border-yellow-500 bg-blue-50'
                                     : 'border-gray-300'
                             }`}
                             onDragOver={handleDragOver}
@@ -1222,10 +1223,10 @@ export default function AssignmentRolloutPage() {
                             onDrop={handleDrop}
                         >
                             <FileText className={`h-8 w-8 mx-auto mb-4 ${
-                                isDragOver ? 'text-blue-500' : 'text-gray-400'
+                                isDragOver ? 'text-yellow-500' : 'text-gray-400'
                             }`} />
                             <p className={`mb-4 ${
-                                isDragOver ? 'text-blue-600' : 'text-gray-600'
+                                isDragOver ? 'text-yellow-600' : 'text-gray-600'
                             }`}>
                                 {isDragOver ? 'Drop your CSV file here' : 'Drop your CSV file here or click to browse'}
                             </p>

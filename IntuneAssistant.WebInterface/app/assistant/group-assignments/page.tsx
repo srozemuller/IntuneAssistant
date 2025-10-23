@@ -19,7 +19,7 @@ import {
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, XCircle
+    ChevronUp, XCircle, Computer, Blocks
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
@@ -702,7 +702,7 @@ export default function AssignmentsOverview() {
                     return (
                         <button
                             onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
-                            className="text-blue-600 hover:text-blue-800 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                            className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
                             title={resourceName}
                         >
                             {resourceName}
@@ -764,7 +764,7 @@ export default function AssignmentsOverview() {
                         <div className="space-y-1">
                             <button
                                 onClick={() => handleResourceClick(targetId, assignmentType)}
-                                className="text-blue-600 hover:text-blue-800 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
                                 title={targetName}
                             >
                                 {targetName}
@@ -835,7 +835,7 @@ export default function AssignmentsOverview() {
                     <div className="space-y-1">
                         <button
                             onClick={() => handleFilterClick(filterId)}
-                            className="text-blue-600 hover:text-blue-800 underline text-xs font-medium cursor-pointer truncate block w-full text-left"
+                            className="text-yellow-400 hover:text-yellow-500 underline text-xs font-medium cursor-pointer truncate block w-full text-left"
                             title={filterInfo.displayName}
                         >
                             {filterInfo.displayName}
@@ -849,7 +849,7 @@ export default function AssignmentsOverview() {
                                 </Badge>
                             ) : (
                                 <Badge variant="destructive"
-                                       className="text-xs bg-red-100 text-red-800 border-red-200 px-1 py-0">
+                                       className="text-xs bg-red-100 text-red-800  px-1 py-0">
                                     <ShieldCheck className="h-2 w-2 mr-1"/>
                                     Exc
                                 </Badge>
@@ -865,8 +865,8 @@ export default function AssignmentsOverview() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Group assignments Overview</h1>
-                    <p className="text-gray-600 mt-2">
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">Group assignments Overview</h1>
+                    <p className="text-gray-600 dark:text-gray-300 mt-2">
                         View all Intune assignments across your organization for a specific group. Search for a group or
                         load all assignments to get started.
                     </p>
@@ -910,7 +910,7 @@ export default function AssignmentsOverview() {
                             <span className="font-medium">Error:</span>
                             <span>{error}</span>
                         </div>
-                        <p className="text-sm text-gray-600 mt-2">
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                             Error occurred while fetching assignments. Please try again.
                         </p>
                         <Button onClick={fetchAssignments} className="mt-4" variant="outline">
@@ -921,37 +921,35 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
-            {/* Show welcome card when no assignments are loaded and not loading */}
+            {/* Welcome card */}
             {assignments.length === 0 && !loading && !error && (
                 <Card className="shadow-sm">
                     <CardHeader className="text-center pb-4">
-                        <Users className="h-12 w-12 text-gray-400 mx-auto mb-4"/>
+                        <Users className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4"/>
                         <CardTitle className="text-xl">Group Assignments</CardTitle>
-                        <CardDescription className="text-gray-600 max-w-md mx-auto">
+                        <CardDescription className="text-gray-600 dark:text-gray-300 max-w-md mx-auto">
                             Search for a specific group to view its assignments, or load all assignments to get a
                             comprehensive overview.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {/* Group Search Section */}
                         <div className="space-y-4">
                             <div className="text-center">
                                 <h3 className="text-lg font-semibold mb-2">Search for a Group</h3>
-                                <p className="text-sm text-gray-600 mb-4">
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                                     Enter the exact group name or GUID to find and view its assignments
                                 </p>
                             </div>
 
                             <div className="flex gap-2 max-w-md mx-auto">
                                 <div className="relative flex-1">
-                                    <Search
-                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4"/>
                                     <input
                                         type="text"
                                         value={groupSearchInput}
                                         onChange={(e) => setGroupSearchInput(e.target.value)}
                                         placeholder="Enter group name or GUID"
-                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                                         onKeyPress={(e) => {
                                             if (e.key === 'Enter') {
                                                 searchGroup();
@@ -972,32 +970,30 @@ export default function AssignmentsOverview() {
                                 </Button>
                             </div>
 
-                            {/* Group Search Results */}
+                            {/* Group Search Error */}
                             {groupSearchError && (
-                                <div className="max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded-lg">
-                                    <p className="text-red-600 text-sm">{groupSearchError}</p>
+                                <div className="max-w-md mx-auto p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg">
+                                    <p className="text-red-600 dark:text-red-300 text-sm">{groupSearchError}</p>
                                 </div>
                             )}
 
-                            {/* Group Search Results - Multiple Groups */}
+                            {/* Group Search Results */}
                             {groupSearchResults.length > 0 && (
                                 <div className="max-w-4xl mx-auto space-y-3">
                                     <div className="text-center mb-4">
                                         <h3 className="text-lg font-semibold">Found {groupSearchResults.length} groups</h3>
-                                        <p className="text-sm text-gray-600">Search and click on a group to view its
-                                            assignments</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">Search and click on a group to view its assignments</p>
                                     </div>
 
                                     {/* Search within results */}
                                     <div className="relative max-w-md mx-auto">
-                                        <Search
-                                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4"/>
                                         <input
                                             type="text"
                                             value={groupResultsSearch}
                                             onChange={(e) => setGroupResultsSearch(e.target.value)}
                                             placeholder="Search within results..."
-                                            className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                            className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
                                         />
                                         {groupResultsSearch && (
                                             <button
@@ -1009,13 +1005,12 @@ export default function AssignmentsOverview() {
                                         )}
                                     </div>
 
-                                    {/* Show filtered count if searching */}
+                                    {/* Show filtered count */}
                                     {groupResultsSearch && (
-                                        <div className="text-center text-sm text-gray-600">
+                                        <div className="text-center text-sm text-gray-600 dark:text-gray-300">
                                             Showing {filteredGroupResults.length} of {groupSearchResults.length} groups
                                         </div>
                                     )}
-
                                     {filteredGroupResults.map((group) => (
                                         <Card key={group.id}
                                               className="border hover:border-blue-300 transition-colors cursor-pointer">
@@ -1023,7 +1018,7 @@ export default function AssignmentsOverview() {
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-2">
-                                                            <Users className="h-4 w-4 text-blue-600"/>
+                                                            <Users className="h-4 w-4 text-yellow-400"/>
                                                             <h4 className="font-semibold text-lg">{group.displayName}</h4>
                                                         </div>
                                                         <p className="text-gray-600 text-sm mb-3">
@@ -1085,11 +1080,12 @@ export default function AssignmentsOverview() {
 
                                     {/* No results after filtering */}
                                     {groupResultsSearch && filteredGroupResults.length === 0 && (
-                                        <div className="text-center py-8 text-gray-500">
-                                            <Search className="h-8 w-8 mx-auto mb-2 text-gray-300"/>
+                                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                            <Search className="h-8 w-8 mx-auto mb-2 text-gray-300 dark:text-gray-600"/>
                                             <p>No groups found matching &quot;{groupResultsSearch}&quot;</p>
                                         </div>
                                     )}
+
 
                                     <div className="text-center pt-4">
                                         <Button
@@ -1108,17 +1104,17 @@ export default function AssignmentsOverview() {
                             )}
 
 
-                            {/* Keep the existing single group display for when a group is selected */}
+                            {/* Single group display */}
                             {searchedGroup && groupSearchResults.length === 0 && (
-                                <Card className="border-2 border-blue-300 bg-blue-50">
+                                <Card className="border-2 border-blue-300 bg-blue-50 dark:bg-blue-950">
                                     <CardContent className="p-4">
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <Users className="h-4 w-4 text-blue-600"/>
+                                                    <Users className="h-4 w-4 text-yellow-400 dark:text-yellow-400"/>
                                                     <h4 className="font-semibold text-lg">{searchedGroup.displayName}</h4>
                                                 </div>
-                                                <p className="text-gray-600 text-sm mb-3">
+                                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
                                                     {searchedGroup.description || 'No description available'}
                                                 </p>
 
@@ -1139,7 +1135,7 @@ export default function AssignmentsOverview() {
                                                 {/*    </div>*/}
                                                 {/*</div>*/}
 
-                                                <div className="text-xs text-gray-500 font-mono break-all">
+                                                <div className="text-xs text-gray-500 dark:text-gray-400 font-mono break-all">
                                                     ID: {searchedGroup.id}
                                                 </div>
                                             </div>
@@ -1168,20 +1164,19 @@ export default function AssignmentsOverview() {
                         {/* Divider */}
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300"></div>
+                                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500">or</span>
+                                <span className="px-2 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400">or</span>
                             </div>
                         </div>
-
                         {/* Load All Assignments */}
                         <div className="text-center">
                             <Button onClick={fetchAssignments} className="inline-flex items-center gap-2">
                                 <Database className="h-4 w-4"/>
                                 Load All Assignments
                             </Button>
-                            <p className="text-xs text-gray-500 mt-2">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                                 Load all group assignments in your organization
                             </p>
                         </div>
@@ -1189,16 +1184,16 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
-            {/* Show loading state */}
+            {/* Loading state */}
             {loading && assignments.length === 0 && (
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4"/>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"/>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 Loading Assignments
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Fetching assignment data from your Intune environment...
                             </p>
                         </div>
@@ -1206,7 +1201,7 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
-            {/* Only show search, filters, and table when assignments are loaded or loading */}
+            {/* Filters and table sections */}
             {(assignments.length > 0 || loading) && (
                 <>
                     {/* Filters Section */}
@@ -1215,7 +1210,7 @@ export default function AssignmentsOverview() {
                             <CardTitle className="flex items-center justify-between">
                                 <button
                                     onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
-                                    className="flex items-center gap-2 hover:text-blue-600 transition-colors"
+                                    className="flex items-center gap-2 hover:text-yellow-400 transition-colors"
                                 >
                                     <Filter className="h-5 w-5"/>
                                     Filters
@@ -1423,15 +1418,15 @@ export default function AssignmentsOverview() {
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
                             </CardTitle>
-                            <CardDescription>
+                            <CardDescription className="text-gray-600 dark:text-gray-300">
                                 Detailed view of all assignments with their targets and configurations
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
                             {loading ? (
                                 <div className="flex items-center justify-center h-32">
-                                    <RefreshCw className="h-6 w-6 animate-spin text-blue-500"/>
-                                    <span className="ml-2 text-gray-600">Loading assignments...</span>
+                                    <RefreshCw className="h-6 w-6 animate-spin text-yellow-400"/>
+                                    <span className="ml-2 text-gray-600 dark:text-gray-300">Loading assignments...</span>
                                 </div>
                             ) : (
                                 <DataTable
@@ -1448,20 +1443,19 @@ export default function AssignmentsOverview() {
                         </CardContent>
                     </Card>
 
-
                     {/* Filtered empty state */}
                     {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
-                                    <div className="text-gray-400 mb-4">
+                                    <div className="text-gray-400 dark:text-gray-500 mb-4">
                                         {searchQuery ? <Search className="h-12 w-12 mx-auto"/> :
                                             <Filter className="h-12 w-12 mx-auto"/>}
                                     </div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                         {searchQuery ? 'No assignments match your search' : 'No assignments match your filters'}
                                     </h3>
-                                    <p className="text-gray-600 mb-4">
+                                    <p className="text-gray-600 dark:text-gray-300 mb-4">
                                         {searchQuery
                                             ? 'Try adjusting your search terms or clearing filters.'
                                             : 'Try adjusting your filter criteria or clear all filters to see more results.'}
@@ -1486,57 +1480,51 @@ export default function AssignmentsOverview() {
             />
 
             {/* Filter Details Dialog */}
+            {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <Settings className="h-5 w-5"/>
+                            <Settings className="h-5 w-5" />
                             {selectedFilter?.displayName || 'Filter Details'}
                         </DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="text-gray-600 dark:text-gray-300">
                             {selectedFilter?.description || 'Assignment filter information and rules'}
                         </DialogDescription>
                     </DialogHeader>
 
                     {selectedFilter ? (
                         <div className="space-y-6">
-                            {/* Filter Info */}
-                            <div
-                                className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter
-                                        ID</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
                                     <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management
-                                        Type</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
                                     <div className="flex items-center gap-2">
                                         {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default"
-                                                   className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
-                                                <Shield className="h-3 w-3 mr-1"/>
-                                                Include
+                                            <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
+                                                <Computer className="h-3 w-3 mr-1" />
+                                                Devices
                                             </Badge>
                                         ) : (
-                                            <Badge variant="destructive"
-                                                   className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
-                                                <ShieldCheck className="h-3 w-3 mr-1"/>
-                                                Exclude
+                                            <Badge variant="default" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
+                                                <Blocks className="h-3 w-3 mr-1" />
+                                                Apps
                                             </Badge>
                                         )}
+
                                     </div>
                                 </div>
                                 <div>
-                                    <label
-                                        className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
-                                    <p className="text-sm text-gray-900 dark:text-gray-100">
-                                        {selectedFilter.platform === 0 ? 'All' :
-                                            selectedFilter.platform === 1 ? 'Android' :
-                                                selectedFilter.platform === 2 ? 'iOS' :
-                                                    selectedFilter.platform === 3 ? 'macOS' :
-                                                        selectedFilter.platform === 4 ? 'Windows' :
-                                                            `Platform ${selectedFilter.platform}`}
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
+                                    <p className="text-sm text-gray-900 dark:text-gray-100">    {selectedFilter.platform === 0 ? 'All' :
+                                        selectedFilter.platform === 1 ? 'Android' :
+                                            selectedFilter.platform === 2 ? 'iOS' :
+                                                selectedFilter.platform === 3 ? 'macOS' :
+                                                    selectedFilter.platform === 4 ? 'Windows' :
+                                                        `Platform ${selectedFilter.platform}`}
                                     </p>
                                 </div>
                             </div>
@@ -1544,47 +1532,38 @@ export default function AssignmentsOverview() {
                             {/* Description */}
                             {selectedFilter.description && (
                                 <div>
-                                    <label
-                                        className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
-                                    <pre
-                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                         <code className="whitespace-pre-wrap break-all">
-                                             {selectedFilter.description}
-
-                                         </code>
-                                    </pre>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <code className="whitespace-pre-wrap break-all">
+                                        {selectedFilter.description}
+                                    </code>
+                                </pre>
                                 </div>
                             )}
 
-                            {/* Filter Rule */}
                             {selectedFilter.rule && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter
-                                        Rule</label>
-                                    <pre
-                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                        <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
-                                    </pre>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
+                                </pre>
                                 </div>
                             )}
 
-                            {/* Additional Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="text-sm font-medium text-gray-600">Created</label>
-                                        <p className="text-sm">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
+                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Created</label>
+                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-600">Last Modified</label>
-                                        <p className="text-sm">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
+                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Last Modified</label>
+                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
                                     </div>
                                 </div>
 
-                                {/* Role Scope Tags */}
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 block mb-2">Role Scope
-                                        Tags</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Role Scope Tags</label>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
                                             selectedFilter.roleScopeTags.map((tag, index) => (
@@ -1593,7 +1572,7 @@ export default function AssignmentsOverview() {
                                                 </Badge>
                                             ))
                                         ) : (
-                                            <span className="text-sm text-gray-500">No role scope tags</span>
+                                            <span className="text-sm text-gray-500 dark:text-gray-400">No role scope tags</span>
                                         )}
                                     </div>
                                 </div>
@@ -1601,7 +1580,7 @@ export default function AssignmentsOverview() {
                         </div>
                     ) : (
                         <div className="text-center py-8">
-                            <p className="text-gray-500">Filter not found</p>
+                            <p className="text-gray-500 dark:text-gray-400">Filter not found</p>
                         </div>
                     )}
                 </DialogContent>

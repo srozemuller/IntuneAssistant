@@ -16,7 +16,7 @@ export default function AccountOverview() {
         return (
             <div className="p-6">
                 <div className="text-center">
-                    <p className="text-gray-500">No account information available</p>
+                    <p className="text-gray-500 dark:text-gray-400">No account information available</p>
                     <Button onClick={() => router.back()} className="mt-4">
                         Go Back
                     </Button>
@@ -39,8 +39,8 @@ export default function AccountOverview() {
                 >
                     ← Back
                 </Button>
-                <h1 className="text-3xl font-bold text-gray-900">Account Overview</h1>
-                <p className="text-gray-600 mt-2">Manage your account information and settings</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Account Overview</h1>
+                <p className="text-gray-600 dark:text-gray-300 mt-2">Manage your account information and settings</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -54,34 +54,34 @@ export default function AccountOverview() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                                <User className="h-8 w-8 text-gray-600" />
+                            <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                                <User className="h-8 w-8 text-gray-600 dark:text-gray-300" />
                             </div>
                             <div>
                                 <h3 className="text-lg font-semibold">{account.name || 'Unknown User'}</h3>
-                                <p className="text-gray-600">{account.username}</p>
+                                <p className="text-gray-600 dark:text-gray-300">{account.username}</p>
                             </div>
                         </div>
 
                         <div className="space-y-3">
                             <div className="flex items-center gap-3">
-                                <Mail className="h-4 w-4 text-gray-500" />
+                                <Mail className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <div>
                                     <p className="text-sm font-medium">Email</p>
-                                    <p className="text-sm text-gray-600">{account.username}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">{account.username}</p>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <Building className="h-4 w-4 text-gray-500" />
+                                <Building className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <div>
                                     <p className="text-sm font-medium">Display Name</p>
-                                    <p className="text-sm text-gray-600">{account.name || 'Not available'}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">{account.name || 'Not available'}</p>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <Globe className="h-4 w-4 text-gray-500" />
+                                <Globe className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <div>
                                     <p className="text-sm font-medium">Environment</p>
                                     <Badge variant="outline" className="mt-1">
@@ -104,9 +104,9 @@ export default function AccountOverview() {
                     <CardContent className="space-y-4">
                         <div className="space-y-3">
                             <div>
-                                <p className="text-sm font-medium text-gray-700">Tenant ID</p>
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Tenant ID</p>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                    <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                                         {account.tenantId}
                                     </code>
                                     <Button
@@ -121,9 +121,9 @@ export default function AccountOverview() {
                             </div>
 
                             <div>
-                                <p className="text-sm font-medium text-gray-700">Home Account ID</p>
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Home Account ID</p>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <code className="text-xs bg-gray-100 px-2 py-1 rounded break-all">
+                                    <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded break-all">
                                         {account.homeAccountId}
                                     </code>
                                     <Button
@@ -138,9 +138,9 @@ export default function AccountOverview() {
                             </div>
 
                             <div>
-                                <p className="text-sm font-medium text-gray-700">Local Account ID</p>
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Local Account ID</p>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <code className="text-xs bg-gray-100 px-2 py-1 rounded break-all">
+                                    <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded break-all">
                                         {account.localAccountId}
                                     </code>
                                     <Button
@@ -168,25 +168,25 @@ export default function AccountOverview() {
                     <CardContent className="space-y-4">
                         <div className="space-y-3">
                             <div>
-                                <p className="text-sm font-medium text-gray-700">Authority Type</p>
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Authority Type</p>
                                 <Badge variant="secondary" className="mt-1">
                                     {account.authorityType || 'MSSTS'}
                                 </Badge>
                             </div>
 
                             <div>
-                                <p className="text-sm font-medium text-gray-700">Cloud Environment</p>
-                                <p className="text-sm text-gray-600 mt-1">{account.environment}</p>
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Cloud Environment</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{account.environment}</p>
                             </div>
 
                             <div>
-                                <p className="text-sm font-medium text-gray-700">ID Token Claims</p>
-                                <div className="mt-2 p-3 bg-gray-50 rounded-md">
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">ID Token Claims</p>
+                                <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
                                     <div className="grid grid-cols-2 gap-2 text-xs">
                                         {account.idTokenClaims && Object.entries(account.idTokenClaims).slice(0, 6).map(([key, value]) => (
                                             <div key={key} className="truncate">
                                                 <span className="font-medium">{key}:</span>
-                                                <span className="ml-1 text-gray-600">
+                                                <span className="ml-1 text-gray-600 dark:text-gray-300">
                                                     {typeof value === 'string' ? value : JSON.stringify(value)}
                                                 </span>
                                             </div>

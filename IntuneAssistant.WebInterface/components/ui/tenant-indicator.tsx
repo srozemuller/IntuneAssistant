@@ -18,7 +18,8 @@ export function TenantIndicator() {
     };
 
     return (
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b animate-in slide-in-from-top duration-300">
+        <div className="sticky top-0 z-40 bg-gradient-to-r from-yellow-50 via-yellow-100/80 to-amber-50 dark:from-yellow-950/90 dark:via-yellow-900/80 dark:to-amber-950/90 backdrop-blur supports-[backdrop-filter]:bg-yellow-50/60 dark:supports-[backdrop-filter]:bg-yellow-950/60 border-b border-yellow-200/50 dark:border-yellow-800/50 animate-in slide-in-from-top duration-300 shadow-sm">
+
             <div className="px-6 py-3">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">

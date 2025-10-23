@@ -134,7 +134,7 @@ export default function DeviceConfigurationLandingPage() {
     return (
         <div className="space-y-8">
             {/* Hero Section */}
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 p-8 text-white">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 dark:from-yellow-500/80 dark:via-yellow-600/80 dark:to-amber-700/80 p-8 text-white backdrop-blur-sm border border-yellow-300/20 dark:border-yellow-400/20 shadow-xl">
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
@@ -156,12 +156,6 @@ export default function DeviceConfigurationLandingPage() {
                             <Link href="/devices/overview">
                                 <BarChart3 className="mr-2 h-4 w-4" />
                                 View Device Overview
-                            </Link>
-                        </Button>
-                        <Button size="lg" variant="outline" className="bg-white text-yellow-600 hover:bg-gray-100 font-semibold">
-                            <Link href="https://docs.intuneassistant.cloud" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                                <FileText className="mr-2 h-4 w-4" />
-                                    View Documentation
                             </Link>
                         </Button>
                     </div>

@@ -49,6 +49,7 @@ export default function CustomerPage() {
     const [showOnboardingModal, setShowOnboardingModal] = useState(false);
     const [updateError, setUpdateError] = useState<string | null>(null);
     const [showClickOverlay, setShowClickOverlay] = useState(false);
+    const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null);
 
     const currentTenantId = accounts[0]?.tenantId;
 
@@ -63,13 +64,10 @@ export default function CustomerPage() {
                     <div className="flex items-center gap-2 text-sm font-medium truncate w-full text-left">
                         <div
                         />
-                        <span
-                            className={`font-medium truncate transition-colors duration-200 ${
-                                selectedTenant?.id === tenant.id ? 'text-blue-600' : 'text-gray-900'
-                            }`}
-                        >
-                    {tenant.displayName}
-                </span>
+                        <span className="font-medium truncate transition-colors duration-200">
+    {tenant.displayName}
+</span>
+
                     </div>
                 );
             },
@@ -130,9 +128,11 @@ export default function CustomerPage() {
             key: "domainName",
             label: "Domain",
             render: (value: unknown) => (
-                <code className="text-xs bg-gray-100 px-2 py-1 rounded font-medium text-blue-600">
+                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-medium">
                     {value as string}
                 </code>
+
+
             ),
         },
         {
@@ -205,6 +205,7 @@ export default function CustomerPage() {
     const handleTenantSelect = (tenant: Tenant) => {
         setShowClickOverlay(true);
         setSelectedTenant(tenant);
+        setSelectedTenantId(tenant.id);
         setTimeout(() => {
             setShowClickOverlay(false);
         }, 200);
@@ -269,9 +270,10 @@ export default function CustomerPage() {
                 >
                     ← Back
                 </Button>
-                <h1 className="text-3xl font-bold text-gray-900">Customer Information</h1>
-                <p className="text-gray-600 mt-2">Manage customer details and tenant access</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Customer Information</h1>
+                <p className="text-gray-600 dark:text-gray-300 mt-2">Manage customer details and tenant access</p>
             </div>
+
 
             {/* Show update error if any */}
             {updateError && (
@@ -297,35 +299,35 @@ export default function CustomerPage() {
                     <CardContent className="space-y-4">
                         <div className="space-y-3">
                             <div className="flex items-center gap-3">
-                                <Building className="h-4 w-4 text-gray-500" />
+                                <Building className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <div>
                                     <p className="text-sm font-medium">Customer Name</p>
-                                    <p className="text-sm text-gray-600">{customerData.name}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">{customerData.name}</p>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <Home className="h-4 w-4 text-gray-500" />
+                                <Home className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <div>
                                     <p className="text-sm font-medium">Address</p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">
                                         {customerData.address || 'Not provided'}
                                     </p>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <Mail className="h-4 w-4 text-gray-500" />
+                                <Mail className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <div>
                                     <p className="text-sm font-medium">Primary Contact</p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">
                                         {customerData.primaryContactEmail || 'Not provided'}
                                     </p>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <Shield className="h-4 w-4 text-gray-500" />
+                                <Shield className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <div>
                                     <p className="text-sm font-medium">Account Type</p>
                                     <div className="flex gap-2 mt-1">
@@ -343,10 +345,10 @@ export default function CustomerPage() {
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <Users className="h-4 w-4 text-gray-500" />
+                                <Users className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 <div>
                                     <p className="text-sm font-medium">Home Tenant ID</p>
-                                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                    <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                                         {customerData.homeTenantId}
                                     </code>
                                 </div>
@@ -362,19 +364,20 @@ export default function CustomerPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center p-4 bg-blue-50 rounded-lg">
-                                <div className="text-2xl font-bold text-blue-600">
+                            <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                                <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
                                     {customerData.tenants.length}
                                 </div>
-                                <div className="text-sm text-blue-600">Total Tenants</div>
+                                <div className="text-sm font-medium text-blue-800 dark:text-blue-200">Total Tenants</div>
                             </div>
-                            <div className="text-center p-4 bg-green-50 rounded-lg">
-                                <div className="text-2xl font-bold text-green-600">
+                            <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                                <div className="text-2xl font-bold text-green-700 dark:text-green-300">
                                     {customerData.tenants.filter((t: Tenant) => t.isEnabled).length}
                                 </div>
-                                <div className="text-sm text-green-600">Enabled Tenants</div>
+                                <div className="text-sm font-medium text-green-800 dark:text-green-200">Enabled Tenants</div>
                             </div>
                         </div>
+
                     </CardContent>
                 </Card>
             </div>
@@ -417,12 +420,7 @@ export default function CustomerPage() {
                             const tenant = row as unknown as Tenant;
                             handleTenantSelect(tenant);
                         }}
-                        rowClassName={(row) => {
-                            const tenant = row as unknown as Tenant;
-                            return selectedTenant?.id === tenant.id
-                                ? 'bg-blue-50 border-l-4 border-blue-500 transition-all duration-300 ease-in-out'
-                                : 'transition-all duration-200 ease-in-out';
-                        }}
+                        selectedRows={selectedTenantId ? [selectedTenantId] : []} // Pass selected tenant ID
                         showPagination={true}
                     />
                 </CardContent>

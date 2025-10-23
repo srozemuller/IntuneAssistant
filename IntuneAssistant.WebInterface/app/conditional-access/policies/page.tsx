@@ -527,8 +527,8 @@ export default function ConditionalAccessPage() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600">Conditional Access Policies</h1>
-                    <p className="text-gray-600 mt-2">
+                    <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Conditional Access Policies</h1>
+                    <p className="text-muted-foreground mt-2">
                         Manage and monitor your Azure AD Conditional Access policies
                     </p>
                 </div>
@@ -566,7 +566,7 @@ export default function ConditionalAccessPage() {
                             <div className="text-gray-400 mb-6">
                                 <Shield className="h-16 w-16 mx-auto" />
                             </div>
-                            <h3 className="text-xl font-medium text-gray-900 mb-4">
+                            <h3 className="text-xl font-medium text-foreground mb-4">
                                 No Conditional Access policies found
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
@@ -585,8 +585,8 @@ export default function ConditionalAccessPage() {
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-500 animate-spin mb-4" />
+                            <h3 className="text-lg font-medium text-foreground mb-2">
                                 Loading Policies
                             </h3>
                             <p className="text-gray-600">
