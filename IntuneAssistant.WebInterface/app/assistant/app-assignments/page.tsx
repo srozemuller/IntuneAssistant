@@ -20,7 +20,7 @@ import {
     ShieldCheck,
     ChevronDown,
     ChevronUp,
-    XCircle
+    XCircle, Computer, Blocks
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
@@ -155,7 +155,7 @@ export default function AssignmentsOverview() {
     };
 
     const getUniqueFilterTypes = (): Option[] => [
-        { label: 'No Filter', value: 'None' },
+        { label: 'No Filter', value: 'none' },
         { label: 'Include Filter', value: 'include' },
         { label: 'Exclude Filter', value: 'exclude' }
     ];
@@ -288,7 +288,7 @@ export default function AssignmentsOverview() {
 
 
     const handleFilterClick = (filterId: string) => {
-        if (filterId && filterId !== 'None') {
+        if (filterId && filterId !== 'none') {
             // Find the filter in the already loaded filters
             const filter = filters.find(f => f.id === filterId);
             if (filter) {
@@ -334,7 +334,7 @@ export default function AssignmentsOverview() {
 
 
     const getFilterInfo = (filterId: string | null, filterType: string) => {
-        if (!filterId || filterId === 'None' || filterType === 'None') {
+        if (!filterId || filterId === 'none' || filterType === 'none') {
             return { displayName: 'None', managementType: null, platform: null };
         }
 
@@ -397,19 +397,19 @@ export default function AssignmentsOverview() {
                 const filterType = assignment.filterType;
 
                 // Check for "No Filter" selection
-                if (filterTypeFilter.includes('None')) {
-                    if (!filterType || filterType === 'None') {
+                if (filterTypeFilter.includes('none')) {
+                    if (!filterType || filterType === 'none' || filterType === 'None') {
                         return true;
                     }
                 }
 
                 // Check for include filter
-                if (filterTypeFilter.includes('include') && filterType === 'Include') {
+                if (filterTypeFilter.includes('include') && filterType === 'include') {
                     return true;
                 }
 
                 // Check for exclude filter
-                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') {
+                if (filterTypeFilter.includes('exclude') && filterType === 'exclude') {
                     return true;
                 }
 
@@ -620,7 +620,7 @@ export default function AssignmentsOverview() {
                                     Inc
                                 </Badge>
                             ) : (
-                                <Badge variant="destructive" className="text-xs bg-red-100 text-red-800 border-red-200 px-1 py-0">
+                                <Badge variant="destructive" className="text-xs bg-red-100 text-white border-red-200 px-1 py-0">
                                     <ShieldCheck className="h-2 w-2 mr-1" />
                                     Exc
                                 </Badge>
@@ -1052,16 +1052,17 @@ export default function AssignmentsOverview() {
                                     <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
                                     <div className="flex items-center gap-2">
                                         {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
-                                                <Shield className="h-3 w-3 mr-1" />
-                                                Include
+                                            <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
+                                                <Computer className="h-3 w-3 mr-1" />
+                                                Devices
                                             </Badge>
                                         ) : (
-                                            <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
-                                                <ShieldCheck className="h-3 w-3 mr-1" />
-                                                Exclude
+                                            <Badge variant="default" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
+                                                <Blocks className="h-3 w-3 mr-1" />
+                                                Apps
                                             </Badge>
                                         )}
+
                                     </div>
                                 </div>
                                 <div>

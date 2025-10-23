@@ -19,7 +19,7 @@ import {
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, XCircle
+    ChevronUp, XCircle, Computer, Blocks
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
@@ -1480,115 +1480,110 @@ export default function AssignmentsOverview() {
             />
 
             {/* Filter Details Dialog */}
-                <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
-            <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Settings className="h-5 w-5"/>
-                        {selectedFilter?.displayName || 'Filter Details'}
-                    </DialogTitle>
-                    <DialogDescription>
-                        {selectedFilter?.description || 'Assignment filter information and rules'}
-                    </DialogDescription>
-                </DialogHeader>
+            {/* Filter Details Dialog */}
+            <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
+                <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Settings className="h-5 w-5" />
+                            {selectedFilter?.displayName || 'Filter Details'}
+                        </DialogTitle>
+                        <DialogDescription className="text-gray-600 dark:text-gray-300">
+                            {selectedFilter?.description || 'Assignment filter information and rules'}
+                        </DialogDescription>
+                    </DialogHeader>
 
-                {selectedFilter ? (
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border dark:border-gray-700">
-                            <div>
-                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
-                                <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
-
-                                <div className="flex items-center gap-2">
+                    {selectedFilter ? (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
+                                    <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
+                                    <div className="flex items-center gap-2">
                                         {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default"
-                                                   className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
-                                                <Shield className="h-3 w-3 mr-1"/>
-                                                Include
+                                            <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
+                                                <Computer className="h-3 w-3 mr-1" />
+                                                Devices
                                             </Badge>
                                         ) : (
-                                            <Badge variant="destructive"
-                                                   className=" text-red-800  dark:bg-red-900 dark:text-red-300 dark:border-red-700">
-                                                <ShieldCheck className="h-3 w-3 mr-1"/>
-                                                Exclude
+                                            <Badge variant="default" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
+                                                <Blocks className="h-3 w-3 mr-1" />
+                                                Apps
                                             </Badge>
                                         )}
+
                                     </div>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
-                                    <p className="text-sm text-gray-900 dark:text-gray-100">
-                                        {selectedFilter.platform === 0 ? 'All' :
-                                            selectedFilter.platform === 1 ? 'Android' :
-                                                selectedFilter.platform === 2 ? 'iOS' :
-                                                    selectedFilter.platform === 3 ? 'macOS' :
-                                                        selectedFilter.platform === 4 ? 'Windows' :
-                                                            `Platform ${selectedFilter.platform}`}
+                                    <p className="text-sm text-gray-900 dark:text-gray-100">    {selectedFilter.platform === 0 ? 'All' :
+                                        selectedFilter.platform === 1 ? 'Android' :
+                                            selectedFilter.platform === 2 ? 'iOS' :
+                                                selectedFilter.platform === 3 ? 'macOS' :
+                                                    selectedFilter.platform === 4 ? 'Windows' :
+                                                        `Platform ${selectedFilter.platform}`}
                                     </p>
                                 </div>
                             </div>
 
-                        {/* Description */}
-                        {selectedFilter.description && (
-                            <div>
-                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
-                                <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                        <code className="whitespace-pre-wrap break-all">
-                                            {selectedFilter.description}
-                                        </code>
-                                    </pre>
-                            </div>
-                        )}
-
-                        {/* Filter Rule */}
-                        {selectedFilter.rule && (
-                            <div>
-                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
-                                <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                        <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
-                                    </pre>
-                            </div>
-                        )}
-
-
-                        {/* Additional Details */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
+                            {/* Description */}
+                            {selectedFilter.description && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Created</label>
-                                    <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <code className="whitespace-pre-wrap break-all">
+                                        {selectedFilter.description}
+                                    </code>
+                                </pre>
                                 </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Last Modified</label>
-                                    <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
-                                </div>
-                            </div>
+                            )}
 
-                            <div>
-                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Role Scope Tags</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
-                                        selectedFilter.roleScopeTags.map((tag, index) => (
-                                            <Badge key={index} variant="outline" className="text-xs">
-                                                {tag}
-                                            </Badge>
-                                        ))
-                                    ) : (
-                                        <span className="text-sm text-gray-500 dark:text-gray-400">No role scope tags</span>
-                                    )}
+                            {selectedFilter.rule && (
+                                <div>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
+                                </pre>
+                                </div>
+                            )}
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Created</label>
+                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Last Modified</label>
+                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Role Scope Tags</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
+                                            selectedFilter.roleScopeTags.map((tag, index) => (
+                                                <Badge key={index} variant="outline" className="text-xs">
+                                                    {tag}
+                                                </Badge>
+                                            ))
+                                        ) : (
+                                            <span className="text-sm text-gray-500 dark:text-gray-400">No role scope tags</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ) : (
-                    <div className="text-center py-8">
-                        <p className="text-gray-500 dark:text-gray-400">Filter not found</p>
-                    </div>
-                )}
-            </DialogContent>
+                    ) : (
+                        <div className="text-center py-8">
+                            <p className="text-gray-500 dark:text-gray-400">Filter not found</p>
+                        </div>
+                    )}
+                </DialogContent>
             </Dialog>
 
         </div>
