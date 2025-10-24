@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useTenant } from '@/contexts/TenantContext';
 import { Button } from '@/components/ui/button';
@@ -540,7 +540,13 @@ export default function ConditionalAccessPage() {
                                 Refresh
                             </Button>
                             <ExportButton
-                                exportData={prepareExportData()}
+                                exportOptions={[
+                                    {
+                                        label: "Standard Export",
+                                        data: prepareExportData(),
+                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                    }
+                                ]}
                                 variant="outline"
                                 size="sm"
                             />
@@ -783,7 +789,7 @@ export default function ConditionalAccessPage() {
                         <CardContent className="p-0">
                             {loading ? (
                                 <div className="flex items-center justify-center h-32">
-                                    <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                                    <RefreshCw className="h-6 w-6 animate-spin text-yellow-500" />
                                     <span className="ml-2 text-gray-600">Loading policies...</span>
                                 </div>
                             ) : (

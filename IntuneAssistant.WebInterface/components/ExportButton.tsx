@@ -23,29 +23,39 @@ export interface ExportData {
     stats?: Array<{ label: string; value: string | number }>;
 }
 
+interface ExportOption {
+    label: string;
+    data: ExportData;
+    formats?: ('csv' | 'pdf' | 'html')[]; // New optional property to specify allowed formats
+}
+
 interface ExportButtonProps {
-    exportData: ExportData;
-    variant?: 'default' | 'outline' | 'ghost';
-    size?: 'default' | 'sm' | 'lg';
+    data?: ExportData; // Keep for backward compatibility
+    exportOptions?: ExportOption[]; // New prop for multiple options
+    variant?: "default" | "outline" | "destructive" | "secondary" | "ghost" | "link";
+    size?: "default" | "sm" | "lg" | "icon";
     className?: string;
 }
 
-export function ExportButton({ exportData, variant = 'outline', size = 'default', className }: ExportButtonProps) {
+export function ExportButton({ data, exportOptions, variant = "default", size = "default", className }: ExportButtonProps) {
     const [isExporting, setIsExporting] = useState(false);
 
-    const exportToCSV = async () => {
+    const exportToCSV = async (dataToExport?: ExportData) => {
+        const exportData = dataToExport || data || (exportOptions && exportOptions.length === 1 ? exportOptions[0].data : null);
+        if (!exportData) return;
+
         setIsExporting(true);
         try {
-            const headers = exportData.columns.map(col => col.label);
-            const csvData = exportData.data.map(row =>
-                exportData.columns.map(col => {
+            const headers = exportData.columns.map((col: ExportColumn) => col.label);
+            const csvData = exportData.data.map((row: Record<string, unknown>) =>
+                exportData.columns.map((col: ExportColumn) => {
                     const value = col.getValue ? col.getValue(row) : row[col.key];
                     return String(value || '');
                 })
             );
 
             const csvContent = [headers, ...csvData]
-                .map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
+                .map((row: string[]) => row.map((field: string) => `"${String(field).replace(/"/g, '""')}"`).join(','))
                 .join('\n');
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -63,7 +73,10 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
         }
     };
 
-    const exportToPDF = async () => {
+    const exportToPDF = async (dataToExport?: ExportData) => {
+        const exportData = dataToExport || data || (exportOptions && exportOptions.length === 1 ? exportOptions[0].data : null);
+        if (!exportData) return;
+
         setIsExporting(true);
         try {
             const doc = new jsPDF();
@@ -88,7 +101,7 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
                 doc.text('Summary:', 14, startY);
                 startY += 6;
 
-                exportData.stats.forEach((stat, index) => {
+                exportData.stats.forEach((stat: { label: string; value: string | number }, index: number) => {
                     doc.setFontSize(10);
                     doc.text(`${stat.label}: ${stat.value}`, 14, startY + (index * 6));
                 });
@@ -96,9 +109,9 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
             }
 
             // Prepare table data
-            const tableHeaders = exportData.columns.map(col => col.label);
-            const tableData = exportData.data.map(row =>
-                exportData.columns.map(col => {
+            const tableHeaders = exportData.columns.map((col: ExportColumn) => col.label);
+            const tableData = exportData.data.map((row: Record<string, unknown>) =>
+                exportData.columns.map((col: ExportColumn) => {
                     const value = col.getValue ? col.getValue(row) : row[col.key];
                     return String(value || '');
                 })
@@ -106,7 +119,7 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
 
             // Calculate column widths
             const totalWidth = 180; // Available width
-            const columnWidths = exportData.columns.map(col => {
+            const columnWidths = exportData.columns.map((col: ExportColumn) => {
                 if (col.width) return col.width;
                 return totalWidth / exportData.columns.length;
             });
@@ -129,7 +142,7 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
                     fillColor: [248, 250, 252]
                 },
                 columnStyles: Object.fromEntries(
-                    columnWidths.map((width, index) => [index, { cellWidth: width }])
+                    columnWidths.map((width: number, index: number) => [index, { cellWidth: width }])
                 ),
                 margin: { top: startY, right: 14, bottom: 20, left: 14 },
                 didDrawPage: (data) => {
@@ -145,12 +158,15 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
         }
     };
 
-    const exportToHTML = async () => {
+    const exportToHTML = async (dataToExport?: ExportData) => {
+        const exportData = dataToExport || data || (exportOptions && exportOptions.length === 1 ? exportOptions[0].data : null);
+        if (!exportData) return;
+
         setIsExporting(true);
         try {
             const statsHtml = exportData.stats ? `
                 <div class="stats">
-                    ${exportData.stats.map(stat => `
+                    ${exportData.stats.map((stat: { label: string; value: string | number }) => `
                         <div class="stat-card">
                             <div class="stat-number">${stat.value}</div>
                             <div class="stat-label">${stat.label}</div>
@@ -265,13 +281,13 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
     <table>
         <thead>
             <tr>
-                ${exportData.columns.map(col => `<th>${col.label}</th>`).join('')}
+                ${exportData.columns.map((col: ExportColumn) => `<th>${col.label}</th>`).join('')}
             </tr>
         </thead>
         <tbody>
-            ${exportData.data.map(row => `
+            ${exportData.data.map((row: Record<string, unknown>) => `
                 <tr>
-                    ${exportData.columns.map(col => {
+                    ${exportData.columns.map((col: ExportColumn) => {
                 const value = col.getValue ? col.getValue(row) : row[col.key];
                 return `<td class="truncate" title="${String(value || '')}">${String(value || '')}</td>`;
             }).join('')}
@@ -301,6 +317,72 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
         }
     };
 
+    // Show export options with format sub-menus when multiple export options exist
+    if (exportOptions && exportOptions.length > 1) {
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant={variant} size={size} className={`flex items-center gap-2 ${className || ''}`} disabled={isExporting}>
+                        <Download className="h-4 w-4" />
+                        {isExporting ? 'Exporting...' : 'Export'}
+                        <ChevronDown className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                    {exportOptions.map((option, index) => {
+                        const allowedFormats = option.formats || ['csv', 'pdf', 'html'];
+
+                        return (
+                            <div key={index}>
+                                <div className="px-2 py-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">
+                                    {option.label}
+                                </div>
+                                {allowedFormats.includes('csv') && (
+                                    <DropdownMenuItem
+                                        onClick={() => exportToCSV(option.data)}
+                                        className="flex items-center gap-2 pl-4"
+                                        disabled={isExporting}
+                                    >
+                                        <FileSpreadsheet className="h-4 w-4" />
+                                        Export as CSV
+                                    </DropdownMenuItem>
+                                )}
+                                {allowedFormats.includes('pdf') && (
+                                    <DropdownMenuItem
+                                        onClick={() => exportToPDF(option.data)}
+                                        className="flex items-center gap-2 pl-4"
+                                        disabled={isExporting}
+                                    >
+                                        <FileText className="h-4 w-4" />
+                                        Export as PDF
+                                    </DropdownMenuItem>
+                                )}
+                                {allowedFormats.includes('html') && (
+                                    <DropdownMenuItem
+                                        onClick={() => exportToHTML(option.data)}
+                                        className="flex items-center gap-2 pl-4"
+                                        disabled={isExporting}
+                                    >
+                                        <Globe className="h-4 w-4" />
+                                        Export as HTML
+                                    </DropdownMenuItem>
+                                )}
+                                {index < exportOptions.length - 1 && (
+                                    <div className="border-b border-gray-200 dark:border-gray-700 my-1" />
+                                )}
+                            </div>
+                        );
+                    })}
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    }
+
+    // Single export option or backward compatibility
+    const exportData = data || (exportOptions && exportOptions.length === 1 ? exportOptions[0].data : null);
+
+    if (!exportData) return null;
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -311,15 +393,15 @@ export function ExportButton({ exportData, variant = 'outline', size = 'default'
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={exportToCSV} className="flex items-center gap-2" disabled={isExporting}>
+                <DropdownMenuItem onClick={() => exportToCSV()} className="flex items-center gap-2" disabled={isExporting}>
                     <FileSpreadsheet className="h-4 w-4" />
                     Export as CSV
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={exportToPDF} className="flex items-center gap-2" disabled={isExporting}>
+                <DropdownMenuItem onClick={() => exportToPDF()} className="flex items-center gap-2" disabled={isExporting}>
                     <FileText className="h-4 w-4" />
                     Export as PDF
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={exportToHTML} className="flex items-center gap-2" disabled={isExporting}>
+                <DropdownMenuItem onClick={() => exportToHTML()} className="flex items-center gap-2" disabled={isExporting}>
                     <Globe className="h-4 w-4" />
                     Export as HTML
                 </DropdownMenuItem>

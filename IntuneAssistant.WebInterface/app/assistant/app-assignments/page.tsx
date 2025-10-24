@@ -160,6 +160,67 @@ export default function AssignmentsOverview() {
         { label: 'Exclude Filter', value: 'exclude' }
     ];
 
+    const prepareRolloutExportData = (): ExportData => {
+        const exportColumns: ExportColumn[] = [
+            {
+                key: 'resourceName',
+                label: 'PolicyName',
+                width: 30,
+                getValue: (row) => String(row.resourceName || 'N/A')
+            },
+            {
+                key: 'targetName',
+                label: 'GroupName',
+                width: 30,
+                getValue: (row) => String(row.targetName || 'N/A')
+            },
+            {
+                key: 'assignmentType',
+                label: 'AssignmentDirection',
+                width: 25,
+                getValue: (row) => String(row.assignmentDirection || '')
+            },
+            {
+                key: '',
+                label: 'AssignmentAction',
+                width: 25,
+                getValue: () => String('Add') // or whatever default action you want
+            },
+            {
+                key: 'filterId',
+                label: 'Filter',
+                width: 25,
+                getValue: (row) => {
+                    const filterId = row.filterId as string | null;
+                    if (!filterId || filterId === 'None') return 'None';
+                    const filterInfo = getFilterInfo(filterId, String(row.filterType));
+                    return filterInfo.displayName;
+                }
+            },
+            {
+                key: 'filterType',
+                label: 'Filter Type',
+                width: 25,
+                getValue: (row) => String(row.filterType || '')
+            }
+        ];
+
+        const rolloutStats = [
+            { label: 'Total Rollouts', value: filteredAssignments.length },
+            { label: 'Assigned Policies', value: filteredAssignments.filter(a => a.isAssigned).length },
+            { label: 'Groups Targeted', value: new Set(filteredAssignments.map(a => a.targetName)).size },
+            { label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size }
+        ];
+
+        return {
+            data: filteredAssignments, // Use your filtered assignments data
+            columns: exportColumns,
+            filename: 'rollouts-overview',
+            title: 'Rollouts Overview',
+            description: 'Detailed view of all Intune rollouts across your organization',
+            stats: rolloutStats
+        };
+    };
 
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
@@ -209,6 +270,12 @@ export default function AssignmentsOverview() {
                     const filterInfo = getFilterInfo(filterId, String(row.filterType));
                     return filterInfo.displayName;
                 }
+            },
+            {
+                key: 'filterType',
+                label: 'Filter Type',
+                width: 25,
+                getValue: (row) => String(row.filterType || '')
             }
         ];
 
@@ -531,18 +598,31 @@ export default function AssignmentsOverview() {
                 const assignmentType = String(row.assignmentType);
                 const isAssigned = Boolean(row.isAssigned);
                 const targetId = row.targetId as string;
-                const group = row.group as { groupCount?: { userCount: number; deviceCount: number; groupCount: number } } | undefined;
+                const group = row.group as {
+                    id: string;
+                    displayName: string;
+                    description: string;
+                    membershipRule: string | null;
+                    groupCount?: { userCount: number; deviceCount: number; groupCount: number }
+                } | undefined;
 
                 if (isAssigned && (assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && targetId) {
                     return (
                         <div className="space-y-1">
-                            <button
-                                onClick={() => handleResourceClick(targetId, assignmentType)}
-                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
-                                title={targetName}
-                            >
-                                {targetName}
-                            </button>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => handleResourceClick(targetId, assignmentType)}
+                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate flex-1 text-left"
+                                    title={targetName}
+                                >
+                                    {targetName}
+                                </button>
+                                {group?.membershipRule && (
+                                    <span title="Dynamic Group">
+            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0"/>
+        </span>
+                                )}
+                            </div>
                             {group?.groupCount && (
                                 <div className="flex gap-1 text-xs text-gray-500">
                                     <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
@@ -649,7 +729,18 @@ export default function AssignmentsOverview() {
                                 Refresh
                             </Button>
                             <ExportButton
-                                exportData={prepareExportData()}
+                                exportOptions={[
+                                    {
+                                        label: "Standard Export",
+                                        data: prepareExportData(),
+                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                    },
+                                    {
+                                        label: "Export for bulk assignments",
+                                        data: prepareRolloutExportData(),
+                                        formats: ['csv'] // Only CSV for rollout
+                                    }
+                                ]}
                                 variant="outline"
                                 size="sm"
                             />

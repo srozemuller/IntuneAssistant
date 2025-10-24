@@ -257,7 +257,17 @@ export default function PolicySettingsPage() {
                 <div className="flex gap-2">
                     {settings.length > 0 ? (
                         <>
-                            <ExportButton exportData={prepareExportData()} />
+                            <ExportButton
+                                exportOptions={[
+                                    {
+                                        label: "Standard Export",
+                                        data: prepareExportData(),
+                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                    }
+                                ]}
+                                variant="outline"
+                                size="sm"
+                            />
                             <Button onClick={fetchSettings} disabled={loading}>
                                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                                 Refresh
