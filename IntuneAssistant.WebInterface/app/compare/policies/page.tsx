@@ -93,14 +93,16 @@ export default function PolicyComparison() {
                 throw new Error('No response received from API');
             }
 
+            let allPolicies: Policy[] = [];
+
             // Handle the response data properly
             if (Array.isArray(response)) {
                 // Direct array response
-                setPolicies(response);
+                allPolicies = response;
             } else if (response.data) {
                 // Response with data field
                 if (Array.isArray(response.data)) {
-                    setPolicies(response.data);
+                    allPolicies = response.data;
                 } else {
                     // data is { url: string; message: string }
                     throw new Error(response.data.message || 'Failed to fetch policies');
@@ -108,6 +110,13 @@ export default function PolicyComparison() {
             } else {
                 throw new Error('Invalid response format');
             }
+
+            // Filter to only show ConfigurationPolicies
+            const configurationPolicies = allPolicies.filter(policy =>
+                policy.policyType === 'ConfigurationPolicies'
+            );
+
+            setPolicies(configurationPolicies);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch policies');
             console.error('Error fetching policies:', err);
@@ -115,6 +124,7 @@ export default function PolicyComparison() {
             setLoading(false);
         }
     };
+
 
 
     const SearchableSelect: React.FC<SearchableSelectProps> = ({
