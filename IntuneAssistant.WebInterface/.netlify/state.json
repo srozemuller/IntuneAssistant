@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Vriezenveen",
+			"country": {
+				"code": "NL",
+				"name": "The Netherlands"
+			},
+			"subdivision": {
+				"code": "OV",
+				"name": "Overijssel"
+			},
+			"timezone": "Europe/Amsterdam",
+			"latitude": 52.4152,
+			"longitude": 6.6235,
+			"postalCode": "7671"
+		},
+		"timestamp": 1759859633838
+	}
+}

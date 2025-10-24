@@ -1,0 +1,250 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  /* Remove or comment out these problematic font references */
+  /* --font-sans: var(--font-geist-sans); */
+  /* --font-mono: var(--font-geist-mono); */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  /* Your custom primary color: HSL 47.9 95.8% 53.1% converted to OKLCH */
+  --primary: oklch(0.861 0.173 91.911);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.531 0.191 108.5); /* Using your primary color for ring */
+  --chart-1: oklch(0.531 0.191 108.5); /* Primary color for chart */
+  --chart-2: oklch(0.6 0.15 108.5); /* Variations of your primary */
+  --chart-3: oklch(0.7 0.12 108.5);
+  --chart-4: oklch(0.8 0.08 108.5);
+  --chart-5: oklch(0.85 0.05 108.5);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.531 0.191 108.5); /* Your primary color */
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.531 0.191 108.5);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  /* Your primary color remains vibrant in dark mode */
+  --primary: oklch(0.861 0.173 91.911);
+  --primary-foreground: oklch(0.145 0 0); /* Dark text on bright primary */
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.531 0.191 108.5);
+  --chart-1: oklch(0.531 0.191 108.5);
+  --chart-2: oklch(0.6 0.15 108.5);
+  --chart-3: oklch(0.7 0.12 108.5);
+  --chart-4: oklch(0.8 0.08 108.5);
+  --chart-5: oklch(0.85 0.05 108.5);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.531 0.191 108.5);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.531 0.191 108.5);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Link styling with primary color - ONLY in tables */
+  table a {
+    color: #FACC16 !important;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  table a:hover {
+    opacity: 0.8;
+  }
+
+  table a:visited {
+    color: #FACC16 !important;
+  }
+
+  /* Dark mode table link styling */
+  .dark table a {
+    color: #FACC16 !important;
+  }
+
+  .dark table a:hover {
+    opacity: 0.9;
+  }
+
+  .dark table a:visited {
+    color: #FACC16 !important;
+  }
+
+  /* Dark mode table styling with custom colors */
+  .dark table {
+    @apply text-gray-100 bg-gray-900/50;
+  }
+
+  .dark thead {
+    background-color: #1A1816 !important;
+    border-bottom: 1px solid rgba(156, 163, 175, 0.2);
+  }
+
+  .dark thead th {
+    background-color: #1A1816 !important;
+    color: #f3f4f6 !important;
+    border-color: rgba(156, 163, 175, 0.2) !important;
+    font-weight: 600;
+  }
+
+  .dark tbody tr {
+    border-color: rgba(156, 163, 175, 0.1) !important;
+    background-color: transparent;
+  }
+
+  .dark tbody tr:hover {
+    background-color: rgba(250, 204, 22, 0.05) !important;
+    transition: background-color 0.2s ease;
+  }
+
+  .dark tbody td {
+    color: #e5e7eb !important;
+    border-color: rgba(156, 163, 175, 0.1) !important;
+  }
+
+  /* Light mode table styling */
+  table {
+    @apply text-gray-900 bg-white;
+  }
+
+  thead {
+    @apply bg-gray-50;
+  }
+
+  thead th {
+    @apply text-gray-900 bg-gray-50 border-gray-200 font-semibold;
+  }
+
+  tbody tr {
+    @apply border-gray-200;
+  }
+
+  tbody tr:hover {
+    @apply bg-gray-50;
+  }
+
+  tbody td {
+    @apply text-gray-900 border-gray-200;
+  }
+
+  /* Enhanced table styling for better visual hierarchy */
+  .dark th {
+    background: linear-gradient(135deg, #1A1816 0%, #252321 100%) !important;
+    border-top: 1px solid rgba(250, 204, 22, 0.1);
+    border-bottom: 2px solid rgba(250, 204, 22, 0.2);
+  }
+
+  .dark td {
+    background-color: rgba(26, 24, 22, 0.3);
+  }
+
+  .dark tbody tr:nth-child(even) td {
+    background-color: rgba(26, 24, 22, 0.15);
+  }
+
+  .dark tbody tr:nth-child(odd) td {
+    background-color: rgba(26, 24, 22, 0.05);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(26, 24, 22, 0.3);
+    border-radius: 2px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(250, 204, 22, 0.5);
+    border-radius: 2px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(250, 204, 22, 0.7);
+  }
+  .row-selected {
+    background-color: #eff6ff !important; /* blue-50 */
+  }
+}
