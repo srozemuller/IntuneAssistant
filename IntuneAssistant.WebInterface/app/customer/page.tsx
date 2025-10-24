@@ -50,6 +50,7 @@ export default function CustomerPage() {
     const [updateError, setUpdateError] = useState<string | null>(null);
     const [showClickOverlay, setShowClickOverlay] = useState(false);
     const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null);
+    const { isActiveCustomer, customerLoading } = useCustomer();
 
     const currentTenantId = accounts[0]?.tenantId;
 
@@ -135,7 +136,8 @@ export default function CustomerPage() {
 
             ),
         },
-        {
+        // Only include rolloutEnabled column if customer is active
+        ...(isActiveCustomer ? [{
             key: "rolloutEnabled",
             label: "Rollout Enabled",
             render: (value: unknown, row: Record<string, unknown>) => {
@@ -158,7 +160,7 @@ export default function CustomerPage() {
                     </div>
                 );
             },
-        },
+        }] : []),
     ];
 
     const updateTenantStatus = async (tenantId: string, isEnabled: boolean) => {
@@ -334,8 +336,8 @@ export default function CustomerPage() {
                                         <Badge variant={customerData.isMsp ? "default" : "secondary"}>
                                             {customerData.isMsp ? 'MSP' : 'Direct'}
                                         </Badge>
-                                        <Badge variant={customerData.isActive ? "default" : "destructive"}>
-                                            {customerData.isActive ? 'Active' : 'Inactive'}
+                                        <Badge variant={customerData.isActive ? "default" : "outline"}>
+                                            {customerData.isActive ? 'Active' : 'Community'}
                                         </Badge>
                                         <Badge variant={customerData.isGdap ? "default" : "secondary"}>
                                             {customerData.isGdap ? 'Gdap' : 'No Gdap'}
