@@ -118,6 +118,68 @@ export default function AssignmentsOverview() {
         {label: 'Exclude Filter', value: 'exclude'}
     ];
 
+    const prepareRolloutExportData = (): ExportData => {
+        const exportColumns: ExportColumn[] = [
+            {
+                key: 'resourceName',
+                label: 'PolicyName',
+                width: 30,
+                getValue: (row) => String(row.resourceName || 'N/A')
+            },
+            {
+                key: 'targetName',
+                label: 'GroupName',
+                width: 30,
+                getValue: (row) => String(row.targetName || 'N/A')
+            },
+            {
+                key: 'assignmentType',
+                label: 'AssignmentDirection',
+                width: 25,
+                getValue: (row) => String(row.assignmentDirection || '')
+            },
+            {
+                key: '',
+                label: 'AssignmentAction',
+                width: 25,
+                getValue: () => String('Add') // or whatever default action you want
+            },
+            {
+                key: 'filterId',
+                label: 'Filter',
+                width: 25,
+                getValue: (row) => {
+                    const filterId = row.filterId as string | null;
+                    if (!filterId || filterId === 'None') return 'None';
+                    const filterInfo = getFilterInfo(filterId, String(row.filterType));
+                    return filterInfo.displayName;
+                }
+            },
+            {
+                key: 'filterType',
+                label: 'Filter Type',
+                width: 25,
+                getValue: (row) => String(row.filterType || '')
+            }
+        ];
+
+        const rolloutStats = [
+            {label: 'Total Rollouts', value: filteredAssignments.length},
+            {label: 'Assigned Policies', value: filteredAssignments.filter(a => a.isAssigned).length},
+            {label: 'Groups Targeted', value: new Set(filteredAssignments.map(a => a.targetName)).size},
+            {label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size}
+        ];
+
+        return {
+            data: filteredAssignments, // Use your filtered assignments data
+            columns: exportColumns,
+            filename: 'rollouts-overview',
+            title: 'Rollouts Overview',
+            description: 'Detailed view of all Intune rollouts across your organization',
+            stats: rolloutStats
+        };
+    };
+
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
             {
@@ -166,6 +228,12 @@ export default function AssignmentsOverview() {
                     const filterInfo = getFilterInfo(filterId, String(row.filterType));
                     return filterInfo.displayName;
                 }
+            },
+            {
+                key: 'filterType',
+                label: 'Filter Type',
+                width: 25,
+                getValue: (row) => String(row.filterType || '')
             }
         ];
 
@@ -527,19 +595,30 @@ export default function AssignmentsOverview() {
                 const isAssigned = Boolean(row.isAssigned);
                 const targetId = row.targetId as string;
                 const group = row.group as {
+                    id: string;
+                    displayName: string;
+                    description: string;
+                    membershipRule: string | null;
                     groupCount?: { userCount: number; deviceCount: number; groupCount: number }
                 } | undefined;
 
                 if (isAssigned && (assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && targetId) {
                     return (
                         <div className="space-y-1">
-                            <button
-                                onClick={() => handleResourceClick(targetId, assignmentType)}
-                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
-                                title={targetName}
-                            >
-                                {targetName}
-                            </button>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => handleResourceClick(targetId, assignmentType)}
+                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate flex-1 text-left"
+                                    title={targetName}
+                                >
+                                    {targetName}
+                                </button>
+                                {group?.membershipRule && (
+                                    <span title="Dynamic Group">
+            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0"/>
+        </span>
+                                )}
+                            </div>
                             {group?.groupCount && (
                                 <div className="flex gap-1 text-xs text-gray-500">
                                     <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
@@ -643,7 +722,6 @@ export default function AssignmentsOverview() {
                     </p>
                 </div>
 
-
                 <div className="flex gap-2">
                     {assignments.length > 0 ? (
                         <>
@@ -652,7 +730,18 @@ export default function AssignmentsOverview() {
                                 Refresh
                             </Button>
                             <ExportButton
-                                exportData={prepareExportData()}
+                                exportOptions={[
+                                    {
+                                        label: "Standard Export",
+                                        data: prepareExportData(),
+                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                    },
+                                    {
+                                        label: "Export for bulk assignments",
+                                        data: prepareRolloutExportData(),
+                                        formats: ['csv'] // Only CSV for rollout
+                                    }
+                                ]}
                                 variant="outline"
                                 size="sm"
                             />
@@ -668,6 +757,7 @@ export default function AssignmentsOverview() {
                         </Button>
                     )}
                 </div>
+
             </div>
 
             {/* Show welcome card when no assignments are loaded and not loading */}
@@ -976,14 +1066,12 @@ export default function AssignmentsOverview() {
                 }}
             />
 
-
-            {/* Filter Details Dialog */}
             {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <Settings className="h-5 w-5" />
+                            <Settings className="h-5 w-5"/>
                             {selectedFilter?.displayName || 'Filter Details'}
                         </DialogTitle>
                         <DialogDescription className="text-gray-600 dark:text-gray-300">
@@ -993,22 +1081,27 @@ export default function AssignmentsOverview() {
 
                     {selectedFilter ? (
                         <div className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div
+                                className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter
+                                        ID</label>
                                     <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management
+                                        Type</label>
                                     <div className="flex items-center gap-2">
                                         {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
-                                                <Computer className="h-3 w-3 mr-1" />
+                                            <Badge variant="default"
+                                                   className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
+                                                <Computer className="h-3 w-3 mr-1"/>
                                                 Devices
                                             </Badge>
                                         ) : (
-                                            <Badge variant="default" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
-                                                <Blocks className="h-3 w-3 mr-1" />
+                                            <Badge variant="default"
+                                                   className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
+                                                <Blocks className="h-3 w-3 mr-1"/>
                                                 Apps
                                             </Badge>
                                         )}
@@ -1016,7 +1109,8 @@ export default function AssignmentsOverview() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
+                                    <label
+                                        className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
                                     <p className="text-sm text-gray-900 dark:text-gray-100">    {selectedFilter.platform === 0 ? 'All' :
                                         selectedFilter.platform === 1 ? 'Android' :
                                             selectedFilter.platform === 2 ? 'iOS' :
@@ -1030,8 +1124,10 @@ export default function AssignmentsOverview() {
                             {/* Description */}
                             {selectedFilter.description && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
-                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <label
+                                        className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
+                                    <pre
+                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                                     <code className="whitespace-pre-wrap break-all">
                                         {selectedFilter.description}
                                     </code>
@@ -1041,8 +1137,10 @@ export default function AssignmentsOverview() {
 
                             {selectedFilter.rule && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
-                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter
+                                        Rule</label>
+                                    <pre
+                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                                     <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
                                 </pre>
                                 </div>
@@ -1051,17 +1149,20 @@ export default function AssignmentsOverview() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Created</label>
+                                        <label
+                                            className="text-sm font-medium text-gray-600 dark:text-gray-300">Created</label>
                                         <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Last Modified</label>
+                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Last
+                                            Modified</label>
                                         <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Role Scope Tags</label>
+                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Role
+                                        Scope Tags</label>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
                                             selectedFilter.roleScopeTags.map((tag, index) => (
