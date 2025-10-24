@@ -253,7 +253,8 @@ export function Sidebar() {
                 }
             ]
         },
-        {
+        // Only include Deployment section if customer is active
+        ...(isActiveCustomer ? [{
             title: "Deployment",
             // badge: "PRO",
             badgeColor: "bg-amber-500",
@@ -268,7 +269,7 @@ export function Sidebar() {
                     ]
                 }
             ]
-        },
+        }] : []),
         {
             title: "Compare",
             // badge: "PRO",
