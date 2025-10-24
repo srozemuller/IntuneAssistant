@@ -17,6 +17,7 @@ import {
     FileText,
     Users,
     Settings,
+    Info,
     BarChart3,
     Shield,
     Clock,
@@ -28,7 +29,12 @@ import {
     GitCompare,
     CheckSquare
 } from 'lucide-react';
-
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 export default function AssignmentManagerLandingPage() {
     const { isAuthenticated } = useAuth();
     const workflowFeatures = [
@@ -141,12 +147,11 @@ export default function AssignmentManagerLandingPage() {
                             <Target className="h-6 w-6" />
                         </div>
                         <Badge variant="secondary" className="bg-white/20 text-white border-white/30 flex items-center gap-1">
-                            <Crown className="h-3 w-3" />
-                            Premium Feature
+                            Bulk assignments
                         </Badge>
                     </div>
                     <h1 className="text-4xl font-bold mb-4">
-                        Assignment Manager (Rollout)
+                        Assignment Manager
                     </h1>
                     <p className="text-xl text-amber-100 mb-6 max-w-2xl">
                         Revolutionize your Intune assignment workflow with bulk processing capabilities.
@@ -232,12 +237,33 @@ export default function AssignmentManagerLandingPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20"></div>
 
                 {/* Premium Badge */}
-                <div className="absolute top-4 right-4 z-20">
-                    <Badge className="bg-yellow-400 text-yellow-900 font-medium flex items-center gap-1">
-                        <Crown className="h-3 w-3" />
-                        Premium
+                <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+                    <Badge className="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-medium flex items-center gap-1">
+                        Licensed
                     </Badge>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Info className="w-4 h-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-sm p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg">
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                    <p className="font-semibold text-gray-900 dark:text-white">Licensed Modules</p>
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                    These modules require a valid IntuneAssistant license and are designed for organizations that need human support, advanced automation, reporting, or integrations.
+                                </p>
+                                <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
+                                    <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                                        Community modules remain completely free and unrestricted.
+                                    </p>
+                                </div>
+                            </div>
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
+
 
                 <CardHeader className="relative z-10">
                     <div className="flex items-center justify-between mb-4">
