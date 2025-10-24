@@ -322,7 +322,9 @@ export default function DeviceConfigurationLandingPage() {
                                 </a>
                             </Button>
                             <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-semibold">
-                                Get Started Now
+                                <Link href="/onboarding/customer">
+                                    Get Started
+                                </Link>
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </div>
