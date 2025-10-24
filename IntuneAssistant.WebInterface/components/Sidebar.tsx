@@ -413,26 +413,26 @@ export function Sidebar() {
                         ))}
                     </nav>
 
-                    {/* Upgrade prompt - hide when collapsed or not authenticated */}
-                    {!isCollapsed && isAuthenticated && !customerLoading && !isActiveCustomer && (
-                        <div className="mt-8 p-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Crown className="h-4 w-4 text-amber-600" />
-                                <span className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                                    Unlock Pro Features
-                                </span>
-                            </div>
-                            <p className="text-xs text-amber-700 dark:text-amber-200 mb-3">
-                                Get access to deployment tools, advanced rollout management, and more.
-                            </p>
-                            <Link
-                                href="/upgrade"
-                                className="block w-full text-center bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium py-2 px-3 rounded-md transition-colors"
-                            >
-                                Upgrade Now
-                            </Link>
-                        </div>
-                    )}
+                    {/*/!* Upgrade prompt - hide when collapsed or not authenticated *!/*/}
+                    {/*{!isCollapsed && isAuthenticated && !customerLoading && !isActiveCustomer && (*/}
+                    {/*    <div className="mt-8 p-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border border-amber-200 dark:border-amber-800">*/}
+                    {/*        <div className="flex items-center gap-2 mb-2">*/}
+                    {/*            <Crown className="h-4 w-4 text-amber-600" />*/}
+                    {/*            <span className="text-sm font-medium text-amber-900 dark:text-amber-100">*/}
+                    {/*                Unlock Pro Features*/}
+                    {/*            </span>*/}
+                    {/*        </div>*/}
+                    {/*        <p className="text-xs text-amber-700 dark:text-amber-200 mb-3">*/}
+                    {/*            Get access to deployment tools, advanced rollout management, and more.*/}
+                    {/*        </p>*/}
+                    {/*        <Link*/}
+                    {/*            href="/upgrade"*/}
+                    {/*            className="block w-full text-center bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium py-2 px-3 rounded-md transition-colors"*/}
+                    {/*        >*/}
+                    {/*            Upgrade Now*/}
+                    {/*        </Link>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
                 </div>
 
 
