@@ -137,14 +137,15 @@ Best regards,
             popular: true
         },
         {
-            name: 'Support License',
-            description: 'Get professional support while keeping all community features completely free',
+            name: 'Basic License',
+            description: 'Get professional support while keeping all community features completely free. Perfect for enterprises and MSPs.',
             price: '$49',
             priceDescription: 'per month',
             icon: <Headphones className="h-6 w-6 text-blue-500" />,
             gradient: 'from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20',
             features: [
                 { name: 'Everything in Community', included: true, description: 'All features remain free' },
+                { name: 'Multi tenant support', included: true, description: 'GDAP integration' },
                 { name: 'Priority email support', included: true },
                 { name: 'Technical assistance', included: true },
                 { name: 'Direct access to developers', included: true },
@@ -153,7 +154,7 @@ Best regards,
                 { name: 'Advanced extensions', included: false },
                 { name: 'Custom integrations', included: false }
             ],
-            cta: 'Get Support',
+            cta: 'Get Basic',
             ctaVariant: 'secondary'
         },
         {
@@ -166,7 +167,7 @@ Best regards,
             icon: <Crown className="h-6 w-6 text-amber-500" />,
             gradient: 'from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20',
             features: [
-                { name: 'Everything in Community + Support', included: true },
+                { name: 'Everything in Community + Basic', included: true },
                 { name: 'Assignment Manager extension', included: true },
                 { name: 'Advanced automation tools', included: true },
                 { name: 'Custom reporting dashboards', included: true },
