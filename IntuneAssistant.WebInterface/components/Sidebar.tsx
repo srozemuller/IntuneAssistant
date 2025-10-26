@@ -51,7 +51,8 @@ import {
     BookOpen,
     Monitor,
     ArrowLeftRight,
-    MonitorCog
+    MonitorCog,
+    ShieldCheck
 } from 'lucide-react';
 
 const iconMap = {
@@ -70,7 +71,8 @@ const iconMap = {
     BookOpen,
     Monitor,
     MonitorCog,
-    Crown
+    Crown,
+    ShieldCheck
 };
 
 interface MenuItem {
@@ -292,7 +294,12 @@ export function Sidebar() {
                 {
                     title: "About",
                     icon: "Info",
-                    href: "/about"
+                    href: "/about",
+                },
+                {
+                    title: "Security & Compliance",
+                    icon: "ShieldCheck",
+                    href: "/security",
                 },
                 {
                     title: "Docs",
