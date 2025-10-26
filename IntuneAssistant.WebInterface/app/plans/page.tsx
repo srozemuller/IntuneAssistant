@@ -389,7 +389,7 @@ Best regards,
                         {/* Features List */}
                         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                             <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-                                What you'll get:
+                                What you&apos;ll get:
                             </h4>
                             <ul className="space-y-2">
                                 {dialogContent.features.map((feature, index) => (
