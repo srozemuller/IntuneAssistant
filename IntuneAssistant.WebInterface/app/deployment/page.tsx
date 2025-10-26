@@ -351,10 +351,23 @@ export default function AssignmentManagerLandingPage() {
                         {/* Action Button */}
                         <div className="pt-4 border-t border-border/50">
                             <Link href="/deployment/assignments" className="block">
-                                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md hover:shadow-lg transition-all duration-200">
-                                    Launch Assignment Manager
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
+                                {isAuthenticated ? (
+                                    <Link href="/deployment/assignments">
+                                        <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md hover:shadow-lg transition-all duration-200">
+                                            <Upload className="mr-2 h-4 w-4" />
+                                            Start Bulk Assignment
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <Button
+                                        size="lg"
+                                        disabled
+                                        className="w-full bg-white/50 text-amber-600/50 cursor-not-allowed font-semibold"
+                                    >
+                                        <Upload className="mr-2 h-4 w-4" />
+                                        Start Bulk Assignment (Login Required)
+                                    </Button>
+                                )}
                             </Link>
                         </div>
                     </div>

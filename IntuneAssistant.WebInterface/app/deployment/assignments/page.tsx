@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { DataTable } from '@/components/DataTable';
 import {useApiRequest} from "@/hooks/useApiRequest";
 import { UserConsentRequiredError } from '@/lib/errors';
-
+import { PlanProtection } from '@/components/PlanProtection';
 import { useConsent } from "@/contexts/ConsentContext";
 
 interface AssignmentCompareApiResponse {
@@ -169,7 +169,7 @@ interface ValidationResult {
 }
 
 
-export default function AssignmentRolloutPage() {
+function AssignmentRolloutContent() {
     // API CALLS
     const { instance, accounts } = useMsal();
     const { request, cancel } = useApiRequest();
@@ -1722,5 +1722,13 @@ export default function AssignmentRolloutPage() {
                 </DialogContent>
             </Dialog>
         </div>
+    );
+}
+
+export default function AssignmentRolloutPage() {
+    return (
+        <PlanProtection requiredPlan="extensions" featureName="Assignments Manager">
+            <AssignmentRolloutContent />
+        </PlanProtection>
     );
 }

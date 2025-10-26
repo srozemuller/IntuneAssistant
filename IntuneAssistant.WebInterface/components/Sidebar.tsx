@@ -69,7 +69,8 @@ const iconMap = {
     Info,
     BookOpen,
     Monitor,
-    MonitorCog
+    MonitorCog,
+    Crown
 };
 
 interface MenuItem {
@@ -297,6 +298,16 @@ export function Sidebar() {
                     title: "Docs",
                     icon: "BookOpen",
                     href: "https://docs.intuneassistant.cloud"
+                }
+            ]
+        },
+        {
+            title: "Enterprise",
+            items: [
+                {
+                    title: "Plans",
+                    icon: "Crown",
+                    href: "/plans"
                 }
             ]
         }
