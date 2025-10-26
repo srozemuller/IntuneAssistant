@@ -19,11 +19,35 @@ import {
     TrendingUp,
     GitCompare,
     History,
-    Zap
+    Zap,
+    Star,
+    Check,
+    Infinity
 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AboutPage() {
+    const coreValues = [
+        {
+            title: "Forever Free",
+            description: "Our commitment: All core features will remain completely free for the community, forever. No catches, no limitations.",
+            icon: Infinity,
+            color: "green"
+        },
+        {
+            title: "Community First",
+            description: "Built by the community, for the community. Every decision is made with the community's best interests at heart.",
+            icon: Users,
+            color: "blue"
+        },
+        {
+            title: "No Barriers",
+            description: "Web-based platform requiring only minimal permissions. Get started instantly without infrastructure overhead.",
+            icon: Globe,
+            color: "purple"
+        }
+    ];
+
     const features = [
         {
             title: "Conditional Access Insights",
@@ -47,28 +71,32 @@ export default function AboutPage() {
 
     const premiumModules = [
         {
-            title: "Rollout Assistant",
+            title: "Assignments Manager",
             description: "Helps with enrolling configurations in a scalable and controlled way. Think about bulk assignments with Intune Update Rings in mind.",
             icon: Zap,
-            isPaid: true
+            isPaid: true,
+            available: true
         },
         {
             title: "Analyser",
             description: "A tool designed to provide in-depth analysis of your Intune configurations, helping you identify potential improvements and optimizations.",
             icon: TrendingUp,
-            isPaid: true
+            isPaid: true,
+            available: false
         },
         {
             title: "Historicus",
             description: "Tracks and visualizes changes in your Intune environment over time, offering insights into historical trends and configurations.",
             icon: History,
-            isPaid: true
+            isPaid: true,
+            available: false
         },
         {
             title: "Configuration Comparator",
-            description: "Compares different configurations side-by-side, making it easier to spot differences and ensure consistency.",
+            description: "Compares different tenant configurations side-by-side, making it easier to spot differences and ensure consistency.",
             icon: GitCompare,
-            isPaid: true
+            isPaid: true,
+            available: false
         }
     ];
 
@@ -91,44 +119,96 @@ export default function AboutPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
             {/* Hero Section */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-black dark:from-slate-900 dark:via-slate-950 dark:to-black">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 bg-grid-white/[0.03] bg-[size:60px_60px]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-
-                {/* Modern geometric elements */}
-                <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
-                <div className="absolute top-40 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl"></div>
-
-                <div className="relative py-16 px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="flex justify-center mb-6">
-                            <div className="relative">
-                                <div className="absolute -inset-3 bg-white/20 rounded-full blur-lg" />
-                                <div className="relative p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-                                    <Target className="h-12 w-12 text-white" />
+            <div className="relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-600/10 via-blue-600/10 to-purple-600/10" />
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                    <div className="text-center">
+                        <Badge className="mb-4 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                            <Heart className="h-3 w-3 mr-1" />
+                            Community Driven
+                        </Badge>
+                        <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+                            <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                                Community Forever
+                            </span>
+                            <br />
+                            <span className="text-2xl md:text-4xl font-medium text-gray-600 dark:text-gray-300">
+                                Enhanced by{' '}
+                            </span>
+                            <span className="bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+                                Enterprise
+                            </span>
+                        </h1>
+                        <div className="space-y-4 max-w-4xl mx-auto">
+                            <p className="text-xl text-gray-600 dark:text-gray-300">
+                                Born from community collaboration, evolved through enterprise partnerships.
+                                <strong className="text-green-600 dark:text-green-400"> Always free, never limited.</strong>
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-4 text-sm">
+                                <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/20 px-4 py-2 rounded-full">
+                                    <Infinity className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                    <span className="text-green-700 dark:text-green-300 font-medium">
+                                        Free Forever Guarantee
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-950/20 px-4 py-2 rounded-full">
+                                    <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                    <span className="text-blue-700 dark:text-blue-300 font-medium">
+                                        Community First
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-950/20 px-4 py-2 rounded-full">
+                                    <Building2 className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                    <span className="text-purple-700 dark:text-purple-300 font-medium">
+                                        Enterprise Enhanced
+                                    </span>
                                 </div>
                             </div>
-                        </div>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white tracking-tight">
-                            About Intune Assistant
-                        </h1>
-                        <p className="text-lg md:text-xl text-amber-100 max-w-2xl mx-auto leading-relaxed font-light">
-                            Simplifying Microsoft Intune management for the modern Cloud Engineer.
-                        </p>
-                        <div className="mt-6 flex justify-center">
-                            <Badge className="bg-white/20 text-white border-white/30 px-4 py-1.5 text-sm backdrop-blur-sm">
-                                Community Driven
-                            </Badge>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-10">
+                {/* Community Values Section */}
+                <Card className="mb-16 shadow-xl border-2 border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+                    <CardContent className="p-8">
+                        <div className="text-center mb-12">
+                            <div className="flex justify-center mb-4">
+                                <div className="p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
+                                    <Heart className="h-8 w-8 text-white" />
+                                </div>
+                            </div>
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                                <span className="text-green-600 dark:text-green-400">Community Promise</span>
+                            </h2>
+                            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                                Every core feature is completely free forever. This isn&apos;t a freemium model - it&apos;s our commitment to the community.
+                            </p>
+                        </div>
+                        <div className="grid lg:grid-cols-3 gap-8">
+                            {coreValues.map((value, index) => {
+                                const Icon = value.icon;
+                                return (
+                                    <div key={index} className="text-center">
+                                        <div className={`p-4 ${getIconColorClasses(value.color)} rounded-xl w-fit mx-auto mb-4 shadow-lg`}>
+                                            <Icon className="h-8 w-8" />
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                                            {value.title}
+                                        </h3>
+                                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                                            {value.description}
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </CardContent>
+                </Card>
+
                 {/* Mission Section */}
                 <Card className="mb-16 shadow-xl border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                     <CardContent className="p-8">
@@ -138,110 +218,96 @@ export default function AboutPage() {
                                     <Target className="h-8 w-8 text-white" />
                                 </div>
                             </div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 tracking-tight">
-                                Our Mission
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                                Story
                             </h2>
                         </div>
-                        <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-300 space-y-4">
-                            <p className="text-center text-base md:text-lg leading-relaxed">
-                                The Intune Assistant is born out of a community idea to make a platform providing assignment insights fast. It is a tool developed by <strong className="text-blue-600 dark:text-blue-400">Sander Rozemuller</strong> - Microsoft Intune MVP.
-                            </p>
-                            <p className="text-center text-base md:text-lg leading-relaxed">
-                                In mean time, the tool has evolved into a platform that provides insights into your Microsoft Intune environment.
-                            </p>
-                            <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50 border border-amber-200 dark:border-amber-800 rounded-xl p-6 mt-6">
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg">
-                                        <Building2 className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-bold text-lg text-amber-800 dark:text-amber-200 mb-2">Recent Acquisition</h3>
-                                        <p className="text-amber-700 dark:text-amber-300 text-sm md:text-base leading-relaxed mb-3">
-                                            Recently, the tool has been acquired by <strong>ControlFlex</strong>. ControlFlex is a company that specializes in Automation and Microsoft Intune configurations, and they are committed to enhancing the capabilities of the Intune Assistant platform.
-                                        </p>
-                                        <Button size="sm" variant="outline" className="border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50" asChild>
-                                            <a href="https://www.linkedin.com/company/controlflex" target="_blank" rel="noopener noreferrer">
-                                                <Building2 className="h-3 w-3 mr-2" />
-                                                ControlFlex LinkedIn
-                                                <ExternalLink className="h-3 w-3 ml-2" />
-                                            </a>
-                                        </Button>
-                                    </div>
-                                </div>
+                        <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-300 space-y-6">
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
+                                <h3 className="font-bold text-lg text-blue-800 dark:text-blue-200 mb-3 flex items-center gap-2">
+                                    <Star className="h-5 w-5" />
+                                    Community Origins
+                                </h3>
+                                <p className="text-blue-700 dark:text-blue-300 leading-relaxed">
+                                    The Intune Assistant was born from a <strong>community idea</strong> to create a platform that provides assignment insights quickly.
+                                    Developed by <strong className="text-blue-600 dark:text-blue-400">Sander Rozemuller</strong> - Microsoft Intune MVP -
+                                    this tool started as a simple solution for the community&apos;s daily challenges.
+                                </p>
                             </div>
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 border border-green-200 dark:border-green-800 rounded-xl p-6">
+                                <h3 className="font-bold text-lg text-green-800 dark:text-green-200 mb-3 flex items-center gap-2">
+                                    <TrendingUp className="h-5 w-5" />
+                                    Natural Evolution
+                                </h3>
+                                <p className="text-green-700 dark:text-green-300 leading-relaxed">
+                                    Over time, the tool evolved into a comprehensive platform providing deep insights into Microsoft Intune environments.
+                                    <strong> Companies approached me</strong> requesting custom extensions for their specific business workflows,
+                                    leading to our enterprise offerings while keeping the core platform completely free.
+                                </p>
+                            </div>
+                            <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50 border border-amber-200 dark:border-amber-800 rounded-xl p-6">
+                                <h3 className="font-bold text-lg text-amber-800 dark:text-amber-200 mb-3 flex items-center gap-2">
+                                    <Building2 className="h-5 w-5" />
+                                    Enterprise Partnership
+                                </h3>
+                                <p className="text-amber-700 dark:text-amber-300 leading-relaxed mb-3">
+                                    <a
+                                        href="https://www.linkedin.com/company/controlflex"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 underline font-bold"
+                                    >
+                                        ControlFlex
+                                    </a>{' '}
+                                    - founded by Microsoft Intune MVPs{' '}
+                                    <a
+                                        href="https://www.linkedin.com/in/kennethvansurksum/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 underline font-medium"
+                                    >
+                                        Kenneth van Surksum
+                                    </a>{' '}
+                                    and{' '}
+                                    <a
+                                        href="https://www.linkedin.com/in/sanderrozemuller/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 underline font-medium"
+                                    >
+                                        Sander Rozemuller
+                                    </a>{' '}
+                                    - became the first enterprise partner, investing in the platform to enhance it for both community and enterprise users while enabling professional support at scale.
+                                </p>
+                            </div>
+
+
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Philosophy Section */}
-                <Card className="mb-16 shadow-xl border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
-                    <CardContent className="p-8">
-                        <div className="text-center mb-8">
-                            <div className="flex justify-center mb-4">
-                                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
-                                    <Heart className="h-8 w-8 text-white" />
-                                </div>
-                            </div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 tracking-tight">
-                                Philosophy
-                            </h2>
-                        </div>
-                        <div className="grid lg:grid-cols-2 gap-8 items-center">
-                            <div className="space-y-4">
-                                <div className="prose prose-lg text-gray-600 dark:text-gray-300">
-                                    <p className="text-sm md:text-base leading-relaxed">
-                                        The Intune Assistant is designed to be a tool that helps you understand your Microsoft Intune environment and build for the community.
-                                    </p>
-                                    <p className="text-sm md:text-base leading-relaxed">
-                                        The Intune Assistant is not a replacement for the Microsoft Intune portal, but rather a tool that provides insights into your environment.
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 border border-green-200 dark:border-green-800 rounded-xl p-6">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
-                                            <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
-                                        </div>
-                                        <span className="font-bold text-lg text-green-800 dark:text-green-200">Community First</span>
-                                    </div>
-                                    <p className="text-green-700 dark:text-green-300 text-sm md:text-base leading-relaxed">
-                                        This tool is built with the community in mind, and stays <strong>FREE</strong> for the community to use. Also this part of the tool keeps evolving with new features and insights.
-                                    </p>
-                                </div>
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
-                                            <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                                        </div>
-                                        <span className="font-bold text-lg text-blue-800 dark:text-blue-200">Web-Based Design</span>
-                                    </div>
-                                    <p className="text-blue-700 dark:text-blue-300 text-sm md:text-base leading-relaxed">
-                                        The tools are web-based, requiring no additional resources other than a consent of an application with the least permissions possible. This enables users to get up to speed as fast as possible.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Features Section */}
-                <Card className="mb-16 shadow-xl border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
+                {/* Core Features Section */}
+                <Card className="mb-16 shadow-xl border-2 border-green-200 dark:border-green-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                     <CardContent className="p-8">
                         <div className="text-center mb-12">
                             <div className="flex justify-center mb-4">
-                                <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl shadow-lg">
+                                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
                                     <Sparkles className="h-8 w-8 text-white" />
                                 </div>
                             </div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 tracking-tight">
-                                Core Features
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                                Complete Platform - Always Free
                             </h2>
-                            <div className="flex justify-center">
-                                <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 text-sm shadow-lg">
-                                    Always Free
+                            <div className="flex justify-center mb-4">
+                                <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2 text-sm shadow-lg">
+                                    <Infinity className="h-4 w-4 mr-2" />
+                                    Forever Free Guarantee
                                 </Badge>
                             </div>
+                            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                                These aren&apos;t limited features - this is the complete Intune management platform,
+                                free for every community member, forever.
+                            </p>
                         </div>
                         <div className="grid lg:grid-cols-3 gap-6">
                             {features.map((feature, index) => {
@@ -249,7 +315,7 @@ export default function AboutPage() {
                                 return (
                                     <Card key={index} className={`${getFeatureColorClasses(feature.color)} border-2 h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}>
                                         <CardContent className="p-6 text-center h-full flex flex-col">
-                                            <div className={`p-3 ${getIconColorClasses(feature.color)} rounded-xl w-fit mx-auto mb-4`}>
+                                            <div className={`p-3 ${getIconColorClasses(feature.color)} rounded-xl w-fit mx-auto mb-4 shadow-lg`}>
                                                 <Icon className="h-8 w-8" />
                                             </div>
                                             <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
@@ -258,8 +324,11 @@ export default function AboutPage() {
                                             <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed flex-1">
                                                 {feature.description}
                                             </p>
-                                            <div className="mt-4">
-                                                <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                                            <div className="mt-4 flex items-center justify-center gap-2">
+                                                <Check className="h-5 w-5 text-green-500" />
+                                                <span className="text-green-600 dark:text-green-400 font-medium text-sm">
+                                                    Free Forever
+                                                </span>
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -269,7 +338,7 @@ export default function AboutPage() {
                     </CardContent>
                 </Card>
 
-                {/* Premium Modules Section */}
+                {/* Enterprise Extensions Section */}
                 <Card className="mb-16 shadow-xl border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                     <CardContent className="p-8">
                         <div className="text-center mb-12">
@@ -278,11 +347,12 @@ export default function AboutPage() {
                                     <Crown className="h-8 w-8 text-white" />
                                 </div>
                             </div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 tracking-tight">
-                                Premium Modules
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                                Enterprise Extensions
                             </h2>
-                            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
-                                Advanced features for enterprise-level Intune management and optimization.
+                            <p className="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                                These advanced modules were created because <strong>enterprises specifically requested them</strong> for their
+                                business-critical workflows. They extend the free platform without limiting it.
                             </p>
                         </div>
                         <div className="grid lg:grid-cols-2 gap-6">
@@ -292,12 +362,17 @@ export default function AboutPage() {
                                     <Card key={index} className="border-2 border-amber-200 dark:border-amber-800 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50 h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                                         <CardContent className="p-6 h-full flex flex-col">
                                             <div className="flex items-start justify-between mb-4">
-                                                <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg">
+                                                <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg shadow-sm">
                                                     <Icon className="h-6 w-6 text-amber-600 dark:text-amber-400" />
                                                 </div>
                                                 <Badge className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-3 py-1 text-xs shadow-lg">
-                                                    Premium
+                                                    Enterprise Add-on
                                                 </Badge>
+                                                {!module.available && (
+                                                    <Badge variant="outline" className="border-blue-300 text-blue-600 dark:border-blue-600 dark:text-blue-400 px-3 py-1 text-xs">
+                                                        Coming Soon
+                                                    </Badge>
+                                                )}
                                             </div>
                                             <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
                                                 {module.title}
@@ -310,37 +385,47 @@ export default function AboutPage() {
                                 );
                             })}
                         </div>
+                        <div className="mt-8 text-center">
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-200 dark:border-blue-800 rounded-xl p-6 max-w-3xl mx-auto">
+                                <p className="text-blue-700 dark:text-blue-300 text-sm leading-relaxed">
+                                    <strong>Important:</strong> These extensions don&apos;t replace or limit any free features.
+                                    They&apos;re additional business tools that enterprises commissioned for their specific automation and compliance needs.
+                                </p>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
 
                 {/* CTA Section */}
-                <Card className="mb-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-800 dark:to-indigo-900 border-0 shadow-xl text-white">
+                <Card className="mb-16 bg-gradient-to-br from-green-600 via-green-700 to-emerald-800 dark:from-green-900 dark:via-green-800 dark:to-emerald-900 border-0 shadow-xl text-white">
                     <CardContent className="p-8 text-center">
                         <div className="flex justify-center mb-6">
                             <div className="relative">
                                 <div className="absolute -inset-3 bg-white/20 rounded-full blur-lg" />
                                 <div className="relative p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-                                    <Award className="h-12 w-12 text-white" />
+                                    <Users className="h-12 w-12 text-white" />
                                 </div>
                             </div>
                         </div>
-                        <h2 className="text-2xl md:text-3xl font-bold mb-4 tracking-tight">
-                            Built by the Community, for the Community
+                        <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                            Join Our Community
                         </h2>
-                        <p className="text-base md:text-lg text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-                            Join thousands of Cloud Engineers who trust Intune Assistant to simplify their Microsoft Intune management workflows.
+                        <p className="text-base md:text-lg text-green-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+                            Start with the complete free platform. Add enterprise extensions only if your organization needs them.
+                            <strong> Your choice, your pace, always free at the core.</strong>
                         </p>
                         <div className="flex flex-wrap gap-4 justify-center">
-                            <Button className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2 text-sm shadow-lg" asChild>
+                            <Button className="bg-white text-green-600 hover:bg-gray-100 px-6 py-2 text-sm shadow-lg" asChild>
                                 <Link href="/onboarding/customer">
-                                    Get Started
+                                    <Heart className="h-4 w-4 mr-2" />
+                                    Join Free Forever
                                 </Link>
                             </Button>
-                            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-6 py-2 text-sm" asChild>
-                                <a href="https://docs.intuneassistant.cloud" target="_blank" rel="noopener noreferrer">
-                                    <ExternalLink className="h-4 w-4 mr-2" />
-                                    Documentation
-                                </a>
+                            <Button variant="outline" className="border-white/30 text-green-600 hover:bg-white/10 backdrop-blur-sm px-6 py-2 text-sm" asChild>
+                                <Link href="/plans">
+                                    <Building2 className="h-4 w-4 mr-2" />
+                                    View All Plans
+                                </Link>
                             </Button>
                         </div>
                     </CardContent>
