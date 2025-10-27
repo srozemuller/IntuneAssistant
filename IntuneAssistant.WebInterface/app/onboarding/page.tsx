@@ -59,7 +59,7 @@ function OnboardingCallbackContent() {
                         try {
                             // Fallback to wildcard for cross-origin scenarios
                             window.opener.postMessage(messageData, '*');
-                            console.log('✅ Message sent with wildcard origin');
+                            console.log('Message sent with wildcard origin');
                         } catch (error3) {
                             console.error('Failed to send message to parent window:', error3);
                         }
@@ -150,17 +150,26 @@ function OnboardingCallbackContent() {
         if (status !== 'processing') {
             const timer = setTimeout(() => {
                 try {
+                    // Check if we can access the opener
                     if (window.opener && !window.opener.closed) {
+                        // Try to notify parent before closing
+                        console.log('Attempting to close popup window...');
                         window.close();
                     } else {
                         // If not opened as popup, redirect to home
+                        console.log('Not a popup window, redirecting...');
                         window.location.href = '/';
                     }
                 } catch (closeError) {
                     console.log('Could not close window automatically:', closeError);
-                    // Show user message that they can close manually
+                    // Try alternative close method
+                    try {
+                        self.close();
+                    } catch (altCloseError) {
+                        console.log('Alternative close also failed, window must be closed manually');
+                    }
                 }
-            }, 1500); // Increased delay to ensure user sees the result
+            }, 2000); // Increased delay
 
             return () => clearTimeout(timer);
         }
