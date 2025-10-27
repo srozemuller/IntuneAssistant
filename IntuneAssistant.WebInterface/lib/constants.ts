@@ -1,8 +1,16 @@
 export const API_BASE_PRD_URL = 'https://api.intuneassistant.cloud/v1';
-
+export const API_BASE_TST_URL = 'https://intuneassistant-api-test.azurewebsites.net/v1';
 export const API_BASE_DEV_URL = 'https://localhost:7224/v1';
 
-export const API_BASE_URL = process.env.NODE_ENV === 'development' ? API_BASE_DEV_URL : API_BASE_PRD_URL;
+// Choose env var name: APP_ENV (build-time). Use NEXT_PUBLIC_APP_ENV if you need client runtime access.
+const APP_ENV = process.env.APP_ENV || process.env.NEXT_PUBLIC_APP_ENV || process.env.NODE_ENV;
+export const API_BASE_URL =
+    APP_ENV === 'test'
+        ? API_BASE_TST_URL
+        : APP_ENV === 'development' || process.env.NODE_ENV === 'development'
+            ? API_BASE_DEV_URL
+            : API_BASE_PRD_URL;
+
 export const PARTNER_TENANTS_ENDPOINT = `${API_BASE_URL}/partner/customers`;
 export const ASSIGNMENTS_ENDPOINT = `${API_BASE_URL}/assignments`;
 export const CONSENT_URL_ENDPOINT = `${API_BASE_URL}/buildconsenturl`;
