@@ -149,27 +149,10 @@ function OnboardingCallbackContent() {
     useEffect(() => {
         if (status !== 'processing') {
             const timer = setTimeout(() => {
-                try {
-                    // Check if we can access the opener
-                    if (window.opener && !window.opener.closed) {
-                        // Try to notify parent before closing
-                        console.log('Attempting to close popup window...');
-                        window.close();
-                    } else {
-                        // If not opened as popup, redirect to home
-                        console.log('Not a popup window, redirecting...');
-                        window.location.href = '/';
-                    }
-                } catch (closeError) {
-                    console.log('Could not close window automatically:', closeError);
-                    // Try alternative close method
-                    try {
-                        self.close();
-                    } catch (altCloseError) {
-                        console.log('Alternative close also failed, window must be closed manually');
-                    }
-                }
-            }, 2000); // Increased delay
+                console.log('Process completed, window should be closed by parent or user');
+                // Don't try to close the window at all - let the parent handle it
+                // or the user can close it manually
+            }, 3000);
 
             return () => clearTimeout(timer);
         }
