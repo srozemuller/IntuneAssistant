@@ -107,27 +107,41 @@ export default function CustomerOnboardingModal({
 
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
-            if (event.origin !== window.location.origin) {
-                return;
-            }
+            console.log('Received message from origin:', event.origin);
+            console.log('Current window origin:', window.location.origin);
 
-            if (event.data.type === 'CONSENT_SUCCESS') {
-                setConsentCompleted(true);
-                setLoading(false);
+            // Validate message structure instead of origin for cross-domain scenarios
+            if (event.data?.type === 'CONSENT_SUCCESS' || event.data?.type === 'CONSENT_ERROR') {
+                console.log('Processing consent message:', event.data);
 
-                if (consentWindow) {
-                    consentWindow.close();
-                    setConsentWindow(null);
-                }
+                if (event.data.type === 'CONSENT_SUCCESS') {
+                    setConsentCompleted(true);
+                    setLoading(false);
 
-                handleConsentCallback();
-            } else if (event.data.type === 'CONSENT_ERROR') {
-                setError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
-                setLoading(false);
+                    if (consentWindow) {
+                        try {
+                            consentWindow.close();
+                        } catch (closeError) {
+                            console.log('Could not close consent window due to COOP policy:', closeError);
+                            // Window will close itself or user can close it manually
+                        }
+                        setConsentWindow(null);
+                    }
 
-                if (consentWindow) {
-                    consentWindow.close();
-                    setConsentWindow(null);
+                    handleConsentCallback();
+                } else if (event.data.type === 'CONSENT_ERROR') {
+                    setError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
+                    setLoading(false);
+
+                    if (consentWindow) {
+                        try {
+                            consentWindow.close();
+                        } catch (closeError) {
+                            console.log('Could not close consent window due to COOP policy:', closeError);
+                            // Window will close itself or user can close it manually
+                        }
+                        setConsentWindow(null);
+                    }
                 }
             }
         };
@@ -136,42 +150,28 @@ export default function CustomerOnboardingModal({
         return () => window.removeEventListener('message', handleMessage);
     }, [consentWindow]);
 
+
     useEffect(() => {
         if (!consentWindow) return;
 
-        const checkClosed = setInterval(() => {
-            try {
-                let isWindowClosed = false;
+        // Since we're getting COOP errors and the message listener is working correctly,
+        // we can simplify this to just rely on the message listener
+        // Remove the interval that checks consentWindow.closed
 
-                // Check if window is closed (handle COOP policy)
-                try {
-                    isWindowClosed = consentWindow.closed;
-                } catch (error) {
-                    console.log('Cannot access consentWindow.closed due to COOP policy, assuming closed');
-                    isWindowClosed = true;
-                }
+        console.log('Consent window reference set, relying on message listener for communication');
 
-                if (isWindowClosed && !consentCompleted) {
-                    console.log('Consent window closed, calling callback...');
-
-                    setConsentCompleted(true);
-                    setConsentWindow(null);
-                    clearInterval(checkClosed);
-
-                    // Call the callback after a short delay
-                    setTimeout(() => {
-                        handleConsentCallback();
-                    }, 1500);
-                }
-            } catch (error) {
-                console.error('Error checking consent window:', error);
-                clearInterval(checkClosed);
-                setConsentWindow(null);
+        // Optional: Add a timeout as a fallback
+        const timeoutId = setTimeout(() => {
+            if (!consentCompleted) {
+                console.log('Consent timeout reached, assuming window may be closed');
                 setLoading(false);
+                setError('Consent process timed out. Please try again.');
             }
-        }, 1000);
+        }, 300000); // 5 minute timeout
 
-        return () => clearInterval(checkClosed);
+        return () => {
+            clearTimeout(timeoutId);
+        };
     }, [consentWindow, consentCompleted]);
 
 
@@ -271,17 +271,15 @@ export default function CustomerOnboardingModal({
             setConsentWindow(popup);
             popup.focus();
 
-            setTimeout(() => {
-                if (popup.closed) {
-                    setError('Popup was blocked. Please allow popups and try again.');
-                    setLoading(false);
-                }
-            }, 1000);
+            // Remove the setTimeout check for popup.closed since it causes COOP errors
+            // The message listener will handle the success/error cases
+            console.log('Consent window opened successfully, waiting for message...');
         } else {
             setError('Failed to open consent window. Please allow popups and try again.');
             setLoading(false);
         }
     };
+
 
     const handleConsentCallback = async () => {
         try {
@@ -355,8 +353,9 @@ export default function CustomerOnboardingModal({
 
 
     const handleClose = () => {
-        if (consentWindow && !consentWindow.closed) {
-            consentWindow.close();
+        if (consentWindow) {
+            // Only attempt to close if it's same-origin, otherwise just clear the reference
+            setConsentWindow(null);
         }
 
         setCurrentStep(0);
@@ -367,7 +366,6 @@ export default function CustomerOnboardingModal({
         setConsentData(null);
         setOnboardingResult(null);
         setConsentCompleted(false);
-        setConsentWindow(null);
         onClose();
     };
 
