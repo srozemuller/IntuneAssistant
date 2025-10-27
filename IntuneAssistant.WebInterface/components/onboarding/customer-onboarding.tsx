@@ -110,7 +110,6 @@ export default function CustomerOnboardingModal({
             console.log('Received message from origin:', event.origin);
             console.log('Current window origin:', window.location.origin);
 
-            // Validate message structure instead of origin for cross-domain scenarios
             if (event.data?.type === 'CONSENT_SUCCESS' || event.data?.type === 'CONSENT_ERROR') {
                 console.log('Processing consent message:', event.data);
 
@@ -118,13 +117,8 @@ export default function CustomerOnboardingModal({
                     setConsentCompleted(true);
                     setLoading(false);
 
+                    // Just clear the reference - don't try to close the window
                     if (consentWindow) {
-                        try {
-                            consentWindow.close();
-                        } catch (closeError) {
-                            console.log('Could not close consent window due to COOP policy:', closeError);
-                            // Window will close itself or user can close it manually
-                        }
                         setConsentWindow(null);
                     }
 
@@ -133,13 +127,8 @@ export default function CustomerOnboardingModal({
                     setError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
                     setLoading(false);
 
+                    // Just clear the reference - don't try to close the window
                     if (consentWindow) {
-                        try {
-                            consentWindow.close();
-                        } catch (closeError) {
-                            console.log('Could not close consent window due to COOP policy:', closeError);
-                            // Window will close itself or user can close it manually
-                        }
                         setConsentWindow(null);
                     }
                 }
@@ -354,7 +343,6 @@ export default function CustomerOnboardingModal({
 
     const handleClose = () => {
         if (consentWindow) {
-            // Only attempt to close if it's same-origin, otherwise just clear the reference
             setConsentWindow(null);
         }
 
