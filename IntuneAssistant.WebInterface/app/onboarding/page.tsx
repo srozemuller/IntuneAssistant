@@ -4,6 +4,17 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
+interface ConsentMessage {
+    type: 'CONSENT_SUCCESS' | 'CONSENT_ERROR';
+    adminConsent?: string | null;
+    state?: string | null;
+    tenantId?: string | null;
+    result?: unknown;
+    error?: string | null;
+    errorDescription?: string | null;
+}
+
+
 function OnboardingCallbackContent() {
     const searchParams = useSearchParams();
     const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
@@ -27,16 +38,45 @@ function OnboardingCallbackContent() {
                 code
             });
 
+            // Function to send message to parent window with cross-origin handling
+            const sendMessageToParent = (messageData: ConsentMessage) => {
+                if (!window.opener || window.opener.closed) {
+                    console.log('No opener window available');
+                    return;
+                }
+
+                try {
+                    // First try with the current origin
+                    window.opener.postMessage(messageData, window.location.origin);
+                    console.log('Message sent with same origin');
+                } catch (error1) {
+                    try {
+                        // Try with the parent's origin if available
+                        const parentOrigin = window.opener.location.origin;
+                        window.opener.postMessage(messageData, parentOrigin);
+                        console.log('Message sent with parent origin');
+                    } catch (error2) {
+                        try {
+                            // Fallback to wildcard for cross-origin scenarios
+                            window.opener.postMessage(messageData, '*');
+                            console.log('✅ Message sent with wildcard origin');
+                        } catch (error3) {
+                            console.error('Failed to send message to parent window:', error3);
+                        }
+                    }
+                }
+            };
+
             if (error) {
                 setStatus('error');
                 setMessage(errorDescription || error || 'Admin consent was denied or failed.');
 
                 // Send error message to parent window
-                window.opener?.postMessage({
+                sendMessageToParent({
                     type: 'CONSENT_ERROR',
                     error: error,
                     errorDescription: errorDescription
-                }, window.location.origin);
+                });
                 return;
             }
 
@@ -66,13 +106,13 @@ function OnboardingCallbackContent() {
                         setMessage('Admin consent has been successfully granted and processed.');
 
                         // Send success message to parent window
-                        window.opener?.postMessage({
+                        sendMessageToParent({
                             type: 'CONSENT_SUCCESS',
                             adminConsent: adminConsent,
                             state: state,
                             tenantId: tenantId,
                             result: result
-                        }, window.location.origin);
+                        });
                     } else {
                         const errorResult = await callbackResponse.json().catch(() => null);
                         throw new Error(errorResult?.message || `Callback failed: ${callbackResponse.statusText}`);
@@ -83,22 +123,22 @@ function OnboardingCallbackContent() {
                     setMessage(callbackError instanceof Error ? callbackError.message : 'Failed to process consent callback');
 
                     // Send error message to parent window
-                    window.opener?.postMessage({
+                    sendMessageToParent({
                         type: 'CONSENT_ERROR',
                         error: 'callback_failed',
                         errorDescription: callbackError instanceof Error ? callbackError.message : 'Failed to process consent callback'
-                    }, window.location.origin);
+                    });
                 }
             } else {
                 // Unknown state
                 setStatus('error');
                 setMessage('Unexpected response from consent flow');
 
-                window.opener?.postMessage({
+                sendMessageToParent({
                     type: 'CONSENT_ERROR',
                     error: 'unknown_response',
                     errorDescription: 'Unexpected response from consent flow'
-                }, window.location.origin);
+                });
             }
         };
 
@@ -109,13 +149,18 @@ function OnboardingCallbackContent() {
     useEffect(() => {
         if (status !== 'processing') {
             const timer = setTimeout(() => {
-                if (window.opener) {
-                    window.close();
-                } else {
-                    // If not in popup, redirect to main app
-                    window.location.href = '/';
+                try {
+                    if (window.opener && !window.opener.closed) {
+                        window.close();
+                    } else {
+                        // If not opened as popup, redirect to home
+                        window.location.href = '/';
+                    }
+                } catch (closeError) {
+                    console.log('Could not close window automatically:', closeError);
+                    // Show user message that they can close manually
                 }
-            }, 2000);
+            }, 1500); // Increased delay to ensure user sees the result
 
             return () => clearTimeout(timer);
         }
@@ -124,25 +169,33 @@ function OnboardingCallbackContent() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
             <div className="text-center max-w-md mx-auto p-6">
-                {status === 'error' ? (
+                {status === 'processing' && (
                     <div className="space-y-4">
-                        <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
-                        <h1 className="text-xl font-semibold text-gray-900">Consent Failed</h1>
-                        <p className="text-gray-600">{message}</p>
-                        <p className="text-sm text-gray-500">This window will close automatically...</p>
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-600" />
+                        <h2 className="text-xl font-semibold text-gray-900">Processing onboarding...</h2>
+                        <p className="text-gray-600">Please wait while we complete your setup.</p>
                     </div>
-                ) : status === 'success' ? (
+                )}
+
+                {status === 'success' && (
                     <div className="space-y-4">
-                        <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-                        <h1 className="text-xl font-semibold text-gray-900">Consent Granted</h1>
+                        <CheckCircle className="h-12 w-12 mx-auto text-green-600" />
+                        <h2 className="text-xl font-semibold text-gray-900">Onboarding Complete!</h2>
                         <p className="text-gray-600">{message}</p>
-                        <p className="text-sm text-gray-500">Completing onboarding...</p>
+                        <p className="text-sm text-gray-500">
+                            This window will close automatically, or you can close it manually.
+                        </p>
                     </div>
-                ) : (
+                )}
+
+                {status === 'error' && (
                     <div className="space-y-4">
-                        <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto" />
-                        <h1 className="text-xl font-semibold text-gray-900">Processing Consent</h1>
-                        <p className="text-gray-600">Please wait while we process the consent response...</p>
+                        <AlertCircle className="h-12 w-12 mx-auto text-red-600" />
+                        <h2 className="text-xl font-semibold text-gray-900">Onboarding Failed</h2>
+                        <p className="text-gray-600">{message}</p>
+                        <p className="text-sm text-gray-500">
+                            You can close this window and try again.
+                        </p>
                     </div>
                 )}
             </div>
