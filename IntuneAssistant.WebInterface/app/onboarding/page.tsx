@@ -9,11 +9,12 @@ interface ConsentMessage {
     adminConsent?: string | null;
     state?: string | null;
     tenantId?: string | null;
+    code?: string | null;
     result?: unknown;
+    searchParams?: Record<string, string>;
     error?: string | null;
     errorDescription?: string | null;
 }
-
 
 function OnboardingCallbackContent() {
     const searchParams = useSearchParams();
@@ -38,7 +39,6 @@ function OnboardingCallbackContent() {
                 code
             });
 
-            // Function to send message to parent window with cross-origin handling
             const sendMessageToParent = (messageData: ConsentMessage) => {
                 if (!window.opener || window.opener.closed) {
                     console.log('No opener window available');
@@ -46,18 +46,15 @@ function OnboardingCallbackContent() {
                 }
 
                 try {
-                    // First try with the current origin
                     window.opener.postMessage(messageData, window.location.origin);
                     console.log('Message sent with same origin');
                 } catch (error1) {
                     try {
-                        // Try with the parent's origin if available
                         const parentOrigin = window.opener.location.origin;
                         window.opener.postMessage(messageData, parentOrigin);
                         console.log('Message sent with parent origin');
                     } catch (error2) {
                         try {
-                            // Fallback to wildcard for cross-origin scenarios
                             window.opener.postMessage(messageData, '*');
                             console.log('Message sent with wildcard origin');
                         } catch (error3) {
@@ -71,7 +68,6 @@ function OnboardingCallbackContent() {
                 setStatus('error');
                 setMessage(errorDescription || error || 'Admin consent was denied or failed.');
 
-                // Send error message to parent window
                 sendMessageToParent({
                     type: 'CONSENT_ERROR',
                     error: error,
@@ -80,57 +76,20 @@ function OnboardingCallbackContent() {
                 return;
             }
 
+            // DO NOT call the server callback here — let customer-onboarding handle it.
             if (adminConsent === 'True' || code) {
-                try {
-                    // Send POST request to CONSENT_CALLBACK endpoint
-                    const callbackResponse = await fetch('/api/consent-callback', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            adminConsent,
-                            state,
-                            tenantId,
-                            code,
-                            // Include all query parameters
-                            searchParams: Object.fromEntries(searchParams.entries())
-                        })
-                    });
+                setStatus('success');
+                setMessage('Admin consent has been received. Processing will continue in the parent window.');
 
-                    if (callbackResponse.ok) {
-                        const result = await callbackResponse.json();
-                        console.log('Consent callback successful:', result);
-
-                        setStatus('success');
-                        setMessage('Admin consent has been successfully granted and processed.');
-
-                        // Send success message to parent window
-                        sendMessageToParent({
-                            type: 'CONSENT_SUCCESS',
-                            adminConsent: adminConsent,
-                            state: state,
-                            tenantId: tenantId,
-                            result: result
-                        });
-                    } else {
-                        const errorResult = await callbackResponse.json().catch(() => null);
-                        throw new Error(errorResult?.message || `Callback failed: ${callbackResponse.statusText}`);
-                    }
-                } catch (callbackError) {
-                    console.error('Error processing consent callback:', callbackError);
-                    setStatus('error');
-                    setMessage(callbackError instanceof Error ? callbackError.message : 'Failed to process consent callback');
-
-                    // Send error message to parent window
-                    sendMessageToParent({
-                        type: 'CONSENT_ERROR',
-                        error: 'callback_failed',
-                        errorDescription: callbackError instanceof Error ? callbackError.message : 'Failed to process consent callback'
-                    });
-                }
+                sendMessageToParent({
+                    type: 'CONSENT_SUCCESS',
+                    adminConsent: adminConsent,
+                    state: state,
+                    tenantId: tenantId,
+                    code: code,
+                    searchParams: Object.fromEntries(searchParams.entries())
+                });
             } else {
-                // Unknown state
                 setStatus('error');
                 setMessage('Unexpected response from consent flow');
 
@@ -145,13 +104,10 @@ function OnboardingCallbackContent() {
         processCallback();
     }, [searchParams]);
 
-    // Close the popup window after processing
     useEffect(() => {
         if (status !== 'processing') {
             const timer = setTimeout(() => {
                 console.log('Process completed, window should be closed by parent or user');
-                // Don't try to close the window at all - let the parent handle it
-                // or the user can close it manually
             }, 3000);
 
             return () => clearTimeout(timer);
