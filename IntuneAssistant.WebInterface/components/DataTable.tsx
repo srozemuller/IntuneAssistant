@@ -56,6 +56,34 @@ export function DataTable({
                               selectedRows = [],
                           }: DataTableProps) {
 
+    // Local pagination state to support uncontrolled usage
+    const [internalCurrentPage, setInternalCurrentPage] = useState<number>(currentPage);
+    const [internalItemsPerPage, setInternalItemsPerPage] = useState<number>(itemsPerPage);
+
+    // Sync internal state when parent updates props
+    useEffect(() => setInternalCurrentPage(currentPage), [currentPage]);
+    useEffect(() => setInternalItemsPerPage(itemsPerPage), [itemsPerPage]);
+
+    // Effective values: prefer controller (props) when callbacks are provided
+    const effectiveCurrentPage = onPageChange ? currentPage : internalCurrentPage;
+    const effectiveItemsPerPage = onItemsPerPageChange ? itemsPerPage : internalItemsPerPage;
+
+    const changePage = (page: number) => {
+        if (onPageChange) {
+            onPageChange(page);
+        } else {
+            setInternalCurrentPage(page);
+        }
+    };
+
+    const changeItemsPerPage = (n: number) => {
+        if (onItemsPerPageChange) {
+            onItemsPerPageChange(n);
+        } else {
+            setInternalItemsPerPage(n);
+        }
+    };
+
     const isRowSelected = (row: Record<string, unknown>) => {
         if (!selectedRows || selectedRows.length === 0) return false;
         const rowId = String(row.id);
@@ -124,61 +152,39 @@ export function DataTable({
     }, [columnsWithSelection]);
 
     // Filter data based on search term
-    // Filter data based on search term
     const filteredData = data.filter(row => {
         if (!searchTerm.trim()) return true;
 
         const searchLower = searchTerm.toLowerCase();
 
-        // Debug: Show the actual structure
-        console.log('Actual row keys:', Object.keys(row));
-        console.log('Column keys we\'re looking for:', initialColumns.map(col => col.key));
-
         // Search through ALL properties in the row, not just the column keys
         return Object.entries(row).some(([key, value]) => {
-            // Skip null, undefined, and non-searchable values
             if (value === null || value === undefined) return false;
-
-            // Convert value to string and search
             const stringValue = String(value).toLowerCase();
-            const matches = stringValue.includes(searchLower);
-
-            if (matches) {
-                console.log(`Found match in key "${key}" with value "${stringValue}"`);
-            }
-
-            return matches;
+            return stringValue.includes(searchLower);
         });
     });
 
-
-
     // Sort filtered data
-    // Sort filtered data - replace the existing sorting logic with this:
     const sortedData = [...filteredData].sort((a, b) => {
         if (!sortConfig) return 0;
 
-        // Debug: Check if the sort key exists in the data
         const aValue = a[sortConfig.key];
         const bValue = b[sortConfig.key];
 
-        // If the column key doesn't exist in the data, try to find a matching key
         if (aValue === undefined && bValue === undefined) {
-            console.warn(`Sort key "${sortConfig.key}" not found in data. Available keys:`, Object.keys(a));
             return 0;
         }
 
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
 
-        // If values are numbers, compare as numbers
         if (typeof aValue === 'number' && typeof bValue === 'number') {
             return sortConfig.direction === 'asc'
                 ? aValue - bValue
                 : bValue - aValue;
         }
 
-        // If values are dates, compare as dates
         const aDate = new Date(aValue as string);
         const bDate = new Date(bValue as string);
         if (!isNaN(aDate.getTime()) && !isNaN(bDate.getTime())) {
@@ -187,7 +193,6 @@ export function DataTable({
                 : bDate.getTime() - aDate.getTime();
         }
 
-        // Default to string comparison - fix ESLint errors by using const
         const aStr = String(aValue).toLowerCase();
         const bStr = String(bValue).toLowerCase();
 
@@ -196,13 +201,11 @@ export function DataTable({
         return 0;
     });
 
-
-
     // Update pagination to work with filtered/sorted data
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    const startIndex = (effectiveCurrentPage - 1) * effectiveItemsPerPage;
+    const endIndex = startIndex + effectiveItemsPerPage;
     const paginatedData = sortedData.slice(startIndex, endIndex);
-    const totalFilteredPages = Math.max(1, Math.ceil(sortedData.length / itemsPerPage));
+    const totalFilteredPages = Math.max(1, Math.ceil(sortedData.length / effectiveItemsPerPage));
 
     const handleSort = (columnKey: string) => {
         let direction: 'asc' | 'desc' = 'asc';
@@ -227,23 +230,23 @@ export function DataTable({
 
     const clearSearch = () => {
         setSearchTerm('');
-        if (onPageChange) {
-            onPageChange(1);
-        }
+        changePage(1);
     };
 
     useEffect(() => {
-        if (onPageChange && currentPage > 1) {
-            onPageChange(1);
+        if (effectiveCurrentPage > 1) {
+            changePage(1);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm]);
 
     useEffect(() => {
-        const maxPage = Math.max(1, Math.ceil(sortedData.length / itemsPerPage));
-        if (onPageChange && currentPage > maxPage) {
-            onPageChange(1);
+        const maxPage = Math.max(1, Math.ceil(sortedData.length / effectiveItemsPerPage));
+        if (effectiveCurrentPage > maxPage) {
+            changePage(1);
         }
-    }, [itemsPerPage, sortedData.length, currentPage, onPageChange]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [effectiveItemsPerPage, sortedData.length, effectiveCurrentPage]);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -430,11 +433,11 @@ export function DataTable({
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">Items per page:</span>
                             <select
-                                value={itemsPerPage}
+                                value={effectiveItemsPerPage}
                                 onChange={(e) => {
                                     const newItemsPerPage = Number(e.target.value);
-                                    onItemsPerPageChange?.(newItemsPerPage);
-                                    onPageChange?.(1);
+                                    changeItemsPerPage(newItemsPerPage);
+                                    changePage(1);
                                 }}
                                 className="border rounded px-2 py-1 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
                             >
@@ -449,8 +452,8 @@ export function DataTable({
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => onPageChange?.(Math.max(1, currentPage - 1))}
-                            disabled={currentPage === 1}
+                            onClick={() => changePage(Math.max(1, effectiveCurrentPage - 1))}
+                            disabled={effectiveCurrentPage === 1}
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -461,20 +464,20 @@ export function DataTable({
                                 let pageNum;
                                 if (totalFilteredPages <= 5) {
                                     pageNum = i + 1;
-                                } else if (currentPage <= 3) {
+                                } else if (effectiveCurrentPage <= 3) {
                                     pageNum = i + 1;
-                                } else if (currentPage >= totalFilteredPages - 2) {
+                                } else if (effectiveCurrentPage >= totalFilteredPages - 2) {
                                     pageNum = totalFilteredPages - 4 + i;
                                 } else {
-                                    pageNum = currentPage - 2 + i;
+                                    pageNum = effectiveCurrentPage - 2 + i;
                                 }
 
                                 return (
                                     <Button
                                         key={pageNum}
-                                        variant={currentPage === pageNum ? "default" : "outline"}
+                                        variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
                                         size="sm"
-                                        onClick={() => onPageChange?.(pageNum)}
+                                        onClick={() => changePage(pageNum)}
                                         className="w-8 h-8 p-0"
                                     >
                                         {pageNum}
@@ -486,8 +489,8 @@ export function DataTable({
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => onPageChange?.(Math.min(totalFilteredPages, currentPage + 1))}
-                            disabled={currentPage === totalFilteredPages}
+                            onClick={() => changePage(Math.min(totalFilteredPages, effectiveCurrentPage + 1))}
+                            disabled={effectiveCurrentPage === totalFilteredPages}
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />
