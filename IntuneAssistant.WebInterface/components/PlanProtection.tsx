@@ -23,7 +23,7 @@ interface PlanProtectionProps {
 export function PlanProtection({ children, requiredPlan, featureName }: PlanProtectionProps) {
     const [dialogOpen, setDialogOpen] = useState(false);
     // This would normally come from your user/subscription context
-    const hasValidPlan = false; // Replace with actual plan check logic
+    const hasValidPlan = true; // Replace with actual plan check logic
 
     if (hasValidPlan) {
         return <>{children}</>;
