@@ -951,7 +951,8 @@ function AssignmentRolloutContent() {
                 SubResourceType: result.policy?.policySubType || '',
                 ResourceId: result.policy?.id || result.id,
                 AssignmentId: result.assignmentId,
-                AssignmentType: result.csvRow?.AssignmentDirection,
+                AssignmentType: result.assignmentType,
+                AssignmentDirection: result.csvRow?.AssignmentDirection,
                 AssignmentAction: result.csvRow?.AssignmentAction || '',
                 FilterId: result.filterToMigrate?.id && result.filterToMigrate.id !== "00000000-0000-0000-0000-000000000000"
                     ? result.filterToMigrate.id
