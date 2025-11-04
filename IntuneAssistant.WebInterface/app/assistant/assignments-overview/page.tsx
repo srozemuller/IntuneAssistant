@@ -783,25 +783,7 @@ export default function AssignmentsOverview() {
                     </CardContent>
                 </Card>
             )}
-            {/* Error Display */}
-            {error && (
-                <Card className="border-red-200">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-2 text-red-600">
-                            <X className="h-5 w-5"/>
-                            <span className="font-medium">Error:</span>
-                            <span>{error}</span>
-                        </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                            Error occurred while fetching assignments. Please try again.
-                        </span>
-                        <Button onClick={fetchAssignments} className="mt-4" variant="outline">
-                            <RefreshCw className="h-4 w-4 mr-2"/>
-                            Try Again
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
+
             {/* Show loading state */}
             {loading && assignments.length === 0 && (
                 <Card className="shadow-sm">

@@ -9,6 +9,8 @@ import { Sidebar } from '@/components/Sidebar';
 import { cn } from '@/lib/utils';
 import { CustomerProvider } from "@/contexts/CustomerContext";
 import { ConsentProvider } from "@/contexts/ConsentContext";
+import { ErrorProvider } from '@/contexts/ErrorContext';
+import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { TenantIndicator } from '@/components/ui/tenant-indicator';
 
 function MainContent({ children }: { children: React.ReactNode }) {
@@ -23,6 +25,7 @@ function MainContent({ children }: { children: React.ReactNode }) {
             )}>
                 <TenantIndicator />
                 <div className="max-w-8xl mx-auto p-6 space-y-6">
+                    <GlobalErrorDisplay />
                     {children}
                 </div>
             </main>
@@ -38,17 +41,19 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             enableSystem
         >
             <MsalProvider instance={msalInstance}>
-                <ConsentProvider>
-                    <CustomerProvider>
-                        <TenantProvider>
-                            <SidebarProvider>
-                                <MainContent>
-                                    {children}
-                                </MainContent>
-                            </SidebarProvider>
-                        </TenantProvider>
-                    </CustomerProvider>
-                </ConsentProvider>
+                <ErrorProvider>
+                    <ConsentProvider>
+                        <CustomerProvider>
+                            <TenantProvider>
+                                <SidebarProvider>
+                                    <MainContent>
+                                        {children}
+                                    </MainContent>
+                                </SidebarProvider>
+                            </TenantProvider>
+                        </CustomerProvider>
+                    </ConsentProvider>
+                </ErrorProvider>
             </MsalProvider>
         </ThemeProvider>
     );
