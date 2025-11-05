@@ -190,8 +190,8 @@ export default function SecurityPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="bg-gradient-to-r from-green-900 via-emerald-800 to-teal-900 text-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <div className="text-center">
                         <div className="inline-flex p-4 rounded-full bg-white/20 backdrop-blur-sm mb-6">
                             <Shield className="h-10 w-10" />
@@ -348,14 +348,20 @@ export default function SecurityPage() {
                                     </TableHeader>
                                     <TableBody>
                                         <TableRow>
-                                            <TableCell className="font-medium">App 1 – Frontend</TableCell>
+                                            <TableCell className="font-medium">
+                                                IntuneAssistant (Frontend)
+                                                <div className="text-xs text-gray-500 font-normal">3448bc04-cdbe-4a07-8e24-7e0e6f6980c1</div>
+                                            </TableCell>
                                             <TableCell>Handles user login using OpenID Connect</TableCell>
                                             <TableCell>
                                                 <Badge variant="secondary">None (sign-in only)</Badge>
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
-                                            <TableCell className="font-medium">App 2 – Downstream API</TableCell>
+                                            <TableCell className="font-medium">
+                                                IntuneAssistant API (Downstream API)
+                                                <div className="text-xs text-gray-500 font-normal">afe66ddf-67d4-4d61-8a51-beca7b799f52</div>
+                                            </TableCell>
                                             <TableCell>Communicates with Microsoft Graph API via On-Behalf-Of (OBO) flow</TableCell>
                                             <TableCell>
                                                 <Badge className="bg-blue-100 text-blue-800">Delegated permissions</Badge>
@@ -543,9 +549,9 @@ export default function SecurityPage() {
                                                 <TableCell className="font-medium">{row.type}</TableCell>
                                                 <TableCell>
                                                     {row.stored ? (
-                                                        <Badge className="bg-yellow-100 text-yellow-800">✅ Yes</Badge>
+                                                        <Badge className="bg-yellow-100 text-yellow-800">Yes</Badge>
                                                     ) : (
-                                                        <Badge className="bg-green-100 text-green-800">❌ No</Badge>
+                                                        <Badge className="bg-green-100 text-green-800">No</Badge>
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="text-sm">{row.purpose}</TableCell>
@@ -687,21 +693,21 @@ export default function SecurityPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                     <Button variant="outline" asChild className="w-full justify-start">
-                                        <a href="/docs/authentication" target="_blank" rel="noopener noreferrer">
+                                        <a href="https://docs.intuneassistant.cloud/docs/general/authentication" target="_blank" rel="noopener noreferrer">
                                             <FileText className="h-4 w-4 mr-2" />
                                             Authentication Overview
                                             <ExternalLink className="h-3 w-3 ml-auto" />
                                         </a>
                                     </Button>
                                     <Button variant="outline" asChild className="w-full justify-start">
-                                        <a href="/docs/permissions" target="_blank" rel="noopener noreferrer">
+                                        <a href="https://docs.intuneassistant.cloud/docs/general/authentication#permissions" target="_blank" rel="noopener noreferrer">
                                             <Key className="h-4 w-4 mr-2" />
                                             Detailed Permissions List
                                             <ExternalLink className="h-3 w-3 ml-auto" />
                                         </a>
                                     </Button>
                                     <Button variant="outline" asChild className="w-full justify-start">
-                                        <a href="/docs/architecture" target="_blank" rel="noopener noreferrer">
+                                        <a href="https://docs.intuneassistant.cloud/docs/general/how-it-works" target="_blank" rel="noopener noreferrer">
                                             <Settings className="h-4 w-4 mr-2" />
                                             Technical Architecture
                                             <ExternalLink className="h-3 w-3 ml-auto" />
