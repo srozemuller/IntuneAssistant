@@ -35,10 +35,17 @@ interface ExportButtonProps {
     variant?: "default" | "outline" | "destructive" | "secondary" | "ghost" | "link";
     size?: "default" | "sm" | "lg" | "icon";
     className?: string;
+    tenantId?: string;
 }
 
-export function ExportButton({ data, exportOptions, variant = "default", size = "default", className }: ExportButtonProps) {
+export function ExportButton({ data, exportOptions, variant = "default", size = "default", className, tenantId }: ExportButtonProps) {
     const [isExporting, setIsExporting] = useState(false);
+
+    // Helper function to generate filename with tenant ID
+    const generateFilename = (baseFilename: string, extension: string): string => {
+        const tenantPrefix = tenantId ? `${tenantId}-` : '';
+        return `${tenantPrefix}${baseFilename}.${extension}`;
+    };
 
     const exportToCSV = async (dataToExport?: ExportData) => {
         const exportData = dataToExport || data || (exportOptions && exportOptions.length === 1 ? exportOptions[0].data : null);
@@ -62,7 +69,7 @@ export function ExportButton({ data, exportOptions, variant = "default", size = 
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `${exportData.filename}-${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute('download', generateFilename(exportData.filename, 'csv'));
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
@@ -152,7 +159,7 @@ export function ExportButton({ data, exportOptions, variant = "default", size = 
                 }
             });
 
-            doc.save(`${exportData.filename}-${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(generateFilename(exportData.filename, 'pdf'));
         } finally {
             setIsExporting(false);
         }
@@ -306,7 +313,7 @@ export function ExportButton({ data, exportOptions, variant = "default", size = 
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `${exportData.filename}-${new Date().toISOString().split('T')[0]}.html`);
+            link.setAttribute('download', generateFilename(exportData.filename, 'html'));
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
