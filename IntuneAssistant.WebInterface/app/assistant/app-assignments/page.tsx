@@ -743,6 +743,7 @@ export default function AssignmentsOverview() {
                                 ]}
                                 variant="outline"
                                 size="sm"
+                                tenantId={instance.getActiveAccount()?.tenantId || accounts[0]?.tenantId || ''}
                             />
                         </>
                     ) : (
