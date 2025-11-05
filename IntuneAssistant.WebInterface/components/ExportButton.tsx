@@ -60,9 +60,9 @@ export function ExportButton({ data, exportOptions, variant = "default", size = 
                     return String(value || '');
                 })
             );
-
+            const separator = ';';
             const csvContent = [headers, ...csvData]
-                .map((row: string[]) => row.map((field: string) => `"${String(field).replace(/"/g, '""')}"`).join(','))
+                .map((row: string[]) => row.map((field: string) => String(field)).join(separator))
                 .join('\n');
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
