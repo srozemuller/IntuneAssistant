@@ -14,6 +14,7 @@ import {
     Search,
     X,
     Users,
+    Group,
     ExternalLink,
     Settings,
     Shield,
@@ -57,6 +58,7 @@ interface Assignments extends Record<string, unknown> {
     filterType: string;
     assignmentDirection: string;
     isExcluded: boolean;
+    isNestedAssignment: boolean;
     group?: {
         id: string;
         displayName: string;
@@ -786,10 +788,12 @@ export default function AssignmentsOverview() {
         {
             key: 'assignmentType' as string,
             label: 'Assignment',
-            width: 140,
-            minWidth: 100,
+            width: 160, // Increased width slightly to accommodate nested indicator
+            minWidth: 110,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const isAssigned = Boolean(row.isAssigned);
+                const isNestedAssignment = Boolean(row.isNestedAssignment);
+
                 if (!isAssigned) {
                     return (
                         <Badge variant="secondary" className="text-xs whitespace-nowrap">
@@ -802,12 +806,23 @@ export default function AssignmentsOverview() {
                 const isExclude = assignmentType.includes('Exclude');
 
                 return (
-                    <Badge
-                        variant={isExclude ? "destructive" : "default"}
-                        className="text-xs whitespace-nowrap"
-                    >
-                        {assignmentType}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                        <Badge
+                            variant={isExclude ? "destructive" : "default"}
+                            className="text-xs whitespace-nowrap"
+                        >
+                            {assignmentType}
+                        </Badge>
+                        {isNestedAssignment && (
+                            <Badge
+                                variant="outline"
+                                className="text-xs bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700 px-1.5 py-0.5"
+                                title="Nested assignment - inherited from parent group"
+                            >
+                                <Group className="h-2.5 w-2.5 mr-0.5" />
+                            </Badge>
+                        )}
+                    </div>
                 );
             }
         },

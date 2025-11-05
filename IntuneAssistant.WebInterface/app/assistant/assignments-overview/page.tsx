@@ -17,7 +17,7 @@ import {
     ShieldCheck,
     ChevronDown,
     ChevronUp,
-    XCircle, Computer, Blocks
+    XCircle, Computer, Blocks, CircleQuestionMark
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 
@@ -620,14 +620,20 @@ export default function AssignmentsOverview() {
                                 )}
                             </div>
                             {group?.groupCount && (
-                                <div className="flex gap-1 text-xs text-gray-500">
+                                <div className="flex gap-1 text-xs text-gray-500 items-center">
                                     <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
                                     <span>{group.groupCount.deviceCount} {group.groupCount.deviceCount === 1 ? 'device' : 'devices'}</span>
                                     <span>{group.groupCount.groupCount} {group.groupCount.groupCount === 1 ? 'group' : 'groups'}</span>
+                                    {group.groupCount.groupCount > 0 && (
+                                        <span
+                                            className="text-amber-500 hover:text-amber-600 cursor-help ml-1"
+                                            title="This group contains nested groups. Use the Assignments by Group page to find all nested group assignments."
+                                        >
+                <CircleQuestionMark className="h-3 w-3" />
+            </span>
+                                    )}
                                 </div>
                             )}
-
-
                         </div>
                     );
                 }
