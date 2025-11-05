@@ -17,7 +17,7 @@ import {
     ShieldCheck,
     ChevronDown,
     ChevronUp,
-    XCircle, Computer, Blocks
+    XCircle, Computer, Blocks, CircleQuestionMark
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 
@@ -620,14 +620,20 @@ export default function AssignmentsOverview() {
                                 )}
                             </div>
                             {group?.groupCount && (
-                                <div className="flex gap-1 text-xs text-gray-500">
+                                <div className="flex gap-1 text-xs text-gray-500 items-center">
                                     <span>{group.groupCount.userCount} {group.groupCount.userCount === 1 ? 'user' : 'users'}</span>
                                     <span>{group.groupCount.deviceCount} {group.groupCount.deviceCount === 1 ? 'device' : 'devices'}</span>
                                     <span>{group.groupCount.groupCount} {group.groupCount.groupCount === 1 ? 'group' : 'groups'}</span>
+                                    {group.groupCount.groupCount > 0 && (
+                                        <span
+                                            className="text-amber-500 hover:text-amber-600 cursor-help ml-1"
+                                            title="This group contains nested groups. Use the Assignments by Group page to find all nested group assignments."
+                                        >
+                <CircleQuestionMark className="h-3 w-3" />
+            </span>
+                                    )}
                                 </div>
                             )}
-
-
                         </div>
                     );
                 }
@@ -784,25 +790,7 @@ export default function AssignmentsOverview() {
                     </CardContent>
                 </Card>
             )}
-            {/* Error Display */}
-            {error && (
-                <Card className="border-red-200">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-2 text-red-600">
-                            <X className="h-5 w-5"/>
-                            <span className="font-medium">Error:</span>
-                            <span>{error}</span>
-                        </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                            Error occurred while fetching assignments. Please try again.
-                        </span>
-                        <Button onClick={fetchAssignments} className="mt-4" variant="outline">
-                            <RefreshCw className="h-4 w-4 mr-2"/>
-                            Try Again
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
+
             {/* Show loading state */}
             {loading && assignments.length === 0 && (
                 <Card className="shadow-sm">

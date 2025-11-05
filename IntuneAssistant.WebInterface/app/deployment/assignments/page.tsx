@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { DataTable } from '@/components/DataTable';
 import {useApiRequest} from "@/hooks/useApiRequest";
 import { UserConsentRequiredError } from '@/lib/errors';
-
+import { PlanProtection } from '@/components/PlanProtection';
 import { useConsent } from "@/contexts/ConsentContext";
 
 interface AssignmentCompareApiResponse {
@@ -169,7 +169,7 @@ interface ValidationResult {
 }
 
 
-export default function AssignmentRolloutPage() {
+function AssignmentRolloutContent() {
     // API CALLS
     const { instance, accounts } = useMsal();
     const { request, cancel } = useApiRequest();
@@ -861,13 +861,26 @@ export default function AssignmentRolloutPage() {
         setMigrationProgress(0);
 
         try {
-            const selectedData = comparisonResults.filter(result =>
+            // Get the selected comparison results first
+            const selectedComparisonResults = comparisonResults.filter(result =>
                 selectedRows.includes(result.id)
             );
 
+            // Create the API payload with the correct structure
+            const migrationPayload = selectedComparisonResults.map(result => ({
+                PolicyId: result.policy?.id || '',
+                PolicyName: result.policy?.name || result.providedPolicyName || '',
+                PolicyType: result.policy?.policySubType || '', // Use policySubType for PolicyType field
+                AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
+                AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
+                AssignmentAction: result.csvRow?.AssignmentAction || result.assignmentAction || 'Add',
+                FilterName: result.csvRow?.FilterName || result.filterName || null,
+                FilterType: result.csvRow?.FilterType || result.filterType || 'none'
+            }));
+
             const apiResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
                 method: 'POST',
-                body: JSON.stringify(selectedData)
+                body: JSON.stringify(migrationPayload)
             });
 
             // Add null check for apiResponse
@@ -919,7 +932,7 @@ export default function AssignmentRolloutPage() {
 
             // Validate only the items that were just migrated
             setTimeout(() => {
-                validateMigratedAssignments(selectedData);
+                validateMigratedAssignments(selectedComparisonResults);
             }, 500);
 
         } catch (error) {
@@ -951,7 +964,8 @@ export default function AssignmentRolloutPage() {
                 SubResourceType: result.policy?.policySubType || '',
                 ResourceId: result.policy?.id || result.id,
                 AssignmentId: result.assignmentId,
-                AssignmentType: result.csvRow?.AssignmentDirection,
+                AssignmentType: result.assignmentType,
+                AssignmentDirection: result.csvRow?.AssignmentDirection,
                 AssignmentAction: result.csvRow?.AssignmentAction || '',
                 FilterId: result.filterToMigrate?.id && result.filterToMigrate.id !== "00000000-0000-0000-0000-000000000000"
                     ? result.filterToMigrate.id
@@ -1722,5 +1736,13 @@ export default function AssignmentRolloutPage() {
                 </DialogContent>
             </Dialog>
         </div>
+    );
+}
+
+export default function AssignmentRolloutPage() {
+    return (
+        <PlanProtection requiredPlan="extensions" featureName="Assignments Manager">
+            <AssignmentRolloutContent />
+        </PlanProtection>
     );
 }

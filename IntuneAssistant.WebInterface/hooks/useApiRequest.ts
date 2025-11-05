@@ -3,13 +3,15 @@ import { useRef, useCallback } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useConsent } from "@/contexts/ConsentContext";
 import { useTenant } from "@/contexts/TenantContext";
-import { apiRequest } from "@/lib/apiRequest";
+import { apiRequest, ApiError } from "@/lib/apiRequest";
 import { apiScope } from '@/lib/msalConfig';
 import { UserConsentRequiredError } from '@/lib/errors';
+import { useError } from '@/contexts/ErrorContext';
 
 export function useApiRequest() {
     const { instance, accounts } = useMsal();
     const { showConsent } = useConsent();
+    const { showError, clearError } = useError();
     const { selectedTenant } = useTenant();
     const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -19,6 +21,8 @@ export function useApiRequest() {
         onConsentComplete?: () => Promise<T>
     ): Promise<T | undefined> {
         // Cancel previous request if still running
+        clearError();
+
         if (abortControllerRef.current) {
             abortControllerRef.current.abort();
         }
@@ -55,27 +59,42 @@ export function useApiRequest() {
 
             if (err instanceof UserConsentRequiredError) {
                 console.log("Consent required, showing consent dialog with URL:", err.consentUrl);
-                // Pass the callback to be executed after consent is complete
                 showConsent(err.consentUrl, onConsentComplete ?
                     async () => {
                         try {
-                            // Re-attempt the request after consent is given
-                            if (onConsentComplete) {
-                                return await onConsentComplete();
-                            }
+                            return await onConsentComplete();
                         } catch (retryError) {
                             console.error("Error retrying request after consent:", retryError);
-                            throw retryError;
+                            const retryErrorMessage = retryError instanceof Error ? retryError.message : 'Retry failed';
+                            showError(retryErrorMessage);
                         }
                     } : undefined
                 );
                 return;
             }
 
-            // Rethrow all other errors
-            throw err;
+            // Handle ApiError with correlation ID
+            let errorMessage = err instanceof Error ? err.message : 'An error occurred';
+
+            if (err instanceof ApiError && err.correlationId) {
+                errorMessage = `${errorMessage} (Correlation ID: ${err.correlationId})`;
+                console.log('Error with correlation ID:', err.correlationId);
+            }
+
+            // Show error through global error handler
+            showError(errorMessage, onConsentComplete ? async () => {
+                try {
+                    return await onConsentComplete();
+                } catch (retryError) {
+                    console.error("Error retrying request after consent:", retryError);
+                    const retryErrorMessage = retryError instanceof Error ? retryError.message : 'Retry failed';
+                    showError(retryErrorMessage);
+                }
+            } : undefined);
+
+            return;
         }
-    }, [instance, accounts, showConsent, selectedTenant]);
+    }, [instance, accounts, showConsent, selectedTenant, showError, clearError]);
 
     const cancel = useCallback(() => {
         if (abortControllerRef.current) {
