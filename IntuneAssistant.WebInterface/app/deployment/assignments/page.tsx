@@ -861,13 +861,26 @@ function AssignmentRolloutContent() {
         setMigrationProgress(0);
 
         try {
-            const selectedData = comparisonResults.filter(result =>
+            // Get the selected comparison results first
+            const selectedComparisonResults = comparisonResults.filter(result =>
                 selectedRows.includes(result.id)
             );
 
+            // Create the API payload with the correct structure
+            const migrationPayload = selectedComparisonResults.map(result => ({
+                PolicyId: result.policy?.id || '',
+                PolicyName: result.policy?.name || result.providedPolicyName || '',
+                PolicyType: result.policy?.policySubType || '', // Use policySubType for PolicyType field
+                AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
+                AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
+                AssignmentAction: result.csvRow?.AssignmentAction || result.assignmentAction || 'Add',
+                FilterName: result.csvRow?.FilterName || result.filterName || null,
+                FilterType: result.csvRow?.FilterType || result.filterType || 'none'
+            }));
+
             const apiResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
                 method: 'POST',
-                body: JSON.stringify(selectedData)
+                body: JSON.stringify(migrationPayload)
             });
 
             // Add null check for apiResponse
@@ -919,7 +932,7 @@ function AssignmentRolloutContent() {
 
             // Validate only the items that were just migrated
             setTimeout(() => {
-                validateMigratedAssignments(selectedData);
+                validateMigratedAssignments(selectedComparisonResults);
             }, 500);
 
         } catch (error) {
