@@ -124,13 +124,13 @@ export default function AssignmentsOverview() {
                 key: 'resourceName',
                 label: 'PolicyName',
                 width: 30,
-                getValue: (row) => String(row.resourceName || 'N/A')
+                getValue: (row) => String(row.resourceName || '')
             },
             {
                 key: 'targetName',
                 label: 'GroupName',
                 width: 30,
-                getValue: (row) => String(row.targetName || 'N/A')
+                getValue: (row) => String(row.targetName || '')
             },
             {
                 key: 'assignmentType',
