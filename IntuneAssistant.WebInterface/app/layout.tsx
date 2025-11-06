@@ -17,15 +17,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
 
-    const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
     return (
         <html lang="en" suppressHydrationWarning>
         <head>
-            {GA_MEASUREMENT_ID && (
                 <>
                     <Script
-                        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+                        src={`https://www.googletagmanager.com/gtag/js?id=467683170`}
                         strategy="afterInteractive"
                     />
                     <Script id="google-analytics" strategy="afterInteractive">
@@ -33,11 +31,10 @@ export default function RootLayout({
                             window.dataLayer = window.dataLayer || [];
                             function gtag(){dataLayer.push(arguments);}
                             gtag('js', new Date());
-                            gtag('config', '${GA_MEASUREMENT_ID}');
+                            gtag('config', '467683170');
                         `}
                     </Script>
                 </>
-            )}
         </head>
         <body className={inter.className}>
         <ClientLayout>
