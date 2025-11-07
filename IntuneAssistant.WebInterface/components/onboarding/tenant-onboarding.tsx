@@ -139,6 +139,60 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
         return () => clearInterval(checkClosed);
     }, [consentWindow, consentCompleted]);
 
+    const linkExistingTenant = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const finalTenantId = isGdapMode ? selectedTenant?.tenantId : tenantId;
+
+            if (!finalTenantId) {
+                throw new Error('Missing tenant ID');
+            }
+
+            const token = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            const response = await fetch(
+                `${CUSTOMER_ENDPOINT}/${customerId}/tenants/add-link`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token.accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        isEnabled: true,
+                        isGdap: isGdapMode,
+                        tenantId: finalTenantId
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || `Failed to link tenant: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log('Tenant linked successfully:', result);
+
+            setOnboardingResult({
+                status: 'success',
+                message: 'Tenant linked successfully'
+            });
+            setCurrentStep(3);
+        } catch (err) {
+            console.error('Error linking tenant:', err);
+            setError(err instanceof Error ? err.message : 'Failed to link tenant');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     const handleConsentCallback = async () => {
         try {
             setLoading(true);
@@ -207,9 +261,19 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
             }
             setCurrentStep(1);
         } else if (currentStep === 1) {
-            // Step 2: Validation -> Admin Consent
-            setCurrentStep(2);
-            initiateConsent();
+            // Check if tenant is already onboarded but not linked
+            const isOnboardedNotLinked = isGdapMode
+                ? selectedTenant?.isOnboarded && !selectedTenant?.isLinked
+                : false; // For manual entry, we can't determine this easily
+
+            if (isOnboardedNotLinked) {
+                // Skip consent step and go directly to linking
+                linkExistingTenant();
+            } else {
+                // Step 2: Validation -> Admin Consent
+                setCurrentStep(2);
+                initiateConsent();
+            }
         } else if (currentStep === 2) {
             // This step is handled by consent completion
             setCurrentStep(3);
@@ -324,7 +388,6 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                         </CardHeader>
                         <CardContent className="space-y-6">
                             {/* Method Selection */}
-                            {/* Method Selection */}
                             <div className="flex items-center justify-between p-4 border rounded-lg">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
@@ -401,7 +464,7 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         {partnerTenants.length === 0 && !gdapLoading && !gdapError && (
-                                            <Button onClick={fetchPartnerTenants} className="w-full">
+                                            <Button onClick={fetchPartnerTenants} >
                                                 Load Partner Tenants
                                             </Button>
                                         )}
@@ -435,7 +498,10 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                                                                     setTenantId(tenant.tenantId);
                                                                     setTenantDomainName(tenant.domain);
                                                                 }}
-                                                                className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50"
+                                                                disabled={tenant.isLinked}
+                                                                className={`flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 ${
+                                                                    tenant.isLinked ? 'opacity-50 cursor-not-allowed hover:bg-transparent' : ''
+                                                                }`}
                                                             >
                                                                 <div className="flex-1">
                                                                     <div className="flex items-center gap-2">
@@ -455,6 +521,12 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                                                                             className="text-xs"
                                                                         >
                                                                             {tenant.isOnboarded ? 'Onboarded' : 'Not Onboarded'}
+                                                                        </Badge>
+                                                                        <Badge
+                                                                            variant="secondary"
+                                                                            className={`text-xs ${tenant.isLinked ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ''}`}
+                                                                        >
+                                                                            {tenant.isLinked ? 'Linked' : 'Not Linked'}
                                                                         </Badge>
                                                                     </div>
                                                                 </div>
@@ -587,14 +659,19 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                                     <Info className="h-5 w-5 text-blue-600 mt-0.5" />
                                     <div className="text-sm text-blue-800">
                                         <p className="font-medium">Next Step:</p>
-                                        <p>Admin consent will be initiated to grant necessary permissions for monitoring and management.</p>
-                                        {isGdapMode && (
-                                            <p className="mt-1">Using GDAP relationship for secure delegated access.</p>
+                                        {isGdapMode && selectedTenant?.isOnboarded && !selectedTenant?.isLinked ? (
+                                            <p>This tenant is already onboarded. We will link it to your customer account.</p>
+                                        ) : (
+                                            <>
+                                                <p>Admin consent will be initiated to grant necessary permissions for monitoring and management.</p>
+                                                {isGdapMode && (
+                                                    <p className="mt-1">Using GDAP relationship for secure delegated access.</p>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>
                             </div>
-
                         </CardContent>
                     </Card>
                 );
@@ -685,8 +762,8 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
+            <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
+            <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Building className="h-5 w-5" />
                         Tenant Onboarding - {customerName}
@@ -765,13 +842,18 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                     )}
 
                     {currentStep < 2 && (
-                        <Button onClick={handleNext} className="flex-1" disabled={loading}>
-                            {currentStep === 1 ? 'Start Consent' : 'Next'}
+                        <Button onClick={handleNext} disabled={loading}>
+                            {currentStep === 1 && isGdapMode && selectedTenant?.isOnboarded && !selectedTenant?.isLinked
+                                ? 'Link Customer'
+                                : currentStep === 1
+                                    ? 'Start Consent'
+                                    : 'Next'
+                            }
                         </Button>
                     )}
 
                     {currentStep === 3 && (
-                        <Button onClick={handleComplete} className="flex-1">
+                        <Button onClick={handleComplete} >
                             Complete Onboarding
                         </Button>
                     )}
