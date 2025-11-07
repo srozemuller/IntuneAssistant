@@ -11,6 +11,7 @@ export interface PartnerTenant {
     country: string;
     createdDateTime: string | null;
     isOnboarded: boolean;
+    isLinked: boolean;
 }
 
 interface ApiResponse {
