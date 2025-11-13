@@ -150,7 +150,7 @@ export default function AssignmentsOverview() {
                 width: 25,
                 getValue: (row) => {
                     const filterId = row.filterId as string | null;
-                    if (!filterId || filterId === 'None') return '';
+                    if (!filterId || filterId === 'None') return ''; // Empty for rollout export
                     const filterInfo = getFilterInfo(filterId, String(row.filterType));
                     return filterInfo.displayName;
                 }
