@@ -465,6 +465,17 @@ function AssignmentRolloutContent() {
             key: 'validationStatus',
             label: 'Status',
             minWidth: 150,
+            sortable: true,
+            sortValue: (row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+
+                // Create a clear hierarchy for sorting
+                // Higher numbers = higher priority in sort order
+                if (result.isMigrated === true) return 4; // Migrated (highest priority)
+                if (result.isReadyForMigration === true) return 3; // Ready to migrate
+                if (result.isBackedUp === true) return 2; // Backed up but not ready
+                return 1; // Not ready (lowest priority)
+            },
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return (
@@ -503,6 +514,8 @@ function AssignmentRolloutContent() {
                 );
             }
         }
+
+
     ];
 
     const validationColumns = [

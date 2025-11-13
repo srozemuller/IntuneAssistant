@@ -12,6 +12,7 @@ interface Column {
     minWidth?: number;
     sortable?: boolean;
     searchable?: boolean;
+    sortValue?: (row: Record<string, unknown>) => number | string;
     render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
 }
 
@@ -114,6 +115,7 @@ export function DataTable({
                     minWidth: 40,
                     sortable: false,
                     searchable: false,
+                    sortValue: undefined,
                     render: (_, row) => (
                         <input
                             type="checkbox"
@@ -134,7 +136,8 @@ export function DataTable({
         ...col,
         width: col.width || 150,
         minWidth: col.minWidth || 100,
-        searchable: col.searchable !== false && col.key !== '_select'
+        searchable: col.searchable !== false && col.key !== '_select',
+        sortValue: col.sortValue
     })));
 
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
@@ -147,7 +150,8 @@ export function DataTable({
             ...col,
             width: col.width || 150,
             minWidth: col.minWidth || 100,
-            searchable: col.searchable !== false && col.key !== '_select'
+            searchable: col.searchable !== false && col.key !== '_select',
+            sortValue: col.sortValue
         })));
     }, [columnsWithSelection]);
 
@@ -169,8 +173,12 @@ export function DataTable({
     const sortedData = [...filteredData].sort((a, b) => {
         if (!sortConfig) return 0;
 
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
+        // Find the column configuration to check for custom sortValue
+        const column = columns.find(col => col.key === sortConfig.key);
+
+        // Use sortValue function if provided, otherwise fall back to direct value
+        const aValue = column?.sortValue ? column.sortValue(a) : a[sortConfig.key];
+        const bValue = column?.sortValue ? column.sortValue(b) : b[sortConfig.key];
 
         if (aValue === undefined && bValue === undefined) {
             return 0;
@@ -200,6 +208,7 @@ export function DataTable({
         if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
     });
+
 
     // Update pagination to work with filtered/sorted data
     const startIndex = (effectiveCurrentPage - 1) * effectiveItemsPerPage;
