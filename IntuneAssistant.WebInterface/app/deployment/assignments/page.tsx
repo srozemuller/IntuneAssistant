@@ -453,12 +453,35 @@ function AssignmentRolloutContent() {
             }
         },
         {
-            key: 'filterType',
-            label: 'Filter',
+            key: 'filterName',
+            label: 'Filter Name',
             minWidth: 120,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.filterName || result.csvRow?.FilterName || '-';
+            }
+        },
+        {
+            key: 'filterType',
+            label: 'Filter Type',
+            minWidth: 120,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                if (!result.filterType) return null;
+
+                if (result.filterType.toLowerCase() === 'none') {
+                    return (
+                        <Badge variant="outline" className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                            {result.filterType}
+                        </Badge>
+                    );
+                }
+
+                return (
+                    <Badge variant={result.filterType === 'Include' ? 'default' : 'destructive'}>
+                        {result.filterType}
+                    </Badge>
+                );
             }
         },
         {
