@@ -21,6 +21,13 @@ import { UserConsentRequiredError } from '@/lib/errors';
 import { PlanProtection } from '@/components/PlanProtection';
 import { useConsent } from "@/contexts/ConsentContext";
 
+interface BackupApiResponse {
+    status: string;
+    message?: string;
+    details?: string[];
+    data?: string; // The JSON string that needs to be parsed
+}
+
 interface AssignmentCompareApiResponse {
     status: string;
     message?: {
@@ -705,38 +712,68 @@ function AssignmentRolloutContent() {
             return;
         }
 
+        // Use selected rows if any are selected, otherwise use all ready-for-migration
+        const policiesToBackup = selectedRows.length > 0
+            ? comparisonResults.filter(r => selectedRows.includes(r.id) && r.isReadyForMigration && !r.isMigrated)
+            : comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated);
+
+        if (policiesToBackup.length === 0) {
+            const message = selectedRows.length > 0
+                ? 'No selected policies are ready for migration to backup'
+                : 'No policies ready for migration to backup';
+            alert(message);
+            return;
+        }
+
+
+        // Get distinct policies based on policy ID and type
+        const distinctPolicies = policiesToBackup.reduce((acc, current) => {
+            const key = `${current.policy.id}_${current.policy.policySubType}`;
+            if (!acc.find(p => `${p.policy.id}_${p.policy.policySubType}` === key)) {
+                acc.push(current);
+            }
+            return acc;
+        }, [] as ComparisonResult[]);
+
         setLoading(true);
 
         try {
             const JSZip = (await import('jszip')).default;
             const zip = new JSZip();
             const backupResults: { [id: string]: boolean } = {};
+            const tenantId = accounts[0]?.tenantId || 'unknown-tenant';
 
-            for (const policy of readyForMigration) {
+            for (const policy of distinctPolicies) {
                 try {
-                    const response = await instance.acquireTokenSilent({
-                        scopes: [apiScope],
-                        account: accounts[0]
+                    const backupResponse = await request<BackupApiResponse>(`${EXPORT_ENDPOINT}/${policy.policy.policySubType}/${policy.policy.id}`, {
+                        method: 'GET'
                     });
 
-                    const apiResponse = await fetch(`${EXPORT_ENDPOINT}/${policy.policy.policySubType}/${policy.policy.id}`, {
-                        headers: {
-                            'Authorization': `Bearer ${response.accessToken}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
+                    if (backupResponse && backupResponse.data) {
+                        // Parse the JSON string in the data property
+                        const backupData = typeof backupResponse.data === 'string'
+                            ? JSON.parse(backupResponse.data)
+                            : backupResponse.data;
 
-                    if (apiResponse.ok) {
-                        const backupData = await apiResponse.json();
                         zip.file(`${policy.policy.name}_${policy.policy.id}.json`, JSON.stringify(backupData, null, 2));
-                        backupResults[policy.id] = true;
+
+                        // Mark all policies with the same ID and type as backed up
+                        readyForMigration
+                            .filter(r => r.policy.id === policy.policy.id && r.policy.policySubType === policy.policy.policySubType)
+                            .forEach(r => backupResults[r.id] = true);
                     } else {
                         console.error(`Failed to backup policy ${policy.policy.id}`);
-                        backupResults[policy.id] = false;
+                        // Mark all policies with the same ID and type as failed
+                        readyForMigration
+                            .filter(r => r.policy.id === policy.policy.id && r.policy.policySubType === policy.policy.policySubType)
+                            .forEach(r => backupResults[r.id] = false);
                     }
                 } catch (error) {
                     console.error(`Failed to backup policy ${policy.policy.id}:`, error);
-                    backupResults[policy.id] = false;
+                    // Mark all policies with the same ID and type as failed
+                    readyForMigration
+                        .filter(r => r.policy.id === policy.policy.id && r.policy.policySubType === policy.policy.policySubType)
+                        .forEach(r => backupResults[r.id] = false);
                 }
             }
 
@@ -751,7 +788,7 @@ function AssignmentRolloutContent() {
             const url = window.URL.createObjectURL(content);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `policy_backups_${new Date().toISOString().split('T')[0]}.zip`;
+            a.download = `${tenantId}_policy_backups_${new Date().toISOString().split('T')[0]}.zip`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -759,7 +796,7 @@ function AssignmentRolloutContent() {
 
             const successCount = Object.values(backupResults).filter(success => success).length;
             const totalCount = Object.keys(backupResults).length;
-            alert(`Backup completed: ${successCount}/${totalCount} policies backed up successfully`);
+            alert(`Backup completed: ${distinctPolicies.length} distinct policies processed, ${successCount}/${totalCount} assignment rows marked as backed up`);
 
         } catch (error) {
             console.error('Backup failed:', error);
@@ -1414,14 +1451,18 @@ function AssignmentRolloutContent() {
                                     })()}
                                 </Button>
 
-
                                 <Button
                                     onClick={downloadBackups}
                                     disabled={loading || comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
                                     variant="outline"
                                 >
-                                    {loading ? 'Creating Backup...' : 'Backup Ready Policies'}
+                                    {loading ? 'Creating Backup...' :
+                                        selectedRows.length > 0
+                                            ? `Backup Policies (${selectedRows.filter(id => comparisonResults.find(r => r.id === id && r.isReadyForMigration && !r.isMigrated)).length})`
+                                            : 'Backup Policies'
+                                    }
                                 </Button>
+
                                 <Button
                                     onClick={migrateSelectedAssignments}
                                     disabled={
