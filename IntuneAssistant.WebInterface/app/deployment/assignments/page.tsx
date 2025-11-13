@@ -1,13 +1,13 @@
 
 'use client';
-
+import ReactDOM from 'react-dom';
 import React, { useState, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
 import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
@@ -20,13 +20,6 @@ import {useApiRequest} from "@/hooks/useApiRequest";
 import { UserConsentRequiredError } from '@/lib/errors';
 import { PlanProtection } from '@/components/PlanProtection';
 import { useConsent } from "@/contexts/ConsentContext";
-
-interface BackupApiResponse {
-    status: string;
-    message?: string;
-    details?: string[];
-    data?: string; // The JSON string that needs to be parsed
-}
 
 interface AssignmentCompareApiResponse {
     status: string;
@@ -61,8 +54,11 @@ interface CSVRow {
     FilterType: string | null;
     isValidAction?: boolean;
     originalActionValue?: string;
+    validationErrors?: CSVValidationError[]; // Add validation errors
+    isValid?: boolean; // Overall row validity
     [key: string]: unknown;
 }
+
 interface Assignment {
     id: string;
     target: {
@@ -175,6 +171,13 @@ interface ValidationResult {
 }
 }
 
+// Add new interface for validation errors
+interface CSVValidationError {
+    rowIndex: number;
+    field: string;
+    message: string;
+}
+
 
 function AssignmentRolloutContent() {
     // API CALLS
@@ -217,16 +220,96 @@ function AssignmentRolloutContent() {
 
     const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
+// Add this component before the uploadColumns definition
+    const ValidationStatusCell = ({ csvRow }: { csvRow: CSVRow }) => {
+        const [showTooltip, setShowTooltip] = useState(false);
+        const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+        const iconRef = useRef<HTMLDivElement>(null);
+
+        const handleMouseEnter = () => {
+            if (iconRef.current) {
+                const rect = iconRef.current.getBoundingClientRect();
+                setTooltipPosition({
+                    x: rect.left,
+                    y: rect.bottom + 8
+                });
+                setShowTooltip(true);
+            }
+        };
+
+        if (!csvRow.isValid) {
+            return (
+                <>
+                    <div
+                        ref={iconRef}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={() => setShowTooltip(false)}
+                        className="flex items-center justify-center cursor-help"
+                    >
+                        <AlertTriangle className="h-5 w-5 text-red-500" />
+                    </div>
+                    {showTooltip && ReactDOM.createPortal(
+                        <div
+                            className="fixed z-[10000] bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-3 shadow-xl min-w-[280px] max-w-[400px]"
+                            style={{
+                                left: `${tooltipPosition.x}px`,
+                                top: `${tooltipPosition.y}px`
+                            }}
+                        >
+                            <div className="absolute -top-1 left-4 w-2 h-2 bg-red-50 dark:bg-red-900 border-l border-t border-red-200 dark:border-red-700 transform rotate-45"></div>
+                            <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-2">Validation Errors:</p>
+                            <ul className="text-xs text-red-700 dark:text-red-300 space-y-1">
+                                {csvRow.validationErrors?.map((error, idx) => (
+                                    <li key={idx} className="leading-relaxed">• {error.message}</li>
+                                ))}
+                            </ul>
+                        </div>,
+                        document.body
+                    )}
+                </>
+            );
+        }
+
+        return (
+            <div className="flex items-center justify-center">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+            </div>
+        );
+    };
+
     const uploadColumns = [
+        {
+            key: 'validationStatusSort',
+            label: 'Status',
+            width: 25,
+            maxWidth: 25,
+            minWidth: 25,
+            sortable: true,
+            sortValue: (row: Record<string, unknown>) => {
+                const csvRow = row as unknown as CSVRow;
+                // Return 0 for invalid (sorts first), 1 for valid (sorts last)
+                return csvRow.isValid ? 1 : 0;
+            },
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as unknown as CSVRow;
+                return <ValidationStatusCell csvRow={csvRow} />;
+            }
+        },
         {
             key: 'PolicyName',
             label: 'Policy Name',
             minWidth: 200,
-            render: (value: unknown) => (
-                <div className="text-sm font-medium cursor-pointer truncate block w-full text-left" title={String(value)}>
-                    {String(value)}
-                </div>
-            )
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const csvRow = row as unknown as CSVRow;
+                const hasError = csvRow.validationErrors?.some(e => e.field === 'PolicyName');
+                return (
+                    <div className={`text-sm font-medium cursor-pointer truncate block w-full text-left ${
+                        hasError ? 'text-red-600 font-bold' : ''
+                    }`} title={String(value)}>
+                        {String(value) || <span className="text-red-500 italic">Missing</span>}
+                    </div>
+                );
+            }
         },
         {
             key: 'GroupName',
@@ -234,9 +317,13 @@ function AssignmentRolloutContent() {
             minWidth: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as unknown as CSVRow;
+                const hasError = csvRow.validationErrors?.some(e => e.field === 'GroupName');
                 return (
-                    <div className={`text-sm font-medium cursor-pointer truncate block w-full text-left ${csvRow.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''}`} title={String(value)}>
-                        {String(value)}
+                    <div className={`text-sm font-medium cursor-pointer truncate block w-full text-left ${
+                        hasError ? 'text-red-600 font-bold' :
+                            csvRow.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''
+                    }`} title={String(value)}>
+                        {String(value) || (hasError ? <span className="text-red-500 italic">Missing</span> : '-')}
                     </div>
                 );
             }
@@ -246,6 +333,17 @@ function AssignmentRolloutContent() {
             label: 'Direction',
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as CSVRow;
+                const hasError = csvRow.validationErrors?.some(e => e.field === 'AssignmentDirection');
+
+                if (hasError) {
+                    return (
+                        <Badge variant="destructive">
+                            <XCircle className="h-3 w-3 mr-1" />
+                            Missing
+                        </Badge>
+                    );
+                }
+
                 return (
                     <Badge
                         variant={csvRow.AssignmentDirection === 'Include' ? 'default' : 'destructive'}
@@ -261,21 +359,51 @@ function AssignmentRolloutContent() {
             label: 'Action',
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as CSVRow;
-                return !csvRow.isValidAction ? (
-                    <div className="flex items-center gap-2">
-                        <Badge variant="destructive">Excluded</Badge>
-                        <span className="text-xs text-red-600">
-            Invalid: &quot;{csvRow.originalActionValue}&quot;
-          </span>
-                    </div>
-                ) : (
-                    <Badge variant={
-                        csvRow.AssignmentAction === 'Add' ? 'default' :
-                            csvRow.AssignmentAction === 'Remove' ? 'destructive' : 'secondary'
-                    }>
+                const hasError = csvRow.validationErrors?.some(e => e.field === 'AssignmentAction');
+
+                if (hasError) {
+                    return (
+                        <div className="flex items-center gap-2">
+                            <Badge variant="destructive">
+                                <XCircle className="h-3 w-3 mr-1" />
+                                Invalid
+                            </Badge>
+                            {csvRow.originalActionValue && (
+                                <span className="text-xs text-red-600">
+                                &quot;{csvRow.originalActionValue}&quot;
+                            </span>
+                            )}
+                        </div>
+                    );
+                }
+
+                if (!csvRow.isValidAction) {
+                    return (
+                        <div className="flex items-center gap-2">
+                            <Badge variant="destructive">Invalid</Badge>
+                            <span className="text-xs text-red-600">
+                            &quot;{csvRow.originalActionValue}&quot;
+                        </span>
+                        </div>
+                    );
+                }
+
+                return (
+                    <Badge
+                        variant={
+                            csvRow.AssignmentAction === 'Add' ? 'default' :
+                                csvRow.AssignmentAction === 'Remove' ? 'destructive' : 'secondary'
+                        }
+                        className={
+                            csvRow.AssignmentAction === 'Add' ? 'bg-green-500 hover:bg-green-600 text-white' :
+                                csvRow.AssignmentAction === 'Remove' ? 'bg-orange-500 hover:bg-orange-600 text-white' :
+                                    'bg-red-500 hover:bg-red-600 text-white'
+                        }
+                    >
                         {csvRow.AssignmentAction}
                     </Badge>
                 );
+
             }
         },
         {
@@ -310,11 +438,156 @@ function AssignmentRolloutContent() {
             }
         }
     ];
+
+    const MigrationCheckCell = ({ result }: { result: ComparisonResult }) => {
+        const [showTooltip, setShowTooltip] = useState(false);
+        const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+        const iconRef = useRef<HTMLDivElement>(null);
+
+        const handleMouseEnter = () => {
+            if (iconRef.current) {
+                const rect = iconRef.current.getBoundingClientRect();
+                setTooltipPosition({
+                    x: rect.left,
+                    y: rect.bottom + 8
+                });
+                setShowTooltip(true);
+            }
+        };
+
+        const check = result.migrationCheckResult;
+        if (!check) return null;
+
+        // Check if already migrated
+        if (result.isMigrated) {
+            return (
+                <>
+                    <div
+                        ref={iconRef}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={() => setShowTooltip(false)}
+                        className="flex items-center justify-center cursor-help"
+                    >
+                        <Circle className="h-5 w-5 text-blue-500" />
+                    </div>
+                    {showTooltip && ReactDOM.createPortal(
+                        <div
+                            className="fixed z-[10000] bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-3 shadow-xl min-w-[280px] max-w-[400px]"
+                            style={{
+                                left: `${tooltipPosition.x}px`,
+                                top: `${tooltipPosition.y}px`
+                            }}
+                        >
+                            <div className="absolute -top-1 left-4 w-2 h-2 bg-blue-50 dark:bg-blue-900 border-l border-t border-blue-200 dark:border-blue-700 transform rotate-45"></div>
+                            <p className="text-xs font-semibold text-blue-800 dark:text-blue-200">Already Migrated</p>
+                        </div>,
+                        document.body
+                    )}
+                </>
+            );
+        }
+
+        const allChecksPass = check.policyExists && check.policyIsUnique &&
+            check.groupExists && check.correctAssignmentTypeProvided &&
+            check.correctAssignmentActionProvided;
+
+        const hasWarnings = check.filterExist === false || check.filterIsUnique === false ||
+            check.correctFilterPlatform === false || check.correctFilterTypeProvided === false;
+
+        const errors: string[] = [];
+        const warnings: string[] = [];
+
+        if (!check.policyExists) errors.push("Policy not found");
+        if (!check.policyIsUnique) errors.push("Multiple policies found");
+        if (!check.groupExists) errors.push("Group not found");
+        if (!check.correctAssignmentTypeProvided) errors.push("Invalid assignment type");
+        if (!check.correctAssignmentActionProvided) errors.push("Invalid assignment action");
+
+        if (check.filterExist === false) warnings.push("Filter not found");
+        if (check.filterIsUnique === false) warnings.push("Multiple filters found");
+        if (check.correctFilterPlatform === false) warnings.push("Incorrect filter platform");
+        if (check.correctFilterTypeProvided === false) warnings.push("Invalid filter type");
+
+        if (allChecksPass && !hasWarnings) {
+            return (
+                <div className="flex items-center justify-center">
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                </div>
+            );
+        }
+
+        if (allChecksPass && hasWarnings) {
+            return (
+                <>
+                    <div
+                        ref={iconRef}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={() => setShowTooltip(false)}
+                        className="flex items-center justify-center cursor-help"
+                    >
+                        <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                    </div>
+                    {showTooltip && ReactDOM.createPortal(
+                        <div
+                            className="fixed z-[10000] bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 shadow-xl min-w-[280px] max-w-[400px]"
+                            style={{
+                                left: `${tooltipPosition.x}px`,
+                                top: `${tooltipPosition.y}px`
+                            }}
+                        >
+                            <div className="absolute -top-1 left-4 w-2 h-2 bg-yellow-50 dark:bg-yellow-900 border-l border-t border-yellow-200 dark:border-yellow-700 transform rotate-45"></div>
+                            <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Filter Warnings:</p>
+                            <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
+                                {warnings.map((warning, idx) => (
+                                    <li key={idx} className="leading-relaxed">• {warning}</li>
+                                ))}
+                            </ul>
+                        </div>,
+                        document.body
+                    )}
+                </>
+            );
+        }
+
+        return (
+            <>
+                <div
+                    ref={iconRef}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={() => setShowTooltip(false)}
+                    className="flex items-center justify-center cursor-help"
+                >
+                    <AlertTriangle className="h-5 w-5 text-red-500" />
+                </div>
+                {showTooltip && ReactDOM.createPortal(
+                    <div
+                        className="fixed z-[10000] bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-3 shadow-xl min-w-[280px] max-w-[400px]"
+                        style={{
+                            left: `${tooltipPosition.x}px`,
+                            top: `${tooltipPosition.y}px`
+                        }}
+                    >
+                        <div className="absolute -top-1 left-4 w-2 h-2 bg-red-50 dark:bg-red-900 border-l border-t border-red-200 dark:border-red-700 transform rotate-45"></div>
+                        <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-2">Migration Check Errors:</p>
+                        <ul className="text-xs text-red-700 dark:text-red-300 space-y-1">
+                            {errors.map((error, idx) => (
+                                <li key={idx} className="leading-relaxed">• {error}</li>
+                            ))}
+                        </ul>
+                    </div>,
+                    document.body
+                )}
+            </>
+        );
+    };
+
+
+
     const comparisonColumns = [
         {
             key: '_select',
             label: '',
-            width: 50,
+            width: 10,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 const isSelected = selectedRows.includes(result.id);
@@ -349,6 +622,26 @@ function AssignmentRolloutContent() {
                         />
                     </div>
                 );
+            }
+        },
+        {
+            key: 'migrationCheckSortValue',
+            label: 'Status',
+            width: 25,
+            sortable: true,
+            sortValue: (row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                const check = result.migrationCheckResult;
+                if (!check) return 2;
+
+                const allChecksPass = check.policyExists && check.policyIsUnique &&
+                    check.groupExists && check.correctAssignmentTypeProvided &&
+                    check.correctAssignmentActionProvided;
+                return allChecksPass ? 1 : 0;
+            },
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return <MigrationCheckCell result={result} />;
             }
         },
         {
@@ -483,62 +776,7 @@ function AssignmentRolloutContent() {
                     </Badge>
                 );
             }
-        },
-        {
-            key: 'validationStatus',
-            label: 'Status',
-            minWidth: 150,
-            sortable: true,
-            sortValue: (row: Record<string, unknown>) => {
-                const result = row as unknown as ComparisonResult;
-
-                // Create a clear hierarchy for sorting
-                // Higher numbers = higher priority in sort order
-                if (result.isMigrated === true) return 4; // Migrated (highest priority)
-                if (result.isReadyForMigration === true) return 3; // Ready to migrate
-                if (result.isBackedUp === true) return 2; // Backed up but not ready
-                return 1; // Not ready (lowest priority)
-            },
-            render: (_: unknown, row: Record<string, unknown>) => {
-                const result = row as unknown as ComparisonResult;
-                return (
-                    <div className="flex flex-col gap-1">
-                        {result.isMigrated ? (
-                            <Badge variant="default" className="bg-green-100 text-green-800">
-                                <CheckCircle2 className="h-3 w-3 mr-1" />
-                                Migrated
-                            </Badge>
-                        ) : result.isReadyForMigration ? (
-                            <Badge variant="default" className="bg-blue-100 text-blue-800">
-                                <Shield className="h-3 w-3 mr-1" />
-                                Ready
-                            </Badge>
-                        ) : (
-                            <Badge variant="destructive">
-                                <XCircle className="h-3 w-3 mr-1" />
-                                Not Ready
-                            </Badge>
-                        )}
-
-                        {result.isBackedUp && (
-                            <Badge variant="outline" className="text-xs">
-                                Backed Up
-                            </Badge>
-                        )}
-
-                        {!result.isReadyForMigration && result.migrationCheckResult && (
-                            <div className="text-xs text-gray-500 mt-1">
-                                {!result.migrationCheckResult.policyExists && "Policy not found"}
-                                {!result.migrationCheckResult.groupExists && "Group not found"}
-                                {!result.migrationCheckResult.policyIsUnique && "Multiple policies found"}
-                            </div>
-                        )}
-                    </div>
-                );
-            }
         }
-
-
     ];
 
     const validationColumns = [
@@ -680,6 +918,56 @@ function AssignmentRolloutContent() {
         }
     }, []);
 
+    const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
+
+    const handleRowClick = (row: Record<string, unknown>, index: number, event?: React.MouseEvent) => {
+        const result = row as unknown as ComparisonResult;
+        const isDisabled = !result.isReadyForMigration || result.isMigrated;
+
+        if (isDisabled) return;
+
+        // Handle shift-click for range selection/deselection
+        if (event?.shiftKey && lastClickedIndex !== null) {
+            const currentIndex = index;
+            const start = Math.min(lastClickedIndex, currentIndex);
+            const end = Math.max(lastClickedIndex, currentIndex);
+
+            const rowsInRange = comparisonResults
+                .slice(start, end + 1)
+                .filter(r => r.isReadyForMigration && !r.isMigrated)
+                .map(r => r.id);
+
+            // Check if all rows in range are already selected
+            const allSelected = rowsInRange.every(id => selectedRows.includes(id));
+
+            setSelectedRows(prev => {
+                if (allSelected) {
+                    // Deselect all rows in range
+                    return prev.filter(id => !rowsInRange.includes(id));
+                } else {
+                    // Select all rows in range
+                    const newSelection = [...prev];
+                    rowsInRange.forEach(id => {
+                        if (!newSelection.includes(id)) {
+                            newSelection.push(id);
+                        }
+                    });
+                    return newSelection;
+                }
+            });
+        } else {
+            // Normal click - toggle single row selection
+            setSelectedRows(prev =>
+                prev.includes(result.id)
+                    ? prev.filter(id => id !== result.id)
+                    : [...prev, result.id]
+            );
+        }
+
+        setLastClickedIndex(index);
+    };
+
+
 
     const toggleExpanded = (resultId: string) => {
         setExpandedRows(prev =>
@@ -694,8 +982,9 @@ function AssignmentRolloutContent() {
         const lines = content.split('\n').filter(line => line.trim());
         const headers = lines[0].split(';').map(h => h.trim());
 
-        return lines.slice(1).map(line => {
+        return lines.slice(1).map((line, index) => {
             const values = line.split(';');
+            const validationErrors: CSVValidationError[] = [];
 
             const nullIfEmpty = (value: string) => value?.trim() === '' ? null : value?.trim() || null;
 
@@ -710,33 +999,87 @@ function AssignmentRolloutContent() {
                 if (normalized === 'remove') return { action: 'Remove', isValid: true };
                 if (normalized === 'noassignment') return { action: 'NoAssignment', isValid: true };
 
-                // If empty, default to 'Add' and mark as valid
                 if (!value || value.trim() === '') {
                     return { action: 'Add', isValid: true };
                 }
 
-                // If invalid value provided, mark as invalid and don't allow migration
                 return {
-                    action: 'Add', // Still need to set something for type safety
+                    action: 'Add',
                     isValid: false,
                     originalValue: value?.trim()
                 };
             };
 
-            const actionResult = getAssignmentAction(values[3]);
+            // Validate required fields
+            const policyName = values[0]?.trim() || '';
+            const groupName = values[1]?.trim() || '';
+            const assignmentDirection = values[2]?.trim() || '';
+            const assignmentAction = values[3]?.trim() || '';
+
+            // Get action result first to determine if other fields are needed
+            const actionResult = getAssignmentAction(assignmentAction);
+
+            // Check PolicyName (always required)
+            if (!policyName) {
+                validationErrors.push({
+                    rowIndex: index + 2,
+                    field: 'PolicyName',
+                    message: 'Policy Name is required'
+                });
+            }
+
+            // Only validate GroupName and AssignmentDirection if action is not 'NoAssignment'
+            if (actionResult.action !== 'NoAssignment') {
+                // Check GroupName
+                if (!groupName) {
+                    validationErrors.push({
+                        rowIndex: index + 2,
+                        field: 'GroupName',
+                        message: 'Group Name is required for Add/Remove actions. You can also use All Users or All Devices.'
+                    });
+                }
+
+                // Check AssignmentDirection
+                if (!assignmentDirection) {
+                    validationErrors.push({
+                        rowIndex: index + 2,
+                        field: 'AssignmentDirection',
+                        message: 'Assignment Direction is required for Add/Remove actions'
+                    });
+                }
+            }
+
+            // Check AssignmentAction validity
+            if (!assignmentAction) {
+                validationErrors.push({
+                    rowIndex: index + 2,
+                    field: 'AssignmentAction',
+                    message: 'Assignment Action is required'
+                });
+            } else if (!actionResult.isValid) {
+                validationErrors.push({
+                    rowIndex: index + 2,
+                    field: 'AssignmentAction',
+                    message: `Invalid Assignment Action: "${actionResult.originalValue}". Must be Add, Remove, or NoAssignment`
+                });
+            }
 
             return {
-                PolicyName: values[0] || '',
-                GroupName: values[1] || '',
-                AssignmentDirection: getAssignmentDirection(values[2]),
+                PolicyName: policyName,
+                GroupName: groupName,
+                AssignmentDirection: getAssignmentDirection(assignmentDirection),
                 AssignmentAction: actionResult.action,
                 FilterName: nullIfEmpty(values[4]),
                 FilterType: nullIfEmpty(values[5]),
                 isValidAction: actionResult.isValid,
-                originalActionValue: actionResult.originalValue
+                originalActionValue: actionResult.originalValue,
+                validationErrors,
+                isValid: validationErrors.length === 0,
+                validationStatusSort: validationErrors.length === 0 ? 1 : 0
             };
         });
     };
+
 
 
     // Backup rows
@@ -748,68 +1091,38 @@ function AssignmentRolloutContent() {
             return;
         }
 
-        // Use selected rows if any are selected, otherwise use all ready-for-migration
-        const policiesToBackup = selectedRows.length > 0
-            ? comparisonResults.filter(r => selectedRows.includes(r.id) && r.isReadyForMigration && !r.isMigrated)
-            : comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated);
-
-        if (policiesToBackup.length === 0) {
-            const message = selectedRows.length > 0
-                ? 'No selected policies are ready for migration to backup'
-                : 'No policies ready for migration to backup';
-            alert(message);
-            return;
-        }
-
-
-        // Get distinct policies based on policy ID and type
-        const distinctPolicies = policiesToBackup.reduce((acc, current) => {
-            const key = `${current.policy.id}_${current.policy.policySubType}`;
-            if (!acc.find(p => `${p.policy.id}_${p.policy.policySubType}` === key)) {
-                acc.push(current);
-            }
-            return acc;
-        }, [] as ComparisonResult[]);
-
         setLoading(true);
 
         try {
             const JSZip = (await import('jszip')).default;
             const zip = new JSZip();
             const backupResults: { [id: string]: boolean } = {};
-            const tenantId = accounts[0]?.tenantId || 'unknown-tenant';
 
-            for (const policy of distinctPolicies) {
+            for (const policy of readyForMigration) {
                 try {
-                    const backupResponse = await request<BackupApiResponse>(`${EXPORT_ENDPOINT}/${policy.policy.policySubType}/${policy.policy.id}`, {
-                        method: 'GET'
+                    const response = await instance.acquireTokenSilent({
+                        scopes: [apiScope],
+                        account: accounts[0]
                     });
 
-                    if (backupResponse && backupResponse.data) {
-                        // Parse the JSON string in the data property
-                        const backupData = typeof backupResponse.data === 'string'
-                            ? JSON.parse(backupResponse.data)
-                            : backupResponse.data;
+                    const apiResponse = await fetch(`${EXPORT_ENDPOINT}/${policy.policy.policySubType}/${policy.policy.id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${response.accessToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
 
+                    if (apiResponse.ok) {
+                        const backupData = await apiResponse.json();
                         zip.file(`${policy.policy.name}_${policy.policy.id}.json`, JSON.stringify(backupData, null, 2));
-
-                        // Mark all policies with the same ID and type as backed up
-                        readyForMigration
-                            .filter(r => r.policy.id === policy.policy.id && r.policy.policySubType === policy.policy.policySubType)
-                            .forEach(r => backupResults[r.id] = true);
+                        backupResults[policy.id] = true;
                     } else {
                         console.error(`Failed to backup policy ${policy.policy.id}`);
-                        // Mark all policies with the same ID and type as failed
-                        readyForMigration
-                            .filter(r => r.policy.id === policy.policy.id && r.policy.policySubType === policy.policy.policySubType)
-                            .forEach(r => backupResults[r.id] = false);
+                        backupResults[policy.id] = false;
                     }
                 } catch (error) {
                     console.error(`Failed to backup policy ${policy.policy.id}:`, error);
-                    // Mark all policies with the same ID and type as failed
-                    readyForMigration
-                        .filter(r => r.policy.id === policy.policy.id && r.policy.policySubType === policy.policy.policySubType)
-                        .forEach(r => backupResults[r.id] = false);
+                    backupResults[policy.id] = false;
                 }
             }
 
@@ -824,7 +1137,7 @@ function AssignmentRolloutContent() {
             const url = window.URL.createObjectURL(content);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${tenantId}_policy_backups_${new Date().toISOString().split('T')[0]}.zip`;
+            a.download = `policy_backups_${new Date().toISOString().split('T')[0]}.zip`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -832,7 +1145,7 @@ function AssignmentRolloutContent() {
 
             const successCount = Object.values(backupResults).filter(success => success).length;
             const totalCount = Object.keys(backupResults).length;
-            alert(`Backup completed: ${distinctPolicies.length} distinct policies processed, ${successCount}/${totalCount} assignment rows marked as backed up`);
+            alert(`Backup completed: ${successCount}/${totalCount} policies backed up successfully`);
 
         } catch (error) {
             console.error('Backup failed:', error);
@@ -852,8 +1165,6 @@ function AssignmentRolloutContent() {
                 const content = e.target?.result as string;
                 const parsed = parseCSV(content);
                 setCsvData(parsed);
-                // Remove this line to stay on upload step
-                // setCurrentStep('compare');
                 setError(null);
             } catch (err) {
                 setError('Failed to parse CSV file. Please check the format.');
@@ -868,15 +1179,15 @@ function AssignmentRolloutContent() {
         if (!accounts.length || !csvData.length) return;
 
         // Filter out invalid rows before sending to API
-        const validCsvData = csvData.filter(row => row.isValidAction);
+        const validCsvData = csvData.filter(row => row.isValid);
         const invalidRowCount = csvData.length - validCsvData.length;
 
         if (invalidRowCount > 0) {
-            setError(`Error: ${invalidRowCount} rows with invalid assignment actions have been excluded from processing. Please correct these values and re-upload the CSV.`);
+            console.log(`Excluding ${invalidRowCount} invalid rows from comparison`);
         }
 
         if (validCsvData.length === 0) {
-            setError('No valid rows found in CSV. All rows contain invalid assignment action values. Please check your data and try again.');
+            setError('No valid rows found in CSV. Please correct the validation errors and re-upload.');
             return;
         }
 
@@ -896,18 +1207,29 @@ function AssignmentRolloutContent() {
                 setLoading(false);
                 return;
             }
+            const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => {
+                const check = item.migrationCheckResult;
+                let migrationCheckSortValue = 2; // default for no check data
 
-            const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => ({
-                ...item,
-                csvRow: {
-                    ...validCsvData[index],
-                },
-                isReadyForMigration: item.isReadyForMigration,
-                isMigrated: item.isMigrated || false,
-                isBackedUp: false,
-                validationStatus: 'pending' as const
-            }));
+                if (check) {
+                    const allChecksPass = check.policyExists && check.policyIsUnique &&
+                        check.groupExists && check.correctAssignmentTypeProvided &&
+                        check.correctAssignmentActionProvided;
+                    migrationCheckSortValue = allChecksPass ? 1 : 0;
+                }
 
+                return {
+                    ...item,
+                    csvRow: {
+                        ...validCsvData[index],
+                    },
+                    isReadyForMigration: item.isReadyForMigration,
+                    isMigrated: item.isMigrated || false,
+                    isBackedUp: false,
+                    validationStatus: 'pending' as const,
+                    migrationCheckSortValue
+                };
+            });
             setComparisonResults(enhancedResults);
             setCurrentStep('migrate');
         } catch (error) {
@@ -1332,24 +1654,37 @@ function AssignmentRolloutContent() {
 
                         {csvData.length > 0 && (
                             <div className="space-y-4">
-                                {/* Show warning if there are invalid rows */}
-                                {csvData.filter(r => !r.isValidAction).length > 0 && (
-                                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                                        <div className="flex items-start gap-2">
-                                            <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                                            <div className="text-sm text-red-800">
-                                                <p className="font-medium mb-1">Invalid Assignment Actions Detected</p>
-                                                <p>
-                                                    {csvData.filter(r => !r.isValidAction).length} rows contain invalid assignment action values
-                                                    and will be <strong>excluded from migration</strong>.
+                                {/* Validation Summary */}
+                                {csvData.filter(r => !r.isValid).length > 0 && (
+                                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                                        <div className="flex items-start gap-3">
+                                            <AlertTriangle className="h-6 w-6 text-red-600 mt-0.5 flex-shrink-0" />
+                                            <div className="flex-1">
+                                                <p className="font-semibold text-red-800 dark:text-red-200 mb-2">
+                                                    {csvData.filter(r => !r.isValid).length} Invalid {csvData.filter(r => !r.isValid).length === 1 ? 'Row' : 'Rows'} Detected
                                                 </p>
-                                                <p className="mt-2">
-                                                    Valid actions are: <code className="bg-red-100 px-1 rounded">Add</code>,
-                                                    <code className="bg-red-100 px-1 rounded ml-1">Remove</code>,
-                                                    <code className="bg-red-100 px-1 rounded ml-1">NoAssignment</code>
+                                                <p className="text-sm text-red-700 dark:text-red-300 mb-3">
+                                                    These rows will be <strong>excluded from migration</strong> due to missing or invalid required fields.
                                                 </p>
-                                                <p className="mt-2 font-medium">
-                                                    Please correct these values in your CSV and re-upload to include all rows.
+
+                                                {/* Group errors by field */}
+                                                <div className="space-y-2">
+                                                    {Array.from(new Set(
+                                                        csvData.flatMap(r => r.validationErrors?.map(e => e.field) || [])
+                                                    )).map(field => {
+                                                        const count = csvData.filter(r =>
+                                                            r.validationErrors?.some(e => e.field === field)
+                                                        ).length;
+                                                        return (
+                                                            <div key={field} className="text-sm text-red-700 dark:text-red-300">
+                                                                • <strong>{count}</strong> row{count !== 1 ? 's' : ''} missing or invalid <code className="bg-red-100 dark:bg-red-800 px-1.5 py-0.5 rounded">{field}</code>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                <p className="text-sm text-red-700 dark:text-red-300 mt-3 font-medium">
+                                                    💡 Hover over the warning icon (⚠️) in each row to see specific validation errors.
                                                 </p>
                                             </div>
                                         </div>
@@ -1357,63 +1692,68 @@ function AssignmentRolloutContent() {
                                 )}
 
                                 <div className="flex items-center justify-between">
-                                    <h3 className="font-semibold">CSV Data Overview ({csvData.length} rows)</h3>
-                                    <Button onClick={compareAssignments} disabled={loading}>
-                                        {loading ? 'Comparing...' : 'Compare Assignments'}
+                                    <h3 className="font-semibold">
+                                        CSV Data Overview ({csvData.filter(r => r.isValid).length} valid / {csvData.length} total rows)
+                                    </h3>
+                                    <Button
+                                        onClick={compareAssignments}
+                                        disabled={loading || csvData.filter(r => r.isValid).length === 0}
+                                    >
+                                        {loading ? 'Comparing...' : `Compare ${csvData.filter(r => r.isValid).length} Valid Rows`}
                                     </Button>
                                 </div>
 
-                                {/* Summary Stats */}
+                                {/* Summary Stats - only count valid rows */}
                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-gray-50 dark:bg-neutral-800 p-4 rounded-lg">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-blue-500">{csvData.length}</div>
-                                        <div className="text-sm text-gray-600">Total Rows</div>
+                                        <div className="text-2xl font-bold text-blue-500">{csvData.filter(r => r.isValid).length}</div>
+                                        <div className="text-sm text-gray-600">Valid Rows</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-green-500">
-                                            {csvData.filter(r => r.AssignmentAction === 'Add').length}
+                                            {csvData.filter(r => r.isValid && r.AssignmentAction === 'Add').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Add Actions</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-orange-500">
-                                            {csvData.filter(r => r.AssignmentAction === 'Remove').length}
+                                            {csvData.filter(r => r.isValid && r.AssignmentAction === 'Remove').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Remove Actions</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-red-500">
-                                            {csvData.filter(r => r.AssignmentAction === 'NoAssignment').length}
+                                            {csvData.filter(r => r.isValid && r.AssignmentAction === 'NoAssignment').length}
                                         </div>
                                         <div className="text-sm text-gray-600">Clear Actions</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-purple-500">
-                                            {csvData.filter(r => r.FilterName).length}
+                                            {csvData.filter(r => r.isValid && r.FilterName).length}
                                         </div>
                                         <div className="text-sm text-gray-600">With Filters</div>
                                     </div>
                                 </div>
 
-                                <div className="border rounded-lg overflow-visible">
-                                    <div className="overflow-x-auto overflow-y-visible">
+                                <div className="border rounded-lg overflow-visible"> {/* Changed from overflow-hidden */}
+                                    <div className="overflow-x-auto"> {/* Only horizontal scroll */}
                                         <DataTable
                                             data={csvData}
                                             columns={uploadColumns}
-                                            className="text-sm"
                                             currentPage={uploadCurrentPage}
                                             totalPages={Math.ceil(csvData.length / itemsPerPage)}
                                             itemsPerPage={itemsPerPage}
                                             onPageChange={setUploadCurrentPage}
                                             onItemsPerPageChange={(newItemsPerPage) => {
                                                 setItemsPerPage(newItemsPerPage);
-                                                setUploadCurrentPage(1); // Reset to first page when changing items per page
+                                                setUploadCurrentPage(1);
                                             }}
                                             showPagination={true}
+                                            searchPlaceholder="Search CSV data..."
                                         />
-
                                     </div>
                                 </div>
+
                             </div>
                         )}
                     </CardContent>
@@ -1487,18 +1827,14 @@ function AssignmentRolloutContent() {
                                     })()}
                                 </Button>
 
+
                                 <Button
                                     onClick={downloadBackups}
                                     disabled={loading || comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
                                     variant="outline"
                                 >
-                                    {loading ? 'Creating Backup...' :
-                                        selectedRows.length > 0
-                                            ? `Backup Policies (${selectedRows.filter(id => comparisonResults.find(r => r.id === id && r.isReadyForMigration && !r.isMigrated)).length})`
-                                            : 'Backup Policies'
-                                    }
+                                    {loading ? 'Creating Backup...' : 'Backup Ready Policies'}
                                 </Button>
-
                                 <Button
                                     onClick={migrateSelectedAssignments}
                                     disabled={
@@ -1571,6 +1907,7 @@ function AssignmentRolloutContent() {
                                     className="text-sm"
                                     // Instead of using key, pass selectedRows as a prop
                                     selectedRows={selectedRows}
+                                    onRowClick={(row, index, event) => handleRowClick(row, index, event)}
                                     currentPage={compareCurrentPage}
                                     totalPages={Math.ceil(comparisonResults.length / itemsPerPage)}
                                     itemsPerPage={itemsPerPage}
