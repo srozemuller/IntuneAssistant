@@ -24,7 +24,7 @@ interface DataTableProps {
     data: Record<string, unknown>[];
     columns: Column[];
     className?: string;
-    onRowClick?: (row: Record<string, unknown>) => void;
+    onRowClick?: (row: Record<string, unknown>, index: number, event?: React.MouseEvent) => void;
     rowClassName?: (row: Record<string, unknown>) => string;
     currentPage?: number;
     totalPages?: number;
@@ -285,16 +285,17 @@ export function DataTable({
         });
     };
 
-    const handleRowClick = (e: React.MouseEvent, row: Record<string, unknown>) => {
+    const handleRowClick = (e: React.MouseEvent, row: Record<string, unknown>, index: number) => {
         if (resizing) return;
 
         const target = e.target as HTMLElement;
         const isInteractive = target.closest('input[type="checkbox"], input[type="radio"], button, a, [role="button"], [tabindex="0"]');
 
         if (!isInteractive && onRowClick) {
-            onRowClick(row);
+            onRowClick(row, index, e);
         }
     };
+
 
     const getCellValue = (row: Record<string, unknown>, column: Column) => {
         if (column.key === '_select') {
@@ -382,18 +383,18 @@ export function DataTable({
                             <tr
                                 key={rowIndex}
                                 className={`
-    transition-colors
-    ${onRowClick ? 'cursor-pointer' : ''}
-    ${isRowSelected(row)
+                transition-colors
+                ${onRowClick ? 'cursor-pointer' : ''}
+                ${isRowSelected(row)
                                     ? 'bg-yellow-400 dark:bg-yellow-400/80 text-foreground border-l-4 border-l-yellow-600 dark:border-l-yellow-400 shadow-md ring-1 ring-yellow-500/30'
                                     : 'hover:bg-muted/50'
                                 }
-    ${rowClassName ? rowClassName(row) : ''}
-`}
-
-                                onClick={(e) => handleRowClick(e, row)}
+                ${rowClassName ? rowClassName(row) : ''}
+            `}
+                                onClick={(e) => handleRowClick(e, row, startIndex + rowIndex)}
                             >
-                                {columns.map((column) => (
+
+                            {columns.map((column) => (
                                     <td
                                         key={column.key}
                                         className="p-3 text-foreground"
