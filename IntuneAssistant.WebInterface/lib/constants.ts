@@ -11,6 +11,8 @@ export const API_BASE_URL =
             ? API_BASE_DEV_URL
             : API_BASE_PRD_URL;
 
+export const VERSION_ENDPOINT = `${API_BASE_URL}/version`;
+
 export const PARTNER_TENANTS_ENDPOINT = `${API_BASE_URL}/partner/customers`;
 export const ASSIGNMENTS_ENDPOINT = `${API_BASE_URL}/assignments`;
 export const CONSENT_URL_ENDPOINT = `${API_BASE_URL}/buildconsenturl`;
