@@ -116,10 +116,6 @@ export const VersionInfo: React.FC<VersionInfoProps> = ({ compact = false }) => 
                     <dd>{new Date(versionData.buildDate).toLocaleString()}</dd>
                 </div>
                 <div className="flex">
-                    <dt className="font-medium w-32">Last Deployed:</dt>
-                    <dd>{new Date(versionData.lastDeployed).toLocaleString()}</dd>
-                </div>
-                <div className="flex">
                     <dt className="font-medium w-32">Builder:</dt>
                     <dd>{versionData.builder}</dd>
                 </div>
