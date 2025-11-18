@@ -5,7 +5,7 @@ title: TEST 1.11.17-test+sha.6b7aa521
 
 # TEST Release 1.11.17-test+sha.6b7aa521
 
-**Released:** 2025-11-18 07:27:09 UTC  
+**Released:** 2025-11-18 08:26:52 +0100 UTC  
 **Commit:** [6b7aa521](https://github.com/srozemuller/IntuneAssistant.Backend/commit/6b7aa5214f4488a8b4e5fa6d91603eb1fe4be55c)
 
 ## 🐛 Bug Fixes
