@@ -6,11 +6,11 @@ sidebar_position: 1
 
 Latest changes to IntuneAssistant API.
 
-## Latest Version: 1.11.17-test+sha.ab0230d
+## Latest Version: 1.11.17-test+sha.8425cfd
 
 ✅ **Deployed to TEST**
 
-[View Details](./1.11.17-test+sha.ab0230d.md)
+[View Details](./1.11.17-test+sha.8425cfd.md)
 
 ---
 
