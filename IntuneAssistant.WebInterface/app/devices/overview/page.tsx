@@ -3,6 +3,7 @@
 import React, {useState, useCallback, useRef} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
+import { DataTable } from '@/components/DataTable';
 import {Badge} from '@/components/ui/badge';
 import {
     Download,
@@ -43,10 +44,19 @@ import {ConsentDialog} from "@/components/ConsentDialog";
 
 import {UserMember} from "@/hooks/useGroupDetails";
 interface ApiResponse {
-    status: string;
+    status: number;
     message: string;
     details: unknown[];
-    data: DeviceStats[] ; // Updated to handle both cases
+    data: {
+        data: DeviceStats[];
+        totalCount: number;
+        pageSize: number;
+        currentPage: number;
+        totalPages: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+        nextPageToken: string | null;
+    };
 }
 
 
@@ -136,6 +146,7 @@ interface DeviceStats {
     processedAt: string;
     batchIndex?: number | null;
     status: string;
+    [key: string]: unknown;
 }
 
 interface DeviceFilters {
@@ -189,6 +200,12 @@ export default function DeviceStatsPage() {
     const [showConsentDialog, setShowConsentDialog] = useState(false);
     const [consentUrl, setConsentUrl] = useState('');
 
+    // Device fetching states
+    const [totalDeviceCount, setTotalDeviceCount] = useState(0);
+    const [hasMoreDevices, setHasMoreDevices] = useState(false);
+    const [nextPageToken, setNextPageToken] = useState<string | null>(null);
+    const [fetchPageSize, setFetchPageSize] = useState(100);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
 
     // State management
     const [deviceStats, setDeviceStats] = useState<DeviceStats[]>([]);
@@ -241,6 +258,159 @@ export default function DeviceStatsPage() {
     const [filteredGroups, setFilteredGroups] = useState<GroupSearchResult[]>([]);
     const [loadingGroups, setLoadingGroups] = useState(false);
     const [groupsError, setGroupsError] = useState<string | null>(null);
+
+    const deviceColumns = [
+        {
+            key: 'deviceName',
+            label: 'Device',
+            minWidth: 200,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const device = row as unknown as DeviceStats;
+                return (
+                    <div className="flex items-center gap-2">
+                        {device.platform === 'Windows' ? (
+                            <Laptop className="h-4 w-4 text-blue-500" />
+                        ) : device.platform === 'iOS' || device.platform === 'Android' ? (
+                            <Smartphone className="h-4 w-4 text-green-500" />
+                        ) : (
+                            <Monitor className="h-4 w-4 text-gray-500" />
+                        )}
+                        <div>
+                            <div className="font-medium max-w-xs truncate" title={device.deviceName}>
+                                {device.deviceName}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                {device.manufacturer} {device.model}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'userDisplayName',
+            label: 'User',
+            minWidth: 180,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const device = row as unknown as DeviceStats;
+                return (
+                    <div>
+                        <div className="max-w-xs truncate" title={device.userDisplayName}>
+                            {device.userDisplayName}
+                        </div>
+                        <div className="text-xs text-gray-500 max-w-xs truncate" title={device.userPrincipalName}>
+                            {device.userPrincipalName}
+                        </div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'platform',
+            label: 'Platform',
+            minWidth: 120,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const device = row as unknown as DeviceStats;
+                return (
+                    <Badge variant="outline">
+                        {device.platform} {device.osVersion}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'complianceState',
+            label: 'Compliance',
+            minWidth: 140,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const device = row as unknown as DeviceStats;
+                return (
+                    <Badge variant={
+                        device.complianceState === 'Compliant' ? 'default' :
+                            device.complianceState === 'Noncompliant' ? 'destructive' : 'secondary'
+                    }>
+                        {device.complianceState === 'Compliant' && <CheckCircle2 className="h-3 w-3 mr-1" />}
+                        {device.complianceState === 'Noncompliant' && <XCircle className="h-3 w-3 mr-1" />}
+                        {device.complianceState === 'Unknown' && <AlertTriangle className="h-3 w-3 mr-1" />}
+                        {device.complianceState}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'managementState',
+            label: 'Management',
+            minWidth: 120,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const device = row as unknown as DeviceStats;
+                return (
+                    <Badge variant={device.managementState === 'Managed' ? 'default' : 'secondary'}>
+                        {device.managementState}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'lastSyncDateTime',
+            label: 'Last Sync',
+            minWidth: 150,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const device = row as unknown as DeviceStats;
+                return (
+                    <div>
+                        <div className="text-sm">{formatDate(device.lastSyncDateTime)}</div>
+                        <div className="text-xs text-gray-500">
+                            {getDaysSinceLastSync(device.lastSyncDateTime)} days ago
+                        </div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'totalStorageSpaceInBytes',
+            label: 'Storage',
+            minWidth: 150,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const device = row as unknown as DeviceStats;
+                return (
+                    <div>
+                        <div className="flex items-center gap-1">
+                            <HardDrive className="h-3 w-3 text-gray-400" />
+                            <span className="text-sm">
+                            {formatBytes(device.totalStorageSpaceInBytes - device.freeStorageSpaceInBytes)} / {formatBytes(device.totalStorageSpaceInBytes)}
+                        </span>
+                        </div>
+                        {device.isEncrypted && (
+                            <div className="flex items-center gap-1 text-green-600">
+                                <Shield className="h-3 w-3" />
+                                <span className="text-xs">Encrypted</span>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'actions',
+            label: 'Actions',
+            minWidth: 120,
+            sortable: false,
+            searchable: false,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const device = row as unknown as DeviceStats;
+                return (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => showDeviceDetails(device)}
+                    >
+                        View Details
+                    </Button>
+                );
+            }
+        }
+    ];
+
 
     const createNewGroup = async () => {
         if (!newGroupName.trim()) return;
@@ -849,15 +1019,31 @@ export default function DeviceStatsPage() {
     };
 
     // Fetch device statistics
-    const fetchDeviceStats = async () => {
+    // Update the fetchDeviceStats function
+    const fetchDeviceStats = async (pageSize: number = 100, skipToken?: string, append: boolean = false) => {
         if (!accounts.length) return;
 
-        setLoading(true);
+        if (append) {
+            setIsFetchingMore(true);
+        } else {
+            setLoading(true);
+            setDeviceStats([]);
+            setFilteredStats([]);
+            setNextPageToken(null);
+        }
         setError(null);
 
         try {
+            const params = new URLSearchParams({
+                pageSize: pageSize.toString()
+            });
+
+            if (skipToken) {
+                params.append('skipToken', skipToken);
+            }
+
             const response = await request<ApiResponse>(
-                DEVICES_STATS_ENDPOINT,
+                `${DEVICES_STATS_ENDPOINT}?${params.toString()}`,
                 {
                     method: 'GET',
                     headers: {
@@ -870,20 +1056,44 @@ export default function DeviceStatsPage() {
                 throw new Error('No response received from API');
             }
 
-            // Add type guard to ensure data is an array before processing
-            if (!Array.isArray(response.data)) {
+            if (!response.data?.data || !Array.isArray(response.data.data)) {
                 throw new Error('Invalid data format received from API');
             }
 
-            setDeviceStats(response.data);
-            setFilteredStats(response.data);
+            const newDevices = response.data.data;
+
+            if (append) {
+                setDeviceStats(prev => [...prev, ...newDevices]);
+                setFilteredStats(prev => [...prev, ...newDevices]);
+            } else {
+                setDeviceStats(newDevices);
+                setFilteredStats(newDevices);
+            }
+
+            setTotalDeviceCount(response.data.totalCount);
+            setHasMoreDevices(response.data.hasNextPage);
+            setNextPageToken(response.data.nextPageToken);
+
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to fetch device statistics');
         } finally {
             setLoading(false);
+            setIsFetchingMore(false);
         }
     };
 
+// Add function to load more devices
+    const loadMoreDevices = () => {
+        if (nextPageToken && hasMoreDevices && !isFetchingMore) {
+            fetchDeviceStats(fetchPageSize, nextPageToken, true);
+        }
+    };
+
+// Add function to reset and fetch with different page size
+    const fetchWithPageSize = (newPageSize: number) => {
+        setFetchPageSize(newPageSize);
+        fetchDeviceStats(newPageSize);
+    };
 
     // Apply filters
     const applyFilters = useCallback(() => {
@@ -1020,9 +1230,30 @@ export default function DeviceStatsPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Device Statistics</h1>
-                    <p className="text-gray-600 mt-2">Monitor and analyze device information</p>
+                    <p className="text-gray-600 mt-2">
+                        Monitor and analyze device information
+                        {totalDeviceCount > 0 && (
+                            <span className="ml-2 text-sm font-medium">
+                    ({deviceStats.length} of {totalDeviceCount} devices loaded)
+                </span>
+                        )}
+                    </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
+                    {/* Page Size Selector */}
+                    {deviceStats.length === 0 && !loading && (
+                        <select
+                            value={fetchPageSize}
+                            onChange={(e) => setFetchPageSize(Number(e.target.value))}
+                            className="border rounded-md px-3 py-2 text-sm"
+                        >
+                            <option value={50}>50 per page</option>
+                            <option value={100}>100 per page</option>
+                            <option value={250}>250 per page</option>
+                            <option value={500}>500 per page</option>
+                        </select>
+                    )}
+
                     <Button
                         onClick={() => setShowAddToGroupDialog(true)}
                         disabled={selectedDevices.length === 0}
@@ -1035,12 +1266,11 @@ export default function DeviceStatsPage() {
                         <Download className="h-4 w-4 mr-2"/>
                         Export Selected ({selectedDevices.length})
                     </Button>
-                    <Button onClick={fetchDeviceStats} disabled={loading}>
+                    <Button onClick={() => fetchDeviceStats(fetchPageSize)} disabled={loading}>
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}/>
-                        {loading ? 'Loading...' : 'Fetch Devices'}
+                        {loading ? 'Loading...' : deviceStats.length > 0 ? 'Refresh' : 'Fetch Devices'}
                     </Button>
                 </div>
-
             </div>
 
             {/* Error Display */}
@@ -1055,7 +1285,7 @@ export default function DeviceStatsPage() {
                         <p className="text-sm text-gray-600 mt-2">
                             Error occurred while fetching settings. Please try again.
                         </p>
-                        <Button onClick={fetchDeviceStats} className="mt-4" variant="outline">
+                        <Button onClick={() => fetchDeviceStats(fetchPageSize)} className="mt-4" variant="outline">
                             <RefreshCw className="h-4 w-4 mr-2" />
                             Try Again
                         </Button>
@@ -1075,18 +1305,33 @@ export default function DeviceStatsPage() {
                                 Ready to view your device overview
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Click the &quot;Load Devices&quot; button above to fetch all device information and
-                                statistics
-                                from your Intune environment.
+                                Click the &quot;Fetch Devices&quot; button to load device information from your Intune environment.
                             </p>
-                            <Button onClick={fetchDeviceStats} className="flex items-center gap-2 mx-auto" size="lg">
+
+                            {/* Page Size Selection */}
+                            <div className="mb-6 flex flex-col items-center gap-3">
+                                <Label className="text-sm font-medium">Devices per page:</Label>
+                                <select
+                                    value={fetchPageSize}
+                                    onChange={(e) => setFetchPageSize(Number(e.target.value))}
+                                    className="border rounded-md px-4 py-2 text-sm w-48"
+                                >
+                                    <option value={50}>50</option>
+                                    <option value={100}>100 (recommended)</option>
+                                    <option value={250}>250</option>
+                                    <option value={500}>500</option>
+                                </select>
+                            </div>
+
+                            <Button onClick={() => fetchDeviceStats(fetchPageSize)} className="flex items-center gap-2 mx-auto" size="lg">
                                 <Monitor className="h-5 w-5"/>
-                                Load Devices
+                                Fetch Devices
                             </Button>
                         </div>
                     </CardContent>
                 </Card>
             )}
+
 
             {loading && deviceStats.length === 0 && (
                 <Card className="shadow-sm">
@@ -1103,6 +1348,7 @@ export default function DeviceStatsPage() {
                     </CardContent>
                 </Card>
             )}
+
             {/* Summary Stats */}
             {(deviceStats.length > 0 || loading) && (
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -1516,194 +1762,54 @@ export default function DeviceStatsPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="border rounded-lg overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead className="bg-gray-50 sticky top-0">
-                                    <tr>
-                                        <th className="text-left p-3">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedDevices.length === paginatedResults.length && paginatedResults.length > 0}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSelectedDevices(paginatedResults.map(d => d.id));
-                                                    } else {
-                                                        setSelectedDevices([]);
-                                                    }
-                                                }}
-                                            />
-                                        </th>
-                                        <th className="text-left p-3">Device</th>
-                                        <th className="text-left p-3">User</th>
-                                        <th className="text-left p-3">Platform</th>
-                                        <th className="text-left p-3">Compliance</th>
-                                        <th className="text-left p-3">Management</th>
-                                        <th className="text-left p-3">Last Sync</th>
-                                        <th className="text-left p-3">Storage</th>
-                                        <th className="text-left p-3">Actions</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {paginatedResults.map((device, index) => (
-                                        <tr key={device.id}
-                                            className={`border-t ${index % 2 === 0 ? 'bg-white dark:bg-neutral-900' : 'bg-gray-50 dark:bg-neutral-800'}`}>
-                                            <td className="p-3">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedDevices.includes(device.id)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedDevices([...selectedDevices, device.id]);
-                                                        } else {
-                                                            setSelectedDevices(selectedDevices.filter(id => id !== device.id));
-                                                        }
-                                                    }}
-                                                />
-                                            </td>
-                                            <td className="p-3">
-                                                <div className="flex items-center gap-2">
-                                                    {device.platform === 'Windows' ?
-                                                        <Laptop className="h-4 w-4 text-blue-500"/> :
-                                                        device.platform === 'iOS' || device.platform === 'Android' ?
-                                                            <Smartphone className="h-4 w-4 text-green-500"/> :
-                                                            <Monitor className="h-4 w-4 text-gray-500"/>}
-                                                    <div>
-                                                        <div className="font-medium max-w-xs truncate"
-                                                             title={device.deviceName}>
-                                                            {device.deviceName}
-                                                        </div>
-                                                        <div className="text-xs text-gray-500">
-                                                            {device.manufacturer} {device.model}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="p-3">
-                                                <div className="max-w-xs truncate" title={device.userDisplayName}>
-                                                    {device.userDisplayName}
-                                                </div>
-                                                <div className="text-xs text-gray-500 max-w-xs truncate"
-                                                     title={device.userPrincipalName}>
-                                                    {device.userPrincipalName}
-                                                </div>
-                                            </td>
-                                            <td className="p-3">
-                                                <Badge variant="outline">
-                                                    {device.platform} {device.osVersion}
-                                                </Badge>
-                                            </td>
-                                            <td className="p-3">
-                                                <Badge variant={device.complianceState === 'Compliant' ? 'default' :
-                                                    device.complianceState === 'Noncompliant' ? 'destructive' : 'secondary'}>
-                                                    {device.complianceState === 'Compliant' &&
-                                                        <CheckCircle2 className="h-3 w-3 mr-1"/>}
-                                                    {device.complianceState === 'Noncompliant' &&
-                                                        <XCircle className="h-3 w-3 mr-1"/>}
-                                                    {device.complianceState === 'Unknown' &&
-                                                        <AlertTriangle className="h-3 w-3 mr-1"/>}
-                                                    {device.complianceState}
-                                                </Badge>
-                                            </td>
-                                            <td className="p-3">
-                                                <Badge
-                                                    variant={device.managementState === 'Managed' ? 'default' : 'secondary'}>
-                                                    {device.managementState}
-                                                </Badge>
-                                            </td>
-                                            <td className="p-3">
-                                                <div className="text-sm">
-                                                    {formatDate(device.lastSyncDateTime)}
-                                                </div>
-                                                <div className="text-xs text-gray-500">
-                                                    {getDaysSinceLastSync(device.lastSyncDateTime)} days ago
-                                                </div>
-                                            </td>
-                                            <td className="p-3">
-                                                <div className="flex items-center gap-1">
-                                                    <HardDrive className="h-3 w-3 text-gray-400"/>
-                                                    <span className="text-sm">
-                                                            {formatBytes(device.totalStorageSpaceInBytes - device.freeStorageSpaceInBytes)} / {formatBytes(device.totalStorageSpaceInBytes)}
-                                                        </span>
-                                                </div>
-                                                {device.isEncrypted && (
-                                                    <div className="flex items-center gap-1 text-green-600">
-                                                        <Shield className="h-3 w-3"/>
-                                                        <span className="text-xs">Encrypted</span>
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td className="p-3">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => showDeviceDetails(device)}
-                                                >
-                                                    View Details
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                        <DataTable
+                            data={filteredStats}
+                            columns={deviceColumns}
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            itemsPerPage={itemsPerPage}
+                            onPageChange={setCurrentPage}
+                            showPagination={true}
+                            showSearch={true}
+                            searchPlaceholder="Search devices..."
+                            selectedRows={selectedDevices}
+                            onSelectionChange={setSelectedDevices}
+                            onRowClick={(row) => showDeviceDetails(row as unknown as DeviceStats)}
+                        />
+                    </CardContent>
+                </Card>
+            )}
 
-                            {/* Pagination Controls */}
-                            {totalPages > 1 && (
-                                <div className="flex items-center justify-between p-4 border-t">
-                                    <div className="text-sm text-gray-600">
-                                        Showing {startIndex + 1} to {Math.min(endIndex, filteredStats.length)} of {filteredStats.length} results
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={goToPreviousPage}
-                                            disabled={currentPage === 1}
-                                        >
-                                            <ChevronLeft className="h-4 w-4"/>
-                                            Previous
-                                        </Button>
-
-                                        <div className="flex items-center gap-1">
-                                            {Array.from({length: Math.min(5, totalPages)}, (_, i) => {
-                                                let pageNum;
-                                                if (totalPages <= 5) {
-                                                    pageNum = i + 1;
-                                                } else if (currentPage <= 3) {
-                                                    pageNum = i + 1;
-                                                } else if (currentPage >= totalPages - 2) {
-                                                    pageNum = totalPages - 4 + i;
-                                                } else {
-                                                    pageNum = currentPage - 2 + i;
-                                                }
-
-                                                return (
-                                                    <Button
-                                                        key={pageNum}
-                                                        variant={currentPage === pageNum ? "default" : "outline"}
-                                                        size="sm"
-                                                        onClick={() => setCurrentPage(pageNum)}
-                                                        className="w-8 h-8 p-0"
-                                                    >
-                                                        {pageNum}
-                                                    </Button>
-                                                );
-                                            })}
-                                        </div>
-
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={goToNextPage}
-                                            disabled={currentPage === totalPages}
-                                        >
-                                            Next
-                                            <ChevronRight className="h-4 w-4"/>
-                                        </Button>
-                                    </div>
+            {deviceStats.length > 0 && hasMoreDevices && (
+                <Card className="mt-4">
+                    <CardContent className="p-6 text-center">
+                        <div className="space-y-4">
+                            <div className="text-sm text-gray-600">
+                                Showing {deviceStats.length} of {totalDeviceCount} devices
+                                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div
+                                        className="bg-yellow-400 h-2 rounded-full transition-all"
+                                        style={{width: `${(deviceStats.length / totalDeviceCount) * 100}%`}}
+                                    />
                                 </div>
-                            )}
+                            </div>
+                            <Button
+                                onClick={loadMoreDevices}
+                                disabled={isFetchingMore}
+                                className="w-full sm:w-auto"
+                            >
+                                {isFetchingMore ? (
+                                    <>
+                                        <RefreshCw className="mr-2 h-4 w-4 animate-spin"/>
+                                        Loading More...
+                                    </>
+                                ) : (
+                                    <>
+                                        <ArrowRight className="mr-2 h-4 w-4"/>
+                                        Load More Devices ({Math.min(fetchPageSize, totalDeviceCount - deviceStats.length)})
+                                    </>
+                                )}
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
