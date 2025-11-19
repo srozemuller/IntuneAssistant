@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle, Blocks
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
 import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
@@ -178,6 +178,27 @@ interface CSVValidationError {
     message: string;
 }
 
+interface GroupData {
+    id?: string;
+    displayName?: string;
+    description?: string;
+    membershipRule?: string;
+    createdDateTime?: string;
+    groupCount?: {
+        userCount: number;
+        deviceCount: number;
+        groupCount: number;
+    };
+    members?: unknown;
+    memberOf?: Array<{
+        '@odata.type': string;
+        id: string;
+        displayName: string;
+        createdDateTime: string;
+        type: string;
+    }>;
+    error?: string;
+}
 
 function AssignmentRolloutContent() {
     // API CALLS
@@ -205,6 +226,13 @@ function AssignmentRolloutContent() {
     const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
     const [compareCurrentPage, setCompareCurrentPage] = useState(1);
     const [validationCurrentPage, setValidationCurrentPage] = useState(1);
+
+
+    // Group assignments dialog state
+    const [showAssignmentsDialog, setShowAssignmentsDialog] = useState(false);
+    const [selectedAssignments, setSelectedAssignments] = useState<Assignment[]>([]);
+    const [assignmentGroups, setAssignmentGroups] = useState<{[key: string]: GroupData}>({});
+    const [loadingAssignmentGroups, setLoadingAssignmentGroups] = useState<string[]>([]);
 
 
     // Add pagination logic before the return statement
@@ -699,7 +727,14 @@ function AssignmentRolloutContent() {
                 const result = row as unknown as ComparisonResult;
                 const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
                 return displayPolicy ? (
-                    <Badge variant="outline">
+                    <Badge
+                        variant="outline"
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleAssignmentsClick(result);
+                        }}
+                    >
                         {displayPolicy.assignments?.length || 0} groups
                     </Badge>
                 ) : (
@@ -1425,6 +1460,58 @@ function AssignmentRolloutContent() {
         }
     };
 
+    const fetchAssignmentGroupDetails = async (groupId: string) => {
+        if (assignmentGroups[groupId] || loadingAssignmentGroups.includes(groupId)) {
+            return;
+        }
+
+        setLoadingAssignmentGroups(prev => [...prev, groupId]);
+
+        try {
+            interface GroupApiResponse {
+                status: string;
+                message: string;
+                details: string;
+                data: GroupData;
+            }
+
+            const response = await request<GroupApiResponse>(`${GROUPS_ENDPOINT}/${groupId}`, {
+                method: 'GET'
+            });
+
+            if (response?.data) {
+                setAssignmentGroups(prev => ({
+                    ...prev,
+                    [groupId]: response.data
+                }));
+            }
+        } catch (error) {
+            console.error(`Failed to fetch group details for ${groupId}:`, error);
+            setAssignmentGroups(prev => ({
+                ...prev,
+                [groupId]: {
+                    error: 'Failed to load group details'
+                } as GroupData
+            }));
+        } finally {
+            setLoadingAssignmentGroups(prev => prev.filter(id => id !== groupId));
+        }
+    };
+
+    const handleAssignmentsClick = async (result: ComparisonResult) => {
+        const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
+        if (!displayPolicy?.assignments) return;
+
+        setSelectedAssignments(displayPolicy.assignments);
+        setShowAssignmentsDialog(true);
+
+        // Fetch group details for all group assignments
+        for (const assignment of displayPolicy.assignments) {
+            if (assignment.target?.groupId && assignment.target['@odata.type']?.includes('groupAssignmentTarget')) {
+                await fetchAssignmentGroupDetails(assignment.target.groupId);
+            }
+        }
+    };
 
     const validateAssignments = async () => {
         // Only validate items that were just migrated in this session
@@ -1472,6 +1559,128 @@ function AssignmentRolloutContent() {
         }
     };
 
+    const AssignmentsDialog = () => (
+        <Dialog open={showAssignmentsDialog} onOpenChange={setShowAssignmentsDialog}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Current Assignments ({selectedAssignments.length})
+                    </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                    {selectedAssignments.map((assignment) => {
+                        const isGroupAssignment = assignment.target?.['@odata.type']?.includes('groupAssignmentTarget');
+                        const isExcludeAssignment = assignment.target?.['@odata.type']?.includes('exclusionGroupAssignmentTarget');
+                        const groupId = assignment.target?.groupId;
+                        const groupData = groupId ? assignmentGroups[groupId] : null;
+                        const isLoading = groupId ? loadingAssignmentGroups.includes(groupId) : false;
+
+                        // Determine assignment direction
+                        const assignmentDirection = isExcludeAssignment ? 'Exclude' : 'Include';
+                        const directionColor = isExcludeAssignment ? 'destructive' : 'default';
+
+                        return (
+                            <div key={assignment.id} className="border rounded-lg p-4 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Shield className="h-4 w-4 text-blue-500" />
+                                        <span className="font-medium">
+                                        {isGroupAssignment ? 'Group Assignment' : 'All Users/Devices'}
+                                    </span>
+                                        <Badge variant={directionColor} className="text-xs">
+                                            {assignmentDirection}
+                                        </Badge>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {assignment.target?.deviceAndAppManagementAssignmentFilterType !== 'None' && (
+                                            <Badge variant="outline" className="text-xs">
+                                                Filtered
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {isGroupAssignment && groupId && (
+                                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                                        {isLoading ? (
+                                            <div className="flex items-center gap-2">
+                                                <RefreshCw className="h-4 w-4 animate-spin" />
+                                                <span className="text-sm">Loading group details...</span>
+                                            </div>
+                                        ) : groupData?.error ? (
+                                            <div className="text-sm text-red-500">
+                                                Failed to load group details
+                                            </div>
+                                        ) : groupData ? (
+                                            <div className="space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <h4 className="font-medium text-sm flex items-center gap-1">
+                                                        {groupData.displayName}
+                                                        {groupData.membershipRule && groupData.membershipRule.trim() !== '' && (
+                                                            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0" />
+                                                        )}
+                                                    </h4>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setShowAssignmentsDialog(false);
+                                                            fetchGroupDetails(groupId);
+                                                        }}
+                                                    >
+                                                        <Eye className="h-3 w-3 mr-1" />
+                                                        View Details
+                                                    </Button>
+                                                </div>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    {groupData.description || 'No description available'}
+                                                </p>
+                                                <div className="flex gap-4 text-xs text-gray-500">
+                                                    <span>ID: {groupData.id}</span>
+                                                    {groupData.groupCount && (
+                                                        <>
+                                                            <span>Users: {groupData.groupCount.userCount}</span>
+                                                            <span>Devices: {groupData.groupCount.deviceCount}</span>
+                                                            <span>Groups: {groupData.groupCount.groupCount}</span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-sm text-gray-500">
+                                                Group ID: {groupId}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {!isGroupAssignment && (
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 text-blue-500" />
+                                            <span className="text-sm font-medium">All Users and Devices</span>
+                                        </div>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                            This assignment applies to all users and devices in your organization
+                                        </p>
+                                    </div>
+                                )}
+
+                                {assignment.target?.deviceAndAppManagementAssignmentFilterId && (
+                                    <div className="text-xs text-gray-500">
+                                        <span className="font-medium">Filter:</span> {assignment.target.deviceAndAppManagementAssignmentFilterType}
+                                        <span className="ml-2">ID: {assignment.target.deviceAndAppManagementAssignmentFilterId}</span>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -2149,6 +2358,8 @@ function AssignmentRolloutContent() {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <AssignmentsDialog />
         </div>
     );
 }
