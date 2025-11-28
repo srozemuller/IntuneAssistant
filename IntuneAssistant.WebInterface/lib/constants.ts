@@ -33,6 +33,7 @@ export const CUSTOMER_ENDPOINT = `${API_BASE_URL}/customer`;
 
 export const POLICIES_ENDPOINT = `${API_BASE_URL}/policies`;
 export const EXPORT_ENDPOINT = `${API_BASE_URL}/export`;
+export const IMPORT_ENDPOINT = `${API_BASE_URL}/import`;
 export const CONFIGURATION_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/configuration`;
 export const CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT = `${POLICIES_ENDPOINT}/configuration/bulk`;
 export const CA_POLICIES_ENDPOINT = `${POLICIES_ENDPOINT}/ca`;

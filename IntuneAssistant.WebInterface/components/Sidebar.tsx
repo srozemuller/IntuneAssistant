@@ -259,11 +259,12 @@ export function Sidebar() {
                     ]
                 },
                 {
-                    title: "Compare Policies",
-                    icon: "ArrowLeftRight",
+                    title: "Policies",
+                    icon: "GitBranch",
                     href: "/compare",
                     submenu: [
-                        { title: "Policies & Settings", href: "/compare/policies" }
+                        { title: "Policies & Settings", href: "/compare/policies" },
+                        { title: "Bulk import", href: "/policies/import" },
                     ]
                 }
             ]

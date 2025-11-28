@@ -342,11 +342,57 @@ export function DataTable({
                     )}
                 </div>
             )}
+            {onSelectionChange && (
+                <div className="p-4 bg-muted border-b">
+                    <div className="relative max-w-sm">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                const allRowIds = sortedData.map(row => String(row.id));
+                                const allSelected = allRowIds.every(id => selectedRows.includes(id));
+
+                                if (allSelected) {
+                                    // Deselect all visible rows
+                                    onSelectionChange(selectedRows.filter(id => !allRowIds.includes(id)));
+                                } else {
+                                    // Select all visible rows
+                                    const newSelection = [...new Set([...selectedRows, ...allRowIds])];
+                                    onSelectionChange(newSelection);
+                                }
+                            }}
+                            className="text-xs"
+                        >
+                            {sortedData.length > 0 && sortedData.every(row => selectedRows.includes(String(row.id)))
+                                ? 'Deselect All'
+                                : 'Select All'
+                            }
+                        </Button>
+
+                        {selectedRows.length > 0 && (
+                            <div className="text-sm text-muted-foreground">
+                                {selectedRows.length} selected
+                                {searchTerm && ` (${sortedData.filter(row => selectedRows.includes(String(row.id))).length} visible)`}
+                            </div>
+                        )}
+                    </div>
+
+                    {selectedRows.length > 0 && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onSelectionChange([])}
+                            className="text-xs text-destructive hover:text-destructive"
+                        >
+                            Clear Selection
+                        </Button>
+                    )}
+                </div>
+            )}
 
             <div className="overflow-auto">
                 <table ref={tableRef} className="w-full text-sm">
                     <thead className="bg-background sticky top-0 z-10 border-b">
-
                     <tr className="border-b">
                         {columns.map((column, index) => (
                             <th
@@ -387,6 +433,7 @@ export function DataTable({
                     </tr>
                     </thead>
                     <tbody className="bg-background divide-y divide-border">
+
                     {paginatedData.length > 0 ? (
                         paginatedData.map((row, rowIndex) => (
                             <tr

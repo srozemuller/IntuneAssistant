@@ -28,7 +28,7 @@ import {
     ASSIGNMENTS_FILTERS_ENDPOINT,
     ITEMS_PER_PAGE,
     CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT,
-    GROUPS_ENDPOINT
+    GROUPS_ENDPOINT, EXPORT_ENDPOINT
 } from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
@@ -156,26 +156,77 @@ export default function ConfigurationPoliciesPage() {
         setCurrentPage(1);
     }, [policyTypeFilter, statusFilter, platformFilter, searchQuery]);
 
-    const handlePolicyClick = (policy: Record<string, unknown>) => {
-        setSelectedPolicy(policy as ConfigurationPolicy);
-        setIsPolicyDialogOpen(true);
-    };
 
-    const handleBulkExport = () => {
+    const handleBulkExport = async () => {
+        if (selectedPolicies.length === 0) {
+            alert('No policies selected for export');
+            return;
+        }
+
         const selectedPolicyData = policies.filter(policy => selectedPolicies.includes(policy.id));
-        const exportData: ExportData = {
-            ...prepareExportData(),
-            data: selectedPolicyData,
-            filename: `selected-configuration-policies-${selectedPolicyData.length}`,
-            title: `Selected Configuration Policies (${selectedPolicyData.length})`,
-            description: `Export of ${selectedPolicyData.length} selected configuration policies`
-        };
+        setBulkActionLoading(true);
 
-        // Create a temporary ExportButton to trigger export
-        const tempExportButton = document.createElement('div');
-        document.body.appendChild(tempExportButton);
-        // Remove after use
-        document.body.removeChild(tempExportButton);
+        try {
+            const JSZip = (await import('jszip')).default;
+            const zip = new JSZip();
+            const exportResults: { [id: string]: boolean } = {};
+
+            // Get tenant ID from MSAL account
+            const tenantId = accounts[0]?.tenantId || 'unknown-tenant';
+
+            for (const policy of selectedPolicyData) {
+                try {
+                    const response = await instance.acquireTokenSilent({
+                        scopes: [apiScope],
+                        account: accounts[0]
+                    });
+
+                    const apiResponse = await fetch(`${EXPORT_ENDPOINT}/${policy.policySubType}/${policy.id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${response.accessToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (apiResponse.ok) {
+                        const fullResponse = await apiResponse.json();
+                        // Parse the string-encoded JSON from the data property
+                        const dataString = fullResponse.data;
+                        const parsedData = typeof dataString === 'string' ? JSON.parse(dataString) : dataString;
+
+                        // Create nicely formatted JSON with proper indentation
+                        zip.file(`${policy.name}_${policy.id}.json`, JSON.stringify(parsedData, null, 2));
+                        exportResults[policy.id] = true;
+                    } else {
+                        console.error(`Failed to export policy ${policy.id}: ${apiResponse.status}`);
+                        exportResults[policy.id] = false;
+                    }
+                } catch (error) {
+                    console.error(`Failed to export policy ${policy.id}:`, error);
+                    exportResults[policy.id] = false;
+                }
+            }
+
+            const content = await zip.generateAsync({ type: 'blob' });
+            const url = window.URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${tenantId}_selected-configuration-policies-${selectedPolicyData.length}_${new Date().toISOString().split('T')[0]}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            const successCount = Object.values(exportResults).filter(success => success).length;
+            const totalCount = Object.keys(exportResults).length;
+            alert(`Export completed: ${successCount}/${totalCount} selected policies exported successfully`);
+
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Export failed. Please try again.');
+        } finally {
+            setBulkActionLoading(false);
+        }
     };
 
 
@@ -464,6 +515,37 @@ export default function ConfigurationPoliciesPage() {
         return Array.from(platforms).sort().map(platform => ({ label: platform, value: platform }));
     };
 
+    const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
+
+    const handleRowClick = (policy: Record<string, unknown>, index: number, event?: React.MouseEvent) => {
+        const policyId = policy.id as string;
+
+        if (event?.shiftKey && lastClickedIndex !== null) {
+            // Shift-click for range selection
+            const startIndex = Math.min(lastClickedIndex, index);
+            const endIndex = Math.max(lastClickedIndex, index);
+            const rangeIds = filteredPolicies.slice(startIndex, endIndex + 1).map(p => p.id);
+
+            if (selectedPolicies.includes(policyId)) {
+                // If clicked policy is selected, deselect the range
+                setSelectedPolicies(prev => prev.filter(id => !rangeIds.includes(id)));
+            } else {
+                // If clicked policy is not selected, select the range
+                setSelectedPolicies(prev => [...new Set([...prev, ...rangeIds])]);
+            }
+        } else {
+            // Normal click - toggle single selection
+            setSelectedPolicies(prev =>
+                prev.includes(policyId)
+                    ? prev.filter(id => id !== policyId)
+                    : [...prev, policyId]
+            );
+        }
+
+        setLastClickedIndex(index);
+    };
+
+
     const clearFilters = () => {
         setPolicyTypeFilter([]);
         setStatusFilter([]);
@@ -484,6 +566,31 @@ export default function ConfigurationPoliciesPage() {
     };
 
     const columns = [
+        {
+            key: '_select' as string,
+            label: '',
+            width: 50,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const policyId = row.id as string;
+                const isSelected = selectedPolicies.includes(policyId);
+
+                return (
+                    <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            setSelectedPolicies(prev =>
+                                prev.includes(policyId)
+                                    ? prev.filter(id => id !== policyId)
+                                    : [...prev, policyId]
+                            );
+                        }}
+                        className="rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    />
+                );
+            }
+        },
         {
             key: 'name' as string,
             label: 'Policy Name',
@@ -922,14 +1029,14 @@ export default function ConfigurationPoliciesPage() {
                     <DataTable
                         data={filteredPolicies}
                         columns={columns}
-                        onRowClick={handlePolicyClick}
+                        onRowClick={handleRowClick}
                         currentPage={currentPage}
                         totalPages={totalPages}
                         itemsPerPage={itemsPerPage}
                         onPageChange={setCurrentPage}
                         onItemsPerPageChange={setItemsPerPage}
                         showPagination={true}
-                        showSearch={false}
+                        showSearch={true}
                         selectedRows={selectedPolicies}
                         onSelectionChange={setSelectedPolicies}
                         className="shadow-sm"
