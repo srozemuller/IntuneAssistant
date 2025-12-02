@@ -101,7 +101,7 @@ export function Sidebar() {
     const isAuthenticated = useIsAuthenticated();
     const { isCollapsed, toggleSidebar } = useSidebar();
     const router = useRouter();
-    const { isActiveCustomer, customerLoading } = useCustomer();
+    const { isActiveCustomer, customerLoading, customerData } = useCustomer();
 
     const account = accounts[0];
     const displayName = account?.name || account?.username || 'User';
@@ -208,6 +208,18 @@ export function Sidebar() {
         );
     };
 
+    const hasOnlyCommunityLicense = (): boolean => {
+        // You'll need to get customerData from your CustomerContext
+        // Assuming you have access to it through useCustomer()
+        const { customerData } = useCustomer();
+
+        if (!customerData?.licenses || customerData.licenses.length === 0) {
+            return false;
+        }
+
+        return customerData.licenses.every(license => license.licenseType === 0);
+    };
+
     const menuSections: MenuSection[] = [
         {
             title: "",
@@ -269,7 +281,7 @@ export function Sidebar() {
             ]
         },
         // Only include Business Modules section if customer is active
-        ...(isActiveCustomer ? [{
+        ...(isActiveCustomer && !hasOnlyCommunityLicense() ? [{
             title: "Extensions",
             badgeColor: "bg-blue-500",
             items: [

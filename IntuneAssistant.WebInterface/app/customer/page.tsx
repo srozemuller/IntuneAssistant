@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useTenant } from '@/contexts/TenantContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -21,11 +21,13 @@ import {
     Loader2,
     Plus,
     Edit,
-    Trash2
+    Trash2,
+    ExternalLink,
+    Lock
 } from 'lucide-react';
-import {CUSTOMER_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+import {CONSENT_CALLBACK, CUSTOMER_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
-import TenantOnboardingModal from '@/components/onboarding/tenant-onboarding';
+
 
 interface TenantUpdateData {
     isActive: boolean;
@@ -128,68 +130,6 @@ export default function CustomerPage() {
         };
     }, []);
 
-    const updateTenantStatus = async (tenantId: string, settings: {
-        isActive: boolean;
-        isPrimary: boolean;
-        isTrial: boolean;
-        licenseType: number;
-    }) => {
-        try {
-            // Save current scroll position before update
-            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-            sessionStorage.setItem('customerPageScrollPosition', currentScroll.toString());
-
-            setUpdatingTenants(prev => new Set(prev).add(tenantId));
-            setUpdateError(null);
-
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(`${CUSTOMER_ENDPOINT}/tenants/${tenantId}/status`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    isActive: settings.isActive,
-                    isPrimary: settings.isPrimary,
-                    isTrial: settings.isTrial,
-                    licenseType: settings.licenseType
-                }),
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to update tenant status: ${apiResponse.statusText}`);
-            }
-
-            await refetchCustomerData();
-
-            // Restore scroll position after data refresh
-            setTimeout(() => {
-                const savedPosition = sessionStorage.getItem('customerPageScrollPosition');
-                if (savedPosition) {
-                    window.scrollTo({
-                        top: parseInt(savedPosition),
-                        behavior: 'smooth'
-                    });
-                }
-            }, 100);
-
-        } catch (err) {
-            console.error('Failed to update tenant status:', err);
-            setUpdateError(err instanceof Error ? err.message : 'Failed to update tenant status');
-        } finally {
-            setUpdatingTenants(prev => {
-                const newSet = new Set(prev);
-                newSet.delete(tenantId);
-                return newSet;
-            });
-        }
-    };
-
     const [licenseManagement, setLicenseManagement] = useState<{
         isOpen: boolean;
         tenant: Tenant | null;
@@ -258,20 +198,19 @@ export default function CustomerPage() {
     };
 
     useEffect(() => {
-        if (licenseManagement && customerData) {
+        if (editTenant && customerData && editTenant.tenant) {
             const updatedTenant = customerData.tenants.find(
-                (t: Tenant) => t.tenantId === licenseManagement.tenant?.tenantId
+                (t: Tenant) => t.tenantId === editTenant.tenant!.tenantId
             );
 
-            if (updatedTenant && JSON.stringify(updatedTenant) !== JSON.stringify(licenseManagement.tenant)) {
-                setLicenseManagement({
-                    ...licenseManagement,
+            if (updatedTenant) {
+                setEditTenant({
+                    ...editTenant,
                     tenant: updatedTenant
                 });
             }
         }
-    }, [customerData, licenseManagement?.tenant?.tenantId]); // Stable dependency
-
+    }, [customerData]);
 
 
     const getLicenseTypeName = (licenseType: number): string => {
@@ -280,8 +219,6 @@ export default function CustomerPage() {
                 return 'Assistant';
             case 1:
                 return 'Assignments Manager';
-            case 2:
-                return 'Historicus';
             default:
                 return 'Unknown';
         }
@@ -313,6 +250,14 @@ export default function CustomerPage() {
         isTrial: false
     });
 
+
+    const hasOnlyCommunityLicense = (): boolean => {
+        if (!customerData?.licenses || customerData.licenses.length === 0) {
+            return false;
+        }
+
+        return customerData.licenses.every(license => license.licenseType === 0);
+    };
 
     const columns = [
         {
@@ -392,7 +337,7 @@ export default function CustomerPage() {
             ),
         },
         // Only include license type column if customer is active
-        ...(isActiveCustomer ? [{
+        ...(isActiveCustomer && !hasOnlyCommunityLicense() ? [{
             key: "licenseType",
             label: "License Status",
             render: (value: unknown, row: Record<string, unknown>) => {
@@ -403,6 +348,8 @@ export default function CustomerPage() {
                 const hasLicenseNeedingConsent = tenant.licenses?.some(
                     license => !license.isConsentGranted && license.consentUrl
                 );
+
+                const licenseCount = tenant.licenses?.length || 0;
 
                 return (
                     <div className="flex items-center gap-2">
@@ -421,6 +368,9 @@ export default function CustomerPage() {
                                 <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 group-hover:text-green-600" />
                             </div>
                         )}
+                            <span className="text-xs text-gray-500 dark:text-gray-400 font-mono bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-full">
+                            license count: {licenseCount}
+                </span>
                     </div>
                 );
             },
@@ -622,6 +572,230 @@ export default function CustomerPage() {
         }
     };
 
+    // Add new state for license onboarding wizard
+    const [licenseOnboardingWizard, setLicenseOnboardingWizard] = useState<{
+        isOpen: boolean;
+        tenantId: string;
+        tenantName: string;
+        licenseType: number;
+        currentStep: number;
+        consentWindow: Window | null;
+        consentCompleted: boolean;
+        loading: boolean;
+        error: string | null;
+        consentState?: string | null;
+    } | null>(null);
+
+// Replace the existing add license dialog with this new wizard
+    const openLicenseOnboardingWizard = (tenantId: string, tenantName: string) => {
+        setLicenseOnboardingWizard({
+            isOpen: true,
+            tenantId,
+            tenantName,
+            licenseType: 0,
+            currentStep: 0, // 0: Select license, 1: Consent, 2: Complete
+            consentWindow: null,
+            consentCompleted: false,
+            loading: false,
+            error: null
+        });
+    };
+
+// Handle consent window messages for license wizard
+    useEffect(() => {
+        const handleLicenseConsentMessage = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin || !licenseOnboardingWizard?.consentWindow) {
+                return;
+            }
+
+            if (event.data.type === 'CONSENT_SUCCESS') {
+                console.log('License consent success received');
+                setLicenseOnboardingWizard(prev => prev ? {
+                    ...prev,
+                    consentCompleted: true,
+                    loading: false
+                } : null);
+
+                if (licenseOnboardingWizard.consentWindow) {
+                    licenseOnboardingWizard.consentWindow.close();
+                    setLicenseOnboardingWizard(prev => prev ? {
+                        ...prev,
+                        consentWindow: null
+                    } : null);
+                }
+
+                // Complete the license creation process
+                completeLicenseCreation();
+
+            } else if (event.data.type === 'CONSENT_ERROR') {
+                console.log('License consent error received:', event.data);
+                setLicenseOnboardingWizard(prev => prev ? {
+                    ...prev,
+                    error: `Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`,
+                    loading: false
+                } : null);
+
+                if (licenseOnboardingWizard.consentWindow) {
+                    licenseOnboardingWizard.consentWindow.close();
+                    setLicenseOnboardingWizard(prev => prev ? {
+                        ...prev,
+                        consentWindow: null
+                    } : null);
+                }
+            }
+        };
+
+        window.addEventListener('message', handleLicenseConsentMessage);
+        return () => window.removeEventListener('message', handleLicenseConsentMessage);
+    }, [licenseOnboardingWizard]);
+
+    const extractStateFromConsentUrl = (url: string): string | null => {
+        try {
+            const urlObj = new URL(url);
+            return urlObj.searchParams.get('state');
+        } catch (error) {
+            console.error('Failed to parse consent URL:', error);
+            return null;
+        }
+    };
+    const initiateLicenseConsent = async () => {
+        if (!licenseOnboardingWizard) return;
+
+        try {
+            setLicenseOnboardingWizard(prev => prev ? {
+                ...prev,
+                loading: true,
+                error: null
+            } : null);
+
+            const tokenResponse = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            // First create the license
+            const createLicenseResponse = await fetch(`${CUSTOMER_ENDPOINT}/tenants/${licenseOnboardingWizard.tenantId}/license`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${tokenResponse.accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    isEnabled: true,
+                    LicenseType: licenseOnboardingWizard.licenseType
+                }),
+            });
+
+            if (!createLicenseResponse.ok) {
+                const errorData = await createLicenseResponse.json().catch(() => null);
+                throw new Error(errorData?.message || `Failed to create license: ${createLicenseResponse.statusText}`);
+            }
+
+            const licenseResult = await createLicenseResponse.json();
+
+            // Get consent URL from the license creation response
+            const consentUrl = licenseResult.data?.consentUrl || licenseResult.consentUrl;
+
+            if (!consentUrl) {
+                throw new Error('No consent URL received from license creation');
+            }
+
+            const extractedState = extractStateFromConsentUrl(consentUrl);
+            setLicenseOnboardingWizard(prev => prev ? {
+                ...prev,
+                consentState: extractedState
+            } : null);
+
+
+            // Open consent window with the URL from license creation
+            const popup = window.open(
+                consentUrl,
+                'licenseConsentWindow',
+                'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no'
+            );
+
+            if (popup) {
+                setLicenseOnboardingWizard(prev => prev ? {
+                    ...prev,
+                    consentWindow: popup,
+                    currentStep: 1
+                } : null);
+                popup.focus();
+            } else {
+                throw new Error('Failed to open consent window. Please check your popup blocker settings.');
+            }
+
+        } catch (err) {
+            console.error('Error initiating license consent:', err);
+            setLicenseOnboardingWizard(prev => prev ? {
+                ...prev,
+                error: err instanceof Error ? err.message : 'Failed to initiate consent',
+                loading: false
+            } : null);
+        }
+    };
+
+
+// Complete license creation after consent
+    const completeLicenseCreation = async () => {
+        if (!licenseOnboardingWizard) return;
+
+        try {
+            setLicenseOnboardingWizard(prev => prev ? {
+                ...prev,
+                loading: true,
+                error: null
+            } : null);
+
+            const tokenResponse = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            // Use the consent state in the callback URL
+
+            const response = await fetch(`${CONSENT_CALLBACK}?state=${licenseOnboardingWizard.consentState}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${tokenResponse.accessToken}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || `Failed to complete consent callback: ${response.statusText}`);
+            }
+
+            await refetchCustomerData();
+
+            setLicenseOnboardingWizard(prev => prev ? {
+                ...prev,
+                currentStep: 2,
+                loading: false
+            } : null);
+
+        } catch (err) {
+            console.error('Failed to complete license creation:', err);
+            setLicenseOnboardingWizard(prev => prev ? {
+                ...prev,
+                error: err instanceof Error ? err.message : 'Failed to complete license creation',
+                loading: false
+            } : null);
+        }
+    };
+
+
+// Wizard navigation
+    const handleLicenseWizardNext = () => {
+        if (!licenseOnboardingWizard) return;
+
+        if (licenseOnboardingWizard.currentStep === 0) {
+            // Start consent process
+            initiateLicenseConsent();
+        }
+    };
+
 
     const assignNewLicense = async (tenantId: string, licenseType: number, licenseData: {
         isActive: boolean;
@@ -729,12 +903,6 @@ export default function CustomerPage() {
             const responseData = await apiResponse.json();
             console.log('License creation response:', responseData);
 
-            // Show success message with consent link if needed
-            if (responseData.data?.consentUrl && !responseData.data?.isConsentGranted) {
-                // You could show a toast notification here
-                console.log('Consent required for new license:', responseData.data.consentUrl);
-            }
-
             await refetchCustomerData();
             setAddLicenseDialog(null);
 
@@ -749,6 +917,8 @@ export default function CustomerPage() {
             });
         }
     };
+
+
 
 
     const handleTenantSelect = (tenant: Tenant) => {
@@ -923,7 +1093,7 @@ export default function CustomerPage() {
                 {/* Right side - License Info and Summary */}
                 <div className="xl:w-1/2 flex flex-col gap-6">
                     {/* License Information */}
-                    {customerData.licenses && customerData.licenses.length > 0 && (
+                    {customerData.licenses && customerData.licenses.length > 0 && !hasOnlyCommunityLicense() && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
@@ -1063,13 +1233,6 @@ export default function CustomerPage() {
                 </CardContent>
             </Card>
 
-            <TenantOnboardingModal
-                isOpen={showOnboardingModal}
-                onClose={() => setShowOnboardingModal(false)}
-                customerId={customerData.id}
-                customerName={customerData.name}
-                onSuccess={handleTenantOnboardingSuccess}
-            />
             {/* Delete Confirmation Dialog */}
             {deleteConfirmation && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1113,400 +1276,285 @@ export default function CustomerPage() {
                     </Card>
                 </div>
             )}
-            {/* Tenant Edit Dialog */}
+
             {editTenant && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <Card className="w-full max-w-4xl mx-4 max-h-[80vh] overflow-y-auto">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Edit className="h-5 w-5" />
-                                Tenant Settings
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {editError && (
-                                <div className="p-3 border border-red-200 bg-red-50 dark:bg-red-950 dark:border-red-800 rounded-lg">
-                                    <div className="flex items-center gap-2 text-red-600">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <span className="text-sm">{editError}</span>
-                                    </div>
-                                </div>
-                            )}
-
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                const formData = new FormData(e.currentTarget);
-                                const settings = {
-                                    displayName: formData.get('displayName') as string,
-                                    isActive: editTenant.tenant!.isActive,
-                                    isPrimary: editTenant.tenant!.isPrimary,
-                                    isTrial: editTenant.tenant!.isTrial,
-                                    licenseType: parseInt(formData.get('licenseType') as string)
-                                };
-                                updateTenantSettings(editTenant.tenant!.tenantId, settings);
-                            }} className="space-y-4">
-
-                                {/* Display Name */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Display Name</label>
-                                    <input
-                                        name="displayName"
-                                        type="text"
-                                        defaultValue={editTenant.tenant?.displayName}
-                                        className="w-full px-3 py-2 border rounded-md dark:bg-gray-800 dark:border-gray-600"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Tenant Information */}
-                                <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                                    <div className="text-sm font-medium mb-3">Tenant Information</div>
-
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">Tenant ID:</span>
-                                            <code className="text-sm text-gray-800 dark:text-gray-200">{editTenant.tenant?.tenantId}</code>
-                                        </div>
-
-                                        <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">Domain:</span>
-                                            <code className="text-sm text-gray-800 dark:text-gray-200">{editTenant.tenant?.domainName}</code>
-                                        </div>
-
-                                        <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">Status:</span>
-                                            <Badge variant={editTenant.tenant?.isActive ? "default" : "secondary"}>
-                                                {editTenant.tenant?.isActive ? 'Active' : 'Inactive'}
-                                            </Badge>
-                                        </div>
-
-                                        <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">Type:</span>
-                                            <div className="flex gap-1">
-                                                {editTenant.tenant?.isPrimary && (
-                                                    <Badge variant="default" className="text-xs">Primary</Badge>
-                                                )}
-                                                {editTenant.tenant?.isTrial && (
-                                                    <Badge variant="outline" className="text-xs">Trial</Badge>
-                                                )}
-                                                {!editTenant.tenant?.isPrimary && !editTenant.tenant?.isTrial && (
-                                                    <Badge variant="secondary" className="text-xs">Standard</Badge>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">GDAP:</span>
-                                            <Badge variant={editTenant.tenant?.isGdap ? "default" : "outline"} className="text-xs">
-                                                {editTenant.tenant?.isGdap ? 'Enabled' : 'Disabled'}
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Action Buttons */}
-                                <div className="flex justify-between pt-4 border-t">
-                                    <div className="flex gap-2">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={() => {
-                                                setLicenseManagement({
-                                                    isOpen: true,
-                                                    tenant: editTenant.tenant
-                                                });
-                                                setEditTenant(null);
-                                            }}
-                                            disabled={editingTenant}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <Shield className="h-4 w-4" />
-                                            Manage Licenses
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            onClick={() => {
-                                                setDeleteConfirmation({
-                                                    isOpen: true,
-                                                    tenantId: editTenant.tenant!.tenantId,
-                                                    tenantName: editTenant.tenant!.displayName
-                                                });
-                                                setEditTenant(null);
-                                            }}
-                                            disabled={editingTenant}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                            Delete Tenant
-                                        </Button>
-                                    </div>
-
-                                    <div className="flex gap-2">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={() => {
-                                                setEditTenant(null);
-                                                setEditError(null);
-                                            }}
-                                            disabled={editingTenant}
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            type="submit"
-                                            disabled={editingTenant}
-                                            className="bg-blue-600 hover:bg-blue-700"
-                                        >
-                                            {editingTenant ? (
-                                                <>
-                                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                                    Saving...
-                                                </>
-                                            ) : (
-                                                'Save Changes'
-                                            )}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
-
-            {/* License Management Dialog */}
-            {licenseManagement && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <Card className="w-full max-w-6xl mx-4 max-h-[90vh] overflow-y-auto">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Shield className="h-5 w-5" />
-                                License Management - {licenseManagement.tenant?.displayName}
+                                <Edit className="h-5 w-5" />
+                                Tenant Management - {editTenant.tenant?.displayName}
                             </CardTitle>
                             <p className="text-sm text-gray-500">
-                                Manage individual licenses for this tenant. Each license can be configured independently.
+                                Manage tenant settings, licenses, and permissions in one place.
                             </p>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            {licenseError && (
+                            {(editError || licenseError) && (
                                 <div className="p-3 border border-red-200 bg-red-50 dark:bg-red-950 dark:border-red-800 rounded-lg">
                                     <div className="flex items-center gap-2 text-red-600">
                                         <AlertCircle className="h-4 w-4" />
-                                        <span className="text-sm">{licenseError}</span>
+                                        <span className="text-sm">{editError || licenseError}</span>
                                     </div>
                                 </div>
                             )}
 
-                            {/* Tenant Info Summary */}
-                            <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h3 className="font-medium">Tenant Information</h3>
-                                    <Badge variant={licenseManagement.tenant?.isActive ? "default" : "secondary"}>
-                                        {licenseManagement.tenant?.isActive ? 'Active' : 'Inactive'}
-                                    </Badge>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <span className="text-gray-500">Tenant ID:</span>
-                                        <code className="ml-2 text-gray-800 dark:text-gray-200">{licenseManagement.tenant?.tenantId}</code>
+                            {/* Two Column Layout */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Left Column - Tenant Settings */}
+                                <div className="space-y-6">
+                                    <div className="p-4 border rounded-lg">
+                                        <h3 className="font-medium mb-4 flex items-center gap-2">
+                                            <Building className="h-4 w-4" />
+                                            Tenant Settings
+                                        </h3>
+
+                                        <form onSubmit={(e) => {
+                                            e.preventDefault();
+                                            const formData = new FormData(e.currentTarget);
+                                            const settings = {
+                                                displayName: formData.get('displayName') as string,
+                                                isActive: editTenant.tenant!.isActive,
+                                                isPrimary: editTenant.tenant!.isPrimary,
+                                                isTrial: editTenant.tenant!.isTrial,
+                                                licenseType: parseInt(formData.get('licenseType') as string)
+                                            };
+                                            updateTenantSettings(editTenant.tenant!.tenantId, settings);
+                                        }} className="space-y-4">
+
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium">Display Name</label>
+                                                <input
+                                                    name="displayName"
+                                                    type="text"
+                                                    defaultValue={editTenant.tenant?.displayName}
+                                                    className="w-full px-3 py-2 border rounded-md dark:bg-gray-800 dark:border-gray-600"
+                                                    required
+                                                />
+                                            </div>
+
+                                            <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                                <div className="text-sm font-medium mb-3">Tenant Information</div>
+                                                <div className="space-y-3 text-sm">
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-500">Tenant ID:</span>
+                                                        <code className="text-gray-800 dark:text-gray-200">{editTenant.tenant?.tenantId}</code>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-500">Domain:</span>
+                                                        <code className="text-gray-800 dark:text-gray-200">{editTenant.tenant?.domainName}</code>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-500">Status:</span>
+                                                        <Badge variant={editTenant.tenant?.isActive ? "default" : "secondary"}>
+                                                            {editTenant.tenant?.isActive ? 'Active' : 'Inactive'}
+                                                        </Badge>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-500">GDAP:</span>
+                                                        <Badge variant={editTenant.tenant?.isGdap ? "default" : "outline"}>
+                                                            {editTenant.tenant?.isGdap ? 'Enabled' : 'Disabled'}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <Button
+                                                type="submit"
+                                                disabled={editingTenant}
+                                                className="w-full bg-blue-600 hover:bg-blue-700"
+                                            >
+                                                {editingTenant ? (
+                                                    <>
+                                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                                        Saving...
+                                                    </>
+                                                ) : (
+                                                    'Save Settings'
+                                                )}
+                                            </Button>
+                                        </form>
                                     </div>
-                                    <div>
-                                        <span className="text-gray-500">Domain:</span>
-                                        <code className="ml-2 text-gray-800 dark:text-gray-200">{licenseManagement.tenant?.domainName}</code>
+
+                                    {/* Quick Actions */}
+                                    <div className="p-4 border rounded-lg">
+                                        <h3 className="font-medium mb-4 flex items-center gap-2">
+                                            <Shield className="h-4 w-4" />
+                                            Quick Actions
+                                        </h3>
+                                        <div className="space-y-2">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => openLicenseOnboardingWizard(editTenant.tenant!.tenantId, editTenant.tenant!.displayName)}
+
+                                                className="w-full justify-start"
+                                            >
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Add New License
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                onClick={() => {
+                                                    setDeleteConfirmation({
+                                                        isOpen: true,
+                                                        tenantId: editTenant.tenant!.tenantId,
+                                                        tenantName: editTenant.tenant!.displayName
+                                                    });
+                                                    setEditTenant(null);
+                                                }}
+                                                className="w-full justify-start"
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Delete Tenant
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* License Management Table */}
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="font-medium">Current Licenses</h3>
-                                    <Button
-                                        onClick={() => {
-                                            setAddLicenseDialog({
-                                                isOpen: true,
-                                                tenantId: licenseManagement.tenant!.tenantId,
-                                                tenantName: licenseManagement.tenant!.displayName
-                                            });
-                                            setNewLicenseData({
-                                                licenseType: 0,
-                                                isEnabled: true,
-                                                isTrial: false
-                                            });
-                                        }}
-                                        size="sm"
-                                        className="flex items-center gap-2"
-                                    >
-                                        <Plus className="h-4 w-4" />
-                                        Add License
-                                    </Button>
-                                </div>
+                                {/* Right Column - License Management */}
+                                <div className="space-y-6">
+                                    <div className="p-4 border rounded-lg">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="font-medium flex items-center gap-2">
+                                                <Shield className="h-4 w-4" />
+                                                License Management
+                                            </h3>
+                                            <span className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                                                {editTenant.tenant?.licenses?.length || 0} licenses
+                                            </span>
+                                        </div>
 
-                                {/* License Table */}
-                                {licenseManagement.tenant?.licenses && licenseManagement.tenant.licenses.length > 0 ? (
-                                    <div className="border rounded-lg overflow-hidden">
-                                        <table className="w-full">
-                                            <thead className="bg-gray-50 dark:bg-gray-800">
-                                            <tr className="border-b">
-                                                <th className="text-left p-3 text-sm font-medium">License Type</th>
-                                                <th className="text-left p-3 text-sm font-medium">Status</th>
-                                                <th className="text-left p-3 text-sm font-medium">Active</th>
-                                                <th className="text-left p-3 text-sm font-medium">Trial</th>
-                                                <th className="text-left p-3 text-sm font-medium">Created</th>
-                                                <th className="text-left p-3 text-sm font-medium">Expires</th>
-                                                <th className="text-left p-3 text-sm font-medium">Actions</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {licenseManagement.tenant.licenses.map((license, index) => {
-                                                const licenseKey = `${licenseManagement.tenant?.tenantId}-${license.id}`;
-                                                const isUpdating = updatingLicense.has(licenseKey);
+                                        {editTenant.tenant?.licenses && editTenant.tenant.licenses.length > 0 ? (
+                                            <div className="space-y-3 max-h-96 overflow-y-auto">
+                                                {editTenant.tenant.licenses.map((license) => {
+                                                    const licenseKey = `${editTenant.tenant?.tenantId}-${license.id}`;
+                                                    const isUpdating = updatingLicense.has(licenseKey);
 
-                                                return (
-                                                    <tr key={license.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
-                                                        <td className="p-3">
-                                                            <Badge variant={getLicenseTypeVariant(license.licenseType)}>
-                                                                {getLicenseTypeName(license.licenseType)}
-                                                            </Badge>
-                                                        </td>
-                                                        <td className="p-3">
-                                                            <div className="flex flex-col gap-2">
+                                                    return (
+                                                        <div key={license.id} className="p-3 border rounded-lg bg-gray-50 dark:bg-gray-900">
+                                                            <div className="flex items-center justify-between mb-3">
+                                                                <Badge variant={getLicenseTypeVariant(license.licenseType)}>
+                                                                    {getLicenseTypeName(license.licenseType)}
+                                                                </Badge>
                                                                 <div className="flex items-center gap-2">
-                                                                    {license.isConsentGranted ? (
-                                                                        <>
-                                                                            <CheckCircle className="h-4 w-4 text-green-500" />
-                                                                            <span className="text-sm text-green-700 dark:text-green-400">
-                        Consented & {license.isOnboarded ? 'Onboarded' : 'Pending Onboarding'}
-                    </span>
-                                                                        </>
-                                                                    ) : (
-                                                                        <>
-                                                                            <AlertCircle className="h-4 w-4 text-orange-500" />
-                                                                            <span className="text-sm text-orange-700 dark:text-orange-400">
-                        Consent Required
-                    </span>
-                                                                        </>
+                                                                    {isUpdating && (
+                                                                        <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                                                                     )}
-                                                                </div>
-                                                                {/* Show consent link if consent is required */}
-                                                                {!license.isConsentGranted && license.consentUrl && (
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
-                                                                        onClick={() => window.open(license.consentUrl!, '_blank')}
-                                                                        className="text-xs h-7 px-2 py-1 text-blue-600 hover:text-blue-800 border-blue-200 hover:border-blue-300"
+                                                                        onClick={() => deleteTenantLicense(editTenant.tenant!.tenantId, license.id)}
+                                                                        disabled={isUpdating}
+                                                                        className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
                                                                     >
-                                                                        Grant Consent
+                                                                        <Trash2 className="h-3 w-3" />
                                                                     </Button>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* License Status */}
+                                                            <div className="flex items-center gap-2 mb-3">
+                                                                {license.isConsentGranted ? (
+                                                                    <>
+                                                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                                                        <span className="text-xs text-green-700 dark:text-green-400">
+                                                                            Consented & {license.isOnboarded ? 'Onboarded' : 'Pending'}
+                                                                        </span>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <AlertCircle className="h-4 w-4 text-orange-500" />
+                                                                        <span className="text-xs text-orange-700 dark:text-orange-400">
+                                                                            Consent Required
+                                                                        </span>
+                                                                    </>
                                                                 )}
                                                             </div>
-                                                        </td>
 
-                                                        <td className="p-3">
-                                                            <label className="relative inline-flex items-center cursor-pointer">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={license.isActive}
-                                                                    onChange={(e) => {
-                                                                        updateTenantLicense(licenseManagement.tenant!.tenantId, license.id, {
-                                                                            isActive: e.target.checked,
-                                                                            isPrimary: false,
-                                                                            isTrial: license.isTrial,
-                                                                            licenseType: license.licenseType
-                                                                        });
-                                                                    }}
-                                                                    disabled={isUpdating}
-                                                                    className="sr-only peer"
-                                                                />
-                                                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                                                            </label>
-                                                        </td>
-                                                        <td className="p-3">
-                                                            <label className="relative inline-flex items-center cursor-pointer">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={license.isTrial}
-                                                                    onChange={(e) => {
-                                                                        updateTenantLicense(licenseManagement.tenant!.tenantId, license.id, {
-                                                                            isActive: license.isActive,
-                                                                            isPrimary: false,
-                                                                            isTrial: e.target.checked,
-                                                                            licenseType: license.licenseType
-                                                                        });
-                                                                    }}
-                                                                    disabled={isUpdating}
-                                                                    className="sr-only peer"
-                                                                />
-                                                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-                                                            </label>
-                                                        </td>
-                                                        <td className="p-3 text-sm text-gray-600">
-                                                            {new Date(license.createdAt).toLocaleDateString()}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-gray-600">
-                                                            {license.expiresAt ? new Date(license.expiresAt).toLocaleDateString() : 'Never'}
-                                                        </td>
-                                                        <td className="p-3">
-                                                            <div className="flex items-center gap-2">
-                                                                {isUpdating && (
-                                                                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                                                                )}
+                                                            {/* Consent Button */}
+                                                            {!license.isConsentGranted && license.consentUrl && (
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    onClick={() => {
-                                                                        deleteTenantLicense(licenseManagement.tenant!.tenantId, license.id);
-                                                                    }}
-                                                                    disabled={isUpdating}
-                                                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-800 hover:bg-red-50"
+                                                                    onClick={() => window.open(license.consentUrl!, '_blank')}
+                                                                    className="w-full mb-3 text-xs h-7 text-blue-600 hover:text-blue-800"
                                                                 >
-                                                                    <Trash2 className="h-3 w-3" />
+                                                                    Grant Consent
                                                                 </Button>
+                                                            )}
+
+                                                            {/* Toggle Controls */}
+                                                            <div className="flex items-center justify-between text-xs">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span>Active:</span>
+                                                                    <label className="relative inline-flex items-center cursor-pointer">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={license.isActive}
+                                                                            onChange={(e) => {
+                                                                                updateTenantLicense(editTenant.tenant!.tenantId, license.id, {
+                                                                                    isActive: e.target.checked,
+                                                                                    isPrimary: false,
+                                                                                    isTrial: license.isTrial,
+                                                                                    licenseType: license.licenseType
+                                                                                });
+                                                                            }}
+                                                                            disabled={isUpdating}
+                                                                            className="sr-only peer"
+                                                                        />
+                                                                        <div className="w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-3 peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                                                                    </label>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span>Trial:</span>
+                                                                    <label className="relative inline-flex items-center cursor-pointer">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={license.isTrial}
+                                                                            onChange={(e) => {
+                                                                                updateTenantLicense(editTenant.tenant!.tenantId, license.id, {
+                                                                                    isActive: license.isActive,
+                                                                                    isPrimary: false,
+                                                                                    isTrial: e.target.checked,
+                                                                                    licenseType: license.licenseType
+                                                                                });
+                                                                            }}
+                                                                            disabled={isUpdating}
+                                                                            className="sr-only peer"
+                                                                        />
+                                                                        <div className="w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-3 peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
+                                                                    </label>
+                                                                </div>
                                                             </div>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-8 text-gray-500 border rounded-lg bg-gray-50 dark:bg-gray-900">
-                                        <Shield className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                        <p className="font-medium">No licenses assigned</p>
-                                        <p className="text-sm">Click &quote;Add License&quote; to assign a license to this tenant</p>
-                                    </div>
-                                )}
 
-                            </div>
-
-                            {/* Available License Types for Adding */}
-                            {customerData?.licenses && customerData.licenses.length > 0 && (
-                                <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-                                    <h4 className="font-medium text-blue-900 dark:text-blue-100">Available Customer License Types</h4>
-                                    <div className="flex gap-2 flex-wrap">
-                                        {customerData.licenses.map((customerLicense, index) => (
-                                            <div key={index} className="flex items-center gap-2 text-sm">
-                                                <Badge variant={getCustomerLicenseVariant(customerLicense.licenseType)}>
-                                                    {getCustomerLicenseTypeName(customerLicense.licenseType)}
-                                                </Badge>
-                                                <span className="text-blue-700 dark:text-blue-300">
-                                        (Max: {customerLicense.maxTenants} tenants)
-                                    </span>
+                                                            {/* Dates */}
+                                                            <div className="flex justify-between text-xs text-gray-500 mt-2 pt-2 border-t">
+                                                                <span>Created: {new Date(license.createdAt).toLocaleDateString()}</span>
+                                                                <span>Expires: {license.expiresAt ? new Date(license.expiresAt).toLocaleDateString() : 'Never'}</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
-                                        ))}
+                                        ) : (
+                                            <div className="text-center py-6 text-gray-500 border rounded-lg bg-gray-50 dark:bg-gray-900">
+                                                <Shield className="h-6 w-6 mx-auto mb-2 opacity-50" />
+                                                <p className="text-sm">No licenses assigned</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                            )}
+                            </div>
 
-                            {/* Actions */}
-                            <div className="flex justify-end pt-4 border-t">
+                            {/* Bottom Actions */}
+                            <div className="flex justify-end gap-2 pt-4 border-t">
                                 <Button
                                     variant="outline"
                                     onClick={() => {
-                                        setLicenseManagement(null);
+                                        setEditTenant(null);
+                                        setEditError(null);
                                         setLicenseError(null);
                                     }}
                                 >
@@ -1517,115 +1565,194 @@ export default function CustomerPage() {
                     </Card>
                 </div>
             )}
-            {/* Add License Dialog */}
-            {addLicenseDialog && (
+            {/* License Onboarding Wizard */}
+            {licenseOnboardingWizard && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-                    <Card className="w-full max-w-md mx-4">
+                    <Card className="w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Plus className="h-5 w-5" />
-                                Add New License
+                                Add License - {licenseOnboardingWizard.tenantName}
                             </CardTitle>
                             <p className="text-sm text-gray-500">
-                                Add a new license to {addLicenseDialog.tenantName}
+                                Step {licenseOnboardingWizard.currentStep + 1} of 3
                             </p>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            {licenseError && (
-                                <div className="p-3 border border-red-200 bg-red-50 dark:bg-red-950 dark:border-red-800 rounded-lg">
-                                    <div className="flex items-center gap-2 text-red-600">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <span className="text-sm">{licenseError}</span>
+                        <CardContent className="space-y-6">
+                            {/* Progress Steps */}
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className={`text-center p-3 ${licenseOnboardingWizard.currentStep >= 0 ? 'opacity-100' : 'opacity-50'}`}>
+                                    <div className={`w-10 h-10 mx-auto mb-2 rounded-full flex items-center justify-center ${
+                                        licenseOnboardingWizard.currentStep >= 0 ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-100'
+                                    }`}>
+                                        <Plus className={`h-5 w-5 ${licenseOnboardingWizard.currentStep >= 0 ? 'text-blue-600' : 'text-gray-400'}`} />
                                     </div>
+                                    <h4 className="font-semibold text-sm">Select License</h4>
+                                </div>
+                                <div className={`text-center p-3 ${licenseOnboardingWizard.currentStep >= 1 ? 'opacity-100' : 'opacity-50'}`}>
+                                    <div className={`w-10 h-10 mx-auto mb-2 rounded-full flex items-center justify-center ${
+                                        licenseOnboardingWizard.currentStep >= 1 ? 'bg-purple-100 dark:bg-purple-900' : 'bg-gray-100'
+                                    }`}>
+                                        <Lock className={`h-5 w-5 ${licenseOnboardingWizard.currentStep >= 1 ? 'text-purple-600' : 'text-gray-400'}`} />
+                                    </div>
+                                    <h4 className="font-semibold text-sm">Grant Consent</h4>
+                                </div>
+                                <div className={`text-center p-3 ${licenseOnboardingWizard.currentStep >= 2 ? 'opacity-100' : 'opacity-50'}`}>
+                                    <div className={`w-10 h-10 mx-auto mb-2 rounded-full flex items-center justify-center ${
+                                        licenseOnboardingWizard.currentStep >= 2 ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-100'
+                                    }`}>
+                                        <CheckCircle className={`h-5 w-5 ${licenseOnboardingWizard.currentStep >= 2 ? 'text-green-600' : 'text-gray-400'}`} />
+                                    </div>
+                                    <h4 className="font-semibold text-sm">Complete</h4>
+                                </div>
+                            </div>
+
+                            {/* Step Content */}
+                            {licenseOnboardingWizard.currentStep === 0 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Select License Type</CardTitle>
+                                        <CardDescription>Choose which license type to add to this tenant</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <select
+                                            value={licenseOnboardingWizard.licenseType}
+                                            onChange={(e) => setLicenseOnboardingWizard(prev => prev ? {
+                                                ...prev,
+                                                licenseType: parseInt(e.target.value)
+                                            } : null)}
+                                            className="w-full p-3 border rounded-md dark:bg-gray-800 dark:border-gray-600"
+                                        >
+                                            <option
+                                                value={0}
+                                                disabled={customerData?.tenants
+                                                    .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
+                                                    ?.licenses?.some(license => license.licenseType === 0)
+                                                }
+                                            >
+                                                Assistant {customerData?.tenants
+                                                .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
+                                                ?.licenses?.some(license => license.licenseType === 0)
+                                                ? '(Already assigned)' : ''
+                                            }
+                                            </option>
+                                            <option
+                                                value={1}
+                                                disabled={customerData?.tenants
+                                                    .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
+                                                    ?.licenses?.some(license => license.licenseType === 1)
+                                                }
+                                            >
+                                                Assignments Manager {customerData?.tenants
+                                                .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
+                                                ?.licenses?.some(license => license.licenseType === 1)
+                                                ? '(Already assigned)' : ''
+                                            }
+                                            </option>
+                                            <option
+                                                value={2}
+                                                disabled={customerData?.tenants
+                                                    .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
+                                                    ?.licenses?.some(license => license.licenseType === 2)
+                                                }
+                                            >
+                                                Historicus {customerData?.tenants
+                                                .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
+                                                ?.licenses?.some(license => license.licenseType === 2)
+                                                ? '(Already assigned)' : ''
+                                            }
+                                            </option>
+                                        </select>
+                                        <p className="text-xs text-gray-500">
+                                            License types already assigned to this tenant are disabled.
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            {licenseOnboardingWizard.currentStep === 1 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Grant Admin Consent</CardTitle>
+                                        <CardDescription>Admin consent is required for the new license</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        {licenseOnboardingWizard.loading && (
+                                            <div className="text-center py-6">
+                                                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+                                                <p className="font-medium">Processing consent...</p>
+                                            </div>
+                                        )}
+
+                                        {licenseOnboardingWizard.consentWindow && !licenseOnboardingWizard.consentCompleted && (
+                                            <div className="text-center py-6">
+                                                <ExternalLink className="h-8 w-8 mx-auto mb-4 text-blue-600" />
+                                                <p className="font-medium">Consent window is open</p>
+                                                <p className="text-sm text-gray-600 mt-2">
+                                                    Please complete the consent process in the popup window
+                                                </p>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            {licenseOnboardingWizard.currentStep === 2 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>License Added Successfully</CardTitle>
+                                        <CardDescription>The license has been added to the tenant</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div className="text-center py-6">
+                                            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-600" />
+                                            <p className="text-lg font-medium mb-2">License Added!</p>
+                                            <p className="text-gray-600">
+                                                {getLicenseTypeName(licenseOnboardingWizard.licenseType)} license has been successfully added to {licenseOnboardingWizard.tenantName}.
+                                            </p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            {/* Error Display */}
+                            {licenseOnboardingWizard.error && (
+                                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-md">
+                                    <AlertCircle className="h-4 w-4" />
+                                    {licenseOnboardingWizard.error}
                                 </div>
                             )}
 
-                            <form onSubmit={async (e) => {
-                                e.preventDefault();
-                                await createNewLicense(addLicenseDialog.tenantId, {
-                                    isEnabled: newLicenseData.isEnabled,
-                                    LicenseType: newLicenseData.licenseType
-                                });
-                            }} className="space-y-4">
-                                {/* License Type Selection */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">License Type</label>
-                                    <select
-                                        value={newLicenseData.licenseType}
-                                        onChange={(e) => setNewLicenseData(prev => ({
-                                            ...prev,
-                                            licenseType: parseInt(e.target.value)
-                                        }))}
-                                        className="w-full p-2 border rounded-md dark:bg-gray-800 dark:border-gray-600"
-                                    >
-                                        <option value={0}>Assistant</option>
-                                        <option value={1}>Assignments Manager</option>
-                                        <option value={2}>Historicus</option>
-                                    </select>
-                                </div>
-
-                                {/* Active Toggle */}
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm font-medium">Active</label>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={newLicenseData.isEnabled}
-                                            onChange={(e) => setNewLicenseData(prev => ({
-                                                ...prev,
-                                                isEnabled: e.target.checked
-                                            }))}
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                                    </label>
-                                </div>
-
-                                {/* Trial Toggle */}
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm font-medium">Trial</label>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={newLicenseData.isTrial}
-                                            onChange={(e) => setNewLicenseData(prev => ({
-                                                ...prev,
-                                                isTrial: e.target.checked
-                                            }))}
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
-                                    </label>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex justify-end gap-2 pt-4 border-t">
+                            {/* Navigation */}
+                            <div className="flex justify-end gap-2 pt-4 border-t">
+                                {licenseOnboardingWizard.currentStep === 0 && (
                                     <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => {
-                                            setAddLicenseDialog(null);
-                                            setLicenseError(null);
-                                        }}
+                                        onClick={handleLicenseWizardNext}
+                                        disabled={licenseOnboardingWizard.loading}
                                     >
-                                        Cancel
+                                        Start Consent Process
                                     </Button>
-                                    <Button
-                                        type="submit"
-                                        disabled={updatingLicense.has(`${addLicenseDialog.tenantId}-new`)}
-                                        className="flex items-center gap-2"
-                                    >
-                                        {updatingLicense.has(`${addLicenseDialog.tenantId}-new`) && (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        )}
-                                        Create License
+                                )}
+
+                                {licenseOnboardingWizard.currentStep === 2 && (
+                                    <Button onClick={() => setLicenseOnboardingWizard(null)}>
+                                        Complete
                                     </Button>
-                                </div>
-                            </form>
+                                )}
+
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setLicenseOnboardingWizard(null)}
+                                    disabled={licenseOnboardingWizard.loading}
+                                >
+                                    {licenseOnboardingWizard.currentStep === 2 ? 'Close' : 'Cancel'}
+                                </Button>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
             )}
+
 
         </div>
     );

@@ -12,7 +12,21 @@ interface License {
     expiryDate: string | null;
     maxTenants: number;
 }
-
+interface CustomerTenantLicense {
+    id: string;
+    createdAt: string;
+    expiresAt: string | null;
+    isActive: boolean;
+    isTrial: boolean;
+    licenseType: number;
+    activatedBy: string;
+    isConsentGranted: boolean;
+    consentGrantedAt: string | null;
+    consentGrantedBy: string | null;
+    isOnboarded: boolean;
+    onboardedAt: string | null;
+    consentUrl: string | null;
+}
 interface Tenant {
     id: string;
     tenantId: string;
@@ -24,6 +38,7 @@ interface Tenant {
     isTrial: boolean;
     lastLogin: string | null;
     licenseType: number;
+    licenses?: CustomerTenantLicense[];
 }
 
 interface CustomerData {
