@@ -1,6 +1,6 @@
 {
   "pages": {
-    "/customer/page": [
+    "/onboarding/page": [
       "static/chunks/node_modules_next_dist_8db7fb1f._.js",
       "static/chunks/app_favicon_ico_mjs_e98bdb63._.js",
       "static/chunks/[root-of-the-server]__36b083e1._.css",
@@ -11,9 +11,8 @@
       "static/chunks/node_modules_463a0e75._.js",
       "static/chunks/app_layout_tsx_0a548d63._.js",
       "static/chunks/node_modules_next_dist_client_components_builtin_global-error_0d58bbc8.js",
-      "static/chunks/_fc264e8f._.js",
-      "static/chunks/node_modules_38166f63._.js",
-      "static/chunks/app_customer_page_tsx_0d58bbc8._.js",
+      "static/chunks/_bc677c55._.js",
+      "static/chunks/app_onboarding_page_tsx_0d58bbc8._.js",
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_57d40746._.js",
       "static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js",
       "static/chunks/node_modules_next_dist_compiled_next-devtools_index_a9cb0712.js",

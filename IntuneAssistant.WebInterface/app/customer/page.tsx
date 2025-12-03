@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import {CONSENT_CALLBACK, CUSTOMER_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
-
+import TenantOnboardingModal from '@/components/onboarding/tenant-onboarding';
 
 interface TenantUpdateData {
     isActive: boolean;
@@ -1752,7 +1752,13 @@ export default function CustomerPage() {
                     </Card>
                 </div>
             )}
-
+            {showOnboardingModal && (
+                <TenantOnboardingModal
+                    isOpen={showOnboardingModal}
+                    onClose={() => setShowOnboardingModal(false)}
+                    onSuccess={handleTenantOnboardingSuccess}
+                />
+            )}
 
         </div>
     );

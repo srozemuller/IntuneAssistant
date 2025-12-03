@@ -209,10 +209,6 @@ export function Sidebar() {
     };
 
     const hasOnlyCommunityLicense = (): boolean => {
-        // You'll need to get customerData from your CustomerContext
-        // Assuming you have access to it through useCustomer()
-        const { customerData } = useCustomer();
-
         if (!customerData?.licenses || customerData.licenses.length === 0) {
             return false;
         }
