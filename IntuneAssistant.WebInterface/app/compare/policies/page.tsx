@@ -21,6 +21,7 @@ interface Policy {
     id: string;
     name: string;
     policyType: string;
+    platform: string;
 }
 
 interface ChildSetting {
@@ -97,26 +98,34 @@ export default function PolicyComparison() {
 
             // Handle the response data properly
             if (Array.isArray(response)) {
-                // Direct array response
                 allPolicies = response;
             } else if (response.data) {
-                // Response with data field
                 if (Array.isArray(response.data)) {
                     allPolicies = response.data;
                 } else {
-                    // data is { url: string; message: string }
                     throw new Error(response.data.message || 'Failed to fetch policies');
                 }
             } else {
                 throw new Error('Invalid response format');
             }
 
-            // Filter to only show ConfigurationPolicies
-            const configurationPolicies = allPolicies.filter(policy =>
-                policy.policyType === 'ConfigurationPolicies'
+            // Show all available policy types for debugging
+            const policyTypes = [...new Set(allPolicies.map(policy => policy.policyType))];
+            console.log('Available policy types:', policyTypes);
+            console.log('All fetched policies:', allPolicies);
+
+            // Show all policies without filtering
+            const settingsCatalogPolicies = allPolicies.filter(policy =>
+                policy.policyType === 'SettingsCatalog'
             );
 
-            setPolicies(configurationPolicies);
+            console.log('SettingsCatalog policies:', settingsCatalogPolicies);
+
+            if (settingsCatalogPolicies.length === 0) {
+                setError(`No SettingsCatalog policies found. Available policy types: ${policyTypes.join(', ')}`);
+            }
+
+            setPolicies(settingsCatalogPolicies);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch policies');
             console.error('Error fetching policies:', err);
@@ -126,7 +135,27 @@ export default function PolicyComparison() {
     };
 
 
+    // Reset target policy when source policy changes to enforce same type selection
+    const handleSourcePolicySelect = (policy: Policy | null) => {
+        setSourcePolicy(policy);
+        // Clear target policy if it's not the same type as the new source policy
+        if (policy && targetPolicy && targetPolicy.policyType !== policy.policyType) {
+            setTargetPolicy(null);
+        }
+    };
 
+
+    // Filter target policies to only show same platform as source
+    const getTargetPolicyOptions = () => {
+        if (!sourcePolicy) return policies;
+        return policies.filter(policy =>
+            policy.platform === sourcePolicy.platform &&
+            policy.id !== sourcePolicy.id
+        );
+    };
+
+
+    // Your existing SearchableSelect component...
     const SearchableSelect: React.FC<SearchableSelectProps> = ({
                                                                    value,
                                                                    onSelect,
@@ -188,9 +217,9 @@ export default function PolicyComparison() {
                     onClick={() => !disabled && setIsOpen(!isOpen)}
                 >
                     <div className="flex items-center justify-between">
-                <span className={selectedPolicy ? 'text-foreground' : 'text-muted-foreground'}>
-                    {selectedPolicy ? selectedPolicy.name : placeholder}
-                </span>
+                        <span className={selectedPolicy ? 'text-foreground' : 'text-muted-foreground'}>
+                            {selectedPolicy ? selectedPolicy.name : placeholder}
+                        </span>
                         <div className="flex items-center gap-2">
                             {selectedPolicy && !disabled && (
                                 <button
@@ -236,7 +265,7 @@ export default function PolicyComparison() {
                                             {policy.name}
                                         </div>
                                         <div className="text-xs text-muted-foreground mt-1">
-                                            Type: {policy.policyType}
+                                            Platform: {policy.platform || 'Not specified'} • Type: {policy.policyType}
                                         </div>
                                     </div>
                                 ))
@@ -250,11 +279,7 @@ export default function PolicyComparison() {
                 )}
             </div>
         );
-
     };
-
-
-
 
     const MultiSelectKeywords: React.FC<{
         availableKeywords: string[];
@@ -1095,28 +1120,19 @@ export default function PolicyComparison() {
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    {policies.length > 0 ? (
-                        <Button
-                            onClick={fetchPolicies}
-                            disabled={loading}
-                            variant="outline"
-                            className="flex items-center gap-2"
-                        >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                            Refresh
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={fetchPolicies}
-                            disabled={loading}
-                            className="flex items-center gap-2"
-                        >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                            Load Policies
-                        </Button>
-                    )}
+                    <Button
+                        onClick={fetchPolicies}
+                        disabled={loading}
+                        variant="outline"
+                        className="flex items-center gap-2"
+                    >
+                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                        {policies.length > 0 ? 'Refresh' : 'Load Policies'}
+                    </Button>
                 </div>
             </div>
+
+
             {/* Error Display */}
             {error && (
                 <Card className="border-red-200">
@@ -1126,13 +1142,6 @@ export default function PolicyComparison() {
                             <span className="font-medium">Error:</span>
                             <span>{error}</span>
                         </div>
-                        <p className="text-sm text-gray-600 mt-2">
-                            Error occurred while fetching policies. Please try again.
-                        </p>
-                        <Button onClick={fetchPolicies} className="mt-4" variant="outline">
-                            <RefreshCw className="h-4 w-4 mr-2" />
-                            Try Again
-                        </Button>
                     </CardContent>
                 </Card>
             )}
@@ -1149,7 +1158,7 @@ export default function PolicyComparison() {
                                 Ready to Compare Policies
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                Load your configuration policies to start comparing them and identify key differences across your organization.
+                                Load your configuration policies to start comparing them and identify key differences.
                             </p>
                             <Button onClick={fetchPolicies} className="flex items-center gap-2 mx-auto" size="lg">
                                 <GitCompare className="h-5 w-5" />
@@ -1161,7 +1170,7 @@ export default function PolicyComparison() {
             )}
 
             {/* Show loading state */}
-            {loading && policies.length === 0 && (
+            {loading && (
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
@@ -1185,19 +1194,19 @@ export default function PolicyComparison() {
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center gap-2">
                                 <Settings className="h-5 w-5 text-gray-600" />
-                                Select Policies to Compare (Warning: Currently only supports configuration setting catalog policies)
+                                Select Policies to Compare
                             </CardTitle>
                             <CardDescription>
-                                Choose two policies to compare their configurations and identify differences
+                                Choose two policies of the same type to compare their configurations. Found {policies.length} configuration policies.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <SearchableSelect
                                     value={sourcePolicy?.id || ''}
-                                    onSelect={setSourcePolicy}
+                                    onSelect={handleSourcePolicySelect}
                                     options={policies}
-                                    placeholder="Select a source policy..."
+                                    placeholder="Select source policy..."
                                     disabled={loading}
                                     label="Source Policy"
                                 />
@@ -1205,17 +1214,29 @@ export default function PolicyComparison() {
                                 <SearchableSelect
                                     value={targetPolicy?.id || ''}
                                     onSelect={setTargetPolicy}
-                                    options={policies}
-                                    placeholder="Select a target policy..."
-                                    disabled={loading}
+                                    options={getTargetPolicyOptions()}
+                                    placeholder={sourcePolicy ? "Select target policy..." : "Select source policy first..."}
+                                    disabled={loading || !sourcePolicy}
                                     label="Target Policy"
                                 />
                             </div>
 
+                            {sourcePolicy && (
+                                <div className="mb-4 p-3 bg-blue-50 rounded-md">
+                                    <p className="text-sm text-blue-800">
+                                        <strong>Selected Platform:</strong> {sourcePolicy.platform || 'Not specified'}
+                                        {getTargetPolicyOptions().length > 0 && (
+                                            <span> • {getTargetPolicyOptions().length} compatible policies available</span>
+                                        )}
+                                    </p>
+                                </div>
+                            )}
+
+
                             <Button
                                 onClick={comparePolicies}
                                 disabled={!sourcePolicy || !targetPolicy || compareLoading || loading}
-                                className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors"
+                                className="w-full"
                             >
                                 {compareLoading ? (
                                     <>

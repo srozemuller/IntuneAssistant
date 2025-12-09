@@ -88,7 +88,7 @@ interface ComparisonResult {
         policyType: string;
         policySubType: string;
         assignments: Assignment[];
-        platforms: string;
+        platform: string;
     };
     policies?: Array<{
         '@odata.type': string | null;
@@ -103,7 +103,7 @@ interface ComparisonResult {
         name: string;
         assignments: Assignment[];
         settingCount: number;
-        platforms: string;
+        platform: string;
         settings: PolicySettings;
     }>;
     providedPolicyName?: string;
@@ -704,7 +704,7 @@ function AssignmentRolloutContent() {
                                 )}
                             </div>
                             <div className="text-xs text-gray-500">
-                                {displayPolicy.policyType || 'Unknown Type'} • {displayPolicy.platforms || 'Unknown Platform'}
+                                {displayPolicy.policyType || 'Unknown Type'} • {displayPolicy.platform || 'Unknown Platform'}
                             </div>
                         </div>
                     </div>
@@ -1300,7 +1300,7 @@ function AssignmentRolloutContent() {
             const migrationPayload = selectedComparisonResults.map(result => ({
                 PolicyId: result.policy?.id || '',
                 PolicyName: result.policy?.name || result.providedPolicyName || '',
-                PolicyType: result.policy?.policySubType || '', // Use policySubType for PolicyType field
+                PolicyType: result.policy?.policyType || '', // Use policySubType for PolicyType field
                 AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
                 AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
                 AssignmentAction: result.csvRow?.AssignmentAction || result.assignmentAction || 'Add',
