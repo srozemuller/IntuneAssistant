@@ -68,6 +68,36 @@ export function AssignmentsLandingPage() {
             ],
             //stats: "156 Active Groups",
             badge: "GROUPS"
+        },
+        {
+            title: "User Assignments",
+            description: "View all Intune assignments (policies, configurations) for a specific user based on group memberships and direct assignments.",
+            href: "/assistant/user-assignments",
+            icon: Users,
+            gradient: "from-indigo-500 to-blue-600",
+            bgGradient: "from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20",
+            borderColor: "border-indigo-200 dark:border-indigo-800",
+            features: [
+                "User group membership analysis",
+                "All assignments via group targeting",
+                "Direct user assignments included"
+            ],
+            badge: "USER"
+        },
+        {
+            title: "User App Assignments",
+            description: "Dedicated view for application assignments targeting a specific user through group memberships and 'All Users' targeting.",
+            href: "/assistant/user-app-assignments",
+            icon: Smartphone,
+            gradient: "from-rose-500 to-orange-500",
+            bgGradient: "from-rose-50 to-orange-50 dark:from-rose-900/20 dark:to-orange-900/20",
+            borderColor: "border-rose-200 dark:border-rose-800",
+            features: [
+                "User-specific app assignments",
+                "Group-based app targeting",
+                "All Users assignment inclusion"
+            ],
+            badge: "USER APPS"
         }
     ];
 
@@ -157,7 +187,7 @@ export function AssignmentsLandingPage() {
             {/*</div>*/}
 
             {/* Assignment Blocks */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {assignmentBlocks.map((block, index) => (
                     <Card key={index} className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 ${block.borderColor}`}>
                         <div className={`absolute inset-0 bg-gradient-to-br ${block.bgGradient}`}></div>
