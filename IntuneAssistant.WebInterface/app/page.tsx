@@ -232,27 +232,6 @@ export default function LandingPage() {
                 </span>
                                     </CardContent>
                                 </Card>
-
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-green-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
-                                    <CardHeader>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center shadow-lg">
-                                                <Wrench className="text-green-600" size={24} />
-                                            </div>
-                                            <Badge className="bg-green-100 text-green-700 shadow-sm">Community</Badge>
-                                        </div>
-                                        <CardTitle className="text-xl">Troubleshoot Helper</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <CardDescription className="mb-4">
-                                            Get intelligent suggestions and step-by-step guidance for resolving common Intune issues.
-                                        </CardDescription>
-                                        <span className="text-green-600 font-medium inline-flex items-center">
-                    Coming soon
-                    <Sparkles className="ml-1 w-4 h-4" />
-                </span>
-                                    </CardContent>
-                                </Card>
                             </div>
                         </div>
 
@@ -384,6 +363,27 @@ export default function LandingPage() {
                                     <CardContent>
                                         <CardDescription className="mb-4">
                                             Create custom automation workflows for routine tasks, policy updates, and compliance remediation.
+                                        </CardDescription>
+                                        <span className="text-blue-600 font-medium inline-flex items-center">
+                    Coming soon
+                    <Sparkles className="ml-1 w-4 h-4" />
+                </span>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center shadow-lg">
+                                                <Wrench className="text-blue-700" size={24} />
+                                            </div>
+                                            <Badge className="bg-blue-100 text-blue-700 shadow-sm">Licensed</Badge>
+                                        </div>
+                                        <CardTitle className="text-xl">Troubleshoot Helper</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <CardDescription className="mb-4">
+                                            Get intelligent suggestions and step-by-step guidance for resolving common Intune issues.
                                         </CardDescription>
                                         <span className="text-blue-600 font-medium inline-flex items-center">
                     Coming soon
