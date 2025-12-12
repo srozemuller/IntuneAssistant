@@ -24,7 +24,6 @@ import {
     ChevronUp, XCircle, Computer, Blocks
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, USERS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
-import {apiScope} from "@/lib/msalConfig";
 import {MultiSelect, Option} from '@/components/ui/multi-select';
 
 import {ExportButton, ExportData, ExportColumn} from '@/components/ExportButton';
@@ -36,13 +35,6 @@ interface ApiResponse {
     message: string;
     details: unknown[];
     data: Assignments[] | { url: string; message: string }; // Updated to handle both cases
-}
-
-interface GroupApiResponse {
-    status: string;
-    message: string;
-    details: unknown[];
-    data: GroupDetails | GroupDetails[] | { url: string; message: string };
 }
 
 interface UserApiResponse {
@@ -157,11 +149,6 @@ export default function AssignmentsOverview() {
 
     // Search mode
     const [searchMode, setSearchMode] = useState<SearchMode>('group');
-
-    const isValidGuid = (str: string): boolean => {
-        const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        return guidRegex.test(str);
-    };
 
     // Group details dialog states
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
@@ -932,9 +919,9 @@ export default function AssignmentsOverview() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">User assignments Overview</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">User configuration assignments overview</h1>
                     <p className="text-gray-600 dark:text-gray-300 mt-2">
-                        View all Intune assignments across your organization for a specific user. Search for a user to get started.
+                        View all Intune configuration assignments across your organization for a specific user. Search for a user to get started.
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -1004,7 +991,7 @@ export default function AssignmentsOverview() {
                 <Card className="shadow-sm">
                     <CardHeader className="text-center pb-4">
                         <Users className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4"/>
-                        <CardTitle className="text-xl">User Assignments</CardTitle>
+                        <CardTitle className="text-xl">User configuration assignments</CardTitle>
                         <CardDescription className="text-gray-600 dark:text-gray-300 max-w-md mx-auto">
                             Search for a specific user to view its assignments from a user perspective. Meaning that is fetches all assignments assigned that are related to All Users directly or via group memberships including nested groups.
                         </CardDescription>
@@ -1209,7 +1196,7 @@ export default function AssignmentsOverview() {
                                 Load All Assignments
                             </Button>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                Load all group assignments in your organization
+                                Load all assignments in your organization
                             </p>
                         </div>
                     </CardContent>
