@@ -205,7 +205,7 @@ export default function CustomerOnboardingModal({
             setLoading(true);
             setError(null);
 
-            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=1`;
+            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=0`;
 
             const response = await fetch(url, {
                 method: 'GET',

@@ -5,15 +5,40 @@ import { CUSTOMER_ENDPOINT } from '@/lib/constants';
 import { apiScope } from '@/lib/msalConfig';
 import { useRouter } from 'next/navigation';
 
+interface License {
+    licenseType: number;
+    isActive: boolean;
+    isTrial: boolean;
+    expiryDate: string | null;
+    maxTenants: number;
+}
+interface CustomerTenantLicense {
+    id: string;
+    createdAt: string;
+    expiresAt: string | null;
+    isActive: boolean;
+    isTrial: boolean;
+    licenseType: number;
+    activatedBy: string;
+    isConsentGranted: boolean;
+    consentGrantedAt: string | null;
+    consentGrantedBy: string | null;
+    isOnboarded: boolean;
+    onboardedAt: string | null;
+    consentUrl: string | null;
+}
 interface Tenant {
     id: string;
     tenantId: string;
     displayName: string;
     domainName: string;
-    isEnabled: boolean;
+    isActive: boolean;
     isGdap: boolean;
     isPrimary: boolean;
+    isTrial: boolean;
     lastLogin: string | null;
+    licenseType: number;
+    licenses?: CustomerTenantLicense[];
 }
 
 interface CustomerData {
@@ -26,7 +51,7 @@ interface CustomerData {
     isGdap: boolean;
     primaryContactEmail: string | null;
     homeTenantId: string;
-    licenses: string[];
+    licenses: License[];
     tenants: Tenant[];
 }
 
@@ -85,7 +110,7 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
                 account: accounts[0]
             });
 
-            const apiResponse = await fetch(`${CUSTOMER_ENDPOINT}/${currentTenantId}/overview`, {
+            const apiResponse = await fetch(`${CUSTOMER_ENDPOINT}/overview`, {
                 headers: {
                     'Authorization': `Bearer ${response.accessToken}`,
                     'Content-Type': 'application/json',
@@ -113,7 +138,7 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
 
     const handleSetSelectedTenant = (tenant: Tenant | null) => {
         // Only allow selection of enabled tenants
-        if (tenant && !tenant.isEnabled) {
+        if (tenant && !tenant.isActive) {
             console.warn('Cannot select disabled tenant:', tenant.displayName);
             return;
         }
@@ -127,11 +152,11 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
             console.log('Auto-selecting tenant...');
 
             const primaryTenant = customerData.tenants.find(tenant =>
-                tenant.isPrimary && tenant.isEnabled
+                tenant.isPrimary && tenant.isActive
             );
 
             const defaultTenant = primaryTenant ||
-                customerData.tenants.find(tenant => tenant.isEnabled) ||
+                customerData.tenants.find(tenant => tenant.isActive) ||
                 customerData.tenants[0];
 
             if (defaultTenant) {
@@ -148,7 +173,7 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
     useEffect(() => {
         if (customerData?.tenants && selectedTenant) {
             const isCurrentTenantValid = customerData.tenants.some(tenant =>
-                tenant.id === selectedTenant.id && tenant.isEnabled
+                tenant.id === selectedTenant.id && tenant.isActive
             );
 
             if (!isCurrentTenantValid) {
