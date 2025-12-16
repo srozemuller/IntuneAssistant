@@ -1757,9 +1757,10 @@ export default function CustomerPage() {
                     isOpen={showOnboardingModal}
                     onClose={() => setShowOnboardingModal(false)}
                     onSuccess={handleTenantOnboardingSuccess}
+                    customerId={customerData.id}
+                    customerName={customerData.name}
                 />
             )}
-
         </div>
     );
 
