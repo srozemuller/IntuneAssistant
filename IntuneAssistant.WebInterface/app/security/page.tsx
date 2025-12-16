@@ -66,6 +66,11 @@ const readPermissions: Permission[] = [
         type: 'read'
     },
     {
+        name: 'User.ReadBasic.All',
+        description: 'Read basic user profiles',
+        type: 'read'
+    },
+    {
         name: 'Directory.AccessAsUser.All',
         description: 'Access directory data on behalf of the user',
         type: 'read'
