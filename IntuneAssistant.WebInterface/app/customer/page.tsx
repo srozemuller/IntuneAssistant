@@ -375,13 +375,21 @@ export default function CustomerPage() {
                 );
             },
         }] : []),
-
         {
             key: "actions",
             label: "Actions",
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
                 const isUpdating = updatingTenants.has(tenant.tenantId);
+
+                // Check if customer has any active non-community licenses
+                const hasActivePaidLicense = customerData?.licenses?.some(
+                    license => license.isActive && license.licenseType !== 0
+                ) ?? false;
+
+                if (!hasActivePaidLicense) {
+                    return null;
+                }
 
                 return (
                     <div className="flex items-center gap-1">
@@ -403,7 +411,7 @@ export default function CustomerPage() {
                     </div>
                 );
             },
-        },
+        }
     ];
 
 // Add this helper function to calculate max tenants from all active licenses
