@@ -85,6 +85,10 @@ interface MenuItem {
     submenu?: Array<{
         title: string;
         href: string;
+        submenu?: Array<{
+            title: string;
+            href: string;
+        }>;
     }>;
 }
 
@@ -101,7 +105,7 @@ export function Sidebar() {
     const isAuthenticated = useIsAuthenticated();
     const { isCollapsed, toggleSidebar } = useSidebar();
     const router = useRouter();
-    const { isActiveCustomer, customerLoading } = useCustomer();
+    const { isActiveCustomer, customerLoading, customerData } = useCustomer();
 
     const account = accounts[0];
     const displayName = account?.name || account?.username || 'User';
@@ -139,26 +143,32 @@ export function Sidebar() {
         );
     };
 
-    const renderMenuItem = (item: MenuItem, isSubmenuItem = false) => {
+    const renderMenuItem = (item: MenuItem, level = 0) => {
         const Icon = iconMap[item.icon as keyof typeof iconMap];
         const isActive = isActiveLink(item.href);
+        const isSubmenuItem = level > 0;
+        const paddingLeft = level === 1 ? "pl-6" : level === 2 ? "pl-10" : "pl-3";
 
         const menuItem = (
             <Link
                 href={item.href}
                 className={cn(
-                    "flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+                    "flex items-center gap-3 py-2 text-sm rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
                     isActive && "bg-primary/10 text-primary font-medium",
-                    isSubmenuItem && !isCollapsed && "pl-6",
-                    isCollapsed && "justify-center px-2",
-                    item.isPaid && !isSubmenuItem && "relative",
-                    // !isAuthenticated && "opacity-50 pointer-events-none"
+                    !isCollapsed && paddingLeft,
+                    isCollapsed && level === 0 && "justify-center px-2",
+                    level > 0 && isCollapsed && "hidden" // Hide nested items when collapsed
                 )}
             >
-                {!isSubmenuItem && Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
-                {isSubmenuItem && !isCollapsed && <div className="w-4 h-4 flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
-                </div>}
+                {level === 0 && Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
+                {level > 0 && !isCollapsed && (
+                    <div className="w-4 h-4 flex items-center justify-center">
+                        <div className={cn(
+                            "rounded-full bg-gray-400",
+                            level === 1 ? "w-1.5 h-1.5" : "w-1 h-1"
+                        )}></div>
+                    </div>
+                )}
 
                 {!isCollapsed && (
                     <>
@@ -166,7 +176,7 @@ export function Sidebar() {
                         <div className="flex items-center gap-1">
                             {item.isPaid && <Crown className="h-3 w-3 text-amber-500" />}
                             {item.isBeta && <Beaker className="h-3 w-3 text-purple-500" />}
-                            {item.submenu && !isSubmenuItem && (
+                            {item.submenu && level === 0 && (
                                 <ChevronRight className="h-3 w-3 text-gray-400" />
                             )}
                         </div>
@@ -175,8 +185,8 @@ export function Sidebar() {
             </Link>
         );
 
-        // Wrap with tooltip when collapsed
-        if (isCollapsed && !isSubmenuItem) {
+        // Wrap with tooltip when collapsed and level 0
+        if (isCollapsed && level === 0) {
             return (
                 <Tooltip key={item.href} delayDuration={0}>
                     <TooltipTrigger asChild>
@@ -196,16 +206,24 @@ export function Sidebar() {
         return (
             <div key={item.href} className="space-y-1">
                 {menuItem}
-                {/* Submenu items - hide when collapsed or not authenticated */}
+                {/* Render nested submenus */}
                 {item.submenu && isActive && !isCollapsed && isAuthenticated && (
                     <div className="space-y-1">
                         {item.submenu.map(subItem =>
-                            renderMenuItem({ ...subItem, icon: '' }, true)
+                            renderMenuItem({ ...subItem, icon: '' }, level + 1)
                         )}
                     </div>
                 )}
             </div>
         );
+    };
+
+    const hasOnlyCommunityLicense = (): boolean => {
+        if (!customerData?.licenses || customerData.licenses.length === 0) {
+            return false;
+        }
+
+        return customerData.licenses.every(license => license.licenseType === 0);
     };
 
     const menuSections: MenuSection[] = [
@@ -228,9 +246,17 @@ export function Sidebar() {
                     icon: "GitBranch",
                     href: "/assistant",
                     submenu: [
-                        { title: "All Assignments", href: "/assistant/assignments-overview" },
-                        { title: "Assignments by group", href: "/assistant/group-assignments" },
-                        { title: "Applications", href: "/assistant/app-assignments" }
+                        { title: "Configuration Assignments (all)", href: "/assistant/assignments-overview" },
+                        { title: "Group Assignments", href: "/assistant/group-assignments" },
+                        {
+                            title: "User Assignments",
+                            href: "/assistant/user-assignments",
+                            submenu: [
+                                { title: "Configuration Assignments", href: "/assistant/user-assignments/configuration" },
+                                { title: "App Assignments", href: "/assistant/user-assignments/apps" }
+                            ]
+                        },
+                        { title: "Application Assignments (all)", href: "/assistant/app-assignments" }
                     ]
                 },
                 {
@@ -269,7 +295,7 @@ export function Sidebar() {
             ]
         },
         // Only include Business Modules section if customer is active
-        ...(isActiveCustomer ? [{
+        ...(isActiveCustomer && !hasOnlyCommunityLicense() ? [{
             title: "Extensions",
             badgeColor: "bg-blue-500",
             items: [

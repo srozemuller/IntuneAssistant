@@ -156,7 +156,7 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
             });
 
             const response = await fetch(
-                `${CUSTOMER_ENDPOINT}/${customerId}/tenants/add-link`,
+                `${CUSTOMER_ENDPOINT}/tenants`,
                 {
                     method: 'POST',
                     headers: {

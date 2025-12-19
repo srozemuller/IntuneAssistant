@@ -1,45 +1,50 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { useMsal } from '@azure/msal-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DataTable } from '@/components/DataTable';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, {useState, useEffect} from 'react';
+import {useMsal} from '@azure/msal-react';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {DataTable} from '@/components/DataTable';
+import {Badge} from '@/components/ui/badge';
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {
     RefreshCw,
+    Download,
     Filter,
     Database,
     Search,
     X,
+    Users,
+    User,
+    Group,
+    ExternalLink,
     Settings,
-    Download,
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, Computer, Blocks, CircleQuestionMark
+    ChevronUp, XCircle, Computer, Blocks, CircleQuestionMark
 } from 'lucide-react';
-import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
-import { MultiSelect, Option } from '@/components/ui/multi-select';
-import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
-import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
+import {ASSIGNMENTS_ENDPOINT, USERS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+import {apiScope} from "@/lib/msalConfig";
+import {MultiSelect, Option} from '@/components/ui/multi-select';
+
+import {ExportButton, ExportData, ExportColumn} from '@/components/ExportButton';
+import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
 
 interface ApiResponse {
     status: string;
     message: string;
     details: unknown[];
-    data: {
-        data: Assignments[];
-        totalCount: number;
-        pageSize: number;
-        currentPage: number;
-        totalPages: number;
-        hasNextPage: boolean;
-        nextPageToken?: string;
-    } | { url: string; message: string };
+    data: Assignments[] | { data: Assignments[] } | { url: string; message: string };
 }
 
+
+interface UserApiResponse {
+    status: string;
+    message: string;
+    details: unknown[];
+    data: UserDetails | UserDetails[] | { url: string; message: string };
+}
 
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
@@ -84,6 +89,16 @@ interface GroupDetails {
     members: UserMember[] | null;
 }
 
+interface UserDetails {
+    id: string;
+    accountEnabled: boolean;
+    createdDateTime: string;
+    displayName: string;
+    userPrincipalName: string;
+    userType: string;
+    memberOf: unknown[] | null;
+}
+
 interface AssignmentFilter {
     id: string;
     createdDateTime: string;
@@ -100,11 +115,13 @@ interface AssignmentFilter {
     odataType: string | null;
 }
 
+type SearchMode = 'group' | 'user';
+
 export default function AssignmentsOverview() {
-    const { instance, accounts } = useMsal();
+    const {instance, accounts} = useMsal();
     const [showConsentDialog, setShowConsentDialog] = useState(false);
     const [consentUrl, setConsentUrl] = useState('');
-    const { request } = useApiRequest();
+    const {request} = useApiRequest();
 
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
@@ -112,65 +129,293 @@ export default function AssignmentsOverview() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [groupLoading, setGroupLoading] = useState(false);
+    const [groupError, setGroupError] = useState<string | null>(null);
+    const [selectedGroup, setSelectedGroup] = useState<GroupDetails | null>(null);
+    const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
+    const [installTypeFilter, setInstallTypeFilter] = useState<string[]>([]);
+
+
+    const [groupSearchResults, setGroupSearchResults] = useState<GroupDetails[]>([]);
+    const [groupSearchInput, setGroupSearchInput] = useState<string>('');
+    const [searchedGroup, setSearchedGroup] = useState<GroupDetails | null>(null);
+    const [groupSearchLoading, setGroupSearchLoading] = useState(false);
+    const [groupSearchError, setGroupSearchError] = useState<string | null>(null);
+    const [groupResultsSearch, setGroupResultsSearch] = useState<string>('');
+
+    // User states
+    const [userSearchResults, setUserSearchResults] = useState<UserDetails[]>([]);
+    const [userSearchInput, setUserSearchInput] = useState<string>('');
+    const [searchedUser, setSearchedUser] = useState<UserDetails | null>(null);
+    const [userSearchLoading, setUserSearchLoading] = useState(false);
+    const [userSearchError, setUserSearchError] = useState<string | null>(null);
+    const [userResultsSearch, setUserResultsSearch] = useState<string>('');
+
+    // Search mode
+    const [searchMode, setSearchMode] = useState<SearchMode>('group');
+
+    const isValidGuid = (str: string): boolean => {
+        const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        return guidRegex.test(str);
+    };
+
+    // Group details dialog states
+    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+    const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
+
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
     const [filterLoading, setFilterLoading] = useState(false);
     const [filterError, setFilterError] = useState<string | null>(null);
-    const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
-
 
     // Filter states
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
+    const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
+
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
-    const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
-    const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
-    const [installTypeFilter, setInstallTypeFilter] = useState<string[]>([]);
+    const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
-    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-    const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
-
-    const [fetchedPages, setFetchedPages] = useState(0);
-    const [fetchPageSize, setFetchPageSize] = useState(100);
-    const [paginationInfo, setPaginationInfo] = useState({
-        totalCount: 0,
-        hasNextPage: false,
-        nextPageToken: null as string | null,
-        currentPage: 0
-    });
-    const [loadingMore, setLoadingMore] = useState(false);
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [assignmentTypeFilter, statusFilter, platformFilter, installTypeFilter, resourceTypeFilter, filterTypeFilter]);
-
-    const getUniqueResourceTypes = (): Option[] => {
-        const types = new Set<string>();
-        assignments.forEach(assignment => {
-            types.add(assignment.resourceType);
-        });
-        return Array.from(types).sort().map(type => ({ label: type, value: type }));
-    };
-
-    const getUniqueInstallTypes = (): Option[] => {
-        const types = new Set<string>();
-        assignments.forEach(assignment => {
-            types.add(assignment.enrollmentType);
-        });
-        return Array.from(types).sort().map(type => ({ label: type, value: type }));
-    };
+    }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter, filterTypeFilter, installTypeFilter]);
 
     const getUniqueFilterTypes = (): Option[] => [
-        { label: 'No Filter', value: 'none' },
-        { label: 'Include Filter', value: 'include' },
-        { label: 'Exclude Filter', value: 'exclude' }
+        {label: 'No Filter', value: 'None'},
+        {label: 'Include Filter', value: 'include'},
+        {label: 'Exclude Filter', value: 'exclude'}
     ];
+
+    const filteredGroupResults = groupSearchResults.filter(group => {
+        if (!groupResultsSearch.trim()) return true;
+        const search = groupResultsSearch.toLowerCase();
+        return (
+            group.displayName.toLowerCase().includes(search) ||
+            group.description?.toLowerCase().includes(search) ||
+            group.id.toLowerCase().includes(search)
+        );
+    });
+
+    const filteredUserResults = userSearchResults.filter(user => {
+        if (!userResultsSearch.trim()) return true;
+        const search = userResultsSearch.toLowerCase();
+        return (
+            user.displayName.toLowerCase().includes(search) ||
+            user.userPrincipalName.toLowerCase().includes(search) ||
+            user.id.toLowerCase().includes(search)
+        );
+    });
+
+    const handleConsentCheck = (response: ApiResponse): boolean => {
+        if (response.status === 'Error' &&
+            response.message === 'User challenge required' &&
+            typeof response.data === 'object' &&
+            response.data !== null &&
+            'url' in response.data) {
+
+            setConsentUrl(response.data.url);
+            setShowConsentDialog(true);
+            setGroupSearchLoading(false);
+            setUserSearchLoading(false);
+            return true;
+        }
+        return false;
+    };
+
+
+    const searchUser = async () => {
+        if (!accounts.length || !userSearchInput.trim()) return;
+
+        setUserSearchLoading(true);
+        setUserSearchError(null);
+        setSearchedUser(null);
+        setUserSearchResults([]);
+
+        try {
+            const responseData = await request<UserApiResponse>(`${USERS_ENDPOINT}?search=${encodeURIComponent(userSearchInput.trim())}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!responseData) {
+                throw new Error('No response received from API');
+            }
+
+            if (handleConsentCheck(responseData as ApiResponse)) {
+                return;
+            }
+
+            const userData = responseData.data as UserDetails | UserDetails[];
+
+            if (Array.isArray(userData)) {
+                if (userData.length > 0) {
+                    setUserSearchResults(userData);
+                } else {
+                    setUserSearchError(`No users found matching "${userSearchInput.trim()}"`);
+                }
+            } else {
+                setSearchedUser(userData);
+            }
+
+        } catch (error) {
+            console.error('Failed to search users:', error);
+            setUserSearchError(error instanceof Error ? error.message : 'Failed to search users');
+        } finally {
+            setUserSearchLoading(false);
+        }
+    };
+
+
+    // TypeScript
+    // Type guard helper
+    const hasDataProperty = (obj: unknown): obj is Record<string, unknown> => {
+        return typeof obj === 'object' && obj !== null && 'data' in obj;
+    };
+
+    const fetchUserAssignments = async (userId: string) => {
+        if (!accounts.length) return;
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const [assignmentsData, filtersData] = await Promise.all([
+                request<ApiResponse>(`${ASSIGNMENTS_ENDPOINT}/user/${userId}/apps`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }),
+                request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+            ]);
+
+            if (!assignmentsData) {
+                throw new Error('No response received from assignments API');
+            }
+
+            if (!filtersData) {
+                console.warn('No response received from filters API, continuing with assignments only');
+                setFilters([]);
+            } else if (Array.isArray(filtersData)) {
+                setFilters(filtersData);
+            }
+
+            if (handleConsentCheck(assignmentsData as ApiResponse)) {
+                return;
+            }
+
+            // Handle nested { data: { data: [...] } } structure
+            let assignmentsPayload: unknown = assignmentsData.data;
+
+            // Check if data contains nested data property
+            if (hasDataProperty(assignmentsPayload)) {
+                const nestedData = (assignmentsPayload as Record<string, unknown>).data;
+                if (Array.isArray(nestedData)) {
+                    assignmentsPayload = nestedData;
+                }
+            }
+
+            if (Array.isArray(assignmentsPayload)) {
+                const assignments = assignmentsPayload as Assignments[];
+                setAssignments(assignments);
+                setFilteredAssignments(assignments);
+
+                if (!searchedUser || searchedUser.id !== userId) {
+                    const user = userSearchResults.find(u => u.id === userId) || searchedUser;
+                    if (user && user.id === userId) {
+                        setSearchedUser(user);
+                    }
+                }
+            } else {
+                console.error('API response data is not an array:', assignmentsPayload);
+                setAssignments([]);
+                setFilteredAssignments([]);
+                throw new Error('Invalid data format received from API');
+            }
+        } catch (error) {
+            console.error('Failed to fetch user assignments:', error);
+            setError(error instanceof Error ? error.message : 'Failed to fetch user assignments');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    const prepareRolloutExportData = (): ExportData => {
+        const exportColumns: ExportColumn[] = [
+            {
+                key: 'resourceName',
+                label: 'PolicyName',
+                width: 30,
+                getValue: (row) => String(row.resourceName || 'N/A')
+            },
+            {
+                key: 'targetName',
+                label: 'GroupName',
+                width: 30,
+                getValue: (row) => String(row.targetName || 'N/A')
+            },
+            {
+                key: 'assignmentType',
+                label: 'AssignmentDirection',
+                width: 25,
+                getValue: (row) => String(row.assignmentDirection || '')
+            },
+            {
+                key: '',
+                label: 'AssignmentAction',
+                width: 25,
+                getValue: () => String('Add')
+            },
+            {
+                key: 'filterId',
+                label: 'Filter',
+                width: 25,
+                getValue: (row) => {
+                    const filterId = row.filterId as string | null;
+                    if (!filterId || filterId === 'None') return 'None';
+                    const filterInfo = getFilterInfo(filterId, String(row.filterType));
+                    return filterInfo.displayName;
+                }
+            },
+            {
+                key: 'filterType',
+                label: 'Filter Type',
+                width: 25,
+                getValue: (row) => String(row.filterType || '')
+            }
+        ];
+
+        const rolloutStats = [
+            { label: 'Total Rollouts', value: filteredAssignments.length },
+            { label: 'Assigned Policies', value: filteredAssignments.filter(a => a.isAssigned).length },
+            { label: 'Groups Targeted', value: new Set(filteredAssignments.map(a => a.targetName)).size },
+            { label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size }
+        ];
+
+        return {
+            data: filteredAssignments,
+            columns: exportColumns,
+            filename: 'rollouts-overview',
+            title: 'Rollouts Overview',
+            description: 'Detailed view of all Intune rollouts across your organization',
+            stats: rolloutStats
+        };
+    };
 
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
@@ -211,12 +456,6 @@ export default function AssignmentsOverview() {
                 getValue: (row) => row.isAssigned ? 'Assigned' : 'Not Assigned'
             },
             {
-                key: 'enrollmentType',
-                label: 'Install Type',
-                width: 15,
-                getValue: (row) =>String(row.enrollmentType  || '')
-            },
-            {
                 key: 'filterId',
                 label: 'Filter',
                 width: 25,
@@ -236,19 +475,19 @@ export default function AssignmentsOverview() {
         ];
 
         const stats = [
-            { label: 'Total Assignments', value: filteredAssignments.length },
-            { label: 'Assigned', value: filteredAssignments.filter(a => a.isAssigned).length },
-            { label: 'Not Assigned', value: filteredAssignments.filter(a => !a.isAssigned).length },
-            { label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size },
-            { label: 'Platforms', value: new Set(filteredAssignments.map(a => a.platform)).size }
+            {label: 'Total Assignments', value: filteredAssignments.length},
+            {label: 'Assigned', value: filteredAssignments.filter(a => a.isAssigned).length},
+            {label: 'Not Assigned', value: filteredAssignments.filter(a => !a.isAssigned).length},
+            {label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size},
+            {label: 'Platforms', value: new Set(filteredAssignments.map(a => a.platform)).size}
         ];
 
         return {
             data: filteredAssignments,
             columns: exportColumns,
-            filename: 'apps-assignments-overview',
-            title: 'Apps Assignments Overview',
-            description: 'Detailed view of all Intune application assignments across your organization',
+            filename: `${searchMode}-assignments-overview`,
+            title: `${searchMode === 'group' ? 'Group' : 'User'} Assignments Overview`,
+            description: `Detailed view of all Intune assignments for ${searchMode === 'group' ? 'groups' : 'users'} across your organization`,
             stats
         };
     };
@@ -258,7 +497,6 @@ export default function AssignmentsOverview() {
 
         setLoading(true);
         setError(null);
-        setPaginationInfo({ totalCount: 0, hasNextPage: false, nextPageToken: null, currentPage: 0 });
 
         try {
             await Promise.all([fetchAssignmentsData(), fetchFilters()]);
@@ -270,85 +508,44 @@ export default function AssignmentsOverview() {
         }
     };
 
-    const loadMoreAssignments = async () => {
-        if (!paginationInfo.nextPageToken || loadingMore) return;
-
-        setLoadingMore(true);
-        setError(null);
-
-        try {
-            await fetchAssignmentsData(paginationInfo.nextPageToken);
-        } catch (error) {
-            console.error('Failed to load more assignments:', error);
-            setError(error instanceof Error ? error.message : 'Failed to load more data');
-        } finally {
-            setLoadingMore(false);
-        }
-    };
-
-    const fetchAssignmentsData = async (skipToken?: string) => {
+    const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
 
-        try {
-            const url = skipToken
-                ? `${ASSIGNMENTS_ENDPOINT}/apps?skipToken=${encodeURIComponent(skipToken)}`
-                : `${ASSIGNMENTS_ENDPOINT}/apps?pageSize=${fetchPageSize}`;
-
-            const responseData = await request<ApiResponse>(url, {
+        const response = await request<ApiResponse>(
+            ASSIGNMENTS_ENDPOINT,
+            {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            });
-
-            if (!responseData) {
-                throw new Error('No response received from API');
             }
+        );
 
-            if (responseData.status === 'Success' && responseData.data) {
-                const paginatedData = responseData.data;
+        if (!response) {
+            throw new Error('No response received from API');
+        }
+        const assignmentsData = response.data;
 
-                if ('data' in paginatedData && Array.isArray(paginatedData.data)) {
-                    if (skipToken) {
-                        // Append to existing data for "Load More"
-                        setAssignments(prev => [...prev, ...paginatedData.data]);
-                        setFilteredAssignments(prev => [...prev, ...paginatedData.data]);
-                        setFetchedPages(prev => prev + 1);
-                    } else {
-                        // Replace data for initial load
-                        setAssignments(paginatedData.data);
-                        setFilteredAssignments(paginatedData.data);
-                        setFetchedPages(1);
-                    }
+        if (Array.isArray(assignmentsData)) {
+            setAssignments(assignmentsData);
+            setFilteredAssignments(assignmentsData);
+        } else {
+            console.error('API response data is not an array:', assignmentsData);
+            setAssignments([]);
+            setFilteredAssignments([]);
+            throw new Error('Invalid data format received from API');
+        }
+    };
 
-                    // Update pagination info
-                    setPaginationInfo({
-                        totalCount: paginatedData.totalCount,
-                        hasNextPage: paginatedData.hasNextPage,
-                        nextPageToken: paginatedData.nextPageToken || null,
-                        currentPage: paginatedData.currentPage
-                    });
-                } else {
-                    console.error('API response data is not in expected format:', paginatedData);
-                    if (!skipToken) {
-                        setAssignments([]);
-                        setFilteredAssignments([]);
-                        setFetchedPages(0);
-                    }
-                    throw new Error('Invalid data format received from API');
-                }
-            } else {
-                throw new Error(responseData.message || 'Failed to fetch assignments');
-            }
-        } catch (error) {
-            console.error('Failed to fetch assignments:', error);
-            throw error;
+    const handleResourceClick = (resourceId: string, assignmentType: string) => {
+        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
+            setSelectedGroupId(resourceId);
+            setIsGroupDialogOpen(true);
         }
     };
 
     const handleFilterClick = (filterId: string) => {
-        if (filterId && filterId !== 'none') {
-            // Find the filter in the already loaded filters
+        if (filterId && filterId !== 'None') {
             const filter = filters.find(f => f.id === filterId);
             if (filter) {
                 setSelectedFilter(filter);
@@ -361,27 +558,33 @@ export default function AssignmentsOverview() {
         if (!accounts.length) return;
 
         try {
-            const responseData = await request<AssignmentFilter[]>(`${ASSIGNMENTS_FILTERS_ENDPOINT}`, {
+            const responseData = await request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
-            // Check if response exists
             if (!responseData) {
                 console.error('No response received from filters API');
                 setFilters([]);
                 return;
             }
 
-            // Handle successful response - filters endpoint returns array directly
             if (Array.isArray(responseData)) {
                 setFilters(responseData);
             } else {
-                // If it's not an array, it might be an error response with consent info
                 const errorResponse = responseData as unknown as ApiResponse;
+                if (errorResponse.status === 'Error' &&
+                    errorResponse.message === 'User challenge required' &&
+                    typeof errorResponse.data === 'object' &&
+                    errorResponse.data !== null &&
+                    'url' in errorResponse.data) {
 
+                    setConsentUrl(errorResponse.data.url);
+                    setShowConsentDialog(true);
+                    return;
+                }
                 console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
             }
@@ -391,10 +594,9 @@ export default function AssignmentsOverview() {
         }
     };
 
-
     const getFilterInfo = (filterId: string | null, filterType: string) => {
-        if (!filterId || filterId === 'none' || filterType === 'none') {
-            return { displayName: 'None', managementType: null, platform: null };
+        if (!filterId || filterId === 'None' || filterType === 'None') {
+            return {displayName: 'None', managementType: null, platform: null};
         }
 
         const filter = filters.find(f => f.id === filterId);
@@ -405,19 +607,9 @@ export default function AssignmentsOverview() {
         };
     };
 
-    const handleResourceClick = (resourceId: string, assignmentType: string) => {
-        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
-            setSelectedGroupId(resourceId);
-            setIsGroupDialogOpen(true);
-        }
-    };
-
-
-    // Filter and search function
     useEffect(() => {
         let filtered = assignments;
 
-        // Apply dropdown filters
         if (resourceTypeFilter.length > 0) {
             filtered = filtered.filter((assignment: Assignments) =>
                 resourceTypeFilter.includes(assignment.resourceType)
@@ -425,7 +617,7 @@ export default function AssignmentsOverview() {
         }
 
         if (assignmentTypeFilter.length > 0) {
-            filtered = filtered.filter((assignment: Assignments) => {
+            filtered = filtered.filter(assignment => {
                 if (assignmentTypeFilter.includes('Not Assigned')) {
                     return !assignment.isAssigned || assignmentTypeFilter.includes(assignment.assignmentType);
                 }
@@ -434,7 +626,7 @@ export default function AssignmentsOverview() {
         }
 
         if (statusFilter.length > 0) {
-            filtered = filtered.filter((assignment: Assignments) => {
+            filtered = filtered.filter(assignment => {
                 if (statusFilter.includes('Assigned') && statusFilter.includes('Not Assigned')) {
                     return true;
                 }
@@ -445,9 +637,15 @@ export default function AssignmentsOverview() {
         }
 
         if (platformFilter.length > 0) {
-            filtered = filtered.filter((assignment: Assignments) => {
+            filtered = filtered.filter(assignment => {
                 const platform = assignment.platform || 'All';
                 return platformFilter.includes(platform);
+            });
+        }
+
+        if (installTypeFilter.length > 0) {
+            filtered = filtered.filter(assignment => {
+                return installTypeFilter.includes(assignment.enrollmentType);
             });
         }
 
@@ -455,38 +653,28 @@ export default function AssignmentsOverview() {
             filtered = filtered.filter((assignment: Assignments) => {
                 const filterType = assignment.filterType;
 
-                // Check for "No Filter" selection
-                if (filterTypeFilter.includes('none')) {
-                    if (!filterType || filterType === 'none' || filterType === 'None') {
+                if (filterTypeFilter.includes('None')) {
+                    if (!filterType || filterType === 'None') {
                         return true;
                     }
                 }
 
-                // Check for include filter
-                if (filterTypeFilter.includes('include') && filterType === 'include') {
+                if (filterTypeFilter.includes('include') && filterType === 'Include') {
                     return true;
                 }
 
-                // Check for exclude filter
-                if (filterTypeFilter.includes('exclude') && filterType === 'exclude') {
+                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') {
                     return true;
                 }
 
                 return false;
             });
         }
-        if (installTypeFilter.length > 0) {
-            filtered = filtered.filter((assignment: Assignments) => {
-                const enrollmentType = assignment.enrollmentType || 'All';
-                return installTypeFilter.includes(enrollmentType);
-            });
-        }
 
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, filterTypeFilter, installTypeFilter]);
+    }, [assignments, assignmentTypeFilter, statusFilter, platformFilter, filterTypeFilter]);
 
 
-    // Get unique values for filters
     const getUniqueAssignmentTypes = (): Option[] => {
         const types = new Set<string>();
         assignments.forEach(assignment => {
@@ -496,12 +684,28 @@ export default function AssignmentsOverview() {
                 types.add('Not Assigned');
             }
         });
+        return Array.from(types).sort().map(type => ({label: type, value: type}));
+    };
+
+    const getUniqueInstallTypes = (): Option[] => {
+        const types = new Set<string>();
+        assignments.forEach(assignment => {
+            types.add(assignment.enrollmentType);
+        });
         return Array.from(types).sort().map(type => ({ label: type, value: type }));
     };
 
+    const getUniqueResourceTypes = (): Option[] => {
+        const types = new Set<string>();
+        assignments.forEach(assignment => {
+            types.add(assignment.resourceType);
+        });
+        return Array.from(types).sort().map(type => ({label: type, value: type}));
+    };
+
     const getUniqueStatuses = (): Option[] => [
-        { label: 'Assigned', value: 'Assigned' },
-        { label: 'Not Assigned', value: 'Not Assigned' }
+        {label: 'Assigned', value: 'Assigned'},
+        {label: 'Not Assigned', value: 'Not Assigned'}
     ];
 
     const getUniquePlatforms = (): Option[] => {
@@ -509,25 +713,7 @@ export default function AssignmentsOverview() {
         assignments.forEach(assignment => {
             platforms.add(assignment.platform || 'All');
         });
-        return Array.from(platforms).sort().map(platform => ({ label: platform, value: platform }));
-    };
-
-    const getDistinctAppsCount = () => {
-        const uniqueApps = new Set(assignments.map(assignment => assignment.resourceId));
-        return uniqueApps.size;
-    };
-
-    const getDistinctAppsFromTotal = () => {
-        // This would ideally come from the API, but we can estimate based on current data
-        // For now, we'll use a ratio approach
-        if (assignments.length === 0 || paginationInfo.totalCount === 0) return 0;
-
-        const currentUniqueApps = getDistinctAppsCount();
-        const currentAssignments = assignments.length;
-        const ratio = currentUniqueApps / currentAssignments;
-
-        // Estimate total unique apps based on ratio
-        return Math.ceil(paginationInfo.totalCount * ratio);
+        return Array.from(platforms).sort().map(platform => ({label: platform, value: platform}));
     };
 
     const clearFilters = () => {
@@ -535,10 +721,30 @@ export default function AssignmentsOverview() {
         setResourceTypeFilter([]);
         setStatusFilter([]);
         setPlatformFilter([]);
+        setSearchQuery('');
         setFilterTypeFilter([]);
-        setInstallTypeFilter([]);
     };
 
+    const clearSearch = () => {
+        setSearchQuery('');
+    };
+
+    const clearAssignments = () => {
+        setAssignments([]);
+        setFilteredAssignments([]);
+        setSearchedGroup(null);
+        setSearchedUser(null);
+        setGroupSearchInput('');
+        setUserSearchInput('');
+        setGroupSearchError(null);
+        setUserSearchError(null);
+        setError(null);
+        setGroupSearchResults([]);
+        setUserSearchResults([]);
+        clearFilters();
+        setGroupResultsSearch('');
+        setUserResultsSearch('');
+    };
 
     const columns = [
         {
@@ -757,17 +963,21 @@ export default function AssignmentsOverview() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">Intune application assignments Overview</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">User application assignments overview</h1>
                     <p className="text-gray-600 dark:text-gray-300 mt-2">
-                        View all Intune applications assignments across your organization
+                        View all Intune application assignments across your organization for a specific user. Search for a user to get started.
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex gap-2">
                     {assignments.length > 0 ? (
                         <>
                             <Button onClick={fetchAssignments} variant="outline" size="sm" disabled={loading}>
-                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}/>
                                 Refresh
+                            </Button>
+                            <Button onClick={clearAssignments} variant="outline" size="sm">
+                                <X className="h-4 w-4 mr-2"/>
+                                Clear
                             </Button>
                             <ExportButton
                                 exportOptions={[
@@ -775,6 +985,11 @@ export default function AssignmentsOverview() {
                                         label: "Standard Export",
                                         data: prepareExportData(),
                                         formats: ['csv', 'pdf', 'html']
+                                    },
+                                    {
+                                        label: "Export for bulk assignments",
+                                        data: prepareRolloutExportData(),
+                                        formats: ['csv']
                                     }
                                 ]}
                                 variant="outline"
@@ -788,7 +1003,7 @@ export default function AssignmentsOverview() {
                             disabled={loading}
                             className="flex items-center gap-2"
                         >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
                             Load Assignments
                         </Button>
                     )}
@@ -818,51 +1033,226 @@ export default function AssignmentsOverview() {
             {/* Welcome card */}
             {assignments.length === 0 && !loading && !error && (
                 <Card className="shadow-sm">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-12">
-                            <div className="text-gray-400 dark:text-gray-500 mb-6">
-                                <Database className="h-16 w-16 mx-auto" />
-                            </div>
-                            <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-4">
-                                Ready to view your Intune assignments
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
-                                Click the &quot;Load Assignments&quot; button below to fetch all assignment configurations from your Intune environment.
-                            </p>
+                    <CardHeader className="text-center pb-4">
+                        <Users className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4"/>
+                        <CardTitle className="text-xl">User application assignments</CardTitle>
+                        <CardDescription className="text-gray-600 dark:text-gray-300 max-w-md mx-auto">
+                            Search for a specific user to view its assignments from a user perspective. Meaning that is fetches all assignments assigned that are related to All Users directly or via group memberships including nested groups.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-4">
 
-                            {/* Page Size Selector */}
-                            <div className="mb-6">
-                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">
-                                    Items per page
-                                </label>
-                                <select
-                                    value={fetchPageSize}
-                                    onChange={(e) => setFetchPageSize(Number(e.target.value))}
-                                    className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                                >
-                                    <option value={50}>50 per page</option>
-                                    <option value={100}>100 per page</option>
-                                    <option value={250}>250 per page</option>
-                                    <option value={500}>500 per page</option>
-                                </select>
+                            {/* Search for a User section */}
+                            <div className="space-y-4">
+                                <div className="text-center">
+                                    <h3 className="text-lg font-semibold mb-2">Search for a User</h3>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                        Enter the exact or part of the user name
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-2 max-w-md mx-auto">
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4"/>
+                                        <input
+                                            type="text"
+                                            value={userSearchInput}
+                                            onChange={(e) => setUserSearchInput(e.target.value)}
+                                            placeholder="Enter user name or part"
+                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                                            onKeyPress={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    searchUser();
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    <Button
+                                        onClick={searchUser}
+                                        disabled={!userSearchInput.trim() || userSearchLoading}
+                                        className="px-6"
+                                    >
+                                        {userSearchLoading ? (
+                                            <RefreshCw className="h-4 w-4 animate-spin"/>
+                                        ) : (
+                                            'Search'
+                                        )}
+                                    </Button>
+                                </div>
+
+                                {/* User Search Error */}
+                                {userSearchError && (
+                                    <div className="max-w-md mx-auto p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg">
+                                        <p className="text-red-600 dark:text-red-300 text-sm">{userSearchError}</p>
+                                    </div>
+                                )}
+
+                                {/* User Search Results */}
+                                {userSearchResults.length > 0 && (
+                                    <div className="max-w-4xl mx-auto space-y-3">
+                                        <div className="text-center mb-4">
+                                            <h3 className="text-lg font-semibold">Found {userSearchResults.length} users</h3>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300">Click on a user to view their assignments</p>
+                                        </div>
+
+                                        {userSearchResults.map((user) => (
+                                            <Card key={user.id} className="border hover:border-blue-300 transition-colors cursor-pointer">
+                                                <CardContent className="p-4">
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <Users className="h-4 w-4 text-yellow-400"/>
+                                                                <h4 className="font-semibold text-lg">{user.displayName}</h4>
+                                                            </div>
+                                                            <p className="text-gray-600 text-sm mb-3">
+                                                                {user.userPrincipalName}
+                                                            </p>
+                                                            <div className="text-xs text-gray-500 font-mono break-all mb-3">
+                                                                ID: {user.id}
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <Badge variant={user.accountEnabled ? "default" : "destructive"} className="text-xs">
+                                                                    {user.accountEnabled ? "Enabled" : "Disabled"}
+                                                                </Badge>
+                                                                <Badge variant="outline" className="text-xs">
+                                                                    {user.userType}
+                                                                </Badge>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex flex-col gap-2 ml-4">
+                                                            <Button
+                                                                onClick={() => {
+                                                                    setSearchedUser(user);
+                                                                    setUserSearchResults([]);
+                                                                }}
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className="whitespace-nowrap"
+                                                            >
+                                                                <ExternalLink className="h-3 w-3 mr-1"/>
+                                                                Select
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => {
+                                                                    setSearchedUser(user);
+                                                                    setUserSearchResults([]);
+                                                                    fetchUserAssignments(user.id);
+                                                                }}
+                                                                size="sm"
+                                                                className="whitespace-nowrap"
+                                                                disabled={loading}
+                                                            >
+                                                                {loading ? (
+                                                                    <RefreshCw className="h-3 w-3 animate-spin mr-1"/>
+                                                                ) : (
+                                                                    <Database className="h-3 w-3 mr-1"/>
+                                                                )}
+                                                                Load
+                                                            </Button>
+
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+
+                                        <div className="text-center pt-4">
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => {
+                                                    setUserSearchResults([]);
+                                                    setUserSearchInput('');
+                                                    setUserSearchError(null);
+                                                }}
+                                            >
+                                                Clear Results
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Single user display */}
+                                {searchedUser && userSearchResults.length === 0 && (
+                                    <Card className="border-2 border-blue-300 bg-blue-50 dark:bg-blue-950">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <Users className="h-4 w-4 text-yellow-400"/>
+                                                        <h4 className="font-semibold text-lg">{searchedUser.displayName}</h4>
+                                                    </div>
+                                                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+                                                        {searchedUser.userPrincipalName}
+                                                    </p>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-mono break-all mb-3">
+                                                        ID: {searchedUser.id}
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Badge variant={searchedUser.accountEnabled ? "default" : "destructive"} className="text-xs">
+                                                            {searchedUser.accountEnabled ? "Enabled" : "Disabled"}
+                                                        </Badge>
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {searchedUser.userType}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex gap-2 ml-4">
+                                                    <Button
+                                                        onClick={() => {
+                                                            fetchUserAssignments(searchedUser.id);
+                                                        }}
+                                                        size="sm"
+                                                        disabled={loading}
+                                                    >
+                                                        {loading ? (
+                                                            <RefreshCw className="h-4 w-4 animate-spin mr-2"/>
+                                                        ) : (
+                                                            <Database className="h-4 w-4 mr-2"/>
+                                                        )}
+                                                        Load Assignments
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )}
                             </div>
 
-                            <Button onClick={fetchAssignments} className="flex items-center gap-2 mx-auto" size="lg">
-                                <Database className="h-5 w-5" />
-                                Load Assignments
+                        </div>
+
+                        {/* Divider */}
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400">or</span>
+                            </div>
+                        </div>
+
+                        {/* Load All Assignments */}
+                        <div className="text-center">
+                            <Button onClick={fetchAssignments} className="inline-flex items-center gap-2">
+                                <Database className="h-4 w-4"/>
+                                Load All Assignments
                             </Button>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                Load all assignments in your organization
+                            </p>
                         </div>
                     </CardContent>
                 </Card>
             )}
-
 
             {/* Loading state */}
             {loading && assignments.length === 0 && (
                 <Card className="shadow-sm">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4" />
+                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"/>
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 Loading Assignments
                             </h3>
@@ -874,7 +1264,7 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
-            {/* Filters and content sections */}
+            {/* Filters and table sections */}
             {(assignments.length > 0 || loading) && (
                 <>
                     {/* Filters Section */}
@@ -1096,7 +1486,6 @@ export default function AssignmentsOverview() {
                         )}
                     </Card>
 
-
                     {error && (
                         <Card className="border-red-200 bg-red-50">
                             <CardContent className="pt-6">
@@ -1112,78 +1501,45 @@ export default function AssignmentsOverview() {
                     <Card className="shadow-sm w-full overflow-hidden">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                <span>Assignment Details</span>
-                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                                    {paginationInfo.totalCount > 0 && (
-                                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-right">
-                <span>
-                    Showing {assignments.length} assignments in {getDistinctAppsCount()} unique applications
-                </span>
-                                            <span className="hidden sm:inline">•</span>
-                                            <span>
-                   total {paginationInfo.totalCount} apps
-                </span>
-                                        </div>
-                                    )}
-                                </div>
+            <span>
+                Assignment Details
+                {searchedUser && (
+                    <span className="text-lg font-normal text-gray-600 dark:text-gray-300 ml-2">
+                        for {searchedUser.displayName}
+                    </span>
+                )}
+            </span>
                             </CardTitle>
                             <CardDescription className="text-gray-600 dark:text-gray-300">
-                                Detailed view of all assignments with their targets and configurations
+                                {searchedUser ? (
+                                    <>
+                                        Assignments for {searchedUser.displayName} ({searchedUser.userPrincipalName})
+                                    </>
+                                ) : (
+                                    "Detailed view of all assignments with their targets and configurations"
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
                             {loading ? (
                                 <div className="flex items-center justify-center h-32">
-                                    <RefreshCw className="h-6 w-6 animate-spin text-yellow-400" />
-                                    <span className="ml-2 text-gray-600 dark:text-gray-300">Loading assignments...</span>
+                                    <RefreshCw className="h-4 w-4 animate-spin"/>
                                 </div>
                             ) : (
-                                <>
-                                    <DataTable
-                                        data={filteredAssignments}
-                                        columns={columns}
-                                        className="min-w-full"
-                                        showPagination={true}
-                                        currentPage={currentPage}
-                                        itemsPerPage={itemsPerPage}
-                                        onPageChange={setCurrentPage}
-                                        onItemsPerPageChange={setItemsPerPage}
-                                    />
-
-                                    {/* Load More Button */}
-                                    {paginationInfo.hasNextPage && (
-                                        <div className="flex justify-center py-6 border-t border-gray-200 dark:border-gray-700">
-                                            <Button
-                                                onClick={loadMoreAssignments}
-                                                disabled={loadingMore}
-                                                variant="outline"
-                                                className="flex items-center gap-2"
-                                            >
-                                                {loadingMore ? (
-                                                    <>
-                                                        <RefreshCw className="h-4 w-4 animate-spin" />
-                                                        Loading more...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Download className="h-4 w-4" />
-                                                        Load More ({paginationInfo.totalCount - (fetchedPages * fetchPageSize)} items remaining)
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </div>
-                                    )}
-
-                                    {/* No more data indicator */}
-                                    {!paginationInfo.hasNextPage && assignments.length > 0 && paginationInfo.totalCount > 0 && (
-                                        <div className="text-center py-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
-                                            All {paginationInfo.totalCount} assignments loaded
-                                        </div>
-                                    )}
-                                </>
+                                <DataTable
+                                    data={filteredAssignments}
+                                    columns={columns}
+                                    className="min-w-full"
+                                    showPagination={true}
+                                    currentPage={currentPage}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
+                                    onItemsPerPageChange={setItemsPerPage}
+                                />
                             )}
                         </CardContent>
                     </Card>
+
 
                     {/* Filtered empty state */}
                     {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (
@@ -1191,7 +1547,8 @@ export default function AssignmentsOverview() {
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
                                     <div className="text-gray-400 dark:text-gray-500 mb-4">
-                                        {searchQuery ? <Search className="h-12 w-12 mx-auto" /> : <Filter className="h-12 w-12 mx-auto" />}
+                                        {searchQuery ? <Search className="h-12 w-12 mx-auto"/> :
+                                            <Filter className="h-12 w-12 mx-auto"/>}
                                     </div>
                                     <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                         {searchQuery ? 'No assignments match your search' : 'No assignments match your filters'}
@@ -1254,17 +1611,16 @@ export default function AssignmentsOverview() {
                                                 Apps
                                             </Badge>
                                         )}
-
                                     </div>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
                                     <p className="text-sm text-gray-900 dark:text-gray-100">    {selectedFilter.platform === 0 ? 'All' :
-                                            selectedFilter.platform === 1 ? 'Android' :
-                                                selectedFilter.platform === 2 ? 'iOS' :
-                                                    selectedFilter.platform === 3 ? 'macOS' :
-                                                        selectedFilter.platform === 4 ? 'Windows' :
-                                                            `Platform ${selectedFilter.platform}`}
+                                        selectedFilter.platform === 1 ? 'Android' :
+                                            selectedFilter.platform === 2 ? 'iOS' :
+                                                selectedFilter.platform === 3 ? 'macOS' :
+                                                    selectedFilter.platform === 4 ? 'Windows' :
+                                                        `Platform ${selectedFilter.platform}`}
                                     </p>
                                 </div>
                             </div>

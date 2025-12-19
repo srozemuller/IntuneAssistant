@@ -4,8 +4,9 @@ import { useMsal } from '@azure/msal-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Mail, Building, Calendar, Shield, Key, Globe } from 'lucide-react';
+import { User, Mail, Building, Shield, Key, Globe } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { VersionInfo } from '@/components/VersionInfo';
 
 export default function AccountOverview() {
     const { accounts, instance } = useMsal();
@@ -226,6 +227,21 @@ export default function AccountOverview() {
                         </Button>
                     </CardContent>
                 </Card>
+
+
+                {/* Version Information */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Globe className="h-5 w-5" />
+                            Version Information
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <VersionInfo />
+                    </CardContent>
+                </Card>
+
             </div>
         </div>
     );

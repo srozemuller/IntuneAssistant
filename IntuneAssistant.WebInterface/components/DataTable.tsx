@@ -12,6 +12,7 @@ interface Column {
     minWidth?: number;
     sortable?: boolean;
     searchable?: boolean;
+    sortValue?: (row: Record<string, unknown>) => number | string;
     render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
 }
 
@@ -24,7 +25,7 @@ interface DataTableProps {
     data: Record<string, unknown>[];
     columns: Column[];
     className?: string;
-    onRowClick?: (row: Record<string, unknown>) => void;
+    onRowClick?: (row: Record<string, unknown>, index: number, event?: React.MouseEvent) => void;
     rowClassName?: (row: Record<string, unknown>) => string;
     currentPage?: number;
     totalPages?: number;
@@ -114,6 +115,7 @@ export function DataTable({
                     minWidth: 40,
                     sortable: false,
                     searchable: false,
+                    sortValue: undefined,
                     render: (_, row) => (
                         <input
                             type="checkbox"
@@ -134,7 +136,8 @@ export function DataTable({
         ...col,
         width: col.width || 150,
         minWidth: col.minWidth || 100,
-        searchable: col.searchable !== false && col.key !== '_select'
+        searchable: col.searchable !== false && col.key !== '_select',
+        sortValue: col.sortValue
     })));
 
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
@@ -147,7 +150,8 @@ export function DataTable({
             ...col,
             width: col.width || 150,
             minWidth: col.minWidth || 100,
-            searchable: col.searchable !== false && col.key !== '_select'
+            searchable: col.searchable !== false && col.key !== '_select',
+            sortValue: col.sortValue
         })));
     }, [columnsWithSelection]);
 
@@ -169,8 +173,12 @@ export function DataTable({
     const sortedData = [...filteredData].sort((a, b) => {
         if (!sortConfig) return 0;
 
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
+        // Find the column configuration to check for custom sortValue
+        const column = columns.find(col => col.key === sortConfig.key);
+
+        // Use sortValue function if provided, otherwise fall back to direct value
+        const aValue = column?.sortValue ? column.sortValue(a) : a[sortConfig.key];
+        const bValue = column?.sortValue ? column.sortValue(b) : b[sortConfig.key];
 
         if (aValue === undefined && bValue === undefined) {
             return 0;
@@ -200,6 +208,7 @@ export function DataTable({
         if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
     });
+
 
     // Update pagination to work with filtered/sorted data
     const startIndex = (effectiveCurrentPage - 1) * effectiveItemsPerPage;
@@ -285,16 +294,17 @@ export function DataTable({
         });
     };
 
-    const handleRowClick = (e: React.MouseEvent, row: Record<string, unknown>) => {
+    const handleRowClick = (e: React.MouseEvent, row: Record<string, unknown>, index: number) => {
         if (resizing) return;
 
         const target = e.target as HTMLElement;
         const isInteractive = target.closest('input[type="checkbox"], input[type="radio"], button, a, [role="button"], [tabindex="0"]');
 
         if (!isInteractive && onRowClick) {
-            onRowClick(row);
+            onRowClick(row, index, e);
         }
     };
+
 
     const getCellValue = (row: Record<string, unknown>, column: Column) => {
         if (column.key === '_select') {
@@ -382,18 +392,18 @@ export function DataTable({
                             <tr
                                 key={rowIndex}
                                 className={`
-    transition-colors
-    ${onRowClick ? 'cursor-pointer' : ''}
-    ${isRowSelected(row)
+                transition-colors
+                ${onRowClick ? 'cursor-pointer' : ''}
+                ${isRowSelected(row)
                                     ? 'bg-yellow-400 dark:bg-yellow-400/80 text-foreground border-l-4 border-l-yellow-600 dark:border-l-yellow-400 shadow-md ring-1 ring-yellow-500/30'
                                     : 'hover:bg-muted/50'
                                 }
-    ${rowClassName ? rowClassName(row) : ''}
-`}
-
-                                onClick={(e) => handleRowClick(e, row)}
+                ${rowClassName ? rowClassName(row) : ''}
+            `}
+                                onClick={(e) => handleRowClick(e, row, startIndex + rowIndex)}
                             >
-                                {columns.map((column) => (
+
+                            {columns.map((column) => (
                                     <td
                                         key={column.key}
                                         className="p-3 text-foreground"

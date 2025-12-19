@@ -11,13 +11,15 @@ export const API_BASE_URL =
             ? API_BASE_DEV_URL
             : API_BASE_PRD_URL;
 
+export const VERSION_ENDPOINT = `${API_BASE_URL}/version`;
+
 export const PARTNER_TENANTS_ENDPOINT = `${API_BASE_URL}/partner/customers`;
 export const ASSIGNMENTS_ENDPOINT = `${API_BASE_URL}/assignments`;
-export const CONSENT_URL_ENDPOINT = `${API_BASE_URL}/buildconsenturl`;
-export const CONSENT_CALLBACK = `${API_BASE_URL}/consent-callback`;
+export const CONSENT_URL_ENDPOINT = `${API_BASE_URL}/consent/build-url`;
+export const CONSENT_CALLBACK = `${API_BASE_URL}/consent/callback`;
 export const INTUNEASSISTANT_TENANT_INFO = `${API_BASE_URL}/tenant/license-info`;
 export const INTUNEASSISTANT_TENANT_STYLE = `${API_BASE_URL}/tenant/style`;
-
+export const USERS_ENDPOINT = `${API_BASE_URL}/user`;
 export const GROUPS_ENDPOINT = `${API_BASE_URL}/groups`;
 export const DEVICES_ENDPOINT = `${API_BASE_URL}/devices`;
 
