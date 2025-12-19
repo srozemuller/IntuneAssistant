@@ -49,7 +49,7 @@ interface CSVRow {
     PolicyName: string;
     GroupName: string;
     AssignmentDirection: 'Include' | 'Exclude';
-    AssignmentAction: 'Add' | 'Remove' | 'NoAssignment';
+    AssignmentAction: 'Add' | 'Remove' | 'NoAssignment' | 'Replace';
     FilterName: string | null;
     FilterType: string | null;
     isValidAction?: boolean;
@@ -398,8 +398,8 @@ function AssignmentRolloutContent() {
                             </Badge>
                             {csvRow.originalActionValue && (
                                 <span className="text-xs text-red-600">
-                                &quot;{csvRow.originalActionValue}&quot;
-                            </span>
+                        &quot;{csvRow.originalActionValue}&quot;
+                    </span>
                             )}
                         </div>
                     );
@@ -410,8 +410,8 @@ function AssignmentRolloutContent() {
                         <div className="flex items-center gap-2">
                             <Badge variant="destructive">Invalid</Badge>
                             <span className="text-xs text-red-600">
-                            &quot;{csvRow.originalActionValue}&quot;
-                        </span>
+                    &quot;{csvRow.originalActionValue}&quot;
+                </span>
                         </div>
                     );
                 }
@@ -420,18 +420,20 @@ function AssignmentRolloutContent() {
                     <Badge
                         variant={
                             csvRow.AssignmentAction === 'Add' ? 'default' :
-                                csvRow.AssignmentAction === 'Remove' ? 'destructive' : 'secondary'
+                                csvRow.AssignmentAction === 'Replace' ? 'default' :
+                                    csvRow.AssignmentAction === 'Remove' ? 'destructive' :
+                                        csvRow.AssignmentAction === 'NoAssignment' ? 'secondary' : 'secondary'
                         }
                         className={
                             csvRow.AssignmentAction === 'Add' ? 'bg-green-500 hover:bg-green-600 text-white' :
-                                csvRow.AssignmentAction === 'Remove' ? 'bg-orange-500 hover:bg-orange-600 text-white' :
-                                    'bg-red-500 hover:bg-red-600 text-white'
+                                csvRow.AssignmentAction === 'Replace' ? 'bg-blue-500 hover:bg-blue-600 text-white' :
+                                    csvRow.AssignmentAction === 'Remove' ? 'bg-orange-500 hover:bg-orange-600 text-white' :
+                                        csvRow.AssignmentAction === 'NoAssignment' ? 'bg-gray-500 hover:bg-gray-600 text-white' : ''
                         }
                     >
                         {csvRow.AssignmentAction}
                     </Badge>
                 );
-
             }
         },
         {
@@ -1028,9 +1030,10 @@ function AssignmentRolloutContent() {
                 return normalized === 'exclude' ? 'Exclude' : 'Include';
             };
 
-            const getAssignmentAction = (value: string): { action: 'Add' | 'Remove' | 'NoAssignment'; isValid: boolean; originalValue?: string } => {
+            const getAssignmentAction = (value: string): { action: 'Add' | 'Remove' | 'NoAssignment' | 'Replace'; isValid: boolean; originalValue?: string } => {
                 const normalized = value?.trim().toLowerCase();
                 if (normalized === 'add') return { action: 'Add', isValid: true };
+                if (normalized === 'replace') return { action: 'Replace', isValid: true };
                 if (normalized === 'remove') return { action: 'Remove', isValid: true };
                 if (normalized === 'noassignment') return { action: 'NoAssignment', isValid: true };
 
