@@ -218,12 +218,12 @@ export function Sidebar() {
         );
     };
 
-    const hasOnlyCommunityLicense = (): boolean => {
+    const hasEnterpriseLicense = (): boolean => {
         if (!customerData?.licenses || customerData.licenses.length === 0) {
             return false;
         }
 
-        return customerData.licenses.every(license => license.licenseType === 0);
+        return customerData.licenses.some(license => license.licenseType === 2 && license.isActive);
     };
 
     const menuSections: MenuSection[] = [
@@ -295,7 +295,7 @@ export function Sidebar() {
             ]
         },
         // Only include Business Modules section if customer is active
-        ...(isActiveCustomer && !hasOnlyCommunityLicense() ? [{
+        ...(isActiveCustomer && hasEnterpriseLicense() ? [{
             title: "Extensions",
             badgeColor: "bg-blue-500",
             items: [
