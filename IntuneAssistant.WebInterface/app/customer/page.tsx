@@ -95,6 +95,99 @@ export default function CustomerPage() {
 
     const currentTenantId = accounts[0]?.tenantId;
 
+    // Add these state variables at the top of your component
+    const [consentWindow, setConsentWindow] = useState<Window | null>(null);
+    const [consentLoading, setConsentLoading] = useState<Set<string>>(new Set());
+    const [consentError, setConsentError] = useState<string | null>(null);
+
+    // Add useEffect for handling consent messages
+    useEffect(() => {
+        const handleConsentMessage = (event: MessageEvent) => {
+            console.log('Received consent message from origin:', event.origin);
+            console.log('Current window origin:', window.location.origin);
+
+            if (event.data?.type === 'CONSENT_SUCCESS' || event.data?.type === 'CONSENT_ERROR') {
+                console.log('Processing consent message:', event.data);
+
+                if (event.data.type === 'CONSENT_SUCCESS') {
+                    setConsentLoading(new Set());
+                    if (consentWindow) {
+                        setConsentWindow(null);
+                    }
+                    handleConsentCallback(event.data.state);
+                } else if (event.data.type === 'CONSENT_ERROR') {
+                    setConsentError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
+                    setConsentLoading(new Set());
+                    if (consentWindow) {
+                        setConsentWindow(null);
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('message', handleConsentMessage);
+        return () => window.removeEventListener('message', handleConsentMessage);
+    }, [consentWindow]);
+
+    // Add consent callback handler
+    const handleConsentCallback = async (state?: string) => {
+        try {
+            const response = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            const callbackResponse = await fetch(
+                `${CONSENT_CALLBACK}${state ? `?state=${state}` : ''}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${response.accessToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+
+            if (!callbackResponse.ok) {
+                const errorData = await callbackResponse.json().catch(() => null);
+                throw new Error(errorData?.message || `Failed to complete consent: ${callbackResponse.statusText}`);
+            }
+
+            // Refresh customer data to reflect consent status
+            await refetchCustomerData();
+            setConsentError(null);
+
+        } catch (err) {
+            console.error('Consent callback error:', err);
+            setConsentError(err instanceof Error ? err.message : 'Failed to complete consent');
+        }
+    };
+
+    // Add function to open consent popup
+    const openConsentPopup = (consentUrl: string, licenseId: string) => {
+        setConsentLoading(prev => new Set(prev).add(licenseId));
+        setConsentError(null);
+
+        const popup = window.open(
+            consentUrl,
+            'consent',
+            'width=600,height=700,scrollbars=yes,resizable=yes,location=yes,toolbar=yes'
+        );
+
+        if (popup) {
+            setConsentWindow(popup);
+            popup.focus();
+        } else {
+            setConsentError('Failed to open consent window. Please allow popups and try again.');
+            setConsentLoading(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(licenseId);
+                return newSet;
+            });
+        }
+    };
+
+
     useEffect(() => {
         const handleScroll = () => {
             const position = window.pageYOffset || document.documentElement.scrollTop;
@@ -318,13 +411,22 @@ export default function CustomerPage() {
                                     variant="outline"
                                     onClick={() => {
                                         if (communityLicense.consentUrl) {
-                                            window.open(communityLicense.consentUrl, '_blank');
+                                            openConsentPopup(communityLicense.consentUrl, communityLicense.id);
                                         }
                                     }}
+                                    disabled={consentLoading.has(communityLicense.id)}
                                     className="h-6 px-2 text-xs"
                                 >
-                                    Grant Consent
+                                    {consentLoading.has(communityLicense.id) ? (
+                                        <>
+                                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        'Grant Consent'
+                                    )}
                                 </Button>
+
                             )}
                         </div>
                     );
@@ -1014,6 +1116,13 @@ export default function CustomerPage() {
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Customer Information</h1>
                 <p className="text-gray-600 dark:text-gray-300 mt-2">Manage customer details and tenant access</p>
             </div>
+
+            {consentError && (
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-md mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    {consentError}
+                </div>
+            )}
 
 
             {/* Show update error if any */}
