@@ -83,6 +83,22 @@ interface CustomerProviderProps {
     children: ReactNode;
 }
 
+// In your CustomerContext file, add this helper function
+export const hasTenantsNeedingConsent = (customerData: any): boolean => {
+    if (!customerData?.licenses || !customerData?.tenants) return false;
+
+    // Check if customer has only community licenses (licenseType 0)
+    const hasOnlyCommunityLicense = customerData.licenses.every((license: any) => license.licenseType === 0);
+
+    if (!hasOnlyCommunityLicense) return false;
+
+    return customerData.tenants.some((tenant: any) => {
+        const communityLicense = tenant.licenses?.find((license: any) => license.licenseType === 0);
+        return communityLicense && !communityLicense.isConsentGranted;
+    });
+};
+
+
 export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) => {
     const { accounts, instance } = useMsal();
     const [customerData, setCustomerData] = useState<CustomerData | null>(null);
