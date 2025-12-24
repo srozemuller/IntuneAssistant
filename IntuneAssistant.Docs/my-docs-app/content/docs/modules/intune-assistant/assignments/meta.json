@@ -1,0 +1,10 @@
+{
+  "title": "Assignments",
+  "pages": [
+    "index",
+    "assignments-overview",
+    "group-assignments",
+    "user-assignments",
+    "app-assignments"
+  ]
+}

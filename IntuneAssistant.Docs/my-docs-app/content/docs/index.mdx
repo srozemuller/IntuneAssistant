@@ -1,13 +1,169 @@
 ---
-title: Hello World
-description: Your first document
+title: Welcome to IntuneAssistant
+description: Your comprehensive Microsoft Intune management platform
 ---
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
+import { Card, Cards } from 'fumadocs-ui/components/card'
+import { Callout } from 'fumadocs-ui/components/callout'
 
-## What is Next?
+# Welcome to IntuneAssistant
+
+<Callout type="info" title="What is IntuneAssistant?">
+IntuneAssistant is a powerful web-based platform that simplifies Microsoft Intune management through an intuitive interface, comprehensive APIs, and advanced automation capabilities.
+</Callout>
+
+## Quick Start
+
+Get up and running with IntuneAssistant in minutes:
 
 <Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
+  <Card
+    title="🚀 Getting Started"
+    description="Install and configure IntuneAssistant for your environment"
+    href="/getting-started"
+  />
+  <Card
+    title="🔐 Authentication"
+    description="Set up secure authentication with Microsoft Graph"
+    href="/getting-started/authentication"
+  />
+  <Card
+    title="👥 Customer Onboarding"
+    description="Learn how to onboard your first customers"
+    href="/getting-started/onboarding"
+  />
 </Cards>
+
+## Core Features
+
+### 🎯 Intune Assistant (Free Module)
+
+The heart of IntuneAssistant - comprehensive Intune management at your fingertips:
+
+<Cards>
+  <Card
+    title="📋 Assignment Management"
+    description="Manage configuration and app assignments across users and groups"
+    href="/modules/intune-assistant/assignments"
+  />
+  <Card
+    title="💻 Device Overview"
+    description="Monitor and manage all your Intune-enrolled devices"
+    href="/modules/intune-assistant/devices"
+  />
+  <Card
+    title="⚙️ Configuration Policies"
+    description="Create, modify, and deploy configuration policies and settings"
+    href="/modules/intune-assistant/configuration"
+  />
+  <Card
+    title="🔑 Conditional Access"
+    description="Manage and monitor your conditional access policies"
+    href="/modules/intune-assistant/conditional-access"
+  />
+  <Card
+    title="🔄 Policy Comparison"
+    description="Compare policies and settings across different configurations"
+    href="/modules/intune-assistant/compare"
+  />
+</Cards>
+
+### 🏢 Enterprise Extensions
+
+Unlock advanced capabilities with our enterprise modules:
+
+<Cards>
+  <Card
+    title="🎯 Assignment Manager"
+    description="Advanced assignment deployment and automation tools"
+    href="/modules/extensions"
+  />
+  <Card
+    title="📊 Advanced Analytics"
+    description="Detailed reporting and insights for enterprise environments"
+    href="/enterprise/plans"
+  />
+</Cards>
+
+## Developer Resources
+
+Build and integrate with IntuneAssistant:
+
+<Cards>
+  <Card
+    title="🔌 REST API"
+    description="Comprehensive API documentation with examples"
+    href="/api"
+  />
+  <Card
+    title="🛠️ CLI Tools"
+    description="Command-line interface for automation and scripting"
+    href="/modules/intune-assistant/assignments"
+  />
+  <Card
+    title="📝 Code Examples"
+    description="Ready-to-use code snippets and integration examples"
+    href="/api/examples"
+  />
+</Cards>
+
+## Support & Community
+
+<Cards>
+  <Card
+    title="❓ FAQ"
+    description="Find answers to commonly asked questions"
+    href="/support/faq"
+  />
+  <Card
+    title="🔧 Troubleshooting"
+    description="Resolve common issues and configuration problems"
+    href="/support/troubleshooting"
+  />
+  <Card
+    title="🛡️ Security & Compliance"
+    description="Learn about our security measures and compliance standards"
+    href="/support/security"
+  />
+  <Card
+    title="💼 Enterprise Plans"
+    description="Explore our enterprise offerings and licensing options"
+    href="/enterprise/plans"
+  />
+</Cards>
+
+---
+
+<div className="flex items-center justify-between mt-12 p-6 border rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
+  <div>
+    <h3 className="text-lg font-semibold mb-2">Ready to get started?</h3>
+    <p className="text-sm text-muted-foreground">
+      Choose your path: Quick setup for immediate use, or dive deep into advanced configuration.
+    </p>
+  </div>
+  <div className="flex gap-2">
+    <a
+      href="/getting-started/installation"
+      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      Quick Start
+    </a>
+    <a
+      href="/getting-started"
+      className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      Full Guide
+    </a>
+  </div>
+</div>
+
+## What's New
+
+Check out our latest updates and improvements:
+
+- **🆕 Enhanced Assignment Management** - New bulk assignment capabilities
+- **⚡ Performance Improvements** - Faster loading times for large environments
+- **🔒 Enhanced Security** - Improved authentication and audit logging
+- **📱 Mobile Responsive** - Optimized experience across all devices
+
+[View Full Changelog](/changelog) →

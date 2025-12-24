@@ -1,0 +1,11 @@
+{
+  "title": "IntuneAssistant Documentation",
+  "pages": [
+    "getting-started",
+    "modules",
+    "api",
+    "support",
+    "enterprise",
+    "changelog"
+  ]
+}
