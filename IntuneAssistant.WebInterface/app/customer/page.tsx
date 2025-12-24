@@ -23,7 +23,7 @@ import {
     Edit,
     Trash2,
     ExternalLink,
-    Lock
+    Lock, Grid2X2Check
 } from 'lucide-react';
 import {CONSENT_CALLBACK, CUSTOMER_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
@@ -94,6 +94,99 @@ export default function CustomerPage() {
     const { isActiveCustomer, customerLoading } = useCustomer();
 
     const currentTenantId = accounts[0]?.tenantId;
+
+    // Add these state variables at the top of your component
+    const [consentWindow, setConsentWindow] = useState<Window | null>(null);
+    const [consentLoading, setConsentLoading] = useState<Set<string>>(new Set());
+    const [consentError, setConsentError] = useState<string | null>(null);
+
+    // Add useEffect for handling consent messages
+    useEffect(() => {
+        const handleConsentMessage = (event: MessageEvent) => {
+            console.log('Received consent message from origin:', event.origin);
+            console.log('Current window origin:', window.location.origin);
+
+            if (event.data?.type === 'CONSENT_SUCCESS' || event.data?.type === 'CONSENT_ERROR') {
+                console.log('Processing consent message:', event.data);
+
+                if (event.data.type === 'CONSENT_SUCCESS') {
+                    setConsentLoading(new Set());
+                    if (consentWindow) {
+                        setConsentWindow(null);
+                    }
+                    handleConsentCallback(event.data.state);
+                } else if (event.data.type === 'CONSENT_ERROR') {
+                    setConsentError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
+                    setConsentLoading(new Set());
+                    if (consentWindow) {
+                        setConsentWindow(null);
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('message', handleConsentMessage);
+        return () => window.removeEventListener('message', handleConsentMessage);
+    }, [consentWindow]);
+
+    // Add consent callback handler
+    const handleConsentCallback = async (state?: string) => {
+        try {
+            const response = await instance.acquireTokenSilent({
+                scopes: [apiScope],
+                account: accounts[0]
+            });
+
+            const callbackResponse = await fetch(
+                `${CONSENT_CALLBACK}${state ? `?state=${state}` : ''}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${response.accessToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+
+            if (!callbackResponse.ok) {
+                const errorData = await callbackResponse.json().catch(() => null);
+                throw new Error(errorData?.message || `Failed to complete consent: ${callbackResponse.statusText}`);
+            }
+
+            // Refresh customer data to reflect consent status
+            await refetchCustomerData();
+            setConsentError(null);
+
+        } catch (err) {
+            console.error('Consent callback error:', err);
+            setConsentError(err instanceof Error ? err.message : 'Failed to complete consent');
+        }
+    };
+
+    // Add function to open consent popup
+    const openConsentPopup = (consentUrl: string, licenseId: string) => {
+        setConsentLoading(prev => new Set(prev).add(licenseId));
+        setConsentError(null);
+
+        const popup = window.open(
+            consentUrl,
+            'consent',
+            'width=600,height=700,scrollbars=yes,resizable=yes,location=yes,toolbar=yes'
+        );
+
+        if (popup) {
+            setConsentWindow(popup);
+            popup.focus();
+        } else {
+            setConsentError('Failed to open consent window. Please allow popups and try again.');
+            setConsentLoading(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(licenseId);
+                return newSet;
+            });
+        }
+    };
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -253,11 +346,12 @@ export default function CustomerPage() {
 
     const hasOnlyCommunityLicense = (): boolean => {
         if (!customerData?.licenses || customerData.licenses.length === 0) {
-            return false;
+            return true; // No licenses means community only
         }
 
         return customerData.licenses.every(license => license.licenseType === 0);
     };
+
 
     const columns = [
         {
@@ -267,9 +361,9 @@ export default function CustomerPage() {
                 const tenant = row as unknown as Tenant;
                 return (
                     <div className="flex items-center gap-2 text-sm font-medium truncate w-full text-left">
-                <span className="font-medium truncate transition-colors duration-200">
-                    {tenant.displayName}
-                </span>
+                    <span className="font-medium truncate transition-colors duration-200">
+                        {tenant.displayName}
+                    </span>
                     </div>
                 );
             },
@@ -284,38 +378,93 @@ export default function CustomerPage() {
             ),
         },
         {
-            key: "isActive",
-            label: "Status",
-            render: (value: unknown) => {
-                const isActive = value as boolean;
+            key: "domainName",
+            label: "Domain",
+            render: (value: unknown) => (
+                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-medium">
+                    {value as string}
+                </code>
+            ),
+        },
+        // Show consent status for community licenses
+        ...(hasOnlyCommunityLicense() ? [{
+            key: "consentStatus",
+            label: "Consent Status",
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const tenant = row as unknown as Tenant;
+                const communityLicense = tenant.licenses?.find(license => license.licenseType === 0);
+
+                if (!communityLicense) {
+                    return <Badge variant="destructive">No License</Badge>;
+                }
+
+                if (!communityLicense.isConsentGranted) {
+                    return (
+                        <div className="flex items-center gap-2">
+                            <Badge variant="destructive">
+                                <AlertCircle className="h-3 w-3 mr-1" />
+                                Consent Required
+                            </Badge>
+                            {communityLicense.consentUrl && (
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                        if (communityLicense.consentUrl) {
+                                            openConsentPopup(communityLicense.consentUrl, communityLicense.id);
+                                        }
+                                    }}
+                                    disabled={consentLoading.has(communityLicense.id)}
+                                    className="h-6 px-2 text-xs"
+                                >
+                                    {consentLoading.has(communityLicense.id) ? (
+                                        <>
+                                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        'Grant Consent'
+                                    )}
+                                </Button>
+
+                            )}
+                        </div>
+                    );
+                }
+
+                if (!communityLicense.isOnboarded) {
+                    return (
+                        <Badge variant="outline">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            Onboarding Required
+                        </Badge>
+                    );
+                }
+
                 return (
-                    <Badge variant={isActive ? "default" : "secondary"}>
-                        {isActive ? 'Active' : 'Inactive'}
+                    <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-white">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Ready
                     </Badge>
                 );
             },
-        },
-        {
+        }] : []),
+        // Type and GDAP columns for non-community licenses
+        ...(!hasOnlyCommunityLicense() ? [{
             key: "isPrimary",
             label: "Type",
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
                 return (
                     <div className="flex gap-1">
-                        {tenant.isPrimary && (
-                            <Badge variant="default" className="text-xs">Primary</Badge>
-                        )}
-                        {tenant.isTrial && (
-                            <Badge variant="outline" className="text-xs">Trial</Badge>
-                        )}
-                        {!tenant.isPrimary && !tenant.isTrial && (
-                            <Badge variant="secondary" className="text-xs">Standard</Badge>
-                        )}
+                        {tenant.isPrimary && <Badge variant="default" className="text-xs">Primary</Badge>}
+                        {tenant.isTrial && <Badge variant="outline" className="text-xs">Trial</Badge>}
+                        {!tenant.isPrimary && !tenant.isTrial && <Badge variant="secondary" className="text-xs">Standard</Badge>}
                     </div>
                 );
             },
-        },
-        {
+        }] : []),
+        ...(!hasOnlyCommunityLicense() ? [{
             key: "isGdap",
             label: "GDAP",
             render: (value: unknown) => {
@@ -326,93 +475,60 @@ export default function CustomerPage() {
                     </Badge>
                 );
             },
-        },
-        {
-            key: "domainName",
-            label: "Domain",
-            render: (value: unknown) => (
-                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-medium">
-                    {value as string}
-                </code>
-            ),
-        },
-        // Only include license type column if customer is active
+        }] : []),
+        // License Status for non-community licenses
         ...(isActiveCustomer && !hasOnlyCommunityLicense() ? [{
             key: "licenseType",
             label: "License Status",
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
-                const licenseType = value as number;
-
-                // Check if any license needs consent
+                const licenseCount = tenant.licenses?.length || 0;
                 const hasLicenseNeedingConsent = tenant.licenses?.some(
                     license => !license.isConsentGranted && license.consentUrl
                 );
 
-                const licenseCount = tenant.licenses?.length || 0;
-
                 return (
                     <div className="flex items-center gap-2">
                         {hasLicenseNeedingConsent ? (
-                            <div
-                                className="relative cursor-help transition-colors duration-200"
-                                title="One or more licenses require consent, use action button to manage licenses"
-                            >
-                                <AlertCircle className="h-4 w-4 text-orange-500 flex-shrink-0 group-hover:text-orange-600" />
-                            </div>
+                            <AlertCircle className="h-4 w-4 text-orange-500" />
                         ) : (
-                            <div
-                                className="relative cursor-help transition-colors duration-200"
-                                title="All licenses are properly configured"
-                            >
-                                <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 group-hover:text-green-600" />
-                            </div>
+                            <CheckCircle className="h-4 w-4 text-green-500" />
                         )}
-                            <span className="text-xs text-gray-500 dark:text-gray-400 font-mono bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-full">
-                            license count: {licenseCount}
-                </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-mono bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-full">
+                        license count: {licenseCount}
+                    </span>
                     </div>
                 );
             },
         }] : []),
-        {
+        ...(isActiveCustomer && !hasOnlyCommunityLicense() ? [{
             key: "actions",
             label: "Actions",
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
                 const isUpdating = updatingTenants.has(tenant.tenantId);
 
-                // Check if customer has any active non-community licenses
-                const hasActivePaidLicense = customerData?.licenses?.some(
-                    license => license.isActive && license.licenseType !== 0
-                ) ?? false;
-
-                if (!hasActivePaidLicense) {
-                    return null;
-                }
-
                 return (
-                    <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setEditTenant({
-                                    isOpen: true,
-                                    tenant: tenant
-                                });
-                            }}
-                            disabled={isUpdating}
-                            className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950"
-                        >
-                            <Edit className="h-3 w-3" />
-                        </Button>
-                    </div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setEditTenant({
+                                isOpen: true,
+                                tenant: tenant
+                            });
+                        }}
+                        disabled={isUpdating}
+                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950"
+                    >
+                        <Edit className="h-3 w-3" />
+                    </Button>
                 );
             },
-        }
+        }] : []),
     ];
+
 
 // Add this helper function to calculate max tenants from all active licenses
     const getMaxAllowedTenants = (): number => {
@@ -1001,6 +1117,13 @@ export default function CustomerPage() {
                 <p className="text-gray-600 dark:text-gray-300 mt-2">Manage customer details and tenant access</p>
             </div>
 
+            {consentError && (
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-md mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    {consentError}
+                </div>
+            )}
+
 
             {/* Show update error if any */}
             {updateError && (
@@ -1231,13 +1354,9 @@ export default function CustomerPage() {
                             setItemsPerPage(newItemsPerPage);
                             setCurrentPage(1);
                         }}
-                        onRowClick={(row) => {
-                            const tenant = row as unknown as Tenant;
-                            handleTenantSelect(tenant);
-                        }}
-                        selectedRows={selectedTenantId ? [selectedTenantId] : []} // Pass selected tenant ID
                         showPagination={true}
                     />
+
                 </CardContent>
             </Card>
 
@@ -1391,6 +1510,32 @@ export default function CustomerPage() {
                                             Quick Actions
                                         </h3>
                                         <div className="space-y-2">
+                                            <Button
+                                                variant={selectedTenant?.tenantId === editTenant.tenant?.tenantId ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => {
+                                                    if (editTenant.tenant) {
+                                                        handleTenantSelect(editTenant.tenant);
+                                                    }
+                                                }}
+                                                className={`w-full justify-start ${
+                                                    selectedTenant?.tenantId === editTenant.tenant?.tenantId
+                                                        ? "bg-green-600 hover:bg-green-700 text-white"
+                                                        : ""
+                                                }`}
+                                            >
+                                                {selectedTenant?.tenantId === editTenant.tenant?.tenantId ? (
+                                                    <>
+                                                        <CheckCircle className="h-4 w-4 mr-2" />
+                                                        Active Context
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Grid2X2Check className="h-4 w-4 mr-2" />
+                                                        Set as Context
+                                                    </>
+                                                )}
+                                            </Button>
                                             <Button
                                                 type="button"
                                                 variant="outline"
