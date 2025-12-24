@@ -23,7 +23,7 @@ import {
     Edit,
     Trash2,
     ExternalLink,
-    Lock
+    Lock, Grid2X2Check
 } from 'lucide-react';
 import {CONSENT_CALLBACK, CUSTOMER_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
@@ -1531,7 +1531,7 @@ export default function CustomerPage() {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Users className="h-4 w-4 mr-2" />
+                                                        <Grid2X2Check className="h-4 w-4 mr-2" />
                                                         Set as Context
                                                     </>
                                                 )}
