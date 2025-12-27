@@ -38,6 +38,7 @@ Assignment Manager is built around a **safety-first workflow**. You always see w
         - Obvious conflicts (duplicate rows, invalid actions, etc.)
 
         If the upload check finds issues, you get immediate feedback to fix them. Only the valid rows are processed in the next step.
+        To fix the errors, update your CSV and re-upload.
 
         ![Upload csv results](/img/assignments-manager/upload-results-with-errors.png)
 
@@ -54,6 +55,8 @@ Assignment Manager is built around a **safety-first workflow**. You always see w
         - <CheckCircle2 className="h-5 w-5 text-green-500 inline" /> **Ready for migration** – Row is ready to implement changes
         - <Circle className="h-5 w-5 text-blue-500 inline" /> **Already migrated** – Row is already in the desired state
         - <AlertTriangle className="h-5 w-5 text-red-500 inline" /> **Check errors** - Row has issues that need fixing before migration. This can due an non existing policy/group, invalid filter, or duplicate policy names.
+
+           Correct the CSV and re-upload to fix. That means, provide a group that actually exists in Azure AD, or a policy that is already created in Intune. If the group or policy doesn't exist, you can also choose to create it first. Then, after creation, upload the CSV again and start over.
 
         ![Compare view example](/img/assignments-manager/compare-results-with-several-status.png)
 
@@ -78,10 +81,10 @@ Assignment Manager is built around a **safety-first workflow**. You always see w
 
     <Step>
 
-        ## 4) Execute + Validate
+        ## 4) Migrate + Validate
         Did you reach the desired state?
 
-        After the run, Assignment Manager validates the final state:
+        After migration, Assignment Manager validates the final state:
 
         - Assignments exist as expected
         - Filters are applied correctly
@@ -110,20 +113,3 @@ Excluding via filters is usually cleaner than managing parallel exclusion groups
 
 ---
 
-## Go deeper
-
-<div className="mt-6 flex flex-col gap-3 sm:flex-row">
-    <a
-        href="./deep-dive"
-        className="inline-flex items-center justify-center gap-2 rounded-xl border bg-card px-4 py-2.5 text-sm font-medium transition hover:shadow-sm"
-    >
-        Deep dive <ArrowRight className="h-4 w-4 opacity-70" />
-    </a>
-
-    <a
-        href="/docs/extensions/assignments-manager/overview"
-        className="inline-flex items-center justify-center gap-2 rounded-xl border bg-card px-4 py-2.5 text-sm font-medium transition hover:shadow-sm"
-    >
-        Assignment Migration Tool docs <ArrowRight className="h-4 w-4 opacity-70" />
-    </a>
-</div>

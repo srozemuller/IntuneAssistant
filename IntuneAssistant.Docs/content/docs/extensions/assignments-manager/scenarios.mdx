@@ -17,23 +17,6 @@ You can add, remove, replace or clear assignments for policies across different 
 
 ---
 
-## Table of Contents
-
-1. [Supported Operations](#supported-operations)
-2. [CSV File Format](#csv-file-format)
-3. [Assignment Types](#assignment-types)
-4. [Assignment Actions](#assignment-actions)
-5. [Filters](#filters)
-6. [Common Scenarios](#common-scenarios)
-7. [Validation Rules](#validation-rules)
-8. [Best Practices](#best-practices)
-9. [Error Messages](#error-messages)
-10. [Examples by Policy Type](#examples-by-policy-type)
-11. [FAQ](#faq)
-12. [Support](#support)
-
----
-
 ## Supported Operations
 
 The tool supports three primary actions:
@@ -44,32 +27,9 @@ The tool supports three primary actions:
 - **NoAssignment** - Remove all assignments using the NoAssignment action
 
 ---
-
-## CSV File Format
-
-### Required Columns
-
-| Column Name | Description | Required | Example |
-|------------|-------------|----------|---------|
-| `PolicyName` | Name of the Intune policy | Yes | "Windows Security Baseline" |
-| `GroupName` | Azure AD group name or special target | Yes | "All Users", "All Devices", "Finance Team" |
-| `AssignmentDirection` | Assignment direction | Yes | "Include", "Exclude" |
-| `AssignmentAction` | Action to perform | Yes | "Add", "Remove", "Replace", "NoAssignment" |
-| `Filter` | Name of assignment filter (optional) | No | "Windows 11 Devices" |
-| `Filter Type` | Filter direction (optional) | No | "Include", "Exclude" |
-
-### CSV Example
-
-```csv
-PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
-Windows Security Baseline;Finance Team;Include;Add;;
-Windows Security Baseline;All Users;Include;Replace;;
-Compliance Policy 1;Sales Team;Include;Add;Windows 11 Devices;Include
-Compliance Policy 1;Marketing Team;Include;Add;Test Devices;Exclude
-Old Policy;Finance Team;Include;Remove;;
-```
-
----
+<Callout type="info" title="Download Blank Template">
+    For more information about the template CSV go to [CSV template](/docs/extensions/assignments-manager/create-assignments-template#create-a-template-from-existing-assignments).
+</Callout>
 
 ## Assignment Types
 
@@ -573,6 +533,35 @@ MAM Policy - Android;BYOD Users;Include;Add;Personal Devices;Exclude
 PolicyName;GroupName;AssignmentDirection;AssignmentAction;FilterName;FilterType
 Windows Security Baseline v2;All Devices;Include;Replace;Managed Devices;Include
 ```
+
+## MSP Scenario Examples
+
+
+### New Customer Onboarding (MSPs)
+
+PolicyName: Windows Security Baseline, GroupName: All Devices, AssignmentDirection: Include, AssignmentAction: Replace
+
+PolicyName: iOS Compliance Policy, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace
+
+PolicyName: Android App Protection, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace
+
+PolicyName: BYOD Compliance, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace, Filter: Corporate Devices, Filter Type: Exclude
+
+### Security Baseline Refresh (Enterprise)
+
+PolicyName: Windows Security Baseline v3, GroupName: All Devices, AssignmentDirection: Include, AssignmentAction: Replace, Filter: Managed Devices, Filter Type: Include
+
+PolicyName: Compliance Policy v2, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace
+
+PolicyName: Legacy Baseline v1, GroupName: (empty), AssignmentDirection: (empty), AssignmentAction: NoAssignment
+
+### Pilot to Production Migration
+
+PolicyName: New Feature Policy, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace
+
+PolicyName: Beta App Config, GroupName: Production Users, AssignmentDirection: Include, AssignmentAction: Replace
+
+PolicyName: Test Policy, GroupName: (empty), AssignmentDirection: (empty), AssignmentAction: NoAssignment
 
 ---
 

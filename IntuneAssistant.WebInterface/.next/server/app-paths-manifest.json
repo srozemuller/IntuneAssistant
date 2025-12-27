@@ -1,5 +1,7 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/assistant/assignments-overview/page": "app/assistant/assignments-overview/page.js",
+  "/assistant/page": "app/assistant/page.js",
   "/customer/page": "app/customer/page.js",
   "/deployment/assignments/page": "app/deployment/assignments/page.js",
   "/deployment/page": "app/deployment/page.js",
