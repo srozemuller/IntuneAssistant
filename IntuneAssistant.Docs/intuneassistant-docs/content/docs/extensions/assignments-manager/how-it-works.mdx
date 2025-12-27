@@ -1,0 +1,129 @@
+---
+title: Workflow
+description: Upload → Compare → Select → Validate. A safe workflow for bulk Intune policy assignment changes.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import {ArrowRight, CheckCircle2, Circle, AlertTriangle} from "lucide-react";
+
+# How it works
+
+Assignment Manager is built around a **safety-first workflow**. You always see what will change *before* you execute anything—and you always validate after.
+
+<Callout type="info" title="Four-step workflow">
+    Upload your desired state in CSV, compare it with the live tenant, choose what to apply, then validate and export results.
+</Callout>
+
+---
+
+<Steps>
+
+    <Step>
+
+        ## 1) Upload CSV
+
+        Provide a CSV describing the assignment changes.
+
+        ```csv
+        PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+        Windows Security Baseline;Finance Department;Include;Add;;
+        iOS Compliance Policy;All Users;Include;Replace;Corporate Devices;Include
+        Android App Protection;Sales Team;Include;Remove;;
+        ```
+
+        During upload, the tool validates:
+
+        - Required columns & data types
+        - Obvious conflicts (duplicate rows, invalid actions, etc.)
+
+        If the upload check finds issues, you get immediate feedback to fix them. Only the valid rows are processed in the next step.
+
+        ![Upload csv results](/img/assignments-manager/upload-results-with-errors.png)
+
+    </Step>
+
+    <Step>
+
+        ## 2) Compare (Current vs Planned)
+
+        Each row is evaluated against the live tenant state, so you get a precise preview.
+
+        **Status compare indicators:**
+
+        - <CheckCircle2 className="h-5 w-5 text-green-500 inline" /> **Ready for migration** – Row is ready to implement changes
+        - <Circle className="h-5 w-5 text-blue-500 inline" /> **Already migrated** – Row is already in the desired state
+        - <AlertTriangle className="h-5 w-5 text-red-500 inline" /> **Check errors** - Row has issues that need fixing before migration. This can due an non existing policy/group, invalid filter, or duplicate policy names.
+
+        ![Compare view example](/img/assignments-manager/compare-results-with-several-status.png)
+
+    </Step>
+
+    <Step>
+
+        ## 3) Select changes (Selective Migration)
+
+        You decide exactly what is applied.
+
+        - Select/deselect operations
+        - Batch multiple policies in one run
+
+        ![Select rows for migrate](/img/assignments-manager/select-row-for-migrate.png)
+
+        <Callout type="warn" title="Recommended for safety">
+            Start with a small pilot CSV, then scale up.
+        </Callout>
+
+    </Step>
+
+    <Step>
+
+        ## 4) Execute + Validate
+        Did you reach the desired state?
+
+        After the run, Assignment Manager validates the final state:
+
+        - Assignments exist as expected
+        - Filters are applied correctly
+        - Conflicts are detected and surfaced
+        - Results are summarized and exportable
+
+
+        ![Results view example](/img/assignments-manager/validation-results.png)
+
+    </Step>
+
+</Steps>
+
+---
+
+## Best-practice patterns
+
+### Use Replace for clean migrations
+When moving from one target strategy to another, **Replace** avoids leftover assignments.
+
+### Keep CSVs in version control
+Treat migrations as change-controlled artifacts.
+
+### Use filters for exclusions (when possible)
+Excluding via filters is usually cleaner than managing parallel exclusion groups.
+
+---
+
+## Go deeper
+
+<div className="mt-6 flex flex-col gap-3 sm:flex-row">
+    <a
+        href="./deep-dive"
+        className="inline-flex items-center justify-center gap-2 rounded-xl border bg-card px-4 py-2.5 text-sm font-medium transition hover:shadow-sm"
+    >
+        Deep dive <ArrowRight className="h-4 w-4 opacity-70" />
+    </a>
+
+    <a
+        href="/docs/extensions/assignments-manager/overview"
+        className="inline-flex items-center justify-center gap-2 rounded-xl border bg-card px-4 py-2.5 text-sm font-medium transition hover:shadow-sm"
+    >
+        Assignment Migration Tool docs <ArrowRight className="h-4 w-4 opacity-70" />
+    </a>
+</div>

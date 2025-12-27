@@ -1,0 +1,148 @@
+---
+title: Overview
+description: Streamline Microsoft Intune policy assignments with CSV-based bulk operations. Upload, review, migrate, and validate assignments efficiently.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { ArrowRight, FileSpreadsheet, ShieldCheck, Sparkles } from "lucide-react";
+
+<div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white">
+    <div className="absolute inset-0 opacity-20 [background:radial-gradient(circle_at_20%_20%,white,transparent_50%),radial-gradient(circle_at_80%_30%,white,transparent_45%),radial-gradient(circle_at_40%_80%,white,transparent_55%)]" />
+    <div className="relative p-8 md:p-10">
+        <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-white/15 p-2 ring-1 ring-white/20">
+                <Sparkles className="h-6 w-6" />
+            </div>
+            <div className="text-sm font-medium text-white/90">Extension</div>
+        </div>
+
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+            Assignment Manager
+        </h1>
+
+        <p className="mt-3 max-w-2xl text-base text-white/90 md:text-lg">
+            Bulk-manage Microsoft Intune policy assignments with a CSV workflow that’s fast, safe, and auditable.
+            Compare planned changes against the live tenant before you apply anything.
+        </p>
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <a
+                href="./how-it-works"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm transition hover:bg-white/90"
+            >
+                How it works <ArrowRight className="h-4 w-4" />
+            </a>
+
+            <a
+                href="./deep-dive"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-medium text-white ring-1 ring-white/20 transition hover:bg-white/15"
+            >
+                Deep dive <ArrowRight className="h-4 w-4" />
+            </a>
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="rounded-xl bg-white/10 p-4 ring-1 ring-white/15">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <FileSpreadsheet className="h-4 w-4" /> CSV-driven operations
+                </div>
+                <p className="mt-1 text-sm text-white/85">
+                    Add, remove, or replace assignments in bulk—repeatably and with version control.
+                </p>
+            </div>
+
+            <div className="rounded-xl bg-white/10 p-4 ring-1 ring-white/15">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <ShieldCheck className="h-4 w-4" /> Safety-first workflow
+                </div>
+                <p className="mt-1 text-sm text-white/85">
+                    Compare + validate before execution, then verify assignments and filters after completion.
+                </p>
+            </div>
+
+            <div className="rounded-xl bg-white/10 p-4 ring-1 ring-white/15">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <Sparkles className="h-4 w-4" /> Enterprise visibility
+                </div>
+                <p className="mt-1 text-sm text-white/85">
+                    Real-time progress, detailed results, and a clean audit trail for change management.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Callout type="info" title="Perfect for enterprise scenarios">
+    Large-scale migrations, security baseline rollouts, mergers/re-orgs, or any situation where manual assignment work becomes risky and slow.
+</Callout>
+
+---
+
+## What you can do
+
+- **Add** assignments (without touching existing ones)
+- **Remove** specific assignments (without affecting others)
+- **Replace** all assignments for a policy (clean migrations)
+- Apply **device filters** (include/exclude) where supported
+
+---
+
+## Quick start
+
+1. Go to **Extensions → Assignment Manager**
+2. Download the CSV template
+3. Upload your CSV
+4. Review the compare results
+5. Select changes and run the migration
+6. Validate and export the results
+
+<Callout type="tip" title="Use Git for your CSVs">
+    Treat the CSV as “infrastructure as code”: commit it, review changes, and run predictable migrations.
+</Callout>
+
+---
+
+## Screenshots
+
+> If you enabled Image Zoom in your Fumadocs `mdx-components.tsx`, these images will open in a nice lightbox/zoom.
+
+![Assignment Manager - Upload screen](/img/assignments-manager/upload-csv.png)
+![Assignment Manager - Compare view](/img/assignments-manager/compare-results.png)
+![Assignment Manager - Migration results](/img/assignments-manager/validation-results.png)
+
+---
+
+## Next steps
+
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <a href="./how-it-works" className="group rounded-2xl border bg-card p-5 transition hover:shadow-sm">
+        <div className="flex items-center justify-between">
+            <div className="text-base font-semibold">How it works</div>
+            <ArrowRight className="h-4 w-4 opacity-60 transition group-hover:translate-x-0.5" />
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+            The 4-step flow (upload → compare → select → validate) with best-practice guardrails.
+        </p>
+    </a>
+
+    <a href="./deep-dive" className="group rounded-2xl border bg-card p-5 transition hover:shadow-sm">
+        <div className="flex items-center justify-between">
+            <div className="text-base font-semibold">Deep dive</div>
+            <ArrowRight className="h-4 w-4 opacity-60 transition group-hover:translate-x-0.5" />
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+            CSV schema, validation rules, filters, safety patterns, and troubleshooting.
+        </p>
+    </a>
+</div>
+
+---
+
+## Related documentation
+
+<Callout type="info" title="Assignment Migration Tool">
+    Want the full CSV reference, rules, and edge cases? Jump to the detailed docs here:
+    <a className="font-medium underline underline-offset-4" href="/docs/extensions/assignment-migration-tool">
+        Assignment Migration Tool — User Documentation
+    </a>
+</Callout>

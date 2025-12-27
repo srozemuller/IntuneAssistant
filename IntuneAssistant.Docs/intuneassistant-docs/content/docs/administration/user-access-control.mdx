@@ -1,0 +1,36 @@
+---
+title: User Access Control & PIM Integration
+description: Configure secure multi-user access with role-based permissions and Privileged Identity Management
+---
+
+# User Access Control & PIM Integration
+
+IntuneAssistant supports secure multi-user environments through proper access control and integration with Microsoft Entra Privileged Identity Management (PIM).
+
+## Access Control Overview
+
+### Default Behavior
+- Only the user who completes onboarding can initially access IntuneAssistant
+- The service principal is created with restricted access by default
+- Additional users must be explicitly granted access
+
+### Security Principles
+- **Least Privilege**: Grant minimum required access
+- **Explicit Assignment**: Never rely on organization-wide consent
+- **Role-Based Access**: Use PIM for time-limited administrative access
+
+## User Assignment Methods
+
+### Method 1: Direct User Assignment
+
+1. **Navigate to Microsoft Entra ID**
+   - Go to [Azure Portal](https://portal.azure.com) or [Entra Admin Center](https://entra.microsoft.com)
+   - Select **Enterprise Applications**
+
+2. **Locate IntuneAssistant Service Principals**
+   - Search for "Intune Assistant"
+   - You'll find two applications:
+     - **Intune Assistant** (Main Application)
+     - **Intune Assistant API** (Backend Service)
+
+3. **Assign Users to Both Applications**

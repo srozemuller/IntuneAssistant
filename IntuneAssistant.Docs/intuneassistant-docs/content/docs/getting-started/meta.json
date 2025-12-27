@@ -1,0 +1,10 @@
+{
+  "title": "Getting Started",
+  "pages": [
+    "index",
+    "installation",
+    "authentication",
+    "onboarding",
+    "consent-management"
+  ]
+}

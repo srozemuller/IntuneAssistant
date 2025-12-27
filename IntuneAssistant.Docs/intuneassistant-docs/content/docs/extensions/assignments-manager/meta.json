@@ -1,0 +1,9 @@
+{
+  "title": "Assignments Manager",
+  "pages": [
+    "overview",
+    "how-it-works",
+    "scenarios",
+    "backup-and-restore"
+  ]
+}
