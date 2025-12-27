@@ -1098,7 +1098,7 @@ function AssignmentRolloutContent() {
                 validationErrors.push({
                     rowIndex: index + 2,
                     field: 'AssignmentAction',
-                    message: `Invalid Assignment Action: "${actionResult.originalValue}". Must be Add, Remove, or NoAssignment`
+                    message: `Invalid Assignment Action: "${actionResult.originalValue}". Must be Add, Remove, Replace, or NoAssignment`
                 });
             }
 
@@ -1121,77 +1121,122 @@ function AssignmentRolloutContent() {
 
 
     // Backup rows
-    const downloadBackups = async () => {
-        const readyForMigration = comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated);
+   const downloadBackups = async () => {
+       const readyForMigration = comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated);
 
-        if (readyForMigration.length === 0) {
-            alert('No policies ready for migration to backup');
-            return;
-        }
+       if (readyForMigration.length === 0) {
+           alert('No policies ready for migration to backup');
+           return;
+       }
 
-        setLoading(true);
+       setLoading(true);
 
-        try {
-            const JSZip = (await import('jszip')).default;
-            const zip = new JSZip();
-            const backupResults: { [id: string]: boolean } = {};
+       try {
+           const JSZip = (await import('jszip')).default;
+           const zip = new JSZip();
+           const backupResults: { [id: string]: boolean } = {};
+           const tenantId = accounts[0]?.tenantId || 'unknown-tenant';
+           const loggedInUser = accounts[0]?.username || accounts[0]?.name || 'unknown-user';
+           const backupTimestamp = new Date().toISOString();
 
-            for (const policy of readyForMigration) {
-                try {
-                    const response = await instance.acquireTokenSilent({
-                        scopes: [apiScope],
-                        account: accounts[0]
-                    });
+           for (const policy of readyForMigration) {
+               try {
+                   const response = await instance.acquireTokenSilent({
+                       scopes: [apiScope],
+                       account: accounts[0]
+                   });
 
-                    const apiResponse = await fetch(`${EXPORT_ENDPOINT}/${policy.policy.policySubType}/${policy.policy.id}`, {
-                        headers: {
-                            'Authorization': `Bearer ${response.accessToken}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
+                   const apiResponse = await fetch(`${EXPORT_ENDPOINT}/${policy.policy.policyType}/${policy.policy.id}`, {
+                       headers: {
+                           'Authorization': `Bearer ${response.accessToken}`,
+                           'Content-Type': 'application/json'
+                       }
+                   });
 
-                    if (apiResponse.ok) {
-                        const backupData = await apiResponse.json();
-                        zip.file(`${policy.policy.name}_${policy.policy.id}.json`, JSON.stringify(backupData, null, 2));
-                        backupResults[policy.id] = true;
-                    } else {
-                        console.error(`Failed to backup policy ${policy.policy.id}`);
-                        backupResults[policy.id] = false;
-                    }
-                } catch (error) {
-                    console.error(`Failed to backup policy ${policy.policy.id}:`, error);
-                    backupResults[policy.id] = false;
-                }
-            }
+                   if (apiResponse.ok) {
+                       const backupData = await apiResponse.json();
+                       const folderPath = `${policy.policy.policyType}/${policy.policy.name}_${policy.policy.id}.json`;
+                       zip.file(folderPath, JSON.stringify(backupData, null, 2));
+                       backupResults[policy.id] = true;
+                   } else {
+                       console.error(`Failed to backup policy ${policy.policy.id}`);
+                       backupResults[policy.id] = false;
+                   }
+               } catch (error) {
+                   console.error(`Failed to backup policy ${policy.policy.id}:`, error);
+                   backupResults[policy.id] = false;
+               }
+           }
 
-            setComparisonResults(prev =>
-                prev.map(result => ({
-                    ...result,
-                    isBackedUp: backupResults[result.id] === true
-                }))
-            );
+           // Create metadata
+           const metadata = {
+               backupInfo: {
+                   createdAt: backupTimestamp,
+                   createdBy: loggedInUser,
+                   tenantId: tenantId,
+                   backupType: 'policy_assignments',
+                   version: '1.0'
+               },
+               tenantInfo: {
+                   tenantId: tenantId,
+                   userPrincipalName: accounts[0]?.username || 'unknown',
+                   displayName: accounts[0]?.name || 'unknown'
+               },
+               statistics: {
+                   totalPoliciesRequested: readyForMigration.length,
+                   totalPoliciesBackedUp: Object.values(backupResults).filter(success => success).length,
+                   totalPoliciesFailed: Object.values(backupResults).filter(success => !success).length,
+                   policyTypeBreakdown: readyForMigration.reduce((acc, policy) => {
+                       const type = policy.policy.policyType;
+                       acc[type] = (acc[type] || 0) + 1;
+                       return acc;
+                   }, {} as Record<string, number>)
+               },
+               policies: readyForMigration.map(policy => ({
+                   id: policy.policy.id,
+                   name: policy.policy.name,
+                   type: policy.policy.policyType,
+                   platform: policy.policy.platform,
+                   backupSuccessful: backupResults[policy.id] === true,
+                   assignmentAction: policy.assignmentAction,
+                   targetGroup: policy.groupToMigrate
+               }))
+           };
 
-            const content = await zip.generateAsync({ type: 'blob' });
-            const url = window.URL.createObjectURL(content);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `policy_backups_${new Date().toISOString().split('T')[0]}.zip`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+           // Add metadata file to root of ZIP
+           console.log('Adding metadata to ZIP:', metadata);
+           zip.file('backup_metadata.json', JSON.stringify(metadata, null, 2));
+           console.log('ZIP contents after adding metadata:', Object.keys(zip.files));
 
-            const successCount = Object.values(backupResults).filter(success => success).length;
-            const totalCount = Object.keys(backupResults).length;
-            alert(`Backup completed: ${successCount}/${totalCount} policies backed up successfully`);
 
-        } catch (error) {
-            console.error('Backup failed:', error);
-            alert('Backup failed. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
+           setComparisonResults(prev =>
+               prev.map(result => ({
+                   ...result,
+                   isBackedUp: backupResults[result.id] === true
+               }))
+           );
+
+           const content = await zip.generateAsync({ type: 'blob' });
+           const url = window.URL.createObjectURL(content);
+           const a = document.createElement('a');
+           a.href = url;
+           a.download = `policy_backups_${tenantId}_${new Date().toISOString().split('T')[0]}.zip`;
+           document.body.appendChild(a);
+           a.click();
+           window.URL.revokeObjectURL(url);
+           document.body.removeChild(a);
+
+           const successCount = Object.values(backupResults).filter(success => success).length;
+           const totalCount = Object.keys(backupResults).length;
+           alert(`Backup completed: ${successCount}/${totalCount} policies backed up successfully`);
+
+       } catch (error) {
+           console.error('Backup failed:', error);
+           alert('Backup failed. Please try again.');
+       } finally {
+           setLoading(false);
+       }
+   };
 
     const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -1689,9 +1734,9 @@ function AssignmentRolloutContent() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Assignment Rollout</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Assignments Manager</h1>
                     <p className="text-muted-foreground mt-2">
-                        Upload, compare, and migrate policy assignments
+                        Upload, compare, and migrate policy assignments in bulk using a CSV file.
                     </p>
                 </div>
                 <Button onClick={resetProcess} variant="outline">

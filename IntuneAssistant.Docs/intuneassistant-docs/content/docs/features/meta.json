@@ -1,0 +1,11 @@
+{
+  "title": "Intune Assistant",
+  "pages": [
+    "index",
+    "assignments",
+    "devices",
+    "configuration",
+    "conditional-access",
+    "compare"
+  ]
+}

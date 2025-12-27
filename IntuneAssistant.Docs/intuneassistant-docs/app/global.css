@@ -1,0 +1,135 @@
+@import 'tailwindcss';
+    @import 'fumadocs-ui/css/shadcn.css';
+    @import 'fumadocs-ui/css/preset.css';
+
+    @theme {
+        /* Use your custom OKLCH colors for Fumadocs */
+        --color-fd-background: oklch(1 0 0);
+        --color-fd-foreground: oklch(0.145 0 0);
+        --color-fd-muted: oklch(0.97 0 0);
+        --color-fd-muted-foreground: oklch(0.556 0 0);
+        --color-fd-popover: oklch(1 0 0);
+        --color-fd-popover-foreground: oklch(0.145 0 0);
+        --color-fd-card: oklch(1 0 0);
+        --color-fd-card-foreground: oklch(0.145 0 0);
+        --color-fd-border: oklch(0.922 0 0);
+        --color-fd-primary: oklch(0.861 0.173 91.911);
+        --color-fd-primary-foreground: oklch(0.985 0 0);
+        --color-fd-secondary: oklch(0.97 0 0);
+        --color-fd-secondary-foreground: oklch(0.205 0 0);
+        --color-fd-accent: oklch(0.97 0 0);
+        --color-fd-accent-foreground: oklch(0.205 0 0);
+        --color-fd-ring: oklch(0.531 0.191 108.5);
+
+        /* Add your custom design system variables */
+        --color-background: oklch(1 0 0);
+        --color-foreground: oklch(0.145 0 0);
+        --color-card: oklch(1 0 0);
+        --color-card-foreground: oklch(0.145 0 0);
+        --color-popover: oklch(1 0 0);
+        --color-popover-foreground: oklch(0.145 0 0);
+        --color-primary: oklch(0.861 0.173 91.911);
+        --color-primary-foreground: oklch(0.985 0 0);
+        --color-secondary: oklch(0.97 0 0);
+        --color-secondary-foreground: oklch(0.205 0 0);
+        --color-muted: oklch(0.97 0 0);
+        --color-muted-foreground: oklch(0.556 0 0);
+        --color-accent: oklch(0.97 0 0);
+        --color-accent-foreground: oklch(0.205 0 0);
+        --color-destructive: oklch(0.577 0.245 27.325);
+        --color-border: oklch(0.922 0 0);
+        --color-input: oklch(0.922 0 0);
+        --color-ring: oklch(0.531 0.191 108.5);
+
+        /* Radius variables */
+        --radius: 0.625rem;
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+    }
+
+    .dark {
+        /* Dark mode Fumadocs colors using your OKLCH system */
+        --color-fd-background: oklch(0.145 0 0);
+        --color-fd-foreground: oklch(0.985 0 0);
+        --color-fd-muted: oklch(0.269 0 0);
+        --color-fd-muted-foreground: oklch(0.708 0 0);
+        --color-fd-popover: oklch(0.205 0 0);
+        --color-fd-popover-foreground: oklch(0.985 0 0);
+        --color-fd-card: oklch(0.205 0 0);
+        --color-fd-card-foreground: oklch(0.985 0 0);
+        --color-fd-border: oklch(1 0 0 / 10%);
+        --color-fd-primary: oklch(0.861 0.173 91.911);
+        --color-fd-primary-foreground: oklch(0.145 0 0);
+        --color-fd-secondary: oklch(0.269 0 0);
+        --color-fd-secondary-foreground: oklch(0.985 0 0);
+        --color-fd-accent: oklch(0.269 0 0);
+        --color-fd-accent-foreground: oklch(0.985 0 0);
+        --color-fd-ring: oklch(0.531 0.191 108.5);
+
+        /* Dark mode custom design system */
+        --color-background: oklch(0.145 0 0);
+        --color-foreground: oklch(0.985 0 0);
+        --color-card: oklch(0.205 0 0);
+        --color-card-foreground: oklch(0.985 0 0);
+        --color-popover: oklch(0.205 0 0);
+        --color-popover-foreground: oklch(0.985 0 0);
+        --color-primary: oklch(0.861 0.173 91.911);
+        --color-primary-foreground: oklch(0.145 0 0);
+        --color-secondary: oklch(0.269 0 0);
+        --color-secondary-foreground: oklch(0.985 0 0);
+        --color-muted: oklch(0.269 0 0);
+        --color-muted-foreground: oklch(0.708 0 0);
+        --color-accent: oklch(0.269 0 0);
+        --color-accent-foreground: oklch(0.985 0 0);
+        --color-destructive: oklch(0.704 0.191 22.216);
+        --color-border: oklch(1 0 0 / 10%);
+        --color-input: oklch(1 0 0 / 15%);
+        --color-ring: oklch(0.531 0.191 108.5);
+    }
+
+    @layer base {
+      * {
+        @apply border-border outline-ring/50;
+      }
+
+      body {
+        @apply bg-background text-foreground;
+      }
+
+      /* Apply your custom link styling for tables */
+      table a {
+        color: #FACC16 !important;
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+      }
+
+      table a:hover {
+        opacity: 0.8;
+      }
+
+      table a:visited {
+        color: #FACC16 !important;
+      }
+
+      /* Dark mode table styling */
+      .dark table {
+        @apply text-gray-100 bg-gray-900/50;
+      }
+
+      .dark thead th {
+        background: linear-gradient(135deg, #1A1816 0%, #252321 100%) !important;
+        border-top: 1px solid rgba(250, 204, 22, 0.1);
+        border-bottom: 2px solid rgba(250, 204, 22, 0.2);
+        color: #f3f4f6 !important;
+      }
+
+      .dark tbody tr:hover {
+        background-color: rgba(250, 204, 22, 0.05) !important;
+      }
+
+      .dark tbody td {
+        color: #e5e7eb !important;
+      }
+    }
