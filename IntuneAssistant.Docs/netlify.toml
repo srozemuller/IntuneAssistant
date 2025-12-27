@@ -1,10 +1,6 @@
 [build]
-  base = "IntuneAssistant.Docs"
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "out"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
