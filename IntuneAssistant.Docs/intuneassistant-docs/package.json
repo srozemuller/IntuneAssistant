@@ -1,6 +1,6 @@
 {
-  "name": "my-docs-app",
-  "version": "0.0.0",
+  "name": "docs-app",
+  "version": "1.2512.0",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -10,6 +10,7 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
+    "@netlify/plugin-nextjs": "^5.15.3",
     "fumadocs-core": "16.3.2",
     "fumadocs-mdx": "14.2.2",
     "fumadocs-ui": "16.3.2",
