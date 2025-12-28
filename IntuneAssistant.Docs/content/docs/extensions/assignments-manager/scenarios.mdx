@@ -19,7 +19,7 @@ You can add, remove, replace or clear assignments for policies across different 
 
 ## Supported Operations
 
-The tool supports three primary actions:
+The tool supports four primary actions:
 
 - **Add** - Add new assignments to existing policies
 - **Remove** - Remove specific assignments from policies
@@ -35,7 +35,7 @@ The tool supports three primary actions:
 
 ### 1. Group Assignments
 
-Assign policies to specific Azure AD groups.
+Assign policies to specific Entra ID groups.
 
 **CSV Format:**
 ```csv
@@ -493,7 +493,7 @@ My Policy;Excluded Group;Exclude;Add;;
 | Error Message | Cause | Solution |
 |--------------|-------|----------|
 | "Policy not found" | Policy name doesn't exist | Verify policy name spelling |
-| "Group not found" | Group name doesn't exist | Check Azure AD group name |
+| "Group not found" | Group name doesn't exist | Check Entra ID group name |
 | "Filter not found" | Filter name doesn't exist | Verify assignment filter exists |
 | "Platform mismatch" | Filter platform ≠ policy platform | Use matching platform filter |
 | "Cannot mix assignment types" | Mixing All Users/Devices with groups | Use Replace action |
@@ -538,31 +538,24 @@ Windows Security Baseline v2;All Devices;Include;Replace;Managed Devices;Include
 
 
 ### New Customer Onboarding (MSPs)
-
-PolicyName: Windows Security Baseline, GroupName: All Devices, AssignmentDirection: Include, AssignmentAction: Replace
-
-PolicyName: iOS Compliance Policy, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace
-
-PolicyName: Android App Protection, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace
-
-PolicyName: BYOD Compliance, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace, Filter: Corporate Devices, Filter Type: Exclude
-
-### Security Baseline Refresh (Enterprise)
-
-PolicyName: Windows Security Baseline v3, GroupName: All Devices, AssignmentDirection: Include, AssignmentAction: Replace, Filter: Managed Devices, Filter Type: Include
-
-PolicyName: Compliance Policy v2, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace
-
-PolicyName: Legacy Baseline v1, GroupName: (empty), AssignmentDirection: (empty), AssignmentAction: NoAssignment
+You have used other tools like Inforcer, Coreview or just added all those policies manually in a customer tenant.
+Now you can use the Assignments Manager to user your standardized assignment template from your pilot tenant and use it for future customers.
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Windows Security Baseline;All Devices;Include;Replace;;
+iOS Compliance Policy;All Users;Include;Replace;;
+Android App Protection;All Users;Include;Replace;;
+BYOD Compliance;All Users;Include;Replace;Corporate Devices;Exclude
+```
+---
 
 ### Pilot to Production Migration
-
-PolicyName: New Feature Policy, GroupName: All Users, AssignmentDirection: Include, AssignmentAction: Replace
-
-PolicyName: Beta App Config, GroupName: Production Users, AssignmentDirection: Include, AssignmentAction: Replace
-
-PolicyName: Test Policy, GroupName: (empty), AssignmentDirection: (empty), AssignmentAction: NoAssignment
-
+You have new policies added to a tenant and want to test it in a pilot group first.
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Old Feature Policy;Pilot Group;Exclude;Add;;
+New Feature Policy;Pilot Group;Include;Add;;
+```
 ---
 
 ## FAQ

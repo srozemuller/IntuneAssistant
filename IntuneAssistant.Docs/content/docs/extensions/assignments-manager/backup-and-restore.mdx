@@ -63,9 +63,8 @@ Before making any assignment changes, Assignment Manager provides a built-in bac
 
 ## Understanding Backup Contents
 
-The backup ZIP contains JSON files for each policy with complete assignment information:
-
-policy-backups_tenantID_2024-01-15.zip ├── compliance-policies/ │ ├── windows-security-baseline.json │ ├── ios-compliance-policy.json │ └── android-app-protection.json ├── configuration-profiles/ │ ├── wifi-corporate.json │ └── vpn-settings.json └── app-protection/ ├── office-365-protection.json └── corporate-apps-policy.json
+The backup ZIP contains JSON files for each policy with complete assignment information.
+After extracting the ZIP, you'll see a folder structure like this:
 
 ![Backup ZIP Structure](/img/assignments-manager/backup-zip-structure.png)
 
@@ -108,6 +107,12 @@ Each JSON file contains:
             Direct restoration through Assignment Manager is planned for future releases. Manual import ensures you have full control over what gets restored.
         </Callout>
 
+        The exported policies are raw JSON data directly from Intune, making it easy to re-import. Be aware that when uploading the JSON file to the Intune Portal will create a new policy with a new policy ID.
+        That means you have to remove the old policy after the new one is created.
+        
+        <Callout type="info" title="Coming soon">
+            We are currently working on a direct restore functionality to avoid this extra step in the future.
+        </Callout>
     </Step>
 
 </Steps>
