@@ -2,6 +2,7 @@
   "title": "Assignments Manager",
   "pages": [
     "overview",
+    "create-assignments-template",
     "how-it-works",
     "scenarios",
     "backup-and-restore"

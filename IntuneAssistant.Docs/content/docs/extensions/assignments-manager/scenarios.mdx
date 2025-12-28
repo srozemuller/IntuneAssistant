@@ -17,26 +17,9 @@ You can add, remove, replace or clear assignments for policies across different 
 
 ---
 
-## Table of Contents
-
-1. [Supported Operations](#supported-operations)
-2. [CSV File Format](#csv-file-format)
-3. [Assignment Types](#assignment-types)
-4. [Assignment Actions](#assignment-actions)
-5. [Filters](#filters)
-6. [Common Scenarios](#common-scenarios)
-7. [Validation Rules](#validation-rules)
-8. [Best Practices](#best-practices)
-9. [Error Messages](#error-messages)
-10. [Examples by Policy Type](#examples-by-policy-type)
-11. [FAQ](#faq)
-12. [Support](#support)
-
----
-
 ## Supported Operations
 
-The tool supports three primary actions:
+The tool supports four primary actions:
 
 - **Add** - Add new assignments to existing policies
 - **Remove** - Remove specific assignments from policies
@@ -44,38 +27,15 @@ The tool supports three primary actions:
 - **NoAssignment** - Remove all assignments using the NoAssignment action
 
 ---
-
-## CSV File Format
-
-### Required Columns
-
-| Column Name | Description | Required | Example |
-|------------|-------------|----------|---------|
-| `PolicyName` | Name of the Intune policy | Yes | "Windows Security Baseline" |
-| `GroupName` | Azure AD group name or special target | Yes | "All Users", "All Devices", "Finance Team" |
-| `AssignmentDirection` | Assignment direction | Yes | "Include", "Exclude" |
-| `AssignmentAction` | Action to perform | Yes | "Add", "Remove", "Replace", "NoAssignment" |
-| `Filter` | Name of assignment filter (optional) | No | "Windows 11 Devices" |
-| `Filter Type` | Filter direction (optional) | No | "Include", "Exclude" |
-
-### CSV Example
-
-```csv
-PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
-Windows Security Baseline;Finance Team;Include;Add;;
-Windows Security Baseline;All Users;Include;Replace;;
-Compliance Policy 1;Sales Team;Include;Add;Windows 11 Devices;Include
-Compliance Policy 1;Marketing Team;Include;Add;Test Devices;Exclude
-Old Policy;Finance Team;Include;Remove;;
-```
-
----
+<Callout type="info" title="Download Blank Template">
+    For more information about the template CSV go to [CSV template](/docs/extensions/assignments-manager/create-assignments-template#create-a-template-from-existing-assignments).
+</Callout>
 
 ## Assignment Types
 
 ### 1. Group Assignments
 
-Assign policies to specific Azure AD groups.
+Assign policies to specific Entra ID groups.
 
 **CSV Format:**
 ```csv
@@ -533,7 +493,7 @@ My Policy;Excluded Group;Exclude;Add;;
 | Error Message | Cause | Solution |
 |--------------|-------|----------|
 | "Policy not found" | Policy name doesn't exist | Verify policy name spelling |
-| "Group not found" | Group name doesn't exist | Check Azure AD group name |
+| "Group not found" | Group name doesn't exist | Check Entra ID group name |
 | "Filter not found" | Filter name doesn't exist | Verify assignment filter exists |
 | "Platform mismatch" | Filter platform ≠ policy platform | Use matching platform filter |
 | "Cannot mix assignment types" | Mixing All Users/Devices with groups | Use Replace action |
@@ -574,6 +534,28 @@ PolicyName;GroupName;AssignmentDirection;AssignmentAction;FilterName;FilterType
 Windows Security Baseline v2;All Devices;Include;Replace;Managed Devices;Include
 ```
 
+## MSP Scenario Examples
+
+
+### New Customer Onboarding (MSPs)
+You have used other tools like Inforcer, Coreview or just added all those policies manually in a customer tenant.
+Now you can use the Assignments Manager to user your standardized assignment template from your pilot tenant and use it for future customers.
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Windows Security Baseline;All Devices;Include;Replace;;
+iOS Compliance Policy;All Users;Include;Replace;;
+Android App Protection;All Users;Include;Replace;;
+BYOD Compliance;All Users;Include;Replace;Corporate Devices;Exclude
+```
+---
+
+### Pilot to Production Migration
+You have new policies added to a tenant and want to test it in a pilot group first.
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Old Feature Policy;Pilot Group;Exclude;Add;;
+New Feature Policy;Pilot Group;Include;Add;;
+```
 ---
 
 ## FAQ
