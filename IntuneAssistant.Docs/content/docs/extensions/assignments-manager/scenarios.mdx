@@ -198,9 +198,24 @@ Device Config;All Devices;Include;Replace;;
 **After:**
 - Policy assigned to: "All Devices" only
 
+
+### Clear (NoAssignment) Action
+Removes **all existing assignments** from the policy.
+
+#### Scenario: Clear All Assignments
+**CSV:**
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;FilterName;FilterType
+Obsolete Policy;; ;NoAssignment;;
+```
+**Before:**
+- Policy assigned to: "Group A", "Group B", "All Users"
+**After:**
+- Policy has no assignments
+
 ---
 
-## Filters
+## Assignment Filters
 
 Assignment filters allow you to include or exclude devices based on device properties.
 
@@ -212,12 +227,12 @@ Assignment filters allow you to include or exclude devices based on device prope
 ### Filter Platform Matching
 
 <Callout type="warn" title="Important">
-    Filter platform must match the policy platform.
+    Assignment Filter platform must match the policy platform.
 </Callout>
 
 | Policy Platform | Compatible Filter Platform |
 |----------------|---------------------------|
-| Windows | Windows |
+| Windows10AndLater, Windows8AndLater, Windows | Windows |
 | iOS | iOS |
 | Android | Android |
 | macOS | macOS |
@@ -347,6 +362,29 @@ App Protection;Excluded Users;Exclude;Add;;
 <Callout type="warn" title="Note">
     This creates two assignments — you may want to use filters instead for exclusions.
 </Callout>
+
+
+### Scenario 6: Clear All Assignments from Multiple Policies
+**CSV:**
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;FilterName;FilterType
+Old Policy 1;; ;NoAssignment;;
+Old Policy 2;; ;NoAssignment;;
+Old Policy 3;; ;NoAssignment;;
+```
+
+**Result:** All assignments removed from specified policies
+
+### Scenario 7: Implement new policies (Update ring 1) for Pilot Group only
+**CSV:**
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;FilterName;FilterType
+Production policy - v1 ;Pilot Group;Exclude;Add;;
+New production policy - v1.1 ;Pilot Group;Include;Add;;
+```
+
+This will keep the existing production policy for all users but exclude the pilot group.
+The new production policy will be assigned only to the pilot group.
 
 ---
 
