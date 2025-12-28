@@ -109,7 +109,7 @@ Each JSON file contains:
 
         The exported policies are raw JSON data directly from Intune, making it easy to re-import. Be aware that when uploading the JSON file to the Intune Portal will create a new policy with a new policy ID.
         That means you have to remove the old policy after the new one is created.
-        
+
         <Callout type="info" title="Coming soon">
             We are currently working on a direct restore functionality to avoid this extra step in the future.
         </Callout>
@@ -124,15 +124,8 @@ Each JSON file contains:
 ### <Shield className="h-5 w-5 text-green-600 inline" /> Backup Strategy
 
 **Before every migration:**
-- Always create a fresh backup
-- Include a descriptive timestamp
+- Always create a fresh backup using the backup button
 - Store in a secure, accessible location
-
-**Regular backups:**
-- Weekly automated backups for active environments
-- Before major organizational changes
-- Prior to policy rollouts or updates
-
 
 ### <AlertTriangle className="h-5 w-5 text-amber-600 inline" /> Recovery Planning
 
@@ -160,7 +153,7 @@ Each JSON file contains:
 
 **Backup file is empty or corrupt:**
 - Check browser download settings
-- Verify sufficient permissions in Intune
+- Verify sufficient permissions in Intune. Check the [permissions documentation](/docs/administration/permissions).
 - Try again during low-usage periods
 
 ### Restoration Issues

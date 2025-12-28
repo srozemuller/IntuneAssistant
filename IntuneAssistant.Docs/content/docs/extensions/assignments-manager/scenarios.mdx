@@ -488,6 +488,30 @@ My Policy;Excluded Group;Exclude;Add;;
 
 ---
 
+## MSP Scenario Examples
+
+
+### New Customer Onboarding (MSPs)
+You have used other tools like Inforcer, Coreview or just added all those policies manually in a customer tenant.
+Now you can use the Assignments Manager to user your standardized assignment template from your pilot tenant and use it for future customers.
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Windows Security Baseline;All Devices;Include;Replace;;
+iOS Compliance Policy;All Users;Include;Replace;;
+Android App Protection;All Users;Include;Replace;;
+BYOD Compliance;All Users;Include;Replace;Corporate Devices;Exclude
+```
+---
+
+### Pilot to Production Migration
+You have new policies added to a tenant and want to test it in a pilot group first.
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Old Feature Policy;Pilot Group;Exclude;Add;;
+New Feature Policy;Pilot Group;Include;Add;;
+```
+---
+
 ## Error Messages
 
 | Error Message | Cause | Solution |
@@ -534,29 +558,7 @@ PolicyName;GroupName;AssignmentDirection;AssignmentAction;FilterName;FilterType
 Windows Security Baseline v2;All Devices;Include;Replace;Managed Devices;Include
 ```
 
-## MSP Scenario Examples
 
-
-### New Customer Onboarding (MSPs)
-You have used other tools like Inforcer, Coreview or just added all those policies manually in a customer tenant.
-Now you can use the Assignments Manager to user your standardized assignment template from your pilot tenant and use it for future customers.
-```csv
-PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
-Windows Security Baseline;All Devices;Include;Replace;;
-iOS Compliance Policy;All Users;Include;Replace;;
-Android App Protection;All Users;Include;Replace;;
-BYOD Compliance;All Users;Include;Replace;Corporate Devices;Exclude
-```
----
-
-### Pilot to Production Migration
-You have new policies added to a tenant and want to test it in a pilot group first.
-```csv
-PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
-Old Feature Policy;Pilot Group;Exclude;Add;;
-New Feature Policy;Pilot Group;Include;Add;;
-```
----
 
 ## FAQ
 
