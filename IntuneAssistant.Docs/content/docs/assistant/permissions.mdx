@@ -1,0 +1,135 @@
+---
+title: Needed Permissions
+description: Complete guide to configuring granular permissions for Intune Assistant users
+---
+
+# Permissions Overview
+
+Learn how to configure the required permissions for Intune Assistant and how to set up granular permissions for users in your organization.
+
+## Required Graph API Permissions
+
+Intune Assistant requires the following Microsoft Graph API permissions to function properly:
+
+| Permission | Type | Description |
+|------------|------|-------------|
+| `DeviceManagementConfiguration.Read.All` | Delegated | Read Intune configuration profiles and baselines |
+| `DeviceManagementApps.Read.All` | Delegated | Read managed applications and app configurations |
+| `DeviceManagementServiceConfig.Read.All` | Delegated | Read device management service configuration |
+| `DeviceManagementScripts.Read.All` | Delegated | Read PowerShell and shell scripts |
+| `Group.Read.All` | Delegated | Read group memberships and properties |
+| `User.ReadBasic.All` | Delegated | Read basic user information like name and email |
+| `Directory.AccessAsUser.All` | Delegated only | Access directory data on behalf of the user |
+| `Policy.Read.ConditionalAccess` | Delegated | Read Conditional Access policies |
+
+<Callout type="warning" title="Read-only permissions">
+    All permissions listed above are **READ-ONLY** permissions. Intune Assistant never modifies your tenant configuration.
+</Callout>
+
+## Configuring Granular User Permissions
+
+Instead of giving users full Intune Administrator permissions, you can configure granular role-based access control (RBAC) permissions. This follows the principle of least privilege.
+
+### Understanding Intune RBAC
+
+Microsoft Intune uses role-based access control to determine what actions users can perform. Each role contains:
+
+- **Permissions**: What actions can be performed
+- **Scope**: Which resources the role applies to
+- **Assignments**: Which users or groups have the role
+
+### Required Intune Roles for Intune Assistant
+
+Since Intune Assistant only reads data, users need roles with **read permissions** for the following categories:
+
+#### Device Configuration Reader
+Allows reading device configuration profiles and compliance policies.
+
+**Required permissions:**
+- Device configuration policies: **Read**
+- Device compliance policies: **Read**
+- Device enrollment: **Read**
+
+#### Application Reader
+Allows reading application management data.
+
+**Required permissions:**
+- Mobile applications: **Read**
+- Mobile application management policies: **Read**
+
+#### Reports Reader
+Allows reading reports and analytics data.
+
+**Required permissions:**
+- Reports: **Read**
+
+#### Conditional Access Reader
+Allows reading Conditional Access policies.
+
+**Required permissions:**
+- Conditional Access: **Read**
+
+### Creating a Custom Role
+
+For optimal security, create a custom role with only the required read permissions:
+
+1. **Navigate to Microsoft Intune admin center**
+   - Go to [Microsoft Intune admin center](https://go.microsoft.com/fwlink/?linkid=2109431)
+   - Select **Tenant administration** > **Roles** > **All roles**
+
+2. **Create new role**
+   - Click **Create**
+   - Enter role name: `Intune Assistant Reader`
+   - Add description: `Read-only access for Intune Assistant users`
+
+3. **Configure permissions**
+   - **Device configuration policies**: Read ✓
+   - **Device compliance policies**: Read ✓
+   - **Device enrollment**: Read ✓
+   - **Mobile applications**: Read ✓
+   - **Mobile application management policies**: Read ✓
+   - **Reports**: Read ✓
+   - **Organization**: Read ✓
+
+4. **Set scope and assignments**
+   - Define which users/groups should have this role
+   - Set appropriate scope tags if needed
+
+### Built-in Roles Alternative
+
+If you prefer using built-in roles, assign users to:
+
+- **Intune Service Administrator** (full read/write - not recommended)
+- **Reports Reader** (limited to reports only)
+- **Global Reader** (read access across Microsoft 365)
+
+<Callout type="info" title="Recommended approach">
+    We recommend creating a custom role with only the required read permissions to follow the principle of least privilege.
+</Callout>
+
+## Troubleshooting
+
+Common permission issues:
+
+| Issue | Solution |
+|-------|----------|
+| User cannot see any data | Check if user has required Intune role assigned |
+| Missing device configurations | Verify `DeviceManagementConfiguration.Read.All` permission |
+| Missing applications | Check `DeviceManagementApps.Read.All` permission |
+
+
+## Consent missing
+Intune Assistant requires admin consent for the Graph API permissions. Ensure that a Global Administrator has granted consent for the application in your tenant.
+New features may require additional permissions, if a required consent is missing you will get notified. Then run the consent again.
+
+For information about that process, check the [Managing Admin Consent](/docs/getting-started/consent-management/) documentation.
+
+## Additional Resources
+
+- [Microsoft Intune RBAC Reference](https://learn.microsoft.com/en-us/intune/fundamentals/role-based-access-control-reference)
+- [Create custom roles in Intune](https://learn.microsoft.com/en-us/intune/fundamentals/create-custom-role)
+- [Scope tags for distributed IT](https://learn.microsoft.com/en-us/intune/fundamentals/scope-tags)
+
+<Callout type="tip" title="Best practice">
+    Regularly review and audit user permissions to ensure they align with current job responsibilities and security requirements.
+</Callout>

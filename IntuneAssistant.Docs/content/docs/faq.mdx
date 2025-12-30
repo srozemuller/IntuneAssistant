@@ -1,0 +1,70 @@
+---
+title: Frequently Asked Questions
+description: Common questions and answers about Intune Assistant
+---
+
+# Frequently Asked Questions
+
+Find answers to the most commonly asked questions about Intune Assistant.
+
+## What is Intune Assistant?
+
+Intune Assistant is a tool that helps Intune Administrators get insights into their Intune environment.
+
+## Who built Intune Assistant?
+
+Intune Assistant is built by [Sander Rozemuller](https://www.rozemuller.com). He is a Microsoft MVP in the category Security (Intune) and Microsoft Graph API.
+
+You can find more information about him on his [LinkedIn](https://www.linkedin.com/in/srozemuller/) or check his [MVP profile](https://mvp.microsoft.com/en-us/PublicProfile/5004451?fullName=Sander%20Rozemuller).
+
+## Is using Intune Assistant safe?
+
+Yes, using Intune Assistant is a safe process. It works under user context and connects to a tenant on behalf of the user.
+
+## What about the data?
+
+Intune Assistant does **NOT** store any tenant sensitive data. It only reads the data from the tenant and displays it in the UI. If you log out and close the browser, the data is gone.
+
+## How does it work?
+
+Intune Assistant uses an app registration consented during the onboarding process. The app registration has only the needed READ permissions.
+
+When a user logs in, the app registration is used under user context to get the data from the tenant.
+
+For more information, check the [documentation](/docs/general/how-it-works/).
+
+## I read something about the Intune Assistant API?
+
+That is great to hear! The Intune Assistant API is a sort of aggregation layer. The API harvests many Graph API endpoints and combines data to something that is useful.
+
+In fact, the Intune Assistant API is just a data shipper that streamlines Graph data to the web interface as well as the Intune CLI.
+
+## What permissions does Intune Assistant need?
+
+Intune Assistant relies on Graph API permissions in combination with the user's permissions. But always with Zero Trust in mind (least privilege). The permissions are basically READ permissions. For a full detailed overview, check [the permissions overview](/docs/general/authentication).
+
+## Can I see more about the source code?
+
+Yes, the web interface as well as the CLI source code is available on GitHub. You can find the repo [here](https://github.com/srozemuller/IntuneAssistant).
+
+## I want to request a feature
+
+That is great! In the repo there is a template available for requesting features. You can find it [here](https://github.com/srozemuller/IntuneAssistant/issues/new/choose).
+
+Use it also for bugs or other issues.
+
+## Where can I find the documentation?
+
+You can find the docs [here](/docs/web/getting-started/onboarding).
+
+## Why is Intune Assistant a web interface only?
+
+Intune Assistant is a web interface because it helps users get up to speed quickly. Also, not everyone has a subscription to store resources.
+
+## Will Intune Assistant become available as a single instance to run on my own platform?
+
+Yes, Intune Assistant will become available as a single instance to run on your own platform. It is on the roadmap but not yet available.
+
+<Callout type="info" title="Coming soon">
+    We are currently working on a direct restore functionality to avoid this extra step in the future.
+</Callout>

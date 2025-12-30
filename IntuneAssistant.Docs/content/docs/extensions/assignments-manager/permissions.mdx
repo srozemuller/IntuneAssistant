@@ -1,0 +1,168 @@
+---
+title: Needed Permissions
+description: Complete guide to configuring permissions for the Intune Assistant Assignments Manager extension
+---
+
+# Permissions Overview
+
+Learn how to configure the required permissions for the Intune Assistant Assignments Manager extension and how to set up granular permissions for users in your organization.
+
+## Required Graph API Permissions
+
+The Assignments Manager extension requires the following Microsoft Graph API permissions to function properly:
+
+| Permission | Type | Description |
+|------------|------|-------------|
+| `DeviceManagementConfiguration.ReadWrite.All` | Delegated | Read and write Intune configuration profiles and baselines |
+| `DeviceManagementApps.ReadWrite.All` | Delegated | Read and write managed applications and app configurations |
+| `DeviceManagementServiceConfig.ReadWrite.All` | Delegated | Read and write device management service configuration |
+| `DeviceManagementScripts.ReadWrite.All` | Delegated | Read and write PowerShell and shell scripts |
+| `Group.Read.All` | Delegated | Read group memberships and properties |
+
+
+<Callout type="warning" title="ReadWrite permissions required">
+    The Assignments Manager extension requires **ReadWrite** permissions to modify policy assignments, group assignments, and filters in your Intune tenant.
+</Callout>
+
+## Configuring Granular User Permissions
+
+Instead of giving users full Intune Administrator permissions, you can configure granular role-based access control (RBAC) permissions for the Assignments Manager functionality.
+
+### Understanding Intune RBAC
+
+Microsoft Intune uses role-based access control to determine what actions users can perform. Each role contains:
+
+- **Permissions**: What actions can be performed
+- **Scope**: Which resources the role applies to
+- **Assignments**: Which users or groups have the role
+
+### Required Intune Roles for Assignments Manager
+
+Users need roles with **read and write permissions** for the following categories:
+
+#### Policy and Profile Manager
+Allows reading and modifying device configuration profiles and compliance policies.
+
+**Required permissions:**
+- Device configuration policies: **Read, Create, Update, Delete, Assign**
+- Device compliance policies: **Read, Create, Update, Delete, Assign**
+- Device enrollment: **Read**
+
+#### Application Configuration Manager
+Allows reading and modifying application management data.
+
+**Required permissions:**
+- Mobile applications: **Read, Create, Update, Delete, Assign**
+- Mobile application management policies: **Read, Create, Update, Delete, Assign**
+
+#### Script Manager
+Allows reading and modifying PowerShell and shell scripts.
+
+**Required permissions:**
+- Device management scripts: **Read, Create, Update, Delete, Assign**
+
+#### Group Reader
+Allows reading group information for assignment purposes.
+
+**Required permissions:**
+- Groups: **Read**
+
+### Creating a Custom Role
+
+For optimal security, create a custom role with only the required permissions:
+
+1. **Navigate to Microsoft Intune admin center**
+   - Go to [Microsoft Intune admin center](https://go.microsoft.com/fwlink/?linkid=2109431)
+   - Select **Tenant administration** > **Roles** > **All roles**
+
+2. **Create new role**
+   - Click **Create**
+   - Enter role name: `Intune Assignments Manager`
+   - Add description: `Manage assignments for Intune policies, apps, and scripts`
+
+3. **Configure permissions**
+   - **Device configuration policies**: Read, Create, Update, Delete, Assign ✓
+   - **Device compliance policies**: Read, Create, Update, Delete, Assign ✓
+   - **Mobile applications**: Read, Create, Update, Delete, Assign ✓
+   - **Mobile application management policies**: Read, Create, Update, Delete, Assign ✓
+   - **Device management scripts**: Read, Create, Update, Delete, Assign ✓
+   - **Organization**: Read ✓
+
+4. **Set scope and assignments**
+   - Define which users/groups should have this role
+   - Set appropriate scope tags if needed
+
+### Built-in Roles Alternative
+
+If you prefer using built-in roles, assign users to:
+
+- **Intune Service Administrator** (full read/write access)
+- **Application Administrator** (for app-related assignments only)
+
+<Callout type="info" title="Recommended approach">
+    We recommend creating a custom role with only the required assignment permissions to follow the principle of least privilege.
+</Callout>
+
+## Assignment Operations
+
+The Assignments Manager extension performs the following operations:
+
+### Policy Assignment Management
+- **Assign policies** to groups with include/exclude logic
+- **Remove assignments** from existing policies
+- **Modify assignment filters** and conditions
+- **Bulk assignment operations** across multiple policies
+
+### Application Assignment Management
+- **Assign applications** to users and devices
+- **Configure installation requirements** and deadlines
+- **Manage app protection policies** assignments
+- **Handle app configuration** policy assignments
+
+### Script Assignment Management
+- **Assign PowerShell scripts** to device groups
+- **Configure script execution** parameters
+- **Manage shell scripts** for macOS devices
+
+<Callout type="warning" title="Assignment impact">
+    Changes made through the Assignments Manager directly affect your production environment. Always test in a non-production environment first.
+</Callout>
+
+## Troubleshooting
+
+Common permission issues:
+
+| Issue | Solution |
+|-------|----------|
+| Cannot modify assignments | Verify user has ReadWrite permissions for the specific resource type |
+| Assignment operations fail | Check if user has "Assign" permission in their Intune role |
+| Cannot see target groups | Ensure `Group.Read.All` permission is granted |
+| Script assignments fail | Verify `DeviceManagementScripts.ReadWrite.All` permission |
+
+## Consent missing
+
+The Assignments Manager requires admin consent for the Graph API permissions. Ensure that a Global Administrator has granted consent for the application in your tenant.
+
+New features may require additional permissions. If required consent is missing, you will be notified. Then run the consent process again.
+
+For information about that process, check the [Managing Admin Consent](/docs/getting-started/consent-management/) documentation.
+
+## Security Considerations
+
+When granting permissions for the Assignments Manager:
+
+- **Limit scope** using scope tags to restrict access to specific organizational units
+- **Regular auditing** of assignment changes through Intune audit logs
+- **Monitor usage** to ensure permissions are being used appropriately
+- **Implement approval workflows** for critical assignment changes
+
+## Additional Resources
+
+- [Microsoft Intune RBAC Reference](https://learn.microsoft.com/en-us/intune/fundamentals/role-based-access-control-reference)
+- [Create custom roles in Intune](https://learn.microsoft.com/en-us/intune/fundamentals/create-custom-role)
+- [Scope tags for distributed IT](https://learn.microsoft.com/en-us/intune/fundamentals/scope-tags)
+- [Intune assignment filters](https://learn.microsoft.com/en-us/intune/fundamentals/filters)
+
+<Callout type="tip" title="Best practice">
+    Regularly review assignment changes and audit logs to ensure the Assignments Manager is being used according to your organization's policies.
+</Callout>

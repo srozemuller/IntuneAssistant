@@ -1,0 +1,223 @@
+---
+title: Tenant License Management
+description: How to add and remove licenses for customer tenants in your MSP environment
+---
+
+# Tenant License Management
+
+Learn how to manage licenses for your customer tenants, including adding new licenses and removing existing ones through the customer settings interface.
+
+## Overview
+
+License management allows MSPs to control which features and capabilities are available for each customer tenant. When you add a license, additional permissions may be required through a consent process to ensure proper functionality.
+
+## Managing Tenant Licenses
+
+### Accessing License Management
+
+1. **Navigate to Customer Settings**
+   - Go to **Customer Settings** in your MSP account
+   - View your list of managed customer tenants
+
+2. **Access Tenant Actions**
+   - Find the customer tenant you want to manage
+   - Click on the **Actions** button in the tenant row
+   - The actions menu will display available options
+
+### Adding a License
+
+1. **Click "Add License"**
+   - From the actions menu, select **Add License**
+   - This opens the license addition dialog
+
+2. **Select License Type**
+   - Choose the appropriate license for the customer
+   - Review the features and capabilities included
+   - Consider the customer's requirements and usage
+
+3. **Consent Process**
+   - Adding a license may trigger a consent request
+   - Additional Graph API permissions might be required
+   - Follow the consent workflow to grant necessary permissions
+
+4. **Confirm Addition**
+   - Review the license details and permissions
+   - Confirm the license addition
+   - The license is applied to the customer tenant
+
+<Callout type="info" title="Consent Required">
+    When adding a license, a consent process may be triggered to request the correct permissions needed for the new license features.
+</Callout>
+
+### Removing a License
+
+1. **Click "Delete License"**
+   - From the actions menu, select **Delete License**
+   - This opens the license removal dialog
+
+2. **Select License to Remove**
+   - Choose which license to remove from the tenant
+   - Review the impact of removing the license
+   - Consider any dependent features or configurations
+
+3. **Confirm Removal**
+   - Understand the consequences of license removal
+   - Confirm the deletion process
+   - The license is removed from the customer tenant
+
+<Callout type="warning" title="Feature Impact">
+    Removing a license will disable associated features and may affect existing configurations or user access to certain functionalities.
+</Callout>
+
+## License Types and Permissions
+
+### Basic License
+**Standard read-only access with core features:**
+- Device and application visibility
+- Basic reporting and analytics
+- Standard policy viewing
+
+**Required permissions:**
+- `DeviceManagementConfiguration.Read.All`
+- `DeviceManagementApps.Read.All`
+- `Group.Read.All`
+
+### Premium License
+**Advanced management capabilities:**
+- Full assignment management
+- Advanced analytics and insights
+- Bulk operations and automation
+- Custom reporting features
+
+**Required permissions:**
+- `DeviceManagementConfiguration.ReadWrite.All`
+- `DeviceManagementApps.ReadWrite.All`
+- `DeviceManagementScripts.ReadWrite.All`
+- Additional consent-based permissions
+
+### Enterprise License
+**Complete feature set for large organizations:**
+- Multi-tenant management
+- Advanced security features
+- Custom integrations
+- Priority support
+
+**Required permissions:**
+- All premium permissions
+- Extended Graph API access
+- Custom application permissions
+
+
+## Consent Management Process
+
+### When Consent is Required
+
+Consent is typically required when:
+- **Adding a new license** that requires additional permissions
+- **Upgrading license tiers** with expanded capabilities
+- **Enabling new features** that need extra Graph API access
+- **First-time setup** of advanced functionalities
+
+### Consent Workflow
+
+1. **Consent Request Triggered**
+   - System identifies required permissions for the new license
+   - Consent dialog appears with permission details
+   - Clear explanation of why permissions are needed
+
+2. **Admin Consent Required**
+   - Global Administrator or appropriate admin role needed
+   - Review of requested permissions and their impact
+   - Decision to grant or deny the consent request
+
+3. **Permission Activation**
+   - Once consent is granted, permissions are activated
+   - License features become available immediately
+   - User can access newly enabled capabilities
+
+<Callout type="tip" title="Consent Best Practice">
+    Review the permissions requested during consent carefully. Only grant permissions that are necessary for the intended license features.
+</Callout>
+
+## License Status Indicators
+
+### Active Licenses
+- **Green indicator** - License active and fully functional
+- **Feature access** - All licensed features available
+- **Up-to-date permissions** - Required consent granted
+
+### Pending Licenses
+- **Yellow indicator** - License added but consent pending
+- **Limited functionality** - Some features may be unavailable
+- **Action required** - Admin consent needed
+
+### Inactive Licenses
+- **Gray indicator** - License removed or expired
+- **No feature access** - Associated features disabled
+- **Clean state** - No residual permissions or data
+
+## Troubleshooting
+
+### License Addition Fails
+
+**Possible causes:**
+- Insufficient permissions for license management
+- Customer tenant access issues
+- Network connectivity problems
+
+**Solutions:**
+- Verify your GDAP permissions include license management
+- Check customer tenant accessibility
+- Retry the operation after a few minutes
+
+### Consent Process Fails
+
+**Possible causes:**
+- Admin consent not properly granted
+- Permission conflicts with existing setup
+- Tenant policy restrictions
+
+**Solutions:**
+- Ensure Global Administrator grants consent
+- Review existing permissions for conflicts
+- Check tenant conditional access policies
+
+### Features Not Available After License Addition
+
+**Possible causes:**
+- Consent not completed successfully
+- Permission synchronization delay
+- License activation pending
+
+**Solutions:**
+- Complete the consent process if pending
+- Wait for permission synchronization (up to 30 minutes)
+- Contact support if issues persist
+
+## Best Practices
+
+### Before Adding Licenses
+- **Assess customer needs** to choose appropriate license tier
+- **Review permission requirements** and their implications
+- **Plan for consent process** if admin approval is needed
+
+### During License Management
+- **Document license changes** for audit purposes
+- **Communicate with customers** about feature changes
+- **Monitor license utilization** and effectiveness
+
+### After License Changes
+- **Verify feature availability** in the customer tenant
+- **Test key functionalities** to ensure proper operation
+- **Update documentation** and customer communications
+
+## Related Documentation
+
+- [Managing Admin Consent](/docs/getting-started/consent-management)
+- [Permission Overview](/docs/administration/permissions/overview)
+- [Switch Tenants](/docs/administration/multi-tenant/switch-tenants)
+- [Multi-Tenant Overview](/docs/administration/multi-tenant/overview)
+
+<Callout type="success" title="License Flexibility">
+    License management provides flexibility to scale features based on customer needs while maintaining security through proper permission management.
+</Callout>

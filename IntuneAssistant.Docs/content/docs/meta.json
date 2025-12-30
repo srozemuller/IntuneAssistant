@@ -3,11 +3,13 @@
   "pages": [
     "getting-started",
     "administration",
-    "features",
+    "assistant",
     "extensions",
+    "msp",
     "api",
     "support",
     "enterprise",
-    "changelog"
+    "changelog",
+    "faq"
   ]
 }

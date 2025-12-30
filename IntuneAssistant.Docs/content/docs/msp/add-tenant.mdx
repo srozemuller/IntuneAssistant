@@ -1,0 +1,160 @@
+---
+title: Add Tenant
+description: Step-by-step guide for adding customer tenants to your MSP home tenant
+---
+
+# Add Tenant to MSP Account
+
+Learn how to add customer tenants to your MSP home tenant using GDAP relationships and Partner Center integration.
+
+## Prerequisites
+
+Before adding a tenant, ensure you have:
+
+- **Active GDAP relationship** with the customer tenant in Partner Center
+- **Approved delegated admin privileges** for Intune management
+- **Customer onboarded** through the regular Intune Assistant onboarding process
+
+<Callout type="warning" title="GDAP Requirement">
+    An active partner-tenant GDAP relationship must be established in Partner Center before you can add the tenant to your MSP account.
+</Callout>
+
+## Step 1: Customer Onboarding
+
+First, the customer must complete the standard onboarding process:
+
+1. **Customer initiates onboarding**
+   - Customer navigates to [Getting Started → Onboarding](/docs/getting-started/onboarding)
+   - Follows the standard onboarding workflow
+   - Completes tenant registration and authentication setup
+
+2. **Backend tenant creation**
+   - This process creates the customer record in the backend
+   - Establishes the tenant configuration
+   - Sets up the foundation for MSP management
+
+<Callout type="info" title="Customer First">
+    The customer must complete their own onboarding first. This ensures proper tenant setup and creates the necessary backend records.
+</Callout>
+
+## Step 2: Access MSP Customer Settings
+
+Navigate to your MSP account's customer management area:
+
+1. **Log into your MSP home tenant**
+   - Use your primary MSP account credentials
+   - Ensure you're in the correct home tenant context
+
+2. **Access customer settings**
+   - Go to **Customer Settings** under your MSP account
+   - This shows your current managed customer tenants
+
+## Step 3: Add New Tenant
+
+1. **Click "Add Tenant" button**
+   - Located in the customer settings interface
+   - This opens the tenant addition dialog
+
+2. **Partner Center Integration**
+   - The dialog automatically fetches available partner tenants
+   - Shows all tenants where you have active GDAP relationships
+   - Displays tenant information from Partner Center
+
+3. **Select Customer Tenant**
+   - Browse the list of available partner tenants
+   - Find the customer tenant you want to add
+   - Click on the desired tenant to select it
+
+4. **Confirm Addition**
+   - Review the tenant details
+   - Confirm the GDAP permissions available
+   - Complete the addition process
+
+<Callout type="success" title="Simple Process">
+    That's it! Once you click on the tenant, it's automatically added to your MSP account with the available GDAP permissions.
+</Callout>
+
+## What Happens Next
+
+After successfully adding the tenant:
+
+### Automatic Integration
+- **Tenant appears** in your MSP dashboard
+- **GDAP permissions** are automatically applied
+- **Access verification** is performed in the background
+
+### Available Features
+- **Tenant switching** becomes available
+- **Cross-tenant operations** are enabled
+- **Unified reporting** includes the new tenant
+
+### Permission Inheritance
+- **Delegated privileges** from GDAP are applied
+- **Role-based access** follows Partner Center configuration
+- **Security boundaries** are automatically enforced
+
+## Troubleshooting
+
+### Tenant Not Appearing in Partner Center List
+
+**Possible causes:**
+- GDAP relationship not yet active
+- Customer hasn't approved delegated privileges
+- Partner Center sync delay
+
+**Solutions:**
+- Verify GDAP status in Partner Center
+- Contact customer to approve pending requests
+- Wait for Partner Center synchronization (up to 30 minutes)
+
+### Access Denied After Adding Tenant
+
+**Possible causes:**
+- Insufficient GDAP permissions
+- Customer revoked delegated privileges
+- Role assignments not synchronized
+
+**Solutions:**
+- Check delegated admin roles in Partner Center
+- Request additional permissions if needed
+- Contact customer to verify GDAP approval
+
+### Customer Not Found in Backend
+
+**Possible causes:**
+- Customer hasn't completed onboarding
+- Backend synchronization pending
+- Onboarding process interrupted
+
+**Solutions:**
+- Ask customer to complete onboarding first
+- Wait for backend processing
+- Retry the add tenant process
+
+## Best Practices
+
+### Before Adding Tenants
+- **Verify GDAP relationship** is fully established
+- **Confirm required permissions** are approved
+- **Document customer requirements** and scope
+
+### During Addition Process
+- **Select correct tenant** from the list
+- **Verify tenant details** before confirming
+- **Note available permissions** for future reference
+
+### After Addition
+- **Test access** to the new tenant
+- **Verify expected functionality** is available
+- **Document any limitations** based on GDAP roles
+
+<Callout type="tip" title="Pro Tip">
+    Keep a record of which GDAP roles you have for each customer tenant. This helps troubleshoot permission issues and plan service delivery.
+</Callout>
+
+## Related Documentation
+
+- [Multi-Tenant Overview](/docs/administration/multi-tenant/overview)
+- [GDAP Setup Guide](/docs/getting-started/gdap-setup)
+- [Customer Onboarding](/docs/getting-started/onboarding)
+- [Managing MSP Permissions](/docs/administration/permissions/msp-permissions)

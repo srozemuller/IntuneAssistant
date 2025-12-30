@@ -1,0 +1,186 @@
+---
+title: Multi-Tenant Overview
+description: How Intune Assistant supports MSPs with GDAP-enabled multi-tenant management
+---
+
+# Multi-Tenant Overview
+
+Intune Assistant is designed to be a perfect fit for Managed Service Providers (MSPs) who need to manage multiple customer tenants efficiently. With support for GDAP (Granular Delegated Admin Privileges), you can securely access and manage all your customer environments from a single interface.
+
+## Perfect for MSPs
+
+As an MSP, you face unique challenges when managing multiple customer tenants:
+
+- **Context switching** between different customer portals
+- **Inconsistent access** across various tenants
+- **Time-consuming** manual processes for similar tasks
+- **Difficult oversight** of configurations across customers
+
+Intune Assistant solves these challenges by providing:
+
+- **Unified dashboard** for all your customer tenants
+- **Consistent experience** across all managed environments
+- **Bulk operations** that work across multiple tenants
+- **Centralized reporting** and insights
+
+## How Multi-Tenant Works
+
+### Home Tenant Architecture
+
+Intune Assistant uses a **home tenant** approach where:
+
+1. **Main tenant** serves as your primary management hub
+2. **Customer tenants** are added as additional managed environments
+3. **Single sign-on** experience across all tenants
+4. **Centralized user management** in your home tenant
+
+### GDAP Integration
+
+Intune Assistant leverages Microsoft's GDAP (Granular Delegated Admin Privileges) for secure customer tenant access:
+
+- **Granular permissions** - Only request the specific permissions you need
+- **Time-bound access** - Set expiration dates for enhanced security
+- **Audit trail** - Complete logging of all cross-tenant activities
+- **Customer approval** - Customers maintain control over granted permissions
+
+<Callout type="info" title="GDAP Advantage">
+    GDAP provides more secure and granular access compared to traditional delegated admin privileges, giving customers better control over what MSPs can access.
+</Callout>
+
+## Setting Up Multi-Tenant Access
+
+### Prerequisites
+
+Before setting up multi-tenant access, ensure you have:
+
+- **Partner Center access** with appropriate permissions
+- **GDAP relationships** established with customer tenants
+- **Required permissions** granted for Intune management
+- **Customer approval** for the necessary delegated privileges
+- **Intune Assistant installed** in your home tenant
+- **MSP license plan** enabled for Intune Assistant
+
+### Required GDAP Roles
+
+For Intune Assistant functionality, request these GDAP roles:
+
+| Role | Purpose | Permissions |
+|------|---------|-------------|
+| **Intune Service Administrator** | Full Intune management | Read/Write access to all Intune resources |
+| **Cloud Device Administrator** | Device management | Manage device settings and compliance |
+| **Application Administrator** | App management | Manage application assignments and policies |
+| **Reports Reader** | Analytics and reporting | Access to usage and compliance reports |
+
+### Setting Up Customer Tenants
+
+1. **Establish GDAP relationship** in Partner Center
+2. **Request appropriate roles** for Intune management
+3. **Wait for customer approval** of the delegated privileges
+4. **Add tenant** to Intune Assistant using the tenant switcher
+
+## Features Across Tenants
+
+### Tenant-Specific Views
+
+Switch between tenants while maintaining context:
+
+- **Quick tenant switching** without re-authentication
+- **Tenant-specific configurations** and customizations
+- **Isolated data** ensuring customer privacy
+
+## Security and Compliance
+
+### Data Isolation
+
+Each customer tenant's data remains completely isolated:
+
+- **No cross-tenant data sharing**
+- **Separate authentication contexts**
+- **Individual audit trails** per tenant
+- **Customer-specific permissions**
+
+### Audit and Monitoring
+
+Comprehensive logging across all operations:
+
+- **GDAP activity logs** for compliance reporting
+- **Cross-tenant operation tracking**
+- **User activity monitoring** across all tenants
+- **Security event correlation**
+
+### Access Controls
+
+Multiple layers of security:
+
+- **Just-in-time access** through GDAP
+- **Role-based permissions** per customer tenant
+- **Multi-factor authentication** enforcement
+- **Conditional access** policy compliance
+
+<Callout type="warning" title="Security Best Practices">
+    Always follow the principle of least privilege when requesting GDAP roles. Only request the minimum permissions necessary for your management tasks.
+</Callout>
+
+## Benefits for MSPs
+
+### Operational Efficiency
+
+- **Reduced context switching** between customer portals
+- **Standardized processes** across all customer tenants
+- **Bulk operations** that scale with your business
+- **Centralized training** on a single platform
+
+### Customer Service
+
+- **Faster issue resolution** with unified visibility
+- **Consistent service delivery** across all customers
+- **Proactive monitoring** and alerting
+- **Better reporting** and insights for customers
+
+### Business Growth
+
+- **Scalable architecture** that grows with your MSP
+- **Standardized offerings** across customer base
+- **Automated processes** that reduce manual overhead
+- **Better resource utilization** across teams
+
+## Getting Started
+
+### Step 1: Prepare Your Home Tenant
+- Set up Intune Assistant in your primary tenant
+- Configure user roles and permissions
+- Establish your baseline configurations
+
+### Step 2: Establish GDAP Relationships
+- Work with customers to set up GDAP in Partner Center
+- Request appropriate delegated admin roles
+- Document approved permissions for each customer
+
+### Step 3: Add Customer Tenants
+- Use the tenant switcher to add customer environments
+- Verify access and permissions for each tenant
+- Configure customer-specific settings and branding
+
+### Step 4: Train Your Team
+- Ensure staff understand multi-tenant navigation
+- Establish processes for cross-tenant operations
+- Implement security and compliance procedures
+
+## Troubleshooting Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| Cannot access customer tenant | Verify GDAP relationship and approved roles |
+| Missing permissions in tenant | Check delegated admin privileges in Partner Center |
+| Tenant not appearing in switcher | Confirm customer has approved GDAP request |
+| Cross-tenant operations failing | Validate consistent permissions across tenants |
+
+## Additional Resources
+
+- [GDAP Introduction - Microsoft Learn](https://learn.microsoft.com/en-us/partner-center/customers/gdap-introduction)
+- [Partner Center GDAP Management](https://learn.microsoft.com/en-us/partner-center/customers/gdap-assign-azure-ad-roles)
+- [Intune Multi-Tenant Best Practices](https://learn.microsoft.com/en-us/intune/fundamentals/multi-tenant-best-practices)
+
+<Callout type="tip" title="MSP Success Tip">
+    Start with a small subset of customer tenants to validate your processes and permissions before scaling to your entire customer base.
+</Callout>
