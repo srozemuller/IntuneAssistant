@@ -1,50 +1,33 @@
 ---
-title: Data & Privacy Policy
+title: Data & Privacy
 description: Our commitment to data privacy and security with minimal data storage and no data leaving your tenant
 ---
 
-# Data & Privacy Policy
+# Data & Privacy
 
 Intune Assistant is built with privacy by design. Our core principle is that **your data stays in your tenant** - we process everything in memory and store only the absolute minimum required for licensing and identification.
 
 ## Our Privacy Commitment
 
 <Callout type="success" title="Zero Data Extraction">
-    **No data leaves your tenant.** All Intune and Graph API data is processed in memory only and never stored or transmitted to external systems.
+    **No data leaves your tenant.** All Intune and Graph API data is processed in browser session memory only and never stored or transmitted to external systems.
 </Callout>
 
 ## Data Storage & Processing Overview
 
 ### Minimal Data Storage Approach
 
-We follow a strict minimal data storage policy with complete transparency about what we store and why:
+There is a very strict minimal data storage policy with complete transparency about what is stored and why:
 
 | Data Type | Stored | Purpose | Retention |
 |-----------|---------|---------|-----------|
-| **Tenant ID** | ✅ Yes | Identify tenant and enforce fair-usage licensing | Persistent |
+| **Tenant ID** | ✅ Yes | Identify tenant and enforce fair-usage licensing. (Access can be denied by Tenant ID)  | Persistent |
 | **Tenant Domain** | ✅ Yes | Display and licensing identification | Persistent |
 | **Session Data** (tokens, settings) | ❌ No | Stored only in browser session storage | Temporary |
-| **Intune Data** | ❌ No | Processed in memory only, never persisted | N/A |
-| **Graph API Data** | ❌ No | Processed in memory only, never persisted | N/A |
-| **Device Information** | ❌ No | Never accessed or stored | N/A |
+| **Intune Data** | ❌ No | Processed in session memory only, never persisted | N/A |
+| **Graph API Data** | ❌ No | Processed in session memory only, never persisted | N/A |
+| **User's Device Information** | ❌ No | Never accessed or stored | N/A |
 | **User Personal Data** | ❌ No | Never accessed or stored | N/A |
-| **Configuration Data** | ❌ No | Never stored outside your tenant | N/A |
-
-## What We DON'T Store
-
-### Personal & Sensitive Data
-- ❌ **No user personal data** - names, emails, or personal information
-- ❌ **No device information** - device details, serial numbers, or hardware data
-- ❌ **No configuration data** - policies, settings, or tenant configurations
-- ❌ **No authentication tokens** - no persistent storage of access credentials
-- ❌ **No usage analytics** - no tracking of user behavior or application usage
-- ❌ **No tenant content** - no documents, files, or user-generated content
-
-### Technical Data
-- ❌ **No API responses** - Graph API data processed and discarded immediately
-- ❌ **No caching** - no persistent caching of any tenant data
-- ❌ **No logs** - no logging of tenant-specific operations or data
-- ❌ **No backups** - no backup copies of any tenant information
 
 ## How We Process Your Data
 
@@ -95,7 +78,7 @@ We follow a strict minimal data storage policy with complete transparency about 
    - No server-side session persistence
 
 <Callout type="info" title="Browser Session Storage">
-    We use browser session storage for temporary data like UI preferences and navigation state. This data is automatically cleared when you close your browser or log out.
+   Browser session storage is used for temporary data like UI preferences and navigation state. This data is automatically cleared when you go to an other page, close your browser or log out.
 </Callout>
 
 ## Data Security Measures
@@ -131,14 +114,13 @@ For MSP environments, we ensure complete data isolation:
 - **Tenant-Specific Processing** - Each customer tenant processed independently
 - **No Cross-Tenant Data** - No mixing of data between customer tenants
 - **GDAP Respect** - Only access data according to granted permissions
-- **Audit Trail** - All tenant switches and operations logged appropriately
 
 ### Customer Data Protection
 
 - **Customer Consent** - All access based on explicit GDAP permissions
 - **Limited Scope** - Only access data necessary for granted roles
 - **No Data Sharing** - No sharing of customer data between tenants or MSPs
-- **Transparent Access** - Clear audit trail of all MSP activities
+
 
 ## Your Rights and Controls
 
@@ -151,23 +133,10 @@ For MSP environments, we ensure complete data isolation:
 
 ### Transparency
 
-- **Open Source** - Application code available for review
+- **Open Source** - Application code (Webinterface) available for review
 - **Clear Documentation** - Complete transparency about data handling
 - **No Hidden Processes** - All data processing clearly documented
 - **Regular Updates** - Privacy policy updates communicated clearly
-
-## Frequently Asked Questions
-
-### General Privacy Questions
-
-**Q: Where is my data stored?**
-A: Your data is never stored outside your tenant. We only store tenant ID and domain for licensing purposes. All other data remains in your Microsoft tenant.
-
-**Q: Can you see my Intune configurations?**
-A: No, we never store or log your Intune data. We only process it in memory to display it to you, then immediately discard it.
-
-**Q: What happens to my data if I stop using Intune Assistant?**
-A: Only your tenant ID and domain are stored for licensing. There's no other data to delete. You can request removal of licensing data by contacting support.
 
 ### Technical Questions
 
@@ -180,40 +149,6 @@ A: All communication is encrypted via HTTPS. Since we don't store your data, the
 **Q: Can other users see my data?**
 A: No, all data processing is isolated per user session. No data is shared between users or stored centrally.
 
-## Contact and Support
-
-### Privacy Inquiries
-
-For questions about data privacy and security:
-- **Email**: privacy@intune-assistant.com
-- **Documentation**: [Security Overview](/docs/security/overview)
-- **Support**: [Contact Support](/support)
-
-### Data Subject Requests
-
-Since we don't store personal data, there are typically no data subject rights to exercise. If you have specific concerns:
-- Contact us for clarification about any stored data
-- Request removal of tenant licensing information
-- Report any privacy concerns or incidents
-
-<Callout type="tip" title="Open Source Transparency">
-    Our application code is open source, allowing you to verify our privacy claims and data handling practices directly in the codebase.
-</Callout>
-
-## Policy Updates
-
-### Notification Process
-
-- **Email notifications** for significant policy changes
-- **In-app notifications** for minor updates
-- **Version history** maintained for all policy versions
-- **30-day notice** for any material changes
-
-### Last Updated
-
-This privacy policy was last updated: **[Current Date]**
-
-For the complete version history, see our [Privacy Policy Changelog](/docs/legal/privacy-changelog).
 
 ---
 

@@ -7,9 +7,9 @@
     "extensions",
     "msp",
     "api",
-    "support",
     "enterprise",
     "changelog",
-    "faq"
+    "faq",
+    "support"
   ]
 }

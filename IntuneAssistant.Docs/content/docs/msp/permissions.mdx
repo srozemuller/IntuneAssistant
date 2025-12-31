@@ -1,9 +1,9 @@
 ---
-title: MSP Multi-Tenant Permissions
-description: Required permissions for MSP multi-tenant management including Partner Center and GDAP access
+title: Multi-Tenant Permissions
+description: Required permissions for multi-tenant management including Partner Center and GDAP access
 ---
 
-# MSP Multi-Tenant Permissions
+# Multi-Tenant Permissions
 
 Learn about the specific permissions required for MSPs to manage multi-tenant environments, including Partner Center integration and GDAP relationship management.
 
@@ -20,9 +20,10 @@ For MSP multi-tenant functionality, your MSP account requires:
 | Permission | Type | Purpose |
 |------------|------|---------|
 | `DelegatedAdminRelationship.Read.All` | Application | Read GDAP relationships and partner tenant information |
-| `Directory.Read.All` | Application | Access partner and customer directory information |
-| `Organization.Read.All` | Application | Read organization details for partner tenants |
 
+<Callout type="warning" title="Special Permission Notice">
+    Please contact support if you want to enable this permission for your MSP account.
+</Callout>
 ### Partner Center Authentication
 
 Your MSP account must have:
@@ -36,25 +37,20 @@ Your MSP account must have:
     You must be able to login to Partner Center and view partner tenants for the multi-tenant functionality to work properly.
 </Callout>
 
-### Standard Intune Permissions
+### Standard Permissions
 
-In addition to Partner Center permissions, each managed tenant requires:
+In addition to Partner Center permissions, each managed tenant requires a set of standard Microsoft Graph API permissions for Intune management.
+The basic Intune Assistant permissions can be found on the [needed permissions](/docs/assistant/permissions) page.
 
-| Permission | Type | Description |
-|------------|------|-------------|
-| `DeviceManagementConfiguration.ReadWrite.All` | Delegated | Manage configuration profiles and policies |
-| `DeviceManagementApps.ReadWrite.All` | Delegated | Manage applications and app configurations |
-| `DeviceManagementServiceConfig.ReadWrite.All` | Delegated | Manage device management service configuration |
-| `DeviceManagementScripts.ReadWrite.All` | Delegated | Manage PowerShell and shell scripts |
-| `Group.Read.All` | Delegated | Read group information for assignments |
-| `Directory.AccessAsUser.All` | Delegated | Access directory on behalf of user |
+After onboarding new customer (see [add tenant](/docs/administration/multi-tenant/add-tenant)), the correct permissions are set up automatically.
+When adding a tenant, the Intune Assistant license is added to the tenant, and the required API permissions are consented. When adding an extra license, a consent prompt is shown to consent the required permissions.
 
 
 ## Related Documentation
 
-- [Add Tenant](/docs/administration/multi-tenant/add-tenant)
-- [Switch Tenants](/docs/administration/multi-tenant/switch-tenants)
-- [License Management](/docs/administration/multi-tenant/license-management)
+- [Add Tenant](../add-tenant)
+- [Switch Tenants](../switch-tenants)
+- [License Management](../license-management)
 - [GDAP Introduction](https://learn.microsoft.com/en-us/partner-center/customers/gdap-introduction)
 - [Partner Center Role Management](https://learn.microsoft.com/en-us/partner-center/permissions-overview)
 

@@ -20,7 +20,7 @@ Intune Assistant solves these challenges by providing:
 
 - **Unified dashboard** for all your customer tenants
 - **Consistent experience** across all managed environments
-- **Bulk operations** that work across multiple tenants
+- **Bulk operations** per tenant context in the same portal
 - **Centralized reporting** and insights
 
 ## How Multi-Tenant Works
@@ -29,7 +29,7 @@ Intune Assistant solves these challenges by providing:
 
 Intune Assistant uses a **home tenant** approach where:
 
-1. **Main tenant** serves as your primary management hub
+1. **Main tenant** serves as your primary management hub, the one where GDAP relationships are established
 2. **Customer tenants** are added as additional managed environments
 3. **Single sign-on** experience across all tenants
 4. **Centralized user management** in your home tenant
@@ -40,7 +40,6 @@ Intune Assistant leverages Microsoft's GDAP (Granular Delegated Admin Privileges
 
 - **Granular permissions** - Only request the specific permissions you need
 - **Time-bound access** - Set expiration dates for enhanced security
-- **Audit trail** - Complete logging of all cross-tenant activities
 - **Customer approval** - Customers maintain control over granted permissions
 
 <Callout type="info" title="GDAP Advantage">
@@ -73,10 +72,10 @@ For Intune Assistant functionality, request these GDAP roles:
 
 ### Setting Up Customer Tenants
 
-1. **Establish GDAP relationship** in Partner Center
-2. **Request appropriate roles** for Intune management
-3. **Wait for customer approval** of the delegated privileges
-4. **Add tenant** to Intune Assistant using the tenant switcher
+1. **Establish GDAP relationship** in Partner Center (see [GDAP Setup Guide](https://learn.microsoft.com/en-us/partner-center/customers/gdap-obtain-admin-permissions-to-manage-customer))
+2. **Request appropriate roles** for Intune management (see [GDAP Role Assignment](https://learn.microsoft.com/en-us/partner-center/customers/gdap-assign-microsoft-entra-roles))
+3. **Wait for customer approval** of the delegated privileges (see [GDAP Approval Process](https://learn.microsoft.com/en-us/partner-center/customers/gdap-customer-approval))
+4. **Add tenant** to Intune Assistant using the customer settings page (see [Adding Customer Tenants](../add-tenant/))
 
 ## Features Across Tenants
 
@@ -104,8 +103,6 @@ Each customer tenant's data remains completely isolated:
 Comprehensive logging across all operations:
 
 - **GDAP activity logs** for compliance reporting
-- **Cross-tenant operation tracking**
-- **User activity monitoring** across all tenants
 - **Security event correlation**
 
 ### Access Controls
@@ -178,8 +175,8 @@ Multiple layers of security:
 ## Additional Resources
 
 - [GDAP Introduction - Microsoft Learn](https://learn.microsoft.com/en-us/partner-center/customers/gdap-introduction)
-- [Partner Center GDAP Management](https://learn.microsoft.com/en-us/partner-center/customers/gdap-assign-azure-ad-roles)
-- [Intune Multi-Tenant Best Practices](https://learn.microsoft.com/en-us/intune/fundamentals/multi-tenant-best-practices)
+- [Partner Center GDAP Management](https://learn.microsoft.com/en-us/partner-center/enroll/overview)
+
 
 <Callout type="tip" title="MSP Success Tip">
     Start with a small subset of customer tenants to validate your processes and permissions before scaling to your entire customer base.

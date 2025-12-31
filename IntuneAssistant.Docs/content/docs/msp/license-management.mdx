@@ -1,7 +1,10 @@
 ---
-title: Tenant License Management
+title: License Management
 description: How to add and remove licenses for customer tenants in your MSP environment
 ---
+
+import {Callout} from "fumadocs-ui/components/callout";
+import { CheckCircle, AlertCircle } from 'lucide-react';
 
 # Tenant License Management
 
@@ -24,11 +27,17 @@ License management allows MSPs to control which features and capabilities are av
    - Click on the **Actions** button in the tenant row
    - The actions menu will display available options
 
+![License Management Interface](/img/msp/tenant-management.png)
+
 ### Adding a License
 
-1. **Click "Add License"**
-   - From the actions menu, select **Add License**
+1. **Click "Add New License"**
+   - From the actions menu, select **Add New License**
    - This opens the license addition dialog
+
+![Add License Dialog](/img/msp/add-license.png)
+
+In the dialog, you can select the license type to add.
 
 2. **Select License Type**
    - Choose the appropriate license for the customer
@@ -45,68 +54,33 @@ License management allows MSPs to control which features and capabilities are av
    - Confirm the license addition
    - The license is applied to the customer tenant
 
+![License Added](/img/msp/license-added.png)
+![License Overview](/img/msp/license-overview.png)
+
 <Callout type="info" title="Consent Required">
     When adding a license, a consent process may be triggered to request the correct permissions needed for the new license features.
 </Callout>
 
 ### Removing a License
+In the license management dialog again, you can also remove an existing license.
 
-1. **Click "Delete License"**
-   - From the actions menu, select **Delete License**
-   - This opens the license removal dialog
-
-2. **Select License to Remove**
+1. **Select License to Remove**
    - Choose which license to remove from the tenant
    - Review the impact of removing the license
    - Consider any dependent features or configurations
 
-3. **Confirm Removal**
+![Remove License Dialog](/img/msp/delete-license.png)
+
+2. **Confirm Removal**
    - Understand the consequences of license removal
    - Confirm the deletion process
    - The license is removed from the customer tenant
 
+![License Removed](/img/msp/delete-confirm.png)
+
 <Callout type="warning" title="Feature Impact">
-    Removing a license will disable associated features and may affect existing configurations or user access to certain functionalities.
+    This action cannot be undone and will remove access to features provided by this license.
 </Callout>
-
-## License Types and Permissions
-
-### Basic License
-**Standard read-only access with core features:**
-- Device and application visibility
-- Basic reporting and analytics
-- Standard policy viewing
-
-**Required permissions:**
-- `DeviceManagementConfiguration.Read.All`
-- `DeviceManagementApps.Read.All`
-- `Group.Read.All`
-
-### Premium License
-**Advanced management capabilities:**
-- Full assignment management
-- Advanced analytics and insights
-- Bulk operations and automation
-- Custom reporting features
-
-**Required permissions:**
-- `DeviceManagementConfiguration.ReadWrite.All`
-- `DeviceManagementApps.ReadWrite.All`
-- `DeviceManagementScripts.ReadWrite.All`
-- Additional consent-based permissions
-
-### Enterprise License
-**Complete feature set for large organizations:**
-- Multi-tenant management
-- Advanced security features
-- Custom integrations
-- Priority support
-
-**Required permissions:**
-- All premium permissions
-- Extended Graph API access
-- Custom application permissions
-
 
 ## Consent Management Process
 
@@ -141,41 +115,34 @@ Consent is typically required when:
 
 ## License Status Indicators
 
-### Active Licenses
-- **Green indicator** - License active and fully functional
-- **Feature access** - All licensed features available
-- **Up-to-date permissions** - Required consent granted
+In the tenants list, license status is indicated with icons:
 
-### Pending Licenses
-- **Yellow indicator** - License added but consent pending
-- **Limited functionality** - Some features may be unavailable
-- **Action required** - Admin consent needed
+- **No Consent needed**: <CheckCircle className="inline h-4 w-4 text-green-500" /> - Indicates no license is assigned
+- **Consent needed**: <AlertCircle className="inline h-4 w-4 text-red-500" /> - Indicates consent is required for the license
 
-### Inactive Licenses
-- **Gray indicator** - License removed or expired
-- **No feature access** - Associated features disabled
-- **Clean state** - No residual permissions or data
+![License Status Icons](/img/msp/license-status-indicators.png)
+
+### Consent license
+If a license requires consent, you will see the red alert icon as show above. To provide consent go to the tenant using the action button and use the Grant Consent button.
+
+![Grant Consent Button](/img/msp/license-consent-required.png)
 
 ## Troubleshooting
 
 ### License Addition Fails
 
 **Possible causes:**
-- Insufficient permissions for license management
-- Customer tenant access issues
-- Network connectivity problems
+- Customer (MSP home tenant) has not the correct license
 
 **Solutions:**
-- Verify your GDAP permissions include license management
-- Check customer tenant accessibility
-- Retry the operation after a few minutes
+- Contact the support to verify your license
 
 ### Consent Process Fails
 
 **Possible causes:**
 - Admin consent not properly granted
 - Permission conflicts with existing setup
-- Tenant policy restrictions
+- Tenant policy restrictions, its not possible to grant the permissions
 
 **Solutions:**
 - Ensure Global Administrator grants consent
@@ -194,29 +161,13 @@ Consent is typically required when:
 - Wait for permission synchronization (up to 30 minutes)
 - Contact support if issues persist
 
-## Best Practices
-
-### Before Adding Licenses
-- **Assess customer needs** to choose appropriate license tier
-- **Review permission requirements** and their implications
-- **Plan for consent process** if admin approval is needed
-
-### During License Management
-- **Document license changes** for audit purposes
-- **Communicate with customers** about feature changes
-- **Monitor license utilization** and effectiveness
-
-### After License Changes
-- **Verify feature availability** in the customer tenant
-- **Test key functionalities** to ensure proper operation
-- **Update documentation** and customer communications
-
 ## Related Documentation
 
 - [Managing Admin Consent](/docs/getting-started/consent-management)
-- [Permission Overview](/docs/administration/permissions/overview)
-- [Switch Tenants](/docs/administration/multi-tenant/switch-tenants)
-- [Multi-Tenant Overview](/docs/administration/multi-tenant/overview)
+- [Permission Overview](/docs/assistant/permissions)
+- [MSP Permission Overview](/docs/msp/permissions)
+- [Switch Tenants](/docs/msp/switch-tenants)
+- [Multi-Tenant Overview](/docs/msp/overview)
 
 <Callout type="success" title="License Flexibility">
     License management provides flexibility to scale features based on customer needs while maintaining security through proper permission management.

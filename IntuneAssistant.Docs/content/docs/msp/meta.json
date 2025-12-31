@@ -3,7 +3,7 @@
   "pages": [
     "overview",
     "permissions",
-    "tenant-license-management",
+    "license-management",
     "switch-tenants",
     "add-tenant"
   ]

@@ -19,7 +19,7 @@ export default function HomePage() {
               <Link href="/docs" className="text-gray-600 hover:text-gray-900">Documentation</Link>
                 {/*<Link href="/docs/api" className="text-gray-600 hover:text-gray-900">API</Link>*/}
               <Link href="https://intuneassistant.cloud/plans" className="text-gray-600 hover:text-gray-900">MSP & Enterprise</Link>
-              <Link href="/docs/getting-started"
+              <Link href="/docs/getting-started/onboarding"
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                 Get Started
               </Link>
@@ -122,10 +122,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8 text-center">
             {[
-              { number: "10K+", label: "Devices Managed" },
-              { number: "500+", label: "Organizations" },
-              { number: "99.9%", label: "Uptime SLA" },
-              { number: "24/7", label: "Expert Support" }
+                { number: "5", label: "Active continents" },
+              { number: "200+", label: "Customers" },
+              { number: "400+", label: "Tenants" },
+                { number: "5", label: "MSPs" },
+
             ].map((stat, index) => (
               <div key={index}>
                 <div className="text-3xl md:text-4xl font-bold mb-2">{stat.number}</div>
@@ -224,23 +225,22 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">Product</h3>
               <div className="space-y-2">
                 <Link href="/docs" className="block text-gray-400 hover:text-white">Documentation</Link>
-                <Link href="/docs/api" className="block text-gray-400 hover:text-white">API Reference</Link>
-                <Link href="/docs/getting-started" className="block text-gray-400 hover:text-white">Getting Started</Link>
+                <Link href="/docs/getting-started/onboarding" className="block text-gray-400 hover:text-white">Getting Started</Link>
               </div>
             </div>
 
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
               <div className="space-y-2">
-                <Link href="/docs/support/faq" className="block text-gray-400 hover:text-white">FAQ</Link>
-                <Link href="/docs/support/troubleshooting" className="block text-gray-400 hover:text-white">Troubleshooting</Link>
-                <Link href="/docs/enterprise/plans" className="block text-gray-400 hover:text-white">Enterprise</Link>
+                <Link href="/docs/faq" className="block text-gray-400 hover:text-white">FAQ</Link>
+                <Link href="/docs/support" className="block text-gray-400 hover:text-white">Support</Link>
+                <Link href="https://intuneassistant.cloud/plans" className="block text-gray-400 hover:text-white">MSP & Enterprise</Link>
               </div>
             </div>
           </div>
 
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 IntuneAssistant. All rights reserved.</p>
+            <p>&copy; 2026 IntuneAssistant. All rights reserved.</p>
           </div>
         </div>
       </footer>
