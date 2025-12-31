@@ -2,6 +2,7 @@
   "title": "Assignments Manager",
   "pages": [
     "overview",
+    "permissions",
     "create-assignments-template",
     "how-it-works",
     "scenarios",

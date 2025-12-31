@@ -1,0 +1,157 @@
+---
+title: Data & Privacy
+description: Our commitment to data privacy and security with minimal data storage and no data leaving your tenant
+---
+
+# Data & Privacy
+
+Intune Assistant is built with privacy by design. Our core principle is that **your data stays in your tenant** - we process everything in memory and store only the absolute minimum required for licensing and identification.
+
+## Our Privacy Commitment
+
+<Callout type="success" title="Zero Data Extraction">
+    **No data leaves your tenant.** All Intune and Graph API data is processed in browser session memory only and never stored or transmitted to external systems.
+</Callout>
+
+## Data Storage & Processing Overview
+
+### Minimal Data Storage Approach
+
+There is a very strict minimal data storage policy with complete transparency about what is stored and why:
+
+| Data Type | Stored | Purpose | Retention |
+|-----------|---------|---------|-----------|
+| **Tenant ID** | ✅ Yes | Identify tenant and enforce fair-usage licensing. (Access can be denied by Tenant ID)  | Persistent |
+| **Tenant Domain** | ✅ Yes | Display and licensing identification | Persistent |
+| **Session Data** (tokens, settings) | ❌ No | Stored only in browser session storage | Temporary |
+| **Intune Data** | ❌ No | Processed in session memory only, never persisted | N/A |
+| **Graph API Data** | ❌ No | Processed in session memory only, never persisted | N/A |
+| **User's Device Information** | ❌ No | Never accessed or stored | N/A |
+| **User Personal Data** | ❌ No | Never accessed or stored | N/A |
+
+## How We Process Your Data
+
+### In-Memory Processing Only
+<Mermaid chart={`graph LR
+    subgraph YT["🏢 Your Tenant"]
+        GA["Graph API<br/>Intune Data"]
+    end
+
+    subgraph IA["⚡ Intune Assistant"]
+        MP["Memory Only<br/>Processing<br/>(Temporary)"]
+    end
+
+    subgraph YB["💻 Your Browser"]
+        SS["Session<br/>Storage<br/>(Temporary)"]
+    end
+
+    GA <--> MP
+    MP <--> SS
+
+    MP --> DD["🗑️ Data discarded<br/>immediately"]
+    SS --> CL["🚪 Cleared on<br/>logout/close"]
+
+    YT -.-> NL["🚫 Data never leaves<br/>your tenant boundary"]
+
+    style YT fill:#e1f5fe
+    style IA fill:#f3e5f5
+    style YB fill:#e8f5e8
+    style DD fill:#ffebee
+    style CL fill:#ffebee
+    style NL fill:#fff3e0`} />
+
+### Data Flow Principles
+
+1. **Request Processing**
+   - API calls made directly to your tenant's Graph API
+   - Data retrieved and processed in memory only
+   - Results displayed immediately to your browser
+
+2. **No Persistence**
+   - API responses processed and immediately discarded
+   - No database storage of any tenant-specific data
+   - No caching beyond browser session storage
+
+3. **Session Management**
+   - Authentication tokens stored only in browser session
+   - Session data cleared automatically on logout
+   - No server-side session persistence
+
+<Callout type="info" title="Browser Session Storage">
+   Browser session storage is used for temporary data like UI preferences and navigation state. This data is automatically cleared when you go to an other page, close your browser or log out.
+</Callout>
+
+## Data Security Measures
+
+### Technical Safeguards
+
+- **HTTPS Encryption** - All communications encrypted in transit
+- **No Database Storage** - No persistent storage of tenant data
+- **Memory-Only Processing** - All operations performed in volatile memory
+- **Automatic Cleanup** - Memory cleared after each operation
+- **Session Isolation** - Each session completely isolated from others
+
+### Access Controls
+
+- **Microsoft Identity** - Authentication through your tenant's identity provider
+- **GDAP Compliance** - Granular delegated admin privileges for MSPs
+- **Role-Based Access** - Permissions enforced through your tenant's RBAC
+- **No Backdoors** - No administrative access to your tenant data
+
+### Compliance Standards
+
+- **GDPR Compliant** - Privacy by design approach
+- **Microsoft Security Standards** - Built on Microsoft's security framework
+- **Industry Best Practices** - Following established security guidelines
+- **Regular Security Reviews** - Continuous security assessment and improvement
+
+## MSP Privacy Considerations
+
+### Multi-Tenant Data Isolation
+
+For MSP environments, we ensure complete data isolation:
+
+- **Tenant-Specific Processing** - Each customer tenant processed independently
+- **No Cross-Tenant Data** - No mixing of data between customer tenants
+- **GDAP Respect** - Only access data according to granted permissions
+
+### Customer Data Protection
+
+- **Customer Consent** - All access based on explicit GDAP permissions
+- **Limited Scope** - Only access data necessary for granted roles
+- **No Data Sharing** - No sharing of customer data between tenants or MSPs
+
+
+## Your Rights and Controls
+
+### Data Control
+
+- **Full Control** - You maintain complete control over your tenant data
+- **Access Management** - Control application access through Azure AD
+- **Permission Granularity** - Grant only necessary permissions
+- **Revoke Access** - Instantly revoke application access at any time
+
+### Transparency
+
+- **Open Source** - Application code (Webinterface) available for review
+- **Clear Documentation** - Complete transparency about data handling
+- **No Hidden Processes** - All data processing clearly documented
+- **Regular Updates** - Privacy policy updates communicated clearly
+
+### Technical Questions
+
+**Q: How do you handle authentication tokens?**
+A: Authentication tokens are stored only in your browser's session storage and are never transmitted to our servers or stored persistently.
+
+**Q: Is my data encrypted?**
+A: All communication is encrypted via HTTPS. Since we don't store your data, there's no data at rest to encrypt.
+
+**Q: Can other users see my data?**
+A: No, all data processing is isolated per user session. No data is shared between users or stored centrally.
+
+
+---
+
+<Callout type="success" title="Privacy Promise">
+    **Your data stays with you.** We're committed to keeping your Microsoft tenant data exactly where it belongs - in your tenant, under your control.
+</Callout>

@@ -2,6 +2,7 @@
   "title": "Administration",
   "pages": [
     "user-access-control",
-    "permissions"
+    "data-and-privacy",
+    "multi-tenant"
   ]
 }

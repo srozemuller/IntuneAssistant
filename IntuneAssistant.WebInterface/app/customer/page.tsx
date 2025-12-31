@@ -100,6 +100,13 @@ export default function CustomerPage() {
     const [consentLoading, setConsentLoading] = useState<Set<string>>(new Set());
     const [consentError, setConsentError] = useState<string | null>(null);
 
+    const [deleteLicenseConfirmation, setDeleteLicenseConfirmation] = useState<{
+        isOpen: boolean;
+        tenantId: string;
+        licenseId: string;
+        licenseName: string;
+    } | null>(null);
+
     // Add useEffect for handling consent messages
     useEffect(() => {
         const handleConsentMessage = (event: MessageEvent) => {
@@ -995,54 +1002,6 @@ export default function CustomerPage() {
                 return 'destructive';
         }
     };
-    const createNewLicense = async (tenantId: string, licenseData: {
-        isEnabled: boolean;
-        LicenseType: number;
-    }) => {
-        try {
-            setUpdatingLicense(prev => new Set(prev).add(`${tenantId}-new`));
-            setLicenseError(null);
-
-            const response = await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0]
-            });
-
-            const apiResponse = await fetch(`${CUSTOMER_ENDPOINT}/tenants/${tenantId}/license`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    isEnabled: licenseData.isEnabled,
-                    LicenseType: licenseData.LicenseType
-                }),
-            });
-
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to create license: ${apiResponse.statusText}`);
-            }
-
-            const responseData = await apiResponse.json();
-            console.log('License creation response:', responseData);
-
-            await refetchCustomerData();
-            setAddLicenseDialog(null);
-
-        } catch (err) {
-            console.error('Failed to create license:', err);
-            setLicenseError(err instanceof Error ? err.message : 'Failed to create license');
-        } finally {
-            setUpdatingLicense(prev => {
-                const newSet = new Set(prev);
-                newSet.delete(`${tenantId}-new`);
-                return newSet;
-            });
-        }
-    };
-
-
 
 
     const handleTenantSelect = (tenant: Tenant) => {
@@ -1362,7 +1321,7 @@ export default function CustomerPage() {
 
             {/* Delete Confirmation Dialog */}
             {deleteConfirmation && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
                     <Card className="w-full max-w-md mx-4">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-red-600">
@@ -1392,6 +1351,7 @@ export default function CustomerPage() {
                                         if (deleteConfirmation) {
                                             deleteTenant(deleteConfirmation.tenantId);
                                             setDeleteConfirmation(null);
+                                            setEditTenant(null);
                                         }
                                     }}
                                     className="bg-red-600 hover:bg-red-700"
@@ -1555,7 +1515,6 @@ export default function CustomerPage() {
                                                         tenantId: editTenant.tenant!.tenantId,
                                                         tenantName: editTenant.tenant!.displayName
                                                     });
-                                                    setEditTenant(null);
                                                 }}
                                                 className="w-full justify-start"
                                             >
@@ -1595,10 +1554,17 @@ export default function CustomerPage() {
                                                                     {isUpdating && (
                                                                         <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                                                                     )}
-                                                                    <Button
+                                                                  <Button
                                                                         variant="outline"
                                                                         size="sm"
-                                                                        onClick={() => deleteTenantLicense(editTenant.tenant!.tenantId, license.id)}
+                                                                        onClick={() => {
+                                                                            setDeleteLicenseConfirmation({
+                                                                                isOpen: true,
+                                                                                tenantId: editTenant.tenant!.tenantId,
+                                                                                licenseId: license.id,
+                                                                                licenseName: getLicenseTypeName(license.licenseType)
+                                                                            });
+                                                                        }}
                                                                         disabled={isUpdating}
                                                                         className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
                                                                     >
@@ -1718,6 +1684,50 @@ export default function CustomerPage() {
                     </Card>
                 </div>
             )}
+            {/* License Delete Confirmation Dialog */}
+            {deleteLicenseConfirmation && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
+                    <Card className="w-full max-w-md mx-4">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-red-600">
+                                <AlertCircle className="h-5 w-5" />
+                                Confirm License Deletion
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                                Are you sure you want to delete the <span className="font-semibold">&quot;{deleteLicenseConfirmation.licenseName}&quot;</span> license?
+                            </p>
+                            <p className="text-xs text-red-600 dark:text-red-400">
+                                This action cannot be undone and will remove access to features provided by this license.
+                            </p>
+                            <div className="flex justify-end gap-2 pt-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setDeleteLicenseConfirmation(null)}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => {
+                                        if (deleteLicenseConfirmation) {
+                                            deleteTenantLicense(deleteLicenseConfirmation.tenantId, deleteLicenseConfirmation.licenseId);
+                                            setDeleteLicenseConfirmation(null);
+                                        }
+                                    }}
+                                    className="bg-red-600 hover:bg-red-700"
+                                >
+                                    Delete License
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
             {/* License Onboarding Wizard */}
             {licenseOnboardingWizard && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
@@ -1809,7 +1819,7 @@ export default function CustomerPage() {
                                                     ?.licenses?.some(license => license.licenseType === 2)
                                                 }
                                             >
-                                                Historicus {customerData?.tenants
+                                                Troubleshooter {customerData?.tenants
                                                 .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
                                                 ?.licenses?.some(license => license.licenseType === 2)
                                                 ? '(Already assigned)' : ''

@@ -3054,6 +3054,7 @@ function CustomerPage() {
     const [consentWindow, setConsentWindow] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [consentLoading, setConsentLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(new Set());
     const [consentError, setConsentError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [deleteLicenseConfirmation, setDeleteLicenseConfirmation] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     // Add useEffect for handling consent messages
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         const handleConsentMessage = (event)=>{
@@ -3275,12 +3276,12 @@ function CustomerPage() {
                         children: tenant.displayName
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 364,
+                        lineNumber: 371,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 363,
+                    lineNumber: 370,
                     columnNumber: 21
                 }, this);
             }
@@ -3293,7 +3294,7 @@ function CustomerPage() {
                     children: value
                 }, void 0, false, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 375,
+                    lineNumber: 382,
                     columnNumber: 17
                 }, this)
         },
@@ -3305,7 +3306,7 @@ function CustomerPage() {
                     children: value
                 }, void 0, false, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 384,
+                    lineNumber: 391,
                     columnNumber: 17
                 }, this)
         },
@@ -3323,7 +3324,7 @@ function CustomerPage() {
                             children: "No License"
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 398,
+                            lineNumber: 405,
                             columnNumber: 28
                         }, this);
                     }
@@ -3338,14 +3339,14 @@ function CustomerPage() {
                                             className: "h-3 w-3 mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 405,
+                                            lineNumber: 412,
                                             columnNumber: 33
                                         }, this),
                                         "Consent Required"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 404,
+                                    lineNumber: 411,
                                     columnNumber: 29
                                 }, this),
                                 communityLicense.consentUrl && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -3364,7 +3365,7 @@ function CustomerPage() {
                                                 className: "h-3 w-3 mr-1 animate-spin"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 422,
+                                                lineNumber: 429,
                                                 columnNumber: 45
                                             }, this),
                                             "Processing..."
@@ -3372,13 +3373,13 @@ function CustomerPage() {
                                     }, void 0, true) : 'Grant Consent'
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 409,
+                                    lineNumber: 416,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 403,
+                            lineNumber: 410,
                             columnNumber: 25
                         }, this);
                     }
@@ -3390,14 +3391,14 @@ function CustomerPage() {
                                     className: "h-3 w-3 mr-1"
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 438,
+                                    lineNumber: 445,
                                     columnNumber: 29
                                 }, this),
                                 "Onboarding Required"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 437,
+                            lineNumber: 444,
                             columnNumber: 25
                         }, this);
                     }
@@ -3409,14 +3410,14 @@ function CustomerPage() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 446,
+                                lineNumber: 453,
                                 columnNumber: 25
                             }, this),
                             "Ready"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 445,
+                        lineNumber: 452,
                         columnNumber: 21
                     }, this);
                 }
@@ -3438,7 +3439,7 @@ function CustomerPage() {
                                 children: "Primary"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 460,
+                                lineNumber: 467,
                                 columnNumber: 46
                             }, this),
                             tenant.isTrial && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3447,7 +3448,7 @@ function CustomerPage() {
                                 children: "Trial"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 461,
+                                lineNumber: 468,
                                 columnNumber: 44
                             }, this),
                             !tenant.isPrimary && !tenant.isTrial && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3456,13 +3457,13 @@ function CustomerPage() {
                                 children: "Standard"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 462,
+                                lineNumber: 469,
                                 columnNumber: 66
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 459,
+                        lineNumber: 466,
                         columnNumber: 21
                     }, this);
                 }
@@ -3479,7 +3480,7 @@ function CustomerPage() {
                         children: isGdap ? 'Enabled' : 'Disabled'
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 473,
+                        lineNumber: 480,
                         columnNumber: 21
                     }, this);
                 }
@@ -3501,13 +3502,13 @@ function CustomerPage() {
                                 className: "h-4 w-4 text-orange-500"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 493,
+                                lineNumber: 500,
                                 columnNumber: 29
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__["CheckCircle"], {
                                 className: "h-4 w-4 text-green-500"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 495,
+                                lineNumber: 502,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3518,13 +3519,13 @@ function CustomerPage() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 497,
+                                lineNumber: 504,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 491,
+                        lineNumber: 498,
                         columnNumber: 21
                     }, this);
                 }
@@ -3553,12 +3554,12 @@ function CustomerPage() {
                             className: "h-3 w-3"
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 525,
+                            lineNumber: 532,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 512,
+                        lineNumber: 519,
                         columnNumber: 21
                     }, this);
                 }
@@ -3939,45 +3940,6 @@ function CustomerPage() {
                 return 'destructive';
         }
     };
-    const createNewLicense = async (tenantId, licenseData)=>{
-        try {
-            setUpdatingLicense((prev)=>new Set(prev).add(`${tenantId}-new`));
-            setLicenseError(null);
-            const response = await instance.acquireTokenSilent({
-                scopes: [
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$msalConfig$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["apiScope"]
-                ],
-                account: accounts[0]
-            });
-            const apiResponse = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CUSTOMER_ENDPOINT"]}/tenants/${tenantId}/license`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${response.accessToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    isEnabled: licenseData.isEnabled,
-                    LicenseType: licenseData.LicenseType
-                })
-            });
-            if (!apiResponse.ok) {
-                throw new Error(`Failed to create license: ${apiResponse.statusText}`);
-            }
-            const responseData = await apiResponse.json();
-            console.log('License creation response:', responseData);
-            await refetchCustomerData();
-            setAddLicenseDialog(null);
-        } catch (err) {
-            console.error('Failed to create license:', err);
-            setLicenseError(err instanceof Error ? err.message : 'Failed to create license');
-        } finally{
-            setUpdatingLicense((prev)=>{
-                const newSet = new Set(prev);
-                newSet.delete(`${tenantId}-new`);
-                return newSet;
-            });
-        }
-    };
     const handleTenantSelect = (tenant)=>{
         setShowClickOverlay(true);
         setSelectedTenant(tenant);
@@ -4000,7 +3962,7 @@ function CustomerPage() {
                         className: "h-8 w-8 animate-spin"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1066,
+                        lineNumber: 1025,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4008,18 +3970,18 @@ function CustomerPage() {
                         children: "Loading customer information..."
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1067,
+                        lineNumber: 1026,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1065,
+                lineNumber: 1024,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/customer/page.tsx",
-            lineNumber: 1064,
+            lineNumber: 1023,
             columnNumber: 13
         }, this);
     }
@@ -4038,7 +4000,7 @@ function CustomerPage() {
                                     className: "h-5 w-5"
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1079,
+                                    lineNumber: 1038,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4048,13 +4010,13 @@ function CustomerPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1080,
+                                    lineNumber: 1039,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1078,
+                            lineNumber: 1037,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -4063,23 +4025,23 @@ function CustomerPage() {
                             children: "Retry"
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1082,
+                            lineNumber: 1041,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1077,
+                    lineNumber: 1036,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1076,
+                lineNumber: 1035,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/customer/page.tsx",
-            lineNumber: 1075,
+            lineNumber: 1034,
             columnNumber: 13
         }, this);
     }
@@ -4094,7 +4056,7 @@ function CustomerPage() {
                             children: "No customer data available"
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1096,
+                            lineNumber: 1055,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -4103,23 +4065,23 @@ function CustomerPage() {
                             children: "Go Back"
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1097,
+                            lineNumber: 1056,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1095,
+                    lineNumber: 1054,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1094,
+                lineNumber: 1053,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/customer/page.tsx",
-            lineNumber: 1093,
+            lineNumber: 1052,
             columnNumber: 13
         }, this);
     }
@@ -4136,7 +4098,7 @@ function CustomerPage() {
                         children: "← Back"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1109,
+                        lineNumber: 1068,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -4144,7 +4106,7 @@ function CustomerPage() {
                         children: "Customer Information"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1116,
+                        lineNumber: 1075,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4152,13 +4114,13 @@ function CustomerPage() {
                         children: "Manage customer details and tenant access"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1117,
+                        lineNumber: 1076,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1108,
+                lineNumber: 1067,
                 columnNumber: 13
             }, this),
             consentError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4168,14 +4130,14 @@ function CustomerPage() {
                         className: "h-4 w-4"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1122,
+                        lineNumber: 1081,
                         columnNumber: 21
                     }, this),
                     consentError
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1121,
+                lineNumber: 1080,
                 columnNumber: 17
             }, this),
             updateError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4189,7 +4151,7 @@ function CustomerPage() {
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1133,
+                                lineNumber: 1092,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4197,23 +4159,23 @@ function CustomerPage() {
                                 children: updateError
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1134,
+                                lineNumber: 1093,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1132,
+                        lineNumber: 1091,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1131,
+                    lineNumber: 1090,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1130,
+                lineNumber: 1089,
                 columnNumber: 17
             }, this),
             deleteError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4227,7 +4189,7 @@ function CustomerPage() {
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1144,
+                                lineNumber: 1103,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4235,23 +4197,23 @@ function CustomerPage() {
                                 children: deleteError
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1145,
+                                lineNumber: 1104,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1143,
+                        lineNumber: 1102,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1142,
+                    lineNumber: 1101,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1141,
+                lineNumber: 1100,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4269,19 +4231,19 @@ function CustomerPage() {
                                                 className: "h-5 w-5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1157,
+                                                lineNumber: 1116,
                                                 columnNumber: 33
                                             }, this),
                                             "Customer Details"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1156,
+                                        lineNumber: 1115,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1155,
+                                    lineNumber: 1114,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4296,7 +4258,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1165,
+                                                        lineNumber: 1124,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4306,7 +4268,7 @@ function CustomerPage() {
                                                                 children: "Customer Name"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1167,
+                                                                lineNumber: 1126,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4314,19 +4276,19 @@ function CustomerPage() {
                                                                 children: customerData.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1168,
+                                                                lineNumber: 1127,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1166,
+                                                        lineNumber: 1125,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1164,
+                                                lineNumber: 1123,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4336,7 +4298,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1173,
+                                                        lineNumber: 1132,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4346,7 +4308,7 @@ function CustomerPage() {
                                                                 children: "Address"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1175,
+                                                                lineNumber: 1134,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4354,19 +4316,19 @@ function CustomerPage() {
                                                                 children: customerData.address || 'Not provided'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1176,
+                                                                lineNumber: 1135,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1174,
+                                                        lineNumber: 1133,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1172,
+                                                lineNumber: 1131,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4376,7 +4338,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1183,
+                                                        lineNumber: 1142,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4386,7 +4348,7 @@ function CustomerPage() {
                                                                 children: "Primary Contact"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1185,
+                                                                lineNumber: 1144,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4394,19 +4356,19 @@ function CustomerPage() {
                                                                 children: customerData.primaryContactEmail || 'Not provided'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1186,
+                                                                lineNumber: 1145,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1184,
+                                                        lineNumber: 1143,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1182,
+                                                lineNumber: 1141,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4416,7 +4378,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1193,
+                                                        lineNumber: 1152,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4426,7 +4388,7 @@ function CustomerPage() {
                                                                 children: "Account Type"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1195,
+                                                                lineNumber: 1154,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4437,7 +4399,7 @@ function CustomerPage() {
                                                                         children: customerData.isMsp ? 'MSP' : 'Direct'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1197,
+                                                                        lineNumber: 1156,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -4445,7 +4407,7 @@ function CustomerPage() {
                                                                         children: customerData.isActive ? 'Active' : 'Community'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1200,
+                                                                        lineNumber: 1159,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -4453,25 +4415,25 @@ function CustomerPage() {
                                                                         children: customerData.isGdap ? 'GDAP' : 'No GDAP'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1203,
+                                                                        lineNumber: 1162,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1196,
+                                                                lineNumber: 1155,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1194,
+                                                        lineNumber: 1153,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1192,
+                                                lineNumber: 1151,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4481,7 +4443,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1211,
+                                                        lineNumber: 1170,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4491,7 +4453,7 @@ function CustomerPage() {
                                                                 children: "Home Tenant ID"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1213,
+                                                                lineNumber: 1172,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
@@ -4499,41 +4461,41 @@ function CustomerPage() {
                                                                 children: customerData.homeTenantId
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1214,
+                                                                lineNumber: 1173,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1212,
+                                                        lineNumber: 1171,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1210,
+                                                lineNumber: 1169,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1163,
+                                        lineNumber: 1122,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1161,
+                                    lineNumber: 1120,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1154,
+                            lineNumber: 1113,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1153,
+                        lineNumber: 1112,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4549,19 +4511,19 @@ function CustomerPage() {
                                                     className: "h-5 w-5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1231,
+                                                    lineNumber: 1190,
                                                     columnNumber: 37
                                                 }, this),
                                                 "License Information"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1230,
+                                            lineNumber: 1189,
                                             columnNumber: 33
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1229,
+                                        lineNumber: 1188,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4576,7 +4538,7 @@ function CustomerPage() {
                                                                 className: "h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1240,
+                                                                lineNumber: 1199,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4590,13 +4552,13 @@ function CustomerPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1241,
+                                                                lineNumber: 1200,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1239,
+                                                        lineNumber: 1198,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4604,13 +4566,13 @@ function CustomerPage() {
                                                         children: "Contact support to increase your tenant limit or upgrade your license."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1245,
+                                                        lineNumber: 1204,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1238,
+                                                lineNumber: 1197,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4627,7 +4589,7 @@ function CustomerPage() {
                                                                         children: getCustomerLicenseTypeName(license.licenseType)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1255,
+                                                                        lineNumber: 1214,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4639,7 +4601,7 @@ function CustomerPage() {
                                                                                 children: license.isActive ? 'Active' : 'Inactive'
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1259,
+                                                                                lineNumber: 1218,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             license.isTrial && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -4648,19 +4610,19 @@ function CustomerPage() {
                                                                                 children: "Trial"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1263,
+                                                                                lineNumber: 1222,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1258,
+                                                                        lineNumber: 1217,
                                                                         columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1254,
+                                                                lineNumber: 1213,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4674,7 +4636,7 @@ function CustomerPage() {
                                                                                 children: "Max Tenants:"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1269,
+                                                                                lineNumber: 1228,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4682,13 +4644,13 @@ function CustomerPage() {
                                                                                 children: license.maxTenants
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1270,
+                                                                                lineNumber: 1229,
                                                                                 columnNumber: 53
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1268,
+                                                                        lineNumber: 1227,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4699,7 +4661,7 @@ function CustomerPage() {
                                                                                 children: "Expires:"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1273,
+                                                                                lineNumber: 1232,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4707,42 +4669,42 @@ function CustomerPage() {
                                                                                 children: license.expiryDate ? new Date(license.expiryDate).toLocaleDateString() : 'Never'
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1274,
+                                                                                lineNumber: 1233,
                                                                                 columnNumber: 53
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1272,
+                                                                        lineNumber: 1231,
                                                                         columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1267,
+                                                                lineNumber: 1226,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, index, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1253,
+                                                        lineNumber: 1212,
                                                         columnNumber: 41
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1251,
+                                                lineNumber: 1210,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1235,
+                                        lineNumber: 1194,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1228,
+                                lineNumber: 1187,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4752,12 +4714,12 @@ function CustomerPage() {
                                             children: "Summary"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1292,
+                                            lineNumber: 1251,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1291,
+                                        lineNumber: 1250,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4772,7 +4734,7 @@ function CustomerPage() {
                                                             children: customerData.tenants.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1297,
+                                                            lineNumber: 1256,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4780,13 +4742,13 @@ function CustomerPage() {
                                                             children: "Total Tenants"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1300,
+                                                            lineNumber: 1259,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1296,
+                                                    lineNumber: 1255,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4797,7 +4759,7 @@ function CustomerPage() {
                                                             children: customerData.tenants.filter((t)=>t.isActive).length
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1303,
+                                                            lineNumber: 1262,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4805,42 +4767,42 @@ function CustomerPage() {
                                                             children: "Enabled Tenants"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1306,
+                                                            lineNumber: 1265,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1302,
+                                                    lineNumber: 1261,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1295,
+                                            lineNumber: 1254,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1294,
+                                        lineNumber: 1253,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1290,
+                                lineNumber: 1249,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1225,
+                        lineNumber: 1184,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1151,
+                lineNumber: 1110,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4855,14 +4817,14 @@ function CustomerPage() {
                                         className: "h-5 w-5"
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1318,
+                                        lineNumber: 1277,
                                         columnNumber: 25
                                     }, this),
                                     "Tenant Management"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1317,
+                                lineNumber: 1276,
                                 columnNumber: 21
                             }, this),
                             customerData.isMsp && customerData.isActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4877,14 +4839,14 @@ function CustomerPage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1328,
+                                                lineNumber: 1287,
                                                 columnNumber: 33
                                             }, this),
                                             "Add Tenant"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1323,
+                                        lineNumber: 1282,
                                         columnNumber: 29
                                     }, this),
                                     isTenantLimitReached() && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4898,19 +4860,19 @@ function CustomerPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1332,
+                                        lineNumber: 1291,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1322,
+                                lineNumber: 1281,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1316,
+                        lineNumber: 1275,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4920,7 +4882,7 @@ function CustomerPage() {
                                 className: "absolute inset-0 bg-gradient-to-r from-transparent via-blue-200 to-transparent opacity-60 animate-shimmer"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1342,
+                                lineNumber: 1301,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DataTable$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DataTable"], {
@@ -4938,23 +4900,23 @@ function CustomerPage() {
                                 showPagination: true
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1345,
+                                lineNumber: 1304,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1340,
+                        lineNumber: 1299,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1315,
+                lineNumber: 1274,
                 columnNumber: 13
             }, this),
             deleteConfirmation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50",
+                className: "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                     className: "w-full max-w-md mx-4",
                     children: [
@@ -4966,19 +4928,19 @@ function CustomerPage() {
                                         className: "h-5 w-5"
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1369,
+                                        lineNumber: 1328,
                                         columnNumber: 33
                                     }, this),
                                     "Confirm Delete"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1368,
+                                lineNumber: 1327,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1367,
+                            lineNumber: 1326,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4997,14 +4959,14 @@ function CustomerPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1375,
+                                            lineNumber: 1334,
                                             columnNumber: 65
                                         }, this),
                                         "?"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1374,
+                                    lineNumber: 1333,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5012,7 +4974,7 @@ function CustomerPage() {
                                     children: "This action cannot be undone and will permanently remove the tenant from the system."
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1377,
+                                    lineNumber: 1336,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5025,7 +4987,7 @@ function CustomerPage() {
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1381,
+                                            lineNumber: 1340,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5035,36 +4997,37 @@ function CustomerPage() {
                                                 if (deleteConfirmation) {
                                                     deleteTenant(deleteConfirmation.tenantId);
                                                     setDeleteConfirmation(null);
+                                                    setEditTenant(null);
                                                 }
                                             },
                                             className: "bg-red-600 hover:bg-red-700",
                                             children: "Delete Tenant"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1388,
+                                            lineNumber: 1347,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1380,
+                                    lineNumber: 1339,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1373,
+                            lineNumber: 1332,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1366,
+                    lineNumber: 1325,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1365,
+                lineNumber: 1324,
                 columnNumber: 17
             }, this),
             editTenant && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5081,7 +5044,7 @@ function CustomerPage() {
                                             className: "h-5 w-5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1412,
+                                            lineNumber: 1372,
                                             columnNumber: 33
                                         }, this),
                                         "Tenant Management - ",
@@ -5089,7 +5052,7 @@ function CustomerPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1411,
+                                    lineNumber: 1371,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5097,13 +5060,13 @@ function CustomerPage() {
                                     children: "Manage tenant settings, licenses, and permissions in one place."
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1415,
+                                    lineNumber: 1375,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1410,
+                            lineNumber: 1370,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5118,7 +5081,7 @@ function CustomerPage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1423,
+                                                lineNumber: 1383,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5126,18 +5089,18 @@ function CustomerPage() {
                                                 children: editError || licenseError
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1424,
+                                                lineNumber: 1384,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1422,
+                                        lineNumber: 1382,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1421,
+                                    lineNumber: 1381,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5156,14 +5119,14 @@ function CustomerPage() {
                                                                     className: "h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1435,
+                                                                    lineNumber: 1395,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 "Tenant Settings"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1434,
+                                                            lineNumber: 1394,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -5189,7 +5152,7 @@ function CustomerPage() {
                                                                             children: "Display Name"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1453,
+                                                                            lineNumber: 1413,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -5200,13 +5163,13 @@ function CustomerPage() {
                                                                             required: true
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1454,
+                                                                            lineNumber: 1414,
                                                                             columnNumber: 49
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1452,
+                                                                    lineNumber: 1412,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5217,7 +5180,7 @@ function CustomerPage() {
                                                                             children: "Tenant Information"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1464,
+                                                                            lineNumber: 1424,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5231,7 +5194,7 @@ function CustomerPage() {
                                                                                             children: "Tenant ID:"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1467,
+                                                                                            lineNumber: 1427,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
@@ -5239,13 +5202,13 @@ function CustomerPage() {
                                                                                             children: editTenant.tenant?.tenantId
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1468,
+                                                                                            lineNumber: 1428,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1466,
+                                                                                    lineNumber: 1426,
                                                                                     columnNumber: 53
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5256,7 +5219,7 @@ function CustomerPage() {
                                                                                             children: "Domain:"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1471,
+                                                                                            lineNumber: 1431,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
@@ -5264,13 +5227,13 @@ function CustomerPage() {
                                                                                             children: editTenant.tenant?.domainName
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1472,
+                                                                                            lineNumber: 1432,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1470,
+                                                                                    lineNumber: 1430,
                                                                                     columnNumber: 53
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5281,7 +5244,7 @@ function CustomerPage() {
                                                                                             children: "Status:"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1475,
+                                                                                            lineNumber: 1435,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -5289,13 +5252,13 @@ function CustomerPage() {
                                                                                             children: editTenant.tenant?.isActive ? 'Active' : 'Inactive'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1476,
+                                                                                            lineNumber: 1436,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1474,
+                                                                                    lineNumber: 1434,
                                                                                     columnNumber: 53
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5306,7 +5269,7 @@ function CustomerPage() {
                                                                                             children: "GDAP:"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1481,
+                                                                                            lineNumber: 1441,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -5314,25 +5277,25 @@ function CustomerPage() {
                                                                                             children: editTenant.tenant?.isGdap ? 'Enabled' : 'Disabled'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1482,
+                                                                                            lineNumber: 1442,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1480,
+                                                                                    lineNumber: 1440,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1465,
+                                                                            lineNumber: 1425,
                                                                             columnNumber: 49
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1463,
+                                                                    lineNumber: 1423,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5345,7 +5308,7 @@ function CustomerPage() {
                                                                                 className: "h-4 w-4 animate-spin mr-2"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1496,
+                                                                                lineNumber: 1456,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             "Saving..."
@@ -5353,19 +5316,19 @@ function CustomerPage() {
                                                                     }, void 0, true) : 'Save Settings'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1489,
+                                                                    lineNumber: 1449,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1439,
+                                                            lineNumber: 1399,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1433,
+                                                    lineNumber: 1393,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5378,14 +5341,14 @@ function CustomerPage() {
                                                                     className: "h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1509,
+                                                                    lineNumber: 1469,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 "Quick Actions"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1508,
+                                                            lineNumber: 1468,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5406,7 +5369,7 @@ function CustomerPage() {
                                                                                 className: "h-4 w-4 mr-2"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1529,
+                                                                                lineNumber: 1489,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             "Active Context"
@@ -5417,7 +5380,7 @@ function CustomerPage() {
                                                                                 className: "h-4 w-4 mr-2"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1534,
+                                                                                lineNumber: 1494,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             "Set as Context"
@@ -5425,7 +5388,7 @@ function CustomerPage() {
                                                                     }, void 0, true)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1513,
+                                                                    lineNumber: 1473,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5438,14 +5401,14 @@ function CustomerPage() {
                                                                             className: "h-4 w-4 mr-2"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1546,
+                                                                            lineNumber: 1506,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         "Add New License"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1539,
+                                                                    lineNumber: 1499,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5457,7 +5420,6 @@ function CustomerPage() {
                                                                             tenantId: editTenant.tenant.tenantId,
                                                                             tenantName: editTenant.tenant.displayName
                                                                         });
-                                                                        setEditTenant(null);
                                                                     },
                                                                     className: "w-full justify-start",
                                                                     children: [
@@ -5465,32 +5427,32 @@ function CustomerPage() {
                                                                             className: "h-4 w-4 mr-2"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1562,
+                                                                            lineNumber: 1521,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         "Delete Tenant"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1549,
+                                                                    lineNumber: 1509,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1512,
+                                                            lineNumber: 1472,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1507,
+                                                    lineNumber: 1467,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1432,
+                                            lineNumber: 1392,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5508,14 +5470,14 @@ function CustomerPage() {
                                                                         className: "h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1574,
+                                                                        lineNumber: 1533,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     "License Management"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1573,
+                                                                lineNumber: 1532,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5526,13 +5488,13 @@ function CustomerPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1577,
+                                                                lineNumber: 1536,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1572,
+                                                        lineNumber: 1531,
                                                         columnNumber: 41
                                                     }, this),
                                                     editTenant.tenant?.licenses && editTenant.tenant.licenses.length > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5551,7 +5513,7 @@ function CustomerPage() {
                                                                                 children: getLicenseTypeName(license.licenseType)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1591,
+                                                                                lineNumber: 1550,
                                                                                 columnNumber: 65
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5561,37 +5523,44 @@ function CustomerPage() {
                                                                                         className: "h-4 w-4 animate-spin text-blue-600"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1596,
+                                                                                        lineNumber: 1555,
                                                                                         columnNumber: 73
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                                                                                         variant: "outline",
                                                                                         size: "sm",
-                                                                                        onClick: ()=>deleteTenantLicense(editTenant.tenant.tenantId, license.id),
+                                                                                        onClick: ()=>{
+                                                                                            setDeleteLicenseConfirmation({
+                                                                                                isOpen: true,
+                                                                                                tenantId: editTenant.tenant.tenantId,
+                                                                                                licenseId: license.id,
+                                                                                                licenseName: getLicenseTypeName(license.licenseType)
+                                                                                            });
+                                                                                        },
                                                                                         disabled: isUpdating,
                                                                                         className: "h-6 w-6 p-0 text-red-600 hover:text-red-800",
                                                                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trash$2d$2$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Trash2$3e$__["Trash2"], {
                                                                                             className: "h-3 w-3"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1605,
+                                                                                            lineNumber: 1571,
                                                                                             columnNumber: 73
                                                                                         }, this)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1598,
-                                                                                        columnNumber: 69
+                                                                                        lineNumber: 1557,
+                                                                                        columnNumber: 67
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1594,
+                                                                                lineNumber: 1553,
                                                                                 columnNumber: 65
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1590,
+                                                                        lineNumber: 1549,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5602,7 +5571,7 @@ function CustomerPage() {
                                                                                     className: "h-4 w-4 text-green-500"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1614,
+                                                                                    lineNumber: 1580,
                                                                                     columnNumber: 73
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5613,7 +5582,7 @@ function CustomerPage() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1615,
+                                                                                    lineNumber: 1581,
                                                                                     columnNumber: 73
                                                                                 }, this)
                                                                             ]
@@ -5623,7 +5592,7 @@ function CustomerPage() {
                                                                                     className: "h-4 w-4 text-orange-500"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1621,
+                                                                                    lineNumber: 1587,
                                                                                     columnNumber: 73
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5631,14 +5600,14 @@ function CustomerPage() {
                                                                                     children: "Consent Required"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1622,
+                                                                                    lineNumber: 1588,
                                                                                     columnNumber: 73
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1611,
+                                                                        lineNumber: 1577,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     !license.isConsentGranted && license.consentUrl && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5649,7 +5618,7 @@ function CustomerPage() {
                                                                         children: "Grant Consent"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1631,
+                                                                        lineNumber: 1597,
                                                                         columnNumber: 65
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5662,7 +5631,7 @@ function CustomerPage() {
                                                                                         children: "Active:"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1644,
+                                                                                        lineNumber: 1610,
                                                                                         columnNumber: 69
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -5683,26 +5652,26 @@ function CustomerPage() {
                                                                                                 className: "sr-only peer"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                                lineNumber: 1646,
+                                                                                                lineNumber: 1612,
                                                                                                 columnNumber: 73
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                 className: "w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-3 peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                                lineNumber: 1660,
+                                                                                                lineNumber: 1626,
                                                                                                 columnNumber: 73
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1645,
+                                                                                        lineNumber: 1611,
                                                                                         columnNumber: 69
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1643,
+                                                                                lineNumber: 1609,
                                                                                 columnNumber: 65
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5712,7 +5681,7 @@ function CustomerPage() {
                                                                                         children: "Trial:"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1664,
+                                                                                        lineNumber: 1630,
                                                                                         columnNumber: 69
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -5733,32 +5702,32 @@ function CustomerPage() {
                                                                                                 className: "sr-only peer"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                                lineNumber: 1666,
+                                                                                                lineNumber: 1632,
                                                                                                 columnNumber: 73
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                 className: "w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-3 peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                                lineNumber: 1680,
+                                                                                                lineNumber: 1646,
                                                                                                 columnNumber: 73
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1665,
+                                                                                        lineNumber: 1631,
                                                                                         columnNumber: 69
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1663,
+                                                                                lineNumber: 1629,
                                                                                 columnNumber: 65
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1642,
+                                                                        lineNumber: 1608,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5771,7 +5740,7 @@ function CustomerPage() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1687,
+                                                                                lineNumber: 1653,
                                                                                 columnNumber: 65
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5781,25 +5750,25 @@ function CustomerPage() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1688,
+                                                                                lineNumber: 1654,
                                                                                 columnNumber: 65
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1686,
+                                                                        lineNumber: 1652,
                                                                         columnNumber: 61
                                                                     }, this)
                                                                 ]
                                                             }, license.id, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1589,
+                                                                lineNumber: 1548,
                                                                 columnNumber: 57
                                                             }, this);
                                                         })
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1583,
+                                                        lineNumber: 1542,
                                                         columnNumber: 45
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "text-center py-6 text-gray-500 border rounded-lg bg-gray-50 dark:bg-gray-900",
@@ -5808,7 +5777,7 @@ function CustomerPage() {
                                                                 className: "h-6 w-6 mx-auto mb-2 opacity-50"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1696,
+                                                                lineNumber: 1662,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5816,30 +5785,30 @@ function CustomerPage() {
                                                                 children: "No licenses assigned"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1697,
+                                                                lineNumber: 1663,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1695,
+                                                        lineNumber: 1661,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1571,
+                                                lineNumber: 1530,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1570,
+                                            lineNumber: 1529,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1430,
+                                    lineNumber: 1390,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5854,29 +5823,143 @@ function CustomerPage() {
                                         children: "Close"
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1706,
+                                        lineNumber: 1672,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1705,
+                                    lineNumber: 1671,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1419,
+                            lineNumber: 1379,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1409,
+                    lineNumber: 1369,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1408,
+                lineNumber: 1368,
+                columnNumber: 17
+            }, this),
+            deleteLicenseConfirmation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
+                    className: "w-full max-w-md mx-4",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardHeader"], {
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardTitle"], {
+                                className: "flex items-center gap-2 text-red-600",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertCircle$3e$__["AlertCircle"], {
+                                        className: "h-5 w-5"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/customer/page.tsx",
+                                        lineNumber: 1693,
+                                        columnNumber: 33
+                                    }, this),
+                                    "Confirm License Deletion"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/customer/page.tsx",
+                                lineNumber: 1692,
+                                columnNumber: 29
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/app/customer/page.tsx",
+                            lineNumber: 1691,
+                            columnNumber: 25
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
+                            className: "space-y-4",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-sm text-gray-600 dark:text-gray-300",
+                                    children: [
+                                        "Are you sure you want to delete the ",
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "font-semibold",
+                                            children: [
+                                                '"',
+                                                deleteLicenseConfirmation.licenseName,
+                                                '"'
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/customer/page.tsx",
+                                            lineNumber: 1699,
+                                            columnNumber: 69
+                                        }, this),
+                                        " license?"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/customer/page.tsx",
+                                    lineNumber: 1698,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-xs text-red-600 dark:text-red-400",
+                                    children: "This action cannot be undone and will remove access to features provided by this license."
+                                }, void 0, false, {
+                                    fileName: "[project]/app/customer/page.tsx",
+                                    lineNumber: 1701,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex justify-end gap-2 pt-2",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
+                                            variant: "outline",
+                                            size: "sm",
+                                            onClick: ()=>setDeleteLicenseConfirmation(null),
+                                            children: "Cancel"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/customer/page.tsx",
+                                            lineNumber: 1705,
+                                            columnNumber: 33
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
+                                            variant: "destructive",
+                                            size: "sm",
+                                            onClick: ()=>{
+                                                if (deleteLicenseConfirmation) {
+                                                    deleteTenantLicense(deleteLicenseConfirmation.tenantId, deleteLicenseConfirmation.licenseId);
+                                                    setDeleteLicenseConfirmation(null);
+                                                }
+                                            },
+                                            className: "bg-red-600 hover:bg-red-700",
+                                            children: "Delete License"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/customer/page.tsx",
+                                            lineNumber: 1712,
+                                            columnNumber: 33
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/customer/page.tsx",
+                                    lineNumber: 1704,
+                                    columnNumber: 29
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/app/customer/page.tsx",
+                            lineNumber: 1697,
+                            columnNumber: 25
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/app/customer/page.tsx",
+                    lineNumber: 1690,
+                    columnNumber: 21
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/app/customer/page.tsx",
+                lineNumber: 1689,
                 columnNumber: 17
             }, this),
             licenseOnboardingWizard && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5893,7 +5976,7 @@ function CustomerPage() {
                                             className: "h-5 w-5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1727,
+                                            lineNumber: 1737,
                                             columnNumber: 33
                                         }, this),
                                         "Add License - ",
@@ -5901,7 +5984,7 @@ function CustomerPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1726,
+                                    lineNumber: 1736,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5913,13 +5996,13 @@ function CustomerPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1730,
+                                    lineNumber: 1740,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1725,
+                            lineNumber: 1735,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5937,12 +6020,12 @@ function CustomerPage() {
                                                         className: `h-5 w-5 ${licenseOnboardingWizard.currentStep >= 0 ? 'text-blue-600' : 'text-gray-400'}`
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1741,
+                                                        lineNumber: 1751,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1738,
+                                                    lineNumber: 1748,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -5950,13 +6033,13 @@ function CustomerPage() {
                                                     children: "Select License"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1743,
+                                                    lineNumber: 1753,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1737,
+                                            lineNumber: 1747,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5968,12 +6051,12 @@ function CustomerPage() {
                                                         className: `h-5 w-5 ${licenseOnboardingWizard.currentStep >= 1 ? 'text-purple-600' : 'text-gray-400'}`
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1749,
+                                                        lineNumber: 1759,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1746,
+                                                    lineNumber: 1756,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -5981,13 +6064,13 @@ function CustomerPage() {
                                                     children: "Grant Consent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1751,
+                                                    lineNumber: 1761,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1745,
+                                            lineNumber: 1755,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5999,12 +6082,12 @@ function CustomerPage() {
                                                         className: `h-5 w-5 ${licenseOnboardingWizard.currentStep >= 2 ? 'text-green-600' : 'text-gray-400'}`
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1757,
+                                                        lineNumber: 1767,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1754,
+                                                    lineNumber: 1764,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -6012,19 +6095,19 @@ function CustomerPage() {
                                                     children: "Complete"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1759,
+                                                    lineNumber: 1769,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1753,
+                                            lineNumber: 1763,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1736,
+                                    lineNumber: 1746,
                                     columnNumber: 29
                                 }, this),
                                 licenseOnboardingWizard.currentStep === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -6035,20 +6118,20 @@ function CustomerPage() {
                                                     children: "Select License Type"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1767,
+                                                    lineNumber: 1777,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "Choose which license type to add to this tenant"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1768,
+                                                    lineNumber: 1778,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1766,
+                                            lineNumber: 1776,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6071,7 +6154,7 @@ function CustomerPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1779,
+                                                            lineNumber: 1789,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -6083,25 +6166,25 @@ function CustomerPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1792,
+                                                            lineNumber: 1802,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                             value: 2,
                                                             disabled: customerData?.tenants.find((t)=>t.tenantId === licenseOnboardingWizard.tenantId)?.licenses?.some((license)=>license.licenseType === 2),
                                                             children: [
-                                                                "Historicus ",
+                                                                "Troubleshooter ",
                                                                 customerData?.tenants.find((t)=>t.tenantId === licenseOnboardingWizard.tenantId)?.licenses?.some((license)=>license.licenseType === 2) ? '(Already assigned)' : ''
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1805,
+                                                            lineNumber: 1815,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1771,
+                                                    lineNumber: 1781,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6109,19 +6192,19 @@ function CustomerPage() {
                                                     children: "License types already assigned to this tenant are disabled."
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1819,
+                                                    lineNumber: 1829,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1770,
+                                            lineNumber: 1780,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1765,
+                                    lineNumber: 1775,
                                     columnNumber: 33
                                 }, this),
                                 licenseOnboardingWizard.currentStep === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -6132,20 +6215,20 @@ function CustomerPage() {
                                                     children: "Grant Admin Consent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1829,
+                                                    lineNumber: 1839,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "Admin consent is required for the new license"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1830,
+                                                    lineNumber: 1840,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1828,
+                                            lineNumber: 1838,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6158,7 +6241,7 @@ function CustomerPage() {
                                                             className: "h-8 w-8 animate-spin mx-auto mb-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1835,
+                                                            lineNumber: 1845,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6166,13 +6249,13 @@ function CustomerPage() {
                                                             children: "Processing consent..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1836,
+                                                            lineNumber: 1846,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1834,
+                                                    lineNumber: 1844,
                                                     columnNumber: 45
                                                 }, this),
                                                 licenseOnboardingWizard.consentWindow && !licenseOnboardingWizard.consentCompleted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6182,7 +6265,7 @@ function CustomerPage() {
                                                             className: "h-8 w-8 mx-auto mb-4 text-blue-600"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1842,
+                                                            lineNumber: 1852,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6190,7 +6273,7 @@ function CustomerPage() {
                                                             children: "Consent window is open"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1843,
+                                                            lineNumber: 1853,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6198,25 +6281,25 @@ function CustomerPage() {
                                                             children: "Please complete the consent process in the popup window"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1844,
+                                                            lineNumber: 1854,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1841,
+                                                    lineNumber: 1851,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1832,
+                                            lineNumber: 1842,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1827,
+                                    lineNumber: 1837,
                                     columnNumber: 33
                                 }, this),
                                 licenseOnboardingWizard.currentStep === 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -6227,20 +6310,20 @@ function CustomerPage() {
                                                     children: "License Added Successfully"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1856,
+                                                    lineNumber: 1866,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "The license has been added to the tenant"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1857,
+                                                    lineNumber: 1867,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1855,
+                                            lineNumber: 1865,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6252,7 +6335,7 @@ function CustomerPage() {
                                                         className: "h-12 w-12 mx-auto mb-4 text-green-600"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1861,
+                                                        lineNumber: 1871,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6260,7 +6343,7 @@ function CustomerPage() {
                                                         children: "License Added!"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1862,
+                                                        lineNumber: 1872,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6273,24 +6356,24 @@ function CustomerPage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1863,
+                                                        lineNumber: 1873,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1860,
+                                                lineNumber: 1870,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1859,
+                                            lineNumber: 1869,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1854,
+                                    lineNumber: 1864,
                                     columnNumber: 33
                                 }, this),
                                 licenseOnboardingWizard.error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6300,14 +6383,14 @@ function CustomerPage() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1874,
+                                            lineNumber: 1884,
                                             columnNumber: 37
                                         }, this),
                                         licenseOnboardingWizard.error
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1873,
+                                    lineNumber: 1883,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6319,7 +6402,7 @@ function CustomerPage() {
                                             children: "Start Consent Process"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1882,
+                                            lineNumber: 1892,
                                             columnNumber: 37
                                         }, this),
                                         licenseOnboardingWizard.currentStep === 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -6327,7 +6410,7 @@ function CustomerPage() {
                                             children: "Complete"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1891,
+                                            lineNumber: 1901,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -6337,30 +6420,30 @@ function CustomerPage() {
                                             children: licenseOnboardingWizard.currentStep === 2 ? 'Close' : 'Cancel'
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1896,
+                                            lineNumber: 1906,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1880,
+                                    lineNumber: 1890,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1734,
+                            lineNumber: 1744,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1724,
+                    lineNumber: 1734,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1723,
+                lineNumber: 1733,
                 columnNumber: 17
             }, this),
             showOnboardingModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$onboarding$2f$tenant$2d$onboarding$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -6371,13 +6454,13 @@ function CustomerPage() {
                 customerName: customerData.name
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1909,
+                lineNumber: 1919,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/customer/page.tsx",
-        lineNumber: 1107,
+        lineNumber: 1066,
         columnNumber: 9
     }, this);
 }

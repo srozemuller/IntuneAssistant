@@ -1,0 +1,10 @@
+{
+  "title": "Muti-Tenant Management (MSP)",
+  "pages": [
+    "overview",
+    "permissions",
+    "license-management",
+    "switch-tenants",
+    "add-tenant"
+  ]
+}
