@@ -1,14 +1,9 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/account/page": "app/account/page.js",
   "/assistant/assignments-overview/page": "app/assistant/assignments-overview/page.js",
   "/assistant/page": "app/assistant/page.js",
   "/customer/page": "app/customer/page.js",
   "/deployment/assignments/page": "app/deployment/assignments/page.js",
   "/deployment/page": "app/deployment/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/onboarding/page": "app/onboarding/page.js",
-  "/page": "app/page.js",
-  "/plans/page": "app/plans/page.js",
-  "/security/page": "app/security/page.js"
+  "/page": "app/page.js"
 }

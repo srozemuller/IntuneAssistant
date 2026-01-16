@@ -139,6 +139,8 @@ interface ComparisonResult {
         filterIsUnique: boolean;
         correctFilterPlatform: boolean;
         correctFilterTypeProvided: boolean;
+        assignmentIsCompatible: boolean;
+        compatibilityErrors: string[];
     };
     csvRow?: CSVRow;
     isBackedUp?: boolean;
@@ -519,13 +521,14 @@ function AssignmentRolloutContent() {
 
         const allChecksPass = check.policyExists && check.policyIsUnique &&
             check.groupExists && check.correctAssignmentTypeProvided &&
-            check.correctAssignmentActionProvided;
+            check.correctAssignmentActionProvided && check.assignmentIsCompatible;
 
         const hasWarnings = check.filterExist === false || check.filterIsUnique === false ||
             check.correctFilterPlatform === false || check.correctFilterTypeProvided === false;
 
         const errors: string[] = [];
         const warnings: string[] = [];
+        const compatibilityErrors: string[] = [];
 
         if (!check.policyExists) errors.push("Policy not found");
         if (!check.policyIsUnique) errors.push("Multiple policies found");
@@ -538,14 +541,60 @@ function AssignmentRolloutContent() {
         if (check.correctFilterPlatform === false) warnings.push("Incorrect filter platform");
         if (check.correctFilterTypeProvided === false) warnings.push("Invalid filter type");
 
-        if (allChecksPass && !hasWarnings) {
+        // Add compatibility errors
+        if (check.assignmentIsCompatible === false && check.compatibilityErrors && check.compatibilityErrors.length > 0) {
+            compatibilityErrors.push(...check.compatibilityErrors);
+        }
+
+        // IMPORTANT: If there are compatibility errors, always show red regardless of other checks
+        if (compatibilityErrors.length > 0 || !allChecksPass) {
             return (
-                <div className="flex items-center justify-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                </div>
+                <>
+                    <div
+                        ref={iconRef}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={() => setShowTooltip(false)}
+                        className="flex items-center justify-center cursor-help"
+                    >
+                        <AlertTriangle className="h-5 w-5 text-red-500" />
+                    </div>
+                    {showTooltip && ReactDOM.createPortal(
+                        <div
+                            className="fixed z-[10000] bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-3 shadow-xl min-w-[280px] max-w-[400px]"
+                            style={{
+                                left: `${tooltipPosition.x}px`,
+                                top: `${tooltipPosition.y}px`
+                            }}
+                        >
+                            <div className="absolute -top-1 left-4 w-2 h-2 bg-red-50 dark:bg-red-900 border-l border-t border-red-200 dark:border-red-700 transform rotate-45"></div>
+                            {errors.length > 0 && (
+                                <>
+                                    <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-2">Migration Check Errors:</p>
+                                    <ul className="text-xs text-red-700 dark:text-red-300 space-y-1 mb-3">
+                                        {errors.map((error, idx) => (
+                                            <li key={idx} className="leading-relaxed">• {error}</li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+                            {compatibilityErrors.length > 0 && (
+                                <>
+                                    <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-2">Compatibility Issues:</p>
+                                    <ul className="text-xs text-red-700 dark:text-red-300 space-y-1">
+                                        {compatibilityErrors.map((error, idx) => (
+                                            <li key={idx} className="leading-relaxed">• {error}</li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+                        </div>,
+                        document.body
+                    )}
+                </>
             );
         }
 
+        // Show yellow warning if all checks pass but there are warnings
         if (allChecksPass && hasWarnings) {
             return (
                 <>
@@ -579,39 +628,13 @@ function AssignmentRolloutContent() {
             );
         }
 
+        // Show green checkmark only if all checks pass and no warnings
         return (
-            <>
-                <div
-                    ref={iconRef}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={() => setShowTooltip(false)}
-                    className="flex items-center justify-center cursor-help"
-                >
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
-                </div>
-                {showTooltip && ReactDOM.createPortal(
-                    <div
-                        className="fixed z-[10000] bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-3 shadow-xl min-w-[280px] max-w-[400px]"
-                        style={{
-                            left: `${tooltipPosition.x}px`,
-                            top: `${tooltipPosition.y}px`
-                        }}
-                    >
-                        <div className="absolute -top-1 left-4 w-2 h-2 bg-red-50 dark:bg-red-900 border-l border-t border-red-200 dark:border-red-700 transform rotate-45"></div>
-                        <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-2">Migration Check Errors:</p>
-                        <ul className="text-xs text-red-700 dark:text-red-300 space-y-1">
-                            {errors.map((error, idx) => (
-                                <li key={idx} className="leading-relaxed">• {error}</li>
-                            ))}
-                        </ul>
-                    </div>,
-                    document.body
-                )}
-            </>
+            <div className="flex items-center justify-center">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+            </div>
         );
     };
-
-
 
     const comparisonColumns = [
         {
@@ -666,7 +689,7 @@ function AssignmentRolloutContent() {
 
                 const allChecksPass = check.policyExists && check.policyIsUnique &&
                     check.groupExists && check.correctAssignmentTypeProvided &&
-                    check.correctAssignmentActionProvided;
+                    check.correctAssignmentActionProvided && check.assignmentIsCompatible;
                 return allChecksPass ? 1 : 0;
             },
             render: (_: unknown, row: Record<string, unknown>) => {
