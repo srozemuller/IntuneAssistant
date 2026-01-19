@@ -1949,6 +1949,10 @@
     max-width: 120px;
   }
 
+  .max-w-\[150px\] {
+    max-width: 150px;
+  }
+
   .max-w-\[400px\] {
     max-width: 400px;
   }
