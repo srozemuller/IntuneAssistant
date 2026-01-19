@@ -1542,6 +1542,7 @@ const MigrationOverlay = ({ progress }: { progress: number }) => {
         const migrationPayload = selectedComparisonResults.map(result => ({
             PolicyId: result.policy?.id || '',
             PolicyName: result.policy?.name || result.providedPolicyName || '',
+            PolicyType: result.policy?.policyType || '',
             AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
             AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
             AssignmentAction: result.csvRow?.AssignmentAction || result.assignmentAction || 'Add',
