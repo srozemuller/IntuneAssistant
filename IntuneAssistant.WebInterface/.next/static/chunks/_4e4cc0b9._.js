@@ -391,6 +391,8 @@ __turbopack_context__.s([
     ()=>POLICIES_ENDPOINT,
     "POLICY_SETTINGS_ENDPOINT",
     ()=>POLICY_SETTINGS_ENDPOINT,
+    "ROLE_SCOPETAGS_ENDPOINT",
+    ()=>ROLE_SCOPETAGS_ENDPOINT,
     "USERS_ENDPOINT",
     ()=>USERS_ENDPOINT,
     "VERSION_ENDPOINT",
@@ -426,6 +428,7 @@ const ASSIGNMENTS_GROUP_ENDPOINT = "".concat(API_BASE_URL, "/assignments/groups"
 const ASSIGNMENTS_FILTERS_ENDPOINT = "".concat(API_BASE_URL, "/assignments/filters");
 const ASSIGNMENTS_COMPARE_ENDPOINT = "".concat(API_BASE_URL, "/assignments/compare");
 const POLICY_SETTINGS_ENDPOINT = "".concat(CONFIGURATION_POLICIES_ENDPOINT, "/settings");
+const ROLE_SCOPETAGS_ENDPOINT = "".concat(API_BASE_URL, "/roles/scopeTags");
 const GROUP_POLICY_SETTINGS_ENDPOINT = "".concat(POLICIES_ENDPOINT, "/group/settings");
 const ITEMS_PER_PAGE = 25;
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {

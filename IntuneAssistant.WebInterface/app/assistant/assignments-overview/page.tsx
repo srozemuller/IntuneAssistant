@@ -19,7 +19,12 @@ import {
     ChevronUp,
     XCircle, Computer, Blocks, CircleQuestionMark
 } from 'lucide-react';
-import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+import {
+    ASSIGNMENTS_ENDPOINT,
+    ASSIGNMENTS_FILTERS_ENDPOINT,
+    ITEMS_PER_PAGE,
+    ROLE_SCOPETAGS_ENDPOINT
+} from '@/lib/constants';
 
 import {MultiSelect, Option} from '@/components/ui/multi-select';
 
@@ -50,11 +55,20 @@ interface Assignments extends Record<string, unknown> {
     filterType: string;
     assignmentDirection: string;
     isExcluded: boolean;
+    scopeTagIds?: string[];
     group?: {
         id: string;
         displayName: string;
         description: string;
     };
+}
+
+interface RoleScopeTag {
+    id: string;
+    displayName: string;
+    description: string;
+    isBuildIn: boolean;
+    assignments: unknown[];
 }
 
 interface AssignmentFilter {
@@ -74,6 +88,8 @@ interface AssignmentFilter {
 }
 
 
+
+
 export default function AssignmentsOverview() {
     // API CALLS
     const {instance, accounts} = useMsal();
@@ -86,6 +102,8 @@ export default function AssignmentsOverview() {
     const [filters, setFilters] = useState<AssignmentFilter[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [roleScopeTags, setRoleScopeTags] = useState<RoleScopeTag[]>([]);
+
 
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
@@ -101,6 +119,8 @@ export default function AssignmentsOverview() {
     const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
     const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
+    const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
+
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -266,7 +286,7 @@ export default function AssignmentsOverview() {
 
         try {
             // Fetch both assignments and filters
-            await Promise.all([fetchAssignmentsData(), fetchFilters()]);
+            await Promise.all([fetchAssignmentsData(), fetchFilters(), fetchRoleScopeTags()]);
         } catch (error) {
             console.error('Failed to fetch data:', error);
             setError(error instanceof Error ? error.message : 'Failed to fetch data');
@@ -300,6 +320,23 @@ export default function AssignmentsOverview() {
         const assignmentsData = response.data;
         setAssignments(assignmentsData);
         setFilteredAssignments(assignmentsData);
+    };
+
+    const getUniqueRoleScopeTags = (): Option[] => {
+        const tagIds = new Set<string>();
+        assignments.forEach(assignment => {
+            assignment.scopeTagIds?.forEach(id => tagIds.add(id));
+        });
+
+        return Array.from(tagIds)
+            .map(id => {
+                const tag = roleScopeTags.find(t => t.id === id);
+                return {
+                    label: tag?.displayName || `Unknown (${id})`,
+                    value: id
+                };
+            })
+            .sort((a, b) => a.label.localeCompare(b.label));
     };
 
     const getUniqueResourceTypes = (): Option[] => {
@@ -349,6 +386,42 @@ export default function AssignmentsOverview() {
         }
     };
 
+    const fetchRoleScopeTags = async () => {
+        if (!accounts.length) return;
+
+        try {
+            const responseData = await request<{ data: RoleScopeTag[] }>(ROLE_SCOPETAGS_ENDPOINT, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!responseData) {
+                console.error('No response received from role scope tags API');
+                setRoleScopeTags([]);
+                return;
+            }
+
+            if (responseData.data && Array.isArray(responseData.data)) {
+                setRoleScopeTags(responseData.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch role scope tags:', error);
+            setRoleScopeTags([]);
+        }
+    };
+
+    const getRoleScopeTagNames = (scopeTagIds: string[] | undefined): string[] => {
+        if (!scopeTagIds || scopeTagIds.length === 0) return [];
+
+        return scopeTagIds
+            .map(id => {
+                const tag = roleScopeTags.find(t => t.id === id);
+                return tag?.displayName || `Unknown (${id})`;
+            })
+            .filter(Boolean);
+    };
 
     const getFilterInfo = (filterId: string | null, filterType: string) => {
         if (!filterId || filterId === 'None' || filterType === 'None') {
@@ -426,8 +499,14 @@ export default function AssignmentsOverview() {
             });
         }
 
+        if (roleScopeTagFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                return assignment.scopeTagIds?.some(id => roleScopeTagFilter.includes(id));
+            });
+        }
+
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, filterTypeFilter]);
+    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, filterTypeFilter, roleScopeTagFilter]);
 
 
     // Get unique values for filters
@@ -462,6 +541,7 @@ export default function AssignmentsOverview() {
         setStatusFilter([]);
         setPlatformFilter([]);
         setFilterTypeFilter([]);
+        setRoleScopeTagFilter([]);
     };
 
     // Group dialog handlers
@@ -717,6 +797,37 @@ export default function AssignmentsOverview() {
                     </div>
                 );
             }
+        },
+        {
+            key: 'scopeTagIds' as string,
+            label: 'Role Scope Tags',
+            width: 180,
+            minWidth: 140,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const scopeTagIds = value as string[] | undefined;
+                const tagNames = getRoleScopeTagNames(scopeTagIds);
+
+                if (tagNames.length === 0) {
+                    return <span className="text-xs text-gray-500">None</span>;
+                }
+
+                return (
+                    <div className="flex flex-wrap gap-1">
+                        {tagNames.map((tagName, index) => {
+                            const isBuiltIn = roleScopeTags.find(t => t.displayName === tagName)?.isBuildIn;
+                            return (
+                                <Badge
+                                    key={index}
+                                    variant={isBuiltIn ? "secondary" : "outline"}
+                                    className="text-xs"
+                                >
+                                    {tagName}
+                                </Badge>
+                            );
+                        })}
+                    </div>
+                );
+            }
         }
     ];
 
@@ -933,6 +1044,17 @@ export default function AssignmentsOverview() {
                                             selected={filterTypeFilter}
                                             onChange={setFilterTypeFilter}
                                             placeholder="Select filter types..."
+                                        />
+                                    </div>
+
+                                    {/* Role Scope Tags Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium dark:text-gray-200">Role Scope Tags</label>
+                                        <MultiSelect
+                                            options={getUniqueRoleScopeTags()}
+                                            selected={roleScopeTagFilter}
+                                            onChange={setRoleScopeTagFilter}
+                                            placeholder="Select scope tags..."
                                         />
                                     </div>
                                 </div>
