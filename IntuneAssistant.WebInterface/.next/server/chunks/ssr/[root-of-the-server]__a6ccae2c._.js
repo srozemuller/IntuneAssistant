@@ -2609,7 +2609,10 @@ function AssignmentsOverview() {
                 key: '',
                 label: 'AssignmentAction',
                 width: 25,
-                getValue: ()=>String('Add') // or whatever default action you want
+                getValue: (row)=>{
+                    const targetName = row.targetName;
+                    return String(targetName ? 'Add' : 'NoAssignment');
+                }
             },
             {
                 key: 'filterId',
@@ -2956,7 +2959,7 @@ function AssignmentsOverview() {
                     children: String(value)
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 477,
+                    lineNumber: 480,
                     columnNumber: 17
                 }, this)
         },
@@ -2969,7 +2972,7 @@ function AssignmentsOverview() {
                     children: String(value)
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 484,
+                    lineNumber: 487,
                     columnNumber: 17
                 }, this)
         },
@@ -2985,7 +2988,7 @@ function AssignmentsOverview() {
                         children: "N/A"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 497,
+                        lineNumber: 500,
                         columnNumber: 28
                     }, this);
                 }
@@ -2996,7 +2999,7 @@ function AssignmentsOverview() {
                     children: isEnabled ? 'Enabled' : 'Disabled'
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 502,
+                    lineNumber: 505,
                     columnNumber: 21
                 }, this);
             }
@@ -3009,7 +3012,7 @@ function AssignmentsOverview() {
                     children: String(value)
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 513,
+                    lineNumber: 516,
                     columnNumber: 17
                 }, this)
         }
@@ -3026,7 +3029,7 @@ function AssignmentsOverview() {
                     children: String(value)
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 525,
+                    lineNumber: 528,
                     columnNumber: 17
                 }, this)
         },
@@ -3047,7 +3050,7 @@ function AssignmentsOverview() {
                         children: resourceName
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 542,
+                        lineNumber: 545,
                         columnNumber: 25
                     }, this);
                 }
@@ -3057,7 +3060,7 @@ function AssignmentsOverview() {
                     children: resourceName
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 553,
+                    lineNumber: 556,
                     columnNumber: 21
                 }, this);
             }
@@ -3076,7 +3079,7 @@ function AssignmentsOverview() {
                         children: "Not Assigned"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 568,
+                        lineNumber: 571,
                         columnNumber: 25
                     }, this);
                 }
@@ -3088,7 +3091,7 @@ function AssignmentsOverview() {
                     children: assignmentType
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 578,
+                    lineNumber: 581,
                     columnNumber: 21
                 }, this);
             }
@@ -3118,7 +3121,7 @@ function AssignmentsOverview() {
                                         children: targetName
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 609,
+                                        lineNumber: 612,
                                         columnNumber: 33
                                     }, this),
                                     group?.membershipRule && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3127,18 +3130,18 @@ function AssignmentsOverview() {
                                             className: "h-3 w-3 text-purple-500 flex-shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 618,
+                                            lineNumber: 621,
                                             columnNumber: 13
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 617,
+                                        lineNumber: 620,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 608,
+                                lineNumber: 611,
                                 columnNumber: 29
                             }, this),
                             group?.groupCount && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3152,7 +3155,7 @@ function AssignmentsOverview() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 624,
+                                        lineNumber: 627,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3163,7 +3166,7 @@ function AssignmentsOverview() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 625,
+                                        lineNumber: 628,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3174,7 +3177,7 @@ function AssignmentsOverview() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 626,
+                                        lineNumber: 629,
                                         columnNumber: 37
                                     }, this),
                                     group.groupCount.groupCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3184,24 +3187,24 @@ function AssignmentsOverview() {
                                             className: "h-3 w-3"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 632,
+                                            lineNumber: 635,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 628,
+                                        lineNumber: 631,
                                         columnNumber: 41
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 623,
+                                lineNumber: 626,
                                 columnNumber: 33
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 607,
+                        lineNumber: 610,
                         columnNumber: 25
                     }, this);
                 }
@@ -3211,7 +3214,7 @@ function AssignmentsOverview() {
                     children: targetName
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 642,
+                    lineNumber: 645,
                     columnNumber: 21
                 }, this);
             }
@@ -3226,7 +3229,7 @@ function AssignmentsOverview() {
                     children: value ? String(value) : 'All'
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 654,
+                    lineNumber: 657,
                     columnNumber: 17
                 }, this)
         },
@@ -3243,7 +3246,7 @@ function AssignmentsOverview() {
                     children: isAssigned ? 'Assigned' : 'Not Assigned'
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 667,
+                    lineNumber: 670,
                     columnNumber: 21
                 }, this);
             }
@@ -3263,7 +3266,7 @@ function AssignmentsOverview() {
                         children: "None"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 685,
+                        lineNumber: 688,
                         columnNumber: 28
                     }, this);
                 }
@@ -3278,7 +3281,7 @@ function AssignmentsOverview() {
                             children: filterInfo.displayName
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                            lineNumber: 692,
+                            lineNumber: 695,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3291,14 +3294,14 @@ function AssignmentsOverview() {
                                         className: "h-2 w-2 mr-1"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 703,
+                                        lineNumber: 706,
                                         columnNumber: 37
                                     }, this),
                                     "Inc"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 701,
+                                lineNumber: 704,
                                 columnNumber: 33
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
                                 variant: "destructive",
@@ -3308,25 +3311,25 @@ function AssignmentsOverview() {
                                         className: "h-2 w-2 mr-1"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 709,
+                                        lineNumber: 712,
                                         columnNumber: 37
                                     }, this),
                                     "Exc"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 707,
+                                lineNumber: 710,
                                 columnNumber: 33
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                            lineNumber: 699,
+                            lineNumber: 702,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 691,
+                    lineNumber: 694,
                     columnNumber: 21
                 }, this);
             }
@@ -3345,7 +3348,7 @@ function AssignmentsOverview() {
                                 children: "Assignments Overview"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 724,
+                                lineNumber: 727,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3353,13 +3356,13 @@ function AssignmentsOverview() {
                                 children: "View and manage all Intune assignments across your organization"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 726,
+                                lineNumber: 729,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 723,
+                        lineNumber: 726,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3376,14 +3379,14 @@ function AssignmentsOverview() {
                                             className: `h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 735,
+                                            lineNumber: 738,
                                             columnNumber: 33
                                         }, this),
                                         "Refresh"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 734,
+                                    lineNumber: 737,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ExportButton$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ExportButton"], {
@@ -3410,7 +3413,7 @@ function AssignmentsOverview() {
                                     tenantId: instance.getActiveAccount()?.tenantId || accounts[0]?.tenantId || ''
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 738,
+                                    lineNumber: 741,
                                     columnNumber: 29
                                 }, this)
                             ]
@@ -3423,25 +3426,25 @@ function AssignmentsOverview() {
                                     className: `h-4 w-4 ${loading ? 'animate-spin' : ''}`
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 762,
+                                    lineNumber: 765,
                                     columnNumber: 29
                                 }, this),
                                 "Load Assignments"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                            lineNumber: 757,
+                            lineNumber: 760,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 731,
+                        lineNumber: 734,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                lineNumber: 722,
+                lineNumber: 725,
                 columnNumber: 13
             }, this),
             assignments.length === 0 && !loading && !error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -3457,12 +3460,12 @@ function AssignmentsOverview() {
                                     className: "h-16 w-16 mx-auto"
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 776,
+                                    lineNumber: 779,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 775,
+                                lineNumber: 778,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -3470,7 +3473,7 @@ function AssignmentsOverview() {
                                 children: "Ready to view your Intune assignments"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 778,
+                                lineNumber: 781,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3478,7 +3481,7 @@ function AssignmentsOverview() {
                                 children: 'Click the "Load Assignments" button above to fetch all assignment configurations from your Intune environment.'
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 781,
+                                lineNumber: 784,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -3490,30 +3493,30 @@ function AssignmentsOverview() {
                                         className: "h-5 w-5"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 786,
+                                        lineNumber: 789,
                                         columnNumber: 33
                                     }, this),
                                     "Load Assignments"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 785,
+                                lineNumber: 788,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 774,
+                        lineNumber: 777,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 773,
+                    lineNumber: 776,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                lineNumber: 772,
+                lineNumber: 775,
                 columnNumber: 17
             }, this),
             loading && assignments.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -3527,7 +3530,7 @@ function AssignmentsOverview() {
                                 className: "h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 799,
+                                lineNumber: 802,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -3535,7 +3538,7 @@ function AssignmentsOverview() {
                                 children: "Loading Assignments"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 800,
+                                lineNumber: 803,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3543,23 +3546,23 @@ function AssignmentsOverview() {
                                 children: "Fetching assignment data from your Intune environment..."
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 803,
+                                lineNumber: 806,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 798,
+                        lineNumber: 801,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 797,
+                    lineNumber: 800,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                lineNumber: 796,
+                lineNumber: 799,
                 columnNumber: 17
             }, this),
             (assignments.length > 0 || loading) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -3581,7 +3584,7 @@ function AssignmentsOverview() {
                                                         className: "h-5 w-5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 822,
+                                                        lineNumber: 825,
                                                         columnNumber: 37
                                                     }, this),
                                                     "Filters",
@@ -3589,19 +3592,19 @@ function AssignmentsOverview() {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 825,
+                                                        lineNumber: 828,
                                                         columnNumber: 41
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 827,
+                                                        lineNumber: 830,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 818,
+                                                lineNumber: 821,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3616,7 +3619,7 @@ function AssignmentsOverview() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 833,
+                                                        lineNumber: 836,
                                                         columnNumber: 41
                                                     }, this),
                                                     (resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -3628,26 +3631,26 @@ function AssignmentsOverview() {
                                                                 className: "h-4 w-4 mr-1"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                                lineNumber: 839,
+                                                                lineNumber: 842,
                                                                 columnNumber: 45
                                                             }, this),
                                                             "Clear All"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 838,
+                                                        lineNumber: 841,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 830,
+                                                lineNumber: 833,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 817,
+                                        lineNumber: 820,
                                         columnNumber: 29
                                     }, this),
                                     !isFiltersExpanded && (resourceTypeFilter.length > 0 || assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0 || filterTypeFilter.length > 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3662,7 +3665,7 @@ function AssignmentsOverview() {
                                                     ]
                                                 }, filter, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 849,
+                                                    lineNumber: 852,
                                                     columnNumber: 41
                                                 }, this)),
                                             assignmentTypeFilter.map((filter)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3674,7 +3677,7 @@ function AssignmentsOverview() {
                                                     ]
                                                 }, filter, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 854,
+                                                    lineNumber: 857,
                                                     columnNumber: 41
                                                 }, this)),
                                             statusFilter.map((filter)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3686,7 +3689,7 @@ function AssignmentsOverview() {
                                                     ]
                                                 }, filter, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 859,
+                                                    lineNumber: 862,
                                                     columnNumber: 41
                                                 }, this)),
                                             platformFilter.map((filter)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3698,7 +3701,7 @@ function AssignmentsOverview() {
                                                     ]
                                                 }, filter, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 864,
+                                                    lineNumber: 867,
                                                     columnNumber: 41
                                                 }, this)),
                                             filterTypeFilter.map((filter)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3710,19 +3713,19 @@ function AssignmentsOverview() {
                                                     ]
                                                 }, filter, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 869,
+                                                    lineNumber: 872,
                                                     columnNumber: 41
                                                 }, this))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 847,
+                                        lineNumber: 850,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 816,
+                                lineNumber: 819,
                                 columnNumber: 25
                             }, this),
                             isFiltersExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3739,7 +3742,7 @@ function AssignmentsOverview() {
                                                         children: "Resource Type"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 883,
+                                                        lineNumber: 886,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -3749,13 +3752,13 @@ function AssignmentsOverview() {
                                                         placeholder: "Select resource types..."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 884,
+                                                        lineNumber: 887,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 882,
+                                                lineNumber: 885,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3766,7 +3769,7 @@ function AssignmentsOverview() {
                                                         children: "Assignment Type"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 893,
+                                                        lineNumber: 896,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -3776,13 +3779,13 @@ function AssignmentsOverview() {
                                                         placeholder: "Select assignment types..."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 895,
+                                                        lineNumber: 898,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 892,
+                                                lineNumber: 895,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3793,7 +3796,7 @@ function AssignmentsOverview() {
                                                         children: "Status"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 905,
+                                                        lineNumber: 908,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -3803,13 +3806,13 @@ function AssignmentsOverview() {
                                                         placeholder: "Select status..."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 906,
+                                                        lineNumber: 909,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 904,
+                                                lineNumber: 907,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3820,7 +3823,7 @@ function AssignmentsOverview() {
                                                         children: "Platform"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 916,
+                                                        lineNumber: 919,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -3830,13 +3833,13 @@ function AssignmentsOverview() {
                                                         placeholder: "Select platforms..."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 917,
+                                                        lineNumber: 920,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 915,
+                                                lineNumber: 918,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3847,7 +3850,7 @@ function AssignmentsOverview() {
                                                         children: "Filter Type"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 927,
+                                                        lineNumber: 930,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -3857,19 +3860,19 @@ function AssignmentsOverview() {
                                                         placeholder: "Select filter types..."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 928,
+                                                        lineNumber: 931,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 926,
+                                                lineNumber: 929,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 880,
+                                        lineNumber: 883,
                                         columnNumber: 33
                                     }, this),
                                     (assignmentTypeFilter.length > 0 || statusFilter.length > 0 || platformFilter.length > 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3880,7 +3883,7 @@ function AssignmentsOverview() {
                                                 children: "Active filters:"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 940,
+                                                lineNumber: 943,
                                                 columnNumber: 41
                                             }, this),
                                             assignmentTypeFilter.map((filter)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3896,18 +3899,18 @@ function AssignmentsOverview() {
                                                                 className: "h-3 w-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                                lineNumber: 948,
+                                                                lineNumber: 951,
                                                                 columnNumber: 53
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                            lineNumber: 944,
+                                                            lineNumber: 947,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, filter, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 942,
+                                                    lineNumber: 945,
                                                     columnNumber: 45
                                                 }, this)),
                                             statusFilter.map((filter)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3923,18 +3926,18 @@ function AssignmentsOverview() {
                                                                 className: "h-3 w-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                                lineNumber: 959,
+                                                                lineNumber: 962,
                                                                 columnNumber: 53
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                            lineNumber: 955,
+                                                            lineNumber: 958,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, filter, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 953,
+                                                    lineNumber: 956,
                                                     columnNumber: 45
                                                 }, this)),
                                             platformFilter.map((filter)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3950,36 +3953,36 @@ function AssignmentsOverview() {
                                                                 className: "h-3 w-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                                lineNumber: 970,
+                                                                lineNumber: 973,
                                                                 columnNumber: 53
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                            lineNumber: 966,
+                                                            lineNumber: 969,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, filter, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 964,
+                                                    lineNumber: 967,
                                                     columnNumber: 45
                                                 }, this))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 939,
+                                        lineNumber: 942,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 879,
+                                lineNumber: 882,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 815,
+                        lineNumber: 818,
                         columnNumber: 21
                     }, this),
                     error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -3994,30 +3997,30 @@ function AssignmentsOverview() {
                                         children: "Error:"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 984,
+                                        lineNumber: 987,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: error
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 985,
+                                        lineNumber: 988,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 983,
+                                lineNumber: 986,
                                 columnNumber: 33
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                            lineNumber: 982,
+                            lineNumber: 985,
                             columnNumber: 29
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 981,
+                        lineNumber: 984,
                         columnNumber: 25
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4032,25 +4035,25 @@ function AssignmentsOverview() {
                                             children: "Assignment Details"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 995,
+                                            lineNumber: 998,
                                             columnNumber: 33
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 994,
+                                        lineNumber: 997,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                         children: "Detailed view of all assignments with their targets and configurations"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 997,
+                                        lineNumber: 1000,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 993,
+                                lineNumber: 996,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4062,7 +4065,7 @@ function AssignmentsOverview() {
                                             className: "h-6 w-6 animate-spin text-yellow-500"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1004,
+                                            lineNumber: 1007,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4070,13 +4073,13 @@ function AssignmentsOverview() {
                                             children: "Loading assignments..."
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1005,
+                                            lineNumber: 1008,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 1003,
+                                    lineNumber: 1006,
                                     columnNumber: 33
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DataTable$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DataTable"], {
                                     data: filteredAssignments,
@@ -4089,18 +4092,18 @@ function AssignmentsOverview() {
                                     onItemsPerPageChange: setItemsPerPage
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 1008,
+                                    lineNumber: 1011,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 1001,
+                                lineNumber: 1004,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 992,
+                        lineNumber: 995,
                         columnNumber: 21
                     }, this),
                     filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4115,18 +4118,18 @@ function AssignmentsOverview() {
                                             className: "h-12 w-12 mx-auto"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1028,
+                                            lineNumber: 1031,
                                             columnNumber: 56
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$funnel$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Filter$3e$__["Filter"], {
                                             className: "h-12 w-12 mx-auto"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1029,
+                                            lineNumber: 1032,
                                             columnNumber: 45
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 1027,
+                                        lineNumber: 1030,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -4134,7 +4137,7 @@ function AssignmentsOverview() {
                                         children: searchQuery ? 'No assignments match your search' : 'No assignments match your filters'
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 1031,
+                                        lineNumber: 1034,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4142,7 +4145,7 @@ function AssignmentsOverview() {
                                         children: searchQuery ? 'Try adjusting your search terms or clearing filters.' : 'Try adjusting your filter criteria or clear all filters to see more results.'
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 1034,
+                                        lineNumber: 1037,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -4151,23 +4154,23 @@ function AssignmentsOverview() {
                                         children: searchQuery ? 'Clear Search & Filters' : 'Clear All Filters'
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                        lineNumber: 1039,
+                                        lineNumber: 1042,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 1026,
+                                lineNumber: 1029,
                                 columnNumber: 33
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                            lineNumber: 1025,
+                            lineNumber: 1028,
                             columnNumber: 29
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                        lineNumber: 1024,
+                        lineNumber: 1027,
                         columnNumber: 25
                     }, this)
                 ]
@@ -4181,7 +4184,7 @@ function AssignmentsOverview() {
                 }
             }, void 0, false, {
                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                lineNumber: 1049,
+                lineNumber: 1052,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -4199,14 +4202,14 @@ function AssignmentsOverview() {
                                             className: "h-5 w-5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1063,
+                                            lineNumber: 1066,
                                             columnNumber: 29
                                         }, this),
                                         selectedFilter?.displayName || 'Filter Details'
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 1062,
+                                    lineNumber: 1065,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogDescription"], {
@@ -4214,13 +4217,13 @@ function AssignmentsOverview() {
                                     children: selectedFilter?.description || 'Assignment filter information and rules'
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 1066,
+                                    lineNumber: 1069,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                            lineNumber: 1061,
+                            lineNumber: 1064,
                             columnNumber: 21
                         }, this),
                         selectedFilter ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4236,7 +4239,7 @@ function AssignmentsOverview() {
                                                     children: "Filter ID"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1076,
+                                                    lineNumber: 1079,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4244,13 +4247,13 @@ function AssignmentsOverview() {
                                                     children: selectedFilter.id
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1078,
+                                                    lineNumber: 1081,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1075,
+                                            lineNumber: 1078,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4260,7 +4263,7 @@ function AssignmentsOverview() {
                                                     children: "Management Type"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1081,
+                                                    lineNumber: 1084,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4273,14 +4276,14 @@ function AssignmentsOverview() {
                                                                 className: "h-3 w-3 mr-1"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                                lineNumber: 1087,
+                                                                lineNumber: 1090,
                                                                 columnNumber: 49
                                                             }, this),
                                                             "Devices"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 1085,
+                                                        lineNumber: 1088,
                                                         columnNumber: 45
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
                                                         variant: "default",
@@ -4290,25 +4293,25 @@ function AssignmentsOverview() {
                                                                 className: "h-3 w-3 mr-1"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                                lineNumber: 1093,
+                                                                lineNumber: 1096,
                                                                 columnNumber: 49
                                                             }, this),
                                                             "Apps"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 1091,
+                                                        lineNumber: 1094,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1083,
+                                                    lineNumber: 1086,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1080,
+                                            lineNumber: 1083,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4318,7 +4321,7 @@ function AssignmentsOverview() {
                                                     children: "Platform"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1101,
+                                                    lineNumber: 1104,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4329,19 +4332,19 @@ function AssignmentsOverview() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1103,
+                                                    lineNumber: 1106,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1100,
+                                            lineNumber: 1103,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 1073,
+                                    lineNumber: 1076,
                                     columnNumber: 29
                                 }, this),
                                 selectedFilter.description && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4351,7 +4354,7 @@ function AssignmentsOverview() {
                                             children: "Description"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1116,
+                                            lineNumber: 1119,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
@@ -4361,18 +4364,18 @@ function AssignmentsOverview() {
                                                 children: selectedFilter.description
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 1120,
+                                                lineNumber: 1123,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1118,
+                                            lineNumber: 1121,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 1115,
+                                    lineNumber: 1118,
                                     columnNumber: 33
                                 }, this),
                                 selectedFilter.rule && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4382,7 +4385,7 @@ function AssignmentsOverview() {
                                             children: "Filter Rule"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1129,
+                                            lineNumber: 1132,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
@@ -4392,18 +4395,18 @@ function AssignmentsOverview() {
                                                 children: selectedFilter.rule
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                lineNumber: 1133,
+                                                lineNumber: 1136,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1131,
+                                            lineNumber: 1134,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 1128,
+                                    lineNumber: 1131,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4419,7 +4422,7 @@ function AssignmentsOverview() {
                                                             children: "Created"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                            lineNumber: 1141,
+                                                            lineNumber: 1144,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4427,13 +4430,13 @@ function AssignmentsOverview() {
                                                             children: new Date(selectedFilter.createdDateTime).toLocaleString()
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                            lineNumber: 1143,
+                                                            lineNumber: 1146,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1140,
+                                                    lineNumber: 1143,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4443,7 +4446,7 @@ function AssignmentsOverview() {
                                                             children: "Last Modified"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                            lineNumber: 1146,
+                                                            lineNumber: 1149,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4451,19 +4454,19 @@ function AssignmentsOverview() {
                                                             children: new Date(selectedFilter.lastModifiedDateTime).toLocaleString()
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                            lineNumber: 1148,
+                                                            lineNumber: 1151,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1145,
+                                                    lineNumber: 1148,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1139,
+                                            lineNumber: 1142,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4473,7 +4476,7 @@ function AssignmentsOverview() {
                                                     children: "Role Scope Tags"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1153,
+                                                    lineNumber: 1156,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4484,37 +4487,37 @@ function AssignmentsOverview() {
                                                             children: tag
                                                         }, index, false, {
                                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                            lineNumber: 1158,
+                                                            lineNumber: 1161,
                                                             columnNumber: 49
                                                         }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-sm text-gray-500 dark:text-gray-400",
                                                         children: "No role scope tags"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                        lineNumber: 1163,
+                                                        lineNumber: 1166,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                                    lineNumber: 1155,
+                                                    lineNumber: 1158,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                            lineNumber: 1152,
+                                            lineNumber: 1155,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                    lineNumber: 1138,
+                                    lineNumber: 1141,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                            lineNumber: 1072,
+                            lineNumber: 1075,
                             columnNumber: 25
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "text-center py-8",
@@ -4523,29 +4526,29 @@ function AssignmentsOverview() {
                                 children: "Filter not found"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                                lineNumber: 1171,
+                                lineNumber: 1174,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                            lineNumber: 1170,
+                            lineNumber: 1173,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                    lineNumber: 1060,
+                    lineNumber: 1063,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-                lineNumber: 1059,
+                lineNumber: 1062,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/assistant/assignments-overview/page.tsx",
-        lineNumber: 721,
+        lineNumber: 724,
         columnNumber: 9
     }, this);
 }
