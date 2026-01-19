@@ -1,7 +1,7 @@
 
 'use client';
 import ReactDOM from 'react-dom';
-import React, { useState, useCallback, useRef } from 'react';
+import React, {useState, useCallback, useRef, useEffect} from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,15 @@ import {
     Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle, Blocks
 } from 'lucide-react';
 import { useMsal } from '@azure/msal-react';
-import {ASSIGNMENTS_COMPARE_ENDPOINT, ASSIGNMENTS_ENDPOINT,EXPORT_ENDPOINT,GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+import {
+    ASSIGNMENTS_COMPARE_ENDPOINT,
+    ASSIGNMENTS_ENDPOINT,
+    EXPORT_ENDPOINT,
+    GROUPS_ENDPOINT,
+    ASSIGNMENTS_FILTERS_ENDPOINT,
+    ITEMS_PER_PAGE,
+    ROLE_SCOPETAGS_ENDPOINT
+} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
 import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -20,6 +28,7 @@ import {useApiRequest} from "@/hooks/useApiRequest";
 import { UserConsentRequiredError } from '@/lib/errors';
 import { PlanProtection } from '@/components/PlanProtection';
 import { useConsent } from "@/contexts/ConsentContext";
+import {MultiSelect} from "@/components/ui/multi-select";
 
 interface AssignmentCompareApiResponse {
     status: string;
@@ -88,6 +97,7 @@ interface ComparisonResult {
         policyType: string;
         policySubType: string;
         assignments: Assignment[];
+        scopeTagIds?: string[];
         platform: string;
     };
     policies?: Array<{
@@ -148,6 +158,15 @@ interface ComparisonResult {
     validationMessage?: string;
     isCurrentSessionValidation?: boolean;
 }
+
+interface RoleScopeTag {
+    id: string;
+    displayName: string;
+    description: string;
+    isBuildIn: boolean;
+    assignments: unknown[];
+}
+
 
 interface MigrationResult {id: string;
     providedPolicyName: string;
@@ -240,6 +259,7 @@ function AssignmentRolloutContent() {
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [backupLoading, setBackupLoading] = useState(false);
+    const [roleScopeTags, setRoleScopeTags] = useState<RoleScopeTag[]>([]);
 
     const [error, setError] = useState<string | null>(null);
     const [migrationProgress, setMigrationProgress] = useState(0);
@@ -259,6 +279,8 @@ function AssignmentRolloutContent() {
     const [assignmentGroups, setAssignmentGroups] = useState<{[key: string]: GroupData}>({});
     const [loadingAssignmentGroups, setLoadingAssignmentGroups] = useState<string[]>([]);
 
+    const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
+    const [filteredComparisonResults, setFilteredComparisonResults] = useState<ComparisonResult[]>([]);
 
     // Add pagination logic before the return statement
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -707,13 +729,35 @@ function AssignmentRolloutContent() {
             sortable: true,
             sortValue: (row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
+
+                // Check if already migrated first
+                if (result.isMigrated) return 3;
+
                 const check = result.migrationCheckResult;
                 if (!check) return 2;
+
+                // Check for compatibility errors first
+                const hasCompatibilityErrors = check.assignmentIsCompatible === false &&
+                    check.compatibilityErrors &&
+                    check.compatibilityErrors.length > 0;
+
+                if (hasCompatibilityErrors) return 0;
 
                 const allChecksPass = check.policyExists && check.policyIsUnique &&
                     check.groupExists && check.correctAssignmentTypeProvided &&
                     check.correctAssignmentActionProvided && check.assignmentIsCompatible;
-                return allChecksPass ? 1 : 0;
+
+                // If checks fail, return 0 (errors)
+                if (!allChecksPass) return 0;
+
+                // Check for warnings
+                const hasWarnings = check.filterExist === false ||
+                    check.filterIsUnique === false ||
+                    check.correctFilterPlatform === false ||
+                    check.correctFilterTypeProvided === false;
+
+                // Return 1.5 for warnings, 1 for success
+                return hasWarnings ? 1.5 : 1;
             },
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
@@ -771,6 +815,14 @@ function AssignmentRolloutContent() {
             key: 'assignedGroups',
             label: 'Current Assignments',
             width: 150,
+            sortable: true,
+            sortValue: (row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
+                // Return -1 for N/A cases so they sort first (or use a high number to sort last)
+                if (!displayPolicy) return -1;
+                return displayPolicy.assignments?.length || 0;
+            },
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
@@ -860,6 +912,39 @@ function AssignmentRolloutContent() {
                         {result.filterType}
                     </Badge>
 
+                );
+            }
+        },
+        {
+            key: 'scopeTagIds',
+            label: 'Role Scope Tags',
+            width: 180,
+            minWidth: 140,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
+                const scopeTagIds = displayPolicy?.scopeTagIds;
+                const tagNames = getRoleScopeTagNames(scopeTagIds);
+
+                if (tagNames.length === 0) {
+                    return <span className="text-xs text-gray-500">None</span>;
+                }
+
+                return (
+                    <div className="flex flex-wrap gap-1">
+                        {tagNames.map((tagName, index) => {
+                            const isBuiltIn = roleScopeTags.find(t => t.displayName === tagName)?.isBuildIn;
+                            return (
+                                <Badge
+                                    key={index}
+                                    variant={isBuiltIn ? "secondary" : "outline"}
+                                    className="text-xs"
+                                >
+                                    {tagName}
+                                </Badge>
+                            );
+                        })}
+                    </div>
                 );
             }
         }
@@ -1213,53 +1298,6 @@ function AssignmentRolloutContent() {
         setLastClickedIndex(index);
     };
 
-const MigrationOverlay = ({ progress }: { progress: number }) => {
-    return ReactDOM.createPortal(
-        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center">
-            <div className="relative">
-                {/* Animated rings */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-64 h-64 border-4 border-blue-500/30 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
-                    <div className="absolute w-48 h-48 border-4 border-purple-500/30 rounded-full animate-ping" style={{ animationDuration: '1.5s' }}></div>
-                    <div className="absolute w-32 h-32 border-4 border-green-500/30 rounded-full animate-ping" style={{ animationDuration: '1s' }}></div>
-                </div>
-
-                {/* Main card */}
-                <div className="relative bg-gradient-to-br from-yellow-500 to-amber-600 p-8 rounded-2xl shadow-2xl min-w-[400px]">
-                    <div className="text-center space-y-6">
-                        {/* Icon */}
-                        <div className="flex justify-center">
-                            <div className="relative">
-                                <ArrowRight className="h-16 w-16 text-white animate-pulse" />
-                                <div className="absolute -inset-2 bg-white/20 rounded-full blur-xl animate-pulse"></div>
-                            </div>
-                        </div>
-
-                        {/* Text */}
-                        <div>
-                            <h3 className="text-2xl font-bold text-white mb-2">
-                                Migrating Assignments
-                            </h3>
-                            <p className="text-blue-100">
-                                Please wait while we process your migrations...
-                            </p>
-                        </div>
-
-
-                        {/* Animated dots */}
-                        <div className="flex justify-center gap-2">
-                            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>,
-        document.body
-    );
-};
-
     const toggleExpanded = (resultId: string) => {
         setExpandedRows(prev =>
             prev.includes(resultId)
@@ -1378,7 +1416,60 @@ const MigrationOverlay = ({ progress }: { progress: number }) => {
     };
 
 
+    const fetchRoleScopeTags = async () => {
+        if (!accounts.length) return;
 
+        try {
+            const responseData = await request<{ data: RoleScopeTag[] }>(ROLE_SCOPETAGS_ENDPOINT, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!responseData) {
+                console.error('No response received from role scope tags API');
+                setRoleScopeTags([]);
+                return;
+            }
+
+            if (responseData.data && Array.isArray(responseData.data)) {
+                setRoleScopeTags(responseData.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch role scope tags:', error);
+            setRoleScopeTags([]);
+        }
+    };
+
+    const getRoleScopeTagNames = (scopeTagIds: string[] | undefined): string[] => {
+        if (!scopeTagIds || scopeTagIds.length === 0) return [];
+
+        return scopeTagIds
+            .map(id => {
+                const tag = roleScopeTags.find(t => t.id === id);
+                return tag?.displayName || `Unknown (${id})`;
+            })
+            .filter(Boolean);
+    };
+const getUniqueRoleScopeTags = (): Array<{label: string; value: string}> => {
+    const tagIds = new Set<string>();
+    // Use all comparison results to show all available tags
+    comparisonResults.forEach(result => {
+        const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
+        displayPolicy?.scopeTagIds?.forEach(id => tagIds.add(id));
+    });
+
+    return Array.from(tagIds)
+        .map(id => {
+            const tag = roleScopeTags.find(t => t.id === id);
+            return {
+                label: tag?.displayName || `Unknown (${id})`,
+                value: id
+            };
+        })
+        .sort((a, b) => a.label.localeCompare(b.label));
+};
     // Backup rows
    const downloadBackups = async () => {
        const readyForMigration = comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated);
@@ -1518,84 +1609,82 @@ const MigrationOverlay = ({ progress }: { progress: number }) => {
 
     // API Calls
     const compareAssignments = async () => {
-        if (!accounts.length || !csvData.length) return;
+    if (!accounts.length || !csvData.length) return;
 
-        // Filter out invalid rows before sending to API
-        const validCsvData = csvData.filter(row => row.isValid);
-        const invalidRowCount = csvData.length - validCsvData.length;
+    const validCsvData = csvData.filter(row => row.isValid);
+    const invalidRowCount = csvData.length - validCsvData.length;
 
-        if (invalidRowCount > 0) {
-            console.log(`Excluding ${invalidRowCount} invalid rows from comparison`);
-        }
+    if (invalidRowCount > 0) {
+        console.log(`Excluding ${invalidRowCount} invalid rows from comparison`);
+    }
 
-        if (validCsvData.length === 0) {
-            setError('No valid rows found in CSV. Please correct the validation errors and re-upload.');
+    if (validCsvData.length === 0) {
+        setError('No valid rows found in CSV. Please correct the validation errors and re-upload.');
+        return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+        // Fetch role scope tags first
+        await fetchRoleScopeTags();
+
+        const payloadData = validCsvData.map(row => ({
+            PolicyName: row.PolicyName,
+            GroupName: row.GroupName,
+            AssignmentDirection: row.AssignmentDirection,
+            AssignmentAction: row.AssignmentAction,
+            FilterName: row.FilterName,
+            FilterType: row.FilterType
+        }));
+
+        console.log('Payload being sent to API:', payloadData);
+
+        const apiResponse = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify(payloadData)
+        });
+
+        if (!apiResponse?.data || !Array.isArray(apiResponse.data)) {
+            setError('Invalid data format received from server');
+            setLoading(false);
             return;
         }
 
-        setLoading(true);
-        setError(null);
+        const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => {
+            const check = item.migrationCheckResult;
+            let migrationCheckSortValue = 2;
 
-        try {
-
-            const payloadData = validCsvData.map(row => ({
-                PolicyName: row.PolicyName,
-                GroupName: row.GroupName,
-                AssignmentDirection: row.AssignmentDirection,
-                AssignmentAction: row.AssignmentAction,
-                FilterName: row.FilterName,
-                FilterType: row.FilterType
-            }));
-
-            console.log('Payload being sent to API:', payloadData);
-
-            // The UserConsentRequiredError will be caught and handled by the useApiRequest hook
-            // which will automatically call showConsent with the consentUrl
-            const apiResponse = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT, {
-                method: 'POST',
-                body: JSON.stringify(payloadData)
-            });
-
-            if (!apiResponse?.data || !Array.isArray(apiResponse.data)) {
-                setError('Invalid data format received from server');
-                setLoading(false);
-                return;
+            if (check) {
+                const allChecksPass = check.policyExists && check.policyIsUnique &&
+                    check.groupExists && check.correctAssignmentTypeProvided &&
+                    check.correctAssignmentActionProvided;
+                migrationCheckSortValue = allChecksPass ? 1 : 0;
             }
-            const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => {
-                const check = item.migrationCheckResult;
-                let migrationCheckSortValue = 2; // default for no check data
 
-                if (check) {
-                    const allChecksPass = check.policyExists && check.policyIsUnique &&
-                        check.groupExists && check.correctAssignmentTypeProvided &&
-                        check.correctAssignmentActionProvided;
-                    migrationCheckSortValue = allChecksPass ? 1 : 0;
-                }
-
-                return {
-                    ...item,
-                    csvRow: {
-                        ...validCsvData[index],
-                    },
-                    isReadyForMigration: item.isReadyForMigration,
-                    isMigrated: item.isMigrated || false,
-                    isBackedUp: false,
-                    validationStatus: 'pending' as const,
-                    migrationCheckSortValue
-                };
-            });
-            setComparisonResults(enhancedResults);
-            setCurrentStep('migrate');
-        } catch (error) {
-            // Don't set an error if it was a consent error (already handled)
-            if (!(error instanceof UserConsentRequiredError)) {
-                setError(error instanceof Error ? error.message : 'Failed to compare assignments');
-            }
-        } finally {
-            setLoading(false);
+            return {
+                ...item,
+                csvRow: {
+                    ...validCsvData[index],
+                },
+                isReadyForMigration: item.isReadyForMigration,
+                isMigrated: item.isMigrated || false,
+                isBackedUp: false,
+                validationStatus: 'pending' as const,
+                migrationCheckSortValue
+            };
+        });
+        setComparisonResults(enhancedResults);
+        setCurrentStep('migrate');
+    } catch (error) {
+        if (!(error instanceof UserConsentRequiredError)) {
+            setError(error instanceof Error ? error.message : 'Failed to compare assignments');
         }
-    };
-
+    } finally {
+        setLoading(false);
+    }
+};
     const migrateSelectedAssignments = async () => {
     if (!accounts.length || !selectedRows.length) return;
 
@@ -1829,19 +1918,21 @@ const MigrationOverlay = ({ progress }: { progress: number }) => {
         await validateMigratedAssignments(recentlyMigrated);
     };
 
-    const resetProcess = () => {
-        setCurrentStep('upload');
-        setCsvData([]);
-        setComparisonResults([]);
-        setSelectedRows([]);
-        setMigrationProgress(0);
-        setValidationResults([]);
-        setValidationComplete(false);
-        setError(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
+const resetProcess = () => {
+    setCurrentStep('upload');
+    setCsvData([]);
+    setComparisonResults([]);
+    setFilteredComparisonResults([]);
+    setSelectedRows([]);
+    setMigrationProgress(0);
+    setValidationResults([]);
+    setValidationComplete(false);
+    setRoleScopeTagFilter([]);
+    setError(null);
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+};
 
     const {
         selectedGroup,
@@ -1984,13 +2075,21 @@ const MigrationOverlay = ({ progress }: { progress: number }) => {
         </Dialog>
     );
 
+    useEffect(() => {
+        let filtered = comparisonResults;
+
+        if (roleScopeTagFilter.length > 0) {
+            filtered = filtered.filter((result) => {
+                const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
+                return displayPolicy?.scopeTagIds?.some(id => roleScopeTagFilter.includes(id));
+            });
+        }
+
+        setFilteredComparisonResults(filtered);
+    }, [comparisonResults, roleScopeTagFilter]);
+
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
-            {/* Show migration overlay when migrating */}
-            {loading && migrationProgress > 0 && (
-                <MigrationOverlay progress={migrationProgress} />
-            )}
-
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Assignments Manager</h1>
@@ -2320,38 +2419,17 @@ const MigrationOverlay = ({ progress }: { progress: number }) => {
                             </div>
                             <div className="flex gap-2">
                                 <Button
-                                    onClick={() => {
-                                        const readyRows = comparisonResults
-                                            .filter(r => r.isReadyForMigration && !r.isMigrated)
-                                            .map(r => r.id);
-
-                                        // Check if all ready rows are already selected
-                                        const allReadySelected = readyRows.length > 0 &&
-                                            readyRows.every(id => selectedRows.includes(id));
-
-                                        if (allReadySelected) {
-                                            // Deselect all ready rows
-                                            setSelectedRows(selectedRows.filter(id => !readyRows.includes(id)));
-                                        } else {
-                                            // Select all ready rows
-                                            const newSelection = [...new Set([...selectedRows, ...readyRows])];
-                                            setSelectedRows(newSelection);
-                                        }
-                                    }}
                                     variant="outline"
                                     size="sm"
-                                >
-                                    {(() => {
-                                        const readyRows = comparisonResults
+                                    onClick={() => {
+                                        const readyIds = filteredComparisonResults
                                             .filter(r => r.isReadyForMigration && !r.isMigrated)
                                             .map(r => r.id);
-                                        const allReadySelected = readyRows.length > 0 &&
-                                            readyRows.every(id => selectedRows.includes(id));
-
-                                        return allReadySelected
-                                            ? `Deselect All Ready (${readyRows.length})`
-                                            : `Select All Ready (${readyRows.length})`;
-                                    })()}
+                                        setSelectedRows(readyIds);
+                                    }}
+                                    disabled={filteredComparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
+                                >
+                                    Select All Ready ({filteredComparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length})
                                 </Button>
 
 
@@ -2398,6 +2476,44 @@ const MigrationOverlay = ({ progress }: { progress: number }) => {
                             </div>
                         )}
 
+                        <div className="mb-4 flex gap-2 items-end">
+                            <div className="flex-1">
+                                <label className="text-sm font-medium dark:text-gray-200 mb-2 block">
+                                    Filter by Role Scope Tags
+                                </label>
+                                <MultiSelect
+                                    options={getUniqueRoleScopeTags()}
+                                    selected={roleScopeTagFilter}
+                                    onChange={setRoleScopeTagFilter}
+                                    placeholder="Select scope tags..."
+                                />
+                            </div>
+                            {roleScopeTagFilter.length > 0 && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setRoleScopeTagFilter([])}
+                                >
+                                    Clear Filter
+                                </Button>
+                            )}
+                        </div>
+
+                        {/* Info badges - update to use filteredComparisonResults */}
+                        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div className="flex flex-wrap gap-4 text-sm">
+                    <span>
+                        <strong>{filteredComparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length}</strong> ready for migration
+                    </span>
+                                <span>
+                        <strong>{filteredComparisonResults.filter(r => r.isMigrated).length}</strong> migrated
+                    </span>
+                                <span>
+                        <strong>{selectedRows.length}</strong> selected
+                    </span>
+                            </div>
+                        </div>
+
                         {/* Comparison Results Table */}
                         {comparisonResults.length > 0 ? (
                             <div className="space-y-4">
@@ -2429,14 +2545,14 @@ const MigrationOverlay = ({ progress }: { progress: number }) => {
                                     </div>
                                 </div>
                                 <DataTable
-                                    data={comparisonResults.map(result => result as unknown as Record<string, unknown>)}
+                                    data={filteredComparisonResults.map(result => result as unknown as Record<string, unknown>)}
                                     columns={comparisonColumns}
                                     className="text-sm"
                                     // Instead of using key, pass selectedRows as a prop
                                     selectedRows={selectedRows}
                                     onRowClick={(row, index, event) => handleRowClick(row, index, event)}
                                     currentPage={compareCurrentPage}
-                                    totalPages={Math.ceil(comparisonResults.length / itemsPerPage)}
+                                    totalPages={Math.ceil(filteredComparisonResults.length / itemsPerPage)}
                                     itemsPerPage={itemsPerPage}
                                     onPageChange={setCompareCurrentPage}
                                     onItemsPerPageChange={(newItemsPerPage) => {
