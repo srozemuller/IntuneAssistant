@@ -142,7 +142,10 @@ export default function AssignmentsOverview() {
                 key: '',
                 label: 'AssignmentAction',
                 width: 25,
-                getValue: () => String('Add') // or whatever default action you want
+                getValue: (row) => {
+                    const targetName = (row as Assignments).targetName as string | null | undefined;
+                    return String(targetName ? 'Add' : 'NoAssignment');
+                }
             },
             {
                 key: 'filterId',
