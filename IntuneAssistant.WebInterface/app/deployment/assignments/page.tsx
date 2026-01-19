@@ -149,6 +149,25 @@ interface ComparisonResult {
     isCurrentSessionValidation?: boolean;
 }
 
+interface MigrationResult {id: string;
+    providedPolicyName: string;
+    policy: null;
+    assignmentId: string;
+    groupToMigrate: string;
+    assignmentType: number;
+    assignmentDirection: number;
+    assignmentAction: number;
+    filterType: string | null;
+    filterName: string | null;
+    isMigrated: boolean;
+    status: 'Success' | 'Failed';
+    errorMessage: string | null;
+    processedAt: string;
+    batchIndex: number | null;
+    [key: string]: unknown;
+}
+
+
 interface ValidationResult {
     id: string;
     hasCorrectAssignment: boolean;
@@ -214,7 +233,8 @@ function AssignmentRolloutContent() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // State management
-    const [currentStep, setCurrentStep] = useState<'upload' | 'compare' | 'migrate' | 'validate'>('upload');
+    const [currentStep, setCurrentStep] = useState<'upload' | 'compare' | 'migrate' | 'results' | 'validate'>('upload');
+
     const [csvData, setCsvData] = useState<CSVRow[]>([]);
     const [comparisonResults, setComparisonResults] = useState<ComparisonResult[]>([]);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -223,6 +243,7 @@ function AssignmentRolloutContent() {
     const [migrationProgress, setMigrationProgress] = useState(0);
     const [validationComplete, setValidationComplete] = useState(false);
     const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
+    const [migrationResults, setMigrationResults] = useState<MigrationResult[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
@@ -831,11 +852,106 @@ function AssignmentRolloutContent() {
                 }
 
                 return (
-                    <Badge variant={result.filterType === 'Include' ? 'default' : 'destructive'}>
+                    <Badge variant={result.filterType === 'include' ? 'default' : 'destructive'}
+                           className={result.filterType === 'include' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
+                    >
                         {result.filterType}
+                    </Badge>
+
+                );
+            }
+        }
+    ];
+
+    const migrationResultsColumns = [
+        {
+            key: 'status',
+            label: 'Status',
+            width: 80,
+            sortable: true,
+            sortValue: (row: Record<string, unknown>) => {
+                const result = row as unknown as MigrationResult;
+                return result.status === 'Success' ? 1 : 0;
+            },
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as MigrationResult;
+                return result.status === 'Success' ? (
+                    <Badge variant="default" className="bg-green-600">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Success
+                    </Badge>
+                ) : (
+                    <Badge variant="destructive">
+                        <XCircle className="h-3 w-3 mr-1" />
+                        Failed
                     </Badge>
                 );
             }
+        },
+        {
+            key: 'providedPolicyName',
+            label: 'Policy Name',
+            minWidth: 200,
+            render: (value: unknown) => (
+                <span className="text-sm font-medium" title={String(value)}>
+                    {String(value)}
+                </span>
+            )
+        },
+        {
+            key: 'groupToMigrate',
+            label: 'Group',
+            minWidth: 150,
+            render: (value: unknown) => (
+                <span className="text-sm" title={String(value)}>
+                    {String(value)}
+                </span>
+            )
+        },
+        {
+            key: 'assignmentAction',
+            label: 'Action',
+            width: 120,
+            render: (value: unknown) => {
+                const actionMap: Record<number, string> = {
+                    0: 'Add',
+                    1: 'Remove',
+                    2: 'Replace',
+                    3: 'NoAssignment'
+                };
+                const action = actionMap[Number(value)] || 'Unknown';
+                return (
+                    <Badge variant={action === 'Add' ? 'default' : 'secondary'}>
+                        {action}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'errorMessage',
+            label: 'Message',
+            minWidth: 300,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as MigrationResult;
+                if (result.status === 'Success') {
+                    return <span className="text-sm text-green-600">Successfully migrated</span>;
+                }
+                return (
+                    <span className="text-sm text-red-600" title={String(value)}>
+                        {String(value)}
+                    </span>
+                );
+            }
+        },
+        {
+            key: 'processedAt',
+            label: 'Processed',
+            width: 180,
+            render: (value: unknown) => (
+                <span className="text-sm text-gray-500">
+                    {new Date(String(value)).toLocaleString()}
+                </span>
+            )
         }
     ];
 
@@ -1071,6 +1187,11 @@ function AssignmentRolloutContent() {
                 };
             };
 
+            console.log('CSV Line:', line);
+            console.log('Values:', values);
+            console.log('FilterName raw value:', values[4]);
+            console.log('FilterName after nullIfEmpty:', nullIfEmpty(values[4]));
+
             // Validate required fields
             const policyName = values[0]?.trim() || '';
             const groupName = values[1]?.trim() || '';
@@ -1301,11 +1422,23 @@ function AssignmentRolloutContent() {
         setError(null);
 
         try {
+
+            const payloadData = validCsvData.map(row => ({
+                PolicyName: row.PolicyName,
+                GroupName: row.GroupName,
+                AssignmentDirection: row.AssignmentDirection,
+                AssignmentAction: row.AssignmentAction,
+                FilterName: row.FilterName,
+                FilterType: row.FilterType
+            }));
+
+            console.log('Payload being sent to API:', payloadData);
+
             // The UserConsentRequiredError will be caught and handled by the useApiRequest hook
             // which will automatically call showConsent with the consentUrl
             const apiResponse = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT, {
                 method: 'POST',
-                body: JSON.stringify(validCsvData)
+                body: JSON.stringify(payloadData)
             });
 
             if (!apiResponse?.data || !Array.isArray(apiResponse.data)) {
@@ -1348,108 +1481,91 @@ function AssignmentRolloutContent() {
         }
     };
 
-    const handleMigrationSuccess = () => {
-        setMigrationSuccessful(true);
-        // Reset after clearing error
-        setTimeout(() => setMigrationSuccessful(false), 100);
-    };
-
-
     const migrateSelectedAssignments = async () => {
-        if (!accounts.length || !selectedRows.length) return;
+    if (!accounts.length || !selectedRows.length) return;
 
-        setLoading(true);
-        setMigrationProgress(0);
+    setLoading(true);
+    setMigrationProgress(0);
 
-        try {
-            // Get the selected comparison results first
-            const selectedComparisonResults = comparisonResults.filter(result =>
-                selectedRows.includes(result.id)
-            );
+    try {
+        const selectedComparisonResults = comparisonResults.filter(result =>
+            selectedRows.includes(result.id)
+        );
 
-            // Create the API payload with the correct structure
-            const migrationPayload = selectedComparisonResults.map(result => ({
-                PolicyId: result.policy?.id || '',
-                PolicyName: result.policy?.name || result.providedPolicyName || '',
-                PolicyType: result.policy?.policyType || '', // Use policySubType for PolicyType field
-                AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
-                AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
-                AssignmentAction: result.csvRow?.AssignmentAction || result.assignmentAction || 'Add',
-                FilterName: result.csvRow?.FilterName || result.filterName || null,
-                FilterType: result.csvRow?.FilterType || result.filterType || 'none'
-            }));
+        const migrationPayload = selectedComparisonResults.map(result => ({
+            PolicyId: result.policy?.id || '',
+            PolicyName: result.policy?.name || result.providedPolicyName || '',
+            PolicyType: result.policy?.policyType || '',
+            AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
+            AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
+            AssignmentAction: result.csvRow?.AssignmentAction || result.assignmentAction || 'Add',
+            FilterName: result.csvRow?.FilterName || result.filterName || null,
+            FilterType: result.csvRow?.FilterType || result.filterType || 'none'
+        }));
 
-            const apiResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
-                method: 'POST',
-                body: JSON.stringify(migrationPayload)
-            });
+        const apiResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
+            method: 'POST',
+            body: JSON.stringify(migrationPayload)
+        });
 
-            // Add null check for apiResponse
-            if (!apiResponse) {
-                setError('Failed to get response from server');
-                return;
-            }
-
-            // Check if this is an error response
-            if (apiResponse.status === 'Error' &&
-                apiResponse.message?.message === 'User challenge required') {
-
-                setConsentUrl(apiResponse.message.url || '');
-                setShowConsentDialog(true);
-                setLoading(false);
-                return;
-            }
-
-            // Add null check for apiResponse.data
-            if (!apiResponse.data) {
-                setError('No data received from server');
-                return;
-            }
-            if (!Array.isArray(apiResponse.data)) {
-                setError('Invalid data format received from server');
-                return;
-            }
-
-            // Simulate migration progress
-            for (let i = 0; i <= 100; i += 10) {
-                setMigrationProgress(i);
-                await new Promise(resolve => setTimeout(resolve, 200));
-            }
-
-            // Update migrated status
-            setComparisonResults(prev =>
-                prev.map(result =>
-                    selectedRows.includes(result.id)
-                        ? { ...result, isMigrated: true }
-                        : result
-                )
-            );
-
-            // Move to validation step
-            setCurrentStep('validate');
-
-            // Clear selected rows to prevent confusion
-            setSelectedRows([]);
-
-            // Validate only the items that were just migrated
-            setTimeout(() => {
-                validateMigratedAssignments(selectedComparisonResults);
-            }, 500);
-
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Migration failed');
-        } finally {
-            setLoading(false);
+        if (!apiResponse || !apiResponse.data) {
+            setError('Failed to get response from server');
+            return;
         }
-    };
 
+        if (apiResponse.status === 'Error' && apiResponse.message?.message === 'User challenge required') {
+            setConsentUrl(apiResponse.message.url || '');
+            setShowConsentDialog(true);
+            setLoading(false);
+            return;
+        }
+
+        for (let i = 0; i <= 100; i += 10) {
+            setMigrationProgress(i);
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+
+        setMigrationResults(apiResponse.data as unknown as MigrationResult[]);
+
+        // Update comparison results with migration status AND validation status
+        setComparisonResults(prev =>
+            prev.map(result => {
+                const migrationResult = (apiResponse.data as unknown as MigrationResult[]).find(
+                    mr => mr.id === result.id
+                );
+
+                if (migrationResult) {
+                    return {
+                        ...result,
+                        isMigrated: migrationResult.status === 'Success',
+                        validationStatus: migrationResult.status === 'Success' ? 'pending' as const : result.validationStatus,
+                        isCurrentSessionValidation: migrationResult.status === 'Success'
+                    };
+                }
+                return result;
+            })
+        );
+
+        setCurrentStep('results');
+        setSelectedRows([]);
+
+    } catch (error) {
+        setError(error instanceof Error ? error.message : 'Migration failed');
+    } finally {
+        setLoading(false);
+    }
+};
 
     const validateMigratedAssignments = async (results?: ComparisonResult[]) => {
         if (!accounts.length) return;
 
-        // If no specific results are passed, don't validate anything
-        if (!results || results.length === 0) {
-            setError('No specific assignments provided for validation');
+        // Filter to only validate successfully migrated items
+        const successfulMigrations = results?.filter(r =>
+             r.isMigrated
+        );
+
+        if (!successfulMigrations || successfulMigrations.length === 0) {
+            setError('No successful migrations to validate');
             return;
         }
 
@@ -1457,9 +1573,9 @@ function AssignmentRolloutContent() {
         setValidationComplete(false);
 
         try {
-            console.log(`Validating ${results.length} specific assignments`);
+            console.log(`Validating ${successfulMigrations.length} successful migrations`);
 
-            const validationPayload = results.map(result => ({
+            const validationPayload = successfulMigrations.map(result => ({
                 Id: result.id,
                 ResourceType: result.policy?.policyType || '',
                 SubResourceType: result.policy?.policySubType || '',
@@ -1776,37 +1892,48 @@ function AssignmentRolloutContent() {
                             { key: 'upload', label: 'Upload CSV', icon: Upload },
                             { key: 'compare', label: 'Compare', icon: Eye },
                             { key: 'migrate', label: 'Migrate', icon: Play },
-                            { key: 'validate', label: 'Validate', icon: CheckCircle2 }
+                            { key: 'results', label: 'Results', icon: CheckCircle2 },
+                            { key: 'validate', label: 'Validate', icon: RefreshCw }
                         ].map((step, index) => {
-                            const Icon = step.icon;
-                            const isActive = currentStep === step.key;
-                            const stepOrder = ['upload', 'compare', 'migrate', 'validate'];
-                            const isCompleted = stepOrder.indexOf(currentStep) > stepOrder.indexOf(step.key);
+                            const stepKeys = ['upload', 'compare', 'migrate', 'results', 'validate'];
+                            const currentStepIndex = stepKeys.indexOf(currentStep);
+                            const thisStepIndex = stepKeys.indexOf(step.key);
 
-                            // Special case for validate step - show green if validation is complete
-                            const isValidateComplete = step.key === 'validate' && validationComplete;
+                            const isActive = currentStep === step.key;
+                            const isCompleted = thisStepIndex < currentStepIndex;
+                            const Icon = step.icon;
 
                             return (
-                                <div key={step.key} className="flex items-center">
-                                    <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                                        isCompleted || isValidateComplete ? 'bg-green-500 border-green-500 text-white' :
-                                            isActive ? 'bgyellow-500 border-yellow-500 text-white' :
-                                                'border-gray-300 text-gray-400'
-                                    }`}>
-                                        <Icon className="h-5 w-5" />
+                                <React.Fragment key={step.key}>
+                                    <div className="flex items-center">
+                                        <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors ${
+                                            isActive
+                                                ? 'border-blue-600 bg-blue-600 text-white'
+                                                : isCompleted
+                                                    ? 'border-green-600 bg-green-600 text-white'
+                                                    : 'border-gray-300 bg-white text-gray-400'
+                                        }`}>
+                                            <Icon className="h-5 w-5" />
+                                        </div>
+                                        <span className={`ml-3 text-sm font-medium ${
+                                            isActive
+                                                ? 'text-blue-600'
+                                                : isCompleted
+                                                    ? 'text-green-600'
+                                                    : 'text-gray-400'
+                                        }`}>
+                    {step.label}
+                </span>
                                     </div>
-                                    <span className={`ml-2 text-sm font-medium ${
-                                        isActive && !isValidateComplete ? 'text-yellow-600' :
-                                            isCompleted || isValidateComplete ? 'text-green-600' : 'text-gray-400'
-                                    }`}>
-                            {step.label}
-                        </span>
-                                    {index < 3 && (
-                                        <ArrowRight className="h-4 w-4 mx-4 text-gray-300" />
+                                    {index < 4 && (
+                                        <ArrowRight className={`h-4 w-4 mx-4 ${
+                                            isCompleted ? 'text-green-600' : 'text-gray-300'
+                                        }`} />
                                     )}
-                                </div>
+                                </React.Fragment>
                             );
                         })}
+
                     </div>
                 </CardContent>
             </Card>
@@ -2225,6 +2352,67 @@ function AssignmentRolloutContent() {
                 </Card>
             )}
 
+            {currentStep === 'results' && (
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>Migration Results</CardTitle>
+                                <p className="text-gray-600">
+                                    Review the outcome of the migration process
+                                </p>
+                            </div>
+                            <Button
+                                onClick={() => setCurrentStep('validate')}
+                                className="bg-blue-600 hover:bg-blue-700"
+                            >
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                                Proceed to Validation
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        {/* Summary Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                    <span className="font-semibold text-green-600">Successful</span>
+                                </div>
+                                <div className="text-2xl font-bold text-green-600 mt-2">
+                                    {migrationResults.filter(r => r.status === 'Success').length}
+                                </div>
+                            </div>
+                            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                                <div className="flex items-center gap-2">
+                                    <XCircle className="h-5 w-5 text-red-600" />
+                                    <span className="font-semibold text-red-600">Failed</span>
+                                </div>
+                                <div className="text-2xl font-bold text-red-600 mt-2">
+                                    {migrationResults.filter(r => r.status === 'Failed').length}
+                                </div>
+                            </div>
+                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <div className="flex items-center gap-2">
+                                    <Info className="h-5 w-5 text-blue-600" />
+                                    <span className="font-semibold text-blue-600">Total</span>
+                                </div>
+                                <div className="text-2xl font-bold text-blue-600 mt-2">
+                                    {migrationResults.length}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Results Table */}
+                        <DataTable
+                            columns={migrationResultsColumns}
+                            data={migrationResults}
+                            itemsPerPage={itemsPerPage}
+                            onItemsPerPageChange={setItemsPerPage}
+                        />
+                    </CardContent>
+                </Card>
+            )}
 
             {currentStep === 'validate' && (
                 <Card>
