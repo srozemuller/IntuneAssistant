@@ -239,6 +239,8 @@ function AssignmentRolloutContent() {
     const [comparisonResults, setComparisonResults] = useState<ComparisonResult[]>([]);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
+    const [backupLoading, setBackupLoading] = useState(false);
+
     const [error, setError] = useState<string | null>(null);
     const [migrationProgress, setMigrationProgress] = useState(0);
     const [validationComplete, setValidationComplete] = useState(false);
@@ -1143,7 +1145,52 @@ function AssignmentRolloutContent() {
         setLastClickedIndex(index);
     };
 
+const MigrationOverlay = ({ progress }: { progress: number }) => {
+    return ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center">
+            <div className="relative">
+                {/* Animated rings */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-64 h-64 border-4 border-blue-500/30 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
+                    <div className="absolute w-48 h-48 border-4 border-purple-500/30 rounded-full animate-ping" style={{ animationDuration: '1.5s' }}></div>
+                    <div className="absolute w-32 h-32 border-4 border-green-500/30 rounded-full animate-ping" style={{ animationDuration: '1s' }}></div>
+                </div>
 
+                {/* Main card */}
+                <div className="relative bg-gradient-to-br from-yellow-500 to-amber-600 p-8 rounded-2xl shadow-2xl min-w-[400px]">
+                    <div className="text-center space-y-6">
+                        {/* Icon */}
+                        <div className="flex justify-center">
+                            <div className="relative">
+                                <ArrowRight className="h-16 w-16 text-white animate-pulse" />
+                                <div className="absolute -inset-2 bg-white/20 rounded-full blur-xl animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        {/* Text */}
+                        <div>
+                            <h3 className="text-2xl font-bold text-white mb-2">
+                                Migrating Assignments
+                            </h3>
+                            <p className="text-blue-100">
+                                Please wait while we process your migrations...
+                            </p>
+                        </div>
+
+
+                        {/* Animated dots */}
+                        <div className="flex justify-center gap-2">
+                            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>,
+        document.body
+    );
+};
 
     const toggleExpanded = (resultId: string) => {
         setExpandedRows(prev =>
@@ -1273,7 +1320,7 @@ function AssignmentRolloutContent() {
            return;
        }
 
-       setLoading(true);
+       setBackupLoading(true);
 
        try {
            const JSZip = (await import('jszip')).default;
@@ -1378,7 +1425,7 @@ function AssignmentRolloutContent() {
            console.error('Backup failed:', error);
            alert('Backup failed. Please try again.');
        } finally {
-           setLoading(false);
+           setBackupLoading(false);
        }
    };
 
@@ -1485,7 +1532,7 @@ function AssignmentRolloutContent() {
     if (!accounts.length || !selectedRows.length) return;
 
     setLoading(true);
-    setMigrationProgress(0);
+    setMigrationProgress(1);
 
     try {
         const selectedComparisonResults = comparisonResults.filter(result =>
@@ -1495,7 +1542,6 @@ function AssignmentRolloutContent() {
         const migrationPayload = selectedComparisonResults.map(result => ({
             PolicyId: result.policy?.id || '',
             PolicyName: result.policy?.name || result.providedPolicyName || '',
-            PolicyType: result.policy?.policyType || '',
             AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
             AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
             AssignmentAction: result.csvRow?.AssignmentAction || result.assignmentAction || 'Add',
@@ -1871,6 +1917,11 @@ function AssignmentRolloutContent() {
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
+            {/* Show migration overlay when migrating */}
+            {loading && migrationProgress > 0 && (
+                <MigrationOverlay progress={migrationProgress} />
+            )}
+
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Assignments Manager</h1>
@@ -2240,7 +2291,7 @@ function AssignmentRolloutContent() {
                                     disabled={loading || comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
                                     variant="outline"
                                 >
-                                    {loading ? 'Creating Backup...' : 'Backup Ready Policies'}
+                                    {backupLoading ? 'Creating Backup...' : 'Backup Ready Policies'}
                                 </Button>
                                 <Button
                                     onClick={migrateSelectedAssignments}
@@ -2404,12 +2455,15 @@ function AssignmentRolloutContent() {
                         </div>
 
                         {/* Results Table */}
-                        <DataTable
-                            columns={migrationResultsColumns}
-                            data={migrationResults}
-                            itemsPerPage={itemsPerPage}
-                            onItemsPerPageChange={setItemsPerPage}
-                        />
+                 <DataTable
+                     columns={migrationResultsColumns}
+                     data={migrationResults}
+                     itemsPerPage={itemsPerPage}
+                     showPagination={true}
+                     onItemsPerPageChange={setItemsPerPage}
+                     currentPage={currentPage}
+                     onPageChange={setCurrentPage}
+                 />
                     </CardContent>
                 </Card>
             )}
