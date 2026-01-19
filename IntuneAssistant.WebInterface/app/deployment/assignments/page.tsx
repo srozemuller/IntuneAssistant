@@ -930,6 +930,74 @@ function AssignmentRolloutContent() {
             }
         },
         {
+            key: 'assignmentDirection',
+            label: 'Direction',
+            width: 120,
+            render: (value: unknown) => {
+               const actionMap: Record<number, string> = {
+                    0: 'NoAssignment',
+                    1: 'Include',
+                    2: 'Exclude',
+                };
+                const action = actionMap[Number(value)] || 'Unknown';
+                return (
+                    <Badge
+                        variant={action === 'Include' ? 'default' : action === 'Exclude' ? 'destructive' : 'secondary'}
+                        className={action === 'Include' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
+                    >
+                        {action}
+                    </Badge>
+                );
+            }
+        },
+       {
+           key: 'filter',
+           label: 'Filter',
+           minWidth: 180,
+           render: (_: unknown, row: Record<string, unknown>) => {
+               const result = row as unknown as MigrationResult;
+               const filterType = result.filterType;
+               const filterName = result.filterName;
+
+               // If no filter type or it's 'None', show None badge
+               if (!filterType || filterType.toLowerCase() === 'none') {
+                   return (
+                       <Badge variant="outline" className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                           None
+                       </Badge>
+                   );
+               }
+
+               // If filter type exists but no name
+               if (!filterName) {
+                   return (
+                       <div className="flex items-center gap-2">
+                           <Badge variant={filterType === 'include' ? 'default' : 'destructive'}
+                                  className={filterType === 'include' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
+                           >
+                               {filterType}
+                           </Badge>
+                           <span className="text-gray-400 text-sm">-</span>
+                       </div>
+                   );
+               }
+
+               // Both type and name exist
+               return (
+                   <div className="flex items-center gap-2">
+                       <Badge variant={filterType === 'include' ? 'default' : 'destructive'}
+                              className={filterType === 'include' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
+                       >
+                           {filterType}
+                       </Badge>
+                       <span className="text-sm truncate max-w-[150px]" title={filterName}>
+                           {filterName}
+                       </span>
+                   </div>
+               );
+           }
+       },
+        {
             key: 'errorMessage',
             label: 'Message',
             minWidth: 300,
