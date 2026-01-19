@@ -1,0 +1,157 @@
+---
+title: Switch Tenants
+description: How to switch between customer tenants in your MSP multi-tenant environment
+---
+
+# Switch Tenants
+
+Learn how to quickly switch between customer tenants in your MSP environment to manage multiple customer environments from a single interface.
+
+## Overview
+
+The tenant switching functionality allows MSPs to seamlessly move between different customer environments without losing context or requiring separate logins. This streamlines your workflow when managing multiple customer tenants.
+
+## How to Switch Tenants
+
+### Step 1: Navigate to Customer Settings
+
+1. **Access your MSP home tenant**
+   - Ensure you're logged into your primary MSP account
+   - Navigate to the main dashboard
+
+2. **Go to Customer Settings**
+   - Click on **Customer Settings** in your MSP account menu
+   - This displays all your managed customer tenants
+
+### Step 2: Select Target Tenant
+
+1. **Locate the customer tenant**
+   - Browse through your list of managed customer tenants
+   - Find the tenant you want to switch to
+
+2. **Access tenant actions**
+   - Click on the **Actions** button in the tenant row
+   - This opens the available actions for that specific tenant
+
+### Step 3: Switch to Tenant
+
+1. **Click "Select Tenant"**
+   - From the actions menu, click **Select Tenant**
+   - The system will initiate the tenant switch process
+
+2. **Automatic context switch**
+   - The interface automatically updates to show the selected tenant
+   - All subsequent operations will be performed in the selected tenant context
+
+<Callout type="success" title="Quick Switch">
+    That's it! You're now working in the selected customer tenant environment with all the appropriate GDAP permissions applied.
+</Callout>
+
+## What Happens During Tenant Switch
+
+### Authentication Context
+- **GDAP authentication** is applied for the selected tenant
+- **Delegated permissions** are activated automatically
+- **User context** is maintained throughout the switch
+
+### Interface Updates
+- **Tenant indicator** shows current active tenant
+- **Data context** switches to the selected tenant
+- **Navigation menus** reflect tenant-specific options
+
+### Permission Application
+- **Role-based access** is applied based on GDAP configuration
+- **Scope limitations** are enforced automatically
+- **Audit trail** records the tenant switch activity
+
+## Current Tenant Indicator
+
+After switching tenants, you can identify your current context through:
+
+- **Tenant name** displayed in the interface header
+- **Tenant-specific branding** if configured
+- **Context indicators** throughout the interface
+- **Breadcrumb navigation** showing current tenant
+
+## Best Practices
+
+### Before Switching
+- **Complete current operations** in the active tenant
+- **Save any pending changes** to avoid data loss
+- **Note the target tenant** to ensure correct selection
+
+### During Operations
+- **Verify tenant context** before making changes
+- **Use tenant indicators** to confirm active environment
+- **Be mindful of cross-tenant operations**
+
+### Security Considerations
+- **Verify permissions** in the new tenant context
+- **Check GDAP status** if access issues occur
+- **Log out completely** when finishing work
+
+## Switching Back to Home Tenant
+
+To return to your MSP home tenant:
+
+1. **Access Customer Settings** again
+2. **Look for "Home Tenant"** option in the interface
+3. **Click to return** to your primary MSP context
+
+Or use the tenant selector if available in the main navigation.
+
+## Troubleshooting
+
+### Cannot Switch to Tenant
+
+**Possible causes:**
+- GDAP relationship expired or revoked
+- Customer disabled delegated access
+- Network connectivity issues
+
+**Solutions:**
+- Check GDAP status in Partner Center
+- Contact customer to verify permissions
+- Refresh the page and try again
+
+### Tenant Not Responding
+
+**Possible causes:**
+- Tenant-specific service issues
+- GDAP permission synchronization delay
+- Network or authentication problems
+
+**Solutions:**
+- Wait a few minutes and retry
+- Check Microsoft service health
+- Verify internet connectivity
+
+### Wrong Tenant Context
+
+**If you're in the wrong tenant:**
+- Immediately stop any operations
+- Switch to the correct tenant using the same process
+- Verify current context before proceeding
+
+<Callout type="warning" title="Double-Check Context">
+    Always verify you're in the correct tenant context before making any configuration changes. Operations in the wrong tenant can affect the wrong customer environment.
+</Callout>
+
+## Keyboard Shortcuts
+
+Some common shortcuts to improve efficiency:
+
+- **Quick tenant search** - Use search functionality in customer settings
+- **Recently accessed** - Some interfaces show recently accessed tenants
+- **Favorites** - Mark frequently accessed tenants for quick access
+
+## Related Documentation
+
+- [Add Tenant](/docs/administration/multi-tenant/add-tenant)
+- [Multi-Tenant Overview](/docs/administration/multi-tenant/overview)
+- [GDAP Management](/docs/getting-started/gdap-setup)
+- [MSP Best Practices](/docs/administration/permissions/msp-permissions)
+
+<Callout type="tip" title="Efficiency Tip">
+    Organize your customer list by priority or frequency of access to make tenant switching faster and more efficient.
+</Callout>

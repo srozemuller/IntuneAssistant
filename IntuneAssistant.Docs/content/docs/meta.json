@@ -1,0 +1,15 @@
+{
+  "title": "IntuneAssistant Documentation",
+  "pages": [
+    "getting-started",
+    "administration",
+    "assistant",
+    "extensions",
+    "msp",
+    "api",
+    "enterprise",
+    "changelog",
+    "faq",
+    "support"
+  ]
+}

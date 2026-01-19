@@ -1,0 +1,136 @@
+---
+title: Overview
+description: Microsoft Intune assignment management built for MSPs and enterprises. Standardize, monitor, and validate policy assignments at scale with CSV-driven automation.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { ArrowRight, FileSpreadsheet, ShieldCheck, Sparkles, Building2, Users } from "lucide-react";
+
+<div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white">
+    <div className="absolute inset-0 opacity-20 [background:radial-gradient(circle_at_20%_20%,white,transparent_50%),radial-gradient(circle_at_80%_30%,white,transparent_45%),radial-gradient(circle_at_40%_80%,white,transparent_55%)]" />
+    <div className="relative p-8 md:p-10">
+        <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-white/15 p-2 ring-1 ring-white/20">
+                <Building2 className="h-6 w-6" />
+            </div>
+            <div className="text-sm font-medium text-white/90">For MSPs & Enterprises</div>
+        </div>
+
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+            Assignment Manager
+        </h1>
+
+        <p className="mt-3 max-w-2xl text-base text-white/90 md:text-lg">
+            Standardize Microsoft Intune assignments across multiple tenants or complex enterprise environments from a single desired state file.
+            Deploy, monitor, and maintain consistent assignments at scale with CSV-driven automation.
+        </p>
+
+        <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="rounded-xl bg-white/10 p-4 ring-1 ring-white/15">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <Users className="h-4 w-4" /> Multi-tenant & enterprise scale
+                </div>
+                <p className="mt-1 text-sm text-white/85">
+                    Deploy consistent assignment patterns across customer tenants (MSPs) or business units (enterprises).
+                </p>
+            </div>
+
+            <div className="rounded-xl bg-white/10 p-4 ring-1 ring-white/15">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <ShieldCheck className="h-4 w-4" /> Continuous compliance monitoring
+                </div>
+                <p className="mt-1 text-sm text-white/85">
+                    Validate assignments against your desired state CSV and catch configuration drift before it impacts users.
+                </p>
+            </div>
+
+            <div className="rounded-xl bg-white/10 p-4 ring-1 ring-white/15">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <FileSpreadsheet className="h-4 w-4" /> Enterprise-grade automation
+                </div>
+                <p className="mt-1 text-sm text-white/85">
+                    Bulk operations, safety validations, and audit trails designed for production environments.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Callout type="info" title="Perfect for MSPs and Large Enterprises">
+    Keep all your customers (multi tenant) "between the lines" by checking assignments using desired state files.
+</Callout>
+
+---
+
+## Primary use cases
+
+### For Managed Service Providers (MSPs)
+- **Standardize Intune assignments** across multiple customer tenants
+- **Monitor assignment drift** across your customers tenants
+- **Automate desired state configuration** for new customers
+- **Scale operations** without manual work that doesn't scale
+
+---
+
+## What makes this different
+
+Unlike traditional assessment tools that only report what exists, Assignment Manager helps you **maintain** the desired state:
+
+- **Deploy** standardized assignments from your CSV templates
+- **Monitor** assignments compliance against your desired configuration
+- **Correct** drift when assignments don't match expectations
+
+<Callout type="tip" title="Beyond assessment tools">
+    Most tools tell you what's there. This tool ensures what **should** be there actually **stays** there.
+</Callout>
+
+---
+
+## Quick start workflow
+
+1. Create your **standardized CSV template** for assignments, or [create one from existing tenant state](/docs/extensions/assignments-manager/create-assignments-template#create-a-template-from-existing-assignments)
+2. Go to **Extensions → Assignment Manager**
+3. Upload your CSV to see what needs to change
+4. Review the comparison against current tenant state
+5. Apply changes and validate results
+6. **Reuse the same CSV** across other tenants or environments
+
+<Callout type="tip" title="Template-driven consistency">
+    Develop your assignment templates once, then deploy them consistently across your entire infrastructure.
+</Callout>
+
+---
+
+## Screenshots
+
+![Assignment Manager - Upload screen](/img/assignments-manager/upload-csv.png)
+![Assignment Manager - Compare view](/img/assignments-manager/compare-results.png)
+![Assignment Manager - Migration results](/img/assignments-manager/validation-results.png)
+
+---
+
+## Next steps
+
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <a href="/docs/extensions/assignments-manager/create-assignments-template" className="group rounded-2xl border bg-card p-5 transition hover:shadow-sm">
+        <div className="flex items-center justify-between">
+            <div className="text-base font-semibold">Create assignments template</div>
+            <ArrowRight className="h-4 w-4 opacity-60 transition group-hover:translate-x-0.5" />
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+            Learn how to create standardized assignment templates from existing tenant configurations or craft new ones from scratch.
+        </p>
+    </a>
+
+    <a href="/docs/extensions/assignments-manager/how-it-works" className="group rounded-2xl border bg-card p-5 transition hover:shadow-sm">
+        <div className="flex items-center justify-between">
+            <div className="text-base font-semibold">How it works</div>
+            <ArrowRight className="h-4 w-4 opacity-60 transition group-hover:translate-x-0.5" />
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+            The workflow: template → deploy → monitor → maintain across environments.
+        </p>
+    </a>
+</div>
+
+---

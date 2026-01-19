@@ -7,7 +7,7 @@ interface Tenant {
     tenantId: string;
     displayName: string;
     domainName: string;
-    isEnabled: boolean;
+    isActive: boolean;
     isPrimary: boolean;
     lastLogin: string | null;
 }

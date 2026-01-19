@@ -41,9 +41,13 @@ export function TenantIndicator() {
                                     Primary
                                 </Badge>
                             )}
-                            {!selectedTenant.isEnabled && (
+                            {!selectedTenant.isActive ? (
                                 <Badge variant="destructive" className="text-xs">
                                     Disabled
+                                </Badge>
+                            ) : (
+                                <Badge variant="default" className="text-xs bg-green-600 hover:bg-green-700">
+                                    Enabled
                                 </Badge>
                             )}
                             <Button

@@ -8,24 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
     RefreshCw,
-    Download,
     Filter,
     Database,
     Search,
     X,
-    Users,
-    ExternalLink,
     Settings,
+    Download,
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp,
-    XCircle, Computer, Blocks, CircleQuestionMark
+    ChevronUp, Computer, Blocks, CircleQuestionMark
 } from 'lucide-react';
-import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
-import {apiScope} from "@/lib/msalConfig";
+import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { MultiSelect, Option } from '@/components/ui/multi-select';
-import { Pagination } from '@/components/ui/pagination';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
@@ -34,7 +29,15 @@ interface ApiResponse {
     status: string;
     message: string;
     details: unknown[];
-    data: Assignments[] | { url: string; message: string }; // Updated to handle both cases
+    data: {
+        data: Assignments[];
+        totalCount: number;
+        pageSize: number;
+        currentPage: number;
+        totalPages: number;
+        hasNextPage: boolean;
+        nextPageToken?: string;
+    } | { url: string; message: string };
 }
 
 
@@ -133,6 +136,15 @@ export default function AssignmentsOverview() {
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
     const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
 
+    const [fetchedPages, setFetchedPages] = useState(0);
+    const [fetchPageSize, setFetchPageSize] = useState(100);
+    const [paginationInfo, setPaginationInfo] = useState({
+        totalCount: 0,
+        hasNextPage: false,
+        nextPageToken: null as string | null,
+        currentPage: 0
+    });
+    const [loadingMore, setLoadingMore] = useState(false);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -159,68 +171,6 @@ export default function AssignmentsOverview() {
         { label: 'Include Filter', value: 'include' },
         { label: 'Exclude Filter', value: 'exclude' }
     ];
-
-    const prepareRolloutExportData = (): ExportData => {
-        const exportColumns: ExportColumn[] = [
-            {
-                key: 'resourceName',
-                label: 'PolicyName',
-                width: 30,
-                getValue: (row) => String(row.resourceName || 'N/A')
-            },
-            {
-                key: 'targetName',
-                label: 'GroupName',
-                width: 30,
-                getValue: (row) => String(row.targetName || 'N/A')
-            },
-            {
-                key: 'assignmentType',
-                label: 'AssignmentDirection',
-                width: 25,
-                getValue: (row) => String(row.assignmentDirection || '')
-            },
-            {
-                key: '',
-                label: 'AssignmentAction',
-                width: 25,
-                getValue: () => String('Add') // or whatever default action you want
-            },
-            {
-                key: 'filterId',
-                label: 'Filter',
-                width: 25,
-                getValue: (row) => {
-                    const filterId = row.filterId as string | null;
-                    if (!filterId || filterId === 'None') return 'None';
-                    const filterInfo = getFilterInfo(filterId, String(row.filterType));
-                    return filterInfo.displayName;
-                }
-            },
-            {
-                key: 'filterType',
-                label: 'Filter Type',
-                width: 25,
-                getValue: (row) => String(row.filterType || '')
-            }
-        ];
-
-        const rolloutStats = [
-            { label: 'Total Rollouts', value: filteredAssignments.length },
-            { label: 'Assigned Policies', value: filteredAssignments.filter(a => a.isAssigned).length },
-            { label: 'Groups Targeted', value: new Set(filteredAssignments.map(a => a.targetName)).size },
-            { label: 'Resource Types', value: new Set(filteredAssignments.map(a => a.resourceType)).size }
-        ];
-
-        return {
-            data: filteredAssignments, // Use your filtered assignments data
-            columns: exportColumns,
-            filename: 'rollouts-overview',
-            title: 'Rollouts Overview',
-            description: 'Detailed view of all Intune rollouts across your organization',
-            stats: rolloutStats
-        };
-    };
 
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
@@ -308,9 +258,9 @@ export default function AssignmentsOverview() {
 
         setLoading(true);
         setError(null);
+        setPaginationInfo({ totalCount: 0, hasNextPage: false, nextPageToken: null, currentPage: 0 });
 
         try {
-            // Fetch both assignments and filters
             await Promise.all([fetchAssignmentsData(), fetchFilters()]);
         } catch (error) {
             console.error('Failed to fetch data:', error);
@@ -320,33 +270,71 @@ export default function AssignmentsOverview() {
         }
     };
 
-    const fetchAssignmentsData = async () => {
+    const loadMoreAssignments = async () => {
+        if (!paginationInfo.nextPageToken || loadingMore) return;
+
+        setLoadingMore(true);
+        setError(null);
+
+        try {
+            await fetchAssignmentsData(paginationInfo.nextPageToken);
+        } catch (error) {
+            console.error('Failed to load more assignments:', error);
+            setError(error instanceof Error ? error.message : 'Failed to load more data');
+        } finally {
+            setLoadingMore(false);
+        }
+    };
+
+    const fetchAssignmentsData = async (skipToken?: string) => {
         if (!accounts.length) return;
 
         try {
-            const responseData = await request<ApiResponse>(`${ASSIGNMENTS_ENDPOINT}/apps`, {
+            const url = skipToken
+                ? `${ASSIGNMENTS_ENDPOINT}/apps?skipToken=${encodeURIComponent(skipToken)}`
+                : `${ASSIGNMENTS_ENDPOINT}/apps?pageSize=${fetchPageSize}`;
+
+            const responseData = await request<ApiResponse>(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
-            // Check if response exists and for consent requirements
             if (!responseData) {
                 throw new Error('No response received from API');
             }
 
-            // Handle successful response
             if (responseData.status === 'Success' && responseData.data) {
-                const assignments = responseData.data;
+                const paginatedData = responseData.data;
 
-                if (Array.isArray(assignments)) {
-                    setAssignments(assignments);
-                    setFilteredAssignments(assignments);
+                if ('data' in paginatedData && Array.isArray(paginatedData.data)) {
+                    if (skipToken) {
+                        // Append to existing data for "Load More"
+                        setAssignments(prev => [...prev, ...paginatedData.data]);
+                        setFilteredAssignments(prev => [...prev, ...paginatedData.data]);
+                        setFetchedPages(prev => prev + 1);
+                    } else {
+                        // Replace data for initial load
+                        setAssignments(paginatedData.data);
+                        setFilteredAssignments(paginatedData.data);
+                        setFetchedPages(1);
+                    }
+
+                    // Update pagination info
+                    setPaginationInfo({
+                        totalCount: paginatedData.totalCount,
+                        hasNextPage: paginatedData.hasNextPage,
+                        nextPageToken: paginatedData.nextPageToken || null,
+                        currentPage: paginatedData.currentPage
+                    });
                 } else {
-                    console.error('API response data is not an array:', assignments);
-                    setAssignments([]);
-                    setFilteredAssignments([]);
+                    console.error('API response data is not in expected format:', paginatedData);
+                    if (!skipToken) {
+                        setAssignments([]);
+                        setFilteredAssignments([]);
+                        setFetchedPages(0);
+                    }
                     throw new Error('Invalid data format received from API');
                 }
             } else {
@@ -357,8 +345,6 @@ export default function AssignmentsOverview() {
             throw error;
         }
     };
-
-
 
     const handleFilterClick = (filterId: string) => {
         if (filterId && filterId !== 'none') {
@@ -526,6 +512,24 @@ export default function AssignmentsOverview() {
         return Array.from(platforms).sort().map(platform => ({ label: platform, value: platform }));
     };
 
+    const getDistinctAppsCount = () => {
+        const uniqueApps = new Set(assignments.map(assignment => assignment.resourceId));
+        return uniqueApps.size;
+    };
+
+    const getDistinctAppsFromTotal = () => {
+        // This would ideally come from the API, but we can estimate based on current data
+        // For now, we'll use a ratio approach
+        if (assignments.length === 0 || paginationInfo.totalCount === 0) return 0;
+
+        const currentUniqueApps = getDistinctAppsCount();
+        const currentAssignments = assignments.length;
+        const ratio = currentUniqueApps / currentAssignments;
+
+        // Estimate total unique apps based on ratio
+        return Math.ceil(paginationInfo.totalCount * ratio);
+    };
+
     const clearFilters = () => {
         setAssignmentTypeFilter([]);
         setResourceTypeFilter([]);
@@ -563,6 +567,31 @@ export default function AssignmentsOverview() {
                     <span className="font-medium text-sm truncate block w-full" title={resourceName}>
                         {resourceName}
                     </span>
+                );
+            }
+        },
+        {
+            key: 'platform' as string,
+            label: 'Platform',
+            width: 100,
+            minWidth: 80,
+            render: (value: unknown) => {
+                const platform = value ? String(value) : 'All';
+                const platformColors: Record<string, string> = {
+                    'Windows': 'bg-blue-100 text-blue-800 border-blue-200',
+                    'iOS': 'bg-gray-100 text-gray-800 border-gray-200',
+                    'Android': 'bg-green-100 text-green-800 border-green-200',
+                    'macOS': 'bg-purple-100 text-purple-800 border-purple-200',
+                    'All': 'bg-gray-100 text-gray-600 border-gray-200'
+                };
+
+                return (
+                    <Badge
+                        variant="outline"
+                        className={`text-xs whitespace-nowrap ${platformColors[platform] || platformColors['All']}`}
+                    >
+                        {platform}
+                    </Badge>
                 );
             }
         },
@@ -728,12 +757,12 @@ export default function AssignmentsOverview() {
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">Assignments Overview</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">Intune application assignments Overview</h1>
                     <p className="text-gray-600 dark:text-gray-300 mt-2">
                         View all Intune applications assignments across your organization
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                     {assignments.length > 0 ? (
                         <>
                             <Button onClick={fetchAssignments} variant="outline" size="sm" disabled={loading}>
@@ -745,7 +774,7 @@ export default function AssignmentsOverview() {
                                     {
                                         label: "Standard Export",
                                         data: prepareExportData(),
-                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                        formats: ['csv', 'pdf', 'html']
                                     }
                                 ]}
                                 variant="outline"
@@ -765,6 +794,7 @@ export default function AssignmentsOverview() {
                     )}
                 </div>
             </div>
+
             {/* Error Display */}
             {error && (
                 <Card className="border-red-200">
@@ -797,8 +827,26 @@ export default function AssignmentsOverview() {
                                 Ready to view your Intune assignments
                             </h3>
                             <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
-                                Click the &quot;Load Assignments&quot; button above to fetch all assignment configurations from your Intune environment.
+                                Click the &quot;Load Assignments&quot; button below to fetch all assignment configurations from your Intune environment.
                             </p>
+
+                            {/* Page Size Selector */}
+                            <div className="mb-6">
+                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">
+                                    Items per page
+                                </label>
+                                <select
+                                    value={fetchPageSize}
+                                    onChange={(e) => setFetchPageSize(Number(e.target.value))}
+                                    className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                >
+                                    <option value={50}>50 per page</option>
+                                    <option value={100}>100 per page</option>
+                                    <option value={250}>250 per page</option>
+                                    <option value={500}>500 per page</option>
+                                </select>
+                            </div>
+
                             <Button onClick={fetchAssignments} className="flex items-center gap-2 mx-auto" size="lg">
                                 <Database className="h-5 w-5" />
                                 Load Assignments
@@ -807,6 +855,7 @@ export default function AssignmentsOverview() {
                     </CardContent>
                 </Card>
             )}
+
 
             {/* Loading state */}
             {loading && assignments.length === 0 && (
@@ -1065,6 +1114,17 @@ export default function AssignmentsOverview() {
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
                                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                    {paginationInfo.totalCount > 0 && (
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-right">
+                <span>
+                    Showing {assignments.length} assignments in {getDistinctAppsCount()} unique applications
+                </span>
+                                            <span className="hidden sm:inline">•</span>
+                                            <span>
+                   total {paginationInfo.totalCount} apps
+                </span>
+                                        </div>
+                                    )}
                                 </div>
                             </CardTitle>
                             <CardDescription className="text-gray-600 dark:text-gray-300">
@@ -1078,16 +1138,49 @@ export default function AssignmentsOverview() {
                                     <span className="ml-2 text-gray-600 dark:text-gray-300">Loading assignments...</span>
                                 </div>
                             ) : (
-                                <DataTable
-                                    data={filteredAssignments}
-                                    columns={columns}
-                                    className="min-w-full"
-                                    showPagination={true}
-                                    currentPage={currentPage}
-                                    itemsPerPage={itemsPerPage}
-                                    onPageChange={setCurrentPage}
-                                    onItemsPerPageChange={setItemsPerPage}
-                                />
+                                <>
+                                    <DataTable
+                                        data={filteredAssignments}
+                                        columns={columns}
+                                        className="min-w-full"
+                                        showPagination={true}
+                                        currentPage={currentPage}
+                                        itemsPerPage={itemsPerPage}
+                                        onPageChange={setCurrentPage}
+                                        onItemsPerPageChange={setItemsPerPage}
+                                    />
+
+                                    {/* Load More Button */}
+                                    {paginationInfo.hasNextPage && (
+                                        <div className="flex justify-center py-6 border-t border-gray-200 dark:border-gray-700">
+                                            <Button
+                                                onClick={loadMoreAssignments}
+                                                disabled={loadingMore}
+                                                variant="outline"
+                                                className="flex items-center gap-2"
+                                            >
+                                                {loadingMore ? (
+                                                    <>
+                                                        <RefreshCw className="h-4 w-4 animate-spin" />
+                                                        Loading more...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Download className="h-4 w-4" />
+                                                        Load More ({paginationInfo.totalCount - (fetchedPages * fetchPageSize)} items remaining)
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    {/* No more data indicator */}
+                                    {!paginationInfo.hasNextPage && assignments.length > 0 && paginationInfo.totalCount > 0 && (
+                                        <div className="text-center py-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
+                                            All {paginationInfo.totalCount} assignments loaded
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </CardContent>
                     </Card>

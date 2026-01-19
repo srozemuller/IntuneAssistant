@@ -1,0 +1,252 @@
+---
+title: Create Assignment Templates
+description: Learn how to create CSV templates for bulk assignment management - manually or by exporting from your reference tenant.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { ArrowRight } from "lucide-react";
+
+# Create Assignment Templates
+
+Assignment Manager uses CSV files to define your desired assignment state. You can create these templates in two ways: manually from scratch or by exporting from an existing reference tenant.
+
+---
+
+## Method 1: Manual CSV Creation
+
+Create your own CSV file from scratch using any spreadsheet application or text editor.
+
+<Callout type="info" title="Download Blank Template">
+    Start with a ready-to-use template: [Blank Template CSV](/assets/blank-assignment-template.csv)
+</Callout>
+
+### When to use manual creation
+
+- **New standardization projects** - Building fresh assignment patterns
+- **Custom requirements** - Need specific assignment combinations
+- **Template-driven approach** - Creating reusable templates for multiple tenants
+- **Precise control** - Want to define exact assignment states
+
+### Getting started
+
+1. Create a new CSV file with semicolon separators (or download here: [Blank Template CSV](/assets/blank-assignment-template.csv))
+2. Add the required column headers
+3. Define your desired assignment states row by row
+4. Save and upload to Assignment Manager
+
+---
+
+## CSV File Format
+
+### Required Columns
+
+| Column Name | Description | Required | Example |
+|------------|-------------|----------|---------|
+| `PolicyName` | Name of the Intune policy | Yes | "Windows Security Baseline" |
+| `GroupName` | Azure AD group name or special target | Yes | "All Users", "All Devices", "Finance Team" |
+| `AssignmentDirection` | Assignment direction | Yes | "Include", "Exclude" |
+| `AssignmentAction` | Action to perform | Yes | "Add", "Remove", "Replace", "NoAssignment" |
+| `Filter` | Name of assignment filter (optional) | No | "Windows 11 Devices" |
+| `Filter Type` | Filter direction (optional) | No | "Include", "Exclude" |
+
+### CSV Example
+
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Windows Security Baseline;Finance Team;Include;Add;;
+Windows Security Baseline;All Users;Include;Replace;;
+Compliance Policy 1;Sales Team;Include;Add;Windows 11 Devices;Include
+Compliance Policy 1;Marketing Team;Include;Add;Test Devices;Exclude
+Old Policy;Finance Team;Include;Remove;;
+```
+
+---
+
+
+## Method 2: Export from Reference Tenant
+
+Use this method to create templates based on existing, properly configured tenants.
+
+<Steps>
+
+<Step>
+
+### Navigate to Assignment Overview
+
+1. Go to [Assignment Overview](https://intuneassistant.cloud/assistant/assignments-overview/) in your reference tenant
+2. Click **Load Assignments** to fetch current assignment data
+
+This loads all current policy assignments from your tenant, including assignment filters and exclusions.
+
+</Step>
+
+<Step>
+
+### Export to CSV
+
+1. Click the **Export** button
+2. Under "Export for Bulk Assignments", choose **Export to CSV**
+3. The file downloads with all current assignments in the correct format
+
+The exported CSV includes:
+- All current policy assignments
+- Assignment filters (if any)
+- Proper column formatting
+- Ready-to-use structure
+
+</Step>
+
+<Step>
+
+### Review and Modify
+If needed, edit the downloaded CSV to match your target requirements:
+
+**Example: Change assignment actions:**
+- Change `Add` to `NoAssignment` for cleanup assignments from a policy
+- Add `Remove` actions for policies you want to unassign
+
+**Update target groups:**
+- Replace specific groups with `All Users` or `All Devices` for standardization
+- Add or remove exclusion groups
+
+**Adjust filters:**
+- Update filter names to match your target tenant
+- Remove filter columns if not needed
+
+</Step>
+
+</Steps>
+
+### When to use export method
+
+- **Existing reference tenant** - You have a properly configured tenant to model
+- **Quick standardization** - Want to replicate current assignments across tenants
+- **Incremental changes** - Need to modify existing assignment patterns
+- **MSP workflows** - Deploying proven configurations to customer tenants
+
+---
+
+## Template Modification Examples
+
+### Converting Export to Standardization Template
+
+**Scenario:** You exported assignments from a pilot tenant and want to create a standardized template for all customers.
+
+**Original export (multiple specific groups):**
+
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Security Baseline;IT Admins;Include;Add;;
+Security Baseline;Finance Team;Include;Add;;
+Security Baseline;Sales Team;Include;Add;;
+```
+**Modified for standardization:**
+This replaces all specific group assignments with a single assignment to All Users.
+
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Security Baseline;All Users;Include;Replace;;
+```
+### Adding Safety Exclusions
+
+**Scenario:** Add test user exclusions to prevent policies from affecting test accounts.
+
+**Original assignment:**
+
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Compliance Policy;All Users;Include;Add;;
+```
+**Modified with exclusions:**
+
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Compliance Policy;Test Users;Exclude;Add;;
+```
+### Removing Unwanted Assignments
+
+**Scenario:** Remove assignments from legacy policies during cleanup.
+
+**Template for removing all assignments:**
+
+```csv
+PolicyName;GroupName;AssignmentDirection;AssignmentAction;Filter;Filter Type
+Legacy Policy;;;NoAssignment;;
+Old Compliance Policy;;;NoAssignment;;
+```
+
+
+<Callout type="tip" title="Scenario-specific examples">
+    Check out the [Scenarios](/docs/extensions/assignments-manager/scenarios) page for detailed CSV examples for common use cases.
+</Callout>
+---
+
+## Best Practices
+
+### For MSPs
+
+- **Create master templates** for each customer type or service tier
+- **Use Replace actions** to ensure consistent state across customer tenants
+- **Test templates** on a pilot customer before wide deployment
+- **Version control** your templates for change tracking
+
+### For Enterprises
+
+- **Export from production** reference environments when possible
+- **Modify gradually** - don't change everything at once
+- **Document templates** with clear naming and versioning
+- **Test in development** before applying to production
+
+### General Guidelines
+
+- **Start small** - test with 1-2 policies first
+- **Validate before upload** - check policy names, group names, and filters exist
+- **Keep templates organized** - use descriptive filenames
+- **Plan rollback** - know how to reverse changes if needed (see Backup and restore guide)[/docs/extensions/assignments-manager/backup-and-restore]
+
+---
+
+## Template Validation
+
+Before uploading your template, verify:
+
+- **Policy names** match exactly (case-sensitive)
+- **Group names** exist in the target tenant
+- **Filter names** exist and match the policy platform
+- **Actions and directions** use valid values
+- **No conflicting operations** in the same batch
+
+<Callout type="tip" title="Validation happens during upload">
+    Assignment Manager validates your template during upload and shows you exactly what issues need fixing before proceeding.
+</Callout>
+
+---
+
+## Next Steps
+
+<Callout type="info" title="Ready to upload?">
+    Once your template is ready, head to **Extensions → Assignment Manager** to upload and preview your changes.
+</Callout>
+
+<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+    <a href="/docs/extensions/assignments-manager/how-it-works" className="group rounded-2xl border bg-card p-5 transition hover:shadow-sm">
+        <div className="flex items-center justify-between">
+            <div className="text-base font-semibold">How it works</div>
+            <ArrowRight className="h-4 w-4 opacity-60 transition group-hover:translate-x-0.5" />
+        </div>
+        <div className="mt-2 text-sm text-muted-foreground">
+            The workflow: template → deploy → monitor → maintain across environments.
+        </div>
+    </a>
+
+    <a href="/docs/extensions/assignments-manager/scenarios" className="group rounded-2xl border bg-card p-5 transition hover:shadow-sm">
+        <div className="flex items-center justify-between">
+            <div className="text-base font-semibold">Common Scenarios</div>
+            <ArrowRight className="h-4 w-4 opacity-60 transition group-hover:translate-x-0.5" />
+        </div>
+        <div className="mt-2 text-sm text-muted-foreground">
+            Detailed CSV format requirements and scenario-specific examples.
+        </div>
+    </a>
+</div>

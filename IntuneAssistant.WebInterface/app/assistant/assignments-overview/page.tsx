@@ -142,7 +142,10 @@ export default function AssignmentsOverview() {
                 key: '',
                 label: 'AssignmentAction',
                 width: 25,
-                getValue: () => String('Add') // or whatever default action you want
+                getValue: (row) => {
+                    const targetName = (row as Assignments).targetName as string | null | undefined;
+                    return String(targetName ? 'Add' : 'NoAssignment');
+                }
             },
             {
                 key: 'filterId',
@@ -150,7 +153,7 @@ export default function AssignmentsOverview() {
                 width: 25,
                 getValue: (row) => {
                     const filterId = row.filterId as string | null;
-                    if (!filterId || filterId === 'None') return 'None';
+                    if (!filterId || filterId === 'None') return ''; // Empty for rollout export
                     const filterInfo = getFilterInfo(filterId, String(row.filterType));
                     return filterInfo.displayName;
                 }

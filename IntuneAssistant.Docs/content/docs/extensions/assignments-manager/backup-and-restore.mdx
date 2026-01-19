@@ -1,0 +1,189 @@
+---
+title: Backup & Restore
+description: How to backup policy assignments before migration and restore them if needed using the Assignment Manager.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Download, Upload, FileArchive, AlertTriangle, Shield } from "lucide-react";
+
+# Backup & Restore Assignments
+
+Before making any assignment changes, Assignment Manager provides a built-in backup system to ensure you can always restore to the previous state if needed.
+
+<Callout type="info" title="Safety first approach">
+    The backup feature creates a complete snapshot of your current assignment state before any migration begins.
+</Callout>
+
+---
+
+## Creating Backups
+
+<Steps>
+
+    <Step>
+
+        ## 1) Start the Backup Process
+
+        Before any migration, click the **"Backup Ready Policies"** button in the Assignment Manager interface.
+
+        <div className="flex items-center gap-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <Download className="h-5 w-5 text-blue-600" />
+            <span className="font-medium text-blue-900">This backs up ALL policies in your tenant</span>
+        </div>
+
+        The backup process will:
+        - Export all policy assignments
+        - Include assignment filters and targeting
+        - Package everything into a downloadable ZIP file
+
+    </Step>
+
+    <Step>
+
+        ## 2) Download & Store the Backup
+
+        Once the backup completes, download the ZIP file to a secure location.
+
+        **Recommended naming convention:**
+        ```
+        policy-backups_tenantID_-YYYY-MM-DD-HHMMSS.zip
+        Example: intune-backup-2024-01-15-143022.zip
+        ```
+
+        <Callout type="warn" title="Important">
+            Store backups in a version-controlled location or secure file share. You may need them weeks or months later.
+        </Callout>
+
+    </Step>
+
+</Steps>
+
+---
+
+## Understanding Backup Contents
+
+The backup ZIP contains JSON files for each policy with complete assignment information.
+After extracting the ZIP, you'll see a folder structure like this:
+
+![Backup ZIP Structure](/img/assignments-manager/backup-zip-structure.png)
+
+Each JSON file contains:
+- Policy metadata and settings
+- All current group assignments
+- Applied filters (include/exclude)
+- Assignment targeting details
+
+---
+
+## Restoring Assignments
+
+<Steps>
+
+    <Step>
+
+        ## 3) Identify the Policy to Restore
+
+        Extract the backup ZIP file and locate the specific policy you need to restore.
+
+        **Navigate through the folder structure:**
+        - `compliance-policies/` - Compliance policies
+        - `configuration-profiles/` - Device configuration profiles
+        - `app-protection/` - App protection policies
+
+    </Step>
+
+    <Step>
+
+        ## 4) Access the Microsoft Intune Portal
+
+        Currently, restoration must be done through the Microsoft Intune admin center:
+
+        1. Open [Microsoft Intune admin center](https://endpoint.microsoft.com/)
+        2. Navigate to the appropriate policy section
+        3. Locate the policy you want to restore assignments for
+
+        <Callout type="info" title="Why manual restoration?">
+            Direct restoration through Assignment Manager is planned for future releases. Manual import ensures you have full control over what gets restored.
+        </Callout>
+
+        The exported policies are raw JSON data directly from Intune, making it easy to re-import. Be aware that when uploading the JSON file to the Intune Portal will create a new policy with a new policy ID.
+        That means you have to remove the old policy after the new one is created.
+
+        <Callout type="info" title="Coming soon">
+            We are currently working on a direct restore functionality to avoid this extra step in the future.
+        </Callout>
+    </Step>
+
+</Steps>
+
+---
+
+## Best Practices
+
+### <Shield className="h-5 w-5 text-green-600 inline" /> Backup Strategy
+
+**Before every migration:**
+- Always create a fresh backup using the backup button
+- Store in a secure, accessible location
+
+### <AlertTriangle className="h-5 w-5 text-amber-600 inline" /> Recovery Planning
+
+**Document your restore process:**
+1. Which policies were changed
+2. What the previous state looked like
+3. Who can perform emergency restores
+4. How to validate successful restoration
+
+**Test your backups:**
+- Periodically validate backup file integrity
+- Practice restoration procedures in test environments
+- Ensure team members know the restoration process
+
+---
+
+## Troubleshooting
+
+### Backup Issues
+
+**Backup takes too long:**
+- Large tenants may require 10+ minutes
+- Don't close the browser during backup
+- Consider backing up policy types separately
+
+**Backup file is empty or corrupt:**
+- Check browser download settings
+- Verify sufficient permissions in Intune. Check the [permissions documentation](/docs/administration/permissions).
+- Try again during low-usage periods
+
+### Restoration Issues
+
+**Can't find the right policy in backup:**
+- Search by display name in the JSON files
+- Check policy type folders carefully
+- Use the policy GUID if display names changed
+
+**Assignments don't match after restore:**
+- Verify group names haven't changed
+- Check if filters still exist with same names
+- Confirm you have the right backup version
+
+---
+
+## Future Enhancements
+
+<Callout type="info" title="Coming soon">
+    **Direct restore functionality** - Import backup files directly through Assignment Manager without manual portal work.
+
+    **Selective restore** - Choose specific assignments to restore rather than full policy restoration.
+
+    **Automated validation** - Automatic comparison between backup and current state.
+</Callout>
+
+---
+
+## Related Documentation
+
+- [Assignment Migration Overview](/docs/extensions/assignments-manager/overview)
+- [How Assignment Manager Works](/docs/extensions/assignments-manager/how-it-works)
+- [CSV Format Reference](/docs/extensions/assignments-manager/csv-format)

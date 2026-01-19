@@ -1,0 +1,257 @@
+---
+title: How Assignment Manager Works
+description: Detailed workflow of the Assignment Manager extension for migrating Intune policy assignments
+---
+
+import {Mermaid} from "../../../../../components/mdx/mermaid";
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# How Assignment Manager Works
+
+The Assignment Manager is a core extension that handles the migration of Microsoft Intune policy assignments between tenants. This page documents the complete workflow from request initiation to final response.
+
+## Overview
+
+The Assignment Manager orchestrates a complex multi-phase process that involves data preparation, validation, batch processing, and error handling to ensure reliable assignment migrations.
+
+<Callout type="info">
+The system uses Microsoft Graph API's batch capabilities to efficiently process multiple assignment updates while handling rate limits and retry scenarios.
+</Callout>
+
+## Workflow Phases
+
+### 1. Data Preparation Phase
+
+The orchestrator begins by gathering essential reference data:
+
+- **Assignment Filters**: Retrieves all available assignment filters from the target tenant
+- **Group Information**: Fetches group details for all referenced group names
+- **Policy Grouping**: Groups assignments by PolicyId to minimize API calls
+- **Conflict Validation**: Ensures no conflicting requests exist for the same policy
+
+### 2. Assignment Processing
+
+For each policy group, the system:
+
+1. **Retrieves Policy**: Uses ServiceFactory reflection to get the specific policy by type
+2. **Prepares Assignment Models**:
+   - Adapts assignments using Mapster
+   - Maps filter information by FilterName
+   - Maps group information by AssignmentResourceName
+   - Determines assignment type (GroupAssignment/GroupExclude/AllDevices/AllUsers)
+
+### 3. Target Assignment Logic
+
+The `AssignmentsBodyHelper` handles different assignment actions:
+
+| Action | Behavior |
+|--------|----------|
+| **NoAssignment** | Clears all assignments from the policy |
+| **Remove** | Finds and removes matching assignments (handles "None" vs null filters) |
+| **Replace** | Validates compatibility, clears existing, creates new assignment |
+| **Add** | Validates compatibility, adds if not already present |
+
+<Callout type="warning">
+The system carefully handles filter matching, distinguishing between "None" filter types and null values to prevent incorrect matches.
+</Callout>
+
+### 4. Batch Migration Phase
+
+The Migration Service processes policies in optimized batches:
+
+- **Batch Size**: Maximum 20 policies per batch
+- **Concurrency**: Uses semaphore to limit concurrent batch processing
+- **Headers**: Configures proper Authorization and X-AnchorMailbox for GDAP scenarios
+
+### 5. Error Handling & Retry Logic
+
+The system implements comprehensive error handling:
+
+#### Rate Limiting (429 responses)
+- Respects `Retry-After` headers from Microsoft Graph
+- Implements exponential backoff (3 attempts)
+- Reduces batch size to 25% on rate limit encounters
+- Switches to sequential processing for retries
+
+#### Error Categories
+- **400 Bad Request**: Detailed logging with request body and Graph response
+- **500-599 Server Errors**: Full context logging for debugging
+- **200-299 Success**: Creates successful migration results
+
+### 6. Response Processing
+
+Final phase maps results back to the client:
+
+- **Result Mapping**: Links migration outcomes to original requests by PolicyName
+- **Status Tracking**: Provides detailed success/failure information
+- **Error Details**: Includes specific error messages and context
+
+<Mermaid chart={`
+sequenceDiagram
+    participant C as Controller
+    participant O as AssignmentsMigratorOrchestrator
+    participant AFS as AssignmentFiltersService
+    participant GIS as GroupInformationService
+    participant ABH as AssignmentsBodyHelper
+    participant MS as MigrationService
+    participant GBH as GraphBatchHelper
+    participant GraphAPI as Microsoft Graph API
+
+    Note over C,GraphAPI: Assignment Migration Flow
+
+    C->>O: PostMigrateAssignments(accessToken, tenantId, assignments[], correlationId)
+
+    Note over O: Data Preparation Phase
+    O->>AFS: GetAssignmentFiltersListAsync(accessToken, tenantId)
+    AFS-->>O: List<AssignmentFiltersModel>
+
+    O->>GIS: GetGroupInformationByNameCollectionListAsync(accessToken, tenantId, groupNames[])
+    GIS-->>O: List<GroupModel>
+
+    Note over O: Group assignments by PolicyId
+    O->>O: GroupBy(PolicyId)
+    O->>O: ValidateNoConflictingRequests(policyGroup)
+
+    loop For each policy group
+        O->>O: GetSinglePolicy(assignment, correlationId, accessToken, tenantId)
+        Note over O: Uses ServiceFactory reflection to get policy by type
+
+        loop For each assignment in policy group
+            O->>O: PrepareAssignmentModel(assignment, allFiltersInfo, allGroupsInfoByName)
+
+            Note over O: PrepareAssignmentModel Details
+            O->>O: assignment.Adapt<AssignmentsMigrationModel>()
+            O->>O: Set FilterInfo from allFiltersInfo (by FilterName match)
+            O->>O: Set GroupInfo from allGroupsInfoByName (by AssignmentResourceName match)
+            O->>O: DetermineCorrectAssignmentType(assignment)
+            Note over O: Returns GroupAssignment/GroupExclude/AllDevices/AllUsers
+
+            O->>ABH: SetCorrectTargets(assignmentModel, policy, action)
+
+            Note over ABH: SetCorrectTargets Logic
+            alt action == NoAssignment
+                ABH->>ABH: policy.Assignments.Clear()
+            else action == Remove
+                ABH->>ABH: FindExistingAssignment(policy, assignment)
+                Note over ABH: FindExistingAssignment uses switch on AssignmentType
+                ABH->>ABH: MatchesFilter(existing, requested) - handles "None" vs null
+                ABH->>ABH: Remove matching assignment from policy.Assignments
+            else action == Replace
+                ABH->>ABH: ValidateFilterCompatibility(assignment, policy)
+                ABH->>ABH: policy.Assignments.Clear()
+                ABH->>ABH: CreateAssignmentTarget(policy, assignment)
+                ABH->>ABH: Add new assignment to policy.Assignments
+            else action == Add
+                ABH->>ABH: ValidateAssignmentCompatibility(assignment, policy)
+                ABH->>ABH: FindExistingAssignment(policy, assignment)
+                alt existingAssignment == null
+                    ABH->>ABH: CreateAssignmentTarget(policy, assignment)
+                    ABH->>ABH: Add new assignment to policy.Assignments
+                end
+            end
+
+            ABH-->>O: Updated GlobalPolicyModel
+            O->>O: CreatePendingResult(assignment, policy, assignmentModel)
+        end
+    end
+
+    Note over O: Batch Migration Phase
+    O->>MS: PostAssignmentMigrationListAsync(accessToken, tenantId, updatedPolicies[], correlationId)
+
+    Note over MS: Migration Service Processing
+    MS->>MS: Configure HTTP headers (Authorization, X-AnchorMailbox for GDAP)
+    MS->>MS: SplitIntoBatches(policies, maxBatchSize=20)
+
+    Note over MS: Concurrent batch processing with semaphore
+    loop For each batch (max 1 concurrent)
+        MS->>MS: ProcessBatchWithRetry(batch, batchIndex, results, errors)
+
+        Note over MS: Retry Policy (3 attempts, exponential backoff)
+        MS->>MS: ExecuteBatch(batch, batchIndex, results, errors)
+
+        MS->>GBH: CreateBatchMigrationAssignmentUrlList(batch)
+        GBH-->>MS: List<string> requestBodies (JSON)
+
+        Note over MS: Concurrent request execution
+        loop For each request body
+            MS->>GraphAPI: POST \\$batch (with policies assignment updates)
+
+            alt Success (200-299)
+                GraphAPI-->>MS: BatchResponse with assignment results
+            else Rate Limit (429)
+                GraphAPI-->>MS: 429 + Retry-After header
+                MS->>MS: Task.Delay(retryAfter)
+                MS->>MS: ExecuteSingleRequest(requestBody) - recursive retry
+            else Bad Request (400)
+                GraphAPI-->>MS: 400 + error details
+                MS->>MS: Log detailed error with request body and Graph response
+            else Server Error (500-599)
+                GraphAPI-->>MS: 5xx + error details
+                MS->>MS: Log server error with full context
+            end
+        end
+
+        MS->>MS: ProcessBatchResponsesWithLogging(batchResults, batch, batchIndex)
+
+        Note over MS: Response Processing
+        loop For each response in batch
+            alt Success (200-299)
+                MS->>MS: Create AssignmentsMigrationModel with Status="Success"
+                MS->>MS: results.Add(migrationResult)
+            else Rate Limit (429) in response
+                MS->>MS: Extract retry-after from Graph response
+                MS->>MS: Add to policiesToRetry list
+            else Error (400, 4xx, 5xx)
+                MS->>MS: Create PolicyError with detailed info
+                MS->>MS: errors.Add(policyError)
+            end
+        end
+
+        alt policiesToRetry.Any()
+            MS->>MS: Task.Delay(maxRetryAfterSeconds)
+            MS->>MS: Reduce batch size to maxBatchSize/4
+            MS->>MS: SplitIntoBatches(retryPolicies, reducedBatchSize)
+            MS->>MS: Sequential retry processing (to avoid more rate limits)
+        end
+    end
+
+    MS-->>O: List<AssignmentsMigrationModel> migrationResults
+
+    Note over O: Result Mapping
+    O->>O: UpdateResultsWithMigrationOutcome(results, migrationResults)
+    Note over O: Maps migration results back to response DTOs by PolicyName
+
+    O-->>C: List<AssignmentMigrationResponseDto>
+
+    Note over C: HTTP Response
+    alt Success
+        C-->>Client: 200 OK with migration results
+    else Error
+        C-->>Client: 400/500 with error details
+    end
+`} />
+
+## Key Components
+
+### AssignmentsMigratorOrchestrator
+Central coordinator managing the entire workflow and data flow between services.
+
+### AssignmentsBodyHelper
+Handles the complex logic of assignment target manipulation based on the requested action.
+
+### MigrationService
+Manages batch processing, retry logic, and Microsoft Graph API communication.
+
+### GraphBatchHelper
+Creates properly formatted batch request bodies for Microsoft Graph API.
+
+## Performance Considerations
+
+- **Concurrent Processing**: Limited concurrency to respect API rate limits
+- **Batch Optimization**: Groups related operations to minimize API calls
+- **Intelligent Retry**: Adaptive retry strategy based on error types
+- **Memory Management**: Processes assignments in batches to handle large datasets
+
+<Callout type="info">
+The system balances performance with reliability, using concurrent processing where possible while implementing robust retry mechanisms for handling transient failures.
+</Callout>

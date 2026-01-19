@@ -1,0 +1,154 @@
+---
+title: Onboarding
+description: Learn how to onboard your tenant to start using IntuneAssistant
+---
+
+import { Callout } from 'fumadocs-ui/components/callout'
+import { Steps } from 'fumadocs-ui/components/steps'
+import { Card, Cards } from 'fumadocs-ui/components/card'
+
+# Onboarding
+
+Welcome to **IntuneAssistant**! Thank you for choosing our tool to enhance your Microsoft Intune management experience. This guide will walk you through the onboarding process to get your tenant connected and ready to use all features.
+
+<Callout type="info" title="What is onboarding?">
+Onboarding connects your Microsoft tenant to IntuneAssistant by consenting our applications to access your Intune environment. This secure process enables the tool to retrieve and display your tenant data while maintaining strict privacy standards.
+</Callout>
+
+## Why Onboarding is Required
+
+The onboarding process serves several important purposes:
+
+<Cards>
+  <Card
+    title="🔐 Application Consent"
+    description="Grants necessary permissions to the IntuneAssistant application and API to access your tenant data"
+  />
+  <Card
+    title="🏢 Tenant Registration"
+    description="Registers your tenant ID and domain in our backend for API access and licensing validation"
+  />
+  <Card
+    title="🛡️ Security & Compliance"
+    description="Enables abuse prevention and allows access to premium features based on your subscription"
+  />
+</Cards>
+
+### Two Key Applications
+
+During onboarding, two applications will be registered in your tenant:
+
+1. **IntuneAssistant Application** - The main web interface you'll use
+2. **IntuneAssistant API Application** - Handles secure data retrieval from your tenant
+
+<Callout type="warn" title="Privacy Commitment">
+**No tenant data is stored in our backend database.** Only your tenant ID and domain are registered for licensing and security purposes. All Intune data shown in the application exists only in your browser session and is removed when you log out.
+</Callout>
+
+## Onboarding Process
+
+Getting started with IntuneAssistant is simple and takes just a few minutes:
+
+<Steps>
+
+### Navigate to Onboarding
+
+Go to the [IntuneAssistant onboarding page](https://intuneassistant.cloud/onboarding) to begin the process.
+
+![Onboarding Form](/img/getting-started/start-onboarding.png)
+
+    Four steps are needed to complete onboarding:
+    1. Provide Tenant Information
+    2. Validate provided details
+    3. Grant Consent
+    4. Welcome to IntuneAssistant
+
+### Provide Tenant Information
+
+Enter your tenant details:
+    - **Customer Name**: Your company or organization name
+    - **Tenant ID**: Your Azure AD tenant identifier
+    - **Tenant Domain**: Your organization's Microsoft 365 domain
+
+    ![Onboarding Form](/img/getting-started/provide-details.png)
+
+### Validate Details & Open Consent Page
+    ![Onboarding Form](/img/getting-started/open-admin-consent.png)
+
+Click the **Open consent** button. The system will verify your tenant details. If valid, you'll proceed to the consent page. A pop-up window will open for Microsoft login.
+    After validation, you will see the following confirmation:
+    ![Onboarding Form](/img/getting-started/onboarding-completed.png)
+    Close the pop-up to return to IntuneAssistant.
+
+### Welcome to IntuneAssistant
+    At this point, your tenant is registered in our backend. You can now start using IntuneAssistant features.
+    ![Onboarding Form](/img/getting-started/welcome-message.png)
+
+### Ready to use IntuneAssistant
+
+    After successful consent, you'll be redirected back to IntuneAssistant with your tenant fully configured and ready to use.
+    Sign in (using sign in button below) with your organizational account to access the dashboard and start using IntuneAssistant.
+
+## Post-Onboarding Verification
+
+    Once onboarding is complete, you can verify the setup:
+    You can verify your onboarding status on the customer page (2) using the user context menu (1) below
+    ![Onboarding Form](/img/getting-started/verify-onboarding-status.png)
+
+    The consent status (3) should show as **Ready**.
+
+</Steps>
+
+<Callout type="info" title="Security & Privacy">
+    **No tenant data is stored in the backend database.** Only your tenant ID and domain are registered for licensing and security purposes. All Intune data shown in the application exists only in your browser session and is removed when you log out.
+    For more details, please refer to the [Security page](https://intuneassistant.cloud/security/).
+</Callout>
+### New Applications in Your Tenant
+
+Check your Azure AD App Registrations - you should see two new applications:
+
+
+- **IntuneAssistant** - Main application for user authentication
+- **IntuneAssistant API** - Backend service for data retrieval
+
+## Next Steps
+
+Now that your tenant is onboarded, explore these key areas:
+
+<Cards>
+  <Card
+    title="📋 Assignment Management"
+    description="Start managing your Intune assignments efficiently"
+    href="/modules/intune-assistant/assignments"
+  />
+  <Card
+    title="💻 Device Overview"
+    description="Monitor and manage your enrolled devices"
+    href="/modules/intune-assistant/devices"
+  />
+  <Card
+    title="🏢 Enterprise Features"
+    description="Explore advanced features and premium modules"
+    href="/enterprise/plans"
+  />
+</Cards>
+
+## Troubleshooting
+
+Having issues with onboarding? Check our troubleshooting guide:
+
+- **Consent errors**: Ensure you have Global Administrator permissions
+- **Application not visible**: Check Azure AD App Registrations after 5-10 minutes
+- **Access denied**: Verify your account has appropriate Intune permissions
+
+[View detailed troubleshooting →](/support/troubleshooting)
+
+---
+**Need help?** Visit the project's GitHub page and create an issue for community support, or [contact our support team](/support) for personalized assistance.
+
+<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '16px' }}>
+    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+    </svg>
+    <span><strong><a href="https://github.com/srozemuller/IntuneAssistant" target="_blank" rel="noopener noreferrer">Visit GitHub Repository</a></strong></span>
+</div>

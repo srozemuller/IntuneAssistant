@@ -1,0 +1,174 @@
+---
+title: License Management
+description: How to add and remove licenses for customer tenants in your MSP environment
+---
+
+import {Callout} from "fumadocs-ui/components/callout";
+import { CheckCircle, AlertCircle } from 'lucide-react';
+
+# Tenant License Management
+
+Learn how to manage licenses for your customer tenants, including adding new licenses and removing existing ones through the customer settings interface.
+
+## Overview
+
+License management allows MSPs to control which features and capabilities are available for each customer tenant. When you add a license, additional permissions may be required through a consent process to ensure proper functionality.
+
+## Managing Tenant Licenses
+
+### Accessing License Management
+
+1. **Navigate to Customer Settings**
+   - Go to **Customer Settings** in your MSP account
+   - View your list of managed customer tenants
+
+2. **Access Tenant Actions**
+   - Find the customer tenant you want to manage
+   - Click on the **Actions** button in the tenant row
+   - The actions menu will display available options
+
+![License Management Interface](/img/msp/tenant-management.png)
+
+### Adding a License
+
+1. **Click "Add New License"**
+   - From the actions menu, select **Add New License**
+   - This opens the license addition dialog
+
+![Add License Dialog](/img/msp/add-license.png)
+
+In the dialog, you can select the license type to add.
+
+2. **Select License Type**
+   - Choose the appropriate license for the customer
+   - Review the features and capabilities included
+   - Consider the customer's requirements and usage
+
+3. **Consent Process**
+   - Adding a license may trigger a consent request
+   - Additional Graph API permissions might be required
+   - Follow the consent workflow to grant necessary permissions
+
+4. **Confirm Addition**
+   - Review the license details and permissions
+   - Confirm the license addition
+   - The license is applied to the customer tenant
+
+![License Added](/img/msp/license-added.png)
+![License Overview](/img/msp/license-overview.png)
+
+<Callout type="info" title="Consent Required">
+    When adding a license, a consent process may be triggered to request the correct permissions needed for the new license features.
+</Callout>
+
+### Removing a License
+In the license management dialog again, you can also remove an existing license.
+
+1. **Select License to Remove**
+   - Choose which license to remove from the tenant
+   - Review the impact of removing the license
+   - Consider any dependent features or configurations
+
+![Remove License Dialog](/img/msp/delete-license.png)
+
+2. **Confirm Removal**
+   - Understand the consequences of license removal
+   - Confirm the deletion process
+   - The license is removed from the customer tenant
+
+![License Removed](/img/msp/delete-confirm.png)
+
+<Callout type="warning" title="Feature Impact">
+    This action cannot be undone and will remove access to features provided by this license.
+</Callout>
+
+## Consent Management Process
+
+### When Consent is Required
+
+Consent is typically required when:
+- **Adding a new license** that requires additional permissions
+- **Upgrading license tiers** with expanded capabilities
+- **Enabling new features** that need extra Graph API access
+- **First-time setup** of advanced functionalities
+
+### Consent Workflow
+
+1. **Consent Request Triggered**
+   - System identifies required permissions for the new license
+   - Consent dialog appears with permission details
+   - Clear explanation of why permissions are needed
+
+2. **Admin Consent Required**
+   - Global Administrator or appropriate admin role needed
+   - Review of requested permissions and their impact
+   - Decision to grant or deny the consent request
+
+3. **Permission Activation**
+   - Once consent is granted, permissions are activated
+   - License features become available immediately
+   - User can access newly enabled capabilities
+
+<Callout type="tip" title="Consent Best Practice">
+    Review the permissions requested during consent carefully. Only grant permissions that are necessary for the intended license features.
+</Callout>
+
+## License Status Indicators
+
+In the tenants list, license status is indicated with icons:
+
+- **No Consent needed**: <CheckCircle className="inline h-4 w-4 text-green-500" /> - Indicates no license is assigned
+- **Consent needed**: <AlertCircle className="inline h-4 w-4 text-red-500" /> - Indicates consent is required for the license
+
+![License Status Icons](/img/msp/license-status-indicators.png)
+
+### Consent license
+If a license requires consent, you will see the red alert icon as show above. To provide consent go to the tenant using the action button and use the Grant Consent button.
+
+![Grant Consent Button](/img/msp/license-consent-required.png)
+
+## Troubleshooting
+
+### License Addition Fails
+
+**Possible causes:**
+- Customer (MSP home tenant) has not the correct license
+
+**Solutions:**
+- Contact the support to verify your license
+
+### Consent Process Fails
+
+**Possible causes:**
+- Admin consent not properly granted
+- Permission conflicts with existing setup
+- Tenant policy restrictions, its not possible to grant the permissions
+
+**Solutions:**
+- Ensure Global Administrator grants consent
+- Review existing permissions for conflicts
+- Check tenant conditional access policies
+
+### Features Not Available After License Addition
+
+**Possible causes:**
+- Consent not completed successfully
+- Permission synchronization delay
+- License activation pending
+
+**Solutions:**
+- Complete the consent process if pending
+- Wait for permission synchronization (up to 30 minutes)
+- Contact support if issues persist
+
+## Related Documentation
+
+- [Managing Admin Consent](/docs/getting-started/consent-management)
+- [Permission Overview](/docs/assistant/permissions)
+- [MSP Permission Overview](/docs/msp/permissions)
+- [Switch Tenants](/docs/msp/switch-tenants)
+- [Multi-Tenant Overview](/docs/msp/overview)
+
+<Callout type="success" title="License Flexibility">
+    License management provides flexibility to scale features based on customer needs while maintaining security through proper permission management.
+</Callout>

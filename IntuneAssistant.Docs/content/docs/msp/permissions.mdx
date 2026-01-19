@@ -1,0 +1,59 @@
+---
+title: Multi-Tenant Permissions
+description: Required permissions for multi-tenant management including Partner Center and GDAP access
+---
+
+# Multi-Tenant Permissions
+
+Learn about the specific permissions required for MSPs to manage multi-tenant environments, including Partner Center integration and GDAP relationship management.
+
+## Overview
+
+MSP multi-tenant management requires additional permissions beyond standard Intune management to support Partner Center integration, GDAP relationship access, and cross-tenant operations.
+
+## Required MSP Permissions
+
+### Partner Center Access Permissions
+
+For MSP multi-tenant functionality, your MSP account requires:
+
+| Permission | Type | Purpose |
+|------------|------|---------|
+| `DelegatedAdminRelationship.Read.All` | Application | Read GDAP relationships and partner tenant information |
+
+<Callout type="warning" title="Special Permission Notice">
+    Please contact support if you want to enable this permission for your MSP account.
+</Callout>
+### Partner Center Authentication
+
+Your MSP account must have:
+
+- **Partner Center access** with appropriate role assignments
+- **Ability to view partner tenants** in the Partner Center portal
+- **GDAP relationship management** permissions
+- **Multi-tenant app registration** in your home tenant
+
+<Callout type="warning" title="Partner Center Requirement">
+    You must be able to login to Partner Center and view partner tenants for the multi-tenant functionality to work properly.
+</Callout>
+
+### Standard Permissions
+
+In addition to Partner Center permissions, each managed tenant requires a set of standard Microsoft Graph API permissions for Intune management.
+The basic Intune Assistant permissions can be found on the [needed permissions](/docs/assistant/permissions) page.
+
+After onboarding new customer (see [add tenant](/docs/administration/multi-tenant/add-tenant)), the correct permissions are set up automatically.
+When adding a tenant, the Intune Assistant license is added to the tenant, and the required API permissions are consented. When adding an extra license, a consent prompt is shown to consent the required permissions.
+
+
+## Related Documentation
+
+- [Add Tenant](../add-tenant)
+- [Switch Tenants](../switch-tenants)
+- [License Management](../license-management)
+- [GDAP Introduction](https://learn.microsoft.com/en-us/partner-center/customers/gdap-introduction)
+- [Partner Center Role Management](https://learn.microsoft.com/en-us/partner-center/permissions-overview)
+
+<Callout type="success" title="Permission Foundation">
+    Proper permission setup is the foundation for successful MSP multi-tenant management. Take time to configure these correctly for optimal security and functionality.
+</Callout>

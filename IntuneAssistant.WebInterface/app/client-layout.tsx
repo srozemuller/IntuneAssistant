@@ -12,6 +12,7 @@ import { ConsentProvider } from "@/contexts/ConsentContext";
 import { ErrorProvider } from '@/contexts/ErrorContext';
 import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { TenantIndicator } from '@/components/ui/tenant-indicator';
+import ConsentWarning from "@/components/ConsentWarning";
 
 function MainContent({ children }: { children: React.ReactNode }) {
     const { isCollapsed } = useSidebar();
@@ -47,6 +48,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                             <TenantProvider>
                                 <SidebarProvider>
                                     <MainContent>
+                                        <ConsentWarning />
                                         {children}
                                     </MainContent>
                                 </SidebarProvider>
