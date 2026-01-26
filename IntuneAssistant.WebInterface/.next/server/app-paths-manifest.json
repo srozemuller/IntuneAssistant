@@ -1,6 +1,4 @@
 {
-  "/assistant/assignments-overview/page": "app/assistant/assignments-overview/page.js",
-  "/assistant/page": "app/assistant/page.js",
   "/deployment/assignments/page": "app/deployment/assignments/page.js",
   "/deployment/page": "app/deployment/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",

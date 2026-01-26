@@ -358,9 +358,6 @@
     --ease-out: cubic-bezier(0, 0, .2, 1);
     --ease-in-out: cubic-bezier(.4, 0, .2, 1);
     --animate-spin: spin 1s linear infinite;
-    --animate-ping: ping 1s cubic-bezier(0, 0, .2, 1) infinite;
-    --animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;
-    --animate-bounce: bounce 1s infinite;
     --blur-sm: 8px;
     --blur-lg: 16px;
     --blur-xl: 24px;
@@ -1174,10 +1171,6 @@
     position: sticky;
   }
 
-  .-inset-2 {
-    inset: calc(var(--spacing) * -2);
-  }
-
   .-inset-3 {
     inset: calc(var(--spacing) * -3);
   }
@@ -1320,10 +1313,6 @@
 
   .z-\[70\] {
     z-index: 70;
-  }
-
-  .z-\[9999\] {
-    z-index: 9999;
   }
 
   .z-\[10000\] {
@@ -2005,10 +1994,6 @@
     min-width: 280px;
   }
 
-  .min-w-\[400px\] {
-    min-width: 400px;
-  }
-
   .min-w-\[var\(--radix-select-trigger-width\)\] {
     min-width: var(--radix-select-trigger-width);
   }
@@ -2088,20 +2073,8 @@
     transform: var(--tw-rotate-x, ) var(--tw-rotate-y, ) var(--tw-rotate-z, ) var(--tw-skew-x, ) var(--tw-skew-y, );
   }
 
-  .animate-bounce {
-    animation: var(--animate-bounce);
-  }
-
   .animate-in {
     animation: enter var(--tw-animation-duration, var(--tw-duration, .15s)) var(--tw-ease, ease) var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
-  }
-
-  .animate-ping {
-    animation: var(--animate-ping);
-  }
-
-  .animate-pulse {
-    animation: var(--animate-pulse);
   }
 
   .animate-spin {
@@ -2459,11 +2432,6 @@
     border-width: 2px;
   }
 
-  .border-4 {
-    border-style: var(--tw-border-style);
-    border-width: 4px;
-  }
-
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
@@ -2534,16 +2502,6 @@
     }
   }
 
-  .border-blue-500\/30 {
-    border-color: rgba(48, 128, 255, .3);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .border-blue-500\/30 {
-      border-color: color-mix(in oklab, var(--color-blue-500) 30%, transparent);
-    }
-  }
-
   .border-blue-600 {
     border-color: var(--color-blue-600);
   }
@@ -2600,16 +2558,6 @@
     border-color: var(--color-green-500);
   }
 
-  .border-green-500\/30 {
-    border-color: rgba(0, 199, 88, .3);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .border-green-500\/30 {
-      border-color: color-mix(in oklab, var(--color-green-500) 30%, transparent);
-    }
-  }
-
   .border-green-600 {
     border-color: var(--color-green-600);
   }
@@ -2659,16 +2607,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .border-purple-400\/30 {
       border-color: color-mix(in oklab, var(--color-purple-400) 30%, transparent);
-    }
-  }
-
-  .border-purple-500\/30 {
-    border-color: rgba(172, 75, 255, .3);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .border-purple-500\/30 {
-      border-color: color-mix(in oklab, var(--color-purple-500) 30%, transparent);
     }
   }
 
@@ -2797,16 +2735,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-black\/50 {
       background-color: color-mix(in oklab, var(--color-black) 50%, transparent);
-    }
-  }
-
-  .bg-black\/80 {
-    background-color: rgba(0, 0, 0, .8);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-black\/80 {
-      background-color: color-mix(in oklab, var(--color-black) 80%, transparent);
     }
   }
 
@@ -3233,11 +3161,6 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
-  .from-green-400 {
-    --tw-gradient-from: var(--color-green-400);
-    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-  }
-
   .from-green-500 {
     --tw-gradient-from: var(--color-green-500);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -3446,21 +3369,6 @@
 
   .via-white {
     --tw-gradient-via: var(--color-white);
-    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
-    --tw-gradient-stops: var(--tw-gradient-via-stops);
-  }
-
-  .via-white\/30 {
-    --tw-gradient-via: rgba(255, 255, 255, .3);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .via-white\/30 {
-      --tw-gradient-via: color-mix(in oklab, var(--color-white) 30%, transparent);
-    }
-  }
-
-  .via-white\/30 {
     --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
     --tw-gradient-stops: var(--tw-gradient-via-stops);
   }
@@ -8305,31 +8213,6 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes ping {
-  75%, 100% {
-    opacity: 0;
-    transform: scale(2);
-  }
-}
-
-@keyframes pulse {
-  50% {
-    opacity: .5;
-  }
-}
-
-@keyframes bounce {
-  0%, 100% {
-    animation-timing-function: cubic-bezier(.8, 0, 1, 1);
-    transform: translateY(-25%);
-  }
-
-  50% {
-    animation-timing-function: cubic-bezier(0, 0, .2, 1);
-    transform: none;
   }
 }
 
