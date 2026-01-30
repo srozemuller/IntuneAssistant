@@ -3,6 +3,9 @@ import React, {useState, useEffect} from 'react';
 import {useMsal} from '@azure/msal-react';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 import {DataTable} from '@/components/DataTable';
 import {Badge} from '@/components/ui/badge';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
@@ -135,6 +138,9 @@ export default function AssignmentsOverview() {
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
     const [filterLoading, setFilterLoading] = useState(false);
     const [filterError, setFilterError] = useState<string | null>(null);
+    const [filterSearchOpen, setFilterSearchOpen] = useState(false);
+    const [selectedFilterForSearch, setSelectedFilterForSearch] = useState<AssignmentFilter | null>(null);
+
 
     // Filter states
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
@@ -1078,191 +1084,167 @@ export default function AssignmentsOverview() {
             {/* Filters List */}
             {filters.length > 0 && assignments.length === 0 && !loading && (
                 <div className="space-y-4">
-                    {/* Filter Controls */}
+                    {/* Filter Search Card */}
                     <Card className="shadow-sm">
                         <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Filter className="h-5 w-5 text-gray-500" />
-                                    <CardTitle>Assignment Filters ({getFilteredFilters().length} of {filters.length})</CardTitle>
+                                    <CardTitle>Select Assignment Filter</CardTitle>
                                 </div>
-                                <div className="flex gap-2">
-                                    {(filterSearch || filterPlatformFilter.length > 0 || filterManagementTypeFilter.length > 0) && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => {
-                                                setFilterSearch('');
-                                                setFilterPlatformFilter([]);
-                                                setFilterManagementTypeFilter([]);
-                                            }}
-                                        >
-                                            <XCircle className="h-4 w-4 mr-2"/>
-                                            Clear Filters
-                                        </Button>
-                                    )}
-                                    <Button variant="outline" size="sm" onClick={() => setFilters([])}>
-                                        <X className="h-4 w-4 mr-2"/>
-                                        Close
-                                    </Button>
-                                </div>
+                                <Button variant="outline" size="sm" onClick={() => {
+                                    setFilters([]);
+                                    setSelectedFilterForSearch(null);
+                                    setFilterSearch('');
+                                }}>
+                                    <X className="h-4 w-4 mr-2"/>
+                                    Close
+                                </Button>
                             </div>
+                            <CardDescription>
+                                Search and select a filter to view its assignments ({filters.length} filters available)
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            {/* Search Input */}
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search filters by name, description, rule, or ID..."
-                                    value={filterSearch}
-                                    onChange={(e) => setFilterSearch(e.target.value)}
-                                    className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                                />
-                                {filterSearch && (
-                                    <button
-                                        onClick={() => setFilterSearch('')}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            {/* Search Filter Dropdown */}
+                            <Popover open={filterSearchOpen} onOpenChange={setFilterSearchOpen}>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        role="combobox"
+                                        aria-expanded={filterSearchOpen}
+                                        className="w-full justify-between h-auto min-h-[40px]"
                                     >
-                                        <X className="h-4 w-4" />
-                                    </button>
-                                )}
-                            </div>
+                                        <div className="flex items-center gap-2">
+                                            <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                            <span className="text-sm text-left">
+                                                {selectedFilterForSearch
+                                                    ? selectedFilterForSearch.displayName
+                                                    : "Search and select a filter..."}
+                                            </span>
+                                        </div>
+                                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[600px] p-0" align="start">
+                                    <Command shouldFilter={false}>
+                                        <CommandInput
+                                            placeholder="Search filters by name, rule, platform, or ID..."
+                                            value={filterSearch}
+                                            onValueChange={setFilterSearch}
+                                        />
+                                        <CommandList><CommandEmpty>No filters found.</CommandEmpty>
+                                            <CommandGroup>
+                                                {filters
+                                                    .filter(filter => {
+                                                        if (!filterSearch.trim()) return true;
+                                                        const search = filterSearch.toLowerCase();
+                                                        return (
+                                                            filter.displayName.toLowerCase().includes(search) ||
+                                                            filter.description?.toLowerCase().includes(search) ||
+                                                            filter.rule.toLowerCase().includes(search) ||
+                                                            filter.id.toLowerCase().includes(search)
+                                                        );
+                                                    })
+                                                    .map((filter) => {
+                                                        const platformName = filter.platform === 0 ? 'All' :
+                                                            filter.platform === 1 ? 'Android' :
+                                                            filter.platform === 2 ? 'iOS' :
+                                                            filter.platform === 3 ? 'macOS' :
+                                                            filter.platform === 4 ? 'Windows' :
+                                                            `Platform ${filter.platform}`;
 
-                            {/* Filter Dropdowns */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <MultiSelect
-                                    options={getUniqueFilterPlatforms()}
-                                    selected={filterPlatformFilter}
-                                    onChange={setFilterPlatformFilter}
-                                    placeholder="Platform"/>
-                                <MultiSelect
-                                    options={getUniqueManagementTypes()}
-                                    selected={filterManagementTypeFilter}
-                                    onChange={setFilterManagementTypeFilter}
-                                    placeholder="Management Type"
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
+                                                        const managementType = filter.assignmentFilterManagementType === 0 ? 'Devices' : 'Apps';
 
-                    {/* Filters Grid */}
-                    {getFilteredFilters().length > 0 ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                            {getFilteredFilters().map((filter) => {
-                                const platformName = filter.platform === 0 ? 'All Platforms' :
-                                    filter.platform === 1 ? 'Android' :
-                                    filter.platform === 2 ? 'iOS' :
-                                    filter.platform === 3 ? 'macOS' :
-                                    filter.platform === 4 ? 'Windows' :
-                                    `Platform ${filter.platform}`;
+                                                        return (
+                                                            <CommandItem
+                                                                key={filter.id}
+                                                                value={filter.id}
+                                                                onSelect={() => {
+                                                                    setSelectedFilterForSearch(filter);
+                                                                    setFilterSearchOpen(false);
+                                                                    fetchFilterAssignments(filter.id);
+                                                                }}
+                                                                className="flex flex-col items-start gap-1 py-3"
+                                                            >
+                                                                <div className="flex items-center gap-2 w-full">
+                                                                    <Filter className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                                                                    <span className="font-medium">{filter.displayName}</span>
+                                                                    <div className="ml-auto flex gap-1">
+                                                                        <Badge variant="outline" className="text-xs">
+                                                                            {platformName}
+                                                                        </Badge>
+                                                                        <Badge variant="secondary" className="text-xs">
+                                                                            {managementType}
+                                                                        </Badge>
+                                                                    </div>
+                                                                </div>
+                                                                {filter.description && (
+                                                                    <span className="text-xs text-gray-500 pl-6 line-clamp-1">
+                                                                        {filter.description}
+                                                                    </span>
+                                                                )}
+                                                                <span className="text-xs text-gray-400 pl-6 font-mono line-clamp-1">
+                                                                    {filter.rule}
+                                                                </span>
+                                                            </CommandItem>
+                                                        );
+                                                    })}
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
 
-                                const managementType = filter.assignmentFilterManagementType === 0 ? 'Devices' : 'Apps';
-
-                                return (
-                                    <Card key={filter.id} className="border hover:border-yellow-300 transition-colors">
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <Shield className="h-4 w-4 text-yellow-400 flex-shrink-0"/>
-                                                        <h4 className="font-semibold text-base truncate" title={filter.displayName}>
-                                                            {filter.displayName}
-                                                        </h4>
-                                                    </div>
-
-                                                    {filter.description && (
-                                                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
-                                                            {filter.description}
-                                                        </p>
-                                                    )}
-
-                                                    <div className="flex flex-wrap gap-2 mb-3">
-                                                        <Badge variant="outline" className="text-xs">
-                                                            {platformName}
-                                                        </Badge>
-                                                        <Badge variant="outline" className="text-xs">
-                                                            {managementType === 'Devices' ? (
-                                                                <>
-                                                                    <Computer className="h-3 w-3 mr-1"/>
-                                                                    Devices
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <Blocks className="h-3 w-3 mr-1"/>
-                                                                    Apps
-                                                                </>
-                                                            )}
-                                                        </Badge>
-                                                    </div>
-
-                                                    <div className="bg-gray-50 dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700 mb-3">
-                                                        <p className="text-xs font-mono text-gray-700 dark:text-gray-300 line-clamp-2" title={filter.rule}>
-                                                            {filter.rule}
-                                                        </p>
-                                                    </div>
-
-                                                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                        <span className="font-medium">Modified: </span>
-                                                        {new Date(filter.lastModifiedDateTime).toLocaleDateString()}
-                                                    </div>
+                            {/* Selected Filter Info */}
+                            {selectedFilterForSearch && (
+                                <Card className="border-yellow-300 bg-yellow-50 dark:bg-yellow-900/10">
+                                    <CardContent className="p-4">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="flex-1 space-y-2">
+                                                <div className="flex items-center gap-2">
+                                                    <ShieldCheck className="h-5 w-5 text-yellow-600" />
+                                                    <h3 className="font-semibold">{selectedFilterForSearch.displayName}</h3>
                                                 </div>
-
-                                                <div className="flex flex-col gap-2">
-                                                    <Button
-                                                        onClick={() => {
-                                                            setSelectedFilter(filter);
-                                                            setIsFilterDialogOpen(true);
-                                                        }}
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="whitespace-nowrap"
-                                                    >
-                                                        <Settings className="h-3 w-3 mr-1"/>
-                                                        Details
-                                                    </Button>
-                                                    <Button
-                                                        onClick={() => fetchFilterAssignments(filter.id)}
-                                                        size="sm"
-                                                        className="whitespace-nowrap"
-                                                        disabled={loading}
-                                                    >
-                                                        {loading ? (
-                                                            <RefreshCw className="h-3 w-3 animate-spin mr-1"/>
-                                                        ) : (
-                                                            <Database className="h-3 w-3 mr-1"/>
-                                                        )}
-                                                        Load
-                                                    </Button>
+                                                {selectedFilterForSearch.description && (
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                        {selectedFilterForSearch.description}
+                                                    </p>
+                                                )}<div className="flex flex-wrap gap-2 text-xs">
+                                                    <Badge variant="outline">
+                                                        Platform: {selectedFilterForSearch.platform === 0 ? 'All' :
+                                                        selectedFilterForSearch.platform === 1 ? 'Android' :
+                                                        selectedFilterForSearch.platform === 2 ? 'iOS' :
+                                                        selectedFilterForSearch.platform === 3 ? 'macOS' :
+                                                        selectedFilterForSearch.platform === 4 ? 'Windows' :
+                                                        `Platform ${selectedFilterForSearch.platform}`}
+                                                    </Badge>
+                                                    <Badge variant="secondary">
+                                                        {selectedFilterForSearch.assignmentFilterManagementType === 0 ? 'Devices' : 'Apps'}
+                                                    </Badge>
+                                                </div>
+                                                <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded text-xs font-mono">
+                                                    {selectedFilterForSearch.rule}
                                                 </div>
                                             </div>
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <Card>
-                            <CardContent className="p-8 text-center">
-                                <Filter className="h-12 w-12 text-gray-400 mx-auto mb-3"/>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    No filters found matching your search criteria
-                                </p>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        setFilterSearch('');
-                                        setFilterPlatformFilter([]);
-                                        setFilterManagementTypeFilter([]);
-                                    }}
-                                    className="mt-4"
-                                >
-                                    Clear Search
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    )}
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setSelectedFilterForSearch(null);
+                                                    setFilterSearch('');
+                                                    setAssignments([]);
+                                                    setFilteredAssignments([]);
+                                                }}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </CardContent>
+                    </Card>
                 </div>
             )}
 
