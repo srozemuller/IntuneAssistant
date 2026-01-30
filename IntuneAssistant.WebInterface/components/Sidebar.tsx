@@ -256,6 +256,7 @@ export function Sidebar() {
                                 { title: "App Assignments", href: "/assistant/user-assignments/apps" }
                             ]
                         },
+                        { title: "Assignments with Filter", href: "/assistant/filter-assignments" },
                         { title: "Application Assignments (all)", href: "/assistant/app-assignments" }
                     ]
                 },

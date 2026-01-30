@@ -139,6 +139,8 @@ export default function AssignmentsOverview() {
     ];
 
     const prepareRolloutExportData = (): ExportData => {
+        const searchFiltered = getSearchFilteredData(filteredAssignments);
+
         const exportColumns: ExportColumn[] = [
             {
                 key: 'resourceName',
@@ -194,16 +196,18 @@ export default function AssignmentsOverview() {
         ];
 
         return {
-            data: filteredAssignments, // Use your filtered assignments data
+            data: searchFiltered,
             columns: exportColumns,
             filename: 'rollouts-overview',
             title: 'Rollouts Overview',
-            description: 'Detailed view of all Intune rollouts across your organization',
+            description: searchQuery ? `Filtered results for: "${searchQuery}"` : 'Detailed view of all Intune rollouts across your organization',
             stats: rolloutStats
         };
     };
 
     const prepareExportData = (): ExportData => {
+        const searchFiltered = getSearchFilteredData(filteredAssignments);
+
         const exportColumns: ExportColumn[] = [
             {
                 key: 'resourceType',
@@ -269,11 +273,11 @@ export default function AssignmentsOverview() {
         ];
 
         return {
-            data: filteredAssignments,
+            data: searchFiltered,
             columns: exportColumns,
             filename: 'assignments-overview',
             title: 'Assignments Overview',
-            description: 'Detailed view of all Intune assignments across your organization',
+            description: searchQuery ? `Search results for: "${searchQuery}"` : 'Detailed view of all Intune assignments across your organization',
             stats
         };
     };
@@ -294,6 +298,25 @@ export default function AssignmentsOverview() {
             setLoading(false);
         }
     };
+
+const getSearchFilteredData = (data: Assignments[]): Assignments[] => {
+    if (!searchQuery.trim()) return data;
+
+    const query = searchQuery.toLowerCase();
+    return data.filter(assignment => {
+        return (
+            assignment.resourceName?.toLowerCase().includes(query) ||
+            assignment.targetName?.toLowerCase().includes(query) ||
+            assignment.assignmentType?.toLowerCase().includes(query) ||
+            assignment.resourceType?.toLowerCase().includes(query) ||
+            assignment.platform?.toLowerCase().includes(query) ||
+            getFilterInfo(assignment.filterId, assignment.filterType).displayName.toLowerCase().includes(query)
+        );
+    });
+};
+
+// Add this new computed value right after your useEffect hooks
+const displayedAssignments = getSearchFilteredData(filteredAssignments);
 
     const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
@@ -600,17 +623,6 @@ export default function AssignmentsOverview() {
 
     const columns = [
         {
-            key: 'resourceType' as string,
-            label: 'Type',
-            width: 120,
-            minWidth: 80,
-            render: (value: unknown) => (
-                <Badge variant="outline" className="font-mono text-xs whitespace-nowrap">
-                    {String(value)}
-                </Badge>
-            )
-        },
-        {
             key: 'resourceName' as string,
             label: 'Resource',
             width: 200,
@@ -622,20 +634,26 @@ export default function AssignmentsOverview() {
 
                 if (resourceType === 'Group' && resourceId && resourceName !== 'N/A') {
                     return (
-                        <button
-                            onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
-                            className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
-                            title={resourceName}
-                        >
-                            {resourceName}
-                        </button>
+                        <div className="space-y-0.5">
+                            <button
+                                onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
+                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                                title={resourceName}
+                            >
+                                {resourceName}
+                            </button>
+                            <span className="text-xs text-gray-400 block">{resourceType}</span>
+                        </div>
                     );
                 }
 
                 return (
-                    <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                        {resourceName}
-                    </span>
+                    <div className="space-y-0.5">
+                        <span className="font-medium text-sm truncate block w-full" title={resourceName}>
+                            {resourceName}
+                        </span>
+                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                    </div>
                 );
             }
         },
@@ -1131,7 +1149,7 @@ export default function AssignmentsOverview() {
                                 </div>
                             ) : (
                                 <DataTable
-                                    data={filteredAssignments}
+                                    data={displayedAssignments}
                                     columns={columns}
                                     className="min-w-full"
                                     showPagination={true}
