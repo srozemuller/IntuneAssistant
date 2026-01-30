@@ -1,4 +1,12 @@
 {
+  "/assistant/app-assignments/page": "app/assistant/app-assignments/page.js",
+  "/assistant/assignments-overview/page": "app/assistant/assignments-overview/page.js",
+  "/assistant/filter-assignments/page": "app/assistant/filter-assignments/page.js",
+  "/assistant/group-assignments/page": "app/assistant/group-assignments/page.js",
+  "/assistant/page": "app/assistant/page.js",
+  "/assistant/user-assignments/configuration/page": "app/assistant/user-assignments/configuration/page.js",
+  "/assistant/user-assignments/page": "app/assistant/user-assignments/page.js",
+  "/customer/page": "app/customer/page.js",
   "/deployment/assignments/page": "app/deployment/assignments/page.js",
   "/deployment/page": "app/deployment/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
