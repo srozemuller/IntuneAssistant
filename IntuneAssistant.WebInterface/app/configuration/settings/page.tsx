@@ -297,7 +297,7 @@ export default function PolicySettingsPage() {
 
             {/* Welcome card when no settings are loaded */}
             {settings.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-muted-foreground mb-6">
@@ -320,7 +320,7 @@ export default function PolicySettingsPage() {
 
             {/* Loading state */}
             {loading && settings.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="p-12">
                         <div className="text-center">
                             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
@@ -341,7 +341,7 @@ export default function PolicySettingsPage() {
                     showPagination={true}
                     showSearch={true}
                     searchPlaceholder="Search policy settings..."
-                    className="shadow-sm"
+                    className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10"
                 />
             )}
         </div>

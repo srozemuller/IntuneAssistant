@@ -817,7 +817,7 @@ export default function AssignmentsOverview() {
 
             {/* Welcome card */}
             {assignments.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 dark:text-gray-500 mb-6">
@@ -859,7 +859,7 @@ export default function AssignmentsOverview() {
 
             {/* Loading state */}
             {loading && assignments.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4" />
@@ -878,7 +878,7 @@ export default function AssignmentsOverview() {
             {(assignments.length > 0 || loading) && (
                 <>
                     {/* Filters Section */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
                                 <button
@@ -1096,7 +1096,6 @@ export default function AssignmentsOverview() {
                         )}
                     </Card>
 
-
                     {error && (
                         <Card className="border-red-200 bg-red-50">
                             <CardContent className="pt-6">
@@ -1109,7 +1108,7 @@ export default function AssignmentsOverview() {
                     )}
 
                     {/* Assignment Details Table */}
-                    <Card className="shadow-sm w-full overflow-hidden">
+                    <Card className="relative overflow-hidden transition-all duration-300  hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
@@ -1142,7 +1141,6 @@ export default function AssignmentsOverview() {
                                     <DataTable
                                         data={filteredAssignments}
                                         columns={columns}
-                                        className="min-w-full"
                                         showPagination={true}
                                         currentPage={currentPage}
                                         itemsPerPage={itemsPerPage}
@@ -1187,7 +1185,7 @@ export default function AssignmentsOverview() {
 
                     {/* Filtered empty state */}
                     {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (
-                        <Card>
+                        <Card className="relative overflow-hidden transition-all duration-300  hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
                                     <div className="text-gray-400 dark:text-gray-500 mb-4">

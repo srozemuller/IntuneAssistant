@@ -988,7 +988,7 @@ export default function AssignmentsOverview() {
 
             {/* Welcome card */}
             {assignments.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardHeader className="text-center pb-4">
                         <Users className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4"/>
                         <CardTitle className="text-xl">User configuration assignments</CardTitle>
@@ -1205,7 +1205,7 @@ export default function AssignmentsOverview() {
 
             {/* Loading state */}
             {loading && assignments.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"/>
@@ -1224,7 +1224,7 @@ export default function AssignmentsOverview() {
             {(assignments.length > 0 || loading) && (
                 <>
                     {/* Filters Section */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
                                 <button
@@ -1432,7 +1432,7 @@ export default function AssignmentsOverview() {
                     )}
 
                     {/* Assignment Details Table */}
-                    <Card className="shadow-sm w-full overflow-hidden">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <span>

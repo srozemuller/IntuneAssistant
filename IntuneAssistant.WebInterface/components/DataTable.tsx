@@ -314,9 +314,10 @@ export function DataTable({
     };
 
     return (
-        <div className={`bg-background border rounded-lg overflow-hidden shadow-sm ${className}`}>
+        <div>
+            {/* Search Section */}
             {showSearch && (
-                <div className="p-4 bg-muted border-b">
+                <div className="p-4 ">
                     <div className="relative max-w-sm">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <input
@@ -324,12 +325,12 @@ export function DataTable({
                             placeholder={searchPlaceholder}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-10 py-2 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
+                            className="w-full pl-10 pr-10 py-2 rounded-lg bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0 shadow-sm"
                         />
                         {searchTerm && (
                             <button
                                 onClick={clearSearch}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -343,98 +344,99 @@ export function DataTable({
                 </div>
             )}
 
-            <div className="overflow-auto">
+            {/* Table Section */}
+            <div className="overflow-auto custom-scrollbar">
                 <table ref={tableRef} className="w-full text-sm">
-                    <thead className="bg-background sticky top-0 z-10 border-b">
-
-                    <tr className="border-b">
-                        {columns.map((column, index) => (
-                            <th
-                                key={column.key}
-                                className="relative text-left p-3 font-medium text-foreground"
-                                style={{ width: `${column.width}px` }}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div
-                                        className={`flex items-center gap-2 flex-1 ${
-                                            column.sortable !== false && column.key !== '_select'
-                                                ? 'cursor-pointer hover:text-primary transition-colors'
-                                                : ''
-                                        }`}
-                                        onClick={() => {
-                                            if (column.sortable !== false && column.key !== '_select') {
-                                                handleSort(column.key);
-                                            }
-                                        }}
-                                    >
-                                        <span className="truncate pr-2">{column.label}</span>
-                                        {column.sortable !== false && column.key !== '_select' && (
-                                            getSortIcon(column.key)
-                                        )}
-                                    </div>
-                                </div>
-
-                                {column.key !== '_select' && (
-                                    <div
-                                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary group"
-                                        onMouseDown={(e) => handleResizeStart(e, index)}
-                                    >
-                                        <div className="h-full w-px bg-border group-hover:bg-primary transition-colors" />
-                                    </div>
-                                )}
-                            </th>
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody className="bg-background divide-y divide-border">
-                    {paginatedData.length > 0 ? (
-                        paginatedData.map((row, rowIndex) => (
-                            <tr
-                                key={rowIndex}
-                                className={`
-                transition-colors
-                ${onRowClick ? 'cursor-pointer' : ''}
-                ${isRowSelected(row)
-                                    ? 'bg-yellow-400 dark:bg-yellow-400/80 text-foreground border-l-4 border-l-yellow-600 dark:border-l-yellow-400 shadow-md ring-1 ring-yellow-500/30'
-                                    : 'hover:bg-muted/50'
-                                }
-                ${rowClassName ? rowClassName(row) : ''}
-            `}
-                                onClick={(e) => handleRowClick(e, row, startIndex + rowIndex)}
-                            >
-
-                            {columns.map((column) => (
-                                    <td
-                                        key={column.key}
-                                        className="p-3 text-foreground"
-                                        style={{ width: `${column.width}px` }}
-                                    >
-                                        <div className="overflow-hidden">
-                                            {column.render
-                                                ? column.render(getCellValue(row, column), row)
-                                                : String(getCellValue(row, column) || '')
-                                            }
-                                        </div>
-                                    </td>
-                                ))}
-                            </tr>
-                        ))
-                    ) : (
+                    <thead className="bg-gradient-to-b from-white/30 to-white/20 dark:from-white/10 dark:to-white/5 backdrop-blur-md sticky top-0 z-10">
                         <tr>
-                            <td
-                                colSpan={columns.length}
-                                className="p-8 text-center text-muted-foreground bg-muted/50"
-                            >
-                                {searchTerm ? 'No results found for your search.' : 'No data available.'}
-                            </td>
+                            {columns.map((column, index) => (
+                                <th
+                                    key={column.key}
+                                    className="relative text-left p-3 font-medium text-foreground first:pl-6 last:pr-6"
+                                    style={{ width: `${column.width}px` }}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div
+                                            className={`flex items-center gap-2 flex-1 ${
+                                                column.sortable !== false && column.key !== '_select'
+                                                    ? 'cursor-pointer hover:text-primary transition-colors'
+                                                    : ''
+                                            }`}
+                                            onClick={() => {
+                                                if (column.sortable !== false && column.key !== '_select') {
+                                                    handleSort(column.key);
+                                                }
+                                            }}
+                                        >
+                                            <span className="truncate pr-2">{column.label}</span>
+                                            {column.sortable !== false && column.key !== '_select' && (
+                                                getSortIcon(column.key)
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {column.key !== '_select' && index < columns.length - 1 && (
+                                        <div
+                                            className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50 group"
+                                            onMouseDown={(e) => handleResizeStart(e, index)}
+                                        >
+                                            <div className="h-full w-px bg-border/20 group-hover:bg-primary transition-colors" />
+                                        </div>
+                                    )}
+                                </th>
+                            ))}
                         </tr>
-                    )}
+                    </thead>
+                    <tbody className="bg-transparent">
+                        {paginatedData.length > 0 ? (
+                            paginatedData.map((row, rowIndex) => (
+                                <tr
+                                    key={rowIndex}
+                                    className={`
+                                        border-b border-border/10 last:border-b-0
+                                        transition-all duration-200
+                                        ${onRowClick ? 'cursor-pointer' : ''}
+                                        ${isRowSelected(row)
+                                            ? 'bg-primary/15 dark:bg-primary/20 text-foreground border-l-4 border-l-primary shadow-lg'
+                                            : 'hover:bg-white/20 dark:hover:bg-white/5'
+                                        }
+                                        ${rowClassName ? rowClassName(row) : ''}
+                                    `}
+                                    onClick={(e) => handleRowClick(e, row, startIndex + rowIndex)}
+                                >
+                                    {columns.map((column) => (
+                                        <td
+                                            key={column.key}
+                                            className="p-3 text-foreground first:pl-6 last:pr-6"
+                                            style={{ width: `${column.width}px` }}
+                                        >
+                                            <div className="overflow-hidden">
+                                                {column.render
+                                                    ? column.render(getCellValue(row, column), row)
+                                                    : String(getCellValue(row, column) || '')
+                                                }
+                                            </div>
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td
+                                    colSpan={columns.length}
+                                    className="p-8 text-center text-muted-foreground"
+                                >
+                                    {searchTerm ? 'No results found for your search.' : 'No data available.'}
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
 
+            {/* Pagination Section */}
             {showPagination && sortedData.length > 0 && (
-                <div className="flex items-center justify-between p-4 border-t bg-muted">
+                <div className="flex items-center justify-between p-4 bg-gradient-to-t from-white/20 to-transparent dark:from-white/5">
                     <div className="flex items-center gap-4">
                         <div className="text-sm text-muted-foreground">
                             Showing {Math.min(startIndex + 1, sortedData.length)} to {Math.min(endIndex, sortedData.length)} of {sortedData.length} results
@@ -449,7 +451,7 @@ export function DataTable({
                                     changeItemsPerPage(newItemsPerPage);
                                     changePage(1);
                                 }}
-                                className="border rounded px-2 py-1 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+                                className="rounded-lg px-3 py-1.5 text-sm bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0 shadow-sm"
                             >
                                 <option value={10}>10</option>
                                 <option value={25}>25</option>
@@ -464,6 +466,7 @@ export function DataTable({
                             size="sm"
                             onClick={() => changePage(Math.max(1, effectiveCurrentPage - 1))}
                             disabled={effectiveCurrentPage === 1}
+                            className="backdrop-blur-sm border-border/20 bg-white/40 dark:bg-white/5"
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -488,7 +491,7 @@ export function DataTable({
                                         variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
                                         size="sm"
                                         onClick={() => changePage(pageNum)}
-                                        className="w-8 h-8 p-0"
+                                        className={`w-8 h-8 p-0 backdrop-blur-sm ${effectiveCurrentPage !== pageNum ? 'border-border/20 bg-white/40 dark:bg-white/5' : ''}`}
                                     >
                                         {pageNum}
                                     </Button>
@@ -501,6 +504,7 @@ export function DataTable({
                             size="sm"
                             onClick={() => changePage(Math.min(totalFilteredPages, effectiveCurrentPage + 1))}
                             disabled={effectiveCurrentPage === totalFilteredPages}
+                            className="backdrop-blur-sm border-border/20 bg-white/40 dark:bg-white/5"
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />
