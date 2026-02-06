@@ -314,10 +314,9 @@ function DataTable(param) {
         return row[column.key];
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "bg-background border rounded-lg overflow-hidden shadow-sm ".concat(className),
         children: [
             showSearch && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "p-4 bg-muted border-b",
+                className: "p-4 ",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "relative max-w-sm",
@@ -326,7 +325,7 @@ function DataTable(param) {
                                 className: "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 321,
+                                lineNumber: 322,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -334,31 +333,31 @@ function DataTable(param) {
                                 placeholder: searchPlaceholder,
                                 value: searchTerm,
                                 onChange: (e)=>setSearchTerm(e.target.value),
-                                className: "w-full pl-10 pr-10 py-2 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
+                                className: "w-full pl-10 pr-10 py-2 rounded-lg bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0 shadow-sm"
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 322,
+                                lineNumber: 323,
                                 columnNumber: 25
                             }, this),
                             searchTerm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 onClick: clearSearch,
-                                className: "absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors",
+                                className: "absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
                                     className: "h-4 w-4"
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 334,
+                                    lineNumber: 335,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 330,
+                                lineNumber: 331,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 320,
+                        lineNumber: 321,
                         columnNumber: 21
                     }, this),
                     searchTerm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -371,27 +370,26 @@ function DataTable(param) {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 339,
+                        lineNumber: 340,
                         columnNumber: 25
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 319,
+                lineNumber: 320,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "overflow-auto",
+                className: "overflow-auto custom-scrollbar",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
                     ref: tableRef,
                     className: "w-full text-sm",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
-                            className: "bg-background sticky top-0 z-10 border-b",
+                            className: "bg-gradient-to-b from-white/30 to-white/20 dark:from-white/10 dark:to-white/5 backdrop-blur-md sticky top-0 z-10",
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
-                                className: "border-b",
                                 children: columns.map((column, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                        className: "relative text-left p-3 font-medium text-foreground",
+                                        className: "relative text-left p-3 font-medium text-foreground first:pl-6 last:pr-6",
                                         style: {
                                             width: "".concat(column.width, "px")
                                         },
@@ -411,59 +409,59 @@ function DataTable(param) {
                                                             children: column.label
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/DataTable.tsx",
-                                                            lineNumber: 370,
-                                                            columnNumber: 41
+                                                            lineNumber: 371,
+                                                            columnNumber: 45
                                                         }, this),
                                                         column.sortable !== false && column.key !== '_select' && getSortIcon(column.key)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/DataTable.tsx",
-                                                    lineNumber: 358,
-                                                    columnNumber: 37
-                                                }, this)
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 357,
-                                                columnNumber: 33
-                                            }, this),
-                                            column.key !== '_select' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary group",
-                                                onMouseDown: (e)=>handleResizeStart(e, index),
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "h-full w-px bg-border group-hover:bg-primary transition-colors"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/DataTable.tsx",
-                                                    lineNumber: 382,
+                                                    lineNumber: 359,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 378,
+                                                lineNumber: 358,
                                                 columnNumber: 37
+                                            }, this),
+                                            column.key !== '_select' && index < columns.length - 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50 group",
+                                                onMouseDown: (e)=>handleResizeStart(e, index),
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "h-full w-px bg-border/20 group-hover:bg-primary transition-colors"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/DataTable.tsx",
+                                                    lineNumber: 383,
+                                                    columnNumber: 45
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/DataTable.tsx",
+                                                lineNumber: 379,
+                                                columnNumber: 41
                                             }, this)
                                         ]
                                     }, column.key, true, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 352,
-                                        columnNumber: 29
+                                        lineNumber: 353,
+                                        columnNumber: 33
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 350,
-                                columnNumber: 21
+                                lineNumber: 351,
+                                columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 348,
+                            lineNumber: 350,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
-                            className: "bg-background divide-y divide-border",
+                            className: "bg-transparent",
                             children: paginatedData.length > 0 ? paginatedData.map((row, rowIndex)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
-                                    className: "\n                transition-colors\n                ".concat(onRowClick ? 'cursor-pointer' : '', "\n                ").concat(isRowSelected(row) ? 'bg-yellow-400 dark:bg-yellow-400/80 text-foreground border-l-4 border-l-yellow-600 dark:border-l-yellow-400 shadow-md ring-1 ring-yellow-500/30' : 'hover:bg-muted/50', "\n                ").concat(rowClassName ? rowClassName(row) : '', "\n            "),
+                                    className: "\n                                        border-b border-border/10 last:border-b-0\n                                        transition-all duration-200\n                                        ".concat(onRowClick ? 'cursor-pointer' : '', "\n                                        ").concat(isRowSelected(row) ? 'bg-primary/15 dark:bg-primary/20 text-foreground border-l-4 border-l-primary shadow-lg' : 'hover:bg-white/20 dark:hover:bg-white/5', "\n                                        ").concat(rowClassName ? rowClassName(row) : '', "\n                                    "),
                                     onClick: (e)=>handleRowClick(e, row, startIndex + rowIndex),
                                     children: columns.map((column)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                            className: "p-3 text-foreground",
+                                            className: "p-3 text-foreground first:pl-6 last:pr-6",
                                             style: {
                                                 width: "".concat(column.width, "px")
                                             },
@@ -472,51 +470,51 @@ function DataTable(param) {
                                                 children: column.render ? column.render(getCellValue(row, column), row) : String(getCellValue(row, column) || '')
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 412,
-                                                columnNumber: 41
+                                                lineNumber: 413,
+                                                columnNumber: 45
                                             }, this)
                                         }, column.key, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 407,
-                                            columnNumber: 37
+                                            lineNumber: 408,
+                                            columnNumber: 41
                                         }, this))
                                 }, rowIndex, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 392,
-                                    columnNumber: 29
+                                    lineNumber: 393,
+                                    columnNumber: 33
                                 }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                     colSpan: columns.length,
-                                    className: "p-8 text-center text-muted-foreground bg-muted/50",
+                                    className: "p-8 text-center text-muted-foreground",
                                     children: searchTerm ? 'No results found for your search.' : 'No data available.'
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 424,
-                                    columnNumber: 29
+                                    lineNumber: 425,
+                                    columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 423,
-                                columnNumber: 25
+                                lineNumber: 424,
+                                columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 389,
+                            lineNumber: 390,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/DataTable.tsx",
-                    lineNumber: 347,
+                    lineNumber: 349,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 346,
+                lineNumber: 348,
                 columnNumber: 13
             }, this),
             showPagination && sortedData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex items-center justify-between p-4 border-t bg-muted",
+                className: "flex items-center justify-between p-4 bg-gradient-to-t from-white/20 to-transparent dark:from-white/5",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex items-center gap-4",
@@ -535,7 +533,7 @@ function DataTable(param) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 439,
+                                lineNumber: 441,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -546,7 +544,7 @@ function DataTable(param) {
                                         children: "Items per page:"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 444,
+                                        lineNumber: 446,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -556,14 +554,14 @@ function DataTable(param) {
                                             changeItemsPerPage(newItemsPerPage);
                                             changePage(1);
                                         },
-                                        className: "border rounded px-2 py-1 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors",
+                                        className: "rounded-lg px-3 py-1.5 text-sm bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0 shadow-sm",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 value: 10,
                                                 children: "10"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 454,
+                                                lineNumber: 456,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -571,7 +569,7 @@ function DataTable(param) {
                                                 children: "25"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 455,
+                                                lineNumber: 457,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -579,7 +577,7 @@ function DataTable(param) {
                                                 children: "50"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 456,
+                                                lineNumber: 458,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -587,25 +585,25 @@ function DataTable(param) {
                                                 children: "100"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 457,
+                                                lineNumber: 459,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 445,
+                                        lineNumber: 447,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 443,
+                                lineNumber: 445,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 438,
+                        lineNumber: 440,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -616,19 +614,20 @@ function DataTable(param) {
                                 size: "sm",
                                 onClick: ()=>changePage(Math.max(1, effectiveCurrentPage - 1)),
                                 disabled: effectiveCurrentPage === 1,
+                                className: "backdrop-blur-sm border-border/20 bg-white/40 dark:bg-white/5",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$left$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronLeft$3e$__["ChevronLeft"], {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 468,
+                                        lineNumber: 471,
                                         columnNumber: 29
                                     }, this),
                                     "Previous"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 462,
+                                lineNumber: 464,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -650,17 +649,17 @@ function DataTable(param) {
                                         variant: effectiveCurrentPage === pageNum ? "default" : "outline",
                                         size: "sm",
                                         onClick: ()=>changePage(pageNum),
-                                        className: "w-8 h-8 p-0",
+                                        className: "w-8 h-8 p-0 backdrop-blur-sm ".concat(effectiveCurrentPage !== pageNum ? 'border-border/20 bg-white/40 dark:bg-white/5' : ''),
                                         children: pageNum
                                     }, pageNum, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 486,
+                                        lineNumber: 489,
                                         columnNumber: 37
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 472,
+                                lineNumber: 475,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -668,31 +667,32 @@ function DataTable(param) {
                                 size: "sm",
                                 onClick: ()=>changePage(Math.min(totalFilteredPages, effectiveCurrentPage + 1)),
                                 disabled: effectiveCurrentPage === totalFilteredPages,
+                                className: "backdrop-blur-sm border-border/20 bg-white/40 dark:bg-white/5",
                                 children: [
                                     "Next",
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 506,
+                                        lineNumber: 510,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 499,
+                                lineNumber: 502,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 461,
+                        lineNumber: 463,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 437,
+                lineNumber: 439,
                 columnNumber: 17
             }, this)
         ]
@@ -3687,7 +3687,7 @@ function AssignmentsOverview() {
                 columnNumber: 17
             }, this),
             assignments.length === 0 && !loading && !error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                className: "shadow-sm",
+                className: "relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
                         className: "text-center pb-4",
@@ -4281,7 +4281,7 @@ function AssignmentsOverview() {
                 columnNumber: 17
             }, this),
             loading && assignments.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                className: "shadow-sm",
+                className: "relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                     className: "pt-6",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4329,7 +4329,7 @@ function AssignmentsOverview() {
             (assignments.length > 0 || loading) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                        className: "shadow-sm",
+                        className: "relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
                                 className: "pb-2",
@@ -4870,7 +4870,7 @@ function AssignmentsOverview() {
                         columnNumber: 25
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                        className: "shadow-sm w-full overflow-hidden",
+                        className: "relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
                                 className: "pb-4",

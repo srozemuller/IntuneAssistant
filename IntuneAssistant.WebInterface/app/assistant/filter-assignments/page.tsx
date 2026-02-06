@@ -1060,7 +1060,7 @@ export default function AssignmentsOverview() {
             )}
 
             {assignments.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardHeader className="text-center pb-4">
                         <Shield className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4"/>
                         <CardTitle className="text-xl">Assignment Filters</CardTitle>
@@ -1085,7 +1085,7 @@ export default function AssignmentsOverview() {
             {filters.length > 0 && assignments.length === 0 && !loading && (
                 <div className="space-y-4">
                     {/* Filter Search Card */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -1113,10 +1113,10 @@ export default function AssignmentsOverview() {
                                         variant="outline"
                                         role="combobox"
                                         aria-expanded={filterSearchOpen}
-                                        className="w-full justify-between h-auto min-h-[40px]"
+                                        className="w-full justify-between h-auto min-h-[40px] bg-white/60 dark:bg-white/10 backdrop-blur-md border-white/30 dark:border-white/20 hover:bg-white/70 dark:hover:bg-white/15"
                                     >
                                         <div className="flex items-center gap-2">
-                                            <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                            <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                                             <span className="text-sm text-left">
                                                 {selectedFilterForSearch
                                                     ? selectedFilterForSearch.displayName
@@ -1126,15 +1126,17 @@ export default function AssignmentsOverview() {
                                         <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[600px] p-0" align="start">
-                                    <Command shouldFilter={false}>
+                                <PopoverContent className="w-[600px] p-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-white/30 dark:border-white/20" align="start">
+                                    <Command shouldFilter={false} className="bg-transparent">
                                         <CommandInput
                                             placeholder="Search filters by name, rule, platform, or ID..."
                                             value={filterSearch}
                                             onValueChange={setFilterSearch}
+                                            className="bg-white/40 dark:bg-white/5 backdrop-blur-sm border-0 border-b border-border/20"
                                         />
-                                        <CommandList><CommandEmpty>No filters found.</CommandEmpty>
-                                            <CommandGroup>
+                                        <CommandList className="bg-transparent">
+                                            <CommandEmpty className="text-muted-foreground">No filters found.</CommandEmpty>
+                                            <CommandGroup className="bg-transparent">
                                                 {filters
                                                     .filter(filter => {
                                                         if (!filterSearch.trim()) return true;
@@ -1165,26 +1167,26 @@ export default function AssignmentsOverview() {
                                                                     setFilterSearchOpen(false);
                                                                     fetchFilterAssignments(filter.id);
                                                                 }}
-                                                                className="flex flex-col items-start gap-1 py-3"
+                                                                className="flex flex-col items-start gap-1 py-3 hover:bg-white/40 dark:hover:bg-white/10 cursor-pointer"
                                                             >
                                                                 <div className="flex items-center gap-2 w-full">
-                                                                    <Filter className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                                                                    <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                                                                     <span className="font-medium">{filter.displayName}</span>
                                                                     <div className="ml-auto flex gap-1">
-                                                                        <Badge variant="outline" className="text-xs">
+                                                                        <Badge variant="outline" className="text-xs bg-white/60 dark:bg-white/10 backdrop-blur-sm">
                                                                             {platformName}
                                                                         </Badge>
-                                                                        <Badge variant="secondary" className="text-xs">
+                                                                        <Badge variant="secondary" className="text-xs bg-white/60 dark:bg-white/10 backdrop-blur-sm">
                                                                             {managementType}
                                                                         </Badge>
                                                                     </div>
                                                                 </div>
                                                                 {filter.description && (
-                                                                    <span className="text-xs text-gray-500 pl-6 line-clamp-1">
+                                                                    <span className="text-xs text-muted-foreground pl-6 line-clamp-1">
                                                                         {filter.description}
                                                                     </span>
                                                                 )}
-                                                                <span className="text-xs text-gray-400 pl-6 font-mono line-clamp-1">
+                                                                <span className="text-xs text-muted-foreground/70 pl-6 font-mono line-clamp-1">
                                                                     {filter.rule}
                                                                 </span>
                                                             </CommandItem>
@@ -1198,20 +1200,21 @@ export default function AssignmentsOverview() {
 
                             {/* Selected Filter Info */}
                             {selectedFilterForSearch && (
-                                <Card className="border-yellow-300 bg-yellow-50 dark:bg-yellow-900/10">
+                                <Card className="glass-card border-primary/30 bg-gradient-to-br from-primary/10 to-transparent">
                                     <CardContent className="p-4">
                                         <div className="flex items-start justify-between gap-2">
                                             <div className="flex-1 space-y-2">
                                                 <div className="flex items-center gap-2">
-                                                    <ShieldCheck className="h-5 w-5 text-yellow-600" />
+                                                    <ShieldCheck className="h-5 w-5 text-primary" />
                                                     <h3 className="font-semibold">{selectedFilterForSearch.displayName}</h3>
                                                 </div>
                                                 {selectedFilterForSearch.description && (
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                    <p className="text-sm text-muted-foreground">
                                                         {selectedFilterForSearch.description}
                                                     </p>
-                                                )}<div className="flex flex-wrap gap-2 text-xs">
-                                                    <Badge variant="outline">
+                                                )}
+                                                <div className="flex flex-wrap gap-2 text-xs">
+                                                    <Badge variant="outline" className="bg-white/60 dark:bg-white/10 backdrop-blur-sm">
                                                         Platform: {selectedFilterForSearch.platform === 0 ? 'All' :
                                                         selectedFilterForSearch.platform === 1 ? 'Android' :
                                                         selectedFilterForSearch.platform === 2 ? 'iOS' :
@@ -1219,11 +1222,11 @@ export default function AssignmentsOverview() {
                                                         selectedFilterForSearch.platform === 4 ? 'Windows' :
                                                         `Platform ${selectedFilterForSearch.platform}`}
                                                     </Badge>
-                                                    <Badge variant="secondary">
+                                                    <Badge variant="secondary" className="bg-white/60 dark:bg-white/10 backdrop-blur-sm">
                                                         {selectedFilterForSearch.assignmentFilterManagementType === 0 ? 'Devices' : 'Apps'}
                                                     </Badge>
                                                 </div>
-                                                <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded text-xs font-mono">
+                                                <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm p-2 rounded text-xs font-mono border border-border/20">
                                                     {selectedFilterForSearch.rule}
                                                 </div>
                                             </div>
@@ -1235,7 +1238,7 @@ export default function AssignmentsOverview() {
                                                     setFilterSearch('');
                                                     setAssignments([]);
                                                     setFilteredAssignments([]);
-                                                }}
+                                                }}className="hover:bg-white/20 dark:hover:bg-white/10"
                                             >
                                                 <X className="h-4 w-4" />
                                             </Button>
@@ -1250,7 +1253,7 @@ export default function AssignmentsOverview() {
 
             {/* Loading state */}
             {loading && assignments.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"/>
@@ -1269,7 +1272,7 @@ export default function AssignmentsOverview() {
             {(assignments.length > 0 || loading) && (
                 <>
                     {/* Filters Section */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
                                 <button
@@ -1477,7 +1480,7 @@ export default function AssignmentsOverview() {
                     )}
 
                     {/* Assignment Details Table */}
-                    <Card className="shadow-sm w-full overflow-hidden">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
@@ -1543,7 +1546,6 @@ export default function AssignmentsOverview() {
                 }}
             />
 
-            {/* Filter Details Dialog */}
             {/* Filter Details Dialog */}
             <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
                 <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">

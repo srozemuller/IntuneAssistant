@@ -746,7 +746,7 @@ export default function ConfigurationPoliciesPage() {
 
             {/* Bulk Actions Bar */}
             {selectedPolicies.length > 0 && !loading && !error && (
-                <Card className="shadow-sm border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
                     <CardContent className="py-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
@@ -793,7 +793,7 @@ export default function ConfigurationPoliciesPage() {
 
             {/* Show welcome card when no policies are loaded and not loading */}
             {policies.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-muted-foreground mb-6">
@@ -816,7 +816,7 @@ export default function ConfigurationPoliciesPage() {
 
             {/* Show loading state */}
             {loading && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="p-12">
                         <div className="text-center">
                             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
@@ -833,7 +833,7 @@ export default function ConfigurationPoliciesPage() {
             {(policies.length > 0 || loading) && !error && (
                 <>
                     {/* Filters */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <div className="flex items-center justify-between">
                                 <CardTitle className="text-lg font-medium">Filters</CardTitle>
@@ -932,7 +932,7 @@ export default function ConfigurationPoliciesPage() {
                         showSearch={false}
                         selectedRows={selectedPolicies}
                         onSelectionChange={setSelectedPolicies}
-                        className="shadow-sm"
+                        className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10"
                     />
                 </>
             )}

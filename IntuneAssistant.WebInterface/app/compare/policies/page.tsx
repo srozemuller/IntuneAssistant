@@ -156,130 +156,129 @@ export default function PolicyComparison() {
 
 
     // Your existing SearchableSelect component...
-    const SearchableSelect: React.FC<SearchableSelectProps> = ({
-                                                                   value,
-                                                                   onSelect,
-                                                                   options,
-                                                                   placeholder,
-                                                                   disabled,
-                                                                   label
-                                                               }) => {
-        const [isOpen, setIsOpen] = useState(false);
-        const [searchTerm, setSearchTerm] = useState('');
-        const dropdownRef = useRef<HTMLDivElement>(null);
-        const inputRef = useRef<HTMLInputElement>(null);
+   const SearchableSelect: React.FC<SearchableSelectProps> = ({
+       value,
+       onSelect,
+       options,
+       placeholder,
+       disabled,
+       label
+   }) => {
+       const [isOpen, setIsOpen] = useState(false);
+       const [searchTerm, setSearchTerm] = useState('');
+       const dropdownRef = useRef<HTMLDivElement>(null);
+       const inputRef = useRef<HTMLInputElement>(null);
 
-        const selectedPolicy = options.find(p => p.id === value);
+       const selectedPolicy = options.find(p => p.id === value);
 
-        const filteredOptions = options.filter(policy =>
-            policy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            policy.policyType.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+       const filteredOptions = options.filter(policy =>
+           policy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           policy.policyType.toLowerCase().includes(searchTerm.toLowerCase())
+       );
 
-        useEffect(() => {
-            const handleClickOutside = (event: MouseEvent) => {
-                if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                    setIsOpen(false);
-                    setSearchTerm('');
-                }
-            };
+       useEffect(() => {
+           const handleClickOutside = (event: MouseEvent) => {
+               if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                   setIsOpen(false);
+                   setSearchTerm('');
+               }
+           };
 
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => document.removeEventListener('mousedown', handleClickOutside);
-        }, []);
+           document.addEventListener('mousedown', handleClickOutside);
+           return () => document.removeEventListener('mousedown', handleClickOutside);
+       }, []);
 
-        useEffect(() => {
-            if (isOpen && inputRef.current) {
-                inputRef.current.focus();
-            }
-        }, [isOpen]);
+       useEffect(() => {
+           if (isOpen && inputRef.current) {
+               inputRef.current.focus();
+           }
+       }, [isOpen]);
 
-        const handleSelect = (policy: Policy) => {
-            onSelect(policy);
-            setIsOpen(false);
-            setSearchTerm('');
-        };
+       const handleSelect = (policy: Policy) => {
+           onSelect(policy);
+           setIsOpen(false);
+           setSearchTerm('');
+       };
 
-        const handleClear = (e: React.MouseEvent) => {
-            e.stopPropagation();
-            onSelect(null);
-        };
+       const handleClear = (e: React.MouseEvent) => {
+           e.stopPropagation();
+           onSelect(null);
+       };
 
-        return (
-            <div className="relative" ref={dropdownRef}>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                    {label}
-                </label>
-                <div
-                    className={`w-full p-3 border border-border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer bg-background ${
-                        disabled ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    onClick={() => !disabled && setIsOpen(!isOpen)}
-                >
-                    <div className="flex items-center justify-between">
-                        <span className={selectedPolicy ? 'text-foreground' : 'text-muted-foreground'}>
-                            {selectedPolicy ? selectedPolicy.name : placeholder}
-                        </span>
-                        <div className="flex items-center gap-2">
-                            {selectedPolicy && !disabled && (
-                                <button
-                                    onClick={handleClear}
-                                    className="text-muted-foreground hover:text-foreground"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
-                            )}
-                            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${
-                                isOpen ? 'transform rotate-180' : ''
-                            }`} />
-                        </div>
-                    </div>
-                </div>
+       return (
+           <div className="relative z-10" ref={dropdownRef}>
+               <label className="block text-sm font-medium text-foreground mb-2">
+                   {label}
+               </label>
+               <div
+                   className={`w-full p-3 rounded-lg bg-white/60 dark:bg-white/10 backdrop-blur-md border border-white/30 dark:border-white/20 cursor-pointer transition-all ${
+                       disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/70 dark:hover:bg-white/15'
+                   } ${isOpen ? 'ring-2 ring-primary/50' : ''}`}
+                   onClick={() => !disabled && setIsOpen(!isOpen)}
+               >
+                   <div className="flex items-center justify-between">
+                       <span className={selectedPolicy ? 'text-foreground' : 'text-muted-foreground'}>
+                           {selectedPolicy ? selectedPolicy.name : placeholder}
+                       </span>
+                       <div className="flex items-center gap-2">
+                           {selectedPolicy && !disabled && (
+                               <button
+                                   onClick={handleClear}
+                                   className="hover:bg-white/20 dark:hover:bg-white/10 rounded-full p-1 transition-colors"
+                               >
+                                   <X className="h-4 w-4 text-muted-foreground" />
+                               </button>
+                           )}
+                           <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${
+                               isOpen ? 'transform rotate-180' : ''
+                           }`} />
+                       </div>
+                   </div></div>
 
-                {isOpen && !disabled && (
-                    <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-hidden">
-                        <div className="p-3 border-b border-border">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <input
-                                    ref={inputRef}
-                                    type="text"
-                                    placeholder="Search policies..."
-                                    className="w-full pl-9 pr-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-background text-foreground"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    onClick={(e) => e.stopPropagation()}
-                                />
-                            </div>
-                        </div>
+               {isOpen && !disabled && (
+                   <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/30 dark:border-white/20 rounded-lg shadow-2xl overflow-hidden">
+                       <div className="p-3 border-b border-border/20 bg-white/40 dark:bg-white/5">
+                           <div className="relative">
+                               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                               <input
+                                   ref={inputRef}
+                                   type="text"
+                                   placeholder="Search policies..."
+                                   value={searchTerm}
+                                   onChange={(e) => setSearchTerm(e.target.value)}
+                                   className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0"
+                               />
+                           </div>
+                       </div>
 
-                        <div className="max-h-48 overflow-y-auto">
-                            {filteredOptions.length > 0 ? (
-                                filteredOptions.map((policy) => (
-                                    <div
-                                        key={policy.id}
-                                        className="p-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
-                                        onClick={() => handleSelect(policy)}
-                                    >
-                                        <div className="font-medium text-foreground text-sm">
-                                            {policy.name}
-                                        </div>
-                                        <div className="text-xs text-muted-foreground mt-1">
-                                            Platform: {policy.platform || 'Not specified'} • Type: {policy.policyType}
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="p-3 text-muted-foreground text-sm text-center">
-                                    No policies found matching &quot;{searchTerm}&quot;
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
-    };
+                       <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                           {filteredOptions.length > 0 ? (
+                               filteredOptions.map((policy, index) => (
+                                   <div
+                                       key={policy.id}
+                                       onClick={() => handleSelect(policy)}
+                                       className="px-4 py-3 hover:bg-white/40 dark:hover:bg-white/10 cursor-pointer transition-colors border-b border-border/10 last:border-b-0"
+                                   >
+                                       <div className="font-medium text-foreground">{policy.name}</div>
+                                       <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                                           <span>{policy.policyType}</span>
+                                           <span className="text-border">•</span>
+                                           <span>{policy.platform}</span>
+                                       </div>
+                                   </div>
+                               ))
+                           ) : (
+                               <div className="p-8 text-center text-muted-foreground">
+                                   <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                   <p>No policies found</p>
+                               </div>
+                           )}
+                       </div>
+                   </div>
+               )}
+           </div>
+       );
+   };
 
     const MultiSelectKeywords: React.FC<{
         availableKeywords: string[];
@@ -1148,7 +1147,7 @@ export default function PolicyComparison() {
 
             {/* Show welcome card when no policies are loaded and not loading */}
             {policies.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 mb-6">
@@ -1171,7 +1170,7 @@ export default function PolicyComparison() {
 
             {/* Show loading state */}
             {loading && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-yellow-500 animate-spin mb-4" />
@@ -1190,17 +1189,16 @@ export default function PolicyComparison() {
             {policies.length > 0 && (
                 <>
                     {/* Policy Selection Section */}
-                    <Card className="shadow-sm">
+                   <Card className="relative bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center gap-2">
                                 <Settings className="h-5 w-5 text-gray-600" />
                                 Select Policies to Compare
-                            </CardTitle>
-                            <CardDescription>
+                            </CardTitle><CardDescription>
                                 Choose two policies of the same type to compare their configurations. Found {policies.length} configuration policies.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="min-h-[400px]">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <SearchableSelect
                                     value={sourcePolicy?.id || ''}
@@ -1221,35 +1219,27 @@ export default function PolicyComparison() {
                                 />
                             </div>
 
-                            {sourcePolicy && (
-                                <div className="mb-4 p-3 bg-blue-50 rounded-md">
-                                    <p className="text-sm text-blue-800">
-                                        <strong>Selected Platform:</strong> {sourcePolicy.platform || 'Not specified'}
-                                        {getTargetPolicyOptions().length > 0 && (
-                                            <span> • {getTargetPolicyOptions().length} compatible policies available</span>
+                            {sourcePolicy && targetPolicy && (
+                                <div className="flex justify-center pt-8">
+                                    <Button
+                                        onClick={comparePolicies}
+                                        disabled={compareLoading}
+                                        size="lg"
+                                        className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                                    >
+                                        {compareLoading ? (
+                                            <>
+                                                <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
+                                                Comparing...
+                                            </>
+                                        ) : (
+                                            <><GitCompare className="mr-2 h-5 w-5" />
+                                                Compare Policies
+                                            </>
                                         )}
-                                    </p>
+                                    </Button>
                                 </div>
                             )}
-
-
-                            <Button
-                                onClick={comparePolicies}
-                                disabled={!sourcePolicy || !targetPolicy || compareLoading || loading}
-                                className="w-full"
-                            >
-                                {compareLoading ? (
-                                    <>
-                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                        Comparing Policies...
-                                    </>
-                                ) : (
-                                    <>
-                                        <ArrowLeftRight className="h-4 w-4 mr-2" />
-                                        Compare Policies
-                                    </>
-                                )}
-                            </Button>
                         </CardContent>
                     </Card>
 
@@ -1269,7 +1259,7 @@ export default function PolicyComparison() {
                     {comparisonResult?.results?.checkResults && (
                         <>
                             {/* Search and Filter Section */}
-                            <Card className="shadow-sm">
+                            <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                                 <CardHeader className="pb-4">
                                     <CardTitle className="flex items-center gap-2">
                                         <Search className="h-5 w-5 text-gray-600" />
@@ -1299,7 +1289,7 @@ export default function PolicyComparison() {
                             </Card>
 
                             {/* Status Filter Section */}
-                            <Card className="shadow-sm">
+                            <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                                 <CardHeader className="pb-4">
                                     <CardTitle className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
@@ -1385,7 +1375,7 @@ export default function PolicyComparison() {
 
 
                             {/* Comparison Results Table */}
-                            <Card className="shadow-sm w-full overflow-hidden">
+                            <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden">
                                 <CardHeader className="pb-4">
                                     <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                         <div className="flex items-center gap-2">
@@ -1419,7 +1409,7 @@ export default function PolicyComparison() {
                                 </CardHeader>
                                 <CardContent className="p-0">
                                     {/* Policy Names Header */}
-                                    <div className="sticky top-0 z-10 p-6 bg-white border-b shadow-sm">
+                                    <div className="sticky top-0 z-10 p-6 bg-white border-b relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
                                                 <h3 className="font-medium text-blue-900">Source Policy</h3>

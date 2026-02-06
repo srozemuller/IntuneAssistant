@@ -56,7 +56,7 @@ const UserAssignmentsPage = ()=>{
         }
     ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "min-h-screen bg-background",
+        className: "min-h-screen",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "container mx-auto px-6 py-12",
             children: [
@@ -64,26 +64,26 @@ const UserAssignmentsPage = ()=>{
                     className: "text-center mb-16",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl mb-6 shadow-lg",
+                            className: "inline-flex items-center justify-center w-20 h-20 bg-primary/90 backdrop-blur-sm rounded-2xl mb-6 shadow-lg hover:scale-105 transition-transform duration-300",
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$user$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__User$3e$__["User"], {
                                 className: "w-10 h-10 text-primary-foreground"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                 lineNumber: 48,
-                                columnNumber: 25
+                                columnNumber: 49
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                             lineNumber: 47,
-                            columnNumber: 21
+                            columnNumber: 45
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                            className: "text-5xl font-bold text-foreground mb-6",
+                            className: "text-5xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent mb-6",
                             children: "User Assignment Analytics"
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                             lineNumber: 50,
-                            columnNumber: 21
+                            columnNumber: 45
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                             className: "text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed",
@@ -91,43 +91,43 @@ const UserAssignmentsPage = ()=>{
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                             lineNumber: 53,
-                            columnNumber: 21
+                            columnNumber: 45
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                     lineNumber: 46,
-                    columnNumber: 17
+                    columnNumber: 41
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "grid grid-cols-1 md:grid-cols-3 gap-6 mb-16",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center space-x-3 bg-card rounded-xl p-4 border",
+                            className: "glass-card flex items-center space-x-3 p-4 hover:shadow-xl",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center",
+                                    className: "w-10 h-10 bg-primary/20 backdrop-blur-sm rounded-lg flex items-center justify-center",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Shield$3e$__["Shield"], {
                                         className: "w-5 h-5 text-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                         lineNumber: 63,
-                                        columnNumber: 29
+                                        columnNumber: 53
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                     lineNumber: 62,
-                                    columnNumber: 25
+                                    columnNumber: 49
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            className: "font-semibold text-foreground",
+                                            className: "font-semibold",
                                             children: "Group Analysis"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 66,
-                                            columnNumber: 29
+                                            columnNumber: 53
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-sm text-muted-foreground",
@@ -135,46 +135,46 @@ const UserAssignmentsPage = ()=>{
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 67,
-                                            columnNumber: 29
+                                            columnNumber: 53
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                     lineNumber: 65,
-                                    columnNumber: 25
+                                    columnNumber: 49
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                             lineNumber: 61,
-                            columnNumber: 21
+                            columnNumber: 45
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center space-x-3 bg-card rounded-xl p-4 border",
+                            className: "glass-card flex items-center space-x-3 p-4 hover:shadow-xl",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center",
+                                    className: "w-10 h-10 bg-primary/20 backdrop-blur-sm rounded-lg flex items-center justify-center",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$users$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Users$3e$__["Users"], {
                                         className: "w-5 h-5 text-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                         lineNumber: 72,
-                                        columnNumber: 29
+                                        columnNumber: 53
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                     lineNumber: 71,
-                                    columnNumber: 25
+                                    columnNumber: 49
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            className: "font-semibold text-foreground",
+                                            className: "font-semibold",
                                             children: "Assignment Targeting"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 75,
-                                            columnNumber: 29
+                                            columnNumber: 53
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-sm text-muted-foreground",
@@ -182,46 +182,46 @@ const UserAssignmentsPage = ()=>{
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 76,
-                                            columnNumber: 29
+                                            columnNumber: 53
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                     lineNumber: 74,
-                                    columnNumber: 25
+                                    columnNumber: 49
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                             lineNumber: 70,
-                            columnNumber: 21
+                            columnNumber: 45
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center space-x-3 bg-card rounded-xl p-4 border",
+                            className: "glass-card flex items-center space-x-3 p-4 hover:shadow-xl",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center",
+                                    className: "w-10 h-10 bg-primary/20 backdrop-blur-sm rounded-lg flex items-center justify-center",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$settings$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Settings$3e$__["Settings"], {
                                         className: "w-5 h-5 text-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                         lineNumber: 81,
-                                        columnNumber: 29
+                                        columnNumber: 53
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                     lineNumber: 80,
-                                    columnNumber: 25
+                                    columnNumber: 49
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            className: "font-semibold text-foreground",
+                                            className: "font-semibold",
                                             children: "Comprehensive View"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 84,
-                                            columnNumber: 29
+                                            columnNumber: 53
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-sm text-muted-foreground",
@@ -229,66 +229,67 @@ const UserAssignmentsPage = ()=>{
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 85,
-                                            columnNumber: 29
+                                            columnNumber: 53
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                     lineNumber: 83,
-                                    columnNumber: 25
+                                    columnNumber: 49
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                             lineNumber: 79,
-                            columnNumber: 21
+                            columnNumber: 45
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                     lineNumber: 60,
-                    columnNumber: 17
+                    columnNumber: 41
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "grid grid-cols-1 lg:grid-cols-2 gap-8",
                     children: userAssignmentBlocks.map((block, index)=>{
                         const IconComponent = block.icon;
                         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                            className: "relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border-2",
+                            className: "relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
+                                    className: "bg-transparent",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "flex items-center justify-between mb-4",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg",
+                                                    className: "w-12 h-12 bg-primary/10 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg hover:rotate-6 transition-transform duration-300 border border-primary/20",
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(IconComponent, {
-                                                        className: "w-6 h-6 text-primary-foreground"
+                                                        className: "w-6 h-6 text-primary"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                         lineNumber: 103,
-                                                        columnNumber: 45
+                                                        columnNumber: 69
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                     lineNumber: 102,
-                                                    columnNumber: 41
+                                                    columnNumber: 65
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
                                                     variant: "secondary",
-                                                    className: "font-medium",
+                                                    className: "font-medium backdrop-blur-sm bg-primary/10 border-primary/20",
                                                     children: block.badge
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                     lineNumber: 105,
-                                                    columnNumber: 41
+                                                    columnNumber: 65
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 101,
-                                            columnNumber: 37
+                                            columnNumber: 61
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
                                             className: "text-2xl font-bold text-foreground",
@@ -296,69 +297,70 @@ const UserAssignmentsPage = ()=>{
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 109,
-                                            columnNumber: 37
+                                            columnNumber: 61
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                            className: "text-muted-foreground text-base leading-relaxed",
+                                            className: "text-base leading-relaxed text-muted-foreground",
                                             children: block.description
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 112,
-                                            columnNumber: 37
+                                            columnNumber: 61
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                     lineNumber: 100,
-                                    columnNumber: 33
+                                    columnNumber: 57
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                                    className: "bg-transparent",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "space-y-3 mb-6",
                                             children: block.features.map((feature, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex items-center space-x-3",
+                                                    className: "flex items-center space-x-3 group",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "w-2 h-2 bg-primary rounded-full"
+                                                            className: "w-2 h-2 bg-primary rounded-full group-hover:scale-150 transition-transform duration-200"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                             lineNumber: 121,
-                                                            columnNumber: 49
+                                                            columnNumber: 73
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-muted-foreground",
+                                                            className: "text-muted-foreground group-hover:text-foreground transition-colors duration-200",
                                                             children: feature
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                             lineNumber: 122,
-                                                            columnNumber: 49
+                                                            columnNumber: 73
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, idx, true, {
                                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                     lineNumber: 120,
-                                                    columnNumber: 45
+                                                    columnNumber: 69
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 118,
-                                            columnNumber: 37
+                                            columnNumber: 61
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex items-center justify-between",
+                                            className: "flex items-center justify-between pt-4 border-t border-border/30",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "text-sm text-muted-foreground",
+                                                    className: "text-sm text-muted-foreground font-medium",
                                                     children: block.stats
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                     lineNumber: 128,
-                                                    columnNumber: 41
+                                                    columnNumber: 65
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                                     asChild: true,
-                                                    className: "hover:scale-105 transition-all duration-300",
+                                                    className: "hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl bg-primary/90 hover:bg-primary text-primary-foreground",
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                         href: block.href,
                                                         className: "flex items-center space-x-2",
@@ -368,62 +370,62 @@ const UserAssignmentsPage = ()=>{
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                                 lineNumber: 133,
-                                                                columnNumber: 49
+                                                                columnNumber: 73
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                                                className: "w-4 h-4"
+                                                                className: "w-4 h-4 group-hover:translate-x-1 transition-transform"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                                 lineNumber: 134,
-                                                                columnNumber: 49
+                                                                columnNumber: 73
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                         lineNumber: 132,
-                                                        columnNumber: 45
+                                                        columnNumber: 69
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                                     lineNumber: 131,
-                                                    columnNumber: 41
+                                                    columnNumber: 65
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                             lineNumber: 127,
-                                            columnNumber: 37
+                                            columnNumber: 61
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                     lineNumber: 117,
-                                    columnNumber: 33
+                                    columnNumber: 57
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, index, true, {
                             fileName: "[project]/app/assistant/user-assignments/page.tsx",
                             lineNumber: 96,
-                            columnNumber: 29
+                            columnNumber: 53
                         }, ("TURBOPACK compile-time value", void 0));
                     })
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                     lineNumber: 91,
-                    columnNumber: 17
+                    columnNumber: 41
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "text-center mt-16",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "bg-card rounded-2xl p-8 border",
+                        className: "glass-card p-8 hover:shadow-2xl transition-all duration-300",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                className: "text-2xl font-bold text-foreground mb-4",
+                                className: "text-2xl font-bold mb-4",
                                 children: "Ready to analyze user assignments?"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                 lineNumber: 147,
-                                columnNumber: 25
+                                columnNumber: 49
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "text-muted-foreground mb-6 max-w-2xl mx-auto",
@@ -431,29 +433,29 @@ const UserAssignmentsPage = ()=>{
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/user-assignments/page.tsx",
                                 lineNumber: 150,
-                                columnNumber: 25
+                                columnNumber: 49
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/user-assignments/page.tsx",
                         lineNumber: 146,
-                        columnNumber: 21
+                        columnNumber: 45
                     }, ("TURBOPACK compile-time value", void 0))
                 }, void 0, false, {
                     fileName: "[project]/app/assistant/user-assignments/page.tsx",
                     lineNumber: 145,
-                    columnNumber: 17
+                    columnNumber: 41
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/app/assistant/user-assignments/page.tsx",
             lineNumber: 44,
-            columnNumber: 13
+            columnNumber: 37
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/app/assistant/user-assignments/page.tsx",
         lineNumber: 43,
-        columnNumber: 9
+        columnNumber: 33
     }, ("TURBOPACK compile-time value", void 0));
 };
 _c = UserAssignmentsPage;
