@@ -29,6 +29,7 @@ import {MultiSelect, Option} from '@/components/ui/multi-select';
 import {ExportButton, ExportData, ExportColumn} from '@/components/ExportButton';
 import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import {CancelledCard} from "@/components/CancelledCard";
 
 interface ApiResponse {
     status: string;
@@ -107,7 +108,9 @@ export default function AssignmentsOverview() {
     const {instance, accounts} = useMsal();
     const [showConsentDialog, setShowConsentDialog] = useState(false);
     const [consentUrl, setConsentUrl] = useState('');
-    const {request} = useApiRequest();
+    const {request, cancel} = useApiRequest();
+
+    const [isCancelled, setIsCancelled] = useState(false);
 
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
@@ -464,30 +467,38 @@ export default function AssignmentsOverview() {
     const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
 
-
-        const response = await request<ApiResponse>(
-            ASSIGNMENTS_ENDPOINT,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
+        try {
+            const response = await request<ApiResponse>(
+                ASSIGNMENTS_ENDPOINT,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 }
+            );
+
+            if (!response) {
+                throw new Error('No response received from API');
             }
-        );
+            const assignmentsData = response.data;
 
-        if (!response) {
-            throw new Error('No response received from API');
-        }
-        const assignmentsData = response.data;
-
-        if (Array.isArray(assignmentsData)) {
-            setAssignments(assignmentsData);
-            setFilteredAssignments(assignmentsData);
-        } else {
-            console.error('API response data is not an array:', assignmentsData);
-            setAssignments([]);
-            setFilteredAssignments([]);
-            throw new Error('Invalid data format received from API');
+            if (Array.isArray(assignmentsData)) {
+                setAssignments(assignmentsData);
+                setFilteredAssignments(assignmentsData);
+            } else {
+                console.error('API response data is not an array:', assignmentsData);
+                setAssignments([]);
+                setFilteredAssignments([]);
+                throw new Error('Invalid data format received from API');
+            }
+        } catch (error) {
+            // Don't set error state for abort errors
+            if (error instanceof Error && error.name === 'AbortError') {
+                console.log('Request was cancelled');
+                return;
+            }
+            throw error; // Re-throw other errors
         }
     };
 
@@ -970,21 +981,17 @@ export default function AssignmentsOverview() {
                                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}/>
                                 Refresh
                             </Button>
-                            <Button onClick={clearAssignments} variant="outline" size="sm">
-                                <X className="h-4 w-4 mr-2"/>
-                                Clear
-                            </Button>
                             <ExportButton
                                 exportOptions={[
                                     {
                                         label: "Standard Export",
                                         data: prepareExportData(),
-                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                        formats: ['csv', 'pdf', 'html']
                                     },
                                     {
                                         label: "Export for bulk assignments",
                                         data: prepareRolloutExportData(),
-                                        formats: ['csv'] // Only CSV for rollout
+                                        formats: ['csv']
                                     }
                                 ]}
                                 variant="outline"
@@ -993,14 +1000,34 @@ export default function AssignmentsOverview() {
                             />
                         </>
                     ) : (
-                        <Button
-                            onClick={fetchAssignments}
-                            disabled={loading}
-                            className="flex items-center gap-2"
-                        >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
-                            Load Assignments
-                        </Button>
+                        <>
+                            <Button
+                                onClick={fetchAssignments}
+                                disabled={loading}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
+                                Load Assignments
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setAssignments([]);
+                                        setFilteredAssignments([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -1286,6 +1313,18 @@ export default function AssignmentsOverview() {
                         </div>
                     </CardContent>
                 </Card>
+            )}
+
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchAssignments();
+                    }}
+                    title="Loading Cancelled"
+                    description="Assignment data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Assignments"
+                />
             )}
 
             {/* Loading state */}

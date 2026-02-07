@@ -45,6 +45,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {UserMember} from "@/hooks/useGroupDetails";
+import {CancelledCard} from "@/components/CancelledCard";
 
 
 interface GroupDetails {
@@ -114,7 +115,9 @@ interface ApiResponse {
 
 export default function ConfigurationPoliciesPage() {
     const { instance, accounts } = useMsal();
-    const { request } = useApiRequest();
+    const { request, cancel } = useApiRequest();
+    const [isCancelled, setIsCancelled] = useState(false);
+
     const [policies, setPolicies] = useState<ConfigurationPolicy[]>([]);
     const [filteredPolicies, setFilteredPolicies] = useState<ConfigurationPolicy[]>([]);
     const [filters, setFilters] = useState<AssignmentFilter[]>([]);
@@ -290,6 +293,7 @@ export default function ConfigurationPoliciesPage() {
 
         setLoading(true);
         setError(null);
+        setIsCancelled(false);
 
         try {
             await Promise.all([fetchPoliciesData(), fetchFilters(), fetchGroups()]);
@@ -704,7 +708,7 @@ export default function ConfigurationPoliciesPage() {
                                     {
                                         label: "Standard Export",
                                         data: prepareExportData(),
-                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                        formats: ['csv', 'pdf', 'html']
                                     }
                                 ]}
                                 variant="outline"
@@ -716,10 +720,30 @@ export default function ConfigurationPoliciesPage() {
                             </Button>
                         </>
                     ) : (
-                        <Button onClick={fetchPolicies} disabled={loading}>
-                            <Database className="h-4 w-4 mr-2" />
-                            {loading ? "Loading..." : "Load Policies"}
-                        </Button>
+                        <>
+                            <Button onClick={fetchPolicies} disabled={loading}>
+                                <Database className="h-4 w-4 mr-2" />
+                                {loading ? "Loading..." : "Load Policies"}
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setPolicies([]);
+                                        setFilteredPolicies([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -742,6 +766,18 @@ export default function ConfigurationPoliciesPage() {
                         </Button>
                     </CardContent>
                 </Card>
+            )}
+
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchPolicies();
+                    }}
+                    title="Loading Cancelled"
+                    description="Data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Policies"
+                />
             )}
 
             {/* Bulk Actions Bar */}

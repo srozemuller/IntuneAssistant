@@ -1226,10 +1226,9 @@ export default function DeviceStatsPage() {
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
-            {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Device Statistics</h1>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-600 dark:text-white">Device Statistics</h1>
                     <p className="text-gray-600 mt-2">
                         Monitor and analyze device information
                         {totalDeviceCount > 0 && (
@@ -1295,13 +1294,13 @@ export default function DeviceStatsPage() {
 
             {/* Show welcome card when no device stats are loaded and not loading */}
             {deviceStats.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 mb-6">
                                 <Monitor className="h-16 w-16 mx-auto"/>
                             </div>
-                            <h3 className="text-xl font-medium text-gray-900 mb-4">
+                            <h3 className="text-xl font-medium font-bold text-gray-600 dark:text-white mb-4">
                                 Ready to view your device overview
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
@@ -1334,7 +1333,7 @@ export default function DeviceStatsPage() {
 
 
             {loading && deviceStats.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4"/>

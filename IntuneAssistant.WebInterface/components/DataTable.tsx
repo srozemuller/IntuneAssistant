@@ -345,8 +345,8 @@ export function DataTable({
             )}
 
             {/* Table Section */}
-            <div className="overflow-auto custom-scrollbar">
-                <table ref={tableRef} className="w-full text-sm">
+            <div className="overflow-auto custom-scrollbar bg-white/5 dark:bg-gray-900/5 backdrop-blur-sm">
+            <table ref={tableRef} className="w-full text-sm">
                     <thead className="bg-gradient-to-b from-white/30 to-white/20 dark:from-white/10 dark:to-white/5 backdrop-blur-md sticky top-0 z-10">
                         <tr>
                             {columns.map((column, index) => (

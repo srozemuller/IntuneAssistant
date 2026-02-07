@@ -566,7 +566,7 @@ export default function ConditionalAccessPage() {
 
             {/* Welcome card when no policies are loaded */}
             {policies.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 mb-6">
@@ -588,7 +588,7 @@ export default function ConditionalAccessPage() {
             )}
             {/* Loading state */}
             {loading && policies.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-yellow-500 animate-spin mb-4" />
@@ -629,7 +629,7 @@ export default function ConditionalAccessPage() {
             {(policies.length > 0 || loading) && (
                 <>
                     {/* Search Section */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center gap-2">
                                 <Search className="h-5 w-5" />
@@ -670,7 +670,7 @@ export default function ConditionalAccessPage() {
                     </Card>
 
                     {/* Filters Section */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center justify-between">
                                 <span className="flex items-center gap-2">
@@ -774,7 +774,7 @@ export default function ConditionalAccessPage() {
                     )}
 
                     {/* Policies Table */}
-                    <Card className="shadow-sm w-full overflow-hidden">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Conditional Access Policy Details</span>
