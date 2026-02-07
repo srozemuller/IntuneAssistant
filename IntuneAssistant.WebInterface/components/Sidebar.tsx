@@ -316,7 +316,7 @@ export function Sidebar() {
                 {
                     title: "FAQ",
                     icon: "FileQuestion",
-                    href: "https://docs.intuneassistant.cloud/faq"
+                    href: "https://docs.intuneassistant.cloud/docs/faq"
                 },
                 {
                     title: "About",

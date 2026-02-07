@@ -31,6 +31,7 @@ import {MultiSelect, Option} from '@/components/ui/multi-select';
 import {ExportButton, ExportData, ExportColumn} from '@/components/ExportButton';
 import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import {CancelledCard} from "@/components/CancelledCard";
 
 
 interface ApiResponse {
@@ -104,6 +105,7 @@ export default function AssignmentsOverview() {
     const [error, setError] = useState<string | null>(null);
     const [roleScopeTags, setRoleScopeTags] = useState<RoleScopeTag[]>([]);
 
+    const [isCancelled, setIsCancelled] = useState(false);
 
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
@@ -872,12 +874,12 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                                     {
                                         label: "Standard Export",
                                         data: prepareExportData(),
-                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                        formats: ['csv', 'pdf', 'html']
                                     },
                                     {
                                         label: "Export for bulk assignments",
                                         data: prepareRolloutExportData(),
-                                        formats: ['csv'] // Only CSV for rollout
+                                        formats: ['csv']
                                     }
                                 ]}
                                 variant="outline"
@@ -886,14 +888,34 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                             />
                         </>
                     ) : (
-                        <Button
-                            onClick={fetchAssignments}
-                            disabled={loading}
-                            className="flex items-center gap-2"
-                        >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
-                            Load Assignments
-                        </Button>
+                        <>
+                            <Button
+                                onClick={fetchAssignments}
+                                disabled={loading}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
+                                Load Assignments
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setAssignments([]);
+                                        setFilteredAssignments([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
 
@@ -921,6 +943,18 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                         </div>
                     </CardContent>
                 </Card>
+            )}
+
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchAssignments();
+                    }}
+                    title="Loading Cancelled"
+                    description="Assignment data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Assignments"
+                />
             )}
 
             {/* Show loading state */}

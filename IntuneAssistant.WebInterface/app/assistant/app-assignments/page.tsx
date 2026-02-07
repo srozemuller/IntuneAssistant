@@ -17,13 +17,14 @@ import {
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, Computer, Blocks, CircleQuestionMark
+    ChevronUp, Computer, Blocks, CircleQuestionMark, XCircle
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import {CancelledCard} from "@/components/CancelledCard";
 
 interface ApiResponse {
     status: string;
@@ -104,7 +105,9 @@ export default function AssignmentsOverview() {
     const { instance, accounts } = useMsal();
     const [showConsentDialog, setShowConsentDialog] = useState(false);
     const [consentUrl, setConsentUrl] = useState('');
-    const { request } = useApiRequest();
+    const { request, cancel } = useApiRequest();
+    const [isCancelled, setIsCancelled] = useState(false);
+
 
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
@@ -762,11 +765,11 @@ export default function AssignmentsOverview() {
                         View all Intune applications assignments across your organization
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex gap-2">
                     {assignments.length > 0 ? (
                         <>
                             <Button onClick={fetchAssignments} variant="outline" size="sm" disabled={loading}>
-                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}/>
                                 Refresh
                             </Button>
                             <ExportButton
@@ -783,14 +786,34 @@ export default function AssignmentsOverview() {
                             />
                         </>
                     ) : (
-                        <Button
-                            onClick={fetchAssignments}
-                            disabled={loading}
-                            className="flex items-center gap-2"
-                        >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                            Load Assignments
-                        </Button>
+                        <>
+                            <Button
+                                onClick={fetchAssignments}
+                                disabled={loading}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
+                                Load Assignments
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setAssignments([]);
+                                        setFilteredAssignments([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -872,6 +895,18 @@ export default function AssignmentsOverview() {
                         </div>
                     </CardContent>
                 </Card>
+            )}
+
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchAssignments();
+                    }}
+                    title="Loading Cancelled"
+                    description="Assignment data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Assignments"
+                />
             )}
 
             {/* Filters and content sections */}
