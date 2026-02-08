@@ -21,8 +21,7 @@ import {
     Key,
     ArrowRight,
     AlertCircle,
-    ExternalLink,
-    Shield,
+    ExternalLink,Shield,
     Users
 } from 'lucide-react';
 import { CONSENT_URL_ENDPOINT, CONSENT_CALLBACK } from '@/lib/constants';
@@ -43,8 +42,7 @@ interface OnboardingStep {
 
 interface ConsentResponse {
     status: number;
-    message: string;
-    data: {
+    message: string;data: {
         url: string;
         message: string;
     };
@@ -67,6 +65,7 @@ export default function CustomerOnboardingModal({
     const [error, setError] = useState<string | null>(null);
     const [consentCompleted, setConsentCompleted] = useState(false);
     const [consentWindow, setConsentWindow] = useState<Window | null>(null);
+    const [scrollPosition, setScrollPosition] = useState(0);
 
     // Form data
     const [customerName, setCustomerName] = useState('');
@@ -77,6 +76,12 @@ export default function CustomerOnboardingModal({
     const [consentData, setConsentData] = useState<ConsentResponse | null>(null);
     const [onboardingResult, setOnboardingResult] = useState<OnboardingResult | null>(null);
     const [consentState, setConsentState] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (isOpen && typeof window !== 'undefined') {
+            setScrollPosition(window.scrollY);
+        }
+    }, [isOpen]);
 
     const steps: OnboardingStep[] = [
         {
@@ -206,8 +211,7 @@ export default function CustomerOnboardingModal({
             if (!validateDomainName(tenantDomainName)) {
                 setError('Please enter a valid domain name');
                 return;
-            }
-            setError(null);
+            }setError(null);
             setCurrentStep(1);
         } else if (currentStep === 1) {
             setCurrentStep(2);
@@ -391,18 +395,16 @@ export default function CustomerOnboardingModal({
 
 
     return (
-<Dialog open={isOpen} onOpenChange={handleClose}>
-
-    <DialogContent
-        className="max-w-[1400px] max-h-[80vh] overflow-y-auto absolute left-1/2 -translate-x-1/2"
-        style={{
-            top: `${window.scrollY + 450}px`,
-            position: 'absolute'
-        }}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-    >
-
-    <DialogHeader>
+        <Dialog open={isOpen} onOpenChange={handleClose}>
+            <DialogContent
+                className="max-w-[1400px] max-h-[80vh] overflow-y-auto absolute left-1/2 -translate-x-1/2"
+                style={{
+                    top: `${scrollPosition + 450}px`,
+                    position: 'absolute'
+                }}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
+                <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Users className="h-5 w-5 text-primary" />
                         Onboard New Customer
@@ -451,8 +453,7 @@ export default function CustomerOnboardingModal({
                                 <CardTitle className="flex items-center gap-2">
                                     <Building className="h-4 w-4" />
                                     Customer & Tenant Details
-                                </CardTitle>
-                                <CardDescription>
+                                </CardTitle><CardDescription>
                                     Enter the customer name and their Microsoft tenant information
                                 </CardDescription>
                             </CardHeader>
@@ -465,8 +466,7 @@ export default function CustomerOnboardingModal({
                                         onChange={(e) => setCustomerName(e.target.value)}
                                         placeholder="e.g. Acme Corporation"
                                     />
-                                </div>
-                                <Separator />
+                                </div><Separator />
                                 <div className="space-y-2">
                                     <Label htmlFor="tenantId">Tenant ID</Label>
                                     <Input

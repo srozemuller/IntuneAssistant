@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
@@ -59,6 +59,13 @@ const groupMemberColumns = [
 ];
 
 export function GroupDetailsDialog({ groupId, isOpen, onClose }: GroupDetailsDialogProps) {
+    const [scrollPosition, setScrollPosition] = useState(0);
+
+    useEffect(() => {
+        if (isOpen && typeof window !== 'undefined') {
+            setScrollPosition(window.scrollY);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (isOpen) {
@@ -128,7 +135,7 @@ export function GroupDetailsDialog({ groupId, isOpen, onClose }: GroupDetailsDia
             <DialogContent
                 className="max-w-[1400px] max-h-[80vh] overflow-y-auto absolute left-1/2 -translate-x-1/2"
                 style={{
-                    top: `${window.scrollY + 450}px`,
+                    top: `${scrollPosition + 450}px`,
                     position: 'absolute'
                 }}
                 onOpenAutoFocus={(e) => e.preventDefault()}
