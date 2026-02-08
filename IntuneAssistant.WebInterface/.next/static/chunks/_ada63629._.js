@@ -298,7 +298,7 @@ function CustomerOnboardingModal(param) {
         try {
             setLoading(true);
             setError(null);
-            const url = "".concat(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CONSENT_URL_ENDPOINT"], "?customerName=").concat(encodeURIComponent(customerName), "&tenantid=").concat(tenantId, "&tenantDomain=").concat(encodeURIComponent(tenantDomainName), "&assistantLicense=0");
+            const url = "".concat(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CONSENT_URL_ENDPOINT"], "?customerName=").concat(encodeURIComponent(customerName), "&tenantid=").concat(tenantId, "&tenantDomain=").concat(encodeURIComponent(tenantDomainName), "&assistantLicense=0&redirectUri=").concat(encodeURIComponent(window.location.origin));
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {

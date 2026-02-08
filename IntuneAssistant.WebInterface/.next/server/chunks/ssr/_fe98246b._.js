@@ -259,7 +259,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
         try {
             setLoading(true);
             setError(null);
-            const url = `${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CONSENT_URL_ENDPOINT"]}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=0`;
+            const url = `${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CONSENT_URL_ENDPOINT"]}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=0&redirectUri=${encodeURIComponent(window.location.origin)}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
