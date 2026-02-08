@@ -176,8 +176,12 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    @apply text-sm;
+  }
+
   body {
-    @apply bg-gradient-to-br from-gray-50 via-white to-gray-100/60 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-foreground;
+    @apply text-sm bg-gradient-to-br from-gray-50 via-white to-gray-100/60 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-foreground;
     backdrop-filter: blur(100px);
   }
 
