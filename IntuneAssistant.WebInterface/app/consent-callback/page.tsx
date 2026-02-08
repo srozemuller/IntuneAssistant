@@ -1,129 +1,126 @@
+
 'use client';
-import { useEffect, useState, Suspense } from 'react';
+
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
-interface ConsentMessage {
-    type: 'CONSENT_SUCCESS' | 'CONSENT_ERROR';
-    adminConsent?: string | null;
-    state?: string | null;
-    tenantId?: string | null;
-    result?: unknown;
-    error?: string | null;
-    errorDescription?: string | null;
-}
-
-function ConsentCallbackContent() {
+export default function ConsentCallbackPage() {
     const searchParams = useSearchParams();
     const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
     const [message, setMessage] = useState('Processing consent...');
 
-    const sendMessageToParent = (messageData: ConsentMessage) => {
-        if (window.opener && !window.opener.closed) {
-            window.opener.postMessage(messageData, window.location.origin);
-        }
-    };
-
     useEffect(() => {
         const error = searchParams.get('error');
-        const code = searchParams.get('code');
+        const errorDescription = searchParams.get('error_description');
+        const adminConsent = searchParams.get('admin_consent');
         const state = searchParams.get('state');
 
         if (error) {
+            // Handle error
             setStatus('error');
-            setMessage(`Consent failed: ${error}`);
+            setMessage(errorDescription || error || 'An error occurred during consent');
 
-            // Send error message to parent window
-            sendMessageToParent({
-                type: 'CONSENT_ERROR',
-                error: error,
-                errorDescription: searchParams.get('error_description')
-            });
-        } else if (code) {
+            // Send error message to parent
+            if (window.opener) {
+                window.opener.postMessage(
+                    {
+                        type: 'CONSENT_ERROR',
+                        error: error,
+                        errorDescription: errorDescription || 'Unknown error'
+                    },
+                    window.location.origin
+                );
+            }
+
+            // Close window after 3 seconds
+            setTimeout(() => {
+                window.close();
+            }, 3000);} else if (adminConsent === 'True') {
+            // Handle success
             setStatus('success');
-            setMessage('Admin consent has been successfully granted and processed.');
+            setMessage('Consent granted successfully!');
 
-            // Send success message to parent window
-            sendMessageToParent({
-                type: 'CONSENT_SUCCESS',
-                adminConsent: code,
-                state: state,
-                tenantId: searchParams.get('tenant_id'),
-                result: { code, state }
-            });
+            // Send success message to parent
+            if (window.opener) {
+                window.opener.postMessage(
+                    {
+                        type: 'CONSENT_SUCCESS',
+                        state: state
+                    },
+                    window.location.origin
+                );
+            }
+
+            // Close window after 2 seconds
+            setTimeout(() => {
+                window.close();
+            }, 2000);
         } else {
+            // Unknown state
             setStatus('error');
-            setMessage('Invalid callback - missing required parameters.');
+            setMessage('Invalid consent response');
 
-            sendMessageToParent({
-                type: 'CONSENT_ERROR',
-                error: 'invalid_callback',
-                errorDescription: 'Missing required parameters'
-            });
+            if (window.opener) {
+                window.opener.postMessage(
+                    {
+                        type: 'CONSENT_ERROR',
+                        error: 'invalid_response',
+                        errorDescription: 'Invalid consent response'
+                    },
+                    window.location.origin
+                );
+            }
+
+            setTimeout(() => {
+                window.close();
+            }, 3000);
         }
     }, [searchParams]);
 
-    // Don't try to close the window automatically
-    useEffect(() => {
-        if (status !== 'processing') {
-            const timer = setTimeout(() => {
-                console.log('Process completed, window should be closed by parent or user');
-                // Don't try to close the window at all - let the parent handle it
-                // or the user can close it manually
-            }, 3000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [status]);
-
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-            <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-md w-full mx-4">
-                {status === 'processing' && (
-                    <div className="space-y-4">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                        <h2 className="text-xl font-semibold text-gray-900">Processing Consent</h2>
-                        <p className="text-gray-600">{message}</p>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+            <Card className="w-full max-w-md">
+                <CardHeader className="text-center">
+                    <div className="flex justify-center mb-4">
+                        {status === 'processing' && (
+                            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                                <Loader2 className="h-8 w-8 text-blue-600 dark:text-blue-400 animate-spin" />
+                            </div>
+                        )}
+                        {status === 'success' && (
+                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                                <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+                            </div>
+                        )}
+                        {status === 'error' && (
+                            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                                <XCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
+                            </div>
+                        )}
                     </div>
-                )}
-
-                {status === 'success' && (
-                    <div className="space-y-4">
-                        <CheckCircle className="h-12 w-12 mx-auto text-green-600" />
-                        <h2 className="text-xl font-semibold text-gray-900">Onboarding Complete!</h2>
-                        <p className="text-gray-600">{message}</p>
-                        <p className="text-sm text-gray-500">
-                            You can now close this window.
-                        </p>
-                    </div>
-                )}
-
-                {status === 'error' && (
-                    <div className="space-y-4">
-                        <AlertCircle className="h-12 w-12 mx-auto text-red-600" />
-                        <h2 className="text-xl font-semibold text-gray-900">Onboarding Failed</h2>
-                        <p className="text-gray-600">{message}</p>
-                        <p className="text-sm text-gray-500">
-                            Please close this window and try again.
-                        </p>
-                    </div>
-                )}
-            </div>
+                    <CardTitle className={
+                        status === 'success'
+                            ? 'text-green-600 dark:text-green-400'
+                            : status === 'error'
+                            ? 'text-red-600 dark:text-red-400'
+                            : 'text-blue-600 dark:text-blue-400'
+                    }>
+                        {status === 'processing' && 'Processing Consent'}
+                        {status === 'success' && 'Consent Granted'}
+                        {status === 'error' && 'Consent Failed'}
+                    </CardTitle>
+                    <CardDescription>
+                        {message}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center text-sm text-muted-foreground">
+                    {status === 'success' && 'This window will close automatically...'}
+                    {status === 'error' && 'This window will close in a few seconds...'}
+                    {status === 'processing' && 'Please wait...'}
+                </CardContent>
+            </Card>
         </div>
-    );
-}
-
-export default function ConsentCallback() {
-    return (
-        <Suspense fallback={
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p>Loading...</p>
-                </div>
-            </div>
-        }>
-            <ConsentCallbackContent />
-        </Suspense>
     );
 }
