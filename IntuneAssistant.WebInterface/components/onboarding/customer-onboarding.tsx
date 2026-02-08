@@ -224,7 +224,7 @@ export default function CustomerOnboardingModal({
             setLoading(true);
             setError(null);
 
-            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=0&redirectUri=${encodeURIComponent(window.location.origin)}`;
+            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=0&redirectUri=${encodeURIComponent(window.location.origin + '/consent-callback')}`;
 
             const response = await fetch(url, {
                 method: 'GET',
