@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
@@ -59,6 +59,48 @@ const groupMemberColumns = [
 ];
 
 export function GroupDetailsDialog({ groupId, isOpen, onClose }: GroupDetailsDialogProps) {
+
+    useEffect(() => {
+        if (isOpen) {
+            const handleScroll = () => {
+                const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+                if (dialog) {
+                    const scrollY = window.scrollY;
+                    const viewportHeight = window.innerHeight;
+                    dialog.style.position = 'fixed';
+                    dialog.style.top = `${viewportHeight / 2}px`;
+                    dialog.style.left = '50%';
+                    dialog.style.transform = 'translate(-50%, -50%)';
+                }
+            };
+
+            handleScroll();
+            window.addEventListener('scroll', handleScroll, true);
+
+            return () => {
+                window.removeEventListener('scroll', handleScroll, true);
+            };
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (isOpen) {
+            const mainContent = document.querySelector('main');
+            const sidebar = document.querySelector('[class*="sidebar"]');
+
+            if (mainContent) {
+                mainContent.style.filter = 'blur(8px)';
+                mainContent.style.transition = 'filter 0.2s';
+            }
+
+            return () => {
+                if (mainContent) {
+                    mainContent.style.filter = '';
+                }
+            };
+        }
+    }, [isOpen]);
+
     const {
         selectedGroup,
         groupLoading,
@@ -83,7 +125,14 @@ export function GroupDetailsDialog({ groupId, isOpen, onClose }: GroupDetailsDia
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
+            <DialogContent
+                className="max-w-[1400px] max-h-[80vh] overflow-y-auto absolute left-1/2 -translate-x-1/2"
+                style={{
+                    top: `${window.scrollY + 450}px`,
+                    position: 'absolute'
+                }}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Users className="h-5 w-5" />
