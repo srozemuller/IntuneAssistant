@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Computer, Blocks } from 'lucide-react';
@@ -27,8 +27,14 @@ interface FilterDetailsDialogProps {
     onClose: () => void;
 }
 
-
 export function FilterDetailsDialog({ filter, isOpen, onClose }: FilterDetailsDialogProps) {
+    const [scrollPosition, setScrollPosition] = useState(0);
+
+    useEffect(() => {
+        if (isOpen && typeof window !== 'undefined') {
+            setScrollPosition(window.scrollY);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (isOpen) {
@@ -56,7 +62,6 @@ export function FilterDetailsDialog({ filter, isOpen, onClose }: FilterDetailsDi
     useEffect(() => {
         if (isOpen) {
             const mainContent = document.querySelector('main');
-            const sidebar = document.querySelector('[class*="sidebar"]');
 
             if (mainContent) {
                 mainContent.style.filter = 'blur(8px)';
@@ -83,15 +88,15 @@ export function FilterDetailsDialog({ filter, isOpen, onClose }: FilterDetailsDi
     };
 
     return (
-<Dialog open={isOpen} onOpenChange={onClose} modal={true}>
-<DialogContent
-    className="max-w-[1400px] max-h-[80vh] overflow-y-auto absolute left-1/2 -translate-x-1/2"
-    style={{
-        top: `${window.scrollY + 450}px`,
-        position: 'absolute'
-    }}
-    onOpenAutoFocus={(e) => e.preventDefault()}
->
+        <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
+            <DialogContent
+                className="max-w-[1400px] max-h-[80vh] overflow-y-auto absolute left-1/2 -translate-x-1/2"
+                style={{
+                    top: `${scrollPosition + 450}px`,
+                    position: 'absolute'
+                }}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Settings className="h-5 w-5" />
@@ -130,7 +135,7 @@ export function FilterDetailsDialog({ filter, isOpen, onClose }: FilterDetailsDi
                                 <p className="text-sm text-gray-900 dark:text-gray-100">
                                     {getPlatformName(filter.platform)}
                                 </p>
-                            </div>
+            </div>
                         </div>
 
                         {filter.description && (
