@@ -198,7 +198,6 @@
     overflow-y: auto;
     overflow-x: hidden;
     margin-left: 16rem; /* w-64 = 256px = 16rem */
-    transition: margin-left 300ms;
   }
 
   /* Table container */
@@ -223,7 +222,6 @@
     @apply fixed top-0 left-0 h-screen;
     width: 16rem; /* w-64 */
     overflow: hidden;
-    transition: width 300ms;
   }
 
   /* When sidebar is collapsed */
@@ -265,11 +263,13 @@
 
   /* Light Mode Tables with Glass */
   table {
-    @apply bg-white/60 backdrop-blur-md rounded-xl overflow-hidden shadow-lg;
+    @apply bg-white/60 rounded-xl overflow-hidden shadow-lg;
+    backdrop-filter: blur(8px);
   }
 
   thead {
-    @apply bg-gradient-to-r from-gray-50/80 to-white/80 backdrop-blur-md border-b border-gray-200/50;
+    @apply bg-gradient-to-r from-gray-50/80 to-white/80 border-b border-gray-200/50;
+    backdrop-filter: blur(8px);
   }
 
   thead th {
@@ -277,7 +277,11 @@
   }
 
   tbody tr {
-    @apply border-gray-200/30 hover:bg-primary/5 transition-all duration-200;
+    @apply border-gray-200/30;
+  }
+
+  tbody tr:hover {
+    @apply bg-primary/5;
   }
 
   tbody td {
@@ -311,7 +315,11 @@
   }
 
   .dark tbody tr {
-    @apply border-gray-700/20 bg-transparent hover:bg-primary/5 transition-all duration-200;
+    @apply border-gray-700/20 bg-transparent;
+  }
+
+  .dark tbody tr:hover {
+    @apply bg-primary/5;
   }
 
   .dark tbody td {
@@ -338,9 +346,10 @@
   }
 
 
-  /* Card Hover Effects */
+  /* Card Hover Effects - Optimized for performance */
   .glass-card:hover {
-    @apply shadow-2xl scale-[1.02] transition-all duration-300;
+    @apply shadow-2xl;
+    transform: scale(1.02);
   }
 
   @keyframes scale-in {
