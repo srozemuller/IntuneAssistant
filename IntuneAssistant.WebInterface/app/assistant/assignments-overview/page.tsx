@@ -712,7 +712,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                             <div className="flex items-center gap-1">
                                 <button
                                     onClick={() => handleResourceClick(targetId, assignmentType)}
-                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate flex-1 text-left"
+                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate flex-1 text-left bg-transparent hover:bg-transparent border-none p-0"
                                     title={targetName}
                                 >
                                     {targetName}
@@ -802,15 +802,13 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                         </button>
                         <div className="flex items-center">
                             {isInclude ? (
-                                <Badge variant="default"
-                                       className="text-xs bg-green-100 text-green-800 border-green-200 px-1 py-0">
-                                    <Shield className="h-2 w-2 mr-1"/>
+                                <Badge variant="default" className="text-xs bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white border-green-400 dark:border-green-500 px-1 py-0">
+                                    <Shield className="h-2 w-2 mr-1" />
                                     Inc
                                 </Badge>
                             ) : (
-                                <Badge variant="destructive"
-                                       className="text-xs bg-red-100 text-red-800 border-red-200 px-1 py-0">
-                                    <ShieldCheck className="h-2 w-2 mr-1"/>
+                                <Badge variant="destructive" className="text-xs bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white border-red-400 dark:border-red-500 px-1 py-0">
+                                    <ShieldCheck className="h-2 w-2 mr-1" />
                                     Exc
                                 </Badge>
                             )}

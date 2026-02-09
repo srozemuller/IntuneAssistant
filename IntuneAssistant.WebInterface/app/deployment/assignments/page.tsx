@@ -1959,15 +1959,6 @@ const validateAssignments = async () => {
         closeDialog
     } = useGroupDetails();
 
-    // Update the handleResourceClick function to handle GroupAssignment:
-    const handleResourceClick = (resourceId: string, assignmentType: string) => {
-        if (assignmentType === 'GroupAssignment' && resourceId) {
-            fetchGroupDetails(resourceId);
-        } else if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude') && resourceId) {
-            fetchGroupDetails(resourceId);
-        }
-    };
-
     const AssignmentsDialog = () => (
         <Dialog open={showAssignmentsDialog} onOpenChange={setShowAssignmentsDialog}>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
@@ -2622,7 +2613,6 @@ const validateAssignments = async () => {
                             </div>
                             <Button
                                 onClick={() => setCurrentStep('validate')}
-                                className="bg-blue-600 hover:bg-blue-700"
                             >
                                 <RefreshCw className="h-4 w-4 mr-2"/>
                                 Proceed to Validation
@@ -2632,30 +2622,36 @@ const validateAssignments = async () => {
                     <CardContent>
                         {/* Summary Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle2 className="h-5 w-5 text-green-600"/>
-                                    <span className="font-semibold text-green-600">Successful</span>
+                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-green-50/60 to-emerald-50/40 dark:from-green-900/20 dark:to-emerald-900/10 border border-green-200/30 dark:border-green-700/30">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-green-500/10 dark:bg-green-500/20 rounded-lg backdrop-blur-sm">
+                                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400"/>
+                                    </div>
+                                    <span className="font-semibold text-green-700 dark:text-green-300">Successful</span>
                                 </div>
-                                <div className="text-2xl font-bold text-green-600 mt-2">
+                                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                                     {migrationResults.filter(r => r.status === 'Success').length}
                                 </div>
                             </div>
-                            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                                <div className="flex items-center gap-2">
-                                    <XCircle className="h-5 w-5 text-red-600"/>
-                                    <span className="font-semibold text-red-600">Failed</span>
+                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-red-50/60 to-rose-50/40 dark:from-red-900/20 dark:to-rose-900/10 border border-red-200/30 dark:border-red-700/30">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-red-500/10 dark:bg-red-500/20 rounded-lg backdrop-blur-sm">
+                                        <XCircle className="h-5 w-5 text-red-600 dark:text-red-400"/>
+                                    </div>
+                                    <span className="font-semibold text-red-700 dark:text-red-300">Failed</span>
                                 </div>
-                                <div className="text-2xl font-bold text-red-600 mt-2">
+                                <div className="text-3xl font-bold text-red-600 dark:text-red-400">
                                     {migrationResults.filter(r => r.status === 'Failed').length}
                                 </div>
                             </div>
-                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                                <div className="flex items-center gap-2">
-                                    <Info className="h-5 w-5 text-blue-600"/>
-                                    <span className="font-semibold text-blue-600">Total</span>
+                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-blue-50/60 to-indigo-50/40 dark:from-blue-900/20 dark:to-indigo-900/10 border border-blue-200/30 dark:border-blue-700/30">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-blue-500/10 dark:bg-blue-500/20 rounded-lg backdrop-blur-sm">
+                                        <Info className="h-5 w-5 text-blue-600 dark:text-blue-400"/>
+                                    </div>
+                                    <span className="font-semibold text-blue-700 dark:text-blue-300">Total</span>
                                 </div>
-                                <div className="text-2xl font-bold text-blue-600 mt-2">
+                                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                                     {migrationResults.length}
                                 </div>
                             </div>
@@ -2708,30 +2704,36 @@ const validateAssignments = async () => {
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle2 className="h-5 w-5 text-green-600"/>
-                                    <span className="font-medium text-green-800">Successful</span>
+                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-green-50/60 to-emerald-50/40 dark:from-green-900/20 dark:to-emerald-900/10 border border-green-200/30 dark:border-green-700/30">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-green-500/10 dark:bg-green-500/20 rounded-lg backdrop-blur-sm">
+                                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400"/>
+                                    </div>
+                                    <span className="font-semibold text-green-700 dark:text-green-300">Successful</span>
                                 </div>
-                                <div className="text-2xl font-bold text-green-600 mt-2">
+                                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                                     {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'valid').length}
                                 </div>
                             </div>
-                            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                                <div className="flex items-center gap-2">
-                                    <AlertTriangle className="h-5 w-5 text-yellow-600"/>
-                                    <span className="font-medium text-yellow-800">Warnings</span>
+                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-yellow-50/60 to-amber-50/40 dark:from-yellow-900/20 dark:to-amber-900/10 border border-yellow-200/30 dark:border-yellow-700/30">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg backdrop-blur-sm">
+                                        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400"/>
+                                    </div>
+                                    <span className="font-semibold text-yellow-700 dark:text-yellow-300">Warnings</span>
                                 </div>
-                                <div className="text-2xl font-bold text-yellow-600 mt-2">
+                                <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
                                     {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'warning').length}
                                 </div>
                             </div>
-                            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                                <div className="flex items-center gap-2">
-                                    <XCircle className="h-5 w-5 text-red-600"/>
-                                    <span className="font-medium text-red-800">Failed</span>
+                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-red-50/60 to-rose-50/40 dark:from-red-900/20 dark:to-rose-900/10 border border-red-200/30 dark:border-red-700/30">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-red-500/10 dark:bg-red-500/20 rounded-lg backdrop-blur-sm">
+                                        <XCircle className="h-5 w-5 text-red-600 dark:text-red-400"/>
+                                    </div>
+                                    <span className="font-semibold text-red-700 dark:text-red-300">Failed</span>
                                 </div>
-                                <div className="text-2xl font-bold text-red-600 mt-2">
+                                <div className="text-3xl font-bold text-red-600 dark:text-red-400">
                                     {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'invalid').length}
                                 </div>
                             </div>
