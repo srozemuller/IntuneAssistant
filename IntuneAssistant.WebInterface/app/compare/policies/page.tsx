@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState,  useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {RefreshCw, ChevronDown, Filter, Search, X, GitCompare, ArrowLeftRight, Settings, Download} from 'lucide-react';
 import { CONFIGURATION_POLICIES_ENDPOINT, COMPARE_ENDPOINT } from '@/lib/constants';
-import { apiScope } from '@/lib/msalConfig';
 import { useApiRequest } from '@/hooks/useApiRequest';
 
 interface ApiResponse {
@@ -287,15 +287,30 @@ export default function PolicyComparison() {
     }> = ({ availableKeywords, selectedKeywords, onSelectionChange }) => {
         const [isOpen, setIsOpen] = useState(false);
         const [searchTerm, setSearchTerm] = useState('');
+        const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
         const dropdownRef = useRef<HTMLDivElement>(null);
+        const triggerRef = useRef<HTMLDivElement>(null);
 
         const filteredKeywords = availableKeywords.filter(keyword =>
             keyword.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
+        // Update dropdown position when opened
+        useEffect(() => {
+            if (isOpen && triggerRef.current) {
+                const rect = triggerRef.current.getBoundingClientRect();
+                setDropdownPosition({
+                    top: rect.bottom + window.scrollY + 4,
+                    left: rect.left + window.scrollX,
+                    width: rect.width
+                });
+            }
+        }, [isOpen]);
+
         useEffect(() => {
             const handleClickOutside = (event: MouseEvent) => {
-                if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+                    triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
                     setIsOpen(false);
                     setSearchTerm('');
                 }
@@ -317,18 +332,19 @@ export default function PolicyComparison() {
         };
 
         return (
-            <div className="relative" ref={dropdownRef}>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Filter by Keywords
                 </label>
                 <div
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer bg-white min-h-[42px]"
+                    ref={triggerRef}
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary/50 dark:focus:ring-primary/60 focus:border-transparent cursor-pointer bg-white dark:bg-gray-800 min-h-[42px] transition-colors"
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     <div className="flex items-center justify-between">
                         <div className="flex-1">
                             {selectedKeywords.length === 0 ? (
-                                <span className="text-gray-500">Select keywords...</span>
+                                <span className="text-gray-500 dark:text-gray-400">Select keywords...</span>
                             ) : (
                                 <div className="flex flex-wrap gap-1">
                                     {selectedKeywords.slice(0, 2).map(keyword => (
@@ -351,27 +367,35 @@ export default function PolicyComparison() {
                                         e.stopPropagation();
                                         clearAll();
                                     }}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
                             )}
-                            <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${
+                            <ChevronDown className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform ${
                                 isOpen ? 'transform rotate-180' : ''
                             }`} />
                         </div>
                     </div>
                 </div>
 
-                {isOpen && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-hidden">
-                        <div className="p-3 border-b border-gray-200">
+                {isOpen && typeof window !== 'undefined' && ReactDOM.createPortal(
+                    <div
+                        ref={dropdownRef}
+                        className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-xl max-h-60 overflow-hidden"
+                        style={{
+                            top: `${dropdownPosition.top}px`,
+                            left: `${dropdownPosition.left}px`,
+                            width: `${dropdownPosition.width}px`
+                        }}
+                    >
+                        <div className="p-3 border-b border-gray-200 dark:border-gray-700">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 <input
                                     type="text"
                                     placeholder="Search keywords..."
-                                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                    className="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-primary/50 dark:focus:ring-primary/60 focus:border-transparent text-sm"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     onClick={(e) => e.stopPropagation()}
@@ -384,7 +408,7 @@ export default function PolicyComparison() {
                                 filteredKeywords.map((keyword) => (
                                     <div
                                         key={keyword}
-                                        className="p-2 hover:bg-gray-50 cursor-pointer flex items-center gap-2"
+                                        className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2 transition-colors"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             toggleKeyword(keyword);
@@ -394,18 +418,19 @@ export default function PolicyComparison() {
                                             type="checkbox"
                                             checked={selectedKeywords.includes(keyword)}
                                             onChange={() => {}}
-                                            className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                                            className="h-4 w-4 text-primary rounded border-gray-300 dark:border-gray-600"
                                         />
-                                        <span className="text-sm text-gray-900">{keyword}</span>
+                                        <span className="text-sm text-gray-900 dark:text-gray-100">{keyword}</span>
                                     </div>
                                 ))
                             ) : (
-                                <div className="p-3 text-gray-500 text-sm text-center">
+                                <div className="p-3 text-gray-500 dark:text-gray-400 text-sm text-center">
                                     No keywords found matching &quot;{searchTerm}&quot;
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )}
             </div>
         );
@@ -1198,7 +1223,7 @@ export default function PolicyComparison() {
                                 Choose two policies of the same type to compare their configurations. Found {policies.length} configuration policies.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="min-h-[400px]">
+                        <CardContent className="min-h-[100px]">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <SearchableSelect
                                     value={sourcePolicy?.id || ''}
@@ -1262,7 +1287,7 @@ export default function PolicyComparison() {
                             <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                                 <CardHeader className="pb-4">
                                     <CardTitle className="flex items-center gap-2">
-                                        <Search className="h-5 w-5 text-gray-600" />
+                                        <Search className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                                         Search Settings
                                     </CardTitle>
                                 </CardHeader>
@@ -1271,15 +1296,15 @@ export default function PolicyComparison() {
                                         <input
                                             type="text"
                                             placeholder="Search by setting name..."
-                                            className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-primary/50 dark:focus:ring-primary/60 focus:border-transparent"
                                             value={filter}
                                             onChange={(e) => setFilter(e.target.value)}
                                         />
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                         {filter && (
                                             <button
                                                 onClick={clearSearch}
-                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                                             >
                                                 <X className="h-5 w-5" />
                                             </button>
@@ -1293,7 +1318,7 @@ export default function PolicyComparison() {
                                 <CardHeader className="pb-4">
                                     <CardTitle className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <Filter className="h-5 w-5 text-gray-600" />
+                                            <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                                             Filters
                                         </div>
                                         {(statusFilter !== 'all' || filter || selectedKeywords.length > 0) && (
@@ -1312,11 +1337,11 @@ export default function PolicyComparison() {
                                 <CardContent className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                 Comparison Status
                                             </label>
                                             <select
-                                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary/50 dark:focus:ring-primary/60 focus:border-transparent"
                                                 value={statusFilter}
                                                 onChange={(e) => setStatusFilter(e.target.value)}
                                             >
@@ -1338,12 +1363,12 @@ export default function PolicyComparison() {
                                     {/* Active Filters Display */}
                                     {(statusFilter !== 'all' || filter || selectedKeywords.length > 0) && (
                                         <div>
-                                            <div className="text-sm font-medium text-gray-700 mb-2">Active Filters:</div>
+                                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Active Filters:</div>
                                             <div className="flex flex-wrap gap-2">
                                                 {filter && (
                                                     <Badge variant="secondary" className="flex items-center gap-1">
                                                         Search: &quot;{filter}&quot;
-                                                        <button onClick={() => setFilter('')} className="ml-1">
+                                                        <button onClick={() => setFilter('')} className="ml-1 hover:opacity-70">
                                                             <X className="h-3 w-3" />
                                                         </button>
                                                     </Badge>
@@ -1351,7 +1376,7 @@ export default function PolicyComparison() {
                                                 {statusFilter !== 'all' && (
                                                     <Badge variant="secondary" className="flex items-center gap-1">
                                                         Status: {statusFilter}
-                                                        <button onClick={() => setStatusFilter('all')} className="ml-1">
+                                                        <button onClick={() => setStatusFilter('all')} className="ml-1 hover:opacity-70">
                                                             <X className="h-3 w-3" />
                                                         </button>
                                                     </Badge>
@@ -1361,7 +1386,7 @@ export default function PolicyComparison() {
                                                         Keyword: {keyword}
                                                         <button
                                                             onClick={() => setSelectedKeywords(prev => prev.filter(k => k !== keyword))}
-                                                            className="ml-1"
+                                                            className="ml-1 hover:opacity-70"
                                                         >
                                                             <X className="h-3 w-3" />
                                                         </button>
@@ -1375,21 +1400,21 @@ export default function PolicyComparison() {
 
 
                             {/* Comparison Results Table */}
-                            <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden">
+                            <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full">
                                 <CardHeader className="pb-4">
                                     <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                         <div className="flex items-center gap-2">
-                                            <ArrowLeftRight className="h-5 w-5 text-gray-600" />
+                                            <ArrowLeftRight className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                                             Comparison Results
-                                            {stats && <span className="text-sm text-gray-500">({stats.total} settings)</span>}
+                                            {stats && <span className="text-sm text-gray-500 dark:text-gray-400">({stats.total} settings)</span>}
                                         </div>
                                         <div className="flex items-center gap-2">
                                             {stats && (
                                                 <div className="flex flex-wrap gap-2 text-sm">
-                                                    <Badge variant="default" className="bg-green-500 hover:bg-green-600">Same: {stats.same}</Badge>
-                                                    <Badge variant="default" className="bg-red-500 hover:bg-red-600">Different: {stats.different}</Badge>
-                                                    <Badge variant="default" className="bg-blue-500 hover:bg-blue-600">Source Only: {stats.sourceOnly}</Badge>
-                                                    <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600">Target Only: {stats.targetOnly}</Badge>
+                                                    <Badge variant="default" className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">Same: {stats.same}</Badge>
+                                                    <Badge variant="default" className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700">Different: {stats.different}</Badge>
+                                                    <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">Source Only: {stats.sourceOnly}</Badge>
+                                                    <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700">Target Only: {stats.targetOnly}</Badge>
                                                 </div>
                                             )}
                                             <Button
@@ -1409,15 +1434,15 @@ export default function PolicyComparison() {
                                 </CardHeader>
                                 <CardContent className="p-0">
                                     {/* Policy Names Header */}
-                                    <div className="sticky top-0 z-10 p-6 bg-white border-b relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                                    <div className="sticky top-0 z-10 p-6 border-b bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border-white/30 dark:border-white/10">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
-                                                <h3 className="font-medium text-blue-900">Source Policy</h3>
-                                                <p className="text-blue-700 text-sm">{comparisonResult.results?.sourcePolicyName}</p>
+                                            <div className="bg-blue-50 dark:bg-blue-950/50 p-4 rounded-lg border-l-4 border-blue-400 dark:border-blue-500">
+                                                <h3 className="font-medium text-blue-900 dark:text-blue-200">Source Policy</h3>
+                                                <p className="text-blue-700 dark:text-blue-300 text-sm">{comparisonResult.results?.sourcePolicyName}</p>
                                             </div>
-                                            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
-                                                <h3 className="font-medium text-green-900">Target Policy</h3>
-                                                <p className="text-green-700 text-sm">{comparisonResult.results?.checkedPolicyName}</p>
+                                            <div className="bg-green-50 dark:bg-green-950/50 p-4 rounded-lg border-l-4 border-green-400 dark:border-green-500">
+                                                <h3 className="font-medium text-green-900 dark:text-green-200">Target Policy</h3>
+                                                <p className="text-green-700 dark:text-green-300 text-sm">{comparisonResult.results?.checkedPolicyName}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1426,21 +1451,21 @@ export default function PolicyComparison() {
                                     <div className="p-6 space-y-4">
                                         {filteredResults.length > 0 ? (
                                             filteredResults.map((result: ComparisonResult) => (
-                                                <div key={result.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                                <div key={result.id} className="border border-gray-200/30 dark:border-gray-700/30 rounded-lg p-4 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-gray-800/60 hover:shadow-lg transition-all duration-200">
                                                     <div className="flex items-center justify-between mb-2">
-                                                        <h3 className="font-medium text-gray-900">{result.name}</h3>
+                                                        <h3 className="font-medium text-gray-900 dark:text-gray-100">{result.name}</h3>
                                                         {getStatusBadge(result.settingCheckState)}
                                                     </div>
 
-                                                    <p className="text-sm text-gray-600 mb-3">{result.description}</p>
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{result.description}</p>
 
                                                     {/* Keywords Display */}
                                                     {result.keywords && result.keywords.length > 0 && (
                                                         <div className="mb-4">
-                                                            <div className="text-xs text-gray-500 font-medium mb-2">KEYWORDS</div>
+                                                            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-2">KEYWORDS</div>
                                                             <div className="flex flex-wrap gap-1">
                                                                 {result.keywords.map((keyword, index) => (
-                                                                    <Badge key={index} variant="outline" className="text-xs bg-neutral-300 hover:bg-neutral-400">
+                                                                    <Badge key={index} variant="outline" className="text-xs bg-neutral-300 dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-200">
                                                                         {keyword}
                                                                     </Badge>
                                                                 ))}
@@ -1450,15 +1475,15 @@ export default function PolicyComparison() {
 
                                                     {/* Main setting values */}
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                                        <div className="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
-                                                            <div className="text-xs text-blue-600 font-medium mb-1">SOURCE VALUE</div>
-                                                            <div className="text-sm text-blue-900">
+                                                        <div className="bg-blue-50 dark:bg-blue-950/50 p-3 rounded border-l-4 border-blue-400 dark:border-blue-500">
+                                                            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">SOURCE VALUE</div>
+                                                            <div className="text-sm text-blue-900 dark:text-blue-200">
                                                                 {result.values.sourceValue || '[Not Set]'}
                                                             </div>
                                                         </div>
-                                                        <div className="bg-green-50 p-3 rounded border-l-4 border-green-400">
-                                                            <div className="text-xs text-green-600 font-medium mb-1">TARGET VALUE</div>
-                                                            <div className="text-sm text-green-900">
+                                                        <div className="bg-green-50 dark:bg-green-950/50 p-3 rounded border-l-4 border-green-400 dark:border-green-500">
+                                                            <div className="text-xs text-green-600 dark:text-green-400 font-medium mb-1">TARGET VALUE</div>
+                                                            <div className="text-sm text-green-900 dark:text-green-200">
                                                                 {result.values.checkedValue || '[Not Set]'}
                                                             </div>
                                                         </div>
@@ -1466,16 +1491,16 @@ export default function PolicyComparison() {
 
                                                     {/* Show differences if available */}
                                                     {result.differences && result.settingCheckState === 'InBothDifferent' && (
-                                                        <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                                                            <div className="text-xs text-yellow-600 font-medium mb-1">DIFFERENCES SUMMARY</div>
-                                                            <div className="text-sm text-yellow-900">{result.differences}</div>
+                                                        <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-950/50 border-l-4 border-yellow-400 dark:border-yellow-500 rounded">
+                                                            <div className="text-xs text-yellow-600 dark:text-yellow-400 font-medium mb-1">DIFFERENCES SUMMARY</div>
+                                                            <div className="text-sm text-yellow-900 dark:text-yellow-200">{result.differences}</div>
                                                         </div>
                                                     )}
 
                                                     {/* Child Settings */}
                                                     {result.childSettings && result.childSettings.length > 0 && (
-                                                        <div className="mt-4 border-t pt-4">
-                                                            <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                                        <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                                                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
                                                                 <Settings className="h-4 w-4" />
                                                                 Child Settings ({result.childSettings.length})
                                                             </h4>
@@ -1485,25 +1510,35 @@ export default function PolicyComparison() {
 
                                                                     return (
                                                                         <div key={index} className={`p-3 rounded-lg border ${
-                                                                            isDifferent ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'
+                                                                            isDifferent 
+                                                                                ? 'bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800' 
+                                                                                : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
                                                                         }`}>
                                                                             <div className="flex items-center justify-between mb-2">
-                                                                                <span className="text-sm font-medium text-gray-700">{child.name}</span>
+                                                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{child.name}</span>
                                                                                 {isDifferent && (
                                                                                     <Badge variant="destructive" className="text-xs">Different</Badge>
                                                                                 )}
                                                                             </div>
 
                                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                                                                                <div className={`p-2 rounded ${isDifferent ? 'bg-blue-100' : 'bg-white'}`}>
-                                                                                    <div className="text-blue-600 font-medium mb-1">SOURCE</div>
-                                                                                    <div className="text-blue-900">
+                                                                                <div className={`p-2 rounded ${
+                                                                                    isDifferent 
+                                                                                        ? 'bg-blue-100 dark:bg-blue-950/70' 
+                                                                                        : 'bg-white dark:bg-gray-900/50'
+                                                                                }`}>
+                                                                                    <div className="text-blue-600 dark:text-blue-400 font-medium mb-1">SOURCE</div>
+                                                                                    <div className="text-blue-900 dark:text-blue-200">
                                                                                         {child.sourceValue || '[Not Set]'}
                                                                                     </div>
                                                                                 </div>
-                                                                                <div className={`p-2 rounded ${isDifferent ? 'bg-green-100' : 'bg-white'}`}>
-                                                                                    <div className="text-green-600 font-medium mb-1">TARGET</div>
-                                                                                    <div className="text-green-900">
+                                                                                <div className={`p-2 rounded ${
+                                                                                    isDifferent 
+                                                                                        ? 'bg-green-100 dark:bg-green-950/70' 
+                                                                                        : 'bg-white dark:bg-gray-900/50'
+                                                                                }`}>
+                                                                                    <div className="text-green-600 dark:text-green-400 font-medium mb-1">TARGET</div>
+                                                                                    <div className="text-green-900 dark:text-green-200">
                                                                                         {child.targetValue || '[Not Set]'}
                                                                                     </div>
                                                                                 </div>
@@ -1517,7 +1552,7 @@ export default function PolicyComparison() {
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="text-center py-8 text-gray-500">
+                                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                                                 No settings match your current filters.
                                             </div>
                                         )}

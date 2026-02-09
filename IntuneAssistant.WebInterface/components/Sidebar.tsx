@@ -349,10 +349,10 @@ export function Sidebar() {
 
     return (
         <TooltipProvider>
-            <div className={cn(
-                "bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col transition-all duration-300 fixed left-0 top-0 z-50",
-                isCollapsed ? "w-16" : "w-64"
-            )}>
+    <div className={cn(
+        "sidebar bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col transition-all duration-300 fixed left-0 top-0 z-50",
+        isCollapsed ? "w-16" : "w-64"
+    )}>
                 {/* Content wrapper */}
                 <div className="h-full flex flex-col">
                     {/* Header with Logo and Collapse Toggle */}

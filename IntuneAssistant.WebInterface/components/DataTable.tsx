@@ -1,6 +1,6 @@
 // components/DataTable.tsx
 'use client';
-import { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {ITEMS_PER_PAGE} from "@/lib/constants";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,13 +39,64 @@ interface DataTableProps {
     onSelectionChange?: (rowIds: string[]) => void;
 }
 
+// Memoized TableRow component to prevent unnecessary re-renders
+const TableRow = React.memo<{
+    row: Record<string, unknown>;
+    rowIndex: number;
+    columns: Column[];
+    startIndex: number;
+    isSelected: boolean;
+    onRowClick?: (e: React.MouseEvent, row: Record<string, unknown>, index: number) => void;
+    rowClassName?: (row: Record<string, unknown>) => string;
+    getCellValue: (row: Record<string, unknown>, column: Column) => unknown;
+}>(({ row, rowIndex, columns, startIndex, isSelected, onRowClick, rowClassName, getCellValue }) => {
+    const handleClick = useCallback((e: React.MouseEvent) => {
+        if (onRowClick) {
+            onRowClick(e, row, startIndex + rowIndex);
+        }
+    }, [onRowClick, row, startIndex, rowIndex]);
+
+    return (
+        <tr
+            className={`
+                border-b border-border/10 last:border-b-0
+                transition-all duration-200
+                ${onRowClick ? 'cursor-pointer' : ''}
+                ${isSelected
+                    ? 'bg-primary/15 dark:bg-primary/20 text-foreground border-l-4 border-l-primary shadow-lg'
+                    : 'hover:bg-white/20 dark:hover:bg-white/5'
+                }
+                ${rowClassName ? rowClassName(row) : ''}
+            `}
+            onClick={handleClick}
+        >
+            {columns.map((column) => (
+                <td
+                    key={column.key}
+                    className="p-3 text-foreground first:pl-6 last:pr-6"
+                    style={{ width: `${column.width}px` }}
+                >
+                    <div className="overflow-hidden">
+                        {column.render
+                            ? column.render(getCellValue(row, column), row)
+                            : String(getCellValue(row, column) || '')
+                        }
+                    </div>
+                </td>
+            ))}
+        </tr>
+    );
+});
+
+TableRow.displayName = 'TableRow';
+
 export function DataTable({
                               data,
                               columns: initialColumns,
-                              className = '',
+                              className: _className = '',
                               onRowClick,
                               currentPage = 1,
-                              totalPages = 1,
+                              totalPages: _totalPages = 1,
                               itemsPerPage = ITEMS_PER_PAGE,
                               onPageChange,
                               rowClassName,
@@ -69,41 +120,45 @@ export function DataTable({
     const effectiveCurrentPage = onPageChange ? currentPage : internalCurrentPage;
     const effectiveItemsPerPage = onItemsPerPageChange ? itemsPerPage : internalItemsPerPage;
 
-    const changePage = (page: number) => {
+    // Memoize change handlers (defined early to use in clearSearch)
+    const changePage = useCallback((page: number) => {
         if (onPageChange) {
             onPageChange(page);
         } else {
             setInternalCurrentPage(page);
         }
-    };
+    }, [onPageChange]);
 
-    const changeItemsPerPage = (n: number) => {
+    const changeItemsPerPage = useCallback((n: number) => {
         if (onItemsPerPageChange) {
             onItemsPerPageChange(n);
         } else {
             setInternalItemsPerPage(n);
         }
-    };
+    }, [onItemsPerPageChange]);
 
-    const isRowSelected = (row: Record<string, unknown>) => {
-        if (!selectedRows || selectedRows.length === 0) return false;
+    // Memoize selected rows as a Set for O(1) lookup
+    const selectedRowsSet = useMemo(() => new Set(selectedRows), [selectedRows]);
+
+    const isRowSelected = useCallback((row: Record<string, unknown>) => {
+        if (selectedRowsSet.size === 0) return false;
         const rowId = String(row.id);
-        return selectedRows.includes(rowId);
-    };
+        return selectedRowsSet.has(rowId);
+    }, [selectedRowsSet]);
 
-    const handleRowSelection = (e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>, row: Record<string, unknown>) => {
+    const handleRowSelection = useCallback((e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>, row: Record<string, unknown>) => {
         e.stopPropagation();
         const rowId = String(row.id);
 
         if (onSelectionChange) {
-            const isCurrentlySelected = isRowSelected(row);
+            const isCurrentlySelected = selectedRowsSet.has(rowId);
             if (isCurrentlySelected) {
                 onSelectionChange(selectedRows.filter(id => id !== rowId));
             } else {
                 onSelectionChange([...selectedRows, rowId]);
             }
         }
-    };
+    }, [onSelectionChange, selectedRowsSet, selectedRows]);
 
     const columnsWithSelection = useMemo(() => {
         if (onSelectionChange && !initialColumns.some(col => col.key === '_select')) {
@@ -130,7 +185,7 @@ export function DataTable({
             ];
         }
         return initialColumns;
-    }, [onSelectionChange, selectedRows, initialColumns]);
+    }, [onSelectionChange, initialColumns, isRowSelected, handleRowSelection]);
 
     const [columns, setColumns] = useState(columnsWithSelection.map(col => ({
         ...col,
@@ -142,8 +197,18 @@ export function DataTable({
 
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [resizing, setResizing] = useState<{ columnIndex: number; startX: number; startWidth: number } | null>(null);
     const tableRef = useRef<HTMLTableElement>(null);
+
+    // Debounce search term to improve performance
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
 
     useEffect(() => {
         setColumns(columnsWithSelection.map(col => ({
@@ -155,78 +220,85 @@ export function DataTable({
         })));
     }, [columnsWithSelection]);
 
-    // Filter data based on search term
-    const filteredData = data.filter(row => {
-        if (!searchTerm.trim()) return true;
+    // Memoize filtered data to prevent unnecessary recalculations
+    const filteredData = useMemo(() => {
+        if (!debouncedSearchTerm.trim()) return data;
 
-        const searchLower = searchTerm.toLowerCase();
+        const searchLower = debouncedSearchTerm.toLowerCase();
 
-        // Search through ALL properties in the row, not just the column keys
-        return Object.entries(row).some(([key, value]) => {
-            if (value === null || value === undefined) return false;
-            const stringValue = String(value).toLowerCase();
-            return stringValue.includes(searchLower);
+        return data.filter(row => {
+            // Search through ALL properties in the row, not just the column keys
+            return Object.entries(row).some(([_key, value]) => {
+                if (value === null || value === undefined) return false;
+                const stringValue = String(value).toLowerCase();
+                return stringValue.includes(searchLower);
+            });
         });
-    });
+    }, [data, debouncedSearchTerm]);
 
-    // Sort filtered data
-    const sortedData = [...filteredData].sort((a, b) => {
-        if (!sortConfig) return 0;
+    // Memoize sorted data to prevent unnecessary recalculations
+    const sortedData = useMemo(() => {
+        if (!sortConfig) return filteredData;
 
         // Find the column configuration to check for custom sortValue
         const column = columns.find(col => col.key === sortConfig.key);
 
-        // Use sortValue function if provided, otherwise fall back to direct value
-        const aValue = column?.sortValue ? column.sortValue(a) : a[sortConfig.key];
-        const bValue = column?.sortValue ? column.sortValue(b) : b[sortConfig.key];
+        return [...filteredData].sort((a, b) => {
+            // Use sortValue function if provided, otherwise fall back to direct value
+            const aValue = column?.sortValue ? column.sortValue(a) : a[sortConfig.key];
+            const bValue = column?.sortValue ? column.sortValue(b) : b[sortConfig.key];
 
-        if (aValue === undefined && bValue === undefined) {
+            if (aValue === undefined && bValue === undefined) {
+                return 0;
+            }
+
+            if (aValue === null || aValue === undefined) return 1;
+            if (bValue === null || bValue === undefined) return -1;
+
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                return sortConfig.direction === 'asc'
+                    ? aValue - bValue
+                    : bValue - aValue;
+            }
+
+            const aDate = new Date(aValue as string);
+            const bDate = new Date(bValue as string);
+            if (!isNaN(aDate.getTime()) && !isNaN(bDate.getTime())) {
+                return sortConfig.direction === 'asc'
+                    ? aDate.getTime() - bDate.getTime()
+                    : bDate.getTime() - aDate.getTime();
+            }
+
+            const aStr = String(aValue).toLowerCase();
+            const bStr = String(bValue).toLowerCase();
+
+            if (aStr < bStr) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
             return 0;
-        }
+        });
+    }, [filteredData, sortConfig, columns]);
 
-        if (aValue === null || aValue === undefined) return 1;
-        if (bValue === null || bValue === undefined) return -1;
+    // Memoize pagination to avoid recalculation on every render
+    const paginationData = useMemo(() => {
+        const startIndex = (effectiveCurrentPage - 1) * effectiveItemsPerPage;
+        const endIndex = startIndex + effectiveItemsPerPage;
+        const paginatedData = sortedData.slice(startIndex, endIndex);
+        const totalFilteredPages = Math.max(1, Math.ceil(sortedData.length / effectiveItemsPerPage));
 
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-            return sortConfig.direction === 'asc'
-                ? aValue - bValue
-                : bValue - aValue;
-        }
+        return { paginatedData, startIndex, endIndex, totalFilteredPages };
+    }, [sortedData, effectiveCurrentPage, effectiveItemsPerPage]);
+    const { paginatedData, startIndex, endIndex, totalFilteredPages } = paginationData;
 
-        const aDate = new Date(aValue as string);
-        const bDate = new Date(bValue as string);
-        if (!isNaN(aDate.getTime()) && !isNaN(bDate.getTime())) {
-            return sortConfig.direction === 'asc'
-                ? aDate.getTime() - bDate.getTime()
-                : bDate.getTime() - aDate.getTime();
-        }
+    const handleSort = useCallback((columnKey: string) => {
+        setSortConfig(prev => {
+            if (prev && prev.key === columnKey && prev.direction === 'asc') {
+                return { key: columnKey, direction: 'desc' };
+            }
+            return { key: columnKey, direction: 'asc' };
+        });
+    }, []);
 
-        const aStr = String(aValue).toLowerCase();
-        const bStr = String(bValue).toLowerCase();
-
-        if (aStr < bStr) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-
-    // Update pagination to work with filtered/sorted data
-    const startIndex = (effectiveCurrentPage - 1) * effectiveItemsPerPage;
-    const endIndex = startIndex + effectiveItemsPerPage;
-    const paginatedData = sortedData.slice(startIndex, endIndex);
-    const totalFilteredPages = Math.max(1, Math.ceil(sortedData.length / effectiveItemsPerPage));
-
-    const handleSort = (columnKey: string) => {
-        let direction: 'asc' | 'desc' = 'asc';
-
-        if (sortConfig && sortConfig.key === columnKey && sortConfig.direction === 'asc') {
-            direction = 'desc';
-        }
-
-        setSortConfig({ key: columnKey, direction });
-    };
-
-    const getSortIcon = (columnKey: string) => {
+    const getSortIcon = useCallback((columnKey: string) => {
         if (!sortConfig || sortConfig.key !== columnKey) {
             return <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />;
         }
@@ -234,13 +306,12 @@ export function DataTable({
         return sortConfig.direction === 'asc'
             ? <ChevronUp className="h-4 w-4 text-foreground" />
             : <ChevronDown className="h-4 w-4 text-foreground" />;
-    };
+    }, [sortConfig]);
 
-
-    const clearSearch = () => {
+    const clearSearch = useCallback(() => {
         setSearchTerm('');
         changePage(1);
-    };
+    }, [changePage]);
 
     useEffect(() => {
         if (effectiveCurrentPage > 1) {
@@ -284,7 +355,7 @@ export function DataTable({
         };
     }, [resizing, columns]);
 
-    const handleResizeStart = (e: React.MouseEvent, columnIndex: number) => {
+    const handleResizeStart = useCallback((e: React.MouseEvent, columnIndex: number) => {
         e.preventDefault();
         e.stopPropagation();
         setResizing({
@@ -292,9 +363,9 @@ export function DataTable({
             startX: e.clientX,
             startWidth: columns[columnIndex].width || 150
         });
-    };
+    }, [columns]);
 
-    const handleRowClick = (e: React.MouseEvent, row: Record<string, unknown>, index: number) => {
+    const handleRowClick = useCallback((e: React.MouseEvent, row: Record<string, unknown>, index: number) => {
         if (resizing) return;
 
         const target = e.target as HTMLElement;
@@ -303,15 +374,37 @@ export function DataTable({
         if (!isInteractive && onRowClick) {
             onRowClick(row, index, e);
         }
-    };
+    }, [resizing, onRowClick]);
 
 
-    const getCellValue = (row: Record<string, unknown>, column: Column) => {
+    const getCellValue = useCallback((row: Record<string, unknown>, column: Column) => {
         if (column.key === '_select') {
             return null;
         }
         return row[column.key];
-    };
+    }, []);
+
+    // Memoize pagination page numbers for better performance
+    const paginationPageNumbers = useMemo(() => {
+        const pageCount = Math.min(5, totalFilteredPages);
+        const pages: number[] = [];
+
+        for (let i = 0; i < pageCount; i++) {
+            let pageNum;
+            if (totalFilteredPages <= 5) {
+                pageNum = i + 1;
+            } else if (effectiveCurrentPage <= 3) {
+                pageNum = i + 1;
+            } else if (effectiveCurrentPage >= totalFilteredPages - 2) {
+                pageNum = totalFilteredPages - 4 + i;
+            } else {
+                pageNum = effectiveCurrentPage - 2 + i;
+            }
+            pages.push(pageNum);
+        }
+
+        return pages;
+    }, [totalFilteredPages, effectiveCurrentPage]);
 
     return (
         <div>
@@ -390,35 +483,17 @@ export function DataTable({
                     <tbody className="bg-transparent">
                         {paginatedData.length > 0 ? (
                             paginatedData.map((row, rowIndex) => (
-                                <tr
-                                    key={rowIndex}
-                                    className={`
-                                        border-b border-border/10 last:border-b-0
-                                        transition-all duration-200
-                                        ${onRowClick ? 'cursor-pointer' : ''}
-                                        ${isRowSelected(row)
-                                            ? 'bg-primary/15 dark:bg-primary/20 text-foreground border-l-4 border-l-primary shadow-lg'
-                                            : 'hover:bg-white/20 dark:hover:bg-white/5'
-                                        }
-                                        ${rowClassName ? rowClassName(row) : ''}
-                                    `}
-                                    onClick={(e) => handleRowClick(e, row, startIndex + rowIndex)}
-                                >
-                                    {columns.map((column) => (
-                                        <td
-                                            key={column.key}
-                                            className="p-3 text-foreground first:pl-6 last:pr-6"
-                                            style={{ width: `${column.width}px` }}
-                                        >
-                                            <div className="overflow-hidden">
-                                                {column.render
-                                                    ? column.render(getCellValue(row, column), row)
-                                                    : String(getCellValue(row, column) || '')
-                                                }
-                                            </div>
-                                        </td>
-                                    ))}
-                                </tr>
+                                <TableRow
+                                    key={row.id ? String(row.id) : rowIndex}
+                                    row={row}
+                                    rowIndex={rowIndex}
+                                    columns={columns}
+                                    startIndex={startIndex}
+                                    isSelected={isRowSelected(row)}
+                                    onRowClick={onRowClick ? handleRowClick : undefined}
+                                    rowClassName={rowClassName}
+                                    getCellValue={getCellValue}
+                                />
                             ))
                         ) : (
                             <tr>
@@ -473,30 +548,17 @@ export function DataTable({
                         </Button>
 
                         <div className="flex items-center gap-1">
-                            {Array.from({ length: Math.min(5, totalFilteredPages) }, (_, i) => {
-                                let pageNum;
-                                if (totalFilteredPages <= 5) {
-                                    pageNum = i + 1;
-                                } else if (effectiveCurrentPage <= 3) {
-                                    pageNum = i + 1;
-                                } else if (effectiveCurrentPage >= totalFilteredPages - 2) {
-                                    pageNum = totalFilteredPages - 4 + i;
-                                } else {
-                                    pageNum = effectiveCurrentPage - 2 + i;
-                                }
-
-                                return (
-                                    <Button
-                                        key={pageNum}
-                                        variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => changePage(pageNum)}
-                                        className={`w-8 h-8 p-0 backdrop-blur-sm ${effectiveCurrentPage !== pageNum ? 'border-border/20 bg-white/40 dark:bg-white/5' : ''}`}
-                                    >
-                                        {pageNum}
-                                    </Button>
-                                );
-                            })}
+                            {paginationPageNumbers.map((pageNum) => (
+                                <Button
+                                    key={pageNum}
+                                    variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => changePage(pageNum)}
+                                    className={`w-8 h-8 p-0 backdrop-blur-sm ${effectiveCurrentPage !== pageNum ? 'border-border/20 bg-white/40 dark:bg-white/5' : ''}`}
+                                >
+                                    {pageNum}
+                                </Button>
+                            ))}
                         </div>
 
                         <Button

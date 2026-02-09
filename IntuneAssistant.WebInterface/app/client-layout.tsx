@@ -18,15 +18,13 @@ function MainContent({ children }: { children: React.ReactNode }) {
     const { isCollapsed } = useSidebar();
 
     return (
-        <div className="flex min-h-screen">
+        <div className={cn(isCollapsed && "sidebar-collapsed")}>
             <Sidebar />
-            <main className={cn(
-                "flex-1 min-h-screen transition-all duration-300",
-                isCollapsed ? "ml-16" : "ml-64"
-            )}>
-                <TenantIndicator />
-                <div className="max-w-8xl mx-auto p-6 space-y-6">
+            <main>
+                <div className="p-6">
+                    <TenantIndicator />
                     <GlobalErrorDisplay />
+                    <ConsentWarning />
                     {children}
                 </div>
             </main>
