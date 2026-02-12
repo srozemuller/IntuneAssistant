@@ -10,6 +10,7 @@ import { POLICY_SETTINGS_ENDPOINT, GROUP_POLICY_SETTINGS_ENDPOINT } from '@/lib/
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { DataTable } from '@/components/DataTable';
+import {CancelledCard} from "@/components/CancelledCard";
 
 interface ChildSettingInfo {
     '@odata.type': string;
@@ -37,24 +38,25 @@ interface ApiResponse {
 
 export default function PolicySettingsPage() {
     const { instance, accounts } = useMsal();
-    const { request } = useApiRequest();
+    const { request, cancel } = useApiRequest();
+const [isCancelled, setIsCancelled] = useState(false);
 
     const [settings, setSettings] = useState<PolicySetting[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
-    const toggleRowExpansion = (settingId: string) => {
-        setExpandedRows(prev => {
-            const newExpanded = new Set(prev);
-            if (newExpanded.has(settingId)) {
-                newExpanded.delete(settingId);
-            } else {
-                newExpanded.add(settingId);
-            }
-            return newExpanded;
-        });
-    };
+const toggleRowExpansion = (settingId: string) => {
+    setExpandedRows(prev => {
+        const newExpanded = new Set(prev);
+        if (newExpanded.has(settingId)) {
+            newExpanded.delete(settingId);
+        } else {
+            newExpanded.add(settingId);
+        }
+        return newExpanded;
+    });
+};
 
     const prepareExportData = (): ExportData => {
         const exportColumns: ExportColumn[] = [
@@ -101,40 +103,44 @@ export default function PolicySettingsPage() {
     };
 
     const fetchSettings = async () => {
-        if (!accounts.length) return;
+    if (!accounts.length) return;
 
-        setLoading(true);
-        setError(null);
+    setLoading(true);
+    setError(null);
+    setIsCancelled(false);
 
-        try {
-            const [configResponse, groupResponse] = await Promise.all([
-                request<ApiResponse>(POLICY_SETTINGS_ENDPOINT, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                }),
-                request<ApiResponse>(GROUP_POLICY_SETTINGS_ENDPOINT, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                })
-            ]);
+    try {
+        const [configResponse, groupResponse] = await Promise.all([
+            request<ApiResponse>(POLICY_SETTINGS_ENDPOINT, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            }),
+            request<ApiResponse>(GROUP_POLICY_SETTINGS_ENDPOINT, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+        ]);
 
-            const configSettings = configResponse?.data || [];
-            const groupSettings = groupResponse?.data || [];
+        const configSettings = configResponse?.data || [];
+        const groupSettings = groupResponse?.data || [];
 
-            const combinedSettings = [
-                ...configSettings.map(setting => ({ ...setting, source: 'configuration' as const })),
-                ...groupSettings.map(setting => ({ ...setting, source: 'groupPolicy' as const }))
-            ];
+        const combinedSettings = [
+            ...configSettings.map(setting => ({ ...setting, source: 'configuration' as const })),
+            ...groupSettings.map(setting => ({ ...setting, source: 'groupPolicy' as const }))
+        ];
 
-            setSettings(combinedSettings);
-        } catch (error) {
-            console.error('Failed to fetch settings:', error);
-            setError(error instanceof Error ? error.message : 'Failed to fetch settings');
-        } finally {
-            setLoading(false);
+        setSettings(combinedSettings);
+    } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+            console.log('Request was cancelled');
+            return;
         }
-    };
-
+        console.error('Failed to fetch settings:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch settings');
+    } finally {
+        setLoading(false);
+    }
+};
     const columns = [
         {
             key: 'policyName',
@@ -199,7 +205,8 @@ export default function PolicySettingsPage() {
             minWidth: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const childSettings = value as ChildSettingInfo[] | null;
-                const settingId = String(row.id || '');
+                // Create unique ID by combining multiple fields
+                const settingId = `${row.policyId || 'no-policy'}-${row.settingName || 'no-name'}-${row.source || 'no-source'}`;
                 const hasChildren = childSettings && childSettings.length > 0;
 
                 if (!hasChildren) {
@@ -217,7 +224,7 @@ export default function PolicySettingsPage() {
                                 e.stopPropagation();
                                 toggleRowExpansion(settingId);
                             }}
-                            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                            className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 hover:underline"
                         >
                             {isExpanded ? (
                                 <ChevronDown className="h-3 w-3" />
@@ -262,7 +269,7 @@ export default function PolicySettingsPage() {
                                     {
                                         label: "Standard Export",
                                         data: prepareExportData(),
-                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                        formats: ['csv', 'pdf', 'html']
                                     }
                                 ]}
                                 variant="outline"
@@ -274,10 +281,29 @@ export default function PolicySettingsPage() {
                             </Button>
                         </>
                     ) : (
-                        <Button onClick={fetchSettings} disabled={loading}>
-                            <Settings className="h-4 w-4 mr-2" />
-                            {loading ? "Loading..." : "Load Settings"}
-                        </Button>
+                        <>
+                            <Button onClick={fetchSettings} disabled={loading}>
+                                <Settings className="h-4 w-4 mr-2" />
+                                {loading ? "Loading..." : "Load Settings"}
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setSettings([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <X className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -295,9 +321,21 @@ export default function PolicySettingsPage() {
                 </Card>
             )}
 
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchSettings();
+                    }}
+                    title="Loading Cancelled"
+                    description="Data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Policies"
+                />
+            )}
+
             {/* Welcome card when no settings are loaded */}
             {settings.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-muted-foreground mb-6">
@@ -320,7 +358,7 @@ export default function PolicySettingsPage() {
 
             {/* Loading state */}
             {loading && settings.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="p-12">
                         <div className="text-center">
                             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
@@ -341,7 +379,7 @@ export default function PolicySettingsPage() {
                     showPagination={true}
                     showSearch={true}
                     searchPlaceholder="Search policy settings..."
-                    className="shadow-sm"
+                    className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10"
                 />
             )}
         </div>

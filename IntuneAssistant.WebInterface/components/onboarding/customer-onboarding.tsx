@@ -21,8 +21,7 @@ import {
     Key,
     ArrowRight,
     AlertCircle,
-    ExternalLink,
-    Shield,
+    ExternalLink,Shield,
     Users
 } from 'lucide-react';
 import { CONSENT_URL_ENDPOINT, CONSENT_CALLBACK } from '@/lib/constants';
@@ -43,8 +42,7 @@ interface OnboardingStep {
 
 interface ConsentResponse {
     status: number;
-    message: string;
-    data: {
+    message: string;data: {
         url: string;
         message: string;
     };
@@ -67,6 +65,7 @@ export default function CustomerOnboardingModal({
     const [error, setError] = useState<string | null>(null);
     const [consentCompleted, setConsentCompleted] = useState(false);
     const [consentWindow, setConsentWindow] = useState<Window | null>(null);
+    const [scrollPosition, setScrollPosition] = useState(0);
 
     // Form data
     const [customerName, setCustomerName] = useState('');
@@ -77,6 +76,12 @@ export default function CustomerOnboardingModal({
     const [consentData, setConsentData] = useState<ConsentResponse | null>(null);
     const [onboardingResult, setOnboardingResult] = useState<OnboardingResult | null>(null);
     const [consentState, setConsentState] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (isOpen && typeof window !== 'undefined') {
+            setScrollPosition(window.scrollY);
+        }
+    }, [isOpen]);
 
     const steps: OnboardingStep[] = [
         {
@@ -108,7 +113,24 @@ export default function CustomerOnboardingModal({
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
             console.log('Received message from origin:', event.origin);
+            console.log('Message data:', event.data);
             console.log('Current window origin:', window.location.origin);
+
+            // Accept messages from both old and new domain
+            const allowedOrigins = [
+                'https://intuneassistant.cloud',
+                'https://test.intuneassistant.cloud',
+                'https://community.intuneassistant.cloud'
+            ];
+
+            // Check if the origin is allowed (or in development, allow localhost)
+            const isDevelopment = window.location.hostname === 'localhost';
+            const isAllowedOrigin = allowedOrigins.some(origin => event.origin.startsWith(origin));
+
+            if (!isDevelopment && !isAllowedOrigin) {
+                console.warn('Message from unauthorized origin:', event.origin);
+                return;
+            }
 
             if (event.data?.type === 'CONSENT_SUCCESS' || event.data?.type === 'CONSENT_ERROR') {
                 console.log('Processing consent message:', event.data);
@@ -117,7 +139,6 @@ export default function CustomerOnboardingModal({
                     setConsentCompleted(true);
                     setLoading(false);
 
-                    // Just clear the reference - don't try to close the window
                     if (consentWindow) {
                         setConsentWindow(null);
                     }
@@ -127,7 +148,6 @@ export default function CustomerOnboardingModal({
                     setError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
                     setLoading(false);
 
-                    // Just clear the reference - don't try to close the window
                     if (consentWindow) {
                         setConsentWindow(null);
                     }
@@ -191,8 +211,7 @@ export default function CustomerOnboardingModal({
             if (!validateDomainName(tenantDomainName)) {
                 setError('Please enter a valid domain name');
                 return;
-            }
-            setError(null);
+            }setError(null);
             setCurrentStep(1);
         } else if (currentStep === 1) {
             setCurrentStep(2);
@@ -205,7 +224,7 @@ export default function CustomerOnboardingModal({
             setLoading(true);
             setError(null);
 
-            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=0`;
+            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=0&redirectUri=${encodeURIComponent(window.location.origin + '/consent-callback')}`;
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -216,6 +235,15 @@ export default function CustomerOnboardingModal({
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
+
+                // Handle 409 Conflict specifically with detailed error message
+                if (response.status === 409) {
+                    const errorMessage = errorData
+                        ? `${errorData.message || 'Customer already exists.'}\n${errorData.details || ''}\n${errorData.data || ''}`.trim()
+                        : 'This customer is already onboarded.';
+                    throw new Error(errorMessage);
+                }
+
                 throw new Error(errorData?.message || `Failed to initiate onboarding: ${response.statusText}`);
             }
 
@@ -227,6 +255,7 @@ export default function CustomerOnboardingModal({
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to initiate onboarding');
             setLoading(false);
+            setCurrentStep(1);
         }
     };
 
@@ -364,9 +393,17 @@ export default function CustomerOnboardingModal({
 
     const isFormValid = validateCustomerName(customerName) && validateTenantId(tenantId) && validateDomainName(tenantDomainName);
 
+
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent
+                className="max-w-[1400px] max-h-[80vh] overflow-y-auto absolute left-1/2 -translate-x-1/2"
+                style={{
+                    top: `${scrollPosition + 450}px`,
+                    position: 'absolute'
+                }}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Users className="h-5 w-5 text-primary" />
@@ -378,9 +415,9 @@ export default function CustomerOnboardingModal({
                 </DialogHeader>
 
                 {/* Progress Steps */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="relative flex items-center justify-between mb-6">
                     {steps.map((step, index) => (
-                        <div key={step.id} className="flex flex-col items-center flex-1">
+                        <div key={step.id} className="flex flex-col items-center flex-1 relative">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                                 step.completed
                                     ? 'bg-green-500 text-white'
@@ -395,9 +432,14 @@ export default function CustomerOnboardingModal({
                                 <div className="text-muted-foreground">{step.description}</div>
                             </div>
                             {index < steps.length - 1 && (
-                                <div className={`absolute top-4 w-full h-0.5 ${
-                                    step.completed ? 'bg-green-500' : 'bg-gray-200'
-                                }`} style={{ left: '50%', width: 'calc(100% - 2rem)', zIndex: -1 }} />
+                                <div
+                                    className={`absolute top-4 h-0.5 ${step.completed ? 'bg-green-500' : 'bg-gray-200'}`}
+                                    style={{
+                                        left: 'calc(50% + 1rem)',
+                                        right: 'calc(-50% + 1rem)',
+                                        zIndex: -1
+                                    }}
+                                />
                             )}
                         </div>
                     ))}
@@ -411,8 +453,7 @@ export default function CustomerOnboardingModal({
                                 <CardTitle className="flex items-center gap-2">
                                     <Building className="h-4 w-4" />
                                     Customer & Tenant Details
-                                </CardTitle>
-                                <CardDescription>
+                                </CardTitle><CardDescription>
                                     Enter the customer name and their Microsoft tenant information
                                 </CardDescription>
                             </CardHeader>
@@ -425,8 +466,7 @@ export default function CustomerOnboardingModal({
                                         onChange={(e) => setCustomerName(e.target.value)}
                                         placeholder="e.g. Acme Corporation"
                                     />
-                                </div>
-                                <Separator />
+                                </div><Separator />
                                 <div className="space-y-2">
                                     <Label htmlFor="tenantId">Tenant ID</Label>
                                     <Input
@@ -447,9 +487,9 @@ export default function CustomerOnboardingModal({
                                 </div>
 
                                 {error && (
-                                    <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-md">
-                                        <AlertCircle className="h-4 w-4" />
-                                        {error}
+                                    <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+                                        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                        <div className="whitespace-pre-line">{error}</div>
                                     </div>
                                 )}
                             </CardContent>
@@ -470,19 +510,26 @@ export default function CustomerOnboardingModal({
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-1 gap-4">
-                                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                         <span className="text-sm font-medium">Customer</span>
                                         <span className="text-sm text-muted-foreground">{customerName}</span>
                                     </div>
-                                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                         <span className="text-sm font-medium">Tenant ID</span>
                                         <span className="text-sm text-muted-foreground font-mono">{tenantId}</span>
                                     </div>
-                                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                         <span className="text-sm font-medium">Domain</span>
                                         <span className="text-sm text-muted-foreground">{tenantDomainName}</span>
                                     </div>
                                 </div>
+
+                                {error && (
+                                    <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+                                        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                        <div className="whitespace-pre-line">{error}</div>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     )}

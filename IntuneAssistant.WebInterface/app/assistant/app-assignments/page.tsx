@@ -17,13 +17,15 @@ import {
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, Computer, Blocks, CircleQuestionMark
+    ChevronUp, Computer, Blocks, CircleQuestionMark, XCircle
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { MultiSelect, Option } from '@/components/ui/multi-select';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import {CancelledCard} from "@/components/CancelledCard";
+import {FilterDetailsDialog} from "@/components/FilterDialog";
 
 interface ApiResponse {
     status: string;
@@ -104,7 +106,9 @@ export default function AssignmentsOverview() {
     const { instance, accounts } = useMsal();
     const [showConsentDialog, setShowConsentDialog] = useState(false);
     const [consentUrl, setConsentUrl] = useState('');
-    const { request } = useApiRequest();
+    const { request, cancel } = useApiRequest();
+    const [isCancelled, setIsCancelled] = useState(false);
+
 
     const [assignments, setAssignments] = useState<Assignments[]>([]);
     const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
@@ -736,12 +740,12 @@ export default function AssignmentsOverview() {
                         </button>
                         <div className="flex items-center">
                             {isInclude ? (
-                                <Badge variant="default" className="text-xs bg-green-100 text-green-800 border-green-200 px-1 py-0">
+                                <Badge variant="default" className="text-xs bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white border-green-400 dark:border-green-500 px-1 py-0">
                                     <Shield className="h-2 w-2 mr-1" />
                                     Inc
                                 </Badge>
                             ) : (
-                                <Badge variant="destructive" className="text-xs bg-red-100 text-white border-red-200 px-1 py-0">
+                                <Badge variant="destructive" className="text-xs bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white border-red-400 dark:border-red-500 px-1 py-0">
                                     <ShieldCheck className="h-2 w-2 mr-1" />
                                     Exc
                                 </Badge>
@@ -762,11 +766,11 @@ export default function AssignmentsOverview() {
                         View all Intune applications assignments across your organization
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex gap-2">
                     {assignments.length > 0 ? (
                         <>
                             <Button onClick={fetchAssignments} variant="outline" size="sm" disabled={loading}>
-                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}/>
                                 Refresh
                             </Button>
                             <ExportButton
@@ -783,14 +787,34 @@ export default function AssignmentsOverview() {
                             />
                         </>
                     ) : (
-                        <Button
-                            onClick={fetchAssignments}
-                            disabled={loading}
-                            className="flex items-center gap-2"
-                        >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                            Load Assignments
-                        </Button>
+                        <>
+                            <Button
+                                onClick={fetchAssignments}
+                                disabled={loading}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
+                                Load Assignments
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setAssignments([]);
+                                        setFilteredAssignments([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -817,7 +841,7 @@ export default function AssignmentsOverview() {
 
             {/* Welcome card */}
             {assignments.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 dark:text-gray-500 mb-6">
@@ -859,7 +883,7 @@ export default function AssignmentsOverview() {
 
             {/* Loading state */}
             {loading && assignments.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4" />
@@ -874,11 +898,23 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchAssignments();
+                    }}
+                    title="Loading Cancelled"
+                    description="Assignment data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Assignments"
+                />
+            )}
+
             {/* Filters and content sections */}
             {(assignments.length > 0 || loading) && (
                 <>
                     {/* Filters Section */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
                                 <button
@@ -1096,7 +1132,6 @@ export default function AssignmentsOverview() {
                         )}
                     </Card>
 
-
                     {error && (
                         <Card className="border-red-200 bg-red-50">
                             <CardContent className="pt-6">
@@ -1109,7 +1144,7 @@ export default function AssignmentsOverview() {
                     )}
 
                     {/* Assignment Details Table */}
-                    <Card className="shadow-sm w-full overflow-hidden">
+                    <Card className="relative overflow-hidden transition-all duration-300  hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
@@ -1142,7 +1177,6 @@ export default function AssignmentsOverview() {
                                     <DataTable
                                         data={filteredAssignments}
                                         columns={columns}
-                                        className="min-w-full"
                                         showPagination={true}
                                         currentPage={currentPage}
                                         itemsPerPage={itemsPerPage}
@@ -1187,7 +1221,7 @@ export default function AssignmentsOverview() {
 
                     {/* Filtered empty state */}
                     {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (
-                        <Card>
+                        <Card className="relative overflow-hidden transition-all duration-300  hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
                                     <div className="text-gray-400 dark:text-gray-500 mb-4">
@@ -1220,111 +1254,14 @@ export default function AssignmentsOverview() {
                 }}
             />
 
-            {/* Filter Details Dialog */}
-            <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
-                <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Settings className="h-5 w-5" />
-                            {selectedFilter?.displayName || 'Filter Details'}
-                        </DialogTitle>
-                        <DialogDescription className="text-gray-600 dark:text-gray-300">
-                            {selectedFilter?.description || 'Assignment filter information and rules'}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    {selectedFilter ? (
-                        <div className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter ID</label>
-                                    <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
-                                    <div className="flex items-center gap-2">
-                                        {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
-                                                <Computer className="h-3 w-3 mr-1" />
-                                                Devices
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="default" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
-                                                <Blocks className="h-3 w-3 mr-1" />
-                                                Apps
-                                            </Badge>
-                                        )}
-
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
-                                    <p className="text-sm text-gray-900 dark:text-gray-100">    {selectedFilter.platform === 0 ? 'All' :
-                                            selectedFilter.platform === 1 ? 'Android' :
-                                                selectedFilter.platform === 2 ? 'iOS' :
-                                                    selectedFilter.platform === 3 ? 'macOS' :
-                                                        selectedFilter.platform === 4 ? 'Windows' :
-                                                            `Platform ${selectedFilter.platform}`}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Description */}
-                            {selectedFilter.description && (
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
-                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                    <code className="whitespace-pre-wrap break-all">
-                                        {selectedFilter.description}
-                                    </code>
-                                </pre>
-                                </div>
-                            )}
-
-                            {selectedFilter.rule && (
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter Rule</label>
-                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                    <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
-                                </pre>
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Created</label>
-                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
-                                    </div>
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Last Modified</label>
-                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Role Scope Tags</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
-                                            selectedFilter.roleScopeTags.map((tag, index) => (
-                                                <Badge key={index} variant="outline" className="text-xs">
-                                                    {tag}
-                                                </Badge>
-                                            ))
-                                        ) : (
-                                            <span className="text-sm text-gray-500 dark:text-gray-400">No role scope tags</span>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="text-center py-8">
-                            <p className="text-gray-500 dark:text-gray-400">Filter not found</p>
-                        </div>
-                    )}
-                </DialogContent>
-            </Dialog>
+            <FilterDetailsDialog
+                filter={selectedFilter}
+                isOpen={isFilterDialogOpen}
+                onClose={() => {
+                    setIsFilterDialogOpen(false);
+                    setSelectedFilter(null);
+                }}
+            />
         </div>
     );
 }

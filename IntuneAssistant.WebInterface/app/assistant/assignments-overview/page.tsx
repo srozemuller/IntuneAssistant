@@ -19,13 +19,20 @@ import {
     ChevronUp,
     XCircle, Computer, Blocks, CircleQuestionMark
 } from 'lucide-react';
-import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
+import {
+    ASSIGNMENTS_ENDPOINT,
+    ASSIGNMENTS_FILTERS_ENDPOINT,
+    ITEMS_PER_PAGE,
+    ROLE_SCOPETAGS_ENDPOINT
+} from '@/lib/constants';
 
 import {MultiSelect, Option} from '@/components/ui/multi-select';
 
 import {ExportButton, ExportData, ExportColumn} from '@/components/ExportButton';
 import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
+import {CancelledCard} from "@/components/CancelledCard";
+import {FilterDetailsDialog} from "@/components/FilterDialog";
 
 
 interface ApiResponse {
@@ -50,11 +57,20 @@ interface Assignments extends Record<string, unknown> {
     filterType: string;
     assignmentDirection: string;
     isExcluded: boolean;
+    scopeTagIds?: string[];
     group?: {
         id: string;
         displayName: string;
         description: string;
     };
+}
+
+interface RoleScopeTag {
+    id: string;
+    displayName: string;
+    description: string;
+    isBuildIn: boolean;
+    assignments: unknown[];
 }
 
 interface AssignmentFilter {
@@ -74,6 +90,8 @@ interface AssignmentFilter {
 }
 
 
+
+
 export default function AssignmentsOverview() {
     // API CALLS
     const {instance, accounts} = useMsal();
@@ -86,6 +104,9 @@ export default function AssignmentsOverview() {
     const [filters, setFilters] = useState<AssignmentFilter[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [roleScopeTags, setRoleScopeTags] = useState<RoleScopeTag[]>([]);
+
+    const [isCancelled, setIsCancelled] = useState(false);
 
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
@@ -101,6 +122,8 @@ export default function AssignmentsOverview() {
     const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
     const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
+    const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
+
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -119,6 +142,8 @@ export default function AssignmentsOverview() {
     ];
 
     const prepareRolloutExportData = (): ExportData => {
+        const searchFiltered = getSearchFilteredData(filteredAssignments);
+
         const exportColumns: ExportColumn[] = [
             {
                 key: 'resourceName',
@@ -174,16 +199,18 @@ export default function AssignmentsOverview() {
         ];
 
         return {
-            data: filteredAssignments, // Use your filtered assignments data
+            data: searchFiltered,
             columns: exportColumns,
             filename: 'rollouts-overview',
             title: 'Rollouts Overview',
-            description: 'Detailed view of all Intune rollouts across your organization',
+            description: searchQuery ? `Filtered results for: "${searchQuery}"` : 'Detailed view of all Intune rollouts across your organization',
             stats: rolloutStats
         };
     };
 
     const prepareExportData = (): ExportData => {
+        const searchFiltered = getSearchFilteredData(filteredAssignments);
+
         const exportColumns: ExportColumn[] = [
             {
                 key: 'resourceType',
@@ -249,11 +276,11 @@ export default function AssignmentsOverview() {
         ];
 
         return {
-            data: filteredAssignments,
+            data: searchFiltered,
             columns: exportColumns,
             filename: 'assignments-overview',
             title: 'Assignments Overview',
-            description: 'Detailed view of all Intune assignments across your organization',
+            description: searchQuery ? `Search results for: "${searchQuery}"` : 'Detailed view of all Intune assignments across your organization',
             stats
         };
     };
@@ -266,7 +293,7 @@ export default function AssignmentsOverview() {
 
         try {
             // Fetch both assignments and filters
-            await Promise.all([fetchAssignmentsData(), fetchFilters()]);
+            await Promise.all([fetchAssignmentsData(), fetchFilters(), fetchRoleScopeTags()]);
         } catch (error) {
             console.error('Failed to fetch data:', error);
             setError(error instanceof Error ? error.message : 'Failed to fetch data');
@@ -274,6 +301,25 @@ export default function AssignmentsOverview() {
             setLoading(false);
         }
     };
+
+const getSearchFilteredData = (data: Assignments[]): Assignments[] => {
+    if (!searchQuery.trim()) return data;
+
+    const query = searchQuery.toLowerCase();
+    return data.filter(assignment => {
+        return (
+            assignment.resourceName?.toLowerCase().includes(query) ||
+            assignment.targetName?.toLowerCase().includes(query) ||
+            assignment.assignmentType?.toLowerCase().includes(query) ||
+            assignment.resourceType?.toLowerCase().includes(query) ||
+            assignment.platform?.toLowerCase().includes(query) ||
+            getFilterInfo(assignment.filterId, assignment.filterType).displayName.toLowerCase().includes(query)
+        );
+    });
+};
+
+// Add this new computed value right after your useEffect hooks
+const displayedAssignments = getSearchFilteredData(filteredAssignments);
 
     const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
@@ -300,6 +346,23 @@ export default function AssignmentsOverview() {
         const assignmentsData = response.data;
         setAssignments(assignmentsData);
         setFilteredAssignments(assignmentsData);
+    };
+
+    const getUniqueRoleScopeTags = (): Option[] => {
+        const tagIds = new Set<string>();
+        assignments.forEach(assignment => {
+            assignment.scopeTagIds?.forEach(id => tagIds.add(id));
+        });
+
+        return Array.from(tagIds)
+            .map(id => {
+                const tag = roleScopeTags.find(t => t.id === id);
+                return {
+                    label: tag?.displayName || `Unknown (${id})`,
+                    value: id
+                };
+            })
+            .sort((a, b) => a.label.localeCompare(b.label));
     };
 
     const getUniqueResourceTypes = (): Option[] => {
@@ -349,6 +412,42 @@ export default function AssignmentsOverview() {
         }
     };
 
+    const fetchRoleScopeTags = async () => {
+        if (!accounts.length) return;
+
+        try {
+            const responseData = await request<{ data: RoleScopeTag[] }>(ROLE_SCOPETAGS_ENDPOINT, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!responseData) {
+                console.error('No response received from role scope tags API');
+                setRoleScopeTags([]);
+                return;
+            }
+
+            if (responseData.data && Array.isArray(responseData.data)) {
+                setRoleScopeTags(responseData.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch role scope tags:', error);
+            setRoleScopeTags([]);
+        }
+    };
+
+    const getRoleScopeTagNames = (scopeTagIds: string[] | undefined): string[] => {
+        if (!scopeTagIds || scopeTagIds.length === 0) return [];
+
+        return scopeTagIds
+            .map(id => {
+                const tag = roleScopeTags.find(t => t.id === id);
+                return tag?.displayName || `Unknown (${id})`;
+            })
+            .filter(Boolean);
+    };
 
     const getFilterInfo = (filterId: string | null, filterType: string) => {
         if (!filterId || filterId === 'None' || filterType === 'None') {
@@ -426,8 +525,14 @@ export default function AssignmentsOverview() {
             });
         }
 
+        if (roleScopeTagFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                return assignment.scopeTagIds?.some(id => roleScopeTagFilter.includes(id));
+            });
+        }
+
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, filterTypeFilter]);
+    }, [assignments, assignmentTypeFilter, resourceTypeFilter, statusFilter, platformFilter, filterTypeFilter, roleScopeTagFilter]);
 
 
     // Get unique values for filters
@@ -462,6 +567,7 @@ export default function AssignmentsOverview() {
         setStatusFilter([]);
         setPlatformFilter([]);
         setFilterTypeFilter([]);
+        setRoleScopeTagFilter([]);
     };
 
     // Group dialog handlers
@@ -520,17 +626,6 @@ export default function AssignmentsOverview() {
 
     const columns = [
         {
-            key: 'resourceType' as string,
-            label: 'Type',
-            width: 120,
-            minWidth: 80,
-            render: (value: unknown) => (
-                <Badge variant="outline" className="font-mono text-xs whitespace-nowrap">
-                    {String(value)}
-                </Badge>
-            )
-        },
-        {
             key: 'resourceName' as string,
             label: 'Resource',
             width: 200,
@@ -542,20 +637,26 @@ export default function AssignmentsOverview() {
 
                 if (resourceType === 'Group' && resourceId && resourceName !== 'N/A') {
                     return (
-                        <button
-                            onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
-                            className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
-                            title={resourceName}
-                        >
-                            {resourceName}
-                        </button>
+                        <div className="space-y-0.5">
+                            <button
+                                onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
+                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
+                                title={resourceName}
+                            >
+                                {resourceName}
+                            </button>
+                            <span className="text-xs text-gray-400 block">{resourceType}</span>
+                        </div>
                     );
                 }
 
                 return (
-                    <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                        {resourceName}
-                    </span>
+                    <div className="space-y-0.5">
+                        <span className="font-medium text-sm truncate block w-full" title={resourceName}>
+                            {resourceName}
+                        </span>
+                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                    </div>
                 );
             }
         },
@@ -611,7 +712,7 @@ export default function AssignmentsOverview() {
                             <div className="flex items-center gap-1">
                                 <button
                                     onClick={() => handleResourceClick(targetId, assignmentType)}
-                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate flex-1 text-left"
+                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate flex-1 text-left bg-transparent hover:bg-transparent border-none p-0"
                                     title={targetName}
                                 >
                                     {targetName}
@@ -701,19 +802,48 @@ export default function AssignmentsOverview() {
                         </button>
                         <div className="flex items-center">
                             {isInclude ? (
-                                <Badge variant="default"
-                                       className="text-xs bg-green-100 text-green-800 border-green-200 px-1 py-0">
-                                    <Shield className="h-2 w-2 mr-1"/>
+                                <Badge variant="default" className="text-xs bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white border-green-400 dark:border-green-500 px-1 py-0">
+                                    <Shield className="h-2 w-2 mr-1" />
                                     Inc
                                 </Badge>
                             ) : (
-                                <Badge variant="destructive"
-                                       className="text-xs bg-red-100 text-red-800 border-red-200 px-1 py-0">
-                                    <ShieldCheck className="h-2 w-2 mr-1"/>
+                                <Badge variant="destructive" className="text-xs bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white border-red-400 dark:border-red-500 px-1 py-0">
+                                    <ShieldCheck className="h-2 w-2 mr-1" />
                                     Exc
                                 </Badge>
                             )}
                         </div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'scopeTagIds' as string,
+            label: 'Role Scope Tags',
+            width: 180,
+            minWidth: 140,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const scopeTagIds = value as string[] | undefined;
+                const tagNames = getRoleScopeTagNames(scopeTagIds);
+
+                if (tagNames.length === 0) {
+                    return <span className="text-xs text-gray-500">None</span>;
+                }
+
+                return (
+                    <div className="flex flex-wrap gap-1">
+                        {tagNames.map((tagName, index) => {
+                            const isBuiltIn = roleScopeTags.find(t => t.displayName === tagName)?.isBuildIn;
+                            return (
+                                <Badge
+                                    key={index}
+                                    variant={isBuiltIn ? "secondary" : "outline"}
+                                    className="text-xs"
+                                >
+                                    {tagName}
+                                </Badge>
+                            );
+                        })}
                     </div>
                 );
             }
@@ -743,12 +873,12 @@ export default function AssignmentsOverview() {
                                     {
                                         label: "Standard Export",
                                         data: prepareExportData(),
-                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                        formats: ['csv', 'pdf', 'html']
                                     },
                                     {
                                         label: "Export for bulk assignments",
                                         data: prepareRolloutExportData(),
-                                        formats: ['csv'] // Only CSV for rollout
+                                        formats: ['csv']
                                     }
                                 ]}
                                 variant="outline"
@@ -757,14 +887,34 @@ export default function AssignmentsOverview() {
                             />
                         </>
                     ) : (
-                        <Button
-                            onClick={fetchAssignments}
-                            disabled={loading}
-                            className="flex items-center gap-2"
-                        >
-                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
-                            Load Assignments
-                        </Button>
+                        <>
+                            <Button
+                                onClick={fetchAssignments}
+                                disabled={loading}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}/>
+                                Load Assignments
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setAssignments([]);
+                                        setFilteredAssignments([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
 
@@ -772,7 +922,7 @@ export default function AssignmentsOverview() {
 
             {/* Show welcome card when no assignments are loaded and not loading */}
             {assignments.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 mb-6">
@@ -794,9 +944,21 @@ export default function AssignmentsOverview() {
                 </Card>
             )}
 
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchAssignments();
+                    }}
+                    title="Loading Cancelled"
+                    description="Assignment data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Assignments"
+                />
+            )}
+
             {/* Show loading state */}
             {loading && assignments.length === 0 && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-16">
                             <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"/>
@@ -815,7 +977,7 @@ export default function AssignmentsOverview() {
             {(assignments.length > 0 || loading) && (
                 <>
                     {/* Filters Section */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
                                 <button
@@ -935,6 +1097,17 @@ export default function AssignmentsOverview() {
                                             placeholder="Select filter types..."
                                         />
                                     </div>
+
+                                    {/* Role Scope Tags Filter */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium dark:text-gray-200">Role Scope Tags</label>
+                                        <MultiSelect
+                                            options={getUniqueRoleScopeTags()}
+                                            selected={roleScopeTagFilter}
+                                            onChange={setRoleScopeTagFilter}
+                                            placeholder="Select scope tags..."
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Active Filters Display */}
@@ -992,7 +1165,7 @@ export default function AssignmentsOverview() {
                     )}
 
                     {/* Assignment Details Table */}
-                    <Card className="shadow-sm w-full overflow-hidden">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <span>Assignment Details</span>
@@ -1009,7 +1182,7 @@ export default function AssignmentsOverview() {
                                 </div>
                             ) : (
                                 <DataTable
-                                    data={filteredAssignments}
+                                    data={displayedAssignments}
                                     columns={columns}
                                     className="min-w-full"
                                     showPagination={true}
@@ -1058,124 +1231,14 @@ export default function AssignmentsOverview() {
                 }}
             />
 
-            {/* Filter Details Dialog */}
-            <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
-                <DialogContent className="max-w-5xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Settings className="h-5 w-5"/>
-                            {selectedFilter?.displayName || 'Filter Details'}
-                        </DialogTitle>
-                        <DialogDescription className="text-gray-600 dark:text-gray-300">
-                            {selectedFilter?.description || 'Assignment filter information and rules'}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    {selectedFilter ? (
-                        <div className="space-y-6">
-                            <div
-                                className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Filter
-                                        ID</label>
-                                    <p className="font-mono text-sm break-all text-gray-900 dark:text-gray-100">{selectedFilter.id}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management
-                                        Type</label>
-                                    <div className="flex items-center gap-2">
-                                        {selectedFilter.assignmentFilterManagementType === 0 ? (
-                                            <Badge variant="default"
-                                                   className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
-                                                <Computer className="h-3 w-3 mr-1"/>
-                                                Devices
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="default"
-                                                   className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
-                                                <Blocks className="h-3 w-3 mr-1"/>
-                                                Apps
-                                            </Badge>
-                                        )}
-
-                                    </div>
-                                </div>
-                                <div>
-                                    <label
-                                        className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
-                                    <p className="text-sm text-gray-900 dark:text-gray-100">    {selectedFilter.platform === 0 ? 'All' :
-                                        selectedFilter.platform === 1 ? 'Android' :
-                                            selectedFilter.platform === 2 ? 'iOS' :
-                                                selectedFilter.platform === 3 ? 'macOS' :
-                                                    selectedFilter.platform === 4 ? 'Windows' :
-                                                        `Platform ${selectedFilter.platform}`}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Description */}
-                            {selectedFilter.description && (
-                                <div>
-                                    <label
-                                        className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Description</label>
-                                    <pre
-                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                    <code className="whitespace-pre-wrap break-all">
-                                        {selectedFilter.description}
-                                    </code>
-                                </pre>
-                                </div>
-                            )}
-
-                            {selectedFilter.rule && (
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Filter
-                                        Rule</label>
-                                    <pre
-                                        className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                                    <code className="whitespace-pre-wrap break-all">{selectedFilter.rule}</code>
-                                </pre>
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <div>
-                                        <label
-                                            className="text-sm font-medium text-gray-600 dark:text-gray-300">Created</label>
-                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.createdDateTime).toLocaleString()}</p>
-                                    </div>
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Last
-                                            Modified</label>
-                                        <p className="text-sm text-gray-900 dark:text-gray-100">{new Date(selectedFilter.lastModifiedDateTime).toLocaleString()}</p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Role
-                                        Scope Tags</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {selectedFilter.roleScopeTags && selectedFilter.roleScopeTags.length > 0 ? (
-                                            selectedFilter.roleScopeTags.map((tag, index) => (
-                                                <Badge key={index} variant="outline" className="text-xs">
-                                                    {tag}
-                                                </Badge>
-                                            ))
-                                        ) : (
-                                            <span className="text-sm text-gray-500 dark:text-gray-400">No role scope tags</span>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="text-center py-8">
-                            <p className="text-gray-500 dark:text-gray-400">Filter not found</p>
-                        </div>
-                    )}
-                </DialogContent>
-            </Dialog>
+            <FilterDetailsDialog
+                filter={selectedFilter}
+                isOpen={isFilterDialogOpen}
+                onClose={() => {
+                    setIsFilterDialogOpen(false);
+                    setSelectedFilter(null);
+                }}
+            />
         </div>
     );
 }

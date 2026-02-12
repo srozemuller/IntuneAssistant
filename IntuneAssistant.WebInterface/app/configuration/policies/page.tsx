@@ -45,6 +45,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {UserMember} from "@/hooks/useGroupDetails";
+import {CancelledCard} from "@/components/CancelledCard";
 
 
 interface GroupDetails {
@@ -114,7 +115,9 @@ interface ApiResponse {
 
 export default function ConfigurationPoliciesPage() {
     const { instance, accounts } = useMsal();
-    const { request } = useApiRequest();
+    const { request, cancel } = useApiRequest();
+    const [isCancelled, setIsCancelled] = useState(false);
+
     const [policies, setPolicies] = useState<ConfigurationPolicy[]>([]);
     const [filteredPolicies, setFilteredPolicies] = useState<ConfigurationPolicy[]>([]);
     const [filters, setFilters] = useState<AssignmentFilter[]>([]);
@@ -290,6 +293,7 @@ export default function ConfigurationPoliciesPage() {
 
         setLoading(true);
         setError(null);
+        setIsCancelled(false);
 
         try {
             await Promise.all([fetchPoliciesData(), fetchFilters(), fetchGroups()]);
@@ -704,7 +708,7 @@ export default function ConfigurationPoliciesPage() {
                                     {
                                         label: "Standard Export",
                                         data: prepareExportData(),
-                                        formats: ['csv', 'pdf', 'html'] // All formats (optional, defaults to all)
+                                        formats: ['csv', 'pdf', 'html']
                                     }
                                 ]}
                                 variant="outline"
@@ -716,10 +720,30 @@ export default function ConfigurationPoliciesPage() {
                             </Button>
                         </>
                     ) : (
-                        <Button onClick={fetchPolicies} disabled={loading}>
-                            <Database className="h-4 w-4 mr-2" />
-                            {loading ? "Loading..." : "Load Policies"}
-                        </Button>
+                        <>
+                            <Button onClick={fetchPolicies} disabled={loading}>
+                                <Database className="h-4 w-4 mr-2" />
+                                {loading ? "Loading..." : "Load Policies"}
+                            </Button>
+                            {loading && (
+                                <Button
+                                    onClick={() => {
+                                        cancel();
+                                        setPolicies([]);
+                                        setFilteredPolicies([]);
+                                        setError(null);
+                                        setLoading(false);
+                                        setIsCancelled(true);
+                                    }}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4"/>
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -744,9 +768,21 @@ export default function ConfigurationPoliciesPage() {
                 </Card>
             )}
 
+            {isCancelled && !loading && (
+                <CancelledCard
+                    onRetry={() => {
+                        setIsCancelled(false);
+                        fetchPolicies();
+                    }}
+                    title="Loading Cancelled"
+                    description="Data loading was cancelled. Click below to load assignments again."
+                    buttonText="Load Policies"
+                />
+            )}
+
             {/* Bulk Actions Bar */}
             {selectedPolicies.length > 0 && !loading && !error && (
-                <Card className="shadow-sm border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
                     <CardContent className="py-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
@@ -793,7 +829,7 @@ export default function ConfigurationPoliciesPage() {
 
             {/* Show welcome card when no policies are loaded and not loading */}
             {policies.length === 0 && !loading && !error && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-muted-foreground mb-6">
@@ -816,7 +852,7 @@ export default function ConfigurationPoliciesPage() {
 
             {/* Show loading state */}
             {loading && (
-                <Card className="shadow-sm">
+                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="p-12">
                         <div className="text-center">
                             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
@@ -833,7 +869,7 @@ export default function ConfigurationPoliciesPage() {
             {(policies.length > 0 || loading) && !error && (
                 <>
                     {/* Filters */}
-                    <Card className="shadow-sm">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <div className="flex items-center justify-between">
                                 <CardTitle className="text-lg font-medium">Filters</CardTitle>
@@ -932,7 +968,7 @@ export default function ConfigurationPoliciesPage() {
                         showSearch={false}
                         selectedRows={selectedPolicies}
                         onSelectionChange={setSelectedPolicies}
-                        className="shadow-sm"
+                        className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10"
                     />
                 </>
             )}

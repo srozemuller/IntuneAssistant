@@ -33,7 +33,7 @@
     "file-saver": "^2.0.5",
     "gtag": "^1.0.1",
     "html2canvas": "^1.4.1",
-    "jspdf": "^3.0.2",
+    "jspdf": "^4.1.0",
     "jspdf-autotable": "^5.0.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.542.0",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.0.0",
     "@types/file-saver": "^2.0.7",
     "@types/jszip": "^3.4.0",
     "@types/node": "^20",
@@ -56,7 +56,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.0.0",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"
   }
