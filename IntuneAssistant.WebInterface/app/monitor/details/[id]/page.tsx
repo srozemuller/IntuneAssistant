@@ -633,7 +633,7 @@ export default function MonitorDetailsPage() {
                                 </div>
                             </div>
                             <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                                Click "Show All Resources" to view the complete baseline configuration
+                                Click &quot;Show All Resources&quot; to view the complete baseline configuration
                             </p>
                         </div>
                     ) : (
