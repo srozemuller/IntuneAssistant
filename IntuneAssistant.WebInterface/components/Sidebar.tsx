@@ -52,7 +52,9 @@ import {
     Monitor,
     ArrowLeftRight,
     MonitorCog,
-    ShieldCheck
+    ShieldCheck,
+    MonitorCheck,
+    ScrollText
 } from 'lucide-react';
 
 const iconMap = {
@@ -72,7 +74,8 @@ const iconMap = {
     Monitor,
     MonitorCog,
     Crown,
-    ShieldCheck
+    ShieldCheck,
+    MonitorCheck
 };
 
 interface MenuItem {
@@ -295,6 +298,23 @@ export function Sidebar() {
                 }
             ]
         },
+        {
+            title: "Drift Monitor",
+            badgeColor: "bg-green-500",
+            items: [
+                {
+                    title: "Monitor Overview",
+                    icon: "MonitorCheck",
+                    href: "/monitor",
+                    submenu: [
+                        { title: "Global Overview", href: "/monitor/global-overview" },
+                        { title: "All Monitors", href: "/monitor/monitors" },
+                        { title: "Add Monitor", href: "/monitor/add" },
+                        { title: "Drifts", href: "/monitor/drift" }
+                    ]
+                }
+            ]
+        },
         // Only include Business Modules section if customer is active
         ...(isActiveCustomer && hasEnterpriseLicense() ? [{
             title: "Extensions",
@@ -481,6 +501,10 @@ export function Sidebar() {
                                     <DropdownMenuItem onClick={() => window.location.href = '/account'}>
                                         <User className="mr-2 h-4 w-4" />
                                         <span>Profile</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => window.location.href = '/auditlog'}>
+                                        <ScrollText className="mr-2 h-4 w-4" />
+                                        <span>Audit Logs</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => window.location.href = '/customer'}>
                                         <Settings className="mr-2 h-4 w-4" />

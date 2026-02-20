@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { CustomerProvider } from "@/contexts/CustomerContext";
 import { ConsentProvider } from "@/contexts/ConsentContext";
 import { ErrorProvider } from '@/contexts/ErrorContext';
+import { MonitorProvider } from '@/contexts/MonitorContext';
 import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { TenantIndicator } from '@/components/ui/tenant-indicator';
 import ConsentWarning from "@/components/ConsentWarning";
@@ -44,12 +45,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                     <ConsentProvider>
                         <CustomerProvider>
                             <TenantProvider>
-                                <SidebarProvider>
-                                    <MainContent>
-                                        <ConsentWarning />
-                                        {children}
-                                    </MainContent>
-                                </SidebarProvider>
+                                <MonitorProvider>
+                                    <SidebarProvider>
+                                        <MainContent>
+                                            <ConsentWarning />
+                                            {children}
+                                        </MainContent>
+                                    </SidebarProvider>
+                                </MonitorProvider>
                             </TenantProvider>
                         </CustomerProvider>
                     </ConsentProvider>

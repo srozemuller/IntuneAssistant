@@ -82,8 +82,8 @@ export const UserContextMenu: React.FC<UserContextMenuProps> = ({ accessToken, o
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg border border-gray-200 z-50">
-                    <div className="px-4 py-3 border-b border-gray-200">
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                    <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                         <div className="flex items-center space-x-3">
                             {userInfo?.picture ? (
                                 <img
@@ -97,10 +97,10 @@ export const UserContextMenu: React.FC<UserContextMenuProps> = ({ accessToken, o
                                 </div>
                             )}
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                                     {userInfo?.name || 'Unknown User'}
                                 </p>
-                                <p className="text-xs text-gray-500 truncate">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                     {userInfo?.email || userInfo?.preferred_username}
                                 </p>
                             </div>
@@ -113,7 +113,7 @@ export const UserContextMenu: React.FC<UserContextMenuProps> = ({ accessToken, o
                                 setIsOpen(false);
                                 // Add profile/settings handler here
                             }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             <Settings className="w-4 h-4 mr-3" />
                             Settings
@@ -123,7 +123,7 @@ export const UserContextMenu: React.FC<UserContextMenuProps> = ({ accessToken, o
                                 setIsOpen(false);
                                 onLogout();
                             }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             <LogOut className="w-4 h-4 mr-3" />
                             Sign Out

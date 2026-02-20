@@ -31,6 +31,7 @@ import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
 import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
+import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
 
 interface ApiResponse {
     status: string;
@@ -1326,25 +1327,19 @@ export default function AssignmentsOverview() {
                 />
             )}
 
-            {/* Loading state */}
-            {loading && assignments.length === 0 && (
-                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"/>
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                Loading Assignments
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                Fetching assignment data from your Intune environment...
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* Loading state with skeleton */}
+            {loading && (
+                <AssignmentsTableSkeleton
+                    showStats={true}
+                    statsCount={4}
+                    showFilters={true}
+                    tableRows={10}
+                    tableColumns={7}
+                />
             )}
 
             {/* Filters and table sections */}
-            {(assignments.length > 0 || loading) && (
+            {assignments.length > 0 && !loading && (
                 <>
                     {/* Filters Section */}
                     <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
