@@ -4,7 +4,13 @@ import type { Metadata } from 'next';
 import { ClientLayout } from './client-layout';
 import './globals.css';
 import Script from 'next/script';
-const inter = Inter({ subsets: ['latin'] });
+
+const inter = Inter({
+    subsets: ['latin'],
+    display: 'swap',
+    preload: true,
+    fallback: ['system-ui', 'arial']
+});
 
 export const metadata: Metadata = {
     title: 'Intune Assistant',

@@ -59,12 +59,11 @@ const TableRow = React.memo<{
     return (
         <tr
             className={`
-                border-b border-border/10 last:border-b-0
-                transition-all duration-200
+                border-b border-gray-200 dark:border-gray-700 last:border-b-0
                 ${onRowClick ? 'cursor-pointer' : ''}
                 ${isSelected
-                    ? 'bg-primary/15 dark:bg-primary/20 text-foreground border-l-4 border-l-primary shadow-lg'
-                    : 'hover:bg-white/20 dark:hover:bg-white/5'
+                    ? 'bg-primary/10 dark:bg-primary/20 border-l-4 border-l-primary'
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }
                 ${rowClassName ? rowClassName(row) : ''}
             `}
@@ -73,15 +72,13 @@ const TableRow = React.memo<{
             {columns.map((column) => (
                 <td
                     key={column.key}
-                    className="p-3 text-foreground first:pl-6 last:pr-6"
+                    className="p-3 text-gray-900 dark:text-gray-100 first:pl-6 last:pr-6"
                     style={{ width: `${column.width}px` }}
                 >
-                    <div className="overflow-hidden">
-                        {column.render
-                            ? column.render(getCellValue(row, column), row)
-                            : String(getCellValue(row, column) || '')
-                        }
-                    </div>
+                    {column.render
+                        ? column.render(getCellValue(row, column), row)
+                        : String(getCellValue(row, column) || '')
+                    }
                 </td>
             ))}
         </tr>
@@ -90,27 +87,29 @@ const TableRow = React.memo<{
 
 TableRow.displayName = 'TableRow';
 
-export function DataTable({
-                              data,
-                              columns: initialColumns,
-                              className: _className = '',
-                              onRowClick,
-                              currentPage = 1,
-                              totalPages: _totalPages = 1,
-                              itemsPerPage = ITEMS_PER_PAGE,
-                              onPageChange,
-                              rowClassName,
-                              onItemsPerPageChange,
-                              showPagination = false,
-                              showSearch = true,
-                              searchPlaceholder = "Search...",
-                              onSelectionChange,
-                              selectedRows = [],
-                          }: DataTableProps) {
+function DataTableComponent(props: DataTableProps) {
+    const {
+        data,
+        columns: initialColumns,
+        className: _className = '',
+        onRowClick,
+        currentPage = 1,
+        totalPages: _totalPages = 1,
+        itemsPerPage = ITEMS_PER_PAGE,
+        rowClassName,
+        onPageChange,
+        onItemsPerPageChange,
+        showPagination = false,
+        showSearch = true,
+        searchPlaceholder = "Search...",
+        onSelectionChange,
+        selectedRows = [],
+    } = props;
 
     // Local pagination state to support uncontrolled usage
     const [internalCurrentPage, setInternalCurrentPage] = useState<number>(currentPage);
     const [internalItemsPerPage, setInternalItemsPerPage] = useState<number>(itemsPerPage);
+
 
     // Sync internal state when parent updates props
     useEffect(() => setInternalCurrentPage(currentPage), [currentPage]);
@@ -200,6 +199,7 @@ export function DataTable({
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [resizing, setResizing] = useState<{ columnIndex: number; startX: number; startWidth: number } | null>(null);
     const tableRef = useRef<HTMLTableElement>(null);
+    const tableContainerRef = useRef<HTMLDivElement>(null);
 
     // Debounce search term to improve performance
     useEffect(() => {
@@ -209,6 +209,19 @@ export function DataTable({
 
         return () => clearTimeout(timer);
     }, [searchTerm]);
+
+    useEffect(() => {
+        const container = tableContainerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            // Passive listener - browser can optimize
+        };
+
+        container.addEventListener('scroll', handleScroll, { passive: true });
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
 
     useEffect(() => {
         setColumns(columnsWithSelection.map(col => ({
@@ -329,27 +342,33 @@ export function DataTable({
     }, [effectiveItemsPerPage, sortedData.length, effectiveCurrentPage]);
 
     useEffect(() => {
+        if (!resizing) return;
+
+        let rafId: number;
+
         const handleMouseMove = (e: MouseEvent) => {
-            if (!resizing) return;
+            if (rafId) cancelAnimationFrame(rafId);
 
-            const diff = e.clientX - resizing.startX;
-            const newWidth = Math.max(resizing.startWidth + diff, columns[resizing.columnIndex].minWidth || 100);
+            rafId = requestAnimationFrame(() => {
+                const diff = e.clientX - resizing.startX;
+                const newWidth = Math.max(resizing.startWidth + diff, columns[resizing.columnIndex].minWidth || 100);
 
-            setColumns(prev => prev.map((col, index) =>
-                index === resizing.columnIndex ? { ...col, width: newWidth } : col
-            ));
+                setColumns(prev => prev.map((col, index) =>
+                    index === resizing.columnIndex ? { ...col, width: newWidth } : col
+                ));
+            });
         };
 
         const handleMouseUp = () => {
+            if (rafId) cancelAnimationFrame(rafId);
             setResizing(null);
         };
 
-        if (resizing) {
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-        }
+        document.addEventListener('mousemove', handleMouseMove, { passive: true });
+        document.addEventListener('mouseup', handleMouseUp);
 
         return () => {
+            if (rafId) cancelAnimationFrame(rafId);
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
@@ -406,24 +425,27 @@ export function DataTable({
         return pages;
     }, [totalFilteredPages, effectiveCurrentPage]);
 
+    // Memoize hasData check
+    const hasData = useMemo(() => paginatedData.length > 0, [paginatedData.length]);
+
     return (
         <div>
             {/* Search Section */}
             {showSearch && (
-                <div className="p-4 ">
+                <div className="p-4">
                     <div className="relative max-w-sm">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 h-4 w-4 text-gray-400" />
                         <input
                             type="text"
                             placeholder={searchPlaceholder}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-10 py-2 rounded-lg bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0 shadow-sm"
+                            className="w-full pl-10 pr-10 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"
                         />
                         {searchTerm && (
                             <button
                                 onClick={clearSearch}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                                className="absolute right-3 top-1/2 text-gray-400"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -438,9 +460,17 @@ export function DataTable({
             )}
 
             {/* Table Section */}
-            <div className="overflow-auto custom-scrollbar bg-white/5 dark:bg-gray-900/5 backdrop-blur-sm">
+            <div
+                ref={tableContainerRef}
+                className="overflow-auto bg-white dark:bg-gray-900"
+                style={{
+                    willChange: 'scroll-position',
+                    transform: 'translateZ(0)',
+                    WebkitOverflowScrolling: 'touch'
+                }}
+            >
             <table ref={tableRef} className="w-full text-sm">
-                    <thead className="bg-gradient-to-b from-white/30 to-white/20 dark:from-white/10 dark:to-white/5 backdrop-blur-md sticky top-0 z-10">
+                    <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700">
                         <tr>
                             {columns.map((column, index) => (
                                 <th
@@ -452,7 +482,7 @@ export function DataTable({
                                         <div
                                             className={`flex items-center gap-2 flex-1 ${
                                                 column.sortable !== false && column.key !== '_select'
-                                                    ? 'cursor-pointer hover:text-primary transition-colors'
+                                                    ? 'cursor-pointer'
                                                     : ''
                                             }`}
                                             onClick={() => {
@@ -481,7 +511,7 @@ export function DataTable({
                         </tr>
                     </thead>
                     <tbody className="bg-transparent">
-                        {paginatedData.length > 0 ? (
+                        {hasData ? (
                             paginatedData.map((row, rowIndex) => (
                                 <TableRow
                                     key={row.id ? String(row.id) : rowIndex}
@@ -511,14 +541,14 @@ export function DataTable({
 
             {/* Pagination Section */}
             {showPagination && sortedData.length > 0 && (
-                <div className="flex items-center justify-between p-4 bg-gradient-to-t from-white/20 to-transparent dark:from-white/5">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-4">
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
                             Showing {Math.min(startIndex + 1, sortedData.length)} to {Math.min(endIndex, sortedData.length)} of {sortedData.length} results
                             {searchTerm && ` (filtered from ${data.length} total)`}
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">Items per page:</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Items per page:</span>
                             <select
                                 value={effectiveItemsPerPage}
                                 onChange={(e) => {
@@ -526,7 +556,7 @@ export function DataTable({
                                     changeItemsPerPage(newItemsPerPage);
                                     changePage(1);
                                 }}
-                                className="rounded-lg px-3 py-1.5 text-sm bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0 shadow-sm"
+                                className="rounded px-3 py-1.5 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"
                             >
                                 <option value={10}>10</option>
                                 <option value={25}>25</option>
@@ -541,7 +571,6 @@ export function DataTable({
                             size="sm"
                             onClick={() => changePage(Math.max(1, effectiveCurrentPage - 1))}
                             disabled={effectiveCurrentPage === 1}
-                            className="backdrop-blur-sm border-border/20 bg-white/40 dark:bg-white/5"
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -554,7 +583,7 @@ export function DataTable({
                                     variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => changePage(pageNum)}
-                                    className={`w-8 h-8 p-0 backdrop-blur-sm ${effectiveCurrentPage !== pageNum ? 'border-border/20 bg-white/40 dark:bg-white/5' : ''}`}
+                                    className="w-8 h-8 p-0"
                                 >
                                     {pageNum}
                                 </Button>
@@ -566,7 +595,6 @@ export function DataTable({
                             size="sm"
                             onClick={() => changePage(Math.min(totalFilteredPages, effectiveCurrentPage + 1))}
                             disabled={effectiveCurrentPage === totalFilteredPages}
-                            className="backdrop-blur-sm border-border/20 bg-white/40 dark:bg-white/5"
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />
@@ -577,3 +605,5 @@ export function DataTable({
         </div>
     );
 }
+
+export const DataTable = React.memo(DataTableComponent);
