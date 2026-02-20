@@ -19,8 +19,7 @@ import {RefreshCw,
     TrendingUp,
     Shield,
     AlertCircle,
-    Eye,
-    ChevronRight
+    Eye
 } from 'lucide-react';
 import {
     MONITOR_CONFIGURATION_ENDPOINT,
@@ -31,8 +30,6 @@ import { useApiRequest } from '@/hooks/useApiRequest';
 import { CancelledCard } from '@/components/CancelledCard';
 import { GlobalOverviewSkeleton } from '@/components/GlobalOverviewSkeleton';
 import {
-    LineChart,
-    Line,
     BarChart,
     Bar,
     PieChart,
@@ -42,13 +39,20 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
     ResponsiveContainer
 } from 'recharts';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 
 // Custom Tooltip for charts with dark mode support
-const CustomTooltip = ({ active, payload }: any) => {
+interface CustomTooltipProps {
+    active?: boolean;
+    payload?: Array<{
+        name: string;
+        value: number;
+    }>;
+}
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
