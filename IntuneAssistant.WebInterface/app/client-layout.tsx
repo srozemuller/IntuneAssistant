@@ -11,6 +11,7 @@ import { CustomerProvider } from "@/contexts/CustomerContext";
 import { ConsentProvider } from "@/contexts/ConsentContext";
 import { ErrorProvider } from '@/contexts/ErrorContext';
 import { MonitorProvider } from '@/contexts/MonitorContext';
+import { AuditEventsProvider } from '@/contexts/AuditEventsContext';
 import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { TenantIndicator } from '@/components/ui/tenant-indicator';
 import ConsentWarning from "@/components/ConsentWarning";
@@ -46,12 +47,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                         <CustomerProvider>
                             <TenantProvider>
                                 <MonitorProvider>
-                                    <SidebarProvider>
-                                        <MainContent>
-                                            <ConsentWarning />
-                                            {children}
-                                        </MainContent>
-                                    </SidebarProvider>
+                                    <AuditEventsProvider>
+                                        <SidebarProvider>
+                                            <MainContent>
+                                                <ConsentWarning />
+                                                {children}
+                                            </MainContent>
+                                        </SidebarProvider>
+                                    </AuditEventsProvider>
                                 </MonitorProvider>
                             </TenantProvider>
                         </CustomerProvider>

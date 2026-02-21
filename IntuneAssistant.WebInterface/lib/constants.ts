@@ -15,6 +15,12 @@ export const VERSION_ENDPOINT = `${API_BASE_URL}/version`;
 
 export const AUDITLOG_ENDPOINT = `${API_BASE_URL}/auditlog`;
 
+export const AUDIT_EVENT_ENDPOINT = `${API_BASE_URL}/audit`;
+export const AUDIT_EVENT_PAGE_ENDPOINT = `${AUDIT_EVENT_ENDPOINT}/events/page`;
+export const AUDIT_EVENT_METADATA_ENDPOINT = `${AUDIT_EVENT_ENDPOINT}/metadata`;
+export const AUDIT_EVENT_FILTER_ENDPOINT = `${AUDIT_EVENT_ENDPOINT}/events/filter`;
+export const AUDIT_EVENT_STATS_ENDPOINT = `${AUDIT_EVENT_ENDPOINT}/statistics`;
+
 
 export const PARTNER_TENANTS_ENDPOINT = `${API_BASE_URL}/partner/customers`;
 export const ASSIGNMENTS_ENDPOINT = `${API_BASE_URL}/assignments`;
