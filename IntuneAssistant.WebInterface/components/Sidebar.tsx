@@ -75,7 +75,8 @@ const iconMap = {
     MonitorCog,
     Crown,
     ShieldCheck,
-    MonitorCheck
+    MonitorCheck,
+    ScrollText
 };
 
 interface MenuItem {
@@ -229,6 +230,10 @@ export function Sidebar() {
         return customerData.licenses.some(license => license.licenseType === 2 && license.isActive);
     };
 
+    const isBetaTester = (): boolean => {
+        return customerData?.isBetaTester === true;
+    };
+
     const menuSections: MenuSection[] = [
         {
             title: "",
@@ -315,6 +320,23 @@ export function Sidebar() {
                 }
             ]
         },
+        // Only include Audit Events section if customer is a beta tester
+        ...(isBetaTester() ? [{
+            title: "Audit Events",
+            badgeColor: "bg-purple-500",
+            items: [
+                {
+                    title: "Event Dashboard",
+                    icon: "ScrollText",
+                    href: "/audit-events",
+                    isBeta: true,
+                    submenu: [
+                        { title: "Dashboard", href: "/audit-events" },
+                        { title: "Advanced Search", href: "/audit-events/search" }
+                    ]
+                }
+            ]
+        }] : []),
         // Only include Business Modules section if customer is active
         ...(isActiveCustomer && hasEnterpriseLicense() ? [{
             title: "Extensions",
