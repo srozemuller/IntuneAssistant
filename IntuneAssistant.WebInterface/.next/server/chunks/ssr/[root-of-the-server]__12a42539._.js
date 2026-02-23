@@ -2784,7 +2784,7 @@ const AuditEventsProvider = ({ children })=>{
     const [recentEvents, setRecentEvents] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
-    const fetchData = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (filterType = 'day', silent = false)=>{
+    const fetchData = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (filterType = 'day', activity, actor, silent = false)=>{
         if (!accounts.length) return;
         if (!silent) {
             setLoading(true);
@@ -2799,11 +2799,15 @@ const AuditEventsProvider = ({ children })=>{
             } else {
                 dateFrom.setHours(now.getHours() - 24);
             }
-            // Fetch statistics
-            const statsParams = new URLSearchParams({
+            // Common params
+            const commonParams = {
                 dateFrom: dateFrom.toISOString(),
                 dateTo: now.toISOString()
-            });
+            };
+            if (activity && activity !== 'all') commonParams['activityType'] = activity;
+            if (actor && actor !== 'all') commonParams['actorUserPrincipalName'] = actor;
+            // Fetch statistics
+            const statsParams = new URLSearchParams(commonParams);
             const statsResponse = await request(`${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AUDIT_EVENT_STATS_ENDPOINT"]}?${statsParams.toString()}`, {
                 method: 'GET',
                 headers: {
@@ -2815,10 +2819,9 @@ const AuditEventsProvider = ({ children })=>{
             }
             // Fetch recent events
             const eventsParams = new URLSearchParams({
+                ...commonParams,
                 pageNumber: '1',
-                pageSize: '10',
-                dateFrom: dateFrom.toISOString(),
-                dateTo: now.toISOString()
+                pageSize: '10'
             });
             if (filterType === 'failures') {
                 eventsParams.append('result', 'Failure');
@@ -2875,7 +2878,7 @@ const AuditEventsProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/contexts/AuditEventsContext.tsx",
-        lineNumber: 145,
+        lineNumber: 152,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };

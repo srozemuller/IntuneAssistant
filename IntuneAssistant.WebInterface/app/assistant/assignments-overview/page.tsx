@@ -189,6 +189,16 @@ export default function AssignmentsOverview() {
                 label: 'Filter Type',
                 width: 25,
                 getValue: (row) => String(row.filterType || '')
+            },
+            {
+                key: 'scopeTagIds',
+                label: 'Role Scope Tags',
+                width: 30,
+                getValue: (row) => {
+                    const scopeTagIds = row.scopeTagIds as string[] | undefined;
+                    const tagNames = getRoleScopeTagNames(scopeTagIds);
+                    return tagNames.length > 0 ? tagNames.join(', ') : 'None';
+                }
             }
         ];
 
@@ -265,6 +275,16 @@ export default function AssignmentsOverview() {
                 label: 'Filter Type',
                 width: 25,
                 getValue: (row) => String(row.filterType || '')
+            },
+            {
+                key: 'scopeTagIds',
+                label: 'Role Scope Tags',
+                width: 30,
+                getValue: (row) => {
+                    const scopeTagIds = row.scopeTagIds as string[] | undefined;
+                    const tagNames = getRoleScopeTagNames(scopeTagIds);
+                    return tagNames.length > 0 ? tagNames.join(', ') : 'None';
+                }
             }
         ];
 
@@ -578,52 +598,6 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             setIsGroupDialogOpen(true);
         }
     };
-
-    const groupMemberColumns = [
-        {
-            key: 'displayName' as string,
-            label: 'Display Name',
-            render: (value: unknown) => (
-                <span className="font-medium">{String(value)}</span>
-            )
-        },
-        {
-            key: 'type' as string,
-            label: 'Type',
-            render: (value: unknown) => (
-                <Badge variant="outline" className="text-xs">
-                    {String(value)}
-                </Badge>
-            )
-        },
-        {
-            key: 'accountEnabled' as string,
-            label: 'Account Status',
-            render: (value: unknown, row: Record<string, unknown>) => {
-                const type = String(row.type).toLowerCase();
-
-                // Don't show account status for groups
-                if (type === 'group') {
-                    return <span className="text-xs text-gray-500">N/A</span>;
-                }
-
-                const isEnabled = Boolean(value);
-                return (
-                    <Badge variant={isEnabled ? 'default' : 'secondary'}
-                           className={isEnabled ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}>
-                        {isEnabled ? 'Enabled' : 'Disabled'}
-                    </Badge>
-                );
-            }
-        },
-        {
-            key: 'id' as string,
-            label: 'ID',
-            render: (value: unknown) => (
-                <span className="font-mono text-xs text-gray-500">{String(value)}</span>
-            )
-        }
-    ];
 
     const columns = [
         {

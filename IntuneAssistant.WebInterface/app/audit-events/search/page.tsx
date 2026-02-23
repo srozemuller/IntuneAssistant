@@ -80,6 +80,51 @@ export default function AuditSearchPage() {
     const [selectedResults, setSelectedResults] = useState<Array<'Success' | 'Failure' | 'Warning'>>([]);
     const [searchText, setSearchText] = useState('');
 
+    // Derived unique values from events for fallback
+    const uniqueActors = useMemo(() => {
+        if (!events.length) return [];
+        const actors = new Set<string>();
+        events.forEach(e => {
+            if (e.actorUserPrincipalName && e.actorUserPrincipalName.trim() !== '') {
+                actors.add(e.actorUserPrincipalName);
+            }
+        });
+        return Array.from(actors).sort();
+    }, [events]);
+
+    const uniqueActivities = useMemo(() => {
+        if (!events.length) return [];
+        const acts = new Set<string>();
+        events.forEach(e => {
+            if (e.activityType && e.activityType.trim() !== '') {
+                acts.add(e.activityType);
+            }
+        });
+        return Array.from(acts).sort();
+    }, [events]);
+
+    const uniqueCategories = useMemo(() => {
+        if (!events.length) return [];
+        const cats = new Set<string>();
+        events.forEach(e => {
+            if (e.category && e.category.trim() !== '') {
+                cats.add(e.category);
+            }
+        });
+        return Array.from(cats).sort();
+    }, [events]);
+
+    const uniqueComponents = useMemo(() => {
+        if (!events.length) return [];
+        const comps = new Set<string>();
+        events.forEach(e => {
+            if (e.componentName && e.componentName.trim() !== '') {
+                comps.add(e.componentName);
+            }
+        });
+        return Array.from(comps).sort();
+    }, [events]);
+
     // Saved presets
     const [savedPresets, setSavedPresets] = useState<FilterPreset[]>([]);
     const [presetName, setPresetName] = useState('');
@@ -146,6 +191,10 @@ export default function AuditSearchPage() {
                 );
                 setEvents(sortedEvents);
                 setTotalCount(response.data.totalCount || response.data.items.length);
+
+                // If metadata is not loaded/available, we could try to infer some common values from the first page of results
+                // to help populate filters if they are empty. However, unique* UseMemos handle this dynamic population
+                // from the loaded events.
             }
         } catch (err) {
             console.error('Failed to search events:', err);
@@ -219,12 +268,12 @@ export default function AuditSearchPage() {
         const headers = ['Timestamp', 'Activity', 'Actor', 'Category', 'Component', 'Result', 'Display Name'];
         const rows = events.map(e => [
             e.activityDateTime,
-            e.activityType,
-            e.actorUserPrincipalName,
-            e.category,
-            e.componentName,
-            e.activityResult,
-            e.displayName
+            e.activityType || '',
+            e.actorUserPrincipalName || 'Unknown',
+            e.category || '',
+            e.componentName || '',
+            e.activityResult || '',
+            e.displayName || ''
         ]);
 
         const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
@@ -405,7 +454,7 @@ export default function AuditSearchPage() {
                                     <SelectValue placeholder="Select categories..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {metadata?.categories.map(cat => (
+                                    {(uniqueCategories.length > 0 ? uniqueCategories : (metadata?.categories || [])).map(cat => (
                                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -439,7 +488,7 @@ export default function AuditSearchPage() {
                                     <SelectValue placeholder="Select activities..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {metadata?.activities.map(act => (
+                                    {(uniqueActivities.length > 0 ? uniqueActivities : (metadata?.activities || [])).map(act => (
                                         <SelectItem key={act} value={act}>{act}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -452,6 +501,74 @@ export default function AuditSearchPage() {
                                             <X
                                                 className="h-3 w-3 ml-1 cursor-pointer"
                                                 onClick={() => setSelectedActivities(selectedActivities.filter(a => a !== act))}
+                                            />
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Actors</Label>
+                            <Select
+                                value={selectedActors[0] || ''}
+                                onValueChange={(val) => {
+                                    if (val && !selectedActors.includes(val)) {
+                                        setSelectedActors([...selectedActors, val]);
+                                    }
+                                }}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select actors..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {(uniqueActors.length > 0 ? uniqueActors : (metadata?.userPrincipalNames || metadata?.actors || [])).map(actor => (
+                                        <SelectItem key={actor} value={actor}>{actor}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {selectedActors.length > 0 && (
+                                <div className="flex gap-1 flex-wrap">
+                                    {selectedActors.map(actor => (
+                                        <Badge key={actor} variant="secondary">
+                                            {actor}
+                                            <X
+                                                className="h-3 w-3 ml-1 cursor-pointer"
+                                                onClick={() => setSelectedActors(selectedActors.filter(a => a !== actor))}
+                                            />
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Components</Label>
+                            <Select
+                                value={selectedComponents[0] || ''}
+                                onValueChange={(val) => {
+                                    if (val && !selectedComponents.includes(val)) {
+                                        setSelectedComponents([...selectedComponents, val]);
+                                    }
+                                }}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select components..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {(uniqueComponents.length > 0 ? uniqueComponents : (metadata?.components || [])).map(comp => (
+                                        <SelectItem key={comp} value={comp}>{comp}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {selectedComponents.length > 0 && (
+                                <div className="flex gap-1 flex-wrap">
+                                    {selectedComponents.map(comp => (
+                                        <Badge key={comp} variant="secondary">
+                                            {comp}
+                                            <X
+                                                className="h-3 w-3 ml-1 cursor-pointer"
+                                                onClick={() => setSelectedComponents(selectedComponents.filter(c => c !== comp))}
                                             />
                                         </Badge>
                                     ))}
@@ -553,7 +670,7 @@ export default function AuditSearchPage() {
                                                 </div>
                                                 <div>
                                                     <p className="text-xs text-gray-500">Actor</p>
-                                                    <p className="text-sm">{event.actorUserPrincipalName}</p>
+                                                    <p className="text-sm">{event.actorUserPrincipalName || 'Unknown'}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-xs text-gray-500">Category</p>

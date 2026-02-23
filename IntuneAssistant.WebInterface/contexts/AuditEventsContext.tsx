@@ -19,7 +19,7 @@ interface AuditEventsContextType {
     recentEvents: AuditEvent[];
     loading: boolean;
     error: string | null;
-    fetchData: (filterType?: 'all' | 'failures' | 'hour' | 'day', silent?: boolean) => Promise<void>;
+    fetchData: (filterType?: 'all' | 'failures' | 'hour' | 'day', activity?: string, actor?: string, silent?: boolean) => Promise<void>;
     clearCache: () => void;
 }
 
@@ -55,6 +55,8 @@ export const AuditEventsProvider: React.FC<AuditEventsProviderProps> = ({ childr
 
     const fetchData = useCallback(async (
         filterType: 'all' | 'failures' | 'hour' | 'day' = 'day',
+        activity?: string,
+        actor?: string,
         silent = false
     ) => {
         if (!accounts.length) return;
@@ -75,11 +77,17 @@ export const AuditEventsProvider: React.FC<AuditEventsProviderProps> = ({ childr
                 dateFrom.setHours(now.getHours() - 24);
             }
 
-            // Fetch statistics
-            const statsParams = new URLSearchParams({
+            // Common params
+            const commonParams: Record<string, string> = {
                 dateFrom: dateFrom.toISOString(),
                 dateTo: now.toISOString()
-            });
+            };
+
+            if (activity && activity !== 'all') commonParams['activityType'] = activity;
+            if (actor && actor !== 'all') commonParams['actorUserPrincipalName'] = actor;
+
+            // Fetch statistics
+            const statsParams = new URLSearchParams(commonParams);
 
             const statsResponse = await request<AuditStatisticsResponse>(
                 `${AUDIT_EVENT_STATS_ENDPOINT}?${statsParams.toString()}`,
@@ -92,10 +100,9 @@ export const AuditEventsProvider: React.FC<AuditEventsProviderProps> = ({ childr
 
             // Fetch recent events
             const eventsParams = new URLSearchParams({
+                ...commonParams,
                 pageNumber: '1',
-                pageSize: '10',
-                dateFrom: dateFrom.toISOString(),
-                dateTo: now.toISOString()
+                pageSize: '10'
             });
 
             if (filterType === 'failures') {
