@@ -701,6 +701,7 @@ const DATE_PRESETS = [
     }
 ];
 function AuditSearchPage() {
+    var _metadata_activities, _metadata_userPrincipalNames, _metadata_actors;
     _s();
     const { accounts } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMsal"])();
     const { request } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApiRequest"])();
@@ -720,6 +721,35 @@ function AuditSearchPage() {
     const [selectedActors, setSelectedActors] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [selectedResults, setSelectedResults] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [searchText, setSearchText] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    // Derived unique values from events for fallback
+    const uniqueActors = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "AuditSearchPage.useMemo[uniqueActors]": ()=>{
+            if (!events.length) return [];
+            const actors = new Set();
+            events.forEach({
+                "AuditSearchPage.useMemo[uniqueActors]": (e)=>{
+                    if (e.actorUserPrincipalName) actors.add(e.actorUserPrincipalName);
+                }
+            }["AuditSearchPage.useMemo[uniqueActors]"]);
+            return Array.from(actors).sort();
+        }
+    }["AuditSearchPage.useMemo[uniqueActors]"], [
+        events
+    ]);
+    const uniqueActivities = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "AuditSearchPage.useMemo[uniqueActivities]": ()=>{
+            if (!events.length) return [];
+            const acts = new Set();
+            events.forEach({
+                "AuditSearchPage.useMemo[uniqueActivities]": (e)=>{
+                    if (e.activityType) acts.add(e.activityType);
+                }
+            }["AuditSearchPage.useMemo[uniqueActivities]"]);
+            return Array.from(acts).sort();
+        }
+    }["AuditSearchPage.useMemo[uniqueActivities]"], [
+        events
+    ]);
     // Saved presets
     const [savedPresets, setSavedPresets] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [presetName, setPresetName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
@@ -768,6 +798,7 @@ function AuditSearchPage() {
             ...selectedCategories.length > 0 && {
                 categories: selectedCategories
             },
+            // Use selectedActivities if present, otherwise no activity filter
             ...selectedActivities.length > 0 && {
                 activities: selectedActivities
             },
@@ -978,14 +1009,14 @@ function AuditSearchPage() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 264,
+                                lineNumber: 284,
                                 columnNumber: 75
                             }, this),
                             " Success"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 264,
+                        lineNumber: 284,
                         columnNumber: 24
                     }, this);
                 case 'Failure':
@@ -996,14 +1027,14 @@ function AuditSearchPage() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 266,
+                                lineNumber: 286,
                                 columnNumber: 53
                             }, this),
                             " Failure"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 266,
+                        lineNumber: 286,
                         columnNumber: 24
                     }, this);
                 case 'Warning':
@@ -1014,14 +1045,14 @@ function AuditSearchPage() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 268,
+                                lineNumber: 288,
                                 columnNumber: 77
                             }, this),
                             " Warning"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 268,
+                        lineNumber: 288,
                         columnNumber: 24
                     }, this);
                 default:
@@ -1030,7 +1061,7 @@ function AuditSearchPage() {
                         children: result
                     }, void 0, false, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 270,
+                        lineNumber: 290,
                         columnNumber: 24
                     }, this);
             }
@@ -1080,14 +1111,14 @@ function AuditSearchPage() {
                                         className: "h-8 w-8 text-blue-500"
                                     }, void 0, false, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 294,
+                                        lineNumber: 314,
                                         columnNumber: 25
                                     }, this),
                                     "Advanced Event Search"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 293,
+                                lineNumber: 313,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1095,13 +1126,13 @@ function AuditSearchPage() {
                                 children: "Filter and explore audit events with precision"
                             }, void 0, false, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 297,
+                                lineNumber: 317,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 292,
+                        lineNumber: 312,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -1111,18 +1142,18 @@ function AuditSearchPage() {
                             children: "Back to Dashboard"
                         }, void 0, false, {
                             fileName: "[project]/app/audit-events/search/page.tsx",
-                            lineNumber: 302,
+                            lineNumber: 322,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 301,
+                        lineNumber: 321,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/audit-events/search/page.tsx",
-                lineNumber: 291,
+                lineNumber: 311,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1139,7 +1170,7 @@ function AuditSearchPage() {
                                             className: "h-5 w-5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                            lineNumber: 313,
+                                            lineNumber: 333,
                                             columnNumber: 29
                                         }, this),
                                         "Filters",
@@ -1151,13 +1182,13 @@ function AuditSearchPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                            lineNumber: 316,
+                                            lineNumber: 336,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                    lineNumber: 312,
+                                    lineNumber: 332,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1172,14 +1203,14 @@ function AuditSearchPage() {
                                                     className: "h-4 w-4 mr-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                    lineNumber: 321,
+                                                    lineNumber: 341,
                                                     columnNumber: 33
                                                 }, this),
                                                 "Clear All"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                            lineNumber: 320,
+                                            lineNumber: 340,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1191,37 +1222,37 @@ function AuditSearchPage() {
                                                     className: "h-4 w-4 mr-2 animate-spin"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                    lineNumber: 325,
+                                                    lineNumber: 345,
                                                     columnNumber: 44
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$search$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Search$3e$__["Search"], {
                                                     className: "h-4 w-4 mr-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                    lineNumber: 325,
+                                                    lineNumber: 345,
                                                     columnNumber: 96
                                                 }, this),
                                                 "Search"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                            lineNumber: 324,
+                                            lineNumber: 344,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                    lineNumber: 319,
+                                    lineNumber: 339,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/audit-events/search/page.tsx",
-                            lineNumber: 311,
+                            lineNumber: 331,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 310,
+                        lineNumber: 330,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1237,7 +1268,7 @@ function AuditSearchPage() {
                                                 children: "From Date"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 335,
+                                                lineNumber: 355,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$popover$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Popover"], {
@@ -1252,19 +1283,19 @@ function AuditSearchPage() {
                                                                     className: "mr-2 h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 339,
+                                                                    lineNumber: 359,
                                                                     columnNumber: 41
                                                                 }, this),
                                                                 dateFrom ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(dateFrom, 'PPP') : 'Pick a date'
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                            lineNumber: 338,
+                                                            lineNumber: 358,
                                                             columnNumber: 37
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 337,
+                                                        lineNumber: 357,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$popover$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["PopoverContent"], {
@@ -1276,24 +1307,24 @@ function AuditSearchPage() {
                                                             initialFocus: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                            lineNumber: 344,
+                                                            lineNumber: 364,
                                                             columnNumber: 37
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 343,
+                                                        lineNumber: 363,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 336,
+                                                lineNumber: 356,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 334,
+                                        lineNumber: 354,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1303,7 +1334,7 @@ function AuditSearchPage() {
                                                 children: "To Date"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 350,
+                                                lineNumber: 370,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$popover$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Popover"], {
@@ -1318,19 +1349,19 @@ function AuditSearchPage() {
                                                                     className: "mr-2 h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 354,
+                                                                    lineNumber: 374,
                                                                     columnNumber: 41
                                                                 }, this),
                                                                 dateTo ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(dateTo, 'PPP') : 'Pick a date'
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                            lineNumber: 353,
+                                                            lineNumber: 373,
                                                             columnNumber: 37
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 352,
+                                                        lineNumber: 372,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$popover$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["PopoverContent"], {
@@ -1342,24 +1373,24 @@ function AuditSearchPage() {
                                                             initialFocus: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                            lineNumber: 359,
+                                                            lineNumber: 379,
                                                             columnNumber: 37
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 358,
+                                                        lineNumber: 378,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 351,
+                                                lineNumber: 371,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 349,
+                                        lineNumber: 369,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1369,7 +1400,7 @@ function AuditSearchPage() {
                                                 children: "Quick Presets"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 365,
+                                                lineNumber: 385,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1381,24 +1412,24 @@ function AuditSearchPage() {
                                                         children: preset.label
                                                     }, preset.label, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 368,
+                                                        lineNumber: 388,
                                                         columnNumber: 37
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 366,
+                                                lineNumber: 386,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 364,
+                                        lineNumber: 384,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 333,
+                                lineNumber: 353,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1408,7 +1439,7 @@ function AuditSearchPage() {
                                         children: "Free Text Search"
                                     }, void 0, false, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 383,
+                                        lineNumber: 403,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1418,13 +1449,13 @@ function AuditSearchPage() {
                                         onKeyPress: (e)=>e.key === 'Enter' && handleSearch()
                                     }, void 0, false, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 384,
+                                        lineNumber: 404,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 382,
+                                lineNumber: 402,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1437,7 +1468,7 @@ function AuditSearchPage() {
                                                 children: "Categories"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 395,
+                                                lineNumber: 415,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -1456,12 +1487,12 @@ function AuditSearchPage() {
                                                             placeholder: "Select categories..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                            lineNumber: 405,
+                                                            lineNumber: 425,
                                                             columnNumber: 37
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 404,
+                                                        lineNumber: 424,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -1470,18 +1501,18 @@ function AuditSearchPage() {
                                                                 children: cat
                                                             }, cat, false, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 409,
+                                                                lineNumber: 429,
                                                                 columnNumber: 41
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 407,
+                                                        lineNumber: 427,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 396,
+                                                lineNumber: 416,
                                                 columnNumber: 29
                                             }, this),
                                             selectedCategories.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1495,24 +1526,24 @@ function AuditSearchPage() {
                                                                 onClick: ()=>setSelectedCategories(selectedCategories.filter((c)=>c !== cat))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 418,
+                                                                lineNumber: 438,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, cat, true, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 416,
+                                                        lineNumber: 436,
                                                         columnNumber: 41
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 414,
+                                                lineNumber: 434,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 394,
+                                        lineNumber: 414,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1522,7 +1553,7 @@ function AuditSearchPage() {
                                                 children: "Activities"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 429,
+                                                lineNumber: 449,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -1541,32 +1572,32 @@ function AuditSearchPage() {
                                                             placeholder: "Select activities..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                            lineNumber: 439,
+                                                            lineNumber: 459,
                                                             columnNumber: 37
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 438,
+                                                        lineNumber: 458,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
-                                                        children: metadata === null || metadata === void 0 ? void 0 : metadata.activities.map((act)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
+                                                        children: ((metadata === null || metadata === void 0 ? void 0 : (_metadata_activities = metadata.activities) === null || _metadata_activities === void 0 ? void 0 : _metadata_activities.length) ? metadata.activities : uniqueActivities).map((act)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
                                                                 value: act,
                                                                 children: act
                                                             }, act, false, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 443,
+                                                                lineNumber: 463,
                                                                 columnNumber: 41
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 441,
+                                                        lineNumber: 461,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 430,
+                                                lineNumber: 450,
                                                 columnNumber: 29
                                             }, this),
                                             selectedActivities.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1580,24 +1611,109 @@ function AuditSearchPage() {
                                                                 onClick: ()=>setSelectedActivities(selectedActivities.filter((a)=>a !== act))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 452,
+                                                                lineNumber: 472,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, act, true, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 450,
+                                                        lineNumber: 470,
                                                         columnNumber: 41
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 448,
+                                                lineNumber: 468,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 428,
+                                        lineNumber: 448,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "space-y-2",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
+                                                children: "Actors"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/audit-events/search/page.tsx",
+                                                lineNumber: 483,
+                                                columnNumber: 29
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
+                                                value: selectedActors[0] || '',
+                                                onValueChange: (val)=>{
+                                                    if (val && !selectedActors.includes(val)) {
+                                                        setSelectedActors([
+                                                            ...selectedActors,
+                                                            val
+                                                        ]);
+                                                    }
+                                                },
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectTrigger"], {
+                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectValue"], {
+                                                            placeholder: "Select actors..."
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/audit-events/search/page.tsx",
+                                                            lineNumber: 493,
+                                                            columnNumber: 37
+                                                        }, this)
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/audit-events/search/page.tsx",
+                                                        lineNumber: 492,
+                                                        columnNumber: 33
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
+                                                        children: ((metadata === null || metadata === void 0 ? void 0 : (_metadata_userPrincipalNames = metadata.userPrincipalNames) === null || _metadata_userPrincipalNames === void 0 ? void 0 : _metadata_userPrincipalNames.length) ? metadata.userPrincipalNames : (metadata === null || metadata === void 0 ? void 0 : (_metadata_actors = metadata.actors) === null || _metadata_actors === void 0 ? void 0 : _metadata_actors.length) ? metadata.actors : uniqueActors).map((actor)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
+                                                                value: actor,
+                                                                children: actor
+                                                            }, actor, false, {
+                                                                fileName: "[project]/app/audit-events/search/page.tsx",
+                                                                lineNumber: 497,
+                                                                columnNumber: 41
+                                                            }, this))
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/audit-events/search/page.tsx",
+                                                        lineNumber: 495,
+                                                        columnNumber: 33
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/audit-events/search/page.tsx",
+                                                lineNumber: 484,
+                                                columnNumber: 29
+                                            }, this),
+                                            selectedActors.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "flex gap-1 flex-wrap",
+                                                children: selectedActors.map((actor)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                        variant: "secondary",
+                                                        children: [
+                                                            actor,
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
+                                                                className: "h-3 w-3 ml-1 cursor-pointer",
+                                                                onClick: ()=>setSelectedActors(selectedActors.filter((a)=>a !== actor))
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/audit-events/search/page.tsx",
+                                                                lineNumber: 506,
+                                                                columnNumber: 45
+                                                            }, this)
+                                                        ]
+                                                    }, actor, true, {
+                                                        fileName: "[project]/app/audit-events/search/page.tsx",
+                                                        lineNumber: 504,
+                                                        columnNumber: 41
+                                                    }, this))
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/audit-events/search/page.tsx",
+                                                lineNumber: 502,
+                                                columnNumber: 33
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/audit-events/search/page.tsx",
+                                        lineNumber: 482,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1607,7 +1723,7 @@ function AuditSearchPage() {
                                                 children: "Result"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 463,
+                                                lineNumber: 517,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1628,24 +1744,24 @@ function AuditSearchPage() {
                                                         children: result
                                                     }, result, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 466,
+                                                        lineNumber: 520,
                                                         columnNumber: 37
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 464,
+                                                lineNumber: 518,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 462,
+                                        lineNumber: 516,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 393,
+                                lineNumber: 413,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1661,7 +1777,7 @@ function AuditSearchPage() {
                                                         children: "Save Filter Preset"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 489,
+                                                        lineNumber: 543,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1670,13 +1786,13 @@ function AuditSearchPage() {
                                                         onChange: (e)=>setPresetName(e.target.value)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 490,
+                                                        lineNumber: 544,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 488,
+                                                lineNumber: 542,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1687,20 +1803,20 @@ function AuditSearchPage() {
                                                         className: "h-4 w-4 mr-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 497,
+                                                        lineNumber: 551,
                                                         columnNumber: 33
                                                     }, this),
                                                     "Save"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 496,
+                                                lineNumber: 550,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 487,
+                                        lineNumber: 541,
                                         columnNumber: 25
                                     }, this),
                                     savedPresets.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1714,7 +1830,7 @@ function AuditSearchPage() {
                                                         children: preset.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 505,
+                                                        lineNumber: 559,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
@@ -1722,36 +1838,36 @@ function AuditSearchPage() {
                                                         onClick: ()=>deletePreset(preset.id)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 506,
+                                                        lineNumber: 560,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, preset.id, true, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 504,
+                                                lineNumber: 558,
                                                 columnNumber: 37
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 502,
+                                        lineNumber: 556,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 486,
+                                lineNumber: 540,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 331,
+                        lineNumber: 351,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/audit-events/search/page.tsx",
-                lineNumber: 309,
+                lineNumber: 329,
                 columnNumber: 13
             }, this),
             events.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1769,7 +1885,7 @@ function AuditSearchPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                    lineNumber: 523,
+                                    lineNumber: 577,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1784,14 +1900,14 @@ function AuditSearchPage() {
                                                     className: "h-4 w-4 mr-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                    lineNumber: 528,
+                                                    lineNumber: 582,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Export CSV"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                            lineNumber: 527,
+                                            lineNumber: 581,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1803,31 +1919,31 @@ function AuditSearchPage() {
                                                     className: "h-4 w-4 mr-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                    lineNumber: 532,
+                                                    lineNumber: 586,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Export JSON"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                            lineNumber: 531,
+                                            lineNumber: 585,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                    lineNumber: 526,
+                                    lineNumber: 580,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/audit-events/search/page.tsx",
-                            lineNumber: 522,
+                            lineNumber: 576,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 521,
+                        lineNumber: 575,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1852,7 +1968,7 @@ function AuditSearchPage() {
                                                                         children: "Time"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 547,
+                                                                        lineNumber: 601,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1860,13 +1976,13 @@ function AuditSearchPage() {
                                                                         children: new Date(event.activityDateTime).toLocaleString()
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 548,
+                                                                        lineNumber: 602,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 546,
+                                                                lineNumber: 600,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1876,7 +1992,7 @@ function AuditSearchPage() {
                                                                         children: "Activity"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 551,
+                                                                        lineNumber: 605,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1884,13 +2000,13 @@ function AuditSearchPage() {
                                                                         children: event.activityType || event.displayName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 552,
+                                                                        lineNumber: 606,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 550,
+                                                                lineNumber: 604,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1900,7 +2016,7 @@ function AuditSearchPage() {
                                                                         children: "Actor"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 555,
+                                                                        lineNumber: 609,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1908,13 +2024,13 @@ function AuditSearchPage() {
                                                                         children: event.actorUserPrincipalName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 556,
+                                                                        lineNumber: 610,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 554,
+                                                                lineNumber: 608,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1924,7 +2040,7 @@ function AuditSearchPage() {
                                                                         children: "Category"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 559,
+                                                                        lineNumber: 613,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -1933,13 +2049,13 @@ function AuditSearchPage() {
                                                                         children: event.category
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 560,
+                                                                        lineNumber: 614,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 558,
+                                                                lineNumber: 612,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1949,20 +2065,20 @@ function AuditSearchPage() {
                                                                         children: "Result"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 563,
+                                                                        lineNumber: 617,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     getResultBadge(event.activityResult)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 562,
+                                                                lineNumber: 616,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 545,
+                                                        lineNumber: 599,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1977,17 +2093,17 @@ function AuditSearchPage() {
                                                                         className: "h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                        lineNumber: 570,
+                                                                        lineNumber: 624,
                                                                         columnNumber: 57
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 569,
+                                                                    lineNumber: 623,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 568,
+                                                                lineNumber: 622,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1998,30 +2114,30 @@ function AuditSearchPage() {
                                                                     className: "h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 578,
+                                                                    lineNumber: 632,
                                                                     columnNumber: 67
                                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                                     className: "h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 578,
+                                                                    lineNumber: 632,
                                                                     columnNumber: 103
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                lineNumber: 573,
+                                                                lineNumber: 627,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                                        lineNumber: 567,
+                                                        lineNumber: 621,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 544,
+                                                lineNumber: 598,
                                                 columnNumber: 41
                                             }, this),
                                             isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2036,7 +2152,7 @@ function AuditSearchPage() {
                                                                     children: "Display Name"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 586,
+                                                                    lineNumber: 640,
                                                                     columnNumber: 57
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2044,13 +2160,13 @@ function AuditSearchPage() {
                                                                     children: event.displayName
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 587,
+                                                                    lineNumber: 641,
                                                                     columnNumber: 57
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                            lineNumber: 585,
+                                                            lineNumber: 639,
                                                             columnNumber: 53
                                                         }, this),
                                                         event.resources && event.resources.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2060,7 +2176,7 @@ function AuditSearchPage() {
                                                                     children: "Affected Resources"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 591,
+                                                                    lineNumber: 645,
                                                                     columnNumber: 61
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2073,7 +2189,7 @@ function AuditSearchPage() {
                                                                                     children: resource.displayName
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                                    lineNumber: 595,
+                                                                                    lineNumber: 649,
                                                                                     columnNumber: 73
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2081,7 +2197,7 @@ function AuditSearchPage() {
                                                                                     children: resource.type
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                                    lineNumber: 596,
+                                                                                    lineNumber: 650,
                                                                                     columnNumber: 73
                                                                                 }, this),
                                                                                 resource.modifiedProperties && resource.modifiedProperties.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2097,7 +2213,7 @@ function AuditSearchPage() {
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                                                    lineNumber: 601,
+                                                                                                    lineNumber: 655,
                                                                                                     columnNumber: 89
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2105,7 +2221,7 @@ function AuditSearchPage() {
                                                                                                     children: prop.oldValue || '(empty)'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                                                    lineNumber: 602,
+                                                                                                    lineNumber: 656,
                                                                                                     columnNumber: 89
                                                                                                 }, this),
                                                                                                 "→",
@@ -2114,58 +2230,58 @@ function AuditSearchPage() {
                                                                                                     children: prop.newValue || '(empty)'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                                                    lineNumber: 604,
+                                                                                                    lineNumber: 658,
                                                                                                     columnNumber: 89
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, pidx, true, {
                                                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                                            lineNumber: 600,
+                                                                                            lineNumber: 654,
                                                                                             columnNumber: 85
                                                                                         }, this))
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                                    lineNumber: 598,
+                                                                                    lineNumber: 652,
                                                                                     columnNumber: 77
                                                                                 }, this)
                                                                             ]
                                                                         }, idx, true, {
                                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                            lineNumber: 594,
+                                                                            lineNumber: 648,
                                                                             columnNumber: 69
                                                                         }, this))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                                    lineNumber: 592,
+                                                                    lineNumber: 646,
                                                                     columnNumber: 61
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/audit-events/search/page.tsx",
-                                                            lineNumber: 590,
+                                                            lineNumber: 644,
                                                             columnNumber: 57
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/audit-events/search/page.tsx",
-                                                    lineNumber: 584,
+                                                    lineNumber: 638,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 583,
+                                                lineNumber: 637,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, event.id, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 543,
+                                        lineNumber: 597,
                                         columnNumber: 37
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 539,
+                                lineNumber: 593,
                                 columnNumber: 25
                             }, this),
                             totalPages > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2181,7 +2297,7 @@ function AuditSearchPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 625,
+                                        lineNumber: 679,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2195,7 +2311,7 @@ function AuditSearchPage() {
                                                 children: "Previous"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 629,
+                                                lineNumber: 683,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2206,41 +2322,41 @@ function AuditSearchPage() {
                                                 children: "Next"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                                lineNumber: 637,
+                                                lineNumber: 691,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/audit-events/search/page.tsx",
-                                        lineNumber: 628,
+                                        lineNumber: 682,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/audit-events/search/page.tsx",
-                                lineNumber: 624,
+                                lineNumber: 678,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/audit-events/search/page.tsx",
-                        lineNumber: 538,
+                        lineNumber: 592,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/audit-events/search/page.tsx",
-                lineNumber: 520,
+                lineNumber: 574,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/audit-events/search/page.tsx",
-        lineNumber: 289,
+        lineNumber: 309,
         columnNumber: 9
     }, this);
 }
-_s(AuditSearchPage, "uVVSKJxbRDbaK58vKWIJWaR0AyI=", false, function() {
+_s(AuditSearchPage, "vfhnrebIgzL/nnuLN5FWN3pJ4XE=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMsal"],
         __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApiRequest"]

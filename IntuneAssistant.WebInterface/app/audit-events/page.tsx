@@ -21,7 +21,16 @@ import {
     Loader2
 } from 'lucide-react';
 import { useAuditEvents } from '@/contexts/AuditEventsContext';
-import { AuditEvent } from '@/types/auditEvents';
+import { useApiRequest } from '@/hooks/useApiRequest';
+import { AuditEvent, AuditMetadata, AuditMetadataResponse } from '@/types/auditEvents';
+import { AUDIT_EVENT_METADATA_ENDPOINT } from '@/lib/constants';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import {
     BarChart,
     Bar,
@@ -70,14 +79,41 @@ const CATEGORY_COLORS = {
 export default function AuditDashboardPage() {
     const { accounts } = useMsal();
     const { statistics, recentEvents, loading, error, fetchData } = useAuditEvents();
+    const { request } = useApiRequest();
 
     const [autoRefresh, setAutoRefresh] = useState(false);
     const [filterType, setFilterType] = useState<'all' | 'failures' | 'hour' | 'day'>('day');
+    const [metadata, setMetadata] = useState<AuditMetadata | null>(null);
+    const [selectedActivity, setSelectedActivity] = useState<string>('all');
+    const [selectedActor, setSelectedActor] = useState<string>('all');
+
+    // Derived lists with fallbacks
+    const activitiesList = metadata?.activities || metadata?.activityTypes || [];
+    const actorsList = metadata?.actors || metadata?.userPrincipalNames || [];
+
+    // Fetch metadata
+    useEffect(() => {
+        const fetchMetadata = async () => {
+            if (!accounts.length) return;
+            try {
+                const response = await request<AuditMetadataResponse>(
+                    AUDIT_EVENT_METADATA_ENDPOINT,
+                    { method: 'GET' }
+                );
+                if (response?.data) {
+                    setMetadata(response.data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch metadata:', err);
+            }
+        };
+        fetchMetadata();
+    }, [accounts.length, request]);
 
     useEffect(() => {
         if (accounts.length > 0 && !statistics) {
             // Only fetch if we don't have cached data
-            fetchData(filterType);
+            fetchData(filterType, selectedActivity, selectedActor);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [accounts.length]);
@@ -85,25 +121,25 @@ export default function AuditDashboardPage() {
     // Re-fetch when filter changes
     useEffect(() => {
         if (accounts.length > 0 && statistics) {
-            fetchData(filterType);
+            fetchData(filterType, selectedActivity, selectedActor);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filterType]);
+    }, [filterType, selectedActivity, selectedActor]);
 
     // Auto-refresh effect
     useEffect(() => {
         if (!autoRefresh) return;
 
         const interval = setInterval(() => {
-            fetchData(filterType, true);
+            fetchData(filterType, selectedActivity, selectedActor, true);
         }, 30000); // 30 seconds
 
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [autoRefresh, filterType]);
+    }, [autoRefresh, filterType, selectedActivity, selectedActor]);
 
     const handleRefresh = () => {
-        fetchData(filterType);
+        fetchData(filterType, selectedActivity, selectedActor);
     };
 
     const getRelativeTime = useCallback((timestamp: string) => {
@@ -249,36 +285,72 @@ export default function AuditDashboardPage() {
             </div>
 
             {/* Quick Filters */}
-            <div className="flex gap-2">
-                <Button
-                    variant={filterType === 'all' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilterType('all')}
-                >
-                    All Events
-                </Button>
-                <Button
-                    variant={filterType === 'failures' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilterType('failures')}
-                    className={filterType === 'failures' ? 'bg-red-500 hover:bg-red-600' : ''}
-                >
-                    Failures Only
-                </Button>
-                <Button
-                    variant={filterType === 'hour' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilterType('hour')}
-                >
-                    Last Hour
-                </Button>
-                <Button
-                    variant={filterType === 'day' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilterType('day')}
-                >
-                    Last 24 Hours
-                </Button>
+            <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+                <div className="flex gap-2 flex-wrap">
+                    <Button
+                        variant={filterType === 'all' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilterType('all')}
+                    >
+                        All Events
+                    </Button>
+                    <Button
+                        variant={filterType === 'failures' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilterType('failures')}
+                        className={filterType === 'failures' ? 'bg-red-500 hover:bg-red-600' : ''}
+                    >
+                        Failures Only
+                    </Button>
+                    <Button
+                        variant={filterType === 'hour' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilterType('hour')}
+                    >
+                        Last Hour
+                    </Button>
+                    <Button
+                        variant={filterType === 'day' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilterType('day')}
+                    >
+                        Last 24 Hours
+                    </Button>
+                </div>
+
+                <div className="flex gap-2 flex-wrap w-full lg:w-auto">
+                    <div className="w-full lg:w-[200px]">
+                        <Select value={selectedActivity} onValueChange={setSelectedActivity}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Filter by Activity" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Activities</SelectItem>
+                                {activitiesList.map((activity) => (
+                                    <SelectItem key={activity} value={activity}>
+                                        {activity}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="w-full lg:w-[200px]">
+                        <Select value={selectedActor} onValueChange={setSelectedActor}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Filter by Actor" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Actors</SelectItem>
+                                {actorsList.map((actor) => (
+                                    <SelectItem key={actor} value={actor}>
+                                        {actor}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
             </div>
 
             {/* Stats Cards */}
@@ -517,7 +589,7 @@ export default function AuditDashboardPage() {
                                             {event.activityType || event.displayName}
                                         </td>
                                         <td className="py-3 px-4 text-sm text-gray-700 dark:text-gray-300">
-                                            {event.actorUserPrincipalName}
+                                            {event.actorUserPrincipalName || 'Unknown'}
                                         </td>
                                         <td className="py-3 px-4 text-sm">
                                             <Badge variant="outline">{event.category}</Badge>

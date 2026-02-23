@@ -3113,7 +3113,7 @@ const AuditEventsProvider = (param)=>{
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const fetchData = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
         "AuditEventsProvider.useCallback[fetchData]": async function() {
-            let filterType = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'day', silent = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+            let filterType = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 'day', activity = arguments.length > 1 ? arguments[1] : void 0, actor = arguments.length > 2 ? arguments[2] : void 0, silent = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : false;
             if (!accounts.length) return;
             if (!silent) {
                 setLoading(true);
@@ -3129,11 +3129,15 @@ const AuditEventsProvider = (param)=>{
                 } else {
                     dateFrom.setHours(now.getHours() - 24);
                 }
-                // Fetch statistics
-                const statsParams = new URLSearchParams({
+                // Common params
+                const commonParams = {
                     dateFrom: dateFrom.toISOString(),
                     dateTo: now.toISOString()
-                });
+                };
+                if (activity && activity !== 'all') commonParams['activityType'] = activity;
+                if (actor && actor !== 'all') commonParams['actorUserPrincipalName'] = actor;
+                // Fetch statistics
+                const statsParams = new URLSearchParams(commonParams);
                 const statsResponse = await request("".concat(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AUDIT_EVENT_STATS_ENDPOINT"], "?").concat(statsParams.toString()), {
                     method: 'GET',
                     headers: {
@@ -3145,10 +3149,9 @@ const AuditEventsProvider = (param)=>{
                 }
                 // Fetch recent events
                 const eventsParams = new URLSearchParams({
+                    ...commonParams,
                     pageNumber: '1',
-                    pageSize: '10',
-                    dateFrom: dateFrom.toISOString(),
-                    dateTo: now.toISOString()
+                    pageSize: '10'
                 });
                 if (filterType === 'failures') {
                     eventsParams.append('result', 'Failure');
@@ -3212,7 +3215,7 @@ const AuditEventsProvider = (param)=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/contexts/AuditEventsContext.tsx",
-        lineNumber: 145,
+        lineNumber: 152,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };

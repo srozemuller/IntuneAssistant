@@ -73,6 +73,8 @@ export interface AuditMetadata {
     activities: string[];
     components: string[];
     actors: string[];
+    activityTypes?: string[];
+    userPrincipalNames?: string[];
 }
 
 export interface AuditMetadataResponse {
