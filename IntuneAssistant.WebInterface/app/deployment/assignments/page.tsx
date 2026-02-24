@@ -1,12 +1,12 @@
 'use client';
 import ReactDOM from 'react-dom';
-import React, {useState, useCallback, useRef, useEffect} from 'react';
+import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle, Blocks
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle
 } from 'lucide-react';
 import {useMsal} from '@azure/msal-react';
 import {
@@ -183,6 +183,16 @@ interface MigrationResult {
     errorMessage: string | null;
     processedAt: string;
     batchIndex: number | null;
+    originalPayload?: {
+        PolicyId: string;
+        PolicyName: string;
+        PolicyType: string;
+        AssignmentResourceName: string;
+        AssignmentDirection: string;
+        AssignmentAction: string;
+        FilterName: string | null;
+        FilterType: string | null;
+    };
 
     [key: string]: unknown;
 }
@@ -261,6 +271,7 @@ function AssignmentRolloutContent() {
     const [loading, setLoading] = useState(false);
     const [backupLoading, setBackupLoading] = useState(false);
     const [roleScopeTags, setRoleScopeTags] = useState<RoleScopeTag[]>([]);
+    const [retryingRows, setRetryingRows] = useState<Set<string>>(new Set());
 
     const [error, setError] = useState<string | null>(null);
     const [validationComplete, setValidationComplete] = useState(false);
@@ -281,6 +292,8 @@ function AssignmentRolloutContent() {
 
     const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
     const [filteredComparisonResults, setFilteredComparisonResults] = useState<ComparisonResult[]>([]);
+    const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed'>('all');
+    const [compareStatusFilter, setCompareStatusFilter] = useState<'all' | 'ready' | 'migrated' | 'warnings'>('all');
 
     // Add pagination logic before the return statement
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -294,6 +307,17 @@ function AssignmentRolloutContent() {
     const [migrationSuccessful, setMigrationSuccessful] = useState(false);
 
     const [expandedRows, setExpandedRows] = useState<string[]>([]);
+
+    // Filter migration results based on status
+    const filteredMigrationResults = useMemo(() => {
+        if (migrationResultFilter === 'all') {
+            return migrationResults;
+        } else if (migrationResultFilter === 'success') {
+            return migrationResults.filter(r => r.status === 'Success');
+        } else {
+            return migrationResults.filter(r => r.status === 'Failed');
+        }
+    }, [migrationResults, migrationResultFilter]);
 
 // Add this component before the uploadColumns definition
     const ValidationStatusCell = ({csvRow}: { csvRow: CSVRow }) => {
@@ -1121,6 +1145,45 @@ function AssignmentRolloutContent() {
                     {new Date(String(value)).toLocaleString()}
                 </span>
             )
+        },
+        {
+            key: 'actions',
+            label: 'Actions',
+            width: 100,
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as MigrationResult;
+                const isRetrying = retryingRows.has(result.id);
+
+                // Only show retry button for failed migrations that have original payload
+                if (result.status !== 'Failed' || !result.originalPayload) {
+                    return null;
+                }
+
+                return (
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            retryFailedMigration(result.id);
+                        }}
+                        disabled={isRetrying}
+                        className="h-8 px-3"
+                    >
+                        {isRetrying ? (
+                            <>
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current mr-1"></div>
+                                Retrying...
+                            </>
+                        ) : (
+                            <>
+                                <RefreshCw className="h-3 w-3 mr-1"/>
+                                Retry
+                            </>
+                        )}
+                    </Button>
+                );
+            }
         }
     ];
 
@@ -1749,11 +1812,23 @@ function AssignmentRolloutContent() {
                 return;
             }
 
-            setMigrationResults(apiResponse.data as unknown as MigrationResult[]);
+            // Store original payload in each migration result for retry functionality
+            const resultsWithPayload = (apiResponse.data as unknown as MigrationResult[]).map(result => {
+                const originalPayload = migrationPayload.find(p =>
+                    p.PolicyName === result.providedPolicyName &&
+                    p.AssignmentResourceName === result.groupToMigrate
+                );
+                return {
+                    ...result,
+                    originalPayload
+                };
+            });
+
+            setMigrationResults(resultsWithPayload);
 
             setComparisonResults(prev =>
                 prev.map(result => {
-                    const migrationResult = (apiResponse.data as unknown as MigrationResult[]).find(
+                    const migrationResult = resultsWithPayload.find(
                         mr => mr.id === result.id
                     );
 
@@ -1776,6 +1851,84 @@ function AssignmentRolloutContent() {
             setError(error instanceof Error ? error.message : 'Migration failed');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const retryFailedMigration = async (resultId: string) => {
+        if (!accounts.length) return;
+
+        const failedResult = migrationResults.find(r => r.id === resultId);
+        if (!failedResult || !failedResult.originalPayload) {
+            setError('Cannot retry: Original migration data not found');
+            return;
+        }
+
+        setRetryingRows(prev => new Set(prev).add(resultId));
+
+        try {
+            const apiResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
+                method: 'POST',
+                body: JSON.stringify([failedResult.originalPayload])
+            });
+
+            if (!apiResponse || !apiResponse.data) {
+                setError('Failed to get response from server');
+                return;
+            }
+
+            if (apiResponse.status === 'Error' && apiResponse.message?.message === 'User challenge required') {
+                setConsentUrl(apiResponse.message.url || '');
+                setShowConsentDialog(true);
+                setRetryingRows(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(resultId);
+                    return newSet;
+                });
+                return;
+            }
+
+            const retryResult = (apiResponse.data as unknown as MigrationResult[])[0];
+
+            if (retryResult) {
+                // Update the migration results with the retry result
+                setMigrationResults(prev =>
+                    prev.map(r =>
+                        r.id === resultId
+                            ? {
+                                ...retryResult,
+                                originalPayload: failedResult.originalPayload,
+                                processedAt: new Date().toISOString()
+                            }
+                            : r
+                    )
+                );
+
+                // Update comparison results if successful
+                if (retryResult.status === 'Success') {
+                    setComparisonResults(prev =>
+                        prev.map(result => {
+                            if (result.id === resultId) {
+                                return {
+                                    ...result,
+                                    isMigrated: true,
+                                    validationStatus: 'pending' as const,
+                                    isCurrentSessionValidation: true
+                                };
+                            }
+                            return result;
+                        })
+                    );
+                }
+            }
+
+        } catch (error) {
+            setError(error instanceof Error ? error.message : 'Retry failed');
+        } finally {
+            setRetryingRows(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(resultId);
+                return newSet;
+            });
         }
     };
 
@@ -1944,6 +2097,7 @@ const validateAssignments = async () => {
         setValidationResults([]);
         setValidationComplete(false);
         setRoleScopeTagFilter([]);
+        setCompareStatusFilter('all');
         setError(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -2087,6 +2241,7 @@ const validateAssignments = async () => {
     useEffect(() => {
         let filtered = comparisonResults;
 
+        // Apply role scope tag filter
         if (roleScopeTagFilter.length > 0) {
             filtered = filtered.filter((result) => {
                 const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
@@ -2094,8 +2249,18 @@ const validateAssignments = async () => {
             });
         }
 
+        // Apply compare status filter
+        if (compareStatusFilter === 'ready') {
+            filtered = filtered.filter(r => r.isReadyForMigration && !r.isMigrated);
+        } else if (compareStatusFilter === 'migrated') {
+            filtered = filtered.filter(r => r.isMigrated);
+        } else if (compareStatusFilter === 'warnings') {
+            filtered = filtered.filter(r => !r.isReadyForMigration && !r.isMigrated);
+        }
+        // 'all' doesn't need additional filtering
+
         setFilteredComparisonResults(filtered);
-    }, [comparisonResults, roleScopeTagFilter]);
+    }, [comparisonResults, roleScopeTagFilter, compareStatusFilter]);
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -2487,6 +2652,46 @@ const validateAssignments = async () => {
                     </CardHeader>
                     <CardContent>
 
+                        {/* Filter by Compare Status */}
+                        <div className="mb-6 flex gap-2">
+                            <Button
+                                onClick={() => setCompareStatusFilter('all')}
+                                variant={compareStatusFilter === 'all' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <Circle className="h-4 w-4"/>
+                                All ({comparisonResults.length})
+                            </Button>
+                            <Button
+                                onClick={() => setCompareStatusFilter('ready')}
+                                variant={compareStatusFilter === 'ready' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <CheckCircle2 className="h-4 w-4 text-green-500"/>
+                                Ready for Migration ({comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length})
+                            </Button>
+                            <Button
+                                onClick={() => setCompareStatusFilter('migrated')}
+                                variant={compareStatusFilter === 'migrated' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <CheckCircle className="h-4 w-4 text-blue-500"/>
+                                Already Migrated ({comparisonResults.filter(r => r.isMigrated).length})
+                            </Button>
+                            <Button
+                                onClick={() => setCompareStatusFilter('warnings')}
+                                variant={compareStatusFilter === 'warnings' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <AlertTriangle className="h-4 w-4 text-amber-500"/>
+                                Warnings ({comparisonResults.filter(r => !r.isReadyForMigration && !r.isMigrated).length})
+                            </Button>
+                        </div>
+
                         <div className="mb-4 flex gap-2 items-end">
                             <div className="flex-1">
                                 <label className="text-sm font-medium dark:text-gray-200 mb-2 block">
@@ -2620,6 +2825,34 @@ const validateAssignments = async () => {
                         </div>
                     </CardHeader>
                     <CardContent>
+                        {/* Filter Buttons */}
+                        <div className="mb-6 flex gap-2">
+                            <Button
+                                onClick={() => setMigrationResultFilter('all')}
+                                variant={migrationResultFilter === 'all' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                            >
+                                <Circle className="h-4 w-4"/>
+                                All ({migrationResults.length})
+                            </Button>
+                            <Button
+                                onClick={() => setMigrationResultFilter('success')}
+                                variant={migrationResultFilter === 'success' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                            >
+                                <CheckCircle2 className="h-4 w-4"/>
+                                Successful ({migrationResults.filter(r => r.status === 'Success').length})
+                            </Button>
+                            <Button
+                                onClick={() => setMigrationResultFilter('failed')}
+                                variant={migrationResultFilter === 'failed' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                            >
+                                <XCircle className="h-4 w-4"/>
+                                Failed ({migrationResults.filter(r => r.status === 'Failed').length})
+                            </Button>
+                        </div>
+
                         {/* Summary Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-green-50/60 to-emerald-50/40 dark:from-green-900/20 dark:to-emerald-900/10 border border-green-200/30 dark:border-green-700/30">
@@ -2657,10 +2890,21 @@ const validateAssignments = async () => {
                             </div>
                         </div>
 
+                        {/* Filtered count indicator */}
+                        {migrationResultFilter !== 'all' && (
+                            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                <p className="text-sm text-blue-700 dark:text-blue-300">
+                                    Showing <strong>{filteredMigrationResults.length}</strong> of <strong>{migrationResults.length}</strong> results
+                                    {migrationResultFilter === 'success' && ' (Successful only)'}
+                                    {migrationResultFilter === 'failed' && ' (Failed only)'}
+                                </p>
+                            </div>
+                        )}
+
                         {/* Results Table */}
                         <DataTable
                             columns={migrationResultsColumns}
-                            data={migrationResults}
+                            data={filteredMigrationResults}
                             itemsPerPage={itemsPerPage}
                             showPagination={true}
                             onItemsPerPageChange={setItemsPerPage}
