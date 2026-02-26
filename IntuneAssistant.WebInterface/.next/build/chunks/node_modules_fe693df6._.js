@@ -5853,17 +5853,8 @@ function parse(css, opts) {
     try {
         parser.parse();
     } catch (e) {
-        if ("TURBOPACK compile-time truthy", 1) {
-            if (e.name === 'CssSyntaxError' && opts && opts.from) {
-                if (/\.scss$/i.test(opts.from)) {
-                    e.message += '\nYou tried to parse SCSS with ' + 'the standard CSS parser; ' + 'try again with the postcss-scss parser';
-                } else if (/\.sass/i.test(opts.from)) {
-                    e.message += '\nYou tried to parse Sass with ' + 'the standard CSS parser; ' + 'try again with the postcss-sass parser';
-                } else if (/\.less$/i.test(opts.from)) {
-                    e.message += '\nYou tried to parse Less with ' + 'the standard CSS parser; ' + 'try again with the postcss-less parser';
-                }
-            }
-        }
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
         throw e;
     }
     return parser.root;
@@ -6164,17 +6155,8 @@ class LazyResult {
                 error.plugin = plugin.postcssPlugin;
                 error.setMessage();
             } else if (plugin.postcssVersion) {
-                if ("TURBOPACK compile-time truthy", 1) {
-                    let pluginName = plugin.postcssPlugin;
-                    let pluginVer = plugin.postcssVersion;
-                    let runtimeVer = this.result.processor.version;
-                    let a = pluginVer.split('.');
-                    let b = runtimeVer.split('.');
-                    if (a[0] !== b[0] || parseInt(a[1]) > parseInt(b[1])) {
-                        // eslint-disable-next-line no-console
-                        console.error('Unknown error from PostCSS plugin. Your current PostCSS ' + 'version is ' + runtimeVer + ', but ' + pluginName + ' uses ' + pluginVer + '. Perhaps this is the source of the error below.');
-                    }
-                }
+                if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+                ;
             }
         } catch (err) {
             /* c8 ignore next 3 */ // eslint-disable-next-line no-console
@@ -6335,11 +6317,8 @@ class LazyResult {
         return this.result;
     }
     then(onFulfilled, onRejected) {
-        if ("TURBOPACK compile-time truthy", 1) {
-            if (!('from' in this.opts)) {
-                warnOnce('Without `from` option PostCSS could generate wrong source map ' + 'and will not find Browserslist config. Set it to CSS file path ' + 'or to `undefined` to prevent this warning.');
-            }
-        }
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
         return this.async().then(onFulfilled, onRejected);
     }
     toString() {
@@ -6538,11 +6517,8 @@ class NoWorkResult {
         return this.result;
     }
     then(onFulfilled, onRejected) {
-        if ("TURBOPACK compile-time truthy", 1) {
-            if (!('from' in this._opts)) {
-                warnOnce('Without `from` option PostCSS could generate wrong source map ' + 'and will not find Browserslist config. Set it to CSS file path ' + 'or to `undefined` to prevent this warning.');
-            }
-        }
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
         return this.async().then(onFulfilled, onRejected);
     }
     toString() {
@@ -6582,9 +6558,8 @@ class Processor {
             } else if (typeof i === 'function') {
                 normalized.push(i);
             } else if (typeof i === 'object' && (i.parse || i.stringify)) {
-                if ("TURBOPACK compile-time truthy", 1) {
-                    throw new Error('PostCSS syntaxes cannot be used as plugins. Instead, please use ' + 'one of the syntax/parser/stringifier options as outlined ' + 'in your PostCSS runner documentation.');
-                }
+                if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+                ;
             } else {
                 throw new Error(i + ' is not a PostCSS plugin');
             }

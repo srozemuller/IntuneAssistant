@@ -1,4 +1,6 @@
 // hooks/useApiRequest.ts
+'use client';
+
 import { useRef, useCallback } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useConsent } from "@/contexts/ConsentContext";

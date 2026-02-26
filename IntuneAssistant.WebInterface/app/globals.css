@@ -196,7 +196,7 @@
   main {
     height: 100vh;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     margin-left: 16rem;
     /* Add these for better scroll performance */
     will-change: scroll-position;
@@ -211,7 +211,7 @@
 
   /* Responsive table width */
   table {
-    @apply w-full max-w-full;
+    /* Remove width constraints - let DataTable component control width */
     /* Remove glass effect - use solid background */
     @apply bg-white dark:bg-gray-800;
     /* Simpler shadow */
@@ -219,9 +219,9 @@
   }
 
 
-  /* Ensure table cells don't expand beyond viewport */
+  /* Ensure table cells render efficiently */
   th, td {
-    @apply max-w-xs overflow-hidden text-ellipsis;
+    @apply overflow-hidden text-ellipsis;
     contain: layout style paint;
   }
 
@@ -405,4 +405,31 @@
   .animate-shake {
       animation: shake 0.5s ease-out;
   }
+
+  /* Custom scrollbar styling for DataTable */
+  .overflow-x-auto::-webkit-scrollbar {
+      height: 8px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-track {
+      background: transparent;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+      background: rgb(203 213 225 / 0.5);
+      border-radius: 4px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+      background: rgb(203 213 225 / 0.8);
+  }
+
+  .dark .overflow-x-auto::-webkit-scrollbar-thumb {
+      background: rgb(71 85 105 / 0.5);
+  }
+
+  .dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+      background: rgb(71 85 105 / 0.8);
+  }
 }
+

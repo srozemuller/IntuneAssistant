@@ -6,7 +6,7 @@ import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle
+    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet
 } from 'lucide-react';
 import {useMsal} from '@azure/msal-react';
 import {
@@ -382,9 +382,8 @@ function AssignmentRolloutContent() {
         {
             key: 'validationStatusSort',
             label: 'Status',
-            width: 25,
-            maxWidth: 25,
-            minWidth: 25,
+            width: 90,
+            minWidth: 90,
             sortable: true,
             sortValue: (row: Record<string, unknown>) => {
                 const csvRow = row as unknown as CSVRow;
@@ -399,7 +398,8 @@ function AssignmentRolloutContent() {
         {
             key: 'PolicyName',
             label: 'Policy Name',
-            minWidth: 200,
+            minWidth: 300,
+            width: 500,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as unknown as CSVRow;
                 const hasError = csvRow.validationErrors?.some(e => e.field === 'PolicyName');
@@ -415,7 +415,8 @@ function AssignmentRolloutContent() {
         {
             key: 'GroupName',
             label: 'Group Name',
-            minWidth: 150,
+            minWidth: 250,
+            width: 250,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as unknown as CSVRow;
                 const hasError = csvRow.validationErrors?.some(e => e.field === 'GroupName');
@@ -432,6 +433,8 @@ function AssignmentRolloutContent() {
         {
             key: 'AssignmentDirection',
             label: 'Direction',
+            minWidth: 150,
+            width: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as CSVRow;
                 const hasError = csvRow.validationErrors?.some(e => e.field === 'AssignmentDirection');
@@ -458,6 +461,8 @@ function AssignmentRolloutContent() {
         {
             key: 'AssignmentAction',
             label: 'Action',
+            minWidth: 150,
+            width: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as CSVRow;
                 const hasError = csvRow.validationErrors?.some(e => e.field === 'AssignmentAction');
@@ -512,6 +517,8 @@ function AssignmentRolloutContent() {
         {
             key: 'FilterName',
             label: 'Filter Name',
+            minWidth: 150,
+            width: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as CSVRow;
                 return csvRow.FilterName ? (
@@ -528,6 +535,8 @@ function AssignmentRolloutContent() {
         {
             key: 'FilterType',
             label: 'Filter Type',
+            minWidth: 150,
+            width: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const csvRow = row as CSVRow;
                 return csvRow.FilterType ? (
@@ -719,14 +728,16 @@ function AssignmentRolloutContent() {
         {
             key: '_select',
             label: '',
-            width: 10,
+            width: 50,
+            minWidth: 50,
+            sortable: false,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 const isSelected = selectedRows.includes(result.id);
                 const isDisabled = !result.isReadyForMigration || result.isMigrated;
 
                 return (
-                    <div onClick={(e) => e.stopPropagation()}>
+                    <div onClick={(e) => e.stopPropagation()} className="flex justify-center">
                         <input
                             type="checkbox"
                             disabled={isDisabled}
@@ -759,7 +770,8 @@ function AssignmentRolloutContent() {
         {
             key: 'migrationCheckSortValue',
             label: 'Status',
-            width: 25,
+            width: 80,
+            minWidth: 80,
             sortable: true,
             sortValue: (row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
@@ -801,7 +813,8 @@ function AssignmentRolloutContent() {
         {
             key: 'providedPolicyName',
             label: 'Policy Name',
-            minWidth: 250,
+            minWidth: 300,
+            width: 300,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 const hasDuplicates = result.policies && result.policies.length > 1;
@@ -850,7 +863,8 @@ function AssignmentRolloutContent() {
         {
             key: 'assignedGroups',
             label: 'Current Assignments',
-            width: 150,
+            width: 200,
+            minWidth: 200,
             sortable: true,
             sortValue: (row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
@@ -882,6 +896,7 @@ function AssignmentRolloutContent() {
             key: 'groupToMigrate',
             label: 'Target Group',
             minWidth: 150,
+            width: 150,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.groupToMigrate || result.csvRow?.GroupName || '-';
@@ -904,6 +919,7 @@ function AssignmentRolloutContent() {
             key: 'assignmentAction',
             label: 'Action',
             width: 120,
+            minWidth: 120,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.assignmentAction ? (
@@ -920,6 +936,7 @@ function AssignmentRolloutContent() {
             key: 'filterName',
             label: 'Filter Name',
             minWidth: 120,
+            width: 120,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.filterName || result.csvRow?.FilterName || '-';
@@ -929,6 +946,7 @@ function AssignmentRolloutContent() {
             key: 'filterType',
             label: 'Filter Type',
             minWidth: 120,
+            width: 120,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 if (!result.filterType) return null;
@@ -955,8 +973,8 @@ function AssignmentRolloutContent() {
         {
             key: 'scopeTagIds',
             label: 'Role Scope Tags',
-            width: 180,
-            minWidth: 140,
+            width: 100,
+            minWidth: 100,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
@@ -2515,36 +2533,51 @@ const validateAssignments = async () => {
                                 </div>
 
                                 {/* Summary Stats - only count valid rows */}
-                                <div
-                                    className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-gray-50 dark:bg-neutral-800 p-4 rounded-lg">
-                                    <div className="text-center">
-                                        <div
-                                            className="text-2xl font-bold text-blue-500">{csvData.filter(r => r.isValid).length}</div>
-                                        <div className="text-sm text-gray-600">Valid Rows</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-green-500">
-                                            {csvData.filter(r => r.isValid && r.AssignmentAction === 'Add').length}
+                                <div className="space-y-3">
+                                    {/* Clear indicator that this is CSV data, not live environment data */}
+                                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                        <FileSpreadsheet className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                                CSV Upload Summary
+                                            </p>
+                                            <p className="text-xs text-blue-700 dark:text-blue-300">
+                                                This data is from your uploaded CSV file, not live environment data. Click &ldquo;Compare&rdquo; to check against your actual Intune assignments.
+                                            </p>
                                         </div>
-                                        <div className="text-sm text-gray-600">Add Actions</div>
                                     </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-orange-500">
-                                            {csvData.filter(r => r.isValid && r.AssignmentAction === 'Remove').length}
+
+                                    <div
+                                        className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-gray-50 dark:bg-neutral-800 p-4 rounded-lg">
+                                        <div className="text-center">
+                                            <div
+                                                className="text-2xl font-bold text-blue-500">{csvData.filter(r => r.isValid).length}</div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">Valid Rows in CSV</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Remove Actions</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-red-500">
-                                            {csvData.filter(r => r.isValid && r.AssignmentAction === 'NoAssignment').length}
+                                        <div className="text-center">
+                                            <div className="text-2xl font-bold text-green-500">
+                                                {csvData.filter(r => r.isValid && r.AssignmentAction === 'Add').length}
+                                            </div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">Add Actions</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Clear Actions</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-purple-500">
-                                            {csvData.filter(r => r.isValid && r.FilterName).length}
+                                        <div className="text-center">
+                                            <div className="text-2xl font-bold text-orange-500">
+                                                {csvData.filter(r => r.isValid && r.AssignmentAction === 'Remove').length}
+                                            </div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">Remove Actions</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">With Filters</div>
+                                        <div className="text-center">
+                                            <div className="text-2xl font-bold text-red-500">
+                                                {csvData.filter(r => r.isValid && r.AssignmentAction === 'NoAssignment').length}
+                                            </div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">Clear Actions</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-2xl font-bold text-purple-500">
+                                                {csvData.filter(r => r.isValid && r.FilterName).length}
+                                            </div>
+                                            <div className="text-sm text-gray-600 dark:text-gray-400">With Filters</div>
+                                        </div>
                                     </div>
                                 </div>
 
