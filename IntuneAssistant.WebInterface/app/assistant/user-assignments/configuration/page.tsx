@@ -713,17 +713,6 @@ export default function AssignmentsOverview() {
 
     const columns = [
         {
-            key: 'resourceType' as string,
-            label: 'Type',
-            width: 120,
-            minWidth: 80,
-            render: (value: unknown) => (
-                <Badge variant="outline" className="font-mono text-xs whitespace-nowrap">
-                    {String(value)}
-                </Badge>
-            )
-        },
-        {
             key: 'resourceName' as string,
             label: 'Resource',
             width: 200,
@@ -744,11 +733,13 @@ export default function AssignmentsOverview() {
                         </button>
                     );
                 }
-
                 return (
-                    <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                    {resourceName}
-                </span>
+                    <div className="space-y-0.5">
+                        <span className="font-medium text-sm truncate block w-full" title={resourceName}>
+                            {resourceName}
+                        </span>
+                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                    </div>
                 );
             }
         },

@@ -773,9 +773,12 @@ export default function AssignmentsOverview() {
                 }
 
                 return (
-                    <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                        {resourceName}
-                    </span>
+                    <div className="space-y-0.5">
+                        <span className="font-medium text-sm truncate block w-full" title={resourceName}>
+                            {resourceName}
+                        </span>
+                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                    </div>
                 );
             }
         },

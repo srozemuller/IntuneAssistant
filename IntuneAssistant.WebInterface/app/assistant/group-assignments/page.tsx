@@ -1,5 +1,5 @@
 'use client';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import {useMsal} from '@azure/msal-react';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
@@ -115,7 +115,6 @@ export default function AssignmentsOverview() {
     const [isCancelled, setIsCancelled] = useState(false);
 
     const [assignments, setAssignments] = useState<Assignments[]>([]);
-    const [filteredAssignments, setFilteredAssignments] = useState<Assignments[]>([]);
     const [filters, setFilters] = useState<AssignmentFilter[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -161,31 +160,20 @@ export default function AssignmentsOverview() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
-    // Add pagination calculations
-    const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedAssignments = filteredAssignments.slice(startIndex, endIndex);
-
     useEffect(() => {
         setCurrentPage(1);
     }, [assignmentTypeFilter, statusFilter, platformFilter, searchQuery, resourceTypeFilter, filterTypeFilter]);
 
-    const getUniqueFilterTypes = (): Option[] => [
-        {label: 'No Filter', value: 'None'},
-        {label: 'Include Filter', value: 'include'},
-        {label: 'Exclude Filter', value: 'exclude'}
-    ];
 
-    const filteredGroupResults = groupSearchResults.filter(group => {
-        if (!groupResultsSearch.trim()) return true;
+    const filteredGroupResults = useMemo(() => {
+        if (!groupResultsSearch.trim()) return groupSearchResults;
         const search = groupResultsSearch.toLowerCase();
-        return (
+        return groupSearchResults.filter(group =>
             group.displayName.toLowerCase().includes(search) ||
             group.description?.toLowerCase().includes(search) ||
             group.id.toLowerCase().includes(search)
         );
-    });
+    }, [groupSearchResults, groupResultsSearch]);
     const handleConsentCheck = (response: ApiResponse): boolean => {
         if (response.status === 'Error' &&
             response.message === 'User challenge required' &&
@@ -296,11 +284,9 @@ export default function AssignmentsOverview() {
 
                 if (Array.isArray(assignments)) {
                     setAssignments(assignments);
-                    setFilteredAssignments(assignments);
                 } else {
                     console.error('API response data is not an array:', assignments);
                     setAssignments([]);
-                    setFilteredAssignments([]);
                     throw new Error('Invalid data format received from API');
                 }
             } else {
@@ -314,7 +300,89 @@ export default function AssignmentsOverview() {
             setLoading(false);
         }
     };
-    const prepareRolloutExportData = (): ExportData => {
+    const getFilterInfo = useCallback((filterId: string | null, filterType: string) => {
+        if (!filterId || filterId === 'None' || filterType === 'None') {
+            return {displayName: 'None', managementType: null, platform: null};
+        }
+
+        const filter = filters.find(f => f.id === filterId);
+        return {
+            displayName: filter?.displayName || 'Unknown Filter',
+            managementType: filter?.assignmentFilterManagementType === 0 ? 'include' : 'exclude',
+            platform: filter?.platform
+        };
+    }, [filters]);
+
+    // Derived filtered assignments — replaces the setFilteredAssignments useEffect
+    const filteredAssignments = useMemo(() => {
+        let filtered = assignments;
+
+        if (resourceTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) =>
+                resourceTypeFilter.includes(assignment.resourceType)
+            );
+        }
+
+        if (assignmentTypeFilter.length > 0) {
+            filtered = filtered.filter(assignment => {
+                if (assignmentTypeFilter.includes('Not Assigned')) {
+                    return !assignment.isAssigned || assignmentTypeFilter.includes(assignment.assignmentType);
+                }
+                return assignment.isAssigned && assignmentTypeFilter.includes(assignment.assignmentType);
+            });
+        }
+
+        if (statusFilter.length > 0) {
+            filtered = filtered.filter(assignment => {
+                if (statusFilter.includes('Assigned') && statusFilter.includes('Not Assigned')) {
+                    return true;
+                }
+                if (statusFilter.includes('Assigned')) return assignment.isAssigned;
+                if (statusFilter.includes('Not Assigned')) return !assignment.isAssigned;
+                return false;
+            });
+        }
+
+        if (platformFilter.length > 0) {
+            filtered = filtered.filter(assignment => {
+                const platform = assignment.platform || 'All';
+                return platformFilter.includes(platform);
+            });
+        }
+
+        if (filterTypeFilter.length > 0) {
+            filtered = filtered.filter((assignment: Assignments) => {
+                const filterType = assignment.filterType;
+                if (filterTypeFilter.includes('None') && (!filterType || filterType === 'None')) return true;
+                if (filterTypeFilter.includes('include') && filterType === 'Include') return true;
+                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') return true;
+                return false;
+            });
+        }
+
+        return filtered;
+    }, [assignments, resourceTypeFilter, assignmentTypeFilter, statusFilter, platformFilter, filterTypeFilter]);
+
+
+    const fetchAssignments = async () => {
+        if (!accounts.length) return;
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            // Fetch both assignments and filters
+            await Promise.all([fetchAssignmentsData(), fetchFilters()]);
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+            setError(error instanceof Error ? error.message : 'Failed to fetch data');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    const rolloutExportData = useMemo((): ExportData => {
         const exportColumns: ExportColumn[] = [
             {
                 key: 'resourceName',
@@ -367,15 +435,16 @@ export default function AssignmentsOverview() {
         ];
 
         return {
-            data: filteredAssignments, // Use your filtered assignments data
+            data: filteredAssignments,
             columns: exportColumns,
             filename: 'rollouts-overview',
             title: 'Rollouts Overview',
             description: 'Detailed view of all Intune rollouts across your organization',
             stats: rolloutStats
         };
-    };
-    const prepareExportData = (): ExportData => {
+    }, [filteredAssignments, getFilterInfo]);
+
+    const exportData = useMemo((): ExportData => {
         const exportColumns: ExportColumn[] = [
             {
                 key: 'resourceType',
@@ -448,23 +517,7 @@ export default function AssignmentsOverview() {
             description: 'Detailed view of all Intune assignments across your organization',
             stats
         };
-    };
-    const fetchAssignments = async () => {
-        if (!accounts.length) return;
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            // Fetch both assignments and filters
-            await Promise.all([fetchAssignmentsData(), fetchFilters()]);
-        } catch (error) {
-            console.error('Failed to fetch data:', error);
-            setError(error instanceof Error ? error.message : 'Failed to fetch data');
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [filteredAssignments, getFilterInfo]);
 
     const fetchAssignmentsData = async () => {
         if (!accounts.length) return;
@@ -487,11 +540,9 @@ export default function AssignmentsOverview() {
 
             if (Array.isArray(assignmentsData)) {
                 setAssignments(assignmentsData);
-                setFilteredAssignments(assignmentsData);
             } else {
                 console.error('API response data is not an array:', assignmentsData);
                 setAssignments([]);
-                setFilteredAssignments([]);
                 throw new Error('Invalid data format received from API');
             }
         } catch (error) {
@@ -504,24 +555,6 @@ export default function AssignmentsOverview() {
         }
     };
 
-    // Group dialog handlers
-    const handleResourceClick = (resourceId: string, assignmentType: string) => {
-        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
-            setSelectedGroupId(resourceId);
-            setIsGroupDialogOpen(true);
-        }
-    };
-
-    const handleFilterClick = (filterId: string) => {
-        if (filterId && filterId !== 'None') {
-            // Find the filter in the already loaded filters
-            const filter = filters.find(f => f.id === filterId);
-            if (filter) {
-                setSelectedFilter(filter);
-                setIsFilterDialogOpen(true);
-            }
-        }
-    };
 
     const fetchFilters = async () => {
         if (!accounts.length) return;
@@ -566,84 +599,31 @@ export default function AssignmentsOverview() {
     };
 
 
-    const getFilterInfo = (filterId: string | null, filterType: string) => {
-        if (!filterId || filterId === 'None' || filterType === 'None') {
-            return {displayName: 'None', managementType: null, platform: null};
+
+
+    // Pagination — depends on filteredAssignments
+    const totalPages = useMemo(
+        () => Math.ceil(filteredAssignments.length / itemsPerPage),
+        [filteredAssignments.length, itemsPerPage]
+    );
+
+    // Group dialog handlers
+    const handleResourceClick = useCallback((resourceId: string, assignmentType: string) => {
+        if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
+            setSelectedGroupId(resourceId);
+            setIsGroupDialogOpen(true);
         }
+    }, []);
 
-        const filter = filters.find(f => f.id === filterId);
-        return {
-            displayName: filter?.displayName || 'Unknown Filter',
-            managementType: filter?.assignmentFilterManagementType === 0 ? 'include' : 'exclude',
-            platform: filter?.platform
-        };
-    };
-
-    // Filter function
-    useEffect(() => {
-        let filtered = assignments;
-
-        if (resourceTypeFilter.length > 0) {
-            filtered = filtered.filter((assignment: Assignments) =>
-                resourceTypeFilter.includes(assignment.resourceType)
-            );
+    const handleFilterClick = useCallback((filterId: string) => {
+        if (filterId && filterId !== 'None') {
+            const filter = filters.find(f => f.id === filterId);
+            if (filter) {
+                setSelectedFilter(filter);
+                setIsFilterDialogOpen(true);
+            }
         }
-
-        // Apply dropdown filters
-        if (assignmentTypeFilter.length > 0) {
-            filtered = filtered.filter(assignment => {
-                if (assignmentTypeFilter.includes('Not Assigned')) {
-                    return !assignment.isAssigned || assignmentTypeFilter.includes(assignment.assignmentType);
-                }
-                return assignment.isAssigned && assignmentTypeFilter.includes(assignment.assignmentType);
-            });
-        }
-
-        if (statusFilter.length > 0) {
-            filtered = filtered.filter(assignment => {
-                if (statusFilter.includes('Assigned') && statusFilter.includes('Not Assigned')) {
-                    return true;
-                }
-                if (statusFilter.includes('Assigned')) return assignment.isAssigned;
-                if (statusFilter.includes('Not Assigned')) return !assignment.isAssigned;
-                return false;
-            });
-        }
-
-        if (platformFilter.length > 0) {
-            filtered = filtered.filter(assignment => {
-                const platform = assignment.platform || 'All';
-                return platformFilter.includes(platform);
-            });
-        }
-
-        if (filterTypeFilter.length > 0) {
-            filtered = filtered.filter((assignment: Assignments) => {
-                const filterType = assignment.filterType;
-
-                // Check for "No Filter" selection
-                if (filterTypeFilter.includes('None')) {
-                    if (!filterType || filterType === 'None') {
-                        return true;
-                    }
-                }
-
-                // Check for include filter
-                if (filterTypeFilter.includes('include') && filterType === 'Include') {
-                    return true;
-                }
-
-                // Check for exclude filter
-                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') {
-                    return true;
-                }
-
-                return false;
-            });
-        }
-
-        setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, statusFilter, platformFilter, filterTypeFilter]);
+    }, [filters]);
 
     // For dynamic group search
     const searchGroupInAssignments = async (searchTerm: string) => {
@@ -699,7 +679,7 @@ export default function AssignmentsOverview() {
     };
 
     // Get unique values for filters
-    const getUniqueAssignmentTypes = (): Option[] => {
+    const uniqueAssignmentTypes = useMemo((): Option[] => {
         const types = new Set<string>();
         assignments.forEach(assignment => {
             if (assignment.isAssigned) {
@@ -709,66 +689,66 @@ export default function AssignmentsOverview() {
             }
         });
         return Array.from(types).sort().map(type => ({label: type, value: type}));
-    };
-    const getUniqueResourceTypes = (): Option[] => {
+    }, [assignments]);
+
+    const uniqueResourceTypes = useMemo((): Option[] => {
         const types = new Set<string>();
         assignments.forEach(assignment => {
             types.add(assignment.resourceType);
         });
         return Array.from(types).sort().map(type => ({label: type, value: type}));
-    };
+    }, [assignments]);
 
-    const getUniqueStatuses = (): Option[] => [
+    const uniqueStatuses = useMemo((): Option[] => [
         {label: 'Assigned', value: 'Assigned'},
         {label: 'Not Assigned', value: 'Not Assigned'}
-    ];
+    ], []);
 
-    const getUniquePlatforms = (): Option[] => {
+    const uniquePlatforms = useMemo((): Option[] => {
         const platforms = new Set<string>();
         assignments.forEach(assignment => {
             platforms.add(assignment.platform || 'All');
         });
         return Array.from(platforms).sort().map(platform => ({label: platform, value: platform}));
-    };
+    }, [assignments]);
 
-    const clearFilters = () => {
+    const uniqueFilterTypes = useMemo((): Option[] => [
+        {label: 'No Filter', value: 'None'},
+        {label: 'Include Filter', value: 'include'},
+        {label: 'Exclude Filter', value: 'exclude'}
+    ], []);
+
+    const clearFilters = useCallback(() => {
         setAssignmentTypeFilter([]);
         setResourceTypeFilter([]);
         setStatusFilter([]);
         setPlatformFilter([]);
         setSearchQuery('');
         setFilterTypeFilter([]);
-    };
+    }, []);
 
-    const clearSearch = () => {
+    const clearSearch = useCallback(() => {
         setSearchQuery('');
-    };
+    }, []);
 
-    const clearAssignments = () => {
+    const clearAssignments = useCallback(() => {
         setAssignments([]);
-        setFilteredAssignments([]);
         setSearchedGroup(null);
         setGroupSearchInput('');
         setGroupSearchError(null);
         setError(null);
         setGroupSearchResults([]);
-        clearFilters();
+        setAssignmentTypeFilter([]);
+        setResourceTypeFilter([]);
+        setStatusFilter([]);
+        setPlatformFilter([]);
+        setSearchQuery('');
+        setFilterTypeFilter([]);
         setGroupResultsSearch('');
-    };
+    }, []);
 
 
-    const columns = [
-        {
-            key: 'resourceType' as string,
-            label: 'Type',
-            width: 120,
-            minWidth: 80,
-            render: (value: unknown) => (
-                <Badge variant="outline" className="font-mono text-xs whitespace-nowrap">
-                    {String(value)}
-                </Badge>
-            )
-        },
+    const columns = useMemo(() => [
         {
             key: 'resourceName' as string,
             label: 'Resource',
@@ -792,9 +772,12 @@ export default function AssignmentsOverview() {
                 }
 
                 return (
-                    <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                    {resourceName}
-                </span>
+                    <div className="space-y-0.5">
+                        <span className="font-medium text-sm truncate block w-full" title={resourceName}>
+                            {resourceName}
+                        </span>
+                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                    </div>
                 );
             }
         },
@@ -899,11 +882,25 @@ export default function AssignmentsOverview() {
             label: 'Platform',
             width: 100,
             minWidth: 80,
-            render: (value: unknown) => (
-                <span className="text-sm text-gray-600 whitespace-nowrap">
-                {value ? String(value) : 'All'}
-            </span>
-            )
+            render: (value: unknown) => {
+                const platform = value ? String(value) : 'All';
+                const platformColors: Record<string, string> = {
+                    'Windows': 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700',
+                    'iOS': 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600',
+                    'Android': 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700',
+                    'macOS': 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700',
+                    'Linux': 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700',
+                    'All': 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600',
+                };
+                return (
+                    <Badge
+                        variant="outline"
+                        className={`text-xs whitespace-nowrap ${platformColors[platform] || platformColors['All']}`}
+                    >
+                        {platform}
+                    </Badge>
+                );
+            }
         },
         {
             key: 'isAssigned' as string,
@@ -962,7 +959,7 @@ export default function AssignmentsOverview() {
                 );
             }
         }
-    ];
+    ], [getFilterInfo, handleFilterClick, handleResourceClick]);
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -985,12 +982,12 @@ export default function AssignmentsOverview() {
                                 exportOptions={[
                                     {
                                         label: "Standard Export",
-                                        data: prepareExportData(),
+                                        data: exportData,
                                         formats: ['csv', 'pdf', 'html']
                                     },
                                     {
                                         label: "Export for bulk assignments",
-                                        data: prepareRolloutExportData(),
+                                        data: rolloutExportData,
                                         formats: ['csv']
                                     }
                                 ]}
@@ -1014,7 +1011,6 @@ export default function AssignmentsOverview() {
                                     onClick={() => {
                                         cancel();
                                         setAssignments([]);
-                                        setFilteredAssignments([]);
                                         setError(null);
                                         setLoading(false);
                                         setIsCancelled(true);
@@ -1441,7 +1437,7 @@ export default function AssignmentsOverview() {
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium">Resource Type</label>
                                         <MultiSelect
-                                            options={getUniqueResourceTypes()}
+                                            options={uniqueResourceTypes}
                                             selected={resourceTypeFilter}
                                             onChange={setResourceTypeFilter}
                                             placeholder="Select resource types..."
@@ -1451,7 +1447,7 @@ export default function AssignmentsOverview() {
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium">Assignment Type</label>
                                         <MultiSelect
-                                            options={getUniqueAssignmentTypes()}
+                                            options={uniqueAssignmentTypes}
                                             selected={assignmentTypeFilter}
                                             onChange={setAssignmentTypeFilter}
                                             placeholder="Select assignment types..."
@@ -1462,7 +1458,7 @@ export default function AssignmentsOverview() {
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium">Status</label>
                                         <MultiSelect
-                                            options={getUniqueStatuses()}
+                                            options={uniqueStatuses}
                                             selected={statusFilter}
                                             onChange={setStatusFilter}
                                             placeholder="Select status..."
@@ -1473,7 +1469,7 @@ export default function AssignmentsOverview() {
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium">Platform</label>
                                         <MultiSelect
-                                            options={getUniquePlatforms()}
+                                            options={uniquePlatforms}
                                             selected={platformFilter}
                                             onChange={setPlatformFilter}
                                             placeholder="Select platforms..."
@@ -1484,7 +1480,7 @@ export default function AssignmentsOverview() {
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium">Filter Type</label>
                                         <MultiSelect
-                                            options={getUniqueFilterTypes()}
+                                            options={uniqueFilterTypes}
                                             selected={filterTypeFilter}
                                             onChange={setFilterTypeFilter}
                                             placeholder="Select filter types..."
