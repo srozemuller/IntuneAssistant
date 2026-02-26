@@ -149,25 +149,21 @@ export default function AssignmentsOverview() {
             {
                 key: 'resourceName',
                 label: 'PolicyName',
-                width: 30,
                 getValue: (row) => String(row.resourceName || '')
             },
             {
                 key: 'targetName',
                 label: 'GroupName',
-                width: 30,
                 getValue: (row) => String(row.targetName || '')
             },
             {
                 key: 'assignmentType',
                 label: 'AssignmentDirection',
-                width: 25,
                 getValue: (row) => String(row.assignmentDirection || '')
             },
             {
                 key: '',
                 label: 'AssignmentAction',
-                width: 25,
                 getValue: (row) => {
                     const targetName = (row as Assignments).targetName as string | null | undefined;
                     return String(targetName ? 'Add' : 'NoAssignment');
@@ -176,7 +172,6 @@ export default function AssignmentsOverview() {
             {
                 key: 'filterId',
                 label: 'Filter',
-                width: 25,
                 getValue: (row) => {
                     const filterId = row.filterId as string | null;
                     if (!filterId || filterId === 'None') return ''; // Empty for rollout export
@@ -187,13 +182,11 @@ export default function AssignmentsOverview() {
             {
                 key: 'filterType',
                 label: 'Filter Type',
-                width: 25,
                 getValue: (row) => String(row.filterType || '')
             },
             {
                 key: 'scopeTagIds',
                 label: 'Role Scope Tags',
-                width: 30,
                 getValue: (row) => {
                     const scopeTagIds = row.scopeTagIds as string[] | undefined;
                     const tagNames = getRoleScopeTagNames(scopeTagIds);
@@ -603,7 +596,6 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         {
             key: 'resourceName' as string,
             label: 'Resource',
-            width: 200,
             minWidth: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const resourceName = value ? String(value) : 'N/A';
@@ -638,7 +630,6 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         {
             key: 'assignmentType' as string,
             label: 'Assignment',
-            width: 140,
             minWidth: 100,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const isAssigned = Boolean(row.isAssigned);
@@ -666,7 +657,6 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         {
             key: 'targetName' as string,
             label: 'Target',
-            width: 180,
             minWidth: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const targetName = String(value);
@@ -897,7 +887,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
 
             {/* Show welcome card when no assignments are loaded and not loading */}
             {assignments.length === 0 && !loading && !error && (
-                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                <Card className="relative transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 mb-6">
@@ -946,7 +936,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             {assignments.length > 0 && !loading && (
                 <>
                     {/* Filters Section */}
-                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                    <Card className="relative transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
                                 <button
@@ -1134,35 +1124,25 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                     )}
 
                     {/* Assignment Details Table */}
-                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden">
-                        <CardHeader className="pb-4">
-                            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                <span>Assignment Details</span>
-                            </CardTitle>
-                            <CardDescription>
-                                Detailed view of all assignments with their targets and configurations
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            {loading ? (
-                                <div className="flex items-center justify-center h-32">
-                                    <RefreshCw className="h-6 w-6 animate-spin text-yellow-500"/>
-                                    <span className="ml-2 text-gray-600">Loading assignments...</span>
-                                </div>
-                            ) : (
-                                <DataTable
-                                    data={displayedAssignments}
-                                    columns={columns}
-                                    className="min-w-full"
-                                    showPagination={true}
-                                    currentPage={currentPage}
-                                    itemsPerPage={itemsPerPage}
-                                    onPageChange={setCurrentPage}
-                                    onItemsPerPageChange={setItemsPerPage}
-                                />
-                            )}
-                        </CardContent>
-                    </Card>
+                    <div className="relative">
+                        {loading ? (
+                            <div className="flex items-center justify-center h-32 bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 rounded-lg">
+                                <RefreshCw className="h-6 w-6 animate-spin text-yellow-500"/>
+                                <span className="ml-2 text-gray-600 dark:text-gray-300">Loading assignments...</span>
+                            </div>
+                        ) : (
+                            <DataTable
+                                data={displayedAssignments}
+                                columns={columns}
+                                className="min-w-full"
+                                showPagination={true}
+                                currentPage={currentPage}
+                                itemsPerPage={itemsPerPage}
+                                onPageChange={setCurrentPage}
+                                onItemsPerPageChange={setItemsPerPage}
+                            />
+                        )}
+                    </div>
 
                     {/* Filtered empty state */}
                     {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (

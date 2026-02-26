@@ -1,1 +1,311 @@
-{"version":3,"caseSensitive":false,"basePath":"","rewrites":{"beforeFiles":[],"afterFiles":[],"fallback":[]},"redirects":[{"source":"/:file((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+)/","destination":"/:file","permanent":true,"internal":true,"missing":[{"type":"header","key":"x-nextjs-data"}],"regex":"^(?:\\/((?!\\.well-known(?:\\/.*)?)(?:[^/]+\\/)*[^/]+\\.\\w+))\\/$"},{"source":"/:notfile((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+)","destination":"/:notfile/","permanent":true,"internal":true,"regex":"^(?:\\/((?!\\.well-known(?:\\/.*)?)(?:[^/]+\\/)*[^/\\.]+))$"}],"headers":[]}
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:file((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+)/",
+      "destination": "/:file",
+      "internal": true,
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "statusCode": 308,
+      "regex": "^(?:/((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+))/$"
+    },
+    {
+      "source": "/:notfile((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+)",
+      "destination": "/:notfile/",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+))$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/audit-events/[id]",
+      "regex": "^/audit\\-events/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/audit\\-events/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/monitor/details/[id]",
+      "regex": "^/monitor/details/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/monitor/details/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/about",
+      "regex": "^/about(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about(?:/)?$"
+    },
+    {
+      "page": "/account",
+      "regex": "^/account(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/account(?:/)?$"
+    },
+    {
+      "page": "/assistant",
+      "regex": "^/assistant(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/assistant(?:/)?$"
+    },
+    {
+      "page": "/assistant/app-assignments",
+      "regex": "^/assistant/app\\-assignments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/assistant/app\\-assignments(?:/)?$"
+    },
+    {
+      "page": "/assistant/assignments-overview",
+      "regex": "^/assistant/assignments\\-overview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/assistant/assignments\\-overview(?:/)?$"
+    },
+    {
+      "page": "/assistant/filter-assignments",
+      "regex": "^/assistant/filter\\-assignments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/assistant/filter\\-assignments(?:/)?$"
+    },
+    {
+      "page": "/assistant/group-assignments",
+      "regex": "^/assistant/group\\-assignments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/assistant/group\\-assignments(?:/)?$"
+    },
+    {
+      "page": "/assistant/user-assignments",
+      "regex": "^/assistant/user\\-assignments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/assistant/user\\-assignments(?:/)?$"
+    },
+    {
+      "page": "/assistant/user-assignments/apps",
+      "regex": "^/assistant/user\\-assignments/apps(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/assistant/user\\-assignments/apps(?:/)?$"
+    },
+    {
+      "page": "/assistant/user-assignments/configuration",
+      "regex": "^/assistant/user\\-assignments/configuration(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/assistant/user\\-assignments/configuration(?:/)?$"
+    },
+    {
+      "page": "/audit-events",
+      "regex": "^/audit\\-events(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/audit\\-events(?:/)?$"
+    },
+    {
+      "page": "/audit-events/search",
+      "regex": "^/audit\\-events/search(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/audit\\-events/search(?:/)?$"
+    },
+    {
+      "page": "/auditlog",
+      "regex": "^/auditlog(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auditlog(?:/)?$"
+    },
+    {
+      "page": "/compare",
+      "regex": "^/compare(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/compare(?:/)?$"
+    },
+    {
+      "page": "/compare/policies",
+      "regex": "^/compare/policies(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/compare/policies(?:/)?$"
+    },
+    {
+      "page": "/conditional-access",
+      "regex": "^/conditional\\-access(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/conditional\\-access(?:/)?$"
+    },
+    {
+      "page": "/conditional-access/policies",
+      "regex": "^/conditional\\-access/policies(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/conditional\\-access/policies(?:/)?$"
+    },
+    {
+      "page": "/configuration",
+      "regex": "^/configuration(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/configuration(?:/)?$"
+    },
+    {
+      "page": "/configuration/policies",
+      "regex": "^/configuration/policies(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/configuration/policies(?:/)?$"
+    },
+    {
+      "page": "/configuration/settings",
+      "regex": "^/configuration/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/configuration/settings(?:/)?$"
+    },
+    {
+      "page": "/consent-callback",
+      "regex": "^/consent\\-callback(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/consent\\-callback(?:/)?$"
+    },
+    {
+      "page": "/customer",
+      "regex": "^/customer(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/customer(?:/)?$"
+    },
+    {
+      "page": "/deployment",
+      "regex": "^/deployment(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/deployment(?:/)?$"
+    },
+    {
+      "page": "/deployment/assignments",
+      "regex": "^/deployment/assignments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/deployment/assignments(?:/)?$"
+    },
+    {
+      "page": "/devices",
+      "regex": "^/devices(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/devices(?:/)?$"
+    },
+    {
+      "page": "/devices/overview",
+      "regex": "^/devices/overview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/devices/overview(?:/)?$"
+    },
+    {
+      "page": "/faq",
+      "regex": "^/faq(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/faq(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/monitor",
+      "regex": "^/monitor(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/monitor(?:/)?$"
+    },
+    {
+      "page": "/monitor/add",
+      "regex": "^/monitor/add(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/monitor/add(?:/)?$"
+    },
+    {
+      "page": "/monitor/drift",
+      "regex": "^/monitor/drift(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/monitor/drift(?:/)?$"
+    },
+    {
+      "page": "/monitor/global-overview",
+      "regex": "^/monitor/global\\-overview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/monitor/global\\-overview(?:/)?$"
+    },
+    {
+      "page": "/monitor/monitors",
+      "regex": "^/monitor/monitors(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/monitor/monitors(?:/)?$"
+    },
+    {
+      "page": "/onboarding",
+      "regex": "^/onboarding(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/onboarding(?:/)?$"
+    },
+    {
+      "page": "/onboarding/customer",
+      "regex": "^/onboarding/customer(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/onboarding/customer(?:/)?$"
+    },
+    {
+      "page": "/plans",
+      "regex": "^/plans(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/plans(?:/)?$"
+    },
+    {
+      "page": "/security",
+      "regex": "^/security(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/security(?:/)?$"
+    },
+    {
+      "page": "/version",
+      "regex": "^/version(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/version(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

@@ -2,8 +2,16 @@
 'use client';
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {ITEMS_PER_PAGE} from "@/lib/constants";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, Search, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, Search, X, Settings2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuCheckboxItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface Column {
     key: string;
@@ -43,13 +51,13 @@ interface DataTableProps {
 const TableRow = React.memo<{
     row: Record<string, unknown>;
     rowIndex: number;
-    columns: Column[];
+    visibleColumns: Column[];
     startIndex: number;
     isSelected: boolean;
     onRowClick?: (e: React.MouseEvent, row: Record<string, unknown>, index: number) => void;
     rowClassName?: (row: Record<string, unknown>) => string;
     getCellValue: (row: Record<string, unknown>, column: Column) => unknown;
-}>(({ row, rowIndex, columns, startIndex, isSelected, onRowClick, rowClassName, getCellValue }) => {
+}>(({ row, rowIndex, visibleColumns, startIndex, isSelected, onRowClick, rowClassName, getCellValue }) => {
     const handleClick = useCallback((e: React.MouseEvent) => {
         if (onRowClick) {
             onRowClick(e, row, startIndex + rowIndex);
@@ -59,21 +67,27 @@ const TableRow = React.memo<{
     return (
         <tr
             className={`
-                border-b border-gray-200 dark:border-gray-700 last:border-b-0
+                border-b border-gray-100 dark:border-gray-800 last:border-b-0
                 ${onRowClick ? 'cursor-pointer' : ''}
                 ${isSelected
                     ? 'bg-primary/10 dark:bg-primary/20 border-l-4 border-l-primary'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                    : rowIndex % 2 === 0
+                        ? 'bg-white dark:bg-gray-900 hover:bg-gray-500/70 dark:hover:bg-gray-800/80'
+                        : 'bg-gray-50/30 dark:bg-gray-900/70 hover:bg-gray-50/70 dark:hover:bg-gray-800/40'
                 }
                 ${rowClassName ? rowClassName(row) : ''}
+                transition-colors duration-200 ease-in-out
             `}
             onClick={handleClick}
         >
-            {columns.map((column) => (
+            {visibleColumns.map((column) => (
                 <td
                     key={column.key}
                     className="p-3 text-gray-900 dark:text-gray-100 first:pl-6 last:pr-6"
-                    style={{ width: `${column.width}px` }}
+                    style={{
+                        width: `${column.width}px`,
+                        minWidth: `${column.minWidth}px`
+                    }}
                 >
                     {column.render
                         ? column.render(getCellValue(row, column), row)
@@ -198,6 +212,16 @@ function DataTableComponent(props: DataTableProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [resizing, setResizing] = useState<{ columnIndex: number; startX: number; startWidth: number } | null>(null);
+    const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() => {
+        // Initialize all columns as visible
+        const visibility: Record<string, boolean> = {};
+        columnsWithSelection.forEach(col => {
+            visibility[col.key] = true;
+        });
+        return visibility;
+    });
+    const [containerWidth, setContainerWidth] = useState<number>(0);
+    const [initialWidthsCalculated, setInitialWidthsCalculated] = useState(false);
     const tableRef = useRef<HTMLTableElement>(null);
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -231,7 +255,111 @@ function DataTableComponent(props: DataTableProps) {
             searchable: col.searchable !== false && col.key !== '_select',
             sortValue: col.sortValue
         })));
+
+        // Update visibility for any new columns
+        setColumnVisibility(prev => {
+            const newVisibility = { ...prev };
+            columnsWithSelection.forEach(col => {
+                if (!(col.key in newVisibility)) {
+                    newVisibility[col.key] = true;
+                }
+            });
+            return newVisibility;
+        });
+
+        // Reset width calculation flag when columns change
+        setInitialWidthsCalculated(false);
     }, [columnsWithSelection]);
+
+    // Measure container width and calculate initial column widths to fill 100%
+    useEffect(() => {
+        if (!tableContainerRef.current || initialWidthsCalculated || columns.length === 0) return;
+
+        const updateColumnWidths = () => {
+            const containerEl = tableContainerRef.current;
+            if (!containerEl) return;
+
+            const availableWidth = containerEl.clientWidth;
+            if (availableWidth === 0) return;
+
+            console.log('📐 Container width:', availableWidth, 'px');
+
+            setContainerWidth(availableWidth);
+
+            // Calculate total width - separate fixed columns from data columns
+            // Fixed columns: _select key OR columns where minWidth === width (locked)
+            const fixedColumns = columns.filter(col => col.key === '_select' || (col.minWidth && col.width && col.minWidth === col.width));
+            const dataColumns = columns.filter(col => col.key !== '_select' && !(col.minWidth && col.width && col.minWidth === col.width));
+
+            const fixedColumnsWidth = fixedColumns.reduce((sum, col) => sum + (col.width || 0), 0);
+            const totalDataColumnWidth = dataColumns.reduce((sum, col) => sum + (col.width || 150), 0);
+            const totalCurrentWidth = fixedColumnsWidth + totalDataColumnWidth;
+
+            console.log('📊 Total column width:', totalCurrentWidth, 'px', 'Available:', availableWidth, 'px');
+
+            // If total is less than available width, distribute the extra space proportionally
+            // BUT only to data columns, not the _select column
+            if (totalCurrentWidth < availableWidth) {
+                const extraSpace = availableWidth - totalCurrentWidth;
+                const widthPerColumn = extraSpace / dataColumns.length;
+
+                console.log('✨ Distributing extra space:', extraSpace, 'px (', widthPerColumn, 'px per column) - excluding fixed columns');
+
+                setColumns(prev => prev.map(col => {
+                    // Keep fixed columns at their original width
+                    if (col.key === '_select' || (col.minWidth && col.width && col.minWidth === col.width)) {
+                        return col;
+                    }
+                    // Distribute extra space to data columns only
+                    return {
+                        ...col,
+                        width: Math.max((col.width || 150) + widthPerColumn, col.minWidth || 100)
+                    };
+                }));
+            }
+
+            setInitialWidthsCalculated(true);
+        };
+
+        // Use ResizeObserver for reliable measurement
+        const resizeObserver = new ResizeObserver(() => {
+            if (!initialWidthsCalculated) {
+                updateColumnWidths();
+            }
+        });
+
+        if (tableContainerRef.current) {
+            resizeObserver.observe(tableContainerRef.current);
+        }
+
+        // Also try immediate calculation
+        updateColumnWidths();
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [columns.length, initialWidthsCalculated]);
+
+    // Memoize visible columns
+    const visibleColumns = useMemo(() => {
+        return columns.filter(col => columnVisibility[col.key] !== false);
+    }, [columns, columnVisibility]);
+
+    // Calculate total table width based on visible column widths
+    const totalTableWidth = useMemo(() => {
+        const total = visibleColumns.reduce((sum, col) => sum + (col.width || 150), 0);
+        console.log('📏 Total table width calculated:', total, 'px');
+        console.log('📊 Visible columns:', visibleColumns.map(c => ({ key: c.key, width: c.width })));
+        return total;
+    }, [visibleColumns]);
+
+    // Toggle column visibility
+    const toggleColumnVisibility = useCallback((columnKey: string) => {
+        setColumnVisibility(prev => ({
+            ...prev,
+            [columnKey]: !prev[columnKey]
+        }));
+    }, []);
 
     // Memoize filtered data to prevent unnecessary recalculations
     const filteredData = useMemo(() => {
@@ -353,6 +481,8 @@ function DataTableComponent(props: DataTableProps) {
                 const diff = e.clientX - resizing.startX;
                 const newWidth = Math.max(resizing.startWidth + diff, columns[resizing.columnIndex].minWidth || 100);
 
+                console.log('🔄 Resizing column:', resizing.columnIndex, 'New width:', newWidth, 'Diff:', diff);
+
                 setColumns(prev => prev.map((col, index) =>
                     index === resizing.columnIndex ? { ...col, width: newWidth } : col
                 ));
@@ -432,9 +562,9 @@ function DataTableComponent(props: DataTableProps) {
         <div>
             {/* Search Section */}
             {showSearch && (
-                <div className="p-4">
-                    <div className="relative max-w-sm">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 text-gray-400" />
+                <div className="p-4 flex items-center gap-4">
+                    <div className="relative flex-1 max-w-sm">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <input
                             type="text"
                             placeholder={searchPlaceholder}
@@ -445,14 +575,47 @@ function DataTableComponent(props: DataTableProps) {
                         {searchTerm && (
                             <button
                                 onClick={clearSearch}
-                                className="absolute right-3 top-1/2 text-gray-400"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                             >
                                 <X className="h-4 w-4" />
                             </button>
                         )}
                     </div>
+
+                    {/* Column Visibility Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <Settings2 className="h-4 w-4" />
+                                Columns
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-[200px]">
+                            <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {columns
+                                .filter(col => col.key !== '_select') // Don't allow hiding selection column
+                                .map((column) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.key}
+                                        checked={columnVisibility[column.key] !== false}
+                                        onCheckedChange={() => toggleColumnVisibility(column.key)}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            {columnVisibility[column.key] !== false ? (
+                                                <Eye className="h-4 w-4" />
+                                            ) : (
+                                                <EyeOff className="h-4 w-4" />
+                                            )}
+                                            {column.label}
+                                        </div>
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                     {searchTerm && (
-                        <div className="mt-2 text-sm text-muted-foreground">
+                        <div className="text-sm text-muted-foreground whitespace-nowrap">
                             {sortedData.length} of {data.length} results
                         </div>
                     )}
@@ -462,52 +625,75 @@ function DataTableComponent(props: DataTableProps) {
             {/* Table Section */}
             <div
                 ref={tableContainerRef}
-                className="overflow-auto bg-white dark:bg-gray-900"
+                className="overflow-x-auto overflow-y-auto bg-white dark:bg-gray-900"
                 style={{
+                    width: '100%',
+                    maxWidth: '100%',
                     willChange: 'scroll-position',
                     transform: 'translateZ(0)',
-                    WebkitOverflowScrolling: 'touch'
+                    WebkitOverflowScrolling: 'touch',
+                    // Custom scrollbar styling
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'rgb(203 213 225) transparent',
                 }}
             >
-            <table ref={tableRef} className="w-full text-sm">
-                    <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700">
+            <table
+                ref={tableRef}
+                className="text-sm"
+                style={{
+                    width: `${totalTableWidth}px`,
+                    minWidth: '100%',
+                    tableLayout: 'fixed'
+                }}
+            >
+                    <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 border-b-2 border-gray-200 dark:border-gray-700">
                         <tr>
-                            {columns.map((column, index) => (
-                                <th
-                                    key={column.key}
-                                    className="relative text-left p-3 font-medium text-foreground first:pl-6 last:pr-6"
-                                    style={{ width: `${column.width}px` }}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div
-                                            className={`flex items-center gap-2 flex-1 ${
-                                                column.sortable !== false && column.key !== '_select'
-                                                    ? 'cursor-pointer'
-                                                    : ''
-                                            }`}
-                                            onClick={() => {
-                                                if (column.sortable !== false && column.key !== '_select') {
-                                                    handleSort(column.key);
-                                                }
-                                            }}
-                                        >
-                                            <span className="truncate pr-2">{column.label}</span>
-                                            {column.sortable !== false && column.key !== '_select' && (
-                                                getSortIcon(column.key)
-                                            )}
-                                        </div>
-                                    </div>
+                            {visibleColumns.map((column, visibleIndex) => {
+                                // Find the original index in the full columns array for resizing
+                                const originalIndex = columns.findIndex(col => col.key === column.key);
 
-                                    {column.key !== '_select' && index < columns.length - 1 && (
-                                        <div
-                                            className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50 group"
-                                            onMouseDown={(e) => handleResizeStart(e, index)}
-                                        >
-                                            <div className="h-full w-px bg-border/20 group-hover:bg-primary transition-colors" />
+                                return (
+                                    <th
+                                        key={column.key}
+                                        className="relative text-left p-3 font-medium text-foreground first:pl-6 last:pr-6"
+                                        style={{
+                                            width: `${column.width}px`,
+                                            minWidth: `${column.minWidth}px`
+                                        }}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div
+                                                className={`flex items-center gap-2 flex-1 ${
+                                                    column.sortable !== false && column.key !== '_select'
+                                                        ? 'cursor-pointer select-none'
+                                                        : ''
+                                                }`}
+                                                onClick={() => {
+                                                    if (column.sortable !== false && column.key !== '_select') {
+                                                        handleSort(column.key);
+                                                    }
+                                                }}
+                                            >
+                                                <span className="truncate pr-2">{column.label}</span>
+                                                {column.sortable !== false && column.key !== '_select' && (
+                                                    getSortIcon(column.key)
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
-                                </th>
-                            ))}
+
+                                        {/* Resize handle - show for all columns except selection column */}
+                                        {column.key !== '_select' && (
+                                            <div
+                                                className="absolute right-0 top-0 h-full w-3 cursor-col-resize hover:bg-primary/10 active:bg-primary/20 group z-20"
+                                                onMouseDown={(e) => handleResizeStart(e, originalIndex)}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <div className="absolute right-0 top-0 h-full w-px bg-transparent group-hover:bg-primary/50 group-active:bg-primary transition-colors" />
+                                            </div>
+                                        )}
+                                    </th>
+                                );
+                            })}
                         </tr>
                     </thead>
                     <tbody className="bg-transparent">
@@ -517,7 +703,7 @@ function DataTableComponent(props: DataTableProps) {
                                     key={row.id ? String(row.id) : rowIndex}
                                     row={row}
                                     rowIndex={rowIndex}
-                                    columns={columns}
+                                    visibleColumns={visibleColumns}
                                     startIndex={startIndex}
                                     isSelected={isRowSelected(row)}
                                     onRowClick={onRowClick ? handleRowClick : undefined}
@@ -528,7 +714,7 @@ function DataTableComponent(props: DataTableProps) {
                         ) : (
                             <tr>
                                 <td
-                                    colSpan={columns.length}
+                                    colSpan={visibleColumns.length}
                                     className="p-8 text-center text-muted-foreground"
                                 >
                                     {searchTerm ? 'No results found for your search.' : 'No data available.'}
