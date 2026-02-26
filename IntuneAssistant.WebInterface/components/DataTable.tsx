@@ -301,19 +301,20 @@ function DataTableComponent(props: DataTableProps) {
             // BUT only to data columns, not the _select column
             if (totalCurrentWidth < availableWidth) {
                 const extraSpace = availableWidth - totalCurrentWidth;
-                const widthPerColumn = extraSpace / dataColumns.length;
 
-                console.log('✨ Distributing extra space:', extraSpace, 'px (', widthPerColumn, 'px per column) - excluding fixed columns');
+                console.log('✨ Distributing extra space:', extraSpace, 'px proportionally across data columns - excluding fixed columns');
 
                 setColumns(prev => prev.map(col => {
                     // Keep fixed columns at their original width
                     if (col.key === '_select' || (col.minWidth && col.width && col.minWidth === col.width)) {
                         return col;
                     }
-                    // Distribute extra space to data columns only
+                    // Distribute extra space proportionally based on each column's current width
+                    const colWidth = col.width || 150;
+                    const proportion = totalDataColumnWidth > 0 ? colWidth / totalDataColumnWidth : 1 / dataColumns.length;
                     return {
                         ...col,
-                        width: Math.max((col.width || 150) + widthPerColumn, col.minWidth || 100)
+                        width: Math.max(colWidth + extraSpace * proportion, col.minWidth || 100)
                     };
                 }));
             }

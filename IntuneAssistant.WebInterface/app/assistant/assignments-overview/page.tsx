@@ -2,22 +2,20 @@
 import React, {useState, useEffect} from 'react';
 import {useMsal} from '@azure/msal-react';
 import {Button} from '@/components/ui/button';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {DataTable} from '@/components/DataTable';
 import {Badge} from '@/components/ui/badge';
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {
     RefreshCw,
     Filter,
     Database,
     Search,
     X,
-    Settings,
     Shield,
     ShieldCheck,
     ChevronDown,
     ChevronUp,
-    XCircle, Computer, Blocks, CircleQuestionMark
+    XCircle, Blocks, CircleQuestionMark
 } from 'lucide-react';
 import {
     ASSIGNMENTS_ENDPOINT,
@@ -596,7 +594,8 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         {
             key: 'resourceName' as string,
             label: 'Resource',
-            minWidth: 150,
+            minWidth: 400,
+            width: 400,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const resourceName = value ? String(value) : 'N/A';
                 const resourceType = String(row.resourceType);
@@ -631,6 +630,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             key: 'assignmentType' as string,
             label: 'Assignment',
             minWidth: 100,
+            width: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const isAssigned = Boolean(row.isAssigned);
                 if (!isAssigned) {
@@ -658,6 +658,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             key: 'targetName' as string,
             label: 'Target',
             minWidth: 120,
+            width: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const targetName = String(value);
                 const assignmentType = String(row.assignmentType);
@@ -719,17 +720,32 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             label: 'Platform',
             width: 100,
             minWidth: 80,
-            render: (value: unknown) => (
-                <span className="text-sm text-gray-600 whitespace-nowrap">
-                    {value ? String(value) : 'All'}
-                </span>
-            )
+            render: (value: unknown) => {
+                const platform = value ? String(value) : 'All';
+                const platformColors: Record<string, string> = {
+                    'Windows': 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700',
+                    'iOS': 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600',
+                    'Android': 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700',
+                    'macOS': 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700',
+                    'Linux': 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700',
+                    'All': 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600',
+                };
+
+                return (
+                    <Badge
+                        variant="outline"
+                        className={`text-xs whitespace-nowrap ${platformColors[platform] || platformColors['All']}`}
+                    >
+                        {platform}
+                    </Badge>
+                );
+            }
         },
         {
             key: 'isAssigned' as string,
             label: 'Status',
             width: 120,
-            minWidth: 90,
+            minWidth: 120,
             render: (value: unknown) => {
                 const isAssigned = Boolean(value);
                 return (
