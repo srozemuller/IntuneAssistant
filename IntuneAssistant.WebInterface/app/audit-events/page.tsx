@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMsal } from '@azure/msal-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,19 +19,15 @@ import {
     Clock,
     Filter,
     Eye,
-    Loader2
+    Loader2,
+    User,
+    X,
+    ChevronDown,
+    ChevronRight
 } from 'lucide-react';
 import { useAuditEvents } from '@/contexts/AuditEventsContext';
-import { useApiRequest } from '@/hooks/useApiRequest';
-import { AuditEvent, AuditMetadata, AuditMetadataResponse } from '@/types/auditEvents';
-import { AUDIT_EVENT_METADATA_ENDPOINT } from '@/lib/constants';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { DataTable } from '@/components/DataTable';
+import { AuditEvent } from '@/types/auditEvents';
 import {
     BarChart,
     Bar,
@@ -68,52 +65,37 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     return null;
 };
 
-const CATEGORY_COLORS = {
-    'default': '#3b82f6',
-    'success': '#22c55e',
-    'warning': '#f59e0b',
-    'error': '#ef4444',
-    'info': '#06b6d4'
+// Get category color from CSS variables
+const getCategoryColor = (index: number): string => {
+    const colors = [
+        'var(--category-default)',
+        'var(--category-success)',
+        'var(--category-warning)',
+        'var(--category-error)',
+        'var(--category-info)'
+    ];
+    return colors[index % colors.length];
 };
 
 export default function AuditDashboardPage() {
     const { accounts } = useMsal();
-    const { statistics, recentEvents, loading, error, fetchData } = useAuditEvents();
-    const { request } = useApiRequest();
+    const router = useRouter();
+    const { statistics, recentEvents, loading, loadingMore, error, hasMore, fetchData, loadMore } = useAuditEvents();
 
     const [autoRefresh, setAutoRefresh] = useState(false);
-    const [filterType, setFilterType] = useState<'all' | 'failures' | 'hour' | 'day'>('day');
-    const [metadata, setMetadata] = useState<AuditMetadata | null>(null);
-    const [selectedActivity, setSelectedActivity] = useState<string>('all');
-    const [selectedActor, setSelectedActor] = useState<string>('all');
+    const [filterType, setFilterType] = useState<'all' | 'failures' | 'hour' | 'day'>('all');
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedActivity, setSelectedActivity] = useState<{ category: string; activity: string } | null>(null);
+    const [tableItemsPerPage, setTableItemsPerPage] = useState(50);
+    const [tablePage, setTablePage] = useState(1);
+    const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
-    // Derived lists with fallbacks
-    const activitiesList = metadata?.activities || metadata?.activityTypes || [];
-    const actorsList = metadata?.actors || metadata?.userPrincipalNames || [];
-
-    // Fetch metadata
-    useEffect(() => {
-        const fetchMetadata = async () => {
-            if (!accounts.length) return;
-            try {
-                const response = await request<AuditMetadataResponse>(
-                    AUDIT_EVENT_METADATA_ENDPOINT,
-                    { method: 'GET' }
-                );
-                if (response?.data) {
-                    setMetadata(response.data);
-                }
-            } catch (err) {
-                console.error('Failed to fetch metadata:', err);
-            }
-        };
-        fetchMetadata();
-    }, [accounts.length, request]);
+    // Categories are collapsed by default - users can expand them individually or use "Expand All"
 
     useEffect(() => {
         if (accounts.length > 0 && !statistics) {
             // Only fetch if we don't have cached data
-            fetchData(filterType, selectedActivity, selectedActor);
+            fetchData(filterType, 'all', 'all');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [accounts.length]);
@@ -121,25 +103,25 @@ export default function AuditDashboardPage() {
     // Re-fetch when filter changes
     useEffect(() => {
         if (accounts.length > 0 && statistics) {
-            fetchData(filterType, selectedActivity, selectedActor);
+            fetchData(filterType, 'all', 'all');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filterType, selectedActivity, selectedActor]);
+    }, [filterType]);
 
     // Auto-refresh effect
     useEffect(() => {
         if (!autoRefresh) return;
 
         const interval = setInterval(() => {
-            fetchData(filterType, selectedActivity, selectedActor, true);
+            fetchData(filterType, 'all', 'all', true);
         }, 30000); // 30 seconds
 
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [autoRefresh, filterType, selectedActivity, selectedActor]);
+    }, [autoRefresh, filterType]);
 
     const handleRefresh = () => {
-        fetchData(filterType, selectedActivity, selectedActor);
+        fetchData(filterType, 'all', 'all');
     };
 
     const getRelativeTime = useCallback((timestamp: string) => {
@@ -184,7 +166,7 @@ export default function AuditDashboardPage() {
         return Object.entries(statistics.eventsByCategory).map(([name, value], index) => ({
             name,
             value,
-            color: Object.values(CATEGORY_COLORS)[index % Object.values(CATEGORY_COLORS).length]
+            color: getCategoryColor(index)
         }));
     }, [statistics]);
 
@@ -207,6 +189,157 @@ export default function AuditDashboardPage() {
 
         return { successRate, failureCount };
     }, [statistics]);
+
+    // Group activities by category using eventsByCategory counts (matches pie chart)
+    const activitiesByCategory = useMemo(() => {
+        if (!statistics?.eventsByCategory || !statistics?.topActivities) return {};
+
+        // First, get all categories from eventsByCategory (this is what the pie chart uses)
+        const result: Record<string, {
+            totalCount: number;
+            activities: Array<{ activity: string; count: number }>
+        }> = {};
+
+        // For each category in eventsByCategory, get its activities
+        Object.entries(statistics.eventsByCategory).forEach(([category, totalCount]) => {
+            // Find all activities for this category
+            const categoryActivities = statistics.topActivities
+                .filter(item => item.category === category)
+                .map(item => ({
+                    activity: item.activity,
+                    count: item.count
+                }))
+                .sort((a, b) => b.count - a.count);
+
+            result[category] = {
+                totalCount,
+                activities: categoryActivities
+            };
+        });
+
+        // Sort by totalCount (descending)
+        return Object.entries(result)
+            .sort((a, b) => b[1].totalCount - a[1].totalCount)
+            .reduce((acc, [category, data]) => {
+                acc[category] = data;
+                return acc;
+            }, {} as Record<string, { totalCount: number; activities: Array<{ activity: string; count: number }> }>);
+    }, [statistics?.eventsByCategory, statistics?.topActivities]);
+
+    const toggleCategory = useCallback((category: string) => {
+        setExpandedCategories(prev => {
+            const next = new Set(prev);
+            if (next.has(category)) {
+                next.delete(category);
+            } else {
+                next.add(category);
+            }
+            return next;
+        });
+    }, []);
+
+    // Memoize most active users to prevent recalculation
+    const mostActiveUsers = useMemo(() => {
+        return statistics?.mostActiveUsers || [];
+    }, [statistics?.mostActiveUsers]);
+
+    // Filter events based on selected category or activity
+    const filteredEvents = useMemo(() => {
+        let filtered = recentEvents;
+
+        if (selectedCategory) {
+            filtered = filtered.filter(event => event.category === selectedCategory);
+        }
+
+        if (selectedActivity) {
+            // Filter by category only (from Top Activities click)
+            filtered = filtered.filter(event => event.category === selectedActivity.category);
+        }
+
+        return filtered;
+    }, [recentEvents, selectedCategory, selectedActivity]);
+
+    // Define columns for DataTable
+    const eventColumns = useMemo(() => [
+        {
+            key: 'activityDateTime',
+            label: 'Time',
+            width: 180,
+            render: (value: unknown) => {
+                return (
+                    <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {getRelativeTime(String(value))}
+                        </span>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'displayName',
+            label: 'Activity',
+            width: 280,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const event = row as AuditEvent;
+                return (
+                    <div>
+                        <div className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                            {event.activityType || String(value)}
+                        </div>
+                        <div className="text-xs text-gray-500">{event.componentName}</div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'actorUserPrincipalName',
+            label: 'Actor',
+            width: 240,
+            render: (value: unknown) => {
+                const upn = String(value);
+                return upn && upn !== 'undefined' ? (
+                    <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-blue-500" />
+                        <span className="text-sm truncate">{upn}</span>
+                    </div>
+                ) : (
+                    <span className="text-sm text-gray-400">System</span>
+                );
+            }
+        },
+        {
+            key: 'category',
+            label: 'Category',
+            width: 150,
+            render: (value: unknown) => (
+                <Badge variant="outline">{String(value)}</Badge>
+            )
+        },
+        {
+            key: 'activityResult',
+            label: 'Result',
+            width: 140,
+            render: (value: unknown) => getResultBadge(String(value))
+        },
+        {
+            key: 'id',
+            label: 'Actions',
+            width: 100,
+            render: (value: unknown) => (
+                <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/audit-events/${String(value)}`);
+                    }}
+                >
+                    <Eye className="h-4 w-4" />
+                </Button>
+            )
+        }
+    ], [getRelativeTime, getResultBadge, router]);
 
     if (loading && !statistics) {
         return (
@@ -275,7 +408,7 @@ export default function AuditDashboardPage() {
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         Refresh
                     </Button>
-                    <Link href="/audit-events/search">
+                    <Link href="/audit-events/advanced">
                         <Button size="sm">
                             <Filter className="h-4 w-4 mr-2" />
                             Advanced Search
@@ -294,14 +427,14 @@ export default function AuditDashboardPage() {
                     >
                         All Events
                     </Button>
-                    <Button
-                        variant={filterType === 'failures' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setFilterType('failures')}
-                        className={filterType === 'failures' ? 'bg-red-500 hover:bg-red-600' : ''}
-                    >
-                        Failures Only
-                    </Button>
+                    {/*<Button*/}
+                    {/*    variant={filterType === 'failures' ? 'default' : 'outline'}*/}
+                    {/*    size="sm"*/}
+                    {/*    onClick={() => setFilterType('failures')}*/}
+                    {/*    className={filterType === 'failures' ? 'bg-red-500 hover:bg-red-600' : ''}*/}
+                    {/*>*/}
+                    {/*    Failures Only*/}
+                    {/*</Button>*/}
                     <Button
                         variant={filterType === 'hour' ? 'default' : 'outline'}
                         size="sm"
@@ -317,40 +450,19 @@ export default function AuditDashboardPage() {
                         Last 24 Hours
                     </Button>
                 </div>
-
-                <div className="flex gap-2 flex-wrap w-full lg:w-auto">
-                    <div className="w-full lg:w-[200px]">
-                        <Select value={selectedActivity} onValueChange={setSelectedActivity}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Filter by Activity" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Activities</SelectItem>
-                                {activitiesList.map((activity) => (
-                                    <SelectItem key={activity} value={activity}>
-                                        {activity}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="w-full lg:w-[200px]">
-                        <Select value={selectedActor} onValueChange={setSelectedActor}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Filter by Actor" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Actors</SelectItem>
-                                {actorsList.map((actor) => (
-                                    <SelectItem key={actor} value={actor}>
-                                        {actor}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
+                {(selectedCategory || selectedActivity) && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                            setSelectedCategory(null);
+                            setSelectedActivity(null);
+                        }}
+                    >
+                        <Activity className="h-4 w-4 mr-2" />
+                        Show All Activities
+                    </Button>
+                )}
             </div>
 
             {/* Stats Cards */}
@@ -451,8 +563,27 @@ export default function AuditDashboardPage() {
                 {/* Category Distribution */}
                 <Card className="bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardHeader>
-                        <CardTitle>Events by Category</CardTitle>
-                        <CardDescription>Distribution across categories</CardDescription>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>Events by Category</CardTitle>
+                                <CardDescription>
+                                    {selectedCategory ? `Filtered by: ${selectedCategory}` : 'Click on a category to filter'}
+                                </CardDescription>
+                            </div>
+                            {selectedCategory && (
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                        setSelectedCategory(null);
+                                        setSelectedActivity(null);
+                                    }}
+                                >
+                                    <X className="h-4 w-4 mr-1" />
+                                    Clear Filter
+                                </Button>
+                            )}
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <ResponsiveContainer width="100%" height={300}>
@@ -467,9 +598,18 @@ export default function AuditDashboardPage() {
                                     fill="#8884d8"
                                     dataKey="value"
                                     fillOpacity={0.85}
+                                    onClick={(data) => {
+                                        setSelectedCategory(data.name);
+                                        setSelectedActivity(null);
+                                    }}
+                                    cursor="pointer"
                                 >
                                     {categoryChartData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={entry.color}
+                                            opacity={selectedCategory && selectedCategory !== entry.name ? 0.3 : 1}
+                                        />
                                     ))}
                                 </Pie>
                                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
@@ -492,7 +632,7 @@ export default function AuditDashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {statistics?.mostActiveUsers.slice(0, 5).map((user, index) => (
+                                {mostActiveUsers.slice(0, 5).map((user, index) => (
                                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-10 w-10">
@@ -512,36 +652,162 @@ export default function AuditDashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* Top Activities */}
+                {/* Top Activities by Category */}
                 <Card className="bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <TrendingUp className="h-5 w-5" />
-                            Top Activities
-                        </CardTitle>
-                        <CardDescription>Most frequent actions</CardDescription>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <TrendingUp className="h-5 w-5" />
+                                    Activities by Category
+                                    {Object.keys(activitiesByCategory).length > 0 && (
+                                        <Badge variant="secondary" className="ml-2">
+                                            {Object.keys(activitiesByCategory).length} categories
+                                        </Badge>
+                                    )}
+                                </CardTitle>
+                                <CardDescription>
+                                    {selectedActivity ? `Filtered by: ${selectedActivity.category}` : 'Click category to filter events'}
+                                </CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {selectedActivity && (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => setSelectedActivity(null)}
+                                    >
+                                        <X className="h-4 w-4 mr-1" />
+                                        Clear Filter
+                                    </Button>
+                                )}
+                                {Object.keys(activitiesByCategory).length > 0 && (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                            if (expandedCategories.size === Object.keys(activitiesByCategory).length) {
+                                                setExpandedCategories(new Set());
+                                            } else {
+                                                setExpandedCategories(new Set(Object.keys(activitiesByCategory)));
+                                            }
+                                        }}
+                                    >
+                                        {expandedCategories.size === Object.keys(activitiesByCategory).length ? (
+                                            <>
+                                                <ChevronRight className="h-4 w-4 mr-1" />
+                                                Collapse All
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ChevronDown className="h-4 w-4 mr-1" />
+                                                Expand All
+                                            </>
+                                        )}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-3">
-                            {statistics?.topActivities.slice(0, 5).map((activity, index) => (
-                                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${
-                                            index === 0 ? 'bg-yellow-500' :
-                                            index === 1 ? 'bg-gray-400' :
-                                            index === 2 ? 'bg-orange-600' :
-                                            'bg-blue-500'
-                                        }`}>
-                                            {index + 1}
+                        <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
+                            {Object.entries(activitiesByCategory).length > 0 ? (
+                                Object.entries(activitiesByCategory).map(([category, data], categoryIndex) => {
+                                    const categoryData = data as { totalCount: number; activities: Array<{ activity: string; count: number }> };
+                                    const totalCount = categoryData.totalCount;
+                                    const activities = categoryData.activities;
+                                    const isExpanded = expandedCategories.has(category);
+                                    const isSelected = selectedActivity?.category === category;
+
+                                    return (
+                                        <div key={category} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                                            {/* Category Header */}
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedActivity({
+                                                        category: category,
+                                                        activity: activities.length > 0 ? activities[0].activity : ''
+                                                    });
+                                                    setSelectedCategory(null);
+                                                }}
+                                                className={`w-full flex items-center justify-between p-3 transition-colors ${
+                                                    isSelected
+                                                        ? 'bg-blue-100 dark:bg-blue-900/30'
+                                                        : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleCategory(category);
+                                                        }}
+                                                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors cursor-pointer"
+                                                        role="button"
+                                                        tabIndex={0}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                                e.stopPropagation();
+                                                                toggleCategory(category);
+                                                            }
+                                                        }}
+                                                    >
+                                                        {isExpanded ? (
+                                                            <ChevronDown className="h-4 w-4" />
+                                                        ) : (
+                                                            <ChevronRight className="h-4 w-4" />
+                                                        )}
+                                                    </div>
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${
+                                                        categoryIndex === 0 ? 'bg-yellow-500' :
+                                                        categoryIndex === 1 ? 'bg-gray-400' :
+                                                        categoryIndex === 2 ? 'bg-orange-600' :
+                                                        'bg-blue-500'
+                                                    }`}>
+                                                        {categoryIndex + 1}
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <p className="font-medium text-gray-900 dark:text-gray-100">{category}</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                            {totalCount} events{activities.length > 0 ? ` · ${activities.length} ${activities.length === 1 ? 'activity' : 'activities'}` : ''}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <Badge variant="outline" className="font-semibold">{totalCount}</Badge>
+                                            </button>
+
+                                            {/* Expanded Activities */}
+                                            {isExpanded && (
+                                                <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                                                    {activities.length > 0 ? (
+                                                        activities.map((activity, actIndex) => (
+                                                            <div
+                                                                key={actIndex}
+                                                                className="flex items-center justify-between p-3 pl-16 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800 last:border-b-0"
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs font-medium">
+                                                                        {actIndex + 1}
+                                                                    </div>
+                                                                    <p className="text-sm text-gray-700 dark:text-gray-300">{activity.activity}</p>
+                                                                </div>
+                                                                <Badge variant="secondary" className="text-xs">{activity.count}x</Badge>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="p-4 pl-16 text-sm text-gray-500 dark:text-gray-400 italic">
+                                                            No detailed activity breakdown available for this category.
+                                                            Total events: {totalCount}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
-                                        <div>
-                                            <p className="font-medium text-gray-900 dark:text-gray-100">{activity.category}</p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">{activity.activity}</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant="outline">{activity.count} times</Badge>
-                                </div>
-                            )) || <p className="text-gray-500 text-center py-4">No data available</p>}
+                                    );
+                                })
+                            ) : (
+                                <p className="text-gray-500 text-center py-4">No data available</p>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -555,66 +821,91 @@ export default function AuditDashboardPage() {
                             <CardTitle className="flex items-center gap-2">
                                 <Clock className="h-5 w-5" />
                                 Recent Events
+                                {(selectedCategory || selectedActivity) && (
+                                    <Badge variant="secondary" className="ml-2">
+                                        {selectedCategory || selectedActivity?.category} - {filteredEvents.length} events
+                                    </Badge>
+                                )}
                             </CardTitle>
-                            <CardDescription>Latest activity in your environment</CardDescription>
+                            <CardDescription>
+                                {selectedCategory || selectedActivity
+                                    ? 'Filtered events based on your selection'
+                                    : 'Latest activity in your environment'}
+                            </CardDescription>
                         </div>
-                        <Link href="/audit-events/search">
-                            <Button size="sm" variant="outline">
-                                View All
-                                <Eye className="h-4 w-4 ml-2" />
-                            </Button>
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            {(selectedCategory || selectedActivity) && (
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                        setSelectedCategory(null);
+                                        setSelectedActivity(null);
+                                    }}
+                                >
+                                    <X className="h-4 w-4 mr-1" />
+                                    Clear All Filters
+                                </Button>
+                            )}
+                            <Link href="/audit-events/advanced">
+                                <Button size="sm" variant="outline">
+                                    View All
+                                    <Eye className="h-4 w-4 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-200 dark:border-gray-700">
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Time</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Activity</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Actor</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Category</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Result</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {recentEvents.length > 0 ? recentEvents.map((event) => (
-                                    <tr key={event.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                                        <td className="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">
-                                            {getRelativeTime(event.activityDateTime)}
-                                        </td>
-                                        <td className="py-3 px-4 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            {event.activityType || event.displayName}
-                                        </td>
-                                        <td className="py-3 px-4 text-sm text-gray-700 dark:text-gray-300">
-                                            {event.actorUserPrincipalName || 'Unknown'}
-                                        </td>
-                                        <td className="py-3 px-4 text-sm">
-                                            <Badge variant="outline">{event.category}</Badge>
-                                        </td>
-                                        <td className="py-3 px-4 text-sm">
-                                            {getResultBadge(event.activityResult)}
-                                        </td>
-                                        <td className="py-3 px-4 text-sm">
-                                            <Link href={`/audit-events/${event.id}`}>
-                                                <Button size="sm" variant="ghost">
-                                                    <Eye className="h-4 w-4" />
-                                                </Button>
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                )) : (
-                                    <tr>
-                                        <td colSpan={6} className="py-8 text-center text-gray-500">
-                                            No events found for the selected filter
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                    {filteredEvents.length > 0 ? (
+                        <>
+                            <DataTable
+                                data={filteredEvents}
+                                columns={eventColumns}
+                                showPagination={true}
+                                itemsPerPage={tableItemsPerPage}
+                                currentPage={tablePage}
+                                onPageChange={(page) => setTablePage(page)}
+                                onItemsPerPageChange={(items) => {
+                                    setTableItemsPerPage(items);
+                                    setTablePage(1);
+                                }}
+                                onRowClick={(row) => {
+                                    const event = row as AuditEvent;
+                                    router.push(`/audit-events/${event.id}`);
+                                }}
+                            />
+                            {hasMore && (
+                                <div className="mt-6 flex justify-center">
+                                    <Button
+                                        onClick={loadMore}
+                                        disabled={loadingMore}
+                                        variant="outline"
+                                        size="lg"
+                                        className="min-w-[200px]"
+                                    >
+                                        {loadingMore ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Loading more...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <RefreshCw className="h-4 w-4 mr-2" />
+                                                Load More Events
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="text-center py-8 text-gray-500">
+                            {selectedCategory || selectedActivity
+                                ? 'No events found matching the selected filter'
+                                : 'No events found for the selected filter'}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

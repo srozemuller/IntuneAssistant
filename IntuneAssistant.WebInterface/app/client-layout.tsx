@@ -14,19 +14,21 @@ import { MonitorProvider } from '@/contexts/MonitorContext';
 import { AuditEventsProvider } from '@/contexts/AuditEventsContext';
 import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { TenantIndicator } from '@/components/ui/tenant-indicator';
-import ConsentWarning from "@/components/ConsentWarning";
+import { ConsentBanner } from '@/components/ConsentBanner';
+import { VerifyConsentOnMount } from '@/components/VerifyConsentOnMount';
 
 function MainContent({ children }: { children: React.ReactNode }) {
     const { isCollapsed } = useSidebar();
 
     return (
         <div className={cn(isCollapsed && "sidebar-collapsed")}>
+            <VerifyConsentOnMount />
+            <ConsentBanner />
             <Sidebar />
             <main>
                 <div className="p-6">
                     <TenantIndicator />
                     <GlobalErrorDisplay />
-                    <ConsentWarning />
                     {children}
                 </div>
             </main>
@@ -50,7 +52,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                                     <AuditEventsProvider>
                                         <SidebarProvider>
                                             <MainContent>
-                                                <ConsentWarning />
                                                 {children}
                                             </MainContent>
                                         </SidebarProvider>

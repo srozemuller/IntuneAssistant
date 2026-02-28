@@ -98,6 +98,13 @@
   --chart-2: oklch(0.7 0.15 130);
   --chart-3: oklch(0.65 0.18 240);
   --chart-4: oklch(0.75 0.14 310);
+
+  /* Audit Category Colors */
+  --category-default: #3b82f6;
+  --category-success: #22c55e;
+  --category-warning: #f59e0b;
+  --category-error: #ef4444;
+  --category-info: #06b6d4;
   --chart-5: oklch(0.8 0.12 50);
 
   /* Sidebar: Glass Effect */

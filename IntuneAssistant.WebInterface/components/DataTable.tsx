@@ -113,7 +113,7 @@ function DataTableComponent(props: DataTableProps) {
         rowClassName,
         onPageChange,
         onItemsPerPageChange,
-        showPagination = false,
+        showPagination = true,
         showSearch = true,
         searchPlaceholder = "Search...",
         onSelectionChange,
