@@ -26,7 +26,6 @@ import {DataTable} from '@/components/DataTable';
 import {useApiRequest} from "@/hooks/useApiRequest";
 import {UserConsentRequiredError} from '@/lib/errors';
 import {PlanProtection} from '@/components/PlanProtection';
-import {useConsent} from "@/contexts/ConsentContext";
 import {MultiSelect} from "@/components/ui/multi-select";
 
 interface AssignmentCompareApiResponse {
@@ -302,7 +301,6 @@ function AssignmentRolloutContent() {
     const paginatedResults = comparisonResults.slice(startIndex, endIndex);
     const totalPages = Math.ceil(comparisonResults.length / itemsPerPage);
 
-    const {showConsent} = useConsent();
 
     const [migrationSuccessful, setMigrationSuccessful] = useState(false);
 
