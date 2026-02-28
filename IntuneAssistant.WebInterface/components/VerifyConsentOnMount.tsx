@@ -31,7 +31,7 @@ export function VerifyConsentOnMount() {
     useEffect(() => {
         // Expose a global function to force re-verification (for testing)
         if (typeof window !== 'undefined') {
-            (window as any).forceConsentCheck = () => {
+            (window as Window & { forceConsentCheck?: () => void }).forceConsentCheck = () => {
                 console.log('FORCE: Clearing consent verification flag');
                 sessionStorage.removeItem(CONSENT_CHECK_KEY);
                 hasVerified.current = false;
