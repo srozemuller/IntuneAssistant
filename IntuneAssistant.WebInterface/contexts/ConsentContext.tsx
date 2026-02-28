@@ -12,6 +12,7 @@ interface ConsentContextType {
     clearConsent: () => void;
     minimize: () => void;
     maximize: () => void;
+    resetVerification: () => void;
 }
 
 const ConsentContext = createContext<ConsentContextType | undefined>(undefined);

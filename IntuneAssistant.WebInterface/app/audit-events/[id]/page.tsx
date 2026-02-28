@@ -578,7 +578,7 @@ export default function EventDetailsPage() {
                                                         <div className="flex-1">
                                                             <p className="font-semibold text-gray-900 dark:text-gray-100">{resource.displayName}</p>
                                                         </div>
-                                                        {event.resources.length > 1 && (
+                                                        {event.resources && event.resources.length > 1 && (
                                                             <Badge variant="secondary" className="text-xs ml-2">
                                                                 Resource {index + 1}
                                                             </Badge>
