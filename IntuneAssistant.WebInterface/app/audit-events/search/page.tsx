@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useMsal } from '@azure/msal-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,31 +24,31 @@ import {
     Search,
     X,
     Download,
-    ChevronDown,
-    ChevronUp,
-    Eye,
     Filter,
     Calendar as CalendarIcon,
     Loader2,
     Save,
     CheckCircle,
     XCircle,
-    AlertTriangle
+    AlertTriangle,
+    Clock,
+    User,
+    RefreshCw
 } from 'lucide-react';
+import { useAuditEvents } from '@/contexts/AuditEventsContext';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import {
-    AUDIT_EVENT_FILTER_ENDPOINT,
-    AUDIT_EVENT_METADATA_ENDPOINT
+    AUDIT_LOGS_INTUNE_FILTER
 } from '@/lib/constants';
 import {
     AuditEvent,
     AuditEventPageResponse,
     AuditFilterRequest,
-    AuditMetadata,
-    AuditMetadataResponse,
     FilterPreset
 } from '@/types/auditEvents';
 import { format } from 'date-fns';
+import { DataTable } from '@/components/DataTable';
+import { useRouter } from 'next/navigation';
 
 const DATE_PRESETS = [
     { label: 'Last 24 Hours', hours: 24 },
@@ -59,13 +58,12 @@ const DATE_PRESETS = [
 ];
 
 export default function AuditSearchPage() {
-    const { accounts } = useMsal();
+    const { recentEvents, loading: contextLoading, loadingMore, error: contextError, hasMore, fetchData, loadMore } = useAuditEvents();
     const { request } = useApiRequest();
+    const router = useRouter();
 
-    const [metadata, setMetadata] = useState<AuditMetadata | null>(null);
     const [events, setEvents] = useState<AuditEvent[]>([]);
     const [loading, setLoading] = useState(false);
-    const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
     const [totalCount, setTotalCount] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 25;
@@ -80,84 +78,211 @@ export default function AuditSearchPage() {
     const [selectedResults, setSelectedResults] = useState<Array<'Success' | 'Failure' | 'Warning'>>([]);
     const [searchText, setSearchText] = useState('');
 
-    // Derived unique values from events for fallback
-    const uniqueActors = useMemo(() => {
-        if (!events.length) return [];
-        const actors = new Set<string>();
-        events.forEach(e => {
-            if (e.actorUserPrincipalName && e.actorUserPrincipalName.trim() !== '') {
-                actors.add(e.actorUserPrincipalName);
-            }
-        });
-        return Array.from(actors).sort();
-    }, [events]);
+    // Fetch events on mount if not already loaded
+    useEffect(() => {
+        if (recentEvents.length === 0 && !contextLoading && !contextError) {
+            fetchData('all', 'all', 'all');
+        }
+    }, [recentEvents.length, contextLoading, contextError, fetchData]);
 
-    const uniqueActivities = useMemo(() => {
-        if (!events.length) return [];
-        const acts = new Set<string>();
-        events.forEach(e => {
-            if (e.activityType && e.activityType.trim() !== '') {
-                acts.add(e.activityType);
-            }
-        });
-        return Array.from(acts).sort();
-    }, [events]);
+    // Derived unique values from events (both from context and search results)
+    const allAvailableEvents = useMemo(() => {
+        // Combine context events with search results for filter options
+        return events.length > 0 ? events : recentEvents;
+    }, [events, recentEvents]);
 
+    // Real-time filtered events - apply selected filters immediately
+    const filteredEvents = useMemo(() => {
+        let filtered = allAvailableEvents;
+
+        // Apply category filter
+        if (selectedCategories.length > 0) {
+            filtered = filtered.filter(e => selectedCategories.includes(e.category));
+        }
+
+        // Apply activity filter
+        if (selectedActivities.length > 0) {
+            filtered = filtered.filter(e => selectedActivities.includes(e.activityType));
+        }
+
+        // Apply actor filter
+        if (selectedActors.length > 0) {
+            filtered = filtered.filter(e => selectedActors.includes(e.actorUserPrincipalName));
+        }
+
+        // Apply component filter
+        if (selectedComponents.length > 0) {
+            filtered = filtered.filter(e => selectedComponents.includes(e.componentName));
+        }
+
+        // Apply result filter
+        if (selectedResults.length > 0) {
+            filtered = filtered.filter(e => selectedResults.includes(e.activityResult as 'Success' | 'Failure' | 'Warning'));
+        }
+
+        // Apply date range filter
+        if (dateFrom) {
+            filtered = filtered.filter(e => new Date(e.activityDateTime) >= dateFrom);
+        }
+        if (dateTo) {
+            filtered = filtered.filter(e => new Date(e.activityDateTime) <= dateTo);
+        }
+
+        // Apply text search
+        if (searchText && searchText.trim()) {
+            const query = searchText.toLowerCase();
+            filtered = filtered.filter(e =>
+                e.displayName?.toLowerCase().includes(query) ||
+                e.actorUserPrincipalName?.toLowerCase().includes(query) ||
+                e.category?.toLowerCase().includes(query) ||
+                e.activityType?.toLowerCase().includes(query) ||
+                e.componentName?.toLowerCase().includes(query)
+            );
+        }
+
+        return filtered;
+    }, [allAvailableEvents, selectedCategories, selectedActivities, selectedActors, selectedComponents, selectedResults, dateFrom, dateTo, searchText]);
+
+    // Cascading filter logic: each filter shows only values that exist in events matching OTHER selected filters
     const uniqueCategories = useMemo(() => {
-        if (!events.length) return [];
+        if (!allAvailableEvents.length) return [];
+
+        // Filter events based on OTHER selected filters (not categories)
+        const filtered = allAvailableEvents.filter(e => {
+            if (selectedActivities.length > 0 && !selectedActivities.includes(e.activityType)) return false;
+            if (selectedActors.length > 0 && !selectedActors.includes(e.actorUserPrincipalName)) return false;
+            if (selectedComponents.length > 0 && !selectedComponents.includes(e.componentName)) return false;
+            if (selectedResults.length > 0 && !selectedResults.includes(e.activityResult as 'Success' | 'Failure' | 'Warning')) return false;
+            return true;
+        });
+
         const cats = new Set<string>();
-        events.forEach(e => {
+        filtered.forEach(e => {
             if (e.category && e.category.trim() !== '') {
                 cats.add(e.category);
             }
         });
         return Array.from(cats).sort();
-    }, [events]);
+    }, [allAvailableEvents, selectedActivities, selectedActors, selectedComponents, selectedResults]);
+
+    const uniqueActivities = useMemo(() => {
+        if (!allAvailableEvents.length) return [];
+
+        // Filter events based on OTHER selected filters (not activities)
+        const filtered = allAvailableEvents.filter(e => {
+            if (selectedCategories.length > 0 && !selectedCategories.includes(e.category)) return false;
+            if (selectedActors.length > 0 && !selectedActors.includes(e.actorUserPrincipalName)) return false;
+            if (selectedComponents.length > 0 && !selectedComponents.includes(e.componentName)) return false;
+            if (selectedResults.length > 0 && !selectedResults.includes(e.activityResult as 'Success' | 'Failure' | 'Warning')) return false;
+            return true;
+        });
+
+        const acts = new Set<string>();
+        filtered.forEach(e => {
+            if (e.activityType && e.activityType.trim() !== '') {
+                acts.add(e.activityType);
+            }
+        });
+        return Array.from(acts).sort();
+    }, [allAvailableEvents, selectedCategories, selectedActors, selectedComponents, selectedResults]);
+
+    const uniqueActors = useMemo(() => {
+        if (!allAvailableEvents.length) return [];
+
+        // Filter events based on OTHER selected filters (not actors)
+        const filtered = allAvailableEvents.filter(e => {
+            if (selectedCategories.length > 0 && !selectedCategories.includes(e.category)) return false;
+            if (selectedActivities.length > 0 && !selectedActivities.includes(e.activityType)) return false;
+            if (selectedComponents.length > 0 && !selectedComponents.includes(e.componentName)) return false;
+            if (selectedResults.length > 0 && !selectedResults.includes(e.activityResult as 'Success' | 'Failure' | 'Warning')) return false;
+            return true;
+        });
+
+        const actors = new Set<string>();
+        filtered.forEach(e => {
+            if (e.actorUserPrincipalName && e.actorUserPrincipalName.trim() !== '') {
+                actors.add(e.actorUserPrincipalName);
+            }
+        });
+        return Array.from(actors).sort();
+    }, [allAvailableEvents, selectedCategories, selectedActivities, selectedComponents, selectedResults]);
 
     const uniqueComponents = useMemo(() => {
-        if (!events.length) return [];
+        if (!allAvailableEvents.length) return [];
+
+        // Filter events based on OTHER selected filters (not components)
+        const filtered = allAvailableEvents.filter(e => {
+            if (selectedCategories.length > 0 && !selectedCategories.includes(e.category)) return false;
+            if (selectedActivities.length > 0 && !selectedActivities.includes(e.activityType)) return false;
+            if (selectedActors.length > 0 && !selectedActors.includes(e.actorUserPrincipalName)) return false;
+            if (selectedResults.length > 0 && !selectedResults.includes(e.activityResult as 'Success' | 'Failure' | 'Warning')) return false;
+            return true;
+        });
+
         const comps = new Set<string>();
-        events.forEach(e => {
+        filtered.forEach(e => {
             if (e.componentName && e.componentName.trim() !== '') {
                 comps.add(e.componentName);
             }
         });
         return Array.from(comps).sort();
-    }, [events]);
+    }, [allAvailableEvents, selectedCategories, selectedActivities, selectedActors, selectedResults]);
 
     // Saved presets
     const [savedPresets, setSavedPresets] = useState<FilterPreset[]>([]);
     const [presetName, setPresetName] = useState('');
 
     useEffect(() => {
-        if (accounts.length > 0) {
-            fetchMetadata();
-            // Load saved presets from localStorage
-            const saved = localStorage.getItem('auditFilterPresets');
-            if (saved) {
-                setSavedPresets(JSON.parse(saved));
+        // Load saved presets from localStorage
+        const saved = localStorage.getItem('auditFilterPresets');
+        if (saved) {
+            setSavedPresets(JSON.parse(saved));
+        }
+    }, []);
+
+    // Auto-cleanup: Remove selected values that are no longer available due to cascading filters
+    useEffect(() => {
+        // Clean up categories that are no longer valid
+        if (selectedCategories.length > 0) {
+            const validCategories = selectedCategories.filter(cat => uniqueCategories.includes(cat));
+            if (validCategories.length !== selectedCategories.length) {
+                setSelectedCategories(validCategories);
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accounts.length]);
+    }, [uniqueCategories]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const fetchMetadata = async () => {
-        try {
-            const response = await request<AuditMetadataResponse>(
-                AUDIT_EVENT_METADATA_ENDPOINT,
-                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
-            );
-
-            if (response?.data) {
-                setMetadata(response.data);
+    useEffect(() => {
+        // Clean up activities that are no longer valid
+        if (selectedActivities.length > 0) {
+            const validActivities = selectedActivities.filter(act => uniqueActivities.includes(act));
+            if (validActivities.length !== selectedActivities.length) {
+                setSelectedActivities(validActivities);
             }
-        } catch (err) {
-            console.error('Failed to fetch metadata:', err);
         }
-    };
+    }, [uniqueActivities]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        // Clean up actors that are no longer valid
+        if (selectedActors.length > 0) {
+            const validActors = selectedActors.filter(actor => uniqueActors.includes(actor));
+            if (validActors.length !== selectedActors.length) {
+                setSelectedActors(validActors);
+            }
+        }
+    }, [uniqueActors]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        // Clean up components that are no longer valid
+        if (selectedComponents.length > 0) {
+            const validComponents = selectedComponents.filter(comp => uniqueComponents.includes(comp));
+            if (validComponents.length !== selectedComponents.length) {
+                setSelectedComponents(validComponents);
+            }
+        }
+    }, [uniqueComponents]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
     const handleSearch = async () => {
-        if (!accounts.length) return;
 
         setLoading(true);
 
@@ -176,7 +301,7 @@ export default function AuditSearchPage() {
 
         try {
             const response = await request<AuditEventPageResponse>(
-                AUDIT_EVENT_FILTER_ENDPOINT,
+                AUDIT_LOGS_INTUNE_FILTER,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -266,7 +391,7 @@ export default function AuditSearchPage() {
 
     const exportToCSV = useCallback(() => {
         const headers = ['Timestamp', 'Activity', 'Actor', 'Category', 'Component', 'Result', 'Display Name'];
-        const rows = events.map(e => [
+        const rows = filteredEvents.map(e => [
             e.activityDateTime,
             e.activityType || '',
             e.actorUserPrincipalName || 'Unknown',
@@ -283,29 +408,18 @@ export default function AuditSearchPage() {
         a.href = url;
         a.download = `audit-events-${new Date().toISOString()}.csv`;
         a.click();
-    }, [events]);
+    }, [filteredEvents]);
 
     const exportToJSON = useCallback(() => {
-        const json = JSON.stringify(events, null, 2);
+        const json = JSON.stringify(filteredEvents, null, 2);
         const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `audit-events-${new Date().toISOString()}.json`;
         a.click();
-    }, [events]);
+    }, [filteredEvents]);
 
-    const toggleRowExpansion = useCallback((id: string) => {
-        setExpandedRows(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(id)) {
-                newSet.delete(id);
-            } else {
-                newSet.add(id);
-            }
-            return newSet;
-        });
-    }, []);
 
     const getResultBadge = useCallback((result: string) => {
         switch (result) {
@@ -319,6 +433,69 @@ export default function AuditSearchPage() {
                 return <Badge variant="outline">{result}</Badge>;
         }
     }, []);
+
+    // Define columns for DataTable
+    const columns = useMemo(() => [
+        {
+            key: 'activityDateTime',
+            label: 'Time',
+            width: 180,
+            render: (value: unknown) => {
+                const date = new Date(String(value));
+                return (
+                    <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-gray-400" />
+                        <div className="text-xs">
+                            <div className="font-medium">{date.toLocaleDateString()}</div>
+                            <div className="text-gray-500">{date.toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'displayName',
+            label: 'Activity',
+            width: 280,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const event = row as unknown as AuditEvent;
+                return (
+                    <div>
+                        <div className="font-medium text-sm">{String(value)}</div>
+                        <div className="text-xs text-gray-500">{event.category}</div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'actorUserPrincipalName',
+            label: 'Actor',
+            width: 220,
+            render: (value: unknown) => {
+                const upn = String(value);
+                return upn ? (
+                    <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-blue-500" />
+                        <span className="text-sm truncate">{upn}</span>
+                    </div>
+                ) : <span className="text-sm text-gray-400">System</span>;
+            }
+        },
+        {
+            key: 'componentName',
+            label: 'Component',
+            width: 180,
+            render: (value: unknown) => {
+                return <Badge variant="outline" className="text-xs">{String(value)}</Badge>;
+            }
+        },
+        {
+            key: 'activityResult',
+            label: 'Status',
+            width: 120,
+            render: (value: unknown) => getResultBadge(String(value))
+        }
+    ], [getResultBadge]);
 
     const activeFiltersCount = useMemo(() => {
         return [
@@ -389,7 +566,7 @@ export default function AuditSearchPage() {
                                         {dateFrom ? format(dateFrom, 'PPP') : 'Pick a date'}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
+                                <PopoverContent className="w-auto p-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border border-white/30 dark:border-gray-700/50">
                                     <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
                                 </PopoverContent>
                             </Popover>
@@ -404,7 +581,7 @@ export default function AuditSearchPage() {
                                         {dateTo ? format(dateTo, 'PPP') : 'Pick a date'}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
+                                <PopoverContent className="w-auto p-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border border-white/30 dark:border-gray-700/50">
                                     <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
                                 </PopoverContent>
                             </Popover>
@@ -453,8 +630,8 @@ export default function AuditSearchPage() {
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select categories..." />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    {(uniqueCategories.length > 0 ? uniqueCategories : (metadata?.categories || [])).map(cat => (
+                                <SelectContent className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border border-white/30 dark:border-gray-700/50">
+                                    {uniqueCategories.map(cat => (
                                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -462,12 +639,19 @@ export default function AuditSearchPage() {
                             {selectedCategories.length > 0 && (
                                 <div className="flex gap-1 flex-wrap">
                                     {selectedCategories.map(cat => (
-                                        <Badge key={cat} variant="secondary">
-                                            {cat}
-                                            <X
-                                                className="h-3 w-3 ml-1 cursor-pointer"
-                                                onClick={() => setSelectedCategories(selectedCategories.filter(c => c !== cat))}
-                                            />
+                                        <Badge key={cat} variant="secondary" className="flex items-center gap-1">
+                                            <span>{cat}</span>
+                                            <button
+                                                type="button"
+                                                className="ml-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full p-0.5 transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setSelectedCategories(selectedCategories.filter(c => c !== cat));
+                                                }}
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
                                         </Badge>
                                     ))}
                                 </div>
@@ -487,8 +671,8 @@ export default function AuditSearchPage() {
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select activities..." />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    {(uniqueActivities.length > 0 ? uniqueActivities : (metadata?.activities || [])).map(act => (
+                                <SelectContent className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border border-white/30 dark:border-gray-700/50">
+                                    {uniqueActivities.map(act => (
                                         <SelectItem key={act} value={act}>{act}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -496,12 +680,19 @@ export default function AuditSearchPage() {
                             {selectedActivities.length > 0 && (
                                 <div className="flex gap-1 flex-wrap">
                                     {selectedActivities.map(act => (
-                                        <Badge key={act} variant="secondary">
-                                            {act}
-                                            <X
-                                                className="h-3 w-3 ml-1 cursor-pointer"
-                                                onClick={() => setSelectedActivities(selectedActivities.filter(a => a !== act))}
-                                            />
+                                        <Badge key={act} variant="secondary" className="flex items-center gap-1">
+                                            <span>{act}</span>
+                                            <button
+                                                type="button"
+                                                className="ml-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full p-0.5 transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setSelectedActivities(selectedActivities.filter(a => a !== act));
+                                                }}
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
                                         </Badge>
                                     ))}
                                 </div>
@@ -521,8 +712,8 @@ export default function AuditSearchPage() {
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select actors..." />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    {(uniqueActors.length > 0 ? uniqueActors : (metadata?.userPrincipalNames || metadata?.actors || [])).map(actor => (
+                                <SelectContent className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border border-white/30 dark:border-gray-700/50">
+                                    {uniqueActors.map(actor => (
                                         <SelectItem key={actor} value={actor}>{actor}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -530,12 +721,19 @@ export default function AuditSearchPage() {
                             {selectedActors.length > 0 && (
                                 <div className="flex gap-1 flex-wrap">
                                     {selectedActors.map(actor => (
-                                        <Badge key={actor} variant="secondary">
-                                            {actor}
-                                            <X
-                                                className="h-3 w-3 ml-1 cursor-pointer"
-                                                onClick={() => setSelectedActors(selectedActors.filter(a => a !== actor))}
-                                            />
+                                        <Badge key={actor} variant="secondary" className="flex items-center gap-1">
+                                            <span>{actor}</span>
+                                            <button
+                                                type="button"
+                                                className="ml-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full p-0.5 transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setSelectedActors(selectedActors.filter(a => a !== actor));
+                                                }}
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
                                         </Badge>
                                     ))}
                                 </div>
@@ -555,8 +753,8 @@ export default function AuditSearchPage() {
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select components..." />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    {(uniqueComponents.length > 0 ? uniqueComponents : (metadata?.components || [])).map(comp => (
+                                <SelectContent className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border border-white/30 dark:border-gray-700/50">
+                                    {uniqueComponents.map(comp => (
                                         <SelectItem key={comp} value={comp}>{comp}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -564,12 +762,19 @@ export default function AuditSearchPage() {
                             {selectedComponents.length > 0 && (
                                 <div className="flex gap-1 flex-wrap">
                                     {selectedComponents.map(comp => (
-                                        <Badge key={comp} variant="secondary">
-                                            {comp}
-                                            <X
-                                                className="h-3 w-3 ml-1 cursor-pointer"
-                                                onClick={() => setSelectedComponents(selectedComponents.filter(c => c !== comp))}
-                                            />
+                                        <Badge key={comp} variant="secondary" className="flex items-center gap-1">
+                                            <span>{comp}</span>
+                                            <button
+                                                type="button"
+                                                className="ml-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full p-0.5 transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setSelectedComponents(selectedComponents.filter(c => c !== comp));
+                                                }}
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
                                         </Badge>
                                     ))}
                                 </div>
@@ -618,12 +823,19 @@ export default function AuditSearchPage() {
                         {savedPresets.length > 0 && (
                             <div className="mt-3 flex gap-2 flex-wrap">
                                 {savedPresets.map(preset => (
-                                    <Badge key={preset.id} variant="outline" className="cursor-pointer">
-                                        <span onClick={() => loadPreset(preset)}>{preset.name}</span>
-                                        <X
-                                            className="h-3 w-3 ml-2 cursor-pointer"
-                                            onClick={() => deletePreset(preset.id)}
-                                        />
+                                    <Badge key={preset.id} variant="outline" className="flex items-center gap-1">
+                                        <span className="cursor-pointer" onClick={() => loadPreset(preset)}>{preset.name}</span>
+                                        <button
+                                            type="button"
+                                            className="ml-1 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full p-0.5 transition-colors"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                deletePreset(preset.id);
+                                            }}
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
                                     </Badge>
                                 ))}
                             </div>
@@ -633,138 +845,96 @@ export default function AuditSearchPage() {
             </Card>
 
             {/* Results */}
-            {events.length > 0 && (
-                <Card className="bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle>
-                                Results ({totalCount.toLocaleString()} events found)
-                            </CardTitle>
+            <Card className="bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle>
+                            {allAvailableEvents.length > 0 ? (
+                                <>
+                                    Results ({filteredEvents.length.toLocaleString()} of {allAvailableEvents.length.toLocaleString()} events{events.length === 0 ? ' from cache' : ''})
+                                </>
+                            ) : (
+                                'Results'
+                            )}
+                        </CardTitle>
+                        {filteredEvents.length > 0 && (
                             <div className="flex gap-2">
-                                <Button variant="outline" size="sm" onClick={exportToCSV}>
+                                <Button variant="outline" size="sm" onClick={exportToCSV} disabled={filteredEvents.length === 0}>
                                     <Download className="h-4 w-4 mr-2" />
                                     Export CSV
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={exportToJSON}>
+                                <Button variant="outline" size="sm" onClick={exportToJSON} disabled={filteredEvents.length === 0}>
                                     <Download className="h-4 w-4 mr-2" />
                                     Export JSON
                                 </Button>
                             </div>
+                        )}
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {(loading || contextLoading) ? (
+                        <div className="flex items-center justify-center py-12">
+                            <Loader2 className="h-8 w-8 animate-spin text-blue-500 mr-3" />
+                            <span className="text-gray-600 dark:text-gray-400">Loading events...</span>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-2">
-                            {events.map((event) => {
-                                const isExpanded = expandedRows.has(event.id);
-                                return (
-                                    <div key={event.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                                        <div className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                                            <div className="flex-1 grid grid-cols-5 gap-4">
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Time</p>
-                                                    <p className="text-sm font-medium">{new Date(event.activityDateTime).toLocaleString()}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Activity</p>
-                                                    <p className="text-sm font-medium">{event.activityType || event.displayName}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Actor</p>
-                                                    <p className="text-sm">{event.actorUserPrincipalName || 'Unknown'}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Category</p>
-                                                    <Badge variant="outline" className="text-xs">{event.category}</Badge>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Result</p>
-                                                    {getResultBadge(event.activityResult)}
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Link href={`/audit-events/${event.id}`}>
-                                                    <Button size="sm" variant="ghost">
-                                                        <Eye className="h-4 w-4" />
-                                                    </Button>
-                                                </Link>
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    onClick={() => toggleRowExpansion(event.id)}
-                                                >
-                                                    {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                                                </Button>
-                                            </div>
-                                        </div>
-                                        {isExpanded && (
-                                            <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                                                <div className="space-y-3">
-                                                    <div>
-                                                        <p className="text-xs text-gray-500 mb-1">Display Name</p>
-                                                        <p className="text-sm">{event.displayName}</p>
-                                                    </div>
-                                                    {event.resources && event.resources.length > 0 && (
-                                                        <div>
-                                                            <p className="text-xs text-gray-500 mb-2">Affected Resources</p>
-                                                            <div className="space-y-2">
-                                                                {event.resources.map((resource, idx) => (
-                                                                    <div key={idx} className="p-2 bg-white dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700">
-                                                                        <p className="text-sm font-medium">{resource.displayName}</p>
-                                                                        <p className="text-xs text-gray-500">{resource.type}</p>
-                                                                        {resource.modifiedProperties && resource.modifiedProperties.length > 0 && (
-                                                                            <div className="mt-2 space-y-1">
-                                                                                {resource.modifiedProperties.map((prop, pidx) => (
-                                                                                    <div key={pidx} className="text-xs">
-                                                                                        <span className="font-medium">{prop.displayName}:</span>
-                                                                                        <span className="text-red-500 mx-1">{prop.oldValue || '(empty)'}</span>
-                                                                                        →
-                                                                                        <span className="text-green-500 mx-1">{prop.newValue || '(empty)'}</span>
-                                                                                    </div>
-                                                                                ))}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
+                    ) : contextError ? (
+                        <div className="text-center py-12">
+                            <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                            <p className="text-red-600 dark:text-red-400">{contextError}</p>
+                            <Button onClick={() => fetchData('all', 'all', 'all')} className="mt-4" variant="outline">
+                                Try Again
+                            </Button>
+                        </div>
+                    ) : allAvailableEvents.length === 0 ? (
+                        <div className="text-center py-12">
+                            <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600 dark:text-gray-400 mb-2">No events found</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-500">Try adjusting your filters or search criteria</p>
+                        </div>
+                    ) : filteredEvents.length === 0 ? (
+                        <div className="text-center py-12">
+                            <Filter className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600 dark:text-gray-400 mb-2">No events match your filters</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-500">Try adjusting or removing some filters</p>
+                            <Button onClick={clearFilters} className="mt-4" variant="outline">
+                                Clear All Filters
+                            </Button>
+                        </div>
+                    ) : (
+                        <>
+                            <DataTable
+                                data={filteredEvents as unknown as Record<string, unknown>[]}
+                                columns={columns}
+                                onRowClick={(row) => router.push(`/audit-events/${(row as unknown as AuditEvent).id}`)}
+                                itemsPerPage={pageSize}
+                            />
+                            {hasMore && (
+                                <div className="mt-6 flex justify-center">
+                                    <Button
+                                        onClick={loadMore}
+                                        disabled={loadingMore}
+                                        variant="outline"
+                                        size="lg"
+                                        className="min-w-[200px]"
+                                    >
+                                        {loadingMore ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Loading more...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <RefreshCw className="h-4 w-4 mr-2" />
+                                                Load More Events
+                                            </>
                                         )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Page {currentPage} of {totalPages}
-                                </p>
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={currentPage === 1}
-                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                    >
-                                        Previous
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={currentPage === totalPages}
-                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                    >
-                                        Next
                                     </Button>
                                 </div>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            )}
+                            )}
+                        </>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }

@@ -1,91 +1,74 @@
 // contexts/ConsentContext.tsx
 'use client';
 
-import React, { createContext, useState, useContext, useCallback, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import React, { createContext, useState, useContext, useCallback } from "react";
 
-type ConsentContextType = {
-    showConsent: (url: string, completeCallback?: () => void) => void;
-    hideConsent: () => void;
-};
+interface ConsentContextType {
+    needsConsent: boolean;
+    consentUrl: string | null;
+    requiredPermissions: string[];
+    isMinimized: boolean;
+    setConsentNeeded: (url: string, permissions: string[]) => void;
+    clearConsent: () => void;
+    minimize: () => void;
+    maximize: () => void;
+}
 
 const ConsentContext = createContext<ConsentContextType | undefined>(undefined);
 
 export const ConsentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    // Separate state for dialog visibility and URL
-    const [isOpen, setIsOpen] = useState(false);
+    const [needsConsent, setNeedsConsent] = useState(false);
     const [consentUrl, setConsentUrl] = useState<string | null>(null);
-    const [onComplete, setOnComplete] = useState<(() => void) | null>(null);
+    const [requiredPermissions, setRequiredPermissions] = useState<string[]>([]);
+    const [isMinimized, setIsMinimized] = useState(false);
 
-    // Force render on state changes
-    useEffect(() => {
-        console.log("ConsentDialog state changed - isOpen:", isOpen, "URL:", consentUrl);
-    }, [isOpen, consentUrl]);
-
-    const showConsent = useCallback((url: string, completeCallback?: () => void) => {
+    const setConsentNeeded = useCallback((url: string, permissions: string[]) => {
+        setNeedsConsent(true);
         setConsentUrl(url);
-        setIsOpen(true);
-        if (completeCallback) {
-            setOnComplete(() => completeCallback);
-        }
+        setRequiredPermissions(permissions);
+
+        // Start minimized by default for better UX (less intrusive)
+        // Check if user previously maximized it in this session
+        const wasMaximized = sessionStorage.getItem('ia_consent_minimized') === 'false';
+        setIsMinimized(!wasMaximized); // Default to minimized unless user explicitly maximized before
     }, []);
 
-    const hideConsent = useCallback(() => {
-        setIsOpen(false);
+    const clearConsent = useCallback(() => {
+        setNeedsConsent(false);
+        setConsentUrl(null);
+        setRequiredPermissions([]);
+        setIsMinimized(false);
+        sessionStorage.removeItem('ia_consent_minimized');
+    }, []);
 
-        // Execute callback after dialog closes
-        if (onComplete) {
-            setTimeout(() => {
-                onComplete();
-                setOnComplete(null);
-            }, 100);
-        }
+    const minimize = useCallback(() => {
+        setIsMinimized(true);
+        sessionStorage.setItem('ia_consent_minimized', 'true');
+    }, []);
 
-        // Clear URL after dialog closes
-        setTimeout(() => setConsentUrl(null), 300);
-    }, [onComplete]);
+    const maximize = useCallback(() => {
+        setIsMinimized(false);
+        sessionStorage.setItem('ia_consent_minimized', 'false');
+    }, []);
+
+    const resetVerification = useCallback(() => {
+        sessionStorage.removeItem('ia_consent_minimized');
+        sessionStorage.removeItem('ia_consent_verified');
+    }, []);
 
     return (
-        <ConsentContext.Provider value={{ showConsent, hideConsent }}>
+        <ConsentContext.Provider value={{
+            needsConsent,
+            consentUrl,
+            requiredPermissions,
+            isMinimized,
+            setConsentNeeded,
+            clearConsent,
+            minimize,
+            maximize,
+            resetVerification
+        }}>
             {children}
-
-            {/* Force the Dialog to always be in the DOM but control visibility with open prop */}
-            <Dialog
-                open={isOpen}
-                onOpenChange={(open) => {
-                    if (!open) hideConsent();
-                    else setIsOpen(true);
-                }}
-            >
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Additional Permissions Required</DialogTitle>
-                        <DialogDescription>
-                            Please grant the additional permissions to continue.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex flex-col gap-4 py-4">
-                        <Button
-                            onClick={() => {
-                                if (consentUrl) window.open(consentUrl, "_blank");
-                            }}
-                            className="w-full"
-                        >
-                            Grant Permissions
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                hideConsent();
-                            }}
-                            className="w-full"
-                        >
-                            I&apos;ve granted permissions, continue
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
         </ConsentContext.Provider>
     );
 };
@@ -97,3 +80,4 @@ export const useConsent = () => {
     }
     return context;
 };
+

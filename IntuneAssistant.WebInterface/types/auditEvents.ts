@@ -1,6 +1,6 @@
 // types/auditEvents.ts
 
-export interface AuditEvent {
+export interface AuditEvent extends Record<string, unknown> {
     id: string;
     displayName: string;
     componentName: string;

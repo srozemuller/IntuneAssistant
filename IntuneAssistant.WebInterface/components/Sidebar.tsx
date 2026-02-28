@@ -321,7 +321,8 @@ export function Sidebar() {
             ]
         },
         // Only include Audit Events section if customer is a beta tester
-        ...(isBetaTester() ? [{
+       // ...(isBetaTester() ? [
+        {
             title: "Audit Events",
             badgeColor: "bg-purple-500",
             items: [
@@ -336,7 +337,8 @@ export function Sidebar() {
                     ]
                 }
             ]
-        }] : []),
+        },
+        //] : []),
         // Only include Business Modules section if customer is active
         ...(isActiveCustomer && hasEnterpriseLicense() ? [{
             title: "Extensions",

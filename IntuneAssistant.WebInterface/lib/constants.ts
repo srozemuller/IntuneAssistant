@@ -27,6 +27,7 @@ export const ASSIGNMENTS_ENDPOINT = `${API_BASE_URL}/assignments`;
 export const CONSENT_URL_ENDPOINT = `${API_BASE_URL}/consent/build-url`;
 export const CONSENT_CALLBACK = `${API_BASE_URL}/consent/callback`;
 export const CONSENT_UTCM_VERIFY = `${API_BASE_URL}/consent/utcm-verify`;
+export const IA_VERIFY_ENDPOINT = `${API_BASE_URL}/consent/intuneassistant-verify`;
 
 export const INTUNEASSISTANT_TENANT_INFO = `${API_BASE_URL}/tenant/license-info`;
 export const INTUNEASSISTANT_TENANT_STYLE = `${API_BASE_URL}/tenant/style`;
@@ -61,6 +62,11 @@ export const MONITOR_CONFIGURATION_ENDPOINT = `${API_BASE_URL}/monitor/configura
 export const MONITOR_CONFIGURATION_DRIFTS_ENDPOINT = `${API_BASE_URL}/monitor/configuration/drifts`;
 export const MONITOR_CONFIGURATION_RESULTS_ENDPOINT = `${API_BASE_URL}/monitor/configuration/results`;
 export const MONITOR_CONFIGURATION_SNAPSHOTS_JOBS = `${API_BASE_URL}/monitor/snapshots/jobs`;
+
+export const AUDIT_LOGS_BASE_URL = `${API_BASE_URL}/audit`;
+export const AUDIT_LOGS_INTUNE_BASE_URL = `${API_BASE_URL}/audit/intune`;
+export const AUDIT_LOGS_INTUNE_EVENTS = `${API_BASE_URL}/audit/intune/page`;
+export const AUDIT_LOGS_INTUNE_FILTER = `${API_BASE_URL}/audit/intune/filter`;
 
 
 export const MONITOR_CONFIGURATION_SNAPSHOTS = `${API_BASE_URL}/monitor/snapshots`;
