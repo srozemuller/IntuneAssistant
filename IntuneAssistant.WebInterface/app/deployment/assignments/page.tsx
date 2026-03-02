@@ -6,7 +6,7 @@ import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet
+    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet
 } from 'lucide-react';
 import {useMsal} from '@azure/msal-react';
 import {
@@ -63,6 +63,7 @@ interface CSVRow {
     originalActionValue?: string;
     validationErrors?: CSVValidationError[]; // Add validation errors
     isValid?: boolean; // Overall row validity
+    rowId?: string; // Unique identifier for tracking throughout the process
     [key: string]: unknown;
 }
 
@@ -155,6 +156,10 @@ interface ComparisonResult {
     validationStatus?: 'pending' | 'valid' | 'invalid' | 'warning';
     validationMessage?: string;
     isCurrentSessionValidation?: boolean;
+    // Master tracking fields for comprehensive status
+    masterStatus?: 'csv_uploaded' | 'compare_ready' | 'compare_failed' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed';
+    masterStatusMessage?: string;
+    failureReason?: string; // Why this item couldn't proceed
 }
 
 interface RoleScopeTag {
@@ -178,7 +183,7 @@ interface MigrationResult {
     filterType: string | null;
     filterName: string | null;
     isMigrated: boolean;
-    status: 'Success' | 'Failed';
+    status: 'Success' | 'Failed' | 'Skipped';
     errorMessage: string | null;
     processedAt: string;
     batchIndex: number | null;
@@ -262,7 +267,7 @@ function AssignmentRolloutContent() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // State management
-    const [currentStep, setCurrentStep] = useState<'upload' | 'compare' | 'migrate' | 'results' | 'validate'>('upload');
+    const [currentStep, setCurrentStep] = useState<'upload' | 'compare' | 'migrate' | 'results' | 'validate' | 'summary'>('upload');
 
     const [csvData, setCsvData] = useState<CSVRow[]>([]);
     const [comparisonResults, setComparisonResults] = useState<ComparisonResult[]>([]);
@@ -276,6 +281,9 @@ function AssignmentRolloutContent() {
     const [validationComplete, setValidationComplete] = useState(false);
     const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
     const [migrationResults, setMigrationResults] = useState<MigrationResult[]>([]);
+
+    // Master tracking: All rows from CSV with their complete journey status
+    const [masterTrackingData, setMasterTrackingData] = useState<ComparisonResult[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [uploadCurrentPage, setUploadCurrentPage] = useState(1);
@@ -291,7 +299,7 @@ function AssignmentRolloutContent() {
 
     const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
     const [filteredComparisonResults, setFilteredComparisonResults] = useState<ComparisonResult[]>([]);
-    const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed'>('all');
+    const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed' | 'skipped'>('all');
     const [compareStatusFilter, setCompareStatusFilter] = useState<'all' | 'ready' | 'migrated' | 'warnings'>('all');
 
     // Add pagination logic before the return statement
@@ -312,8 +320,10 @@ function AssignmentRolloutContent() {
             return migrationResults;
         } else if (migrationResultFilter === 'success') {
             return migrationResults.filter(r => r.status === 'Success');
-        } else {
+        } else if (migrationResultFilter === 'failed') {
             return migrationResults.filter(r => r.status === 'Failed');
+        } else {
+            return migrationResults.filter(r => r.status === 'Skipped');
         }
     }, [migrationResults, migrationResultFilter]);
 
@@ -714,10 +724,10 @@ function AssignmentRolloutContent() {
             );
         }
 
-        // Show green checkmark only if all checks pass and no warnings
+        // Show purple arrow up for ready-for-migration (not completed yet)
         return (
             <div className="flex items-center justify-center">
-                <CheckCircle2 className="h-5 w-5 text-green-500"/>
+                <ArrowUp className="h-5 w-5 text-purple-500"/>
             </div>
         );
     };
@@ -800,8 +810,8 @@ function AssignmentRolloutContent() {
                     check.correctFilterPlatform === false ||
                     check.correctFilterTypeProvided === false;
 
-                // Return 1.5 for warnings, 1 for success
-                return hasWarnings ? 1.5 : 1;
+                // Return 1.5 for warnings, 1.2 for ready (purple arrow), 1 for success (green)
+                return hasWarnings ? 1.5 : 1.2;
             },
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
@@ -1011,21 +1021,32 @@ function AssignmentRolloutContent() {
             sortable: true,
             sortValue: (row: Record<string, unknown>) => {
                 const result = row as unknown as MigrationResult;
-                return result.status === 'Success' ? 1 : 0;
+                return result.status === 'Success' ? 2 : result.status === 'Skipped' ? 1 : 0;
             },
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as MigrationResult;
-                return result.status === 'Success' ? (
-                    <Badge variant="default" className="bg-green-600">
-                        <CheckCircle2 className="h-3 w-3 mr-1"/>
-                        Success
-                    </Badge>
-                ) : (
-                    <Badge variant="destructive">
-                        <XCircle className="h-3 w-3 mr-1"/>
-                        Failed
-                    </Badge>
-                );
+                if (result.status === 'Success') {
+                    return (
+                        <Badge variant="default" className="bg-green-600">
+                            <CheckCircle2 className="h-3 w-3 mr-1"/>
+                            Success
+                        </Badge>
+                    );
+                } else if (result.status === 'Skipped') {
+                    return (
+                        <Badge variant="secondary" className="bg-gray-500 text-white">
+                            <Circle className="h-3 w-3 mr-1"/>
+                            Skipped
+                        </Badge>
+                    );
+                } else {
+                    return (
+                        <Badge variant="destructive">
+                            <XCircle className="h-3 w-3 mr-1"/>
+                            Failed
+                        </Badge>
+                    );
+                }
             }
         },
         {
@@ -1144,6 +1165,8 @@ function AssignmentRolloutContent() {
                 const result = row as unknown as MigrationResult;
                 if (result.status === 'Success') {
                     return <span className="text-sm text-green-600">Successfully migrated</span>;
+                } else if (result.status === 'Skipped') {
+                    return <span className="text-sm text-gray-500">{String(value) || 'Skipped - not selected for migration'}</span>;
                 }
                 return (
                     <span className="text-sm text-red-600" title={String(value)}>
@@ -1515,7 +1538,8 @@ function AssignmentRolloutContent() {
                 originalActionValue: actionResult.originalValue,
                 validationErrors,
                 isValid: validationErrors.length === 0,
-                validationStatusSort: validationErrors.length === 0 ? 1 : 0
+                validationStatusSort: validationErrors.length === 0 ? 1 : 0,
+                rowId: `csv-row-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // Unique ID
             };
         });
     };
@@ -1760,12 +1784,37 @@ function AssignmentRolloutContent() {
             const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => {
                 const check = item.migrationCheckResult;
                 let migrationCheckSortValue = 2;
+                let masterStatus: ComparisonResult['masterStatus'] = 'csv_uploaded';
+                let masterStatusMessage = '';
+                let failureReason = '';
 
                 if (check) {
                     const allChecksPass = check.policyExists && check.policyIsUnique &&
                         check.groupExists && check.correctAssignmentTypeProvided &&
-                        check.correctAssignmentActionProvided;
-                    migrationCheckSortValue = allChecksPass ? 1 : 0;
+                        check.correctAssignmentActionProvided && check.assignmentIsCompatible;
+
+                    if (allChecksPass) {
+                        migrationCheckSortValue = 1;
+                        masterStatus = 'compare_ready';
+                        masterStatusMessage = 'Ready for migration';
+                    } else {
+                        migrationCheckSortValue = 0;
+                        masterStatus = 'compare_failed';
+
+                        // Build detailed failure reason
+                        const failures: string[] = [];
+                        if (!check.policyExists) failures.push('Policy not found');
+                        if (!check.policyIsUnique) failures.push('Multiple policies found with same name');
+                        if (!check.groupExists) failures.push('Group not found');
+                        if (!check.correctAssignmentTypeProvided) failures.push('Invalid assignment type');
+                        if (!check.correctAssignmentActionProvided) failures.push('Invalid assignment action');
+                        if (!check.assignmentIsCompatible && check.compatibilityErrors) {
+                            failures.push(...check.compatibilityErrors);
+                        }
+
+                        failureReason = failures.join('; ');
+                        masterStatusMessage = `Cannot migrate: ${failureReason}`;
+                    }
                 }
 
                 return {
@@ -1777,10 +1826,38 @@ function AssignmentRolloutContent() {
                     isMigrated: item.isMigrated || false,
                     isBackedUp: false,
                     validationStatus: 'pending' as const,
-                    migrationCheckSortValue
+                    migrationCheckSortValue,
+                    masterStatus,
+                    masterStatusMessage,
+                    failureReason
                 };
             });
+
+            // Also track invalid CSV rows that never made it to comparison
+            const invalidCsvRows = csvData.filter(row => !row.isValid).map((row, index): ComparisonResult => ({
+                id: `invalid-${index}-${Date.now()}`,
+                assignmentId: '',
+                policy: {
+                    id: '',
+                    name: row.PolicyName,
+                    policyType: '',
+                    policySubType: '',
+                    assignments: [],
+                    platform: ''
+                },
+                csvRow: row,
+                isReadyForMigration: false,
+                isMigrated: false,
+                masterStatus: 'compare_failed',
+                masterStatusMessage: 'Invalid CSV data',
+                failureReason: row.validationErrors?.map(e => e.message).join('; ') || 'Invalid CSV format'
+            }));
+
+            // Combine valid comparisons with invalid rows for complete tracking
+            const allTrackedResults = [...enhancedResults, ...invalidCsvRows];
+
             setComparisonResults(enhancedResults);
+            setMasterTrackingData(allTrackedResults);
             setCurrentStep('migrate');
         } catch (error) {
             if (!(error instanceof UserConsentRequiredError)) {
@@ -1849,11 +1926,42 @@ function AssignmentRolloutContent() {
                     );
 
                     if (migrationResult) {
+                        const isSuccess = migrationResult.status === 'Success';
                         return {
                             ...result,
-                            isMigrated: migrationResult.status === 'Success',
-                            validationStatus: migrationResult.status === 'Success' ? 'pending' as const : result.validationStatus,
-                            isCurrentSessionValidation: migrationResult.status === 'Success'
+                            isMigrated: isSuccess,
+                            validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
+                            isCurrentSessionValidation: isSuccess,
+                            masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
+                            masterStatusMessage: isSuccess
+                                ? 'Successfully migrated - pending validation'
+                                : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
+                            failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
+                        };
+                    }
+                    return result;
+                })
+            );
+
+            // Update master tracking
+            setMasterTrackingData(prev =>
+                prev.map(result => {
+                    const migrationResult = resultsWithPayload.find(
+                        mr => mr.id === result.id
+                    );
+
+                    if (migrationResult) {
+                        const isSuccess = migrationResult.status === 'Success';
+                        return {
+                            ...result,
+                            isMigrated: isSuccess,
+                            validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
+                            isCurrentSessionValidation: isSuccess,
+                            masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
+                            masterStatusMessage: isSuccess
+                                ? 'Successfully migrated - pending validation'
+                                : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
+                            failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
                         };
                     }
                     return result;
@@ -1948,14 +2056,14 @@ function AssignmentRolloutContent() {
         }
     };
 
-    const validateMigratedAssignments = async (results?: ComparisonResult[]) => {
+    const validateMigratedAssignments = async () => {
         if (!accounts.length) return;
 
-        // Validate all items that have a policy ID
-        const itemsWithPolicy = results?.filter(r => r.policy?.id);
+        // Re-run compare for ALL valid CSV rows to check final state
+        const validCsvRows = csvData.filter(row => row.isValid);
 
-        if (!itemsWithPolicy || itemsWithPolicy.length === 0) {
-            setError('No items to validate');
+        if (validCsvRows.length === 0) {
+            setError('No valid rows to validate');
             return;
         }
 
@@ -1963,26 +2071,21 @@ function AssignmentRolloutContent() {
         setValidationComplete(false);
 
         try {
-            console.log(`Validating ${itemsWithPolicy.length} items`);
+            console.log(`Validating ${validCsvRows.length} items by re-running comparison`);
 
-            const validationPayload = itemsWithPolicy.map(result => ({
-                Id: result.id,
-                ResourceType: result.policy?.policyType || '',
-                SubResourceType: result.policy?.policySubType || '',
-                ResourceId: result.policy?.id || result.id,
-                AssignmentId: result.assignmentId,
-                AssignmentType: result.assignmentType,
-                AssignmentDirection: result.csvRow?.AssignmentDirection,
-                AssignmentAction: result.csvRow?.AssignmentAction || '',
-                FilterId: result.filterToMigrate?.id && result.filterToMigrate.id !== "00000000-0000-0000-0000-000000000000"
-                    ? result.filterToMigrate.id
-                    : null,
-                FilterType: result.csvRow?.FilterType || null
+            // Use the same payload structure as initial compare
+            const validationPayload = validCsvRows.map(row => ({
+                PolicyName: row.PolicyName,
+                GroupName: row.AssignmentAction === 'NoAssignment' ? null : row.GroupName,
+                AssignmentDirection: row.AssignmentDirection,
+                AssignmentAction: row.AssignmentAction,
+                FilterName: row.FilterName,
+                FilterType: row.FilterType
             }));
 
-            console.log('Validation payload:', validationPayload);
+            console.log('Validation payload (using compare endpoint):', validationPayload);
 
-            const validationData = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/validate`, {
+            const validationData = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT, {
                 method: 'POST',
                 body: JSON.stringify(validationPayload)
             });
@@ -1993,7 +2096,7 @@ function AssignmentRolloutContent() {
             }
 
             if (validationData.status === 'Error' &&
-                validationData.message?.message === 'Additional permissions required') {
+                validationData.message?.message === 'User challenge required') {
 
                 setConsentUrl(validationData.message.url || '');
                 setShowConsentDialog(true);
@@ -2006,21 +2109,160 @@ function AssignmentRolloutContent() {
                 return;
             }
 
-            setValidationResults(validationData.data as unknown as ValidationResult[]);
+            const validationResults = validationData.data as ComparisonResult[];
+            setValidationResults(validationResults as unknown as ValidationResult[]);
 
-            // Only update the specific results that were validated
+            // Map validation results back to original comparison results by matching policy and group names
             setComparisonResults(prev =>
                 prev.map(result => {
-                    const validation = (validationData.data as unknown as ValidationResult[]).find(
-                        (v: ValidationResult) => v.id === result.id
-                    );
+                    // Find matching validation result by comparing policy name and group name
+                    // Use providedPolicyName or policy.name from validation result to match
+                    const matchingValidation = validationResults.find(vr => {
+                        const validationPolicyName = vr.providedPolicyName || vr.policy?.name;
+                        const resultPolicyName = result.csvRow?.PolicyName || result.policy?.name;
+                        const validationGroupName = vr.groupToMigrate;
+                        const resultGroupName = result.csvRow?.GroupName || result.groupToMigrate;
 
-                    if (validation) {
+                        return validationPolicyName === resultPolicyName &&
+                               validationGroupName === resultGroupName;
+                    });
+
+                    if (matchingValidation) {
+                        // Interpret the comparison result as validation:
+                        // - If isMigrated is true, the assignment already exists = validation success
+                        // - If isReadyForMigration is true and was previously migrated, verify it's still there
+                        const wasSuccessfullyMigrated = result.masterStatus === 'migration_success';
+
+                        let validationStatus: 'valid' | 'invalid' | 'warning';
+                        let masterStatus: ComparisonResult['masterStatus'];
+                        let masterStatusMessage: string;
+                        let failureReason: string | undefined;
+
+                        if (matchingValidation.isMigrated) {
+                            // Assignment exists and matches expectations
+                            validationStatus = 'valid';
+                            masterStatus = 'validation_success';
+                            masterStatusMessage = 'Assignment verified in environment';
+                            failureReason = undefined;
+                        } else if (wasSuccessfullyMigrated && !matchingValidation.isMigrated) {
+                            // Was migrated but now doesn't show as existing - validation failed
+                            validationStatus = 'invalid';
+                            masterStatus = 'validation_failed';
+                            masterStatusMessage = 'Assignment not found after migration';
+                            failureReason = 'Migration was reported successful but assignment not found in re-check';
+                        } else if (matchingValidation.isReadyForMigration && !wasSuccessfullyMigrated) {
+                            // Item is ready but was never migrated - mark as warning
+                            validationStatus = 'warning';
+                            masterStatus = result.masterStatus; // Keep original status
+                            masterStatusMessage = 'Ready for migration but was not migrated';
+                            failureReason = undefined;
+                        } else {
+                            // Check failed - policy or group issues
+                            validationStatus = 'invalid';
+                            masterStatus = 'validation_failed';
+
+                            const check = matchingValidation.migrationCheckResult;
+                            const failures: string[] = [];
+                            if (check) {
+                                if (!check.policyExists) failures.push('Policy not found');
+                                if (!check.policyIsUnique) failures.push('Multiple policies found');
+                                if (!check.groupExists) failures.push('Group not found');
+                                if (!check.assignmentIsCompatible && check.compatibilityErrors) {
+                                    failures.push(...check.compatibilityErrors);
+                                }
+                            }
+
+                            failureReason = failures.length > 0 ? failures.join('; ') : 'Validation check failed';
+                            masterStatusMessage = `Validation failed: ${failureReason}`;
+                        }
+
                         return {
                             ...result,
-                            validationStatus: validation.hasCorrectAssignment ? 'valid' : 'invalid',
-                            validationMessage: validation.message?.reason || validation.message?.status || '',
-                            isCurrentSessionValidation: true // Mark as current session
+                            validationStatus,
+                            validationMessage: masterStatusMessage,
+                            isCurrentSessionValidation: true,
+                            masterStatus,
+                            masterStatusMessage,
+                            failureReason,
+                            // Update with latest comparison data
+                            policy: matchingValidation.policy || result.policy,
+                            isMigrated: matchingValidation.isMigrated,
+                            isReadyForMigration: matchingValidation.isReadyForMigration,
+                            migrationCheckResult: matchingValidation.migrationCheckResult
+                        };
+                    }
+                    return result;
+                })
+            );
+
+            // Update master tracking
+            setMasterTrackingData(prev =>
+                prev.map(result => {
+                    // Find matching validation result by policy and group name
+                    const matchingValidation = validationResults.find(vr => {
+                        const validationPolicyName = vr.providedPolicyName || vr.policy?.name;
+                        const resultPolicyName = result.csvRow?.PolicyName || result.policy?.name;
+                        const validationGroupName = vr.groupToMigrate;
+                        const resultGroupName = result.csvRow?.GroupName || result.groupToMigrate;
+
+                        return validationPolicyName === resultPolicyName &&
+                               validationGroupName === resultGroupName;
+                    });
+
+                    if (matchingValidation) {
+                        const wasSuccessfullyMigrated = result.masterStatus === 'migration_success';
+
+                        let validationStatus: 'valid' | 'invalid' | 'warning';
+                        let masterStatus: ComparisonResult['masterStatus'];
+                        let masterStatusMessage: string;
+                        let failureReason: string | undefined;
+
+                        if (matchingValidation.isMigrated) {
+                            validationStatus = 'valid';
+                            masterStatus = 'validation_success';
+                            masterStatusMessage = 'Assignment verified in environment';
+                            failureReason = undefined;
+                        } else if (wasSuccessfullyMigrated && !matchingValidation.isMigrated) {
+                            validationStatus = 'invalid';
+                            masterStatus = 'validation_failed';
+                            masterStatusMessage = 'Assignment not found after migration';
+                            failureReason = 'Migration was reported successful but assignment not found in re-check';
+                        } else if (matchingValidation.isReadyForMigration && !wasSuccessfullyMigrated) {
+                            validationStatus = 'warning';
+                            masterStatus = result.masterStatus;
+                            masterStatusMessage = 'Ready for migration but was not migrated';
+                            failureReason = undefined;
+                        } else {
+                            validationStatus = 'invalid';
+                            masterStatus = 'validation_failed';
+
+                            const check = matchingValidation.migrationCheckResult;
+                            const failures: string[] = [];
+                            if (check) {
+                                if (!check.policyExists) failures.push('Policy not found');
+                                if (!check.policyIsUnique) failures.push('Multiple policies found');
+                                if (!check.groupExists) failures.push('Group not found');
+                                if (!check.assignmentIsCompatible && check.compatibilityErrors) {
+                                    failures.push(...check.compatibilityErrors);
+                                }
+                            }
+
+                            failureReason = failures.length > 0 ? failures.join('; ') : 'Validation check failed';
+                            masterStatusMessage = `Validation failed: ${failureReason}`;
+                        }
+
+                        return {
+                            ...result,
+                            validationStatus,
+                            validationMessage: masterStatusMessage,
+                            isCurrentSessionValidation: true,
+                            masterStatus,
+                            masterStatusMessage,
+                            failureReason,
+                            policy: matchingValidation.policy || result.policy,
+                            isMigrated: matchingValidation.isMigrated,
+                            isReadyForMigration: matchingValidation.isReadyForMigration,
+                            migrationCheckResult: matchingValidation.migrationCheckResult
                         };
                     }
                     return result;
@@ -2028,7 +2270,7 @@ function AssignmentRolloutContent() {
             );
 
             setValidationComplete(true);
-            console.log(`Validation completed for ${validationData.data?.length || 0} items`);
+            console.log(`Validation completed for ${validationResults.length} items`);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Validation failed');
             console.error('Validation error:', error);
@@ -2091,17 +2333,16 @@ function AssignmentRolloutContent() {
     };
 
 const validateAssignments = async () => {
-    // Validate all items from the comparison phase
-    const itemsToValidate = comparisonResults.filter(result =>
-        result.policy?.id // Has a valid policy ID to validate against
-    );
+    // Re-run compare for all valid CSV rows to verify final state
+    const validCsvRows = csvData.filter(row => row.isValid);
 
-    if (itemsToValidate.length === 0) {
-        setError('No assignments to validate');
+    if (validCsvRows.length === 0) {
+        setError('No valid rows to validate');
         return;
     }
 
-    await validateMigratedAssignments(itemsToValidate);
+    console.log(`Validation will re-run comparison for ${validCsvRows.length} valid CSV rows`);
+    await validateMigratedAssignments();
 };
 
     const resetProcess = () => {
@@ -2114,6 +2355,8 @@ const validateAssignments = async () => {
         setValidationComplete(false);
         setRoleScopeTagFilter([]);
         setCompareStatusFilter('all');
+        setMasterTrackingData([]);
+        setMigrationResults([]);
         setError(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -2302,9 +2545,10 @@ const validateAssignments = async () => {
                             {key: 'compare', label: 'Compare', icon: Eye},
                             {key: 'migrate', label: 'Migrate', icon: Play},
                             {key: 'results', label: 'Results', icon: CheckCircle2},
-                            {key: 'validate', label: 'Validate', icon: RefreshCw}
+                            {key: 'validate', label: 'Verify', icon: RefreshCw},
+                            {key: 'summary', label: 'Summary', icon: FileText}
                         ].map((step, index) => {
-                            const stepKeys = ['upload', 'compare', 'migrate', 'results', 'validate'];
+                            const stepKeys = ['upload', 'compare', 'migrate', 'results', 'validate', 'summary'];
                             const currentStepIndex = stepKeys.indexOf(currentStep);
                             const thisStepIndex = stepKeys.indexOf(step.key);
 
@@ -2335,7 +2579,7 @@ const validateAssignments = async () => {
                     {step.label}
                 </span>
                                     </div>
-                                    {index < 4 && (
+                                    {index < 5 && (
                                         <ArrowRight className={`h-4 w-4 mx-4 ${
                                             isCompleted ? 'text-green-600' : 'text-gray-300'
                                         }`}/>
@@ -2477,7 +2721,7 @@ const validateAssignments = async () => {
                                 {/* Validation Summary */}
                                 {csvData.filter(r => !r.isValid).length > 0 && (
                                     <div
-                                        className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                                        className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
                                         <div className="flex items-start gap-3">
                                             <AlertTriangle className="h-6 w-6 text-red-600 mt-0.5 flex-shrink-0"/>
                                             <div className="flex-1">
@@ -2622,7 +2866,6 @@ const validateAssignments = async () => {
                                     : `Compare ${csvData.filter(r => r.isValidAction).length} Assignments`
                             }
                         </Button>
-
                     </CardContent>
                 </Card>
             )}
@@ -2700,7 +2943,7 @@ const validateAssignments = async () => {
                                 className="flex items-center gap-2"
                                 size="sm"
                             >
-                                <CheckCircle2 className="h-4 w-4 text-green-500"/>
+                                <ArrowUp className="h-4 w-4 text-purple-500"/>
                                 Ready for Migration ({comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length})
                             </Button>
                             <Button
@@ -2882,10 +3125,18 @@ const validateAssignments = async () => {
                                 <XCircle className="h-4 w-4"/>
                                 Failed ({migrationResults.filter(r => r.status === 'Failed').length})
                             </Button>
+                            <Button
+                                onClick={() => setMigrationResultFilter('skipped')}
+                                variant={migrationResultFilter === 'skipped' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                            >
+                                <Circle className="h-4 w-4"/>
+                                Skipped ({migrationResults.filter(r => r.status === 'Skipped').length})
+                            </Button>
                         </div>
 
                         {/* Summary Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                             <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-green-50/60 to-emerald-50/40 dark:from-green-900/20 dark:to-emerald-900/10 border border-green-200/30 dark:border-green-700/30">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="p-2 bg-green-500/10 dark:bg-green-500/20 rounded-lg backdrop-blur-sm">
@@ -2906,6 +3157,17 @@ const validateAssignments = async () => {
                                 </div>
                                 <div className="text-3xl font-bold text-red-600 dark:text-red-400">
                                     {migrationResults.filter(r => r.status === 'Failed').length}
+                                </div>
+                            </div>
+                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-gray-50/60 to-slate-50/40 dark:from-gray-900/20 dark:to-slate-900/10 border border-gray-200/30 dark:border-gray-700/30">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-gray-500/10 dark:bg-gray-500/20 rounded-lg backdrop-blur-sm">
+                                        <Circle className="h-5 w-5 text-gray-600 dark:text-gray-400"/>
+                                    </div>
+                                    <span className="font-semibold text-gray-700 dark:text-gray-300">Skipped</span>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-600 dark:text-gray-400">
+                                    {migrationResults.filter(r => r.status === 'Skipped').length}
                                 </div>
                             </div>
                             <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-blue-50/60 to-indigo-50/40 dark:from-blue-900/20 dark:to-indigo-900/10 border border-blue-200/30 dark:border-blue-700/30">
@@ -2951,80 +3213,87 @@ const validateAssignments = async () => {
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Validation Results</CardTitle>
+                                <CardTitle>Final Verification</CardTitle>
                                 <p className="text-gray-600">
-                                    Verify migrated assignments
+                                    Re-run comparison to verify all assignments in their final state
                                 </p>
                             </div>
-                            {!validationComplete && (
-                                <Button onClick={validateAssignments} disabled={loading}>
-                                    {loading ? (
-                                        <div className="flex items-center">
-                                            <div
-                                                className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                            Validating...
-                                        </div>
-                                    ) : (
-                                        'Run Validation'
-                                    )}
-                                </Button>
-                            )}
-                            {validationComplete && (
-                                <div className="flex items-center gap-2 text-green-600">
-                                    <CheckCircle2 className="h-5 w-5"/>
-                                    <span className="font-medium">Validation Complete</span>
-                                </div>
-                            )}
+                            <div className="flex gap-2">
+                                {!validationComplete && (
+                                    <Button onClick={validateAssignments} disabled={loading}>
+                                        {loading ? (
+                                            <div className="flex items-center">
+                                                <div
+                                                    className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                Verifying...
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <RefreshCw className="h-4 w-4 mr-2"/>
+                                                Run Verification
+                                            </>
+                                        )}
+                                    </Button>
+                                )}
+                                {validationComplete && (
+                                    <Button onClick={() => setCurrentStep('summary')}>
+                                        <FileText className="h-4 w-4 mr-2"/>
+                                        View Summary
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-green-50/60 to-emerald-50/40 dark:from-green-900/20 dark:to-emerald-900/10 border border-green-200/30 dark:border-green-700/30">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="p-2 bg-green-500/10 dark:bg-green-500/20 rounded-lg backdrop-blur-sm">
-                                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400"/>
+                        {/* Info banner explaining the validation process */}
+                        {!validationComplete && (
+                            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                <div className="flex items-start gap-3">
+                                    <Info className="h-5 w-5 text-blue-600 mt-0.5 shrink-0"/>
+                                    <div>
+                                        <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+                                            How Verification Works
+                                        </p>
+                                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                                            This step re-runs the comparison check for all {csvData.filter(r => r.isValid).length} valid CSV rows
+                                            against your current Intune environment to verify the final state.
+                                        </p>
                                     </div>
-                                    <span className="font-semibold text-green-700 dark:text-green-300">Successful</span>
-                                </div>
-                                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'valid').length}
                                 </div>
                             </div>
-                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-yellow-50/60 to-amber-50/40 dark:from-yellow-900/20 dark:to-amber-900/10 border border-yellow-200/30 dark:border-yellow-700/30">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg backdrop-blur-sm">
-                                        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400"/>
-                                    </div>
-                                    <span className="font-semibold text-yellow-700 dark:text-yellow-300">Warnings</span>
-                                </div>
-                                <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
-                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'warning').length}
-                                </div>
-                            </div>
-                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-red-50/60 to-rose-50/40 dark:from-red-900/20 dark:to-rose-900/10 border border-red-200/30 dark:border-red-700/30">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="p-2 bg-red-500/10 dark:bg-red-500/20 rounded-lg backdrop-blur-sm">
-                                        <XCircle className="h-5 w-5 text-red-600 dark:text-red-400"/>
-                                    </div>
-                                    <span className="font-semibold text-red-700 dark:text-red-300">Failed</span>
-                                </div>
-                                <div className="text-3xl font-bold text-red-600 dark:text-red-400">
-                                    {comparisonResults.filter(r => r.isCurrentSessionValidation && r.validationStatus === 'invalid').length}
-                                </div>
-                            </div>
-                        </div>
+                        )}
 
+                        {validationComplete && (
+                            <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                <div className="flex items-start gap-3">
+                                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0"/>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-green-900 dark:text-green-100 mb-1">
+                                            Verification Complete
+                                        </p>
+                                        <p className="text-sm text-green-700 dark:text-green-300">
+                                            All {comparisonResults.filter(r => r.isCurrentSessionValidation).length} items have been verified. Click &ldquo;View Summary&rdquo; to see the complete report.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-                        {/* Validation Results Table */}
+                        {/* Verification Results Table - Same look as compare step */}
                         {comparisonResults.filter(r => r.isCurrentSessionValidation).length > 0 && (
                             <div className="space-y-4">
-                                <h3 className="font-semibold">Validated Assignments
-                                    ({comparisonResults.filter(r => r.isCurrentSessionValidation).length} items)</h3>
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-semibold">Verification Results
+                                        ({comparisonResults.filter(r => r.isCurrentSessionValidation).length} items)</h3>
+                                    <Badge variant="outline" className="text-xs">
+                                        Re-compared against live environment
+                                    </Badge>
+                                </div>
                                 <div className="border rounded-lg overflow-visible">
                                     <div className="overflow-x-auto overflow-y-visible">
                                         <DataTable
                                             data={comparisonResults.filter(r => r.isCurrentSessionValidation).map(result => result as unknown as Record<string, unknown>)}
-                                            columns={validationColumns}
+                                            columns={comparisonColumns}
                                             className="text-sm"
                                             currentPage={validationCurrentPage}
                                             totalPages={Math.ceil(comparisonResults.filter(r => r.isCurrentSessionValidation).length / itemsPerPage)}
@@ -3035,6 +3304,7 @@ const validateAssignments = async () => {
                                                 setValidationCurrentPage(1);
                                             }}
                                             showPagination={true}
+                                            searchPlaceholder="Search verified items..."
                                         />
                                     </div>
                                 </div>
@@ -3043,135 +3313,539 @@ const validateAssignments = async () => {
                     </CardContent>
                 </Card>
             )}
-            {/* Group Details Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
-                <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Users className="h-5 w-5"/>
-                            Group Details
-                        </DialogTitle>
-                    </DialogHeader>
 
-                    {groupLoading && (
-                        <div className="flex items-center justify-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                            <span className="ml-2">Loading group details...</span>
+            {/* Summary Step - Final Overview */}
+            {currentStep === 'summary' && (
+                <>
+                    <Card>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-blue-500 rounded-lg">
+                                        <CheckCircle2 className="h-6 w-6 text-white"/>
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-2xl">Migration Summary</CardTitle>
+                                        <p className="text-gray-600">
+                                            Complete overview of your assignment migration process
+                                        </p>
+                                    </div>
+                                </div>
+                                <Button onClick={resetProcess} variant="outline">
+                                    <RotateCcw className="h-4 w-4 mr-2"/>
+                                    Start New Migration
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* High-Level Statistics */}
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Upload className="h-5 w-5 text-blue-600"/>
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Uploaded</span>
+                                    </div>
+                                    <div className="text-3xl font-bold text-blue-600">
+                                        {csvData.length}
+                                    </div>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Total CSV rows</p>
+                                </div>
+
+                                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <CheckCircle2 className="h-5 w-5 text-green-600"/>
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Valid</span>
+                                    </div>
+                                    <div className="text-3xl font-bold text-green-600">
+                                        {csvData.filter(r => r.isValid).length}
+                                    </div>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Passed CSV validation</p>
+                                </div>
+
+                                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Play className="h-5 w-5 text-purple-600"/>
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Migrated</span>
+                                    </div>
+                                    <div className="text-3xl font-bold text-purple-600">
+                                        {migrationResults.filter(r => r.status === 'Success').length}
+                                    </div>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Successfully migrated</p>
+                                </div>
+
+                                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <CheckCircle className="h-5 w-5 text-emerald-600"/>
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Verified</span>
+                                    </div>
+                                    <div className="text-3xl font-bold text-emerald-600">
+                                        {masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}
+                                    </div>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Confirmed in environment</p>
+                                </div>
+                            </div>
+
+                            {/* Process Flow Summary */}
+                            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                    <Info className="h-5 w-5 text-blue-500"/>
+                                    Process Overview
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
+                                    <div>
+                                        <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">1. Upload</div>
+                                        <div className="text-gray-600 dark:text-gray-400">
+                                            <div>Total: <strong>{csvData.length}</strong></div>
+                                            <div className="text-green-600">Valid: <strong>{csvData.filter(r => r.isValid).length}</strong></div>
+                                            <div className="text-red-600">Invalid: <strong>{csvData.filter(r => !r.isValid).length}</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">2. Compare</div>
+                                        <div className="text-gray-600 dark:text-gray-400">
+                                            <div className="text-green-600">Ready: <strong>{comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length}</strong></div>
+                                            <div className="text-red-600">Failed: <strong>{masterTrackingData.filter(r => r.masterStatus === 'compare_failed').length}</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">3. Migrate</div>
+                                        <div className="text-gray-600 dark:text-gray-400">
+                                            <div>Selected: <strong>{migrationResults.length}</strong></div>
+                                            <div className="text-green-600">Success: <strong>{migrationResults.filter(r => r.status === 'Success').length}</strong></div>
+                                            <div className="text-red-600">Failed: <strong>{migrationResults.filter(r => r.status === 'Failed').length}</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">4. Results</div>
+                                        <div className="text-gray-600 dark:text-gray-400">
+                                            <div>Processed: <strong>{migrationResults.length}</strong></div>
+                                            <div className="text-blue-600">Rate: <strong>{migrationResults.length > 0 ? Math.round((migrationResults.filter(r => r.status === 'Success').length / migrationResults.length) * 100) : 0}%</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">5. Verify</div>
+                                        <div className="text-gray-600 dark:text-gray-400">
+                                            <div>Checked: <strong>{comparisonResults.filter(r => r.isCurrentSessionValidation).length}</strong></div>
+                                            <div className="text-emerald-600">Verified: <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}</strong></div>
+                                            <div className="text-red-600">Issues: <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length}</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Items Requiring Manual Action */}
+                            {(masterTrackingData.filter(r =>
+                                r.masterStatus === 'compare_failed' ||
+                                r.masterStatus === 'migration_failed' ||
+                                r.masterStatus === 'validation_failed'
+                            ).length > 0 ||
+                            comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'validation_success').length > 0 ||
+                            masterTrackingData.filter(r => r.masterStatus === 'migration_success').length > 0) && (
+                                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0"/>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-100">
+                                                Items Status Overview
+                                            </h3>
+                                            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                                                Review the status of all items from your migration process.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {masterTrackingData.filter(r => r.masterStatus === 'compare_failed').length > 0 && (
+                                            <div className="p-3 bg-white dark:bg-gray-800 rounded border border-red-200 dark:border-red-700">
+                                                <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                    <XCircle className="h-4 w-4 text-red-500"/>
+                                                    Compare Failed ({masterTrackingData.filter(r => r.masterStatus === 'compare_failed').length})
+                                                </div>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    ❌ Policies or groups not found, duplicates detected, or validation errors in CSV.
+                                                    <br/><strong>Action:</strong> Fix manually in Intune portal.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'validation_success').length > 0 && (
+                                            <div className="p-3 bg-white dark:bg-gray-800 rounded border border-yellow-200 dark:border-yellow-700">
+                                                <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                    <Circle className="h-4 w-4 text-yellow-500"/>
+                                                    Ready but Not Migrated ({comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'validation_success').length})
+                                                </div>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    ⚠️ Items were ready but not selected for migration.
+                                                    <br/><strong>Action:</strong> Review and migrate manually if needed.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length > 0 && (
+                                            <div className="p-3 bg-white dark:bg-gray-800 rounded border border-red-200 dark:border-red-700">
+                                                <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                    <XCircle className="h-4 w-4 text-red-500"/>
+                                                    Migration Failed ({masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length})
+                                                </div>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    ❌ API errors, permission issues, or timeouts during migration.
+                                                    <br/><strong>Action:</strong> Check errors and retry or fix manually.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {masterTrackingData.filter(r => r.masterStatus === 'migration_success').length > 0 && (
+                                            <div className="p-3 bg-white dark:bg-gray-800 rounded border border-blue-200 dark:border-blue-700">
+                                                <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                    <AlertTriangle className="h-4 w-4 text-blue-500"/>
+                                                    Migrated but Not Verified ({masterTrackingData.filter(r => r.masterStatus === 'migration_success').length})
+                                                </div>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    ⏳ Migration reported successful but verification not completed.
+                                                    <br/><strong>Action:</strong> Run verification step or check manually in portal.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length > 0 && (
+                                            <div className="p-3 bg-white dark:bg-gray-800 rounded border border-red-200 dark:border-red-700">
+                                                <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                    <XCircle className="h-4 w-4 text-red-500"/>
+                                                    Verification Failed ({masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length})
+                                                </div>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    ❌ Assignments not found after migration or environment changed.
+                                                    <br/><strong>Action:</strong> Check in Intune portal and fix manually.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {migrationResults.filter(r => r.status === 'Skipped').length > 0 && (
+                                            <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                                                <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                    <Circle className="h-4 w-4 text-gray-500"/>
+                                                    Skipped ({migrationResults.filter(r => r.status === 'Skipped').length})
+                                                </div>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    ⊘ Items that were not selected for migration.
+                                                    <br/><strong>Action:</strong> No action needed unless you want to migrate them.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Success Message */}
+                            {masterTrackingData.filter(r => r.masterStatus === 'validation_success').length > 0 && (
+                                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                    <div className="flex items-start gap-3">
+                                        <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0"/>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+                                                ✅ Successfully Completed
+                                            </h3>
+                                            <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                                                <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}</strong> assignment(s)
+                                                were successfully migrated AND verified in your Intune environment. These are ready to use!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </>
+            )}
+
+            {/* Master Status Overview - Shows complete journey of ALL CSV rows */}
+            {masterTrackingData.length > 0 && currentStep === 'summary' && (
+                <Card className="border-2 border-blue-500">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-blue-500 rounded-lg">
+                                    <FileSpreadsheet className="h-6 w-6 text-white"/>
+                                </div>
+                                <div>
+                                    <CardTitle className="text-xl">Detailed Status Report</CardTitle>
+                                    <p className="text-gray-600 text-sm">
+                                        Complete status of all {masterTrackingData.length} rows from your CSV file
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={() => {
+                                    const summary = masterTrackingData.map(row => ({
+                                        PolicyName: row.csvRow?.PolicyName || row.policy?.name || row.providedPolicyName || 'Unknown',
+                                        GroupName: row.csvRow?.GroupName || row.groupToMigrate || 'N/A',
+                                        Action: row.csvRow?.AssignmentAction || 'N/A',
+                                        Direction: row.csvRow?.AssignmentDirection || 'N/A',
+                                        Status: row.masterStatus || 'Unknown',
+                                        StatusMessage: row.masterStatusMessage || '',
+                                        FailureReason: row.failureReason || ''
+                                    }));
+
+                                    const csvContent = [
+                                        ['Policy Name', 'Group Name', 'Action', 'Direction', 'Status', 'Status Message', 'Failure Reason'],
+                                        ...summary.map(row => [
+                                            row.PolicyName,
+                                            row.GroupName,
+                                            row.Action,
+                                            row.Direction,
+                                            row.Status,
+                                            row.StatusMessage,
+                                            row.FailureReason
+                                        ])
+                                    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+                                    const blob = new Blob([csvContent], { type: 'text/csv' });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `assignment-migration-summary-${new Date().toISOString().split('T')[0]}.csv`;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                    URL.revokeObjectURL(url);
+                                }}
+                            >
+                                <FileText className="h-4 w-4 mr-2"/>
+                                Export Complete Report
+                            </Button>
                         </div>
-                    )}
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {/* Overall Statistics */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Upload className="h-5 w-5 text-blue-600"/>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Uploaded</span>
+                                </div>
+                                <div className="text-3xl font-bold text-blue-600">
+                                    {csvData.length}
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Total CSV rows</p>
+                            </div>
 
-                    {groupError && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                            <div className="flex items-center gap-2 text-red-600">
-                                <AlertTriangle className="h-5 w-5"/>
-                                <span>{groupError}</span>
+                            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <CheckCircle2 className="h-5 w-5 text-green-600"/>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Valid</span>
+                                </div>
+                                <div className="text-3xl font-bold text-green-600">
+                                    {csvData.filter(r => r.isValid).length}
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Passed CSV validation</p>
+                            </div>
+
+                            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Play className="h-5 w-5 text-purple-600"/>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Migrated</span>
+                                </div>
+                                <div className="text-3xl font-bold text-purple-600">
+                                    {migrationResults.filter(r => r.status === 'Success').length}
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Successfully migrated</p>
+                            </div>
+
+                            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <CheckCircle className="h-5 w-5 text-emerald-600"/>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Verified</span>
+                                </div>
+                                <div className="text-3xl font-bold text-emerald-600">
+                                    {masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Confirmed in environment</p>
                             </div>
                         </div>
-                    )}
 
-                    {selectedGroup && (
-                        <div className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4">
+                        {/* Process Flow Summary */}
+                        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                <Info className="h-5 w-5 text-blue-500"/>
+                                Process Overview
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">Display Name</label>
-                                    <p className="text-sm font-semibold">{selectedGroup.displayName}</p>
+                                    <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">1. Upload</div>
+                                    <div className="text-gray-600 dark:text-gray-400">
+                                        <div>Total: <strong>{csvData.length}</strong></div>
+                                        <div className="text-green-600">Valid: <strong>{csvData.filter(r => r.isValid).length}</strong></div>
+                                        <div className="text-red-600">Invalid: <strong>{csvData.filter(r => !r.isValid).length}</strong></div>
+                                    </div>
                                 </div>
+
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">Group ID</label>
-                                    <p className="text-sm font-mono text-gray-600">{selectedGroup.id}</p>
+                                    <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">2. Compare</div>
+                                    <div className="text-gray-600 dark:text-gray-400">
+                                        <div className="text-green-600">Ready: <strong>{comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length}</strong></div>
+                                        <div className="text-red-600">Failed: <strong>{masterTrackingData.filter(r => r.masterStatus === 'compare_failed').length}</strong></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">3. Migrate</div>
+                                    <div className="text-gray-600 dark:text-gray-400">
+                                        <div>Selected: <strong>{migrationResults.length}</strong></div>
+                                        <div className="text-green-600">Success: <strong>{migrationResults.filter(r => r.status === 'Success').length}</strong></div>
+                                        <div className="text-red-600">Failed: <strong>{migrationResults.filter(r => r.status === 'Failed').length}</strong></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">4. Results</div>
+                                    <div className="text-gray-600 dark:text-gray-400">
+                                        <div>Processed: <strong>{migrationResults.length}</strong></div>
+                                        <div className="text-blue-600">Rate: <strong>{migrationResults.length > 0 ? Math.round((migrationResults.filter(r => r.status === 'Success').length / migrationResults.length) * 100) : 0}%</strong></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className="font-semibold text-gray-700 dark:text-gray-300 mb-2">5. Verify</div>
+                                    <div className="text-gray-600 dark:text-gray-400">
+                                        <div>Checked: <strong>{comparisonResults.filter(r => r.isCurrentSessionValidation).length}</strong></div>
+                                        <div className="text-emerald-600">Verified: <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}</strong></div>
+                                        <div className="text-red-600">Issues: <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length}</strong></div>
+                                    </div>
                                 </div>
                             </div>
-
-                            {selectedGroup.description && (
-                                <div>
-                                    <label className="text-sm font-medium text-gray-500">Description</label>
-                                    <p className="text-sm text-gray-600">{selectedGroup.description}</p>
-                                </div>
-                            )}
-
-                            {selectedGroup.groupCount && (
-                                <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-blue-600">
-                                            {selectedGroup.groupCount.userCount}
-                                        </div>
-                                        <div className="text-sm text-gray-600">Users</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-green-600">
-                                            {selectedGroup.groupCount.deviceCount}
-                                        </div>
-                                        <div className="text-sm text-gray-600">Devices</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-purple-600">
-                                            {selectedGroup.groupCount.groupCount}
-                                        </div>
-                                        <div className="text-sm text-gray-600">Groups</div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {selectedGroup.members && selectedGroup.members.length > 0 ? (
-                                <div>
-                                    <label className="text-sm font-medium text-gray-500 mb-2 block">
-                                        Members ({selectedGroup.members.length})
-                                    </label>
-                                    <div className="border rounded-lg overflow-hidden max-h-60 overflow-y-auto">
-                                        <table className="w-full text-sm">
-                                            <thead className="bg-gray-50 sticky top-0">
-                                            <tr>
-                                                <th className="text-left p-3 border-b">Name</th>
-                                                <th className="text-left p-3 border-b">Type</th>
-                                                <th className="text-left p-3 border-b">Status</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {selectedGroup.members.map((member, index) => (
-                                                <tr key={member.id || index}
-                                                    className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                                    <td className="p-3 border-b">
-                                                        <div
-                                                            className="font-medium">{member.displayName || 'Unknown'}</div>
-                                                        <div
-                                                            className="text-xs text-gray-500">{member.id || 'No ID'}</div>
-                                                    </td>
-                                                    <td className="p-3 border-b">
-                                                        <Badge variant="outline">{member.type || 'Unknown'}</Badge>
-                                                    </td>
-                                                    <td className="p-3 border-b">
-                                                        <Badge
-                                                            variant={member.accountEnabled ? 'default' : 'secondary'}>
-                                                            {member.accountEnabled ? 'Enabled' : 'Disabled'}
-                                                        </Badge>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="bg-gray-50 p-4 rounded-lg text-center">
-                                    <p className="text-sm text-gray-600">No members found or unable to load member
-                                        details.</p>
-                                </div>
-                            )}
-
                         </div>
-                    )}
-                </DialogContent>
-            </Dialog>
 
-            <AssignmentsDialog/>
+                        {/* Items Requiring Manual Action */}
+                        {(masterTrackingData.filter(r =>
+                            r.masterStatus === 'compare_failed' ||
+                            r.masterStatus === 'migration_failed' ||
+                            r.masterStatus === 'validation_failed'
+                        ).length > 0 ||
+                        comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'validation_success').length > 0 ||
+                        masterTrackingData.filter(r => r.masterStatus === 'migration_success').length > 0) && (
+                            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                                <div className="flex items-start gap-3 mb-4">
+                                    <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0"/>
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-100">
+                                            Items Status Overview
+                                        </h3>
+                                        <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                                            Review the status of all items from your migration process.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {masterTrackingData.filter(r => r.masterStatus === 'compare_failed').length > 0 && (
+                                        <div className="p-3 bg-white dark:bg-gray-800 rounded border border-red-200 dark:border-red-700">
+                                            <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                <XCircle className="h-4 w-4 text-red-500"/>
+                                                Compare Failed ({masterTrackingData.filter(r => r.masterStatus === 'compare_failed').length})
+                                            </div>
+                                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                ❌ Policies or groups not found, duplicates detected, or validation errors in CSV.
+                                                <br/><strong>Action:</strong> Fix manually in Intune portal.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'validation_success').length > 0 && (
+                                        <div className="p-3 bg-white dark:bg-gray-800 rounded border border-yellow-200 dark:border-yellow-700">
+                                            <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                <Circle className="h-4 w-4 text-yellow-500"/>
+                                                Ready but Not Migrated ({comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'validation_success').length})
+                                            </div>
+                                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                ⚠️ Items were ready but not selected for migration.
+                                                <br/><strong>Action:</strong> Review and migrate manually if needed.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length > 0 && (
+                                        <div className="p-3 bg-white dark:bg-gray-800 rounded border border-red-200 dark:border-red-700">
+                                            <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                <XCircle className="h-4 w-4 text-red-500"/>
+                                                Migration Failed ({masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length})
+                                            </div>
+                                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                ❌ API errors, permission issues, or timeouts during migration.
+                                                <br/><strong>Action:</strong> Check errors and retry or fix manually.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {masterTrackingData.filter(r => r.masterStatus === 'migration_success').length > 0 && (
+                                        <div className="p-3 bg-white dark:bg-gray-800 rounded border border-blue-200 dark:border-blue-700">
+                                            <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                <AlertTriangle className="h-4 w-4 text-blue-500"/>
+                                                Migrated but Not Verified ({masterTrackingData.filter(r => r.masterStatus === 'migration_success').length})
+                                            </div>
+                                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                ⏳ Migration reported successful but verification not completed.
+                                                <br/><strong>Action:</strong> Run verification step or check manually in portal.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length > 0 && (
+                                        <div className="p-3 bg-white dark:bg-gray-800 rounded border border-red-200 dark:border-red-700">
+                                            <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                <XCircle className="h-4 w-4 text-red-500"/>
+                                                Verification Failed ({masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length})
+                                            </div>
+                                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                ❌ Assignments not found after migration or environment changed.
+                                                <br/><strong>Action:</strong> Check in Intune portal and fix manually.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {migrationResults.filter(r => r.status === 'Skipped').length > 0 && (
+                                        <div className="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                                            <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                                <Circle className="h-4 w-4 text-gray-500"/>
+                                                Skipped ({migrationResults.filter(r => r.status === 'Skipped').length})
+                                            </div>
+                                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                ⊘ Items that were not selected for migration.
+                                                <br/><strong>Action:</strong> No action needed unless you want to migrate them.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Success Message */}
+                            {masterTrackingData.filter(r => r.masterStatus === 'validation_success').length > 0 && (
+                                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                    <div className="flex items-start gap-3">
+                                        <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0"/>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+                                                ✅ Successfully Completed
+                                            </h3>
+                                            <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                                                <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}</strong> assignment(s)
+                                                were successfully migrated AND verified in your Intune environment. These are ready to use!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+            )}
         </div>
     );
 }
 
 export default function AssignmentRolloutPage() {
-    return (
-        <PlanProtection requiredPlan="extensions" featureName="Assignments Manager">
-            <AssignmentRolloutContent/>
-        </PlanProtection>
-    );
+    return <AssignmentRolloutContent />;
 }
