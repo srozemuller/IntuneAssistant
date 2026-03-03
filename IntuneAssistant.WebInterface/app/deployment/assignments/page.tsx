@@ -323,6 +323,9 @@ function AssignmentRolloutContent() {
         isProcessing: false
     });
 
+    // Track recently updated rows for visual feedback
+    const [recentlyUpdatedRows, setRecentlyUpdatedRows] = useState<Set<string>>(new Set());
+
     // Filter migration results based on status
     const filteredMigrationResults = useMemo(() => {
         if (migrationResultFilter === 'all') {
@@ -335,6 +338,97 @@ function AssignmentRolloutContent() {
             return migrationResults.filter(r => r.status === 'Skipped');
         }
     }, [migrationResults, migrationResultFilter]);
+
+    // Summary Component for consistent display across all steps
+    const MigrationSummaryCard = ({ step }: { step: 'upload' | 'compare' | 'migrate' | 'results' | 'validate' }) => {
+        const uploadedCount = csvData.length;
+        const validCount = csvData.filter(r => r.isValid).length;
+        const invalidCount = csvData.filter(r => !r.isValid).length;
+        const readyCount = comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length;
+        const compareFailedCount = comparisonResults.filter(r => !r.isReadyForMigration && !r.isMigrated).length;
+        const migratedSuccessCount = migrationResults.filter(r => r.status === 'Success').length;
+        const migratedFailedCount = migrationResults.filter(r => r.status === 'Failed').length;
+        const migratedSkippedCount = migrationResults.filter(r => r.status === 'Skipped').length;
+        const verifiedCount = comparisonResults.filter(r => r.masterStatus === 'validation_success').length;
+
+        return (
+            <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                <div className="flex items-center gap-2 mb-3">
+                    <Info className="h-5 w-5 text-blue-600" />
+                    <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                        {step === 'upload' && 'Upload Summary'}
+                        {step === 'compare' && 'Comparison Summary'}
+                        {step === 'migrate' && 'Migration Summary'}
+                        {step === 'results' && 'Results Summary'}
+                        {step === 'validate' && 'Validation Summary'}
+                    </h3>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-sm">
+                    {/* Upload Stats */}
+                    <div className="flex flex-col">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Uploaded</span>
+                        <span className="text-lg font-bold text-blue-600">{uploadedCount}</span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Valid</span>
+                        <span className="text-lg font-bold text-green-600">{validCount}</span>
+                    </div>
+                    {invalidCount > 0 && (
+                        <div className="flex flex-col">
+                            <span className="text-gray-600 dark:text-gray-400 text-xs">Invalid</span>
+                            <span className="text-lg font-bold text-red-600">{invalidCount}</span>
+                        </div>
+                    )}
+
+                    {/* Compare Stats - show after compare step */}
+                    {(step !== 'upload') && (
+                        <>
+                            <div className="flex flex-col">
+                                <span className="text-gray-600 dark:text-gray-400 text-xs">Ready</span>
+                                <span className="text-lg font-bold text-purple-600">{readyCount}</span>
+                            </div>
+                            {compareFailedCount > 0 && (
+                                <div className="flex flex-col">
+                                    <span className="text-gray-600 dark:text-gray-400 text-xs">Compare Failed</span>
+                                    <span className="text-lg font-bold text-orange-600">{compareFailedCount}</span>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Migration Stats - show after migrate step */}
+                    {(step === 'migrate' || step === 'results' || step === 'validate') && migrationResults.length > 0 && (
+                        <>
+                            <div className="flex flex-col">
+                                <span className="text-gray-600 dark:text-gray-400 text-xs">Migrated</span>
+                                <span className="text-lg font-bold text-emerald-600">{migratedSuccessCount}</span>
+                            </div>
+                            {migratedFailedCount > 0 && (
+                                <div className="flex flex-col">
+                                    <span className="text-gray-600 dark:text-gray-400 text-xs">Failed</span>
+                                    <span className="text-lg font-bold text-red-600">{migratedFailedCount}</span>
+                                </div>
+                            )}
+                            {migratedSkippedCount > 0 && (
+                                <div className="flex flex-col">
+                                    <span className="text-gray-600 dark:text-gray-400 text-xs">Skipped</span>
+                                    <span className="text-lg font-bold text-gray-600">{migratedSkippedCount}</span>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Validation Stats - show after validate step */}
+                    {step === 'validate' && verifiedCount > 0 && (
+                        <div className="flex flex-col">
+                            <span className="text-gray-600 dark:text-gray-400 text-xs">Verified</span>
+                            <span className="text-lg font-bold text-teal-600">{verifiedCount}</span>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
 
 // Add this component before the uploadColumns definition
     const ValidationStatusCell = ({csvRow}: { csvRow: CSVRow }) => {
@@ -589,6 +683,45 @@ function AssignmentRolloutContent() {
         const check = result.migrationCheckResult;
         if (!check) return null;
 
+        // Check if currently being processed (migration in progress)
+        const isProcessing = migrationChunkProgress.isProcessing &&
+                           selectedRows.includes(result.id) &&
+                           !result.isMigrated &&
+                           result.isReadyForMigration;
+
+        // Show pulsing animation for rows being processed
+        if (isProcessing) {
+            return (
+                <>
+                    <div
+                        ref={iconRef}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={() => setShowTooltip(false)}
+                        className="flex items-center justify-center cursor-help"
+                    >
+                        <div className="relative">
+                            <Play className="h-5 w-5 text-blue-600 animate-pulse" />
+                            <div className="absolute inset-0 rounded-full bg-blue-400 opacity-50 animate-ping"></div>
+                        </div>
+                    </div>
+                    {showTooltip && ReactDOM.createPortal(
+                        <div
+                            className="fixed z-[10000] bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-3 shadow-xl min-w-[280px] max-w-[400px]"
+                            style={{
+                                left: `${tooltipPosition.x}px`,
+                                top: `${tooltipPosition.y}px`
+                            }}
+                        >
+                            <div className="absolute -top-1 left-4 w-2 h-2 bg-blue-50 dark:bg-blue-900 border-l border-t border-blue-200 dark:border-blue-700 transform rotate-45"></div>
+                            <p className="text-xs font-semibold text-blue-800 dark:text-blue-200">Processing Migration...</p>
+                            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">This row is being migrated</p>
+                        </div>,
+                        document.body
+                    )}
+                </>
+            );
+        }
+
         // Check if already migrated
         if (result.isMigrated) {
             return (
@@ -733,10 +866,13 @@ function AssignmentRolloutContent() {
             );
         }
 
-        // Show purple arrow up for ready-for-migration (not completed yet)
+        // Show green circle with arrow up for ready-for-migration (not completed yet)
         return (
             <div className="flex items-center justify-center">
-                <ArrowUp className="h-5 w-5 text-purple-500"/>
+                <div className="relative">
+                    <Circle className="h-5 w-5 text-green-500 fill-green-100 dark:fill-green-900/30"/>
+                    <ArrowUp className="h-3 w-3 text-gray-700 dark:text-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"/>
+                </div>
             </div>
         );
     };
@@ -830,8 +966,8 @@ function AssignmentRolloutContent() {
         {
             key: 'providedPolicyName',
             label: 'Policy Name',
-            minWidth: 300,
-            width: 300,
+            minWidth: 200,
+            width: 250,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 const hasDuplicates = result.policies && result.policies.length > 1;
@@ -880,8 +1016,8 @@ function AssignmentRolloutContent() {
         {
             key: 'assignedGroups',
             label: 'Current Assignments',
-            width: 200,
-            minWidth: 200,
+            width: 150,
+            minWidth: 120,
             sortable: true,
             sortValue: (row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
@@ -912,8 +1048,8 @@ function AssignmentRolloutContent() {
         {
             key: 'groupToMigrate',
             label: 'Target Group',
-            minWidth: 150,
-            width: 150,
+            minWidth: 120,
+            width: 180,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.groupToMigrate || result.csvRow?.GroupName || '-';
@@ -922,7 +1058,8 @@ function AssignmentRolloutContent() {
         {
             key: 'assignmentDirection',
             label: 'Direction',
-            width: 100,
+            width: 90,
+            minWidth: 80,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.assignmentDirection ? (
@@ -935,8 +1072,8 @@ function AssignmentRolloutContent() {
         {
             key: 'assignmentAction',
             label: 'Action',
-            width: 120,
-            minWidth: 120,
+            width: 110,
+            minWidth: 90,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.assignmentAction ? (
@@ -952,8 +1089,8 @@ function AssignmentRolloutContent() {
         {
             key: 'filterName',
             label: 'Filter Name',
-            minWidth: 120,
-            width: 120,
+            minWidth: 100,
+            width: 130,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.filterName || result.csvRow?.FilterName || '-';
@@ -962,8 +1099,8 @@ function AssignmentRolloutContent() {
         {
             key: 'filterType',
             label: 'Filter Type',
-            minWidth: 120,
-            width: 120,
+            minWidth: 90,
+            width: 110,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 if (!result.filterType) return null;
@@ -990,7 +1127,7 @@ function AssignmentRolloutContent() {
         {
             key: 'scopeTagIds',
             label: 'Role Scope Tags',
-            width: 100,
+            width: 140,
             minWidth: 100,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
@@ -1967,9 +2104,20 @@ function AssignmentRolloutContent() {
                 }));
 
                 console.log(`Chunk ${chunkIndex + 1} completed. Total processed: ${allResults.length}/${migrationPayload.length}`);
+                console.log(`Results breakdown: Success=${chunkResults.filter(r => r.status === 'Success').length}, Failed=${chunkResults.filter(r => r.status === 'Failed').length}, Skipped=${chunkResults.filter(r => r.status === 'Skipped').length}`);
 
                 // Update table rows in real-time after each chunk completes
-                setMigrationResults(allResults);
+                setMigrationResults([...allResults]); // Create new array to force re-render
+                console.log('Migration results updated, total results:', allResults.length);
+
+                // Track which rows were just updated
+                const updatedRowIds = new Set(chunkResults.map(r => r.id));
+                setRecentlyUpdatedRows(updatedRowIds);
+
+                // Clear recently updated status after animation duration
+                setTimeout(() => {
+                    setRecentlyUpdatedRows(new Set());
+                }, 1500);
 
                 setComparisonResults(prev =>
                     prev.map(result => {
@@ -2012,6 +2160,11 @@ function AssignmentRolloutContent() {
                         return result;
                     })
                 );
+
+                // Add small delay to ensure UI updates are visible between chunks
+                if (chunkIndex < chunks.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
             }
 
             // All chunks processed
@@ -2811,6 +2964,9 @@ const validateAssignments = async () => {
                                     </div>
                                 )}
 
+                                {/* Summary Card */}
+                                <MigrationSummaryCard step="upload" />
+
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold">
                                         CSV Data Overview ({csvData.filter(r => r.isValid).length} valid
@@ -2977,37 +3133,95 @@ const validateAssignments = async () => {
 
                     {/* Chunk Progress Display */}
                     {migrationChunkProgress.isProcessing && (
-                        <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="font-medium text-blue-900 dark:text-blue-100">
-                                        Processing Migration in Chunks
-                                    </span>
-                                    <span className="text-blue-700 dark:text-blue-300">
-                                        Chunk {migrationChunkProgress.currentChunk} of {migrationChunkProgress.totalChunks}
-                                    </span>
+                        <div className="mx-6 mt-6 mb-4 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border-2 border-blue-300 dark:border-blue-700 shadow-lg">
+                            <div className="space-y-4">
+                                {/* Header */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                                        <span className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                                            Migration in Progress
+                                        </span>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                                            Chunk {migrationChunkProgress.currentChunk} of {migrationChunkProgress.totalChunks}
+                                        </div>
+                                        <div className="text-xs text-blue-600 dark:text-blue-400">
+                                            Processing in batches of 20
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
-                                    <div
-                                        className="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
-                                        style={{
-                                            width: `${(migrationChunkProgress.processedItems / migrationChunkProgress.totalItems) * 100}%`
-                                        }}
-                                    />
+
+                                {/* Main Progress Bar */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between text-sm font-medium text-blue-800 dark:text-blue-200">
+                                        <span>Overall Progress</span>
+                                        <span className="text-2xl font-bold">
+                                            {Math.round((migrationChunkProgress.processedItems / migrationChunkProgress.totalItems) * 100)}%
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-4 shadow-inner">
+                                        <div
+                                            className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 h-4 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
+                                            style={{
+                                                width: `${(migrationChunkProgress.processedItems / migrationChunkProgress.totalItems) * 100}%`
+                                            }}
+                                        >
+                                            {migrationChunkProgress.processedItems > 0 && (
+                                                <span className="text-xs font-bold text-white drop-shadow">
+                                                    {migrationChunkProgress.processedItems}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between text-xs text-blue-700 dark:text-blue-300">
+                                        <span className="font-medium">
+                                            {migrationChunkProgress.processedItems} of {migrationChunkProgress.totalItems} items processed
+                                        </span>
+                                        <span>
+                                            {migrationChunkProgress.totalItems - migrationChunkProgress.processedItems} remaining
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="flex items-center justify-between text-xs text-blue-700 dark:text-blue-300">
-                                    <span>
-                                        {migrationChunkProgress.processedItems} of {migrationChunkProgress.totalItems} items processed
-                                    </span>
-                                    <span>
-                                        {Math.round((migrationChunkProgress.processedItems / migrationChunkProgress.totalItems) * 100)}%
-                                    </span>
+
+                                {/* Statistics */}
+                                {migrationResults.length > 0 && (
+                                    <div className="grid grid-cols-3 gap-4 pt-4 border-t border-blue-300 dark:border-blue-700">
+                                        <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg transition-all duration-300">
+                                            <div className="text-3xl font-bold text-green-600 dark:text-green-400 transition-all duration-300">
+                                                {migrationResults.filter(r => r.status === 'Success').length}
+                                            </div>
+                                            <div className="text-xs font-medium text-green-700 dark:text-green-500">Successful</div>
+                                        </div>
+                                        <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg transition-all duration-300">
+                                            <div className="text-3xl font-bold text-red-600 dark:text-red-400 transition-all duration-300">
+                                                {migrationResults.filter(r => r.status === 'Failed').length}
+                                            </div>
+                                            <div className="text-xs font-medium text-red-700 dark:text-red-500">Failed</div>
+                                        </div>
+                                        <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg transition-all duration-300">
+                                            <div className="text-3xl font-bold text-gray-600 dark:text-gray-400 transition-all duration-300">
+                                                {migrationResults.filter(r => r.status === 'Skipped').length}
+                                            </div>
+                                            <div className="text-xs font-medium text-gray-700 dark:text-gray-500">Skipped</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Info message */}
+                                <div className="text-xs text-blue-600 dark:text-blue-400 text-center pt-2 border-t border-blue-200 dark:border-blue-800">
+                                    <Info className="h-3 w-3 inline mr-1" />
+                                    Table rows are updating in real-time as each batch completes
                                 </div>
                             </div>
                         </div>
                     )}
 
                     <CardContent>
+
+                        {/* Summary Card */}
+                        <MigrationSummaryCard step="migrate" />
 
                         {/* Filter by Compare Status */}
                         <div className="mb-6 flex gap-2">
@@ -3119,10 +3333,10 @@ const validateAssignments = async () => {
                                     </div>
                                 </div>
                                 <DataTable
+                                    key={`compare-table-${migrationResults.length}-${migrationChunkProgress.processedItems}`}
                                     data={filteredComparisonResults.map(result => result as unknown as Record<string, unknown>)}
                                     columns={comparisonColumns}
                                     className="text-sm"
-                                    // Instead of using key, pass selectedRows as a prop
                                     selectedRows={selectedRows}
                                     onRowClick={(row, index, event) => handleRowClick(row, index, event)}
                                     currentPage={compareCurrentPage}
@@ -3136,6 +3350,28 @@ const validateAssignments = async () => {
                                     showPagination={true}
                                     onSelectionChange={setSelectedRows}
                                     searchPlaceholder="Search policies..."
+                                    rowClassName={(row) => {
+                                        const result = row as unknown as ComparisonResult;
+                                        const isProcessing = migrationChunkProgress.isProcessing &&
+                                                           selectedRows.includes(result.id) &&
+                                                           !result.isMigrated &&
+                                                           result.isReadyForMigration;
+                                        const isRecentlyUpdated = recentlyUpdatedRows.has(result.id);
+
+                                        // Add pulsing blue background for rows being processed
+                                        if (isProcessing) {
+                                            return 'bg-blue-50 dark:bg-blue-900/20 animate-pulse border-l-4 border-blue-500';
+                                        }
+                                        // Add flash effect for recently updated rows
+                                        if (isRecentlyUpdated && result.isMigrated) {
+                                            return 'bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 transition-all duration-1000';
+                                        }
+                                        // Add green tint for successfully migrated rows
+                                        if (result.isMigrated) {
+                                            return 'bg-green-50/50 dark:bg-green-900/10 transition-all duration-500';
+                                        }
+                                        return '';
+                                    }}
                                 />
                                 {/* Summary */}
                                 <div
@@ -3182,6 +3418,9 @@ const validateAssignments = async () => {
                         </div>
                     </CardHeader>
                     <CardContent>
+                        {/* Summary Card */}
+                        <MigrationSummaryCard step="results" />
+
                         {/* Filter Buttons */}
                         <div className="mb-6 flex gap-2">
                             <Button
@@ -3328,6 +3567,9 @@ const validateAssignments = async () => {
                         </div>
                     </CardHeader>
                     <CardContent>
+                        {/* Summary Card */}
+                        {validationComplete && <MigrationSummaryCard step="validate" />}
+
                         {/* Info banner explaining the validation process */}
                         {!validationComplete && (
                             <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -3549,7 +3791,7 @@ const validateAssignments = async () => {
                                                     Compare Failed ({masterTrackingData.filter(r => r.masterStatus === 'compare_failed').length})
                                                 </div>
                                                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                    ❌ Policies or groups not found, duplicates detected, or validation errors in CSV.
+                                                    Policies or groups not found, duplicates detected, or validation errors in CSV.
                                                     <br/><strong>Action:</strong> Fix manually in Intune portal.
                                                 </p>
                                             </div>
@@ -3562,7 +3804,7 @@ const validateAssignments = async () => {
                                                     Ready but Not Migrated ({comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'validation_success').length})
                                                 </div>
                                                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                    ⚠️ Items were ready but not selected for migration.
+                                                    Items were ready but not selected for migration.
                                                     <br/><strong>Action:</strong> Review and migrate manually if needed.
                                                 </p>
                                             </div>
@@ -3575,7 +3817,7 @@ const validateAssignments = async () => {
                                                     Migration Failed ({masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length})
                                                 </div>
                                                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                    ❌ API errors, permission issues, or timeouts during migration.
+                                                    API errors, permission issues, or timeouts during migration.
                                                     <br/><strong>Action:</strong> Check errors and retry or fix manually.
                                                 </p>
                                             </div>
@@ -3588,7 +3830,7 @@ const validateAssignments = async () => {
                                                     Migrated but Not Verified ({masterTrackingData.filter(r => r.masterStatus === 'migration_success').length})
                                                 </div>
                                                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                    ⏳ Migration reported successful but verification not completed.
+                                                    Migration reported successful but verification not completed.
                                                     <br/><strong>Action:</strong> Run verification step or check manually in portal.
                                                 </p>
                                             </div>
@@ -3601,7 +3843,7 @@ const validateAssignments = async () => {
                                                     Verification Failed ({masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length})
                                                 </div>
                                                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                    ❌ Assignments not found after migration or environment changed.
+                                                    Assignments not found after migration or environment changed.
                                                     <br/><strong>Action:</strong> Check in Intune portal and fix manually.
                                                 </p>
                                             </div>
@@ -3614,7 +3856,7 @@ const validateAssignments = async () => {
                                                     Skipped ({migrationResults.filter(r => r.status === 'Skipped').length})
                                                 </div>
                                                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                    ⊘ Items that were not selected for migration.
+                                                    Items that were not selected for migration.
                                                     <br/><strong>Action:</strong> No action needed unless you want to migrate them.
                                                 </p>
                                             </div>
@@ -3630,7 +3872,7 @@ const validateAssignments = async () => {
                                         <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0"/>
                                         <div>
                                             <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
-                                                ✅ Successfully Completed
+                                                Successfully Completed
                                             </h3>
                                             <p className="text-sm text-green-700 dark:text-green-300 mt-1">
                                                 <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}</strong> assignment(s)
@@ -3831,7 +4073,7 @@ const validateAssignments = async () => {
                                                 Compare Failed ({masterTrackingData.filter(r => r.masterStatus === 'compare_failed').length})
                                             </div>
                                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                ❌ Policies or groups not found, duplicates detected, or validation errors in CSV.
+                                                Policies or groups not found, duplicates detected, or validation errors in CSV.
                                                 <br/><strong>Action:</strong> Fix manually in Intune portal.
                                             </p>
                                         </div>
@@ -3844,7 +4086,7 @@ const validateAssignments = async () => {
                                                 Ready but Not Migrated ({comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'validation_success').length})
                                             </div>
                                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                ⚠️ Items were ready but not selected for migration.
+                                                Items were ready but not selected for migration.
                                                 <br/><strong>Action:</strong> Review and migrate manually if needed.
                                             </p>
                                         </div>
@@ -3857,7 +4099,7 @@ const validateAssignments = async () => {
                                                 Migration Failed ({masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length})
                                             </div>
                                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                ❌ API errors, permission issues, or timeouts during migration.
+                                                API errors, permission issues, or timeouts during migration.
                                                 <br/><strong>Action:</strong> Check errors and retry or fix manually.
                                             </p>
                                         </div>
@@ -3870,7 +4112,7 @@ const validateAssignments = async () => {
                                                 Migrated but Not Verified ({masterTrackingData.filter(r => r.masterStatus === 'migration_success').length})
                                             </div>
                                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                ⏳ Migration reported successful but verification not completed.
+                                                Migration reported successful but verification not completed.
                                                 <br/><strong>Action:</strong> Run verification step or check manually in portal.
                                             </p>
                                         </div>
@@ -3883,7 +4125,7 @@ const validateAssignments = async () => {
                                                 Verification Failed ({masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length})
                                             </div>
                                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                ❌ Assignments not found after migration or environment changed.
+                                                Assignments not found after migration or environment changed.
                                                 <br/><strong>Action:</strong> Check in Intune portal and fix manually.
                                             </p>
                                         </div>
@@ -3896,7 +4138,7 @@ const validateAssignments = async () => {
                                                 Skipped ({migrationResults.filter(r => r.status === 'Skipped').length})
                                             </div>
                                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                ⊘ Items that were not selected for migration.
+                                                Items that were not selected for migration.
                                                 <br/><strong>Action:</strong> No action needed unless you want to migrate them.
                                             </p>
                                         </div>
@@ -3912,7 +4154,7 @@ const validateAssignments = async () => {
                                         <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0"/>
                                         <div>
                                             <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
-                                                ✅ Successfully Completed
+                                                Successfully Completed
                                             </h3>
                                             <p className="text-sm text-green-700 dark:text-green-300 mt-1">
                                                 <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}</strong> assignment(s)
