@@ -221,7 +221,7 @@ function DataTableComponent(props: DataTableProps) {
         return visibility;
     });
     const [containerWidth, setContainerWidth] = useState<number>(0);
-    const [initialWidthsCalculated, setInitialWidthsCalculated] = useState(false);
+    const initialWidthsCalculatedRef = useRef(false);
     const tableRef = useRef<HTMLTableElement>(null);
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -268,12 +268,12 @@ function DataTableComponent(props: DataTableProps) {
         });
 
         // Reset width calculation flag when columns change
-        setInitialWidthsCalculated(false);
+        initialWidthsCalculatedRef.current = false;
     }, [columnsWithSelection]);
 
     // Measure container width and calculate initial column widths to fill 100%
     useEffect(() => {
-        if (!tableContainerRef.current || initialWidthsCalculated || columns.length === 0) return;
+        if (!tableContainerRef.current || initialWidthsCalculatedRef.current || columns.length === 0) return;
 
         const updateColumnWidths = () => {
             const containerEl = tableContainerRef.current;
@@ -282,49 +282,63 @@ function DataTableComponent(props: DataTableProps) {
             const availableWidth = containerEl.clientWidth;
             if (availableWidth === 0) return;
 
-            console.log('📐 Container width:', availableWidth, 'px');
+            console.log('Container width:', availableWidth, 'px');
 
             setContainerWidth(availableWidth);
 
-            // Calculate total width - separate fixed columns from data columns
-            // Fixed columns: _select key OR columns where minWidth === width (locked)
-            const fixedColumns = columns.filter(col => col.key === '_select' || (col.minWidth && col.width && col.minWidth === col.width));
-            const dataColumns = columns.filter(col => col.key !== '_select' && !(col.minWidth && col.width && col.minWidth === col.width));
+            // Calculate total width - separate fixed columns from flexible columns
+            // Fixed columns: _select key OR columns where minWidth === width (explicitly locked)
+            const fixedColumns = columns.filter(col =>
+                col.key === '_select' ||
+                (col.minWidth && col.width && col.minWidth === col.width)
+            );
+            const flexibleColumns = columns.filter(col =>
+                col.key !== '_select' &&
+                !(col.minWidth && col.width && col.minWidth === col.width)
+            );
 
             const fixedColumnsWidth = fixedColumns.reduce((sum, col) => sum + (col.width || 0), 0);
-            const totalDataColumnWidth = dataColumns.reduce((sum, col) => sum + (col.width || 150), 0);
-            const totalCurrentWidth = fixedColumnsWidth + totalDataColumnWidth;
+            const currentFlexibleWidth = flexibleColumns.reduce((sum, col) => sum + (col.width || 150), 0);
+            const totalCurrentWidth = fixedColumnsWidth + currentFlexibleWidth;
 
-            console.log('📊 Total column width:', totalCurrentWidth, 'px', 'Available:', availableWidth, 'px');
+            console.log('Total current width:', totalCurrentWidth, 'px', 'Available:', availableWidth, 'px');
+            console.log('Fixed columns width:', fixedColumnsWidth, 'px', 'Flexible columns width:', currentFlexibleWidth, 'px');
 
-            // If total is less than available width, distribute the extra space proportionally
-            // BUT only to data columns, not the _select column
-            if (totalCurrentWidth < availableWidth) {
-                const extraSpace = availableWidth - totalCurrentWidth;
+            // Calculate available space for flexible columns
+            const availableForFlexible = availableWidth - fixedColumnsWidth;
 
-                console.log('✨ Distributing extra space:', extraSpace, 'px proportionally across data columns - excluding fixed columns');
+            if (availableForFlexible > 0 && flexibleColumns.length > 0) {
+                console.log('Distributing', availableForFlexible, 'px across', flexibleColumns.length, 'flexible columns');
 
                 setColumns(prev => prev.map(col => {
                     // Keep fixed columns at their original width
                     if (col.key === '_select' || (col.minWidth && col.width && col.minWidth === col.width)) {
                         return col;
                     }
-                    // Distribute extra space proportionally based on each column's current width
-                    const colWidth = col.width || 150;
-                    const proportion = totalDataColumnWidth > 0 ? colWidth / totalDataColumnWidth : 1 / dataColumns.length;
+
+                    // Calculate new width for flexible columns proportionally
+                    const currentWidth = col.width || 150;
+                    const proportion = currentFlexibleWidth > 0 ? currentWidth / currentFlexibleWidth : 1 / flexibleColumns.length;
+                    const newWidth = availableForFlexible * proportion;
+
+                    // Ensure width is at least minWidth
+                    const finalWidth = Math.max(Math.floor(newWidth), col.minWidth || 100);
+
+                    console.log(`Column ${col.key}: ${currentWidth}px -> ${finalWidth}px (proportion: ${(proportion * 100).toFixed(1)}%)`);
+
                     return {
                         ...col,
-                        width: Math.max(colWidth + extraSpace * proportion, col.minWidth || 100)
+                        width: finalWidth
                     };
                 }));
             }
 
-            setInitialWidthsCalculated(true);
+            initialWidthsCalculatedRef.current = true;
         };
 
         // Use ResizeObserver for reliable measurement
         const resizeObserver = new ResizeObserver(() => {
-            if (!initialWidthsCalculated) {
+            if (!initialWidthsCalculatedRef.current) {
                 updateColumnWidths();
             }
         });
@@ -333,13 +347,16 @@ function DataTableComponent(props: DataTableProps) {
             resizeObserver.observe(tableContainerRef.current);
         }
 
-        // Also try immediate calculation
-        updateColumnWidths();
+        // Also try immediate calculation after a short delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+            updateColumnWidths();
+        }, 100);
 
         return () => {
             resizeObserver.disconnect();
+            clearTimeout(timer);
         };
-    }, [columns.length, initialWidthsCalculated]);
+    }, [columns.length]);
 
     // Memoize visible columns
     const visibleColumns = useMemo(() => {
