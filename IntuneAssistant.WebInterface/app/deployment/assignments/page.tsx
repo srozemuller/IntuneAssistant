@@ -2170,6 +2170,157 @@ function AssignmentRolloutContent() {
             // All chunks processed
             console.log(`Migration complete. Processed ${allResults.length} items in ${chunks.length} chunks`);
 
+            // Check for 429 rate limit errors and retry them
+            const rateLimitedItems = allResults.filter(r =>
+                r.status === 'Failed' &&
+                r.errorMessage &&
+                (r.errorMessage.includes('429') || r.errorMessage.toLowerCase().includes('rate limit'))
+            );
+
+            if (rateLimitedItems.length > 0) {
+                console.log(`Found ${rateLimitedItems.length} rate-limited items. Waiting 5 seconds before retry...`);
+
+                // Update UI to show retry preparation
+                setMigrationChunkProgress(prev => ({
+                    ...prev,
+                    currentChunk: 0,
+                    totalChunks: 0,
+                    processedItems: 0,
+                    totalItems: rateLimitedItems.length,
+                    isProcessing: true
+                }));
+
+                // Wait 5 seconds before retrying
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                // Prepare retry payload from original payloads
+                const retryPayload = rateLimitedItems
+                    .filter(item => item.originalPayload)
+                    .map(item => item.originalPayload!);
+
+                if (retryPayload.length > 0) {
+                    console.log(`Retrying ${retryPayload.length} rate-limited items in batches...`);
+
+                    // Split into chunks for retry
+                    const retryChunks = [];
+                    for (let i = 0; i < retryPayload.length; i += CHUNK_SIZE) {
+                        retryChunks.push(retryPayload.slice(i, i + CHUNK_SIZE));
+                    }
+
+                    setMigrationChunkProgress(prev => ({
+                        ...prev,
+                        totalChunks: retryChunks.length
+                    }));
+
+                    // Process retry chunks
+                    for (let chunkIndex = 0; chunkIndex < retryChunks.length; chunkIndex++) {
+                        const retryChunk = retryChunks[chunkIndex];
+
+                        console.log(`Retrying chunk ${chunkIndex + 1}/${retryChunks.length} with ${retryChunk.length} items`);
+
+                        setMigrationChunkProgress(prev => ({
+                            ...prev,
+                            currentChunk: chunkIndex + 1
+                        }));
+
+                        const retryResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
+                            method: 'POST',
+                            body: JSON.stringify(retryChunk)
+                        });
+
+                        if (retryResponse && retryResponse.data) {
+                            const retryResults = (retryResponse.data as unknown as MigrationResult[]).map(result => {
+                                const originalPayload = retryChunk.find(p =>
+                                    p.PolicyName === result.providedPolicyName &&
+                                    p.AssignmentResourceName === result.groupToMigrate
+                                );
+                                return {
+                                    ...result,
+                                    originalPayload
+                                };
+                            });
+
+                            // Update allResults with retry results
+                            retryResults.forEach(retryResult => {
+                                const originalIndex = allResults.findIndex(r => r.id === retryResult.id);
+                                if (originalIndex !== -1) {
+                                    allResults[originalIndex] = retryResult;
+                                }
+                            });
+
+                            // Update progress
+                            setMigrationChunkProgress(prev => ({
+                                ...prev,
+                                processedItems: (chunkIndex + 1) * CHUNK_SIZE
+                            }));
+
+                            // Update UI with retry results
+                            setMigrationResults([...allResults]);
+
+                            // Track updated rows
+                            const updatedRowIds = new Set(retryResults.map(r => r.id));
+                            setRecentlyUpdatedRows(updatedRowIds);
+
+                            setTimeout(() => {
+                                setRecentlyUpdatedRows(new Set());
+                            }, 1500);
+
+                            // Update comparison results
+                            setComparisonResults(prev =>
+                                prev.map(result => {
+                                    const migrationResult = allResults.find(mr => mr.id === result.id);
+                                    if (migrationResult) {
+                                        const isSuccess = migrationResult.status === 'Success';
+                                        return {
+                                            ...result,
+                                            isMigrated: isSuccess,
+                                            validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
+                                            isCurrentSessionValidation: isSuccess,
+                                            masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
+                                            masterStatusMessage: isSuccess
+                                                ? 'Successfully migrated - pending validation'
+                                                : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
+                                            failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
+                                        };
+                                    }
+                                    return result;
+                                })
+                            );
+
+                            setMasterTrackingData(prev =>
+                                prev.map(result => {
+                                    const migrationResult = allResults.find(mr => mr.id === result.id);
+                                    if (migrationResult) {
+                                        const isSuccess = migrationResult.status === 'Success';
+                                        return {
+                                            ...result,
+                                            isMigrated: isSuccess,
+                                            validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
+                                            isCurrentSessionValidation: isSuccess,
+                                            masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
+                                            masterStatusMessage: isSuccess
+                                                ? 'Successfully migrated - pending validation'
+                                                : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
+                                            failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
+                                        };
+                                    }
+                                    return result;
+                                })
+                            );
+
+                            console.log(`Retry chunk ${chunkIndex + 1} completed. Success=${retryResults.filter(r => r.status === 'Success').length}, Failed=${retryResults.filter(r => r.status === 'Failed').length}`);
+
+                            // Add small delay between retry chunks
+                            if (chunkIndex < retryChunks.length - 1) {
+                                await new Promise(resolve => setTimeout(resolve, 300));
+                            }
+                        }
+                    }
+
+                    console.log(`Retry complete. Total retried: ${rateLimitedItems.length} items`);
+                }
+            }
+
             setCurrentStep('results');
             setSelectedRows([]);
 
@@ -3140,16 +3291,29 @@ const validateAssignments = async () => {
                                     <div className="flex items-center gap-3">
                                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
                                         <span className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                                            Migration in Progress
+                                            {migrationChunkProgress.totalChunks === 0 && migrationChunkProgress.currentChunk === 0
+                                                ? 'Preparing to Retry Rate-Limited Items...'
+                                                : migrationChunkProgress.currentChunk > 0 && migrationResults.filter(r => r.status === 'Failed' && (r.errorMessage?.includes('429') || r.errorMessage?.toLowerCase().includes('rate limit'))).length > 0
+                                                    ? 'Retrying Rate-Limited Items'
+                                                    : 'Migration in Progress'
+                                            }
                                         </span>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                                            Chunk {migrationChunkProgress.currentChunk} of {migrationChunkProgress.totalChunks}
-                                        </div>
-                                        <div className="text-xs text-blue-600 dark:text-blue-400">
-                                            Processing in batches of 20
-                                        </div>
+                                        {migrationChunkProgress.totalChunks > 0 ? (
+                                            <>
+                                                <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                                                    Chunk {migrationChunkProgress.currentChunk} of {migrationChunkProgress.totalChunks}
+                                                </div>
+                                                <div className="text-xs text-blue-600 dark:text-blue-400">
+                                                    Processing in batches of 20
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="text-xs text-blue-600 dark:text-blue-400">
+                                                Waiting 5 seconds before retry...
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -3212,7 +3376,9 @@ const validateAssignments = async () => {
                                 {/* Info message */}
                                 <div className="text-xs text-blue-600 dark:text-blue-400 text-center pt-2 border-t border-blue-200 dark:border-blue-800">
                                     <Info className="h-3 w-3 inline mr-1" />
-                                    Table rows are updating in real-time as each batch completes
+                                    {migrationChunkProgress.totalChunks === 0 && migrationChunkProgress.currentChunk === 0
+                                        ? 'Detected rate-limited items. Waiting 5 seconds before automatic retry...'
+                                        : 'Table rows are updating in real-time as each batch completes'}
                                 </div>
                             </div>
                         </div>

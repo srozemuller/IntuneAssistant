@@ -45,6 +45,7 @@ interface ApiResponse {
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
     resourceType: string;
+    subResourceType: string;
     assignmentType: string;
     platform: string | null;
     isAssigned: boolean;
@@ -219,6 +220,12 @@ export default function AssignmentsOverview() {
                 label: 'Type',
                 width: 20,
                 getValue: (row) => String(row.resourceType || '')
+            },
+            {
+                key: 'subResourceType',
+                label: 'Type',
+                width: 20,
+                getValue: (row) => String(row.subResourceType || '')
             },
             {
                 key: 'resourceName',
@@ -599,6 +606,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             render: (value: unknown, row: Record<string, unknown>) => {
                 const resourceName = value ? String(value) : 'N/A';
                 const resourceType = String(row.resourceType);
+                const subResourceType = String(row.subResourceType);
                 const resourceId = String(row.resourceId);
 
                 if (resourceType === 'Group' && resourceId && resourceName !== 'N/A') {
@@ -611,7 +619,11 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                             >
                                 {resourceName}
                             </button>
-                            <span className="text-xs text-gray-400 block">{resourceType}</span>
+                            <span className="text-xs text-gray-400 block">
+                                {subResourceType && subResourceType !== 'undefined' && subResourceType !== 'null'
+                                    ? `${resourceType} - ${subResourceType}`
+                                    : resourceType}
+                            </span>
                         </div>
                     );
                 }
@@ -621,7 +633,11 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                         <span className="font-medium text-sm truncate block w-full" title={resourceName}>
                             {resourceName}
                         </span>
-                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                        <span className="text-xs text-gray-400 block">
+                            {subResourceType && subResourceType !== 'undefined' && subResourceType !== 'null'
+                                ? `${resourceType} - ${subResourceType}`
+                                : resourceType}
+                        </span>
                     </div>
                 );
             }
