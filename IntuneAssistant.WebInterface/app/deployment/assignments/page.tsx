@@ -314,6 +314,15 @@ function AssignmentRolloutContent() {
 
     const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
+    // Chunking state for migration
+    const [migrationChunkProgress, setMigrationChunkProgress] = useState({
+        currentChunk: 0,
+        totalChunks: 0,
+        processedItems: 0,
+        totalItems: 0,
+        isProcessing: false
+    });
+
     // Filter migration results based on status
     const filteredMigrationResults = useMemo(() => {
         if (migrationResultFilter === 'all') {
@@ -1871,6 +1880,7 @@ function AssignmentRolloutContent() {
         if (!accounts.length || !selectedRows.length) return;
 
         setLoading(true);
+        const CHUNK_SIZE = 20;
 
         try {
             const selectedComparisonResults = comparisonResults.filter(result =>
@@ -1888,85 +1898,124 @@ function AssignmentRolloutContent() {
                 FilterType: result.csvRow?.FilterType || result.filterType || 'none'
             }));
 
-            const apiResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
-                method: 'POST',
-                body: JSON.stringify(migrationPayload)
+            // Split into chunks of max 20 items
+            const chunks = [];
+            for (let i = 0; i < migrationPayload.length; i += CHUNK_SIZE) {
+                chunks.push(migrationPayload.slice(i, i + CHUNK_SIZE));
+            }
+
+            console.log(`Processing ${migrationPayload.length} items in ${chunks.length} chunks of max ${CHUNK_SIZE}`);
+
+            // Initialize chunk progress
+            setMigrationChunkProgress({
+                currentChunk: 0,
+                totalChunks: chunks.length,
+                processedItems: 0,
+                totalItems: migrationPayload.length,
+                isProcessing: true
             });
 
-            if (!apiResponse || !apiResponse.data) {
-                setError('Failed to get response from server');
-                return;
-            }
+            // Process chunks sequentially
+            const allResults: MigrationResult[] = [];
 
-            if (apiResponse.status === 'Error' && apiResponse.message?.message === 'User challenge required') {
-                setConsentUrl(apiResponse.message.url || '');
-                setShowConsentDialog(true);
-                setLoading(false);
-                return;
-            }
+            for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
+                const chunk = chunks[chunkIndex];
 
-            // Store original payload in each migration result for retry functionality
-            const resultsWithPayload = (apiResponse.data as unknown as MigrationResult[]).map(result => {
-                const originalPayload = migrationPayload.find(p =>
-                    p.PolicyName === result.providedPolicyName &&
-                    p.AssignmentResourceName === result.groupToMigrate
+                console.log(`Processing chunk ${chunkIndex + 1}/${chunks.length} with ${chunk.length} items`);
+
+                // Update progress
+                setMigrationChunkProgress(prev => ({
+                    ...prev,
+                    currentChunk: chunkIndex + 1
+                }));
+
+                const apiResponse = await request<AssignmentCompareApiResponse>(`${ASSIGNMENTS_ENDPOINT}/migrate`, {
+                    method: 'POST',
+                    body: JSON.stringify(chunk)
+                });
+
+                if (!apiResponse || !apiResponse.data) {
+                    throw new Error(`Failed to get response from server for chunk ${chunkIndex + 1}`);
+                }
+
+                if (apiResponse.status === 'Error' && apiResponse.message?.message === 'User challenge required') {
+                    setConsentUrl(apiResponse.message.url || '');
+                    setShowConsentDialog(true);
+                    setLoading(false);
+                    setMigrationChunkProgress(prev => ({ ...prev, isProcessing: false }));
+                    return;
+                }
+
+                // Store results from this chunk
+                const chunkResults = (apiResponse.data as unknown as MigrationResult[]).map(result => {
+                    const originalPayload = chunk.find(p =>
+                        p.PolicyName === result.providedPolicyName &&
+                        p.AssignmentResourceName === result.groupToMigrate
+                    );
+                    return {
+                        ...result,
+                        originalPayload
+                    };
+                });
+
+                allResults.push(...chunkResults);
+
+                // Update progress with processed items
+                setMigrationChunkProgress(prev => ({
+                    ...prev,
+                    processedItems: allResults.length
+                }));
+
+                console.log(`Chunk ${chunkIndex + 1} completed. Total processed: ${allResults.length}/${migrationPayload.length}`);
+
+                // Update table rows in real-time after each chunk completes
+                setMigrationResults(allResults);
+
+                setComparisonResults(prev =>
+                    prev.map(result => {
+                        const migrationResult = allResults.find(mr => mr.id === result.id);
+                        if (migrationResult) {
+                            const isSuccess = migrationResult.status === 'Success';
+                            return {
+                                ...result,
+                                isMigrated: isSuccess,
+                                validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
+                                isCurrentSessionValidation: isSuccess,
+                                masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
+                                masterStatusMessage: isSuccess
+                                    ? 'Successfully migrated - pending validation'
+                                    : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
+                                failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
+                            };
+                        }
+                        return result;
+                    })
                 );
-                return {
-                    ...result,
-                    originalPayload
-                };
-            });
 
-            setMigrationResults(resultsWithPayload);
+                setMasterTrackingData(prev =>
+                    prev.map(result => {
+                        const migrationResult = allResults.find(mr => mr.id === result.id);
+                        if (migrationResult) {
+                            const isSuccess = migrationResult.status === 'Success';
+                            return {
+                                ...result,
+                                isMigrated: isSuccess,
+                                validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
+                                isCurrentSessionValidation: isSuccess,
+                                masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
+                                masterStatusMessage: isSuccess
+                                    ? 'Successfully migrated - pending validation'
+                                    : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
+                                failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
+                            };
+                        }
+                        return result;
+                    })
+                );
+            }
 
-            setComparisonResults(prev =>
-                prev.map(result => {
-                    const migrationResult = resultsWithPayload.find(
-                        mr => mr.id === result.id
-                    );
-
-                    if (migrationResult) {
-                        const isSuccess = migrationResult.status === 'Success';
-                        return {
-                            ...result,
-                            isMigrated: isSuccess,
-                            validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
-                            isCurrentSessionValidation: isSuccess,
-                            masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
-                            masterStatusMessage: isSuccess
-                                ? 'Successfully migrated - pending validation'
-                                : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
-                            failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
-                        };
-                    }
-                    return result;
-                })
-            );
-
-            // Update master tracking
-            setMasterTrackingData(prev =>
-                prev.map(result => {
-                    const migrationResult = resultsWithPayload.find(
-                        mr => mr.id === result.id
-                    );
-
-                    if (migrationResult) {
-                        const isSuccess = migrationResult.status === 'Success';
-                        return {
-                            ...result,
-                            isMigrated: isSuccess,
-                            validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
-                            isCurrentSessionValidation: isSuccess,
-                            masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
-                            masterStatusMessage: isSuccess
-                                ? 'Successfully migrated - pending validation'
-                                : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
-                            failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
-                        };
-                    }
-                    return result;
-                })
-            );
+            // All chunks processed
+            console.log(`Migration complete. Processed ${allResults.length} items in ${chunks.length} chunks`);
 
             setCurrentStep('results');
             setSelectedRows([]);
@@ -1975,6 +2024,7 @@ function AssignmentRolloutContent() {
             setError(error instanceof Error ? error.message : 'Migration failed');
         } finally {
             setLoading(false);
+            setMigrationChunkProgress(prev => ({ ...prev, isProcessing: false }));
         }
     };
 
@@ -2924,6 +2974,39 @@ const validateAssignments = async () => {
                             </div>
                         </div>
                     </CardHeader>
+
+                    {/* Chunk Progress Display */}
+                    {migrationChunkProgress.isProcessing && (
+                        <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="font-medium text-blue-900 dark:text-blue-100">
+                                        Processing Migration in Chunks
+                                    </span>
+                                    <span className="text-blue-700 dark:text-blue-300">
+                                        Chunk {migrationChunkProgress.currentChunk} of {migrationChunkProgress.totalChunks}
+                                    </span>
+                                </div>
+                                <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+                                    <div
+                                        className="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
+                                        style={{
+                                            width: `${(migrationChunkProgress.processedItems / migrationChunkProgress.totalItems) * 100}%`
+                                        }}
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between text-xs text-blue-700 dark:text-blue-300">
+                                    <span>
+                                        {migrationChunkProgress.processedItems} of {migrationChunkProgress.totalItems} items processed
+                                    </span>
+                                    <span>
+                                        {Math.round((migrationChunkProgress.processedItems / migrationChunkProgress.totalItems) * 100)}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <CardContent>
 
                         {/* Filter by Compare Status */}

@@ -30,35 +30,45 @@ function OnboardingCallbackContent() {
             const tenantId = searchParams.get('tenant');
             const code = searchParams.get('code');
 
-            console.log('🔵 Onboarding callback received:', {
+            console.log('Onboarding callback received:', {
                 error,
                 errorDescription,
                 adminConsent,
                 state,
                 tenantId,
-                code
+                code,
+                allParams: Object.fromEntries(searchParams.entries())
             });
 
             const sendMessageToParent = (messageData: ConsentMessage) => {
+                console.log('Sending message to parent:', messageData);
+
                 if (!window.opener || window.opener.closed) {
-                    console.log('No opener window available');
+                    console.log('No opener window available or it was closed');
+                    setStatus('error');
+                    setMessage('Parent window not found. Please return to the main window and try again.');
                     return;
                 }
 
                 try {
+                    // Try same origin first
                     window.opener.postMessage(messageData, window.location.origin);
-                    console.log('Message sent with same origin');
+                    console.log('Message sent with same origin:', window.location.origin);
                 } catch (error1) {
+                    console.log('Failed to send with same origin, trying parent origin');
                     try {
                         const parentOrigin = window.opener.location.origin;
                         window.opener.postMessage(messageData, parentOrigin);
-                        console.log('Message sent with parent origin');
+                        console.log('Message sent with parent origin:', parentOrigin);
                     } catch (error2) {
+                        console.log('Failed to send with parent origin, trying wildcard');
                         try {
                             window.opener.postMessage(messageData, '*');
                             console.log('Message sent with wildcard origin');
                         } catch (error3) {
                             console.error('Failed to send message to parent window:', error3);
+                            setStatus('error');
+                            setMessage('Failed to communicate with parent window. Please close this window and try again.');
                         }
                     }
                 }
@@ -73,25 +83,35 @@ function OnboardingCallbackContent() {
                     error: error,
                     errorDescription: errorDescription
                 });
+
+                // Don't auto-close on error - let user read the message
                 return;
             }
 
-            // DO NOT call the server callback here — let customer-onboarding handle it.
+            // Success case - admin consent granted
             if (adminConsent === 'True' || code) {
                 setStatus('success');
-                setMessage('Admin consent has been received. Processing will continue in the parent window.');
+                setMessage('Admin consent granted successfully! Processing will continue in the parent window.');
 
-                sendMessageToParent({
+                const messageData: ConsentMessage = {
                     type: 'CONSENT_SUCCESS',
                     adminConsent: adminConsent,
                     state: state,
                     tenantId: tenantId,
                     code: code,
                     searchParams: Object.fromEntries(searchParams.entries())
-                });
+                };
+
+                sendMessageToParent(messageData);
+
+                // Auto-close after 2 seconds on success
+                setTimeout(() => {
+                    console.log('Closing window after successful consent');
+                    window.close();
+                }, 2000);
             } else {
                 setStatus('error');
-                setMessage('Unexpected response from consent flow');
+                setMessage('Unexpected response from consent flow. Please try again.');
 
                 sendMessageToParent({
                     type: 'CONSENT_ERROR',

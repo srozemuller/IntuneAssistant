@@ -18,7 +18,6 @@ import {
     CheckCircle,
     Loader2,
     Building,
-    Key,
     ArrowRight,
     AlertCircle,
     ExternalLink,
@@ -85,15 +84,39 @@ export default function CustomerOnboardingModal({
         }
     }, [isOpen]);
 
-    // Check if user is already logged in and extract tenant ID
+    // Check if user is already logged in and extract claims
     useEffect(() => {
         if (accounts && accounts.length > 0) {
             setIsLoggedIn(true);
-            // Extract tenant ID from account
             const account = accounts[0];
-            if (account.tenantId) {
+
+            // Extract tenant ID from account
+            if (account.tenantId && !tenantId) {
                 setTenantId(account.tenantId);
+                console.log('Extracted Tenant ID:', account.tenantId);
             }
+
+            // Extract domain from account username or idTokenClaims
+            if (account.username && !tenantDomainName) {
+                const domain = account.username.split('@')[1];
+                if (domain) {
+                    setTenantDomainName(domain);
+                    console.log('Extracted Domain:', domain);
+                }
+            }
+
+            // Try to extract domain from idTokenClaims
+            if (!tenantDomainName && account.idTokenClaims) {
+                const claims = account.idTokenClaims as Record<string, unknown>;
+                if (claims.preferred_username && typeof claims.preferred_username === 'string') {
+                    const domain = claims.preferred_username.split('@')[1];
+                    if (domain) {
+                        setTenantDomainName(domain);
+                        console.log('Extracted Domain from claims:', domain);
+                    }
+                }
+            }
+
             // If already logged in, skip to step 1
             if (currentStep === 0) {
                 setCurrentStep(1);
@@ -256,12 +279,40 @@ export default function CustomerOnboardingModal({
         try {
             setLoading(true);
             setError(null);
-            await instance.loginPopup({
-                scopes: ['openid', 'profile', 'email'],
+
+            // Login to the first application (3448bc04-cdbe-4a07-8e24-7e0e6f6980c1)
+            const result = await instance.loginPopup({
+                scopes: [
+                    'openid',
+                    'profile',
+                    'email',
+                    'User.Read' // Request User.Read to get more user information
+                ],
                 prompt: 'select_account'
             });
-            // After successful login, the useEffect will handle moving to the next step
+
+            console.log('Login successful:', result);
+            console.log('Account info:', result.account);
+            console.log('ID Token Claims:', result.idTokenClaims);
+
+            // Extract tenant ID and domain immediately after login
+            if (result.account) {
+                if (result.account.tenantId) {
+                    setTenantId(result.account.tenantId);
+                    console.log('Tenant ID extracted:', result.account.tenantId);
+                }
+
+                if (result.account.username) {
+                    const domain = result.account.username.split('@')[1];
+                    if (domain) {
+                        setTenantDomainName(domain);
+                        console.log('Domain extracted:', domain);
+                    }
+                }
+            }
+
             setLoading(false);
+            setCurrentStep(1); // Move to customer info step
         } catch (error) {
             console.error('Login error:', error);
             setError('Failed to sign in. Please try again.');
@@ -274,16 +325,16 @@ export default function CustomerOnboardingModal({
             setLoading(true);
             setError(null);
 
-            // Build consent URL with the new parameters
+            // Build consent URL with the new parameters - using assistant license 0
             const consentClientId = 'afe66ddf-67d4-4d61-8a51-beca7b799f52';
-            const redirectUrl = window.location.origin + '/consent-callback';
-            const state = 'onboarding';
+            const redirectUrl = window.location.origin + '/onboarding'; // Changed to /onboarding
+            const state = `onboarding_${Date.now()}`;
 
             // Build URL with proper parameter order and encoding
             const params = new URLSearchParams({
                 tenantid: tenantId,
                 clientId: consentClientId,
-                assistantLicense: '1',
+                assistantLicense: '0', // Changed to '0' as requested
                 redirectUrl: redirectUrl,
                 tenantName: tenantDomainName,
                 tenantDomain: tenantDomainName,
@@ -293,7 +344,10 @@ export default function CustomerOnboardingModal({
 
             const url = `${CONSENT_URL_ENDPOINT}?${params.toString()}`;
 
-            console.log('Building consent URL with clientId:', consentClientId);
+            console.log('Building consent URL for assistant license 0');
+            console.log('Consent ClientId:', consentClientId);
+            console.log('Tenant ID:', tenantId);
+            console.log('Domain:', tenantDomainName);
             console.log('Full consent URL:', url);
 
             const response = await fetch(url, {
@@ -318,6 +372,8 @@ export default function CustomerOnboardingModal({
             }
 
             const result: ConsentResponse = await response.json();
+            console.log('Consent URL received:', result);
+
             const stateFromUrl = extractStateFromConsentUrl(result.data.url);
             setConsentState(stateFromUrl || state);
             setConsentData(result);
@@ -435,6 +491,25 @@ export default function CustomerOnboardingModal({
                 }
             });
 
+            // Refresh token after successful onboarding so user can start immediately
+            try {
+                console.log('Refreshing token after successful onboarding...');
+                const account = accounts && accounts.length > 0 ? accounts[0] : null;
+                if (account) {
+                    await instance.acquireTokenSilent({
+                        scopes: ['User.Read'],
+                        account: account,
+                        forceRefresh: true // Force refresh to get new token with updated claims
+                    });
+                    console.log('Token refreshed successfully');
+                } else {
+                    console.warn('No account found for token refresh');
+                }
+            } catch (tokenError) {
+                console.error('Failed to refresh token:', tokenError);
+                // Don't fail the onboarding if token refresh fails - user can still refresh page
+            }
+
             setCurrentStep(4);
             console.log('Onboarding completed successfully');
 
@@ -532,7 +607,7 @@ export default function CustomerOnboardingModal({
                                     Sign In to Continue
                                 </CardTitle>
                                 <CardDescription>
-                                    Please sign in with your Microsoft account to begin onboarding
+                                    Sign in with your Microsoft account to consent to the Intune Assistant application
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -540,13 +615,30 @@ export default function CustomerOnboardingModal({
                                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <LogIn className="h-8 w-8 text-blue-500" />
                                     </div>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                        Sign in to automatically detect your tenant information and begin the onboarding process.
+                                    <h3 className="font-semibold mb-2">Step 1: Initial Login & Consent</h3>
+                                    <p className="text-sm text-muted-foreground mb-2">
+                                        Sign in to automatically detect your tenant information and consent to the first application.
                                     </p>
+                                    <p className="text-xs text-muted-foreground mb-4 px-4">
+                                        After login, we&apos;ll automatically extract your <strong>Tenant ID</strong> and <strong>Domain</strong> from your account.
+                                    </p>
+
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4 text-left max-w-md mx-auto">
+                                        <div className="flex items-start gap-2">
+                                            <Shield className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                            <div className="text-xs text-blue-900 dark:text-blue-100">
+                                                <strong>Application ID:</strong> 3448bc04-cdbe-4a07-8e24-7e0e6f6980c1
+                                                <br />
+                                                <span className="text-blue-700 dark:text-blue-300">This is the primary Intune Assistant application</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <Button
                                         onClick={handleLogin}
                                         disabled={loading}
                                         className="w-full max-w-xs mx-auto"
+                                        size="lg"
                                     >
                                         {loading ? (
                                             <>
@@ -581,44 +673,73 @@ export default function CustomerOnboardingModal({
                                     Customer & Tenant Details
                                 </CardTitle>
                                 <CardDescription>
-                                    Enter the customer name and verify tenant information
+                                    Enter the customer name and verify tenant information (auto-filled from your login)
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
+                                {isLoggedIn && tenantId && (
+                                    <div className="flex items-start gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-900/20 p-3 rounded-md mb-4">
+                                        <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                        <div>
+                                            <strong>Auto-detected from login:</strong> Tenant ID and Domain have been pre-filled using your account information.
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="space-y-2">
-                                    <Label htmlFor="customerName">Customer Name</Label>
+                                    <Label htmlFor="customerName">Customer Name *</Label>
                                     <Input
                                         id="customerName"
                                         value={customerName}
                                         onChange={(e) => setCustomerName(e.target.value)}
                                         placeholder="e.g. Acme Corporation"
+                                        autoFocus
                                     />
+                                    <p className="text-xs text-muted-foreground">
+                                        Enter a friendly name for this customer
+                                    </p>
                                 </div>
+
                                 <Separator />
+
                                 <div className="space-y-2">
-                                    <Label htmlFor="tenantId">Tenant ID</Label>
+                                    <Label htmlFor="tenantId">Tenant ID *</Label>
                                     <Input
                                         id="tenantId"
                                         value={tenantId}
                                         onChange={(e) => setTenantId(e.target.value)}
                                         placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                                        readOnly={isLoggedIn}
-                                        className={isLoggedIn ? "bg-gray-100 dark:bg-gray-800" : ""}
+                                        readOnly={isLoggedIn && !!tenantId}
+                                        className={isLoggedIn && tenantId ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed" : ""}
                                     />
-                                    {isLoggedIn && (
-                                        <p className="text-xs text-muted-foreground">
-                                            ✓ Automatically detected from your login
+                                    {isLoggedIn && tenantId && (
+                                        <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                                            <CheckCircle className="h-3 w-3" />
+                                            Automatically detected from your login
                                         </p>
                                     )}
                                 </div>
+
                                 <div className="space-y-2">
-                                    <Label htmlFor="tenantDomainName">Tenant Domain Name</Label>
+                                    <Label htmlFor="tenantDomainName">Tenant Domain Name *</Label>
                                     <Input
                                         id="tenantDomainName"
                                         value={tenantDomainName}
                                         onChange={(e) => setTenantDomainName(e.target.value)}
                                         placeholder="contoso.onmicrosoft.com"
+                                        className={isLoggedIn && tenantDomainName ? "bg-gray-50 dark:bg-gray-900" : ""}
                                     />
+                                    {isLoggedIn && tenantDomainName && (
+                                        <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                                            <CheckCircle className="h-3 w-3" />
+                                            Automatically detected from your login
+                                        </p>
+                                    )}
+                                    {!tenantDomainName && (
+                                        <p className="text-xs text-muted-foreground">
+                                            If not auto-filled, enter your primary domain (e.g., contoso.onmicrosoft.com)
+                                        </p>
+                                    )}
                                 </div>
 
                                 {error && (
@@ -678,51 +799,75 @@ export default function CustomerOnboardingModal({
                                     Admin Consent Required
                                 </CardTitle>
                                 <CardDescription>
-                                    Grant permissions to manage this tenant
+                                    App idafe66ddf-67d4-4d61-8a51-beca7b799f52
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {!consentData ? (
-                                    <div className="flex items-center justify-center py-8">
-                                        <Loader2 className="h-6 w-6 animate-spin" />
-                                        <span className="ml-2">Preparing consent...</span>
+                                    <div className="flex flex-col items-center justify-center py-8 space-y-3">
+                                        <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                                        <div className="text-center">
+                                            <p className="font-medium">Preparing consent...</p>
+                                            <p className="text-sm text-muted-foreground">Building consent URL for Assistant License 0</p>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            <Key className="h-4 w-4" />
-                                            Click below to grant admin consent in a new window
+                                        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                                            <div className="flex items-start gap-3">
+                                                <Shield className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                                <div className="flex-1">
+                                                    <h4 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                                                        Step 2: Assistant License Consent
+                                                    </h4>
+                                                    <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
+                                                        Click below to grant admin consent for <strong>Assistant License 0</strong> in a popup window.
+                                                    </p>
+                                                    <div className="text-xs text-amber-700 dark:text-amber-300 space-y-1">
+                                                        <p><strong>Application ID:</strong> afe66ddf-67d4-4d61-8a51-beca7b799f52</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+
                                         <Button
                                             onClick={openConsentWindow}
                                             disabled={loading}
                                             className="w-full"
+                                            size="lg"
                                         >
                                             {loading ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Processing...
+                                                    Waiting for consent...
                                                 </>
                                             ) : (
                                                 <>
                                                     <ExternalLink className="mr-2 h-4 w-4" />
-                                                    {error ? 'Retry Consent' : 'Open Consent Window'}
+                                                    {error ? 'Retry Admin Consent' : 'Open Consent Window'}
                                                 </>
                                             )}
                                         </Button>
 
+                                        {loading && !error && (
+                                            <div className="text-xs text-center text-muted-foreground">
+                                                <p>A popup window should have opened. If not, please allow popups and try again.</p>
+                                                <p className="mt-1">After granting consent, this window will automatically continue...</p>
+                                            </div>
+                                        )}
+
                                         {error && (
-                                            <div className="text-xs text-muted-foreground text-center">
-                                                If you closed the popup after granting consent, please wait a moment and the process will continue automatically.
+                                            <div className="text-xs text-center text-muted-foreground">
+                                                If you closed the popup after granting consent, the process will continue automatically.
                                             </div>
                                         )}
                                     </div>
                                 )}
 
                                 {error && (
-                                    <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <div className="flex-1">{error}</div>
+                                    <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+                                        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                        <div className="flex-1 whitespace-pre-line">{error}</div>
                                     </div>
                                 )}
                             </CardContent>
@@ -769,19 +914,53 @@ export default function CustomerOnboardingModal({
                 <div className="flex justify-between">
                     <Button
                         variant="outline"
-                        onClick={handleClose}
+                        onClick={() => {
+                            // Close consent popup if it's open
+                            if (consentWindow && !consentWindow.closed) {
+                                consentWindow.close();
+                                setConsentWindow(null);
+                            }
+                            handleClose();
+                        }}
                     >
                         {currentStep === 4 ? 'Close' : 'Cancel'}
                     </Button>
 
                     <div className="flex gap-2">
+                        {/* Show Cancel Consent button when popup is open */}
+                        {currentStep === 3 && consentWindow && !consentWindow.closed && (
+                            <Button
+                                variant="destructive"
+                                onClick={() => {
+                                    if (consentWindow && !consentWindow.closed) {
+                                        consentWindow.close();
+                                        setConsentWindow(null);
+                                    }
+                                    setLoading(false);
+                                    setError('Consent cancelled. You can retry by clicking "Open Consent Window" again.');
+                                }}
+                            >
+                                Cancel Consent
+                            </Button>
+                        )}
+
+                        {/* Hide Next button during consent step when popup is open */}
                         {currentStep < 3 && (
                             <Button
                                 onClick={handleNext}
-                                disabled={currentStep === 1 && !isFormValid}
+                                disabled={loading || (currentStep === 1 && !isFormValid)}
                             >
-                                {currentStep === 0 ? 'Sign In' : currentStep === 2 ? 'Start Consent' : 'Next'}
-                                <ArrowRight className="ml-2 h-4 w-4" />
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        {currentStep === 0 ? 'Sign In' : currentStep === 2 ? 'Start Consent' : 'Next'}
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </>
+                                )}
                             </Button>
                         )}
 
