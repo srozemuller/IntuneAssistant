@@ -18,6 +18,7 @@ import {
     CheckCircle,
     Loader2,
     Building,
+    Key,
     ArrowRight,
     AlertCircle,
     ExternalLink,
@@ -328,7 +329,7 @@ export default function CustomerOnboardingModal({
             // Build consent URL with the new parameters - using assistant license 0
             const consentClientId = 'afe66ddf-67d4-4d61-8a51-beca7b799f52';
             const redirectUrl = window.location.origin + '/onboarding'; // Changed to /onboarding
-            const state = `onboarding_${Date.now()}`;
+            const state = `InitialOnboarding`;
 
             // Build URL with proper parameter order and encoding
             const params = new URLSearchParams({
@@ -338,7 +339,7 @@ export default function CustomerOnboardingModal({
                 redirectUrl: redirectUrl,
                 tenantName: tenantDomainName,
                 tenantDomain: tenantDomainName,
-                state: state,
+                purpose: state,
                 customerName: customerName
             });
 
@@ -491,25 +492,6 @@ export default function CustomerOnboardingModal({
                 }
             });
 
-            // Refresh token after successful onboarding so user can start immediately
-            try {
-                console.log('Refreshing token after successful onboarding...');
-                const account = accounts && accounts.length > 0 ? accounts[0] : null;
-                if (account) {
-                    await instance.acquireTokenSilent({
-                        scopes: ['User.Read'],
-                        account: account,
-                        forceRefresh: true // Force refresh to get new token with updated claims
-                    });
-                    console.log('Token refreshed successfully');
-                } else {
-                    console.warn('No account found for token refresh');
-                }
-            } catch (tokenError) {
-                console.error('Failed to refresh token:', tokenError);
-                // Don't fail the onboarding if token refresh fails - user can still refresh page
-            }
-
             setCurrentStep(4);
             console.log('Onboarding completed successfully');
 
@@ -620,7 +602,7 @@ export default function CustomerOnboardingModal({
                                         Sign in to automatically detect your tenant information and consent to the first application.
                                     </p>
                                     <p className="text-xs text-muted-foreground mb-4 px-4">
-                                        After login, we&apos;ll automatically extract your <strong>Tenant ID</strong> and <strong>Domain</strong> from your account.
+                                        After login, we'll automatically extract your <strong>Tenant ID</strong> and <strong>Domain</strong> from your account.
                                     </p>
 
                                     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4 text-left max-w-md mx-auto">
@@ -799,7 +781,7 @@ export default function CustomerOnboardingModal({
                                     Admin Consent Required
                                 </CardTitle>
                                 <CardDescription>
-                                    App idafe66ddf-67d4-4d61-8a51-beca7b799f52
+                                    App iafe66ddf-67d4-4d61-8a51-beca7b799f52
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -825,6 +807,7 @@ export default function CustomerOnboardingModal({
                                                     </p>
                                                     <div className="text-xs text-amber-700 dark:text-amber-300 space-y-1">
                                                         <p><strong>Application ID:</strong> afe66ddf-67d4-4d61-8a51-beca7b799f52</p>
+                                                        <p><strong>License Type:</strong> Assistant License 0 (Basic tier)</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -914,53 +897,19 @@ export default function CustomerOnboardingModal({
                 <div className="flex justify-between">
                     <Button
                         variant="outline"
-                        onClick={() => {
-                            // Close consent popup if it's open
-                            if (consentWindow && !consentWindow.closed) {
-                                consentWindow.close();
-                                setConsentWindow(null);
-                            }
-                            handleClose();
-                        }}
+                        onClick={handleClose}
                     >
                         {currentStep === 4 ? 'Close' : 'Cancel'}
                     </Button>
 
                     <div className="flex gap-2">
-                        {/* Show Cancel Consent button when popup is open */}
-                        {currentStep === 3 && consentWindow && !consentWindow.closed && (
-                            <Button
-                                variant="destructive"
-                                onClick={() => {
-                                    if (consentWindow && !consentWindow.closed) {
-                                        consentWindow.close();
-                                        setConsentWindow(null);
-                                    }
-                                    setLoading(false);
-                                    setError('Consent cancelled. You can retry by clicking "Open Consent Window" again.');
-                                }}
-                            >
-                                Cancel Consent
-                            </Button>
-                        )}
-
-                        {/* Hide Next button during consent step when popup is open */}
                         {currentStep < 3 && (
                             <Button
                                 onClick={handleNext}
-                                disabled={loading || (currentStep === 1 && !isFormValid)}
+                                disabled={currentStep === 1 && !isFormValid}
                             >
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Processing...
-                                    </>
-                                ) : (
-                                    <>
-                                        {currentStep === 0 ? 'Sign In' : currentStep === 2 ? 'Start Consent' : 'Next'}
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </>
-                                )}
+                                {currentStep === 0 ? 'Sign In' : currentStep === 2 ? 'Start Consent' : 'Next'}
+                                <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         )}
 
