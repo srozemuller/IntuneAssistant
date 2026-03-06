@@ -363,19 +363,19 @@ function AssignmentRolloutContent() {
                         {step === 'validate' && 'Validation Summary'}
                     </h3>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-sm">
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
                     {/* Upload Stats */}
                     <div className="flex flex-col">
-                        <span className="text-gray-600 dark:text-gray-400 text-xs">Uploaded</span>
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Rows uploaded using CSV</span>
                         <span className="text-lg font-bold text-blue-600">{uploadedCount}</span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-gray-600 dark:text-gray-400 text-xs">Valid</span>
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">Rows valid in CSV</span>
                         <span className="text-lg font-bold text-green-600">{validCount}</span>
                     </div>
                     {invalidCount > 0 && (
                         <div className="flex flex-col">
-                            <span className="text-gray-600 dark:text-gray-400 text-xs">Invalid</span>
+                            <span className="text-gray-600 dark:text-gray-400 text-xs">Row invalid in CSV</span>
                             <span className="text-lg font-bold text-red-600">{invalidCount}</span>
                         </div>
                     )}
@@ -384,7 +384,7 @@ function AssignmentRolloutContent() {
                     {(step !== 'upload') && (
                         <>
                             <div className="flex flex-col">
-                                <span className="text-gray-600 dark:text-gray-400 text-xs">Ready</span>
+                                <span className="text-gray-600 dark:text-gray-400 text-xs">Ready for migration</span>
                                 <span className="text-lg font-bold text-purple-600">{readyCount}</span>
                             </div>
                             {compareFailedCount > 0 && (
@@ -2413,11 +2413,13 @@ function AssignmentRolloutContent() {
     const validateMigratedAssignments = async () => {
         if (!accounts.length) return;
 
-        // Re-run compare for ALL valid CSV rows to check final state
-        const validCsvRows = csvData.filter(row => row.isValid);
+        // Only validate the rows that were actually selected and migrated
+        const selectedComparisonResults = comparisonResults.filter(result =>
+            selectedRows.includes(result.id)
+        );
 
-        if (validCsvRows.length === 0) {
-            setError('No valid rows to validate');
+        if (selectedComparisonResults.length === 0) {
+            setError('No migrated rows to validate. Please run migration first.');
             return;
         }
 
@@ -2425,19 +2427,21 @@ function AssignmentRolloutContent() {
         setValidationComplete(false);
 
         try {
-            console.log(`Validating ${validCsvRows.length} items by re-running comparison`);
+            console.log(`Validating ${selectedComparisonResults.length} selected/migrated items (out of ${comparisonResults.length} total)`);
 
-            // Use the same payload structure as initial compare
-            const validationPayload = validCsvRows.map(row => ({
-                PolicyName: row.PolicyName,
-                GroupName: row.AssignmentAction === 'NoAssignment' ? null : row.GroupName,
-                AssignmentDirection: row.AssignmentDirection,
-                AssignmentAction: row.AssignmentAction,
-                FilterName: row.FilterName,
-                FilterType: row.FilterType
+            // Build payload from the selected comparison results (same as migration payload source)
+            const validationPayload = selectedComparisonResults.map(result => ({
+                PolicyName: result.csvRow?.PolicyName || result.providedPolicyName || result.policy?.name || '',
+                GroupName: (result.csvRow?.AssignmentAction === 'NoAssignment' || result.assignmentAction === 'NoAssignment')
+                    ? null
+                    : result.csvRow?.GroupName || result.groupToMigrate || null,
+                AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
+                AssignmentAction: result.csvRow?.AssignmentAction || result.assignmentAction || 'Add',
+                FilterName: result.csvRow?.FilterName || result.filterName || null,
+                FilterType: result.csvRow?.FilterType || result.filterType || 'none'
             }));
 
-            console.log('Validation payload (using compare endpoint):', validationPayload);
+            console.log('Validation payload (selected rows only):', validationPayload);
 
             const validationData = await request<AssignmentCompareApiResponse>(ASSIGNMENTS_COMPARE_ENDPOINT, {
                 method: 'POST',
@@ -2466,165 +2470,101 @@ function AssignmentRolloutContent() {
             const validationResults = validationData.data as ComparisonResult[];
             setValidationResults(validationResults as unknown as ValidationResult[]);
 
-            // Map validation results back to original comparison results by matching policy and group names
+            // Helper: resolve validation status from a matching validation result
+            const resolveValidationFields = (result: ComparisonResult, matchingValidation: ComparisonResult) => {
+                const wasSuccessfullyMigrated = result.masterStatus === 'migration_success';
+                let validationStatus: 'valid' | 'invalid' | 'warning';
+                let masterStatus: ComparisonResult['masterStatus'];
+                let masterStatusMessage: string;
+                let failureReason: string | undefined;
+
+                if (matchingValidation.isMigrated) {
+                    validationStatus = 'valid';
+                    masterStatus = 'validation_success';
+                    masterStatusMessage = 'Assignment verified in environment';
+                    failureReason = undefined;
+                } else if (wasSuccessfullyMigrated && !matchingValidation.isMigrated) {
+                    validationStatus = 'invalid';
+                    masterStatus = 'validation_failed';
+                    masterStatusMessage = 'Assignment not found after migration';
+                    failureReason = 'Migration was reported successful but assignment not found in re-check';
+                } else if (matchingValidation.isReadyForMigration && !wasSuccessfullyMigrated) {
+                    validationStatus = 'warning';
+                    masterStatus = result.masterStatus;
+                    masterStatusMessage = 'Ready for migration but was not migrated';
+                    failureReason = undefined;
+                } else {
+                    validationStatus = 'invalid';
+                    masterStatus = 'validation_failed';
+                    const check = matchingValidation.migrationCheckResult;
+                    const failures: string[] = [];
+                    if (check) {
+                        if (!check.policyExists) failures.push('Policy not found');
+                        if (!check.policyIsUnique) failures.push('Multiple policies found');
+                        if (!check.groupExists) failures.push('Group not found');
+                        if (!check.assignmentIsCompatible && check.compatibilityErrors) {
+                            failures.push(...check.compatibilityErrors);
+                        }
+                    }
+                    failureReason = failures.length > 0 ? failures.join('; ') : 'Validation check failed';
+                    masterStatusMessage = `Validation failed: ${failureReason}`;
+                }
+
+                return {
+                    validationStatus,
+                    validationMessage: masterStatusMessage,
+                    isCurrentSessionValidation: true,
+                    masterStatus,
+                    masterStatusMessage,
+                    failureReason,
+                    policy: matchingValidation.policy || result.policy,
+                    isMigrated: matchingValidation.isMigrated,
+                    isReadyForMigration: matchingValidation.isReadyForMigration,
+                    migrationCheckResult: matchingValidation.migrationCheckResult
+                };
+            };
+
+            // Only update rows that were actually selected for migration
             setComparisonResults(prev =>
                 prev.map(result => {
-                    // Find matching validation result by comparing policy name and group name
-                    // Use providedPolicyName or policy.name from validation result to match
+                    // Skip rows that were not part of this migration run
+                    if (!selectedRows.includes(result.id)) return result;
+
                     const matchingValidation = validationResults.find(vr => {
                         const validationPolicyName = vr.providedPolicyName || vr.policy?.name;
                         const resultPolicyName = result.csvRow?.PolicyName || result.policy?.name;
                         const validationGroupName = vr.groupToMigrate;
                         const resultGroupName = result.csvRow?.GroupName || result.groupToMigrate;
-
                         return validationPolicyName === resultPolicyName &&
                                validationGroupName === resultGroupName;
                     });
 
-                    if (matchingValidation) {
-                        // Interpret the comparison result as validation:
-                        // - If isMigrated is true, the assignment already exists = validation success
-                        // - If isReadyForMigration is true and was previously migrated, verify it's still there
-                        const wasSuccessfullyMigrated = result.masterStatus === 'migration_success';
-
-                        let validationStatus: 'valid' | 'invalid' | 'warning';
-                        let masterStatus: ComparisonResult['masterStatus'];
-                        let masterStatusMessage: string;
-                        let failureReason: string | undefined;
-
-                        if (matchingValidation.isMigrated) {
-                            // Assignment exists and matches expectations
-                            validationStatus = 'valid';
-                            masterStatus = 'validation_success';
-                            masterStatusMessage = 'Assignment verified in environment';
-                            failureReason = undefined;
-                        } else if (wasSuccessfullyMigrated && !matchingValidation.isMigrated) {
-                            // Was migrated but now doesn't show as existing - validation failed
-                            validationStatus = 'invalid';
-                            masterStatus = 'validation_failed';
-                            masterStatusMessage = 'Assignment not found after migration';
-                            failureReason = 'Migration was reported successful but assignment not found in re-check';
-                        } else if (matchingValidation.isReadyForMigration && !wasSuccessfullyMigrated) {
-                            // Item is ready but was never migrated - mark as warning
-                            validationStatus = 'warning';
-                            masterStatus = result.masterStatus; // Keep original status
-                            masterStatusMessage = 'Ready for migration but was not migrated';
-                            failureReason = undefined;
-                        } else {
-                            // Check failed - policy or group issues
-                            validationStatus = 'invalid';
-                            masterStatus = 'validation_failed';
-
-                            const check = matchingValidation.migrationCheckResult;
-                            const failures: string[] = [];
-                            if (check) {
-                                if (!check.policyExists) failures.push('Policy not found');
-                                if (!check.policyIsUnique) failures.push('Multiple policies found');
-                                if (!check.groupExists) failures.push('Group not found');
-                                if (!check.assignmentIsCompatible && check.compatibilityErrors) {
-                                    failures.push(...check.compatibilityErrors);
-                                }
-                            }
-
-                            failureReason = failures.length > 0 ? failures.join('; ') : 'Validation check failed';
-                            masterStatusMessage = `Validation failed: ${failureReason}`;
-                        }
-
-                        return {
-                            ...result,
-                            validationStatus,
-                            validationMessage: masterStatusMessage,
-                            isCurrentSessionValidation: true,
-                            masterStatus,
-                            masterStatusMessage,
-                            failureReason,
-                            // Update with latest comparison data
-                            policy: matchingValidation.policy || result.policy,
-                            isMigrated: matchingValidation.isMigrated,
-                            isReadyForMigration: matchingValidation.isReadyForMigration,
-                            migrationCheckResult: matchingValidation.migrationCheckResult
-                        };
-                    }
-                    return result;
+                    if (!matchingValidation) return result;
+                    return { ...result, ...resolveValidationFields(result, matchingValidation) };
                 })
             );
 
-            // Update master tracking
+            // Only update master tracking for selected rows
             setMasterTrackingData(prev =>
                 prev.map(result => {
-                    // Find matching validation result by policy and group name
+                    if (!selectedRows.includes(result.id)) return result;
+
                     const matchingValidation = validationResults.find(vr => {
                         const validationPolicyName = vr.providedPolicyName || vr.policy?.name;
                         const resultPolicyName = result.csvRow?.PolicyName || result.policy?.name;
                         const validationGroupName = vr.groupToMigrate;
                         const resultGroupName = result.csvRow?.GroupName || result.groupToMigrate;
-
                         return validationPolicyName === resultPolicyName &&
                                validationGroupName === resultGroupName;
                     });
 
-                    if (matchingValidation) {
-                        const wasSuccessfullyMigrated = result.masterStatus === 'migration_success';
-
-                        let validationStatus: 'valid' | 'invalid' | 'warning';
-                        let masterStatus: ComparisonResult['masterStatus'];
-                        let masterStatusMessage: string;
-                        let failureReason: string | undefined;
-
-                        if (matchingValidation.isMigrated) {
-                            validationStatus = 'valid';
-                            masterStatus = 'validation_success';
-                            masterStatusMessage = 'Assignment verified in environment';
-                            failureReason = undefined;
-                        } else if (wasSuccessfullyMigrated && !matchingValidation.isMigrated) {
-                            validationStatus = 'invalid';
-                            masterStatus = 'validation_failed';
-                            masterStatusMessage = 'Assignment not found after migration';
-                            failureReason = 'Migration was reported successful but assignment not found in re-check';
-                        } else if (matchingValidation.isReadyForMigration && !wasSuccessfullyMigrated) {
-                            validationStatus = 'warning';
-                            masterStatus = result.masterStatus;
-                            masterStatusMessage = 'Ready for migration but was not migrated';
-                            failureReason = undefined;
-                        } else {
-                            validationStatus = 'invalid';
-                            masterStatus = 'validation_failed';
-
-                            const check = matchingValidation.migrationCheckResult;
-                            const failures: string[] = [];
-                            if (check) {
-                                if (!check.policyExists) failures.push('Policy not found');
-                                if (!check.policyIsUnique) failures.push('Multiple policies found');
-                                if (!check.groupExists) failures.push('Group not found');
-                                if (!check.assignmentIsCompatible && check.compatibilityErrors) {
-                                    failures.push(...check.compatibilityErrors);
-                                }
-                            }
-
-                            failureReason = failures.length > 0 ? failures.join('; ') : 'Validation check failed';
-                            masterStatusMessage = `Validation failed: ${failureReason}`;
-                        }
-
-                        return {
-                            ...result,
-                            validationStatus,
-                            validationMessage: masterStatusMessage,
-                            isCurrentSessionValidation: true,
-                            masterStatus,
-                            masterStatusMessage,
-                            failureReason,
-                            policy: matchingValidation.policy || result.policy,
-                            isMigrated: matchingValidation.isMigrated,
-                            isReadyForMigration: matchingValidation.isReadyForMigration,
-                            migrationCheckResult: matchingValidation.migrationCheckResult
-                        };
-                    }
-                    return result;
+                    if (!matchingValidation) return result;
+                    return { ...result, ...resolveValidationFields(result, matchingValidation) };
                 })
             );
 
             setValidationComplete(true);
-            console.log(`Validation completed for ${validationResults.length} items`);
+            console.log(`Validation completed for ${validationResults.length} selected items`);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Validation failed');
             console.error('Validation error:', error);
@@ -2687,15 +2627,13 @@ function AssignmentRolloutContent() {
     };
 
 const validateAssignments = async () => {
-    // Re-run compare for all valid CSV rows to verify final state
-    const validCsvRows = csvData.filter(row => row.isValid);
-
-    if (validCsvRows.length === 0) {
-        setError('No valid rows to validate');
+    // Re-run compare only for the rows that were selected and migrated
+    if (selectedRows.length === 0) {
+        setError('No rows were selected for migration to validate');
         return;
     }
 
-    console.log(`Validation will re-run comparison for ${validCsvRows.length} valid CSV rows`);
+    console.log(`Validation will re-run comparison for ${selectedRows.length} selected/migrated rows`);
     await validateMigratedAssignments();
 };
 
@@ -2899,7 +2837,7 @@ const validateAssignments = async () => {
                             {key: 'compare', label: 'Compare', icon: Eye},
                             {key: 'migrate', label: 'Migrate', icon: Play},
                             {key: 'results', label: 'Results', icon: CheckCircle2},
-                            {key: 'validate', label: 'Verify', icon: RefreshCw},
+                            {key: 'validate', label: 'Verification', icon: RefreshCw},
                             {key: 'summary', label: 'Summary', icon: FileText}
                         ].map((step, index) => {
                             const stepKeys = ['upload', 'compare', 'migrate', 'results', 'validate', 'summary'];
@@ -3406,7 +3344,10 @@ const validateAssignments = async () => {
                                 className="flex items-center gap-2"
                                 size="sm"
                             >
-                                <ArrowUp className="h-4 w-4 text-purple-500"/>
+                                <div className="relative">
+                                    <Circle className="h-5 w-5 text-green-500 fill-green-100 dark:fill-green-900/30"/>
+                                    <ArrowUp className="h-3 w-3 text-gray-700 dark:text-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"/>
+                                </div>
                                 Ready for Migration ({comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length})
                             </Button>
                             <Button
@@ -3579,7 +3520,7 @@ const validateAssignments = async () => {
                                 onClick={() => setCurrentStep('validate')}
                             >
                                 <RefreshCw className="h-4 w-4 mr-2"/>
-                                Proceed to Validation
+                                Proceed to Verification
                             </Button>
                         </div>
                     </CardHeader>

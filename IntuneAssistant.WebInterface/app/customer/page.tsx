@@ -364,6 +364,8 @@ export default function CustomerPage() {
         {
             key: "displayName",
             label: "Display Name",
+            width: 250,
+            minWidth: 200,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
                 return (
@@ -378,6 +380,8 @@ export default function CustomerPage() {
         {
             key: "tenantId",
             label: "Tenant ID",
+            width: 300,
+            minWidth: 250,
             render: (value: unknown) => (
                 <code className="text-sm font-medium cursor-pointer truncate block w-full text-left">
                     {value as string}
@@ -387,6 +391,8 @@ export default function CustomerPage() {
         {
             key: "domainName",
             label: "Domain",
+            width: 200,
+            minWidth: 150,
             render: (value: unknown) => (
                 <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-medium">
                     {value as string}
@@ -397,6 +403,8 @@ export default function CustomerPage() {
         ...(hasOnlyCommunityLicense() ? [{
             key: "consentStatus",
             label: "Consent Status",
+            width: 180,
+             minWidth: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
                 const communityLicense = tenant.licenses?.find(license => license.licenseType === 0);
@@ -460,6 +468,8 @@ export default function CustomerPage() {
         ...(!hasOnlyCommunityLicense() ? [{
             key: "isPrimary",
             label: "Type",
+            width: 120,
+            minWidth: 100,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
                 return (
@@ -474,6 +484,8 @@ export default function CustomerPage() {
         ...(!hasOnlyCommunityLicense() ? [{
             key: "isGdap",
             label: "GDAP",
+            width: 100,
+            minWidth: 80,
             render: (value: unknown) => {
                 const isGdap = value as boolean;
                 return (
@@ -487,6 +499,8 @@ export default function CustomerPage() {
         ...(isActiveCustomer && !hasOnlyCommunityLicense() ? [{
             key: "licenseType",
             label: "License Status",
+            width: 150,
+            minWidth: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
                 const licenseCount = tenant.licenses?.length || 0;
@@ -511,6 +525,8 @@ export default function CustomerPage() {
         ...(isActiveCustomer && !hasOnlyCommunityLicense() ? [{
             key: "actions",
             label: "Actions",
+            width: 80,
+            minWidth: 60,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const tenant = row as unknown as Tenant;
                 const isUpdating = updatingTenants.has(tenant.tenantId);
@@ -1812,19 +1828,6 @@ export default function CustomerPage() {
                                                 ? '(Already assigned)' : ''
                                             }
                                             </option>
-                                            <option
-                                                value={2}
-                                                disabled={customerData?.tenants
-                                                    .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
-                                                    ?.licenses?.some(license => license.licenseType === 2)
-                                                }
-                                            >
-                                                Troubleshooter {customerData?.tenants
-                                                .find(t => t.tenantId === licenseOnboardingWizard.tenantId)
-                                                ?.licenses?.some(license => license.licenseType === 2)
-                                                ? '(Already assigned)' : ''
-                                            }
-                                            </option>
                                         </select>
                                         <p className="text-xs text-gray-500">
                                             License types already assigned to this tenant are disabled.
@@ -1928,3 +1931,4 @@ export default function CustomerPage() {
     );
 
 }
+

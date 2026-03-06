@@ -546,7 +546,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
             // Build consent URL with the new parameters - using assistant license 0
             const consentClientId = 'afe66ddf-67d4-4d61-8a51-beca7b799f52';
             const redirectUrl = window.location.origin + '/onboarding'; // Changed to /onboarding
-            const state = `onboarding_${Date.now()}`;
+            const state = `InitialOnboarding`;
             // Build URL with proper parameter order and encoding
             const params = new URLSearchParams({
                 tenantid: tenantId,
@@ -555,7 +555,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                 redirectUrl: redirectUrl,
                 tenantName: tenantDomainName,
                 tenantDomain: tenantDomainName,
-                state: state,
+                purpose: state,
                 customerName: customerName
             });
             const url = `${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CONSENT_URL_ENDPOINT"]}?${params.toString()}`;
@@ -673,26 +673,6 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                     ...result?.data
                 }
             });
-            // Refresh token after successful onboarding so user can start immediately
-            try {
-                console.log('Refreshing token after successful onboarding...');
-                const account = accounts && accounts.length > 0 ? accounts[0] : null;
-                if (account) {
-                    await instance.acquireTokenSilent({
-                        scopes: [
-                            'User.Read'
-                        ],
-                        account: account,
-                        forceRefresh: true // Force refresh to get new token with updated claims
-                    });
-                    console.log('Token refreshed successfully');
-                } else {
-                    console.warn('No account found for token refresh');
-                }
-            } catch (tokenError) {
-                console.error('Failed to refresh token:', tokenError);
-            // Don't fail the onboarding if token refresh fails - user can still refresh page
-            }
             setCurrentStep(4);
             console.log('Onboarding completed successfully');
         } catch (err) {
@@ -741,27 +721,27 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                     className: "h-5 w-5 text-primary"
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 561,
+                                    lineNumber: 543,
                                     columnNumber: 25
                                 }, this),
                                 "Onboard New Customer"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 560,
+                            lineNumber: 542,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogDescription"], {
                             children: "Add a new customer with their Microsoft tenant to your management portal"
                         }, void 0, false, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 564,
+                            lineNumber: 546,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                    lineNumber: 559,
+                    lineNumber: 541,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -775,12 +755,12 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                        lineNumber: 580,
+                                        lineNumber: 562,
                                         columnNumber: 51
                                     }, this) : index + 1
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 573,
+                                    lineNumber: 555,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -791,7 +771,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                             children: step.title
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 583,
+                                            lineNumber: 565,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -799,13 +779,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                             children: step.description
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 584,
+                                            lineNumber: 566,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 582,
+                                    lineNumber: 564,
                                     columnNumber: 29
                                 }, this),
                                 index < steps.length - 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -817,18 +797,18 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 587,
+                                    lineNumber: 569,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, step.id, true, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 572,
+                            lineNumber: 554,
                             columnNumber: 25
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                    lineNumber: 570,
+                    lineNumber: 552,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -845,27 +825,27 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 606,
+                                                    lineNumber: 588,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Sign In to Continue"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 605,
+                                            lineNumber: 587,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                             children: "Sign in with your Microsoft account to consent to the Intune Assistant application"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 609,
+                                            lineNumber: 591,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 604,
+                                    lineNumber: 586,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -880,12 +860,12 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                         className: "h-8 w-8 text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                        lineNumber: 616,
+                                                        lineNumber: 598,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 615,
+                                                    lineNumber: 597,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -893,7 +873,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "Step 1: Initial Login & Consent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 618,
+                                                    lineNumber: 600,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -901,7 +881,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "Sign in to automatically detect your tenant information and consent to the first application."
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 619,
+                                                    lineNumber: 601,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -912,22 +892,22 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "Tenant ID"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 623,
-                                                            columnNumber: 92
+                                                            lineNumber: 605,
+                                                            columnNumber: 87
                                                         }, this),
                                                         " and ",
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
                                                             children: "Domain"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 623,
-                                                            columnNumber: 123
+                                                            lineNumber: 605,
+                                                            columnNumber: 118
                                                         }, this),
                                                         " from your account."
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 622,
+                                                    lineNumber: 604,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -939,7 +919,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                 className: "h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                lineNumber: 628,
+                                                                lineNumber: 610,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -949,13 +929,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                         children: "Application ID:"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                        lineNumber: 630,
+                                                                        lineNumber: 612,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     " 3448bc04-cdbe-4a07-8e24-7e0e6f6980c1",
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                        lineNumber: 631,
+                                                                        lineNumber: 613,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -963,24 +943,24 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                         children: "This is the primary Intune Assistant application"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                        lineNumber: 632,
+                                                                        lineNumber: 614,
                                                                         columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                lineNumber: 629,
+                                                                lineNumber: 611,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                        lineNumber: 627,
+                                                        lineNumber: 609,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 626,
+                                                    lineNumber: 608,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -994,7 +974,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                 className: "mr-2 h-4 w-4 animate-spin"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                lineNumber: 645,
+                                                                lineNumber: 627,
                                                                 columnNumber: 49
                                                             }, this),
                                                             "Signing in..."
@@ -1005,7 +985,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                 className: "mr-2 h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                lineNumber: 650,
+                                                                lineNumber: 632,
                                                                 columnNumber: 49
                                                             }, this),
                                                             "Sign In with Microsoft"
@@ -1013,13 +993,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     }, void 0, true)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 637,
+                                                    lineNumber: 619,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 614,
+                                            lineNumber: 596,
                                             columnNumber: 33
                                         }, this),
                                         error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1029,7 +1009,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4 mt-0.5 flex-shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 659,
+                                                    lineNumber: 641,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1037,25 +1017,25 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: error
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 660,
+                                                    lineNumber: 642,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 658,
+                                            lineNumber: 640,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 613,
+                                    lineNumber: 595,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 603,
+                            lineNumber: 585,
                             columnNumber: 25
                         }, this),
                         currentStep === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -1069,27 +1049,27 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 672,
+                                                    lineNumber: 654,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Customer & Tenant Details"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 671,
+                                            lineNumber: 653,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                             children: "Enter the customer name and verify tenant information (auto-filled from your login)"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 675,
+                                            lineNumber: 657,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 670,
+                                    lineNumber: 652,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1102,7 +1082,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4 mt-0.5 flex-shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 682,
+                                                    lineNumber: 664,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1111,20 +1091,20 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "Auto-detected from login:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 684,
+                                                            lineNumber: 666,
                                                             columnNumber: 45
                                                         }, this),
                                                         " Tenant ID and Domain have been pre-filled using your account information."
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 683,
+                                                    lineNumber: 665,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 681,
+                                            lineNumber: 663,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1135,7 +1115,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "Customer Name *"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 690,
+                                                    lineNumber: 672,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1146,7 +1126,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     autoFocus: true
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 691,
+                                                    lineNumber: 673,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1154,18 +1134,18 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "Enter a friendly name for this customer"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 698,
+                                                    lineNumber: 680,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 689,
+                                            lineNumber: 671,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 703,
+                                            lineNumber: 685,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1176,7 +1156,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "Tenant ID *"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 706,
+                                                    lineNumber: 688,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1188,7 +1168,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: isLoggedIn && tenantId ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed" : ""
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 707,
+                                                    lineNumber: 689,
                                                     columnNumber: 37
                                                 }, this),
                                                 isLoggedIn && tenantId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1198,20 +1178,20 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             className: "h-3 w-3"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 717,
+                                                            lineNumber: 699,
                                                             columnNumber: 45
                                                         }, this),
                                                         "Automatically detected from your login"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 716,
+                                                    lineNumber: 698,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 705,
+                                            lineNumber: 687,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1222,7 +1202,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "Tenant Domain Name *"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 724,
+                                                    lineNumber: 706,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1233,7 +1213,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: isLoggedIn && tenantDomainName ? "bg-gray-50 dark:bg-gray-900" : ""
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 725,
+                                                    lineNumber: 707,
                                                     columnNumber: 37
                                                 }, this),
                                                 isLoggedIn && tenantDomainName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1243,14 +1223,14 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             className: "h-3 w-3"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 734,
+                                                            lineNumber: 716,
                                                             columnNumber: 45
                                                         }, this),
                                                         "Automatically detected from your login"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 733,
+                                                    lineNumber: 715,
                                                     columnNumber: 41
                                                 }, this),
                                                 !tenantDomainName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1258,13 +1238,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "If not auto-filled, enter your primary domain (e.g., contoso.onmicrosoft.com)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 739,
+                                                    lineNumber: 721,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 723,
+                                            lineNumber: 705,
                                             columnNumber: 33
                                         }, this),
                                         error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1274,7 +1254,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4 mt-0.5 flex-shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 747,
+                                                    lineNumber: 729,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1282,25 +1262,25 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: error
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 748,
+                                                    lineNumber: 730,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 746,
+                                            lineNumber: 728,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 679,
+                                    lineNumber: 661,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 669,
+                            lineNumber: 651,
                             columnNumber: 25
                         }, this),
                         currentStep === 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -1314,27 +1294,27 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4 text-green-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 760,
+                                                    lineNumber: 742,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Information Validated"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 759,
+                                            lineNumber: 741,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                             children: "Ready to proceed with admin consent"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 763,
+                                            lineNumber: 745,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 758,
+                                    lineNumber: 740,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1351,7 +1331,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "Customer"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 770,
+                                                            lineNumber: 752,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1359,13 +1339,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: customerName
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 771,
+                                                            lineNumber: 753,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 769,
+                                                    lineNumber: 751,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1376,7 +1356,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "Tenant ID"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 774,
+                                                            lineNumber: 756,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1384,13 +1364,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: tenantId
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 775,
+                                                            lineNumber: 757,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 773,
+                                                    lineNumber: 755,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1401,7 +1381,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "Domain"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 778,
+                                                            lineNumber: 760,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1409,19 +1389,19 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: tenantDomainName
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 779,
+                                                            lineNumber: 761,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 777,
+                                                    lineNumber: 759,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 768,
+                                            lineNumber: 750,
                                             columnNumber: 33
                                         }, this),
                                         error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1431,7 +1411,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4 mt-0.5 flex-shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 785,
+                                                    lineNumber: 767,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1439,25 +1419,25 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: error
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 786,
+                                                    lineNumber: 768,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 784,
+                                            lineNumber: 766,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 767,
+                                    lineNumber: 749,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 757,
+                            lineNumber: 739,
                             columnNumber: 25
                         }, this),
                         currentStep === 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -1471,27 +1451,27 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 798,
+                                                    lineNumber: 780,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Admin Consent Required"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 797,
+                                            lineNumber: 779,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                            children: "App idafe66ddf-67d4-4d61-8a51-beca7b799f52"
+                                            children: "App iafe66ddf-67d4-4d61-8a51-beca7b799f52"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 801,
+                                            lineNumber: 783,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 796,
+                                    lineNumber: 778,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1504,7 +1484,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-6 w-6 animate-spin text-blue-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 808,
+                                                    lineNumber: 790,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1515,7 +1495,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "Preparing consent..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 810,
+                                                            lineNumber: 792,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1523,19 +1503,19 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "Building consent URL for Assistant License 0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 811,
+                                                            lineNumber: 793,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 809,
+                                                    lineNumber: 791,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 807,
+                                            lineNumber: 789,
                                             columnNumber: 37
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "space-y-4",
@@ -1549,7 +1529,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                 className: "h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                lineNumber: 818,
+                                                                lineNumber: 800,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1560,7 +1540,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                         children: "Step 2: Assistant License Consent"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                        lineNumber: 820,
+                                                                        lineNumber: 802,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1571,54 +1551,72 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                                 children: "Assistant License 0"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                                lineNumber: 824,
+                                                                                lineNumber: 806,
                                                                                 columnNumber: 96
                                                                             }, this),
                                                                             " in a popup window."
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                        lineNumber: 823,
+                                                                        lineNumber: 805,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                         className: "text-xs text-amber-700 dark:text-amber-300 space-y-1",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                                                    children: "Application ID:"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                                    lineNumber: 827,
-                                                                                    columnNumber: 60
-                                                                                }, this),
-                                                                                " afe66ddf-67d4-4d61-8a51-beca7b799f52"
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                            lineNumber: 827,
-                                                                            columnNumber: 57
-                                                                        }, this)
-                                                                    }, void 0, false, {
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                                        children: "Application ID:"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/components/onboarding/customer-onboarding.tsx",
+                                                                                        lineNumber: 809,
+                                                                                        columnNumber: 60
+                                                                                    }, this),
+                                                                                    " afe66ddf-67d4-4d61-8a51-beca7b799f52"
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/components/onboarding/customer-onboarding.tsx",
+                                                                                lineNumber: 809,
+                                                                                columnNumber: 57
+                                                                            }, this),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                                        children: "License Type:"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/components/onboarding/customer-onboarding.tsx",
+                                                                                        lineNumber: 810,
+                                                                                        columnNumber: 60
+                                                                                    }, this),
+                                                                                    " Assistant License 0 (Basic tier)"
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/components/onboarding/customer-onboarding.tsx",
+                                                                                lineNumber: 810,
+                                                                                columnNumber: 57
+                                                                            }, this)
+                                                                        ]
+                                                                    }, void 0, true, {
                                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                        lineNumber: 826,
+                                                                        lineNumber: 808,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                lineNumber: 819,
+                                                                lineNumber: 801,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                        lineNumber: 817,
+                                                        lineNumber: 799,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 816,
+                                                    lineNumber: 798,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1632,7 +1630,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                 className: "mr-2 h-4 w-4 animate-spin"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                lineNumber: 841,
+                                                                lineNumber: 824,
                                                                 columnNumber: 53
                                                             }, this),
                                                             "Waiting for consent..."
@@ -1643,7 +1641,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                                 className: "mr-2 h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                                lineNumber: 846,
+                                                                lineNumber: 829,
                                                                 columnNumber: 53
                                                             }, this),
                                                             error ? 'Retry Admin Consent' : 'Open Consent Window'
@@ -1651,7 +1649,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     }, void 0, true)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 833,
+                                                    lineNumber: 816,
                                                     columnNumber: 41
                                                 }, this),
                                                 loading && !error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1661,7 +1659,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "A popup window should have opened. If not, please allow popups and try again."
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 854,
+                                                            lineNumber: 837,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1669,13 +1667,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                             children: "After granting consent, this window will automatically continue..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                            lineNumber: 855,
+                                                            lineNumber: 838,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 853,
+                                                    lineNumber: 836,
                                                     columnNumber: 45
                                                 }, this),
                                                 error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1683,13 +1681,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "If you closed the popup after granting consent, the process will continue automatically."
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 860,
+                                                    lineNumber: 843,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 815,
+                                            lineNumber: 797,
                                             columnNumber: 37
                                         }, this),
                                         error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1699,7 +1697,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4 mt-0.5 flex-shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 869,
+                                                    lineNumber: 852,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1707,25 +1705,25 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: error
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 870,
+                                                    lineNumber: 853,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 868,
+                                            lineNumber: 851,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 805,
+                                    lineNumber: 787,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 795,
+                            lineNumber: 777,
                             columnNumber: 25
                         }, this),
                         currentStep === 4 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -1739,27 +1737,27 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     className: "h-4 w-4 text-green-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 882,
+                                                    lineNumber: 865,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Onboarding Complete!"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 881,
+                                            lineNumber: 864,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                             children: "Customer and tenant have been successfully added"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 885,
+                                            lineNumber: 868,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 880,
+                                    lineNumber: 863,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1774,12 +1772,12 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                         className: "h-8 w-8 text-green-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                        lineNumber: 892,
+                                                        lineNumber: 875,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 891,
+                                                    lineNumber: 874,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1791,7 +1789,7 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 894,
+                                                    lineNumber: 877,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1799,13 +1797,13 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                     children: "You can now manage their Microsoft Intune environment through our platform."
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                    lineNumber: 895,
+                                                    lineNumber: 878,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 890,
+                                            lineNumber: 873,
                                             columnNumber: 33
                                         }, this),
                                         onboardingResult && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1815,35 +1813,35 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                                 children: onboardingResult.message
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                lineNumber: 902,
+                                                lineNumber: 885,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 901,
+                                            lineNumber: 884,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 889,
+                                    lineNumber: 872,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 879,
+                            lineNumber: 862,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                    lineNumber: 600,
+                    lineNumber: 582,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                    lineNumber: 913,
+                    lineNumber: 896,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1851,68 +1849,32 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                             variant: "outline",
-                            onClick: ()=>{
-                                // Close consent popup if it's open
-                                if (consentWindow && !consentWindow.closed) {
-                                    consentWindow.close();
-                                    setConsentWindow(null);
-                                }
-                                handleClose();
-                            },
+                            onClick: handleClose,
                             children: currentStep === 4 ? 'Close' : 'Cancel'
                         }, void 0, false, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 915,
+                            lineNumber: 898,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex gap-2",
                             children: [
-                                currentStep === 3 && consentWindow && !consentWindow.closed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
-                                    variant: "destructive",
-                                    onClick: ()=>{
-                                        if (consentWindow && !consentWindow.closed) {
-                                            consentWindow.close();
-                                            setConsentWindow(null);
-                                        }
-                                        setLoading(false);
-                                        setError('Consent cancelled. You can retry by clicking "Open Consent Window" again.');
-                                    },
-                                    children: "Cancel Consent"
-                                }, void 0, false, {
-                                    fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 932,
-                                    columnNumber: 29
-                                }, this),
                                 currentStep < 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                                     onClick: handleNext,
-                                    disabled: loading || currentStep === 1 && !isFormValid,
-                                    children: loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$loader$2d$circle$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Loader2$3e$__["Loader2"], {
-                                                className: "mr-2 h-4 w-4 animate-spin"
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                lineNumber: 955,
-                                                columnNumber: 41
-                                            }, this),
-                                            "Processing..."
-                                        ]
-                                    }, void 0, true) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
-                                        children: [
-                                            currentStep === 0 ? 'Sign In' : currentStep === 2 ? 'Start Consent' : 'Next',
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                                className: "ml-2 h-4 w-4"
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                                lineNumber: 961,
-                                                columnNumber: 41
-                                            }, this)
-                                        ]
-                                    }, void 0, true)
-                                }, void 0, false, {
+                                    disabled: currentStep === 1 && !isFormValid,
+                                    children: [
+                                        currentStep === 0 ? 'Sign In' : currentStep === 2 ? 'Start Consent' : 'Next',
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
+                                            className: "ml-2 h-4 w-4"
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/onboarding/customer-onboarding.tsx",
+                                            lineNumber: 912,
+                                            columnNumber: 33
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 949,
+                                    lineNumber: 907,
                                     columnNumber: 29
                                 }, this),
                                 currentStep === 4 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1923,36 +1885,36 @@ function CustomerOnboardingModal({ isOpen, onClose, onSuccess }) {
                                             className: "ml-2 h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                            lineNumber: 970,
+                                            lineNumber: 919,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                                    lineNumber: 968,
+                                    lineNumber: 917,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                            lineNumber: 929,
+                            lineNumber: 905,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-                    lineNumber: 914,
+                    lineNumber: 897,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-            lineNumber: 551,
+            lineNumber: 533,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/onboarding/customer-onboarding.tsx",
-        lineNumber: 550,
+        lineNumber: 532,
         columnNumber: 9
     }, this);
 }

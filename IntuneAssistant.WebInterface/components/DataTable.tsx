@@ -22,6 +22,7 @@ interface Column {
     searchable?: boolean;
     sortValue?: (row: Record<string, unknown>) => number | string;
     render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
+    hasExplicitWidth?: boolean; // internal: true when caller set an explicit width
 }
 
 interface SortConfig {
@@ -181,6 +182,7 @@ function DataTableComponent(props: DataTableProps) {
                     label: '',
                     width: 50,
                     minWidth: 40,
+                    hasExplicitWidth: true,
                     sortable: false,
                     searchable: false,
                     sortValue: undefined,
@@ -202,11 +204,14 @@ function DataTableComponent(props: DataTableProps) {
 
     const [columns, setColumns] = useState(columnsWithSelection.map(col => ({
         ...col,
+        hasExplicitWidth: col.key === '_select' ? true : col.width !== undefined,
         width: col.width || 150,
         minWidth: col.minWidth || 100,
         searchable: col.searchable !== false && col.key !== '_select',
         sortValue: col.sortValue
     })));
+
+    const [widthsReady, setWidthsReady] = useState(false);
 
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -250,11 +255,14 @@ function DataTableComponent(props: DataTableProps) {
     useEffect(() => {
         setColumns(columnsWithSelection.map(col => ({
             ...col,
+            hasExplicitWidth: col.key === '_select' ? true : col.width !== undefined,
             width: col.width || 150,
             minWidth: col.minWidth || 100,
             searchable: col.searchable !== false && col.key !== '_select',
             sortValue: col.sortValue
         })));
+
+        setWidthsReady(false);
 
         // Update visibility for any new columns
         setColumnVisibility(prev => {
@@ -282,58 +290,30 @@ function DataTableComponent(props: DataTableProps) {
             const availableWidth = containerEl.clientWidth;
             if (availableWidth === 0) return;
 
-            console.log('Container width:', availableWidth, 'px');
-
             setContainerWidth(availableWidth);
 
-            // Calculate total width - separate fixed columns from flexible columns
-            // Fixed columns: _select key OR columns where minWidth === width (explicitly locked)
-            const fixedColumns = columns.filter(col =>
-                col.key === '_select' ||
-                (col.minWidth && col.width && col.minWidth === col.width)
-            );
-            const flexibleColumns = columns.filter(col =>
-                col.key !== '_select' &&
-                !(col.minWidth && col.width && col.minWidth === col.width)
-            );
+            // Fixed columns: _select or any column where the caller provided an explicit width
+            const fixedCols = columns.filter(col => col.hasExplicitWidth);
+            const autoCols  = columns.filter(col => !col.hasExplicitWidth);
 
-            const fixedColumnsWidth = fixedColumns.reduce((sum, col) => sum + (col.width || 0), 0);
-            const currentFlexibleWidth = flexibleColumns.reduce((sum, col) => sum + (col.width || 150), 0);
-            const totalCurrentWidth = fixedColumnsWidth + currentFlexibleWidth;
+            const fixedWidth = fixedCols.reduce((sum, col) => sum + (col.width || 0), 0);
+            const availableForAuto = availableWidth - fixedWidth;
 
-            console.log('Total current width:', totalCurrentWidth, 'px', 'Available:', availableWidth, 'px');
-            console.log('Fixed columns width:', fixedColumnsWidth, 'px', 'Flexible columns width:', currentFlexibleWidth, 'px');
-
-            // Calculate available space for flexible columns
-            const availableForFlexible = availableWidth - fixedColumnsWidth;
-
-            if (availableForFlexible > 0 && flexibleColumns.length > 0) {
-                console.log('Distributing', availableForFlexible, 'px across', flexibleColumns.length, 'flexible columns');
+            if (availableForAuto > 0 && autoCols.length > 0) {
+                // Equal share for every auto column, respecting its minWidth
+                const equalShare = Math.floor(availableForAuto / autoCols.length);
 
                 setColumns(prev => prev.map(col => {
-                    // Keep fixed columns at their original width
-                    if (col.key === '_select' || (col.minWidth && col.width && col.minWidth === col.width)) {
-                        return col;
-                    }
-
-                    // Calculate new width for flexible columns proportionally
-                    const currentWidth = col.width || 150;
-                    const proportion = currentFlexibleWidth > 0 ? currentWidth / currentFlexibleWidth : 1 / flexibleColumns.length;
-                    const newWidth = availableForFlexible * proportion;
-
-                    // Ensure width is at least minWidth
-                    const finalWidth = Math.max(Math.floor(newWidth), col.minWidth || 100);
-
-                    console.log(`Column ${col.key}: ${currentWidth}px -> ${finalWidth}px (proportion: ${(proportion * 100).toFixed(1)}%)`);
-
+                    if (col.hasExplicitWidth) return col; // keep fixed columns untouched
                     return {
                         ...col,
-                        width: finalWidth
+                        width: Math.max(equalShare, col.minWidth || 80),
                     };
                 }));
             }
 
             initialWidthsCalculatedRef.current = true;
+            setWidthsReady(true);
         };
 
         // Use ResizeObserver for reliable measurement
@@ -365,10 +345,7 @@ function DataTableComponent(props: DataTableProps) {
 
     // Calculate total table width based on visible column widths
     const totalTableWidth = useMemo(() => {
-        const total = visibleColumns.reduce((sum, col) => sum + (col.width || 150), 0);
-        console.log('📏 Total table width calculated:', total, 'px');
-        console.log('📊 Visible columns:', visibleColumns.map(c => ({ key: c.key, width: c.width })));
-        return total;
+        return visibleColumns.reduce((sum, col) => sum + (col.width || 150), 0);
     }, [visibleColumns]);
 
     // Toggle column visibility
@@ -658,10 +635,13 @@ function DataTableComponent(props: DataTableProps) {
             <table
                 ref={tableRef}
                 className="text-sm"
-                style={{
+                style={widthsReady ? {
                     width: `${totalTableWidth}px`,
                     minWidth: '100%',
-                    tableLayout: 'fixed'
+                    tableLayout: 'fixed',
+                } : {
+                    width: '100%',
+                    tableLayout: 'auto',
                 }}
             >
                     <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 border-b-2 border-gray-200 dark:border-gray-700">

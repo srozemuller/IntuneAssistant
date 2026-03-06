@@ -311,8 +311,8 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
             });
 
             // Build API URL to get consent URL
-            const apiUrl = `${CUSTOMER_ENDPOINT}/${customerId}/tenants/onboarding?tenantid=${finalTenantId}&tenantName=${finalDisplayName}&domainName=${encodeURIComponent(finalDomainName)}&isGdap=${isGdapMode}`;
-            console.log('🔵 API URL:', apiUrl);
+            const apiUrl = `${CUSTOMER_ENDPOINT}/tenants/onboarding?tenantid=${finalTenantId}&tenantName=${finalDisplayName}&domainName=${encodeURIComponent(finalDomainName)}&isGdap=${isGdapMode}`;
+            console.log('API URL:', apiUrl);
 
             // Make API call to get consent URL
             const response = await fetch(apiUrl, {
@@ -618,46 +618,46 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                         </CardHeader>
                          {/*Validation step display*/}
                         <CardContent className="space-y-4">
-                            <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2">
                                 <div className="flex justify-between">
-                                    <span className="font-medium">Customer:</span>
-                                    <span>{customerName}</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Customer:</span>
+                                    <span className="text-gray-900 dark:text-gray-100">{customerName}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="font-medium">Method:</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Method:</span>
                                     <Badge variant={isGdapMode ? "default" : "secondary"}>
                                         {isGdapMode ? 'GDAP' : 'Interactive'}
                                     </Badge>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="font-medium">Tenant ID:</span>
-                                    <span className="font-mono text-sm">
-            {isGdapMode ? selectedTenant?.tenantId : tenantId}
-        </span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Tenant ID:</span>
+                                    <span className="font-mono text-sm text-gray-900 dark:text-gray-100">
+                                        {isGdapMode ? selectedTenant?.tenantId : tenantId}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="font-medium">Domain:</span>
-                                    <span>{isGdapMode ? selectedTenant?.domain : tenantDomainName}</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Domain:</span>
+                                    <span className="text-gray-900 dark:text-gray-100">{isGdapMode ? selectedTenant?.domain : tenantDomainName}</span>
                                 </div>
                                 {isGdapMode && selectedTenant?.displayName && (
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Display Name:</span>
-                                        <span>{selectedTenant.displayName}</span>
+                                        <span className="font-medium text-gray-700 dark:text-gray-300">Display Name:</span>
+                                        <span className="text-gray-900 dark:text-gray-100">{selectedTenant.displayName}</span>
                                     </div>
                                 )}
                                 {isGdapMode && selectedTenant && (
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Status:</span>
+                                        <span className="font-medium text-gray-700 dark:text-gray-300">Status:</span>
                                         <Badge variant="outline" className="text-xs">
                                             {selectedTenant.isOnboarded ? 'Previously Onboarded' : 'New Tenant'}
                                         </Badge>
                                     </div>
                                 )}
                             </div>
-                            <div className="bg-blue-50 p-4 rounded-lg">
+                            <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
                                 <div className="flex items-start gap-2">
-                                    <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-                                    <div className="text-sm text-blue-800">
+                                    <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                                    <div className="text-sm text-blue-800 dark:text-blue-200">
                                         <p className="font-medium">Next Step:</p>
                                         {isGdapMode && selectedTenant?.isOnboarded && !selectedTenant?.isLinked ? (
                                             <p>This tenant is already onboarded. We will link it to your customer account.</p>
@@ -741,13 +741,12 @@ const TenantOnboardingModal: React.FC<TenantOnboardingModalProps> = ({
                                     {customerName} has been successfully onboarded and is ready for monitoring.
                                 </p>
                             </div>
-                            <div className="bg-green-50 p-4 rounded-lg">
-                                <div className="text-sm text-green-800">
+                            <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg">
+                                <div className="text-sm text-green-800 dark:text-green-200">
                                     <p className="font-medium mb-1">What happens next:</p>
                                     <ul className="space-y-1 list-disc list-inside">
-                                        <li>Tenant monitoring will begin shortly</li>
-                                        <li>Security alerts and reports will be available</li>
-                                        <li>Customer will appear in your dashboard</li>
+                                        <li>Tenant becomes available in the tenants list</li>
+                                        <li>If needed, add the additional license</li>
                                     </ul>
                                 </div>
                             </div>
