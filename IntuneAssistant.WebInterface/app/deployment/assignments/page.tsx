@@ -160,6 +160,7 @@ interface ComparisonResult {
     masterStatus?: 'csv_invalid' | 'csv_uploaded' | 'compare_ready' | 'compare_failed' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed';
     masterStatusMessage?: string;
     failureReason?: string; // Why this item couldn't proceed
+    batchIndex?: number | null; // Which batch this migration was part of
 }
 
 interface RoleScopeTag {
@@ -183,7 +184,7 @@ interface MigrationResult {
     filterType: string | null;
     filterName: string | null;
     isMigrated: boolean;
-    status: 'Success' | 'Failed' | 'Skipped';
+    status: 'Success' | 'Failed' | 'Skipped' | 'NotStarted';
     errorMessage: string | null;
     processedAt: string;
     batchIndex: number | null;
@@ -280,6 +281,7 @@ function AssignmentRolloutContent() {
 
     const [error, setError] = useState<string | null>(null);
     const [validationComplete, setValidationComplete] = useState(false);
+    const [validatedItemsCount, setValidatedItemsCount] = useState(0); // Store count when validation completes
     const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
     const [migrationResults, setMigrationResults] = useState<MigrationResult[]>([]);
 
@@ -300,8 +302,9 @@ function AssignmentRolloutContent() {
 
     const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
     const [filteredComparisonResults, setFilteredComparisonResults] = useState<ComparisonResult[]>([]);
-    const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed' | 'skipped'>('all');
-    const [compareStatusFilter, setCompareStatusFilter] = useState<'all' | 'ready' | 'migrated' | 'warnings'>('all');
+    const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed' | 'skipped' | 'notstarted'>('all');
+    const [compareStatusFilter, setCompareStatusFilter] = useState<'all' | 'ready' | 'migrated' | 'warnings' | 'failed'>('all');
+    const [summaryStatusFilter, setSummaryStatusFilter] = useState<'all' | 'csv_invalid' | 'compare_failed' | 'compare_ready' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed'>('all');
 
     // Add pagination logic before the return statement
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -339,10 +342,133 @@ function AssignmentRolloutContent() {
             return migrationResults.filter(r => r.status === 'Success');
         } else if (migrationResultFilter === 'failed') {
             return migrationResults.filter(r => r.status === 'Failed');
-        } else {
+        } else if (migrationResultFilter === 'skipped') {
             return migrationResults.filter(r => r.status === 'Skipped');
+        } else if (migrationResultFilter === 'notstarted') {
+            return migrationResults.filter(r => r.status === 'NotStarted');
+        } else {
+            return migrationResults;
         }
     }, [migrationResults, migrationResultFilter]);
+
+    // Memoize summary statistics to avoid recalculation
+    const summaryStats = useMemo(() => {
+        // Use ONLY masterTrackingData as single source of truth to prevent double counting
+        // Each row appears ONCE in masterTrackingData with its final status
+
+        // Count items that were selected for migration (in migratedRowIds)
+        // This includes items in any post-compare status
+        const selectedForMigration = masterTrackingData.filter(r => migratedRowIds.includes(r.id));
+
+        const compareFailedItems = masterTrackingData.filter(r => r.masterStatus === 'compare_failed');
+
+        // Debug logging
+        console.log('SUMMARY STATS DEBUG:');
+        console.log(`masterTrackingData.length: ${masterTrackingData.length}`);
+        console.log(`compareFailedItems.length: ${compareFailedItems.length}`);
+        console.log('Compare failed items:', compareFailedItems.map(r => ({
+            id: r.id,
+            policy: r.csvRow?.PolicyName || r.policy?.name,
+            status: r.masterStatus,
+            reason: r.failureReason
+        })));
+
+        return {
+            // Attention boxes data - all from masterTrackingData
+            csvInvalid: masterTrackingData.filter(r => r.masterStatus === 'csv_invalid'),
+            compareFailed: compareFailedItems,
+            notMigrated: masterTrackingData.filter(r => r.masterStatus === 'compare_ready' && !migratedRowIds.includes(r.id)),
+            migFailed: masterTrackingData.filter(r => r.masterStatus === 'migration_failed'),
+            migNotVerified: masterTrackingData.filter(r => r.masterStatus === 'migration_success'),
+            valFailed: masterTrackingData.filter(r => r.masterStatus === 'validation_failed'),
+            skipped: migrationResults.filter(r => r.status === 'Skipped'),
+            notStarted: migrationResults.filter(r => r.status === 'NotStarted'),
+            missing: [], // No longer needed - all rows are in masterTrackingData
+
+            // Statistics counts - all from masterTrackingData
+            totalUploaded: csvData.length,
+            csvInvalidCount: masterTrackingData.filter(r => r.masterStatus === 'csv_invalid').length,
+            compareFailedCount: compareFailedItems.length,
+            notSelectedCount: masterTrackingData.filter(r => r.masterStatus === 'compare_ready' && !migratedRowIds.includes(r.id)).length,
+            readyForMigrationCount: selectedForMigration.length, // All items that were selected for migration
+            missingCount: 0, // No missing rows - all accounted for in masterTrackingData
+            notStartedCount: migrationResults.filter(r => r.status === 'NotStarted').length,
+            migrationSuccessCount: migrationResults.filter(r => r.status === 'Success').length,
+            migrationSkippedCount: migrationResults.filter(r => r.status === 'Skipped').length,
+            migrationFailedCount: migrationResults.filter(r => r.status === 'Failed').length,
+            verifiedCount: masterTrackingData.filter(r => r.masterStatus === 'validation_success').length,
+            verifyFailedCount: masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length,
+        };
+    }, [masterTrackingData, migratedRowIds, migrationResults, csvData]);
+
+    // Memoize summary table data
+    const summaryTableData = useMemo(() => {
+        const data = masterTrackingData.map(row => ({
+            id: row.id,
+            policy: row.csvRow?.PolicyName || row.policy?.name || row.providedPolicyName || '—',
+            action: row.csvRow?.AssignmentAction || '—',
+            group: row.csvRow?.GroupName || row.groupToMigrate || '—',
+            direction: row.csvRow?.AssignmentDirection || '—',
+            filter: row.csvRow?.FilterName ? `${row.csvRow.FilterName} (${row.csvRow.FilterType || ''})` : '—',
+            status: row.masterStatus || 'unknown',
+            batch: row.batchIndex !== null && row.batchIndex !== undefined ? row.batchIndex + 1 : null,
+            notes: row.failureReason || row.masterStatusMessage || '—',
+        }));
+
+        // Debug: Count statuses
+        const statusCounts = data.reduce((acc, row) => {
+            acc[row.status] = (acc[row.status] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+
+        console.log('SUMMARY TABLE STATUS BREAKDOWN:', statusCounts);
+
+        // Debug: Show samples of "Ready (Not Migrated)" items
+        const compareReadyItems = data.filter(r => r.status === 'compare_ready');
+        if (compareReadyItems.length > 0) {
+            console.log(`Found ${compareReadyItems.length} items with 'compare_ready' status in summary:`);
+            console.log('Sample items:', compareReadyItems.slice(0, 3).map(r => ({
+                policy: r.policy,
+                group: r.group,
+                status: r.status,
+                notes: r.notes
+            })));
+        }
+
+        return data;
+    }, [masterTrackingData]);
+
+    // Filter summary table data by selected status
+    const filteredSummaryTableData = useMemo(() => {
+        if (summaryStatusFilter === 'all') {
+            return summaryTableData;
+        }
+        return summaryTableData.filter(row => row.status === summaryStatusFilter);
+    }, [summaryTableData, summaryStatusFilter]);
+
+    // Compute validated items for verification results table
+    const validatedItems = useMemo(() => {
+        const items = masterTrackingData.filter(r => r.masterStatus === 'validation_success' || r.masterStatus === 'validation_failed');
+
+        // Debug logging
+        console.log('🔍 VALIDATION RESULTS TABLE DEBUG:');
+        console.log(`validationComplete: ${validationComplete}`);
+        console.log(`validatedItemsCount: ${validatedItemsCount}`);
+        console.log(`masterTrackingData.length: ${masterTrackingData.length}`);
+        console.log(`validatedItems.length: ${items.length}`);
+        console.log('masterTrackingData statuses:', masterTrackingData.map(r => ({
+            id: r.id.substring(0, 8),
+            status: r.masterStatus,
+            policy: r.csvRow?.PolicyName || r.policy?.name
+        })).slice(0, 10)); // Show first 10
+
+        if (items.length === 0 && validationComplete && validatedItemsCount > 0) {
+            console.error('⚠️ NO VALIDATED ITEMS FOUND! But validatedItemsCount is', validatedItemsCount);
+            console.log('All masterStatus values:', [...new Set(masterTrackingData.map(r => r.masterStatus))]);
+        }
+
+        return items;
+    }, [masterTrackingData, validationComplete, validatedItemsCount]);
 
     // Summary Component for consistent display across all steps
     const MigrationSummaryCard = ({ step }: { step: 'upload' | 'compare' | 'migrate' | 'results' | 'validate' }) => {
@@ -1201,6 +1327,30 @@ function AssignmentRolloutContent() {
             }
         },
         {
+            key: 'batchIndex',
+            label: 'Batch',
+            width: 80,
+            sortable: true,
+            sortValue: (row: Record<string, unknown>) => {
+                const result = row as unknown as MigrationResult;
+                return result.batchIndex ?? -1;
+            },
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as MigrationResult;
+                const batchNumber = result.batchIndex !== null && result.batchIndex !== undefined
+                    ? result.batchIndex + 1
+                    : null;
+
+                return batchNumber !== null ? (
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                        #{batchNumber}
+                    </Badge>
+                ) : (
+                    <span className="text-sm text-gray-400">-</span>
+                );
+            }
+        },
+        {
             key: 'providedPolicyName',
             label: 'Policy Name',
             minWidth: 200,
@@ -1933,26 +2083,23 @@ function AssignmentRolloutContent() {
             }
 
             const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => {
-                const check = item.migrationCheckResult;
-                let migrationCheckSortValue = 2;
-                let masterStatus: ComparisonResult['masterStatus'] = 'csv_uploaded';
+                // Get the original CSV row to preserve its unique rowId
+                const originalCsvRow = validCsvData[index];
+
+                // Use the API's isReadyForMigration flag to determine status
+                let masterStatus: ComparisonResult['masterStatus'];
                 let masterStatusMessage = '';
                 let failureReason = '';
 
-                if (check) {
-                    const allChecksPass = check.policyExists && check.policyIsUnique &&
-                        check.groupExists && check.correctAssignmentTypeProvided &&
-                        check.correctAssignmentActionProvided && check.assignmentIsCompatible;
+                if (item.isReadyForMigration) {
+                    masterStatus = 'compare_ready';
+                    masterStatusMessage = 'Ready for migration';
+                } else {
+                    masterStatus = 'compare_failed';
 
-                    if (allChecksPass) {
-                        migrationCheckSortValue = 1;
-                        masterStatus = 'compare_ready';
-                        masterStatusMessage = 'Ready for migration';
-                    } else {
-                        migrationCheckSortValue = 0;
-                        masterStatus = 'compare_failed';
-
-                        // Build detailed failure reason
+                    // Build detailed failure reason from migrationCheckResult
+                    const check = item.migrationCheckResult;
+                    if (check) {
                         const failures: string[] = [];
                         if (!check.policyExists) failures.push('Policy not found');
                         if (!check.policyIsUnique) failures.push('Multiple policies found with same name');
@@ -1962,22 +2109,21 @@ function AssignmentRolloutContent() {
                         if (!check.assignmentIsCompatible && check.compatibilityErrors) {
                             failures.push(...check.compatibilityErrors);
                         }
-
                         failureReason = failures.join('; ');
-                        masterStatusMessage = `Cannot migrate: ${failureReason}`;
+                    } else {
+                        failureReason = 'Validation failed';
                     }
+                    masterStatusMessage = `Cannot migrate: ${failureReason}`;
                 }
 
                 return {
                     ...item,
-                    csvRow: {
-                        ...validCsvData[index],
-                    },
+                    id: originalCsvRow.rowId || item.id, // Use original CSV rowId for tracking
+                    csvRow: originalCsvRow,
                     isReadyForMigration: item.isReadyForMigration,
                     isMigrated: item.isMigrated || false,
                     isBackedUp: false,
                     validationStatus: 'pending' as const,
-                    migrationCheckSortValue,
                     masterStatus,
                     masterStatusMessage,
                     failureReason
@@ -1985,8 +2131,8 @@ function AssignmentRolloutContent() {
             });
 
             // Also track invalid CSV rows that never made it to comparison
-            const invalidCsvRows = csvData.filter(row => !row.isValid).map((row, index): ComparisonResult => ({
-                id: `invalid-${index}-${Date.now()}`,
+            const invalidCsvRows = csvData.filter(row => !row.isValid).map((row): ComparisonResult => ({
+                id: row.rowId || `invalid-${Date.now()}-${Math.random()}`, // Use original rowId
                 assignmentId: '',
                 policy: {
                     id: '',
@@ -2109,6 +2255,7 @@ function AssignmentRolloutContent() {
                     );
                     return {
                         ...result,
+                        batchIndex: chunkIndex,
                         originalPayload
                     };
                 });
@@ -2172,7 +2319,8 @@ function AssignmentRolloutContent() {
                                 masterStatusMessage: isSuccess
                                     ? 'Successfully migrated - pending validation'
                                     : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
-                                failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
+                                failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed'),
+                                batchIndex: migrationResult.batchIndex // Add batch index from migration result
                             };
                         }
                         return result;
@@ -2260,8 +2408,11 @@ function AssignmentRolloutContent() {
                                     p.PolicyName === result.providedPolicyName &&
                                     p.AssignmentResourceName === result.groupToMigrate
                                 );
+                                // Find the original result to preserve its batchIndex
+                                const originalResult = allResults.find(r => r.id === result.id);
                                 return {
                                     ...result,
+                                    batchIndex: originalResult?.batchIndex ?? null,
                                     originalPayload
                                 };
                             });
@@ -2327,7 +2478,8 @@ function AssignmentRolloutContent() {
                                             masterStatusMessage: isSuccess
                                                 ? 'Successfully migrated - pending validation'
                                                 : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
-                                            failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
+                                            failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed'),
+                                            batchIndex: migrationResult.batchIndex // Add batch index from migration result
                                         };
                                     }
                                     return result;
@@ -2417,6 +2569,7 @@ function AssignmentRolloutContent() {
                         r.id === resultId
                             ? {
                                 ...retryResult,
+                                batchIndex: r.batchIndex, // Preserve original batch index
                                 originalPayload: failedResult.originalPayload,
                                 processedAt: new Date().toISOString()
                             }
@@ -2688,8 +2841,8 @@ function AssignmentRolloutContent() {
             );
 
             // Only update master tracking for validated rows
-            setMasterTrackingData(prev =>
-                prev.map(result => {
+            setMasterTrackingData(prev => {
+                const updated = prev.map(result => {
                     if (!validatedItemIds.includes(result.id)) return result;
 
                     const matchingValidation = validationResults.find(vr => {
@@ -2701,11 +2854,30 @@ function AssignmentRolloutContent() {
                                validationGroupName === resultGroupName;
                     });
 
-                    if (!matchingValidation) return result;
-                    return { ...result, ...resolveValidationFields(result, matchingValidation) };
-                })
-            );
+                    if (!matchingValidation) {
+                        console.log(`⚠️ No matching validation found for: ${result.csvRow?.PolicyName || result.policy?.name}`);
+                        return result;
+                    }
 
+                    const validationFields = resolveValidationFields(result, matchingValidation);
+
+                    console.log(`✓ Validation update for ${result.csvRow?.PolicyName || result.policy?.name}:`, {
+                        oldStatus: result.masterStatus,
+                        newStatus: validationFields.masterStatus,
+                        wasSuccessfullyMigrated: result.masterStatus === 'migration_success',
+                        isMigrated: matchingValidation.isMigrated,
+                        isReadyForMigration: matchingValidation.isReadyForMigration
+                    });
+
+                    return { ...result, ...validationFields };
+                });
+
+                console.log('📝 Master tracking updated with validation results');
+                return updated;
+            });
+
+            // Store the count of validated items
+            setValidatedItemsCount(validationResults.length);
             setValidationComplete(true);
             console.log(`Validation completed for ${validationResults.length} selected items`);
         } catch (error) {
@@ -2831,22 +3003,42 @@ const validateAssignments = async () => {
 };
 
     const resetProcess = () => {
+        // Reset step and basic state
         setCurrentStep('upload');
+
+        // Clear all data arrays (used in useMemo calculations)
         setCsvData([]);
         setComparisonResults([]);
         setFilteredComparisonResults([]);
-        setSelectedRows([]);
-        setMigratedRowIds([]);
-        setValidationResults([]);
-        setValidationComplete(false);
-        setRoleScopeTagFilter([]);
-        setCompareStatusFilter('all');
         setMasterTrackingData([]);
         setMigrationResults([]);
+        setValidationResults([]);
+
+        // Clear selection and tracking
+        setSelectedRows([]);
+        setMigratedRowIds([]);
+
+        // Reset filters
+        setRoleScopeTagFilter([]);
+        setCompareStatusFilter('all');
+        setMigrationResultFilter('all');
+
+        // Reset validation state
+        setValidationComplete(false);
+
+        // Reset pagination
+        setCurrentPage(1);
+        setItemsPerPage(10);
+
+        // Clear errors
         setError(null);
+
+        // Reset file input
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
+
+        console.log('🔄 Process reset - all state and memoized data cleared');
     };
 
     const {
@@ -2986,6 +3178,17 @@ const validateAssignments = async () => {
     useEffect(() => {
         let filtered = comparisonResults;
 
+        console.log('📊 Compare Filter Debug:', {
+            totalComparisonResults: comparisonResults.length,
+            compareStatusFilter,
+            statusBreakdown: {
+                ready: comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length,
+                migrated: comparisonResults.filter(r => r.isMigrated).length,
+                warnings: comparisonResults.filter(r => !r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'compare_failed').length,
+                failed: comparisonResults.filter(r => r.masterStatus === 'compare_failed' || (!r.isReadyForMigration && !r.isMigrated)).length,
+            }
+        });
+
         // Apply role scope tag filter
         if (roleScopeTagFilter.length > 0) {
             filtered = filtered.filter((result) => {
@@ -3000,10 +3203,13 @@ const validateAssignments = async () => {
         } else if (compareStatusFilter === 'migrated') {
             filtered = filtered.filter(r => r.isMigrated);
         } else if (compareStatusFilter === 'warnings') {
-            filtered = filtered.filter(r => !r.isReadyForMigration && !r.isMigrated);
+            filtered = filtered.filter(r => !r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'compare_failed');
+        } else if (compareStatusFilter === 'failed') {
+            filtered = filtered.filter(r => r.masterStatus === 'compare_failed');
         }
         // 'all' doesn't need additional filtering
 
+        console.log('Filtered results:', filtered.length);
         setFilteredComparisonResults(filtered);
     }, [comparisonResults, roleScopeTagFilter, compareStatusFilter]);
 
@@ -3545,7 +3751,7 @@ const validateAssignments = async () => {
                         <MigrationSummaryCard step="migrate" />
 
                         {/* Filter by Compare Status */}
-                        <div className="mb-6 flex gap-2">
+                        <div className="mb-6 flex gap-2 flex-wrap">
                             <Button
                                 onClick={() => setCompareStatusFilter('all')}
                                 variant={compareStatusFilter === 'all' ? 'default' : 'outline'}
@@ -3577,13 +3783,22 @@ const validateAssignments = async () => {
                                 Already Migrated ({comparisonResults.filter(r => r.isMigrated).length})
                             </Button>
                             <Button
+                                onClick={() => setCompareStatusFilter('failed')}
+                                variant={compareStatusFilter === 'failed' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <XCircle className="h-4 w-4 text-red-500"/>
+                                Compare Failed ({comparisonResults.filter(r => r.masterStatus === 'compare_failed').length})
+                            </Button>
+                            <Button
                                 onClick={() => setCompareStatusFilter('warnings')}
                                 variant={compareStatusFilter === 'warnings' ? 'default' : 'outline'}
                                 className="flex items-center gap-2"
                                 size="sm"
                             >
-                                <AlertTriangle className="h-4 w-4 text-red-500"/>
-                                Compare failed ({comparisonResults.filter(r => !r.isReadyForMigration && !r.isMigrated).length})
+                                <AlertTriangle className="h-4 w-4 text-orange-500"/>
+                                Warnings ({comparisonResults.filter(r => !r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'compare_failed').length})
                             </Button>
                         </div>
 
@@ -3779,10 +3994,18 @@ const validateAssignments = async () => {
                                 <Circle className="h-4 w-4"/>
                                 Skipped ({migrationResults.filter(r => r.status === 'Skipped').length})
                             </Button>
+                            <Button
+                                onClick={() => setMigrationResultFilter('notstarted')}
+                                variant={migrationResultFilter === 'notstarted' ? 'default' : 'outline'}
+                                className="flex items-center gap-2"
+                            >
+                                <AlertTriangle className="h-4 w-4"/>
+                                Not Started ({migrationResults.filter(r => r.status === 'NotStarted').length})
+                            </Button>
                         </div>
 
                         {/* Summary Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                             <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-green-50/60 to-emerald-50/40 dark:from-green-900/20 dark:to-emerald-900/10 border border-green-200/30 dark:border-green-700/30">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="p-2 bg-green-500/10 dark:bg-green-500/20 rounded-lg backdrop-blur-sm">
@@ -3816,6 +4039,17 @@ const validateAssignments = async () => {
                                     {migrationResults.filter(r => r.status === 'Skipped').length}
                                 </div>
                             </div>
+                            <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-yellow-50/60 to-amber-50/40 dark:from-yellow-900/20 dark:to-amber-900/10 border border-yellow-200/30 dark:border-yellow-700/30">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg backdrop-blur-sm">
+                                        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400"/>
+                                    </div>
+                                    <span className="font-semibold text-yellow-700 dark:text-yellow-300">Not Started</span>
+                                </div>
+                                <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+                                    {migrationResults.filter(r => r.status === 'NotStarted').length}
+                                </div>
+                            </div>
                             <div className="glass-card p-6 hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-blue-50/60 to-indigo-50/40 dark:from-blue-900/20 dark:to-indigo-900/10 border border-blue-200/30 dark:border-blue-700/30">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="p-2 bg-blue-500/10 dark:bg-blue-500/20 rounded-lg backdrop-blur-sm">
@@ -3836,6 +4070,8 @@ const validateAssignments = async () => {
                                     Showing <strong>{filteredMigrationResults.length}</strong> of <strong>{migrationResults.length}</strong> results
                                     {migrationResultFilter === 'success' && ' (Successful only)'}
                                     {migrationResultFilter === 'failed' && ' (Failed only)'}
+                                    {migrationResultFilter === 'skipped' && ' (Skipped only)'}
+                                    {migrationResultFilter === 'notstarted' && ' (Not Started only)'}
                                 </p>
                             </div>
                         )}
@@ -3921,7 +4157,7 @@ const validateAssignments = async () => {
                                             Verification Complete
                                         </p>
                                         <p className="text-sm text-green-700 dark:text-green-300">
-                                            All {comparisonResults.filter(r => r.isCurrentSessionValidation).length} items have been verified. Click &ldquo;View Summary&rdquo; to see the complete report.
+                                            All {validatedItemsCount} items have been verified. Click &ldquo;View Summary&rdquo; to see the complete report.
                                         </p>
                                     </div>
                                 </div>
@@ -3929,23 +4165,32 @@ const validateAssignments = async () => {
                         )}
 
                         {/* Verification Results Table - Same look as compare step */}
-                        {comparisonResults.filter(r => r.isCurrentSessionValidation).length > 0 && (
+                        {validationComplete && validatedItemsCount > 0 && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold">Verification Results
-                                        ({comparisonResults.filter(r => r.isCurrentSessionValidation).length} items)</h3>
+                                        ({validatedItemsCount} items)</h3>
                                     <Badge variant="outline" className="text-xs">
                                         Re-compared against live environment
                                     </Badge>
                                 </div>
+
+                                {validatedItems.length === 0 && (
+                                    <div className="p-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                                        <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                                            ⚠️ No validation results found in table data. Check browser console for debug info.
+                                        </p>
+                                    </div>
+                                )}
+
                                 <div className="border rounded-lg overflow-visible">
                                     <div className="overflow-x-auto overflow-y-visible">
                                         <DataTable
-                                            data={comparisonResults.filter(r => r.isCurrentSessionValidation).map(result => result as unknown as Record<string, unknown>)}
-                                            columns={comparisonColumns}
+                                            data={validatedItems.map(result => result as unknown as Record<string, unknown>)}
+                                            columns={validationColumns}
                                             className="text-sm"
                                             currentPage={validationCurrentPage}
-                                            totalPages={Math.ceil(comparisonResults.filter(r => r.isCurrentSessionValidation).length / itemsPerPage)}
+                                            totalPages={Math.ceil(validatedItemsCount / itemsPerPage)}
                                             itemsPerPage={itemsPerPage}
                                             onPageChange={setValidationCurrentPage}
                                             onItemsPerPageChange={(newItemsPerPage) => {
@@ -3992,6 +4237,7 @@ const validateAssignments = async () => {
                                                 Direction:  row.csvRow?.AssignmentDirection || '',
                                                 Filter:     row.csvRow?.FilterName   || '',
                                                 FilterType: row.csvRow?.FilterType   || '',
+                                                Batch:      row.batchIndex !== null && row.batchIndex !== undefined ? (row.batchIndex + 1).toString() : '',
                                                 FinalStatus: row.masterStatus        || '',
                                                 Notes:      row.failureReason        || row.masterStatusMessage || '',
                                             }));
@@ -4015,17 +4261,11 @@ const validateAssignments = async () => {
                         </CardHeader>
                         <CardContent className="space-y-6">
 
-                            
+
                             {/* ── Attention boxes (only when there are issues) ── */}
                             {(() => {
-                                const csvInvalid      = masterTrackingData.filter(r => r.masterStatus === 'csv_invalid');
-                                const compareFailed   = masterTrackingData.filter(r => r.masterStatus === 'compare_failed' && r.csvRow?.isValid !== false);
-                                const notMigrated     = comparisonResults.filter(r => r.isReadyForMigration && !migratedRowIds.includes(r.id));
-                                const migFailed       = masterTrackingData.filter(r => r.masterStatus === 'migration_failed');
-                                const migNotVerified  = masterTrackingData.filter(r => r.masterStatus === 'migration_success');
-                                const valFailed       = masterTrackingData.filter(r => r.masterStatus === 'validation_failed');
-                                const skipped         = migrationResults.filter(r => r.status === 'Skipped');
-                                const hasIssues = csvInvalid.length + compareFailed.length + notMigrated.length + migFailed.length + migNotVerified.length + valFailed.length + skipped.length > 0;
+                                const { csvInvalid, compareFailed, notMigrated, migFailed, migNotVerified, valFailed, skipped, notStarted } = summaryStats;
+                                const hasIssues = csvInvalid.length + compareFailed.length + notMigrated.length + migFailed.length + migNotVerified.length + valFailed.length + skipped.length + notStarted.length > 0;
                                 if (!hasIssues) return null;
                                 return (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -4044,6 +4284,15 @@ const validateAssignments = async () => {
                                                 <div>
                                                     <p className="text-sm font-semibold text-red-800 dark:text-red-200">{compareFailed.length} Compare failed</p>
                                                     <p className="text-xs text-red-600 dark:text-red-400">Policy or group not found / duplicate</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {notStarted.length > 0 && (
+                                            <div className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                                                <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 shrink-0"/>
+                                                <div>
+                                                    <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">{notStarted.length} Not Started</p>
+                                                    <p className="text-xs text-yellow-600 dark:text-yellow-400">Sent to API but never processed 👻</p>
                                                 </div>
                                             </div>
                                         )}
@@ -4094,16 +4343,19 @@ const validateAssignments = async () => {
                                     Migration Statistics
                                 </h3>
                                 {(() => {
-                                    const totalUploaded = csvData.length;
-                                    const csvInvalid = masterTrackingData.filter(r => r.masterStatus === 'csv_invalid').length;
-                                    const compareFailed = masterTrackingData.filter(r => r.masterStatus === 'compare_failed' && r.csvRow?.isValid !== false).length;
-                                    const notSelected = comparisonResults.filter(r => r.isReadyForMigration && !migratedRowIds.includes(r.id)).length;
-                                    const readyForMigration = comparisonResults.filter(r => r.isReadyForMigration && migratedRowIds.includes(r.id)).length;
-                                    const migrationSuccess = migrationResults.filter(r => r.status === 'Success').length;
-                                    const migrationSkipped = migrationResults.filter(r => r.status === 'Skipped').length;
-                                    const migrationFailed = migrationResults.filter(r => r.status === 'Failed').length;
-                                    const verified = masterTrackingData.filter(r => r.masterStatus === 'validation_success').length;
-                                    const verifyFailed = masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length;
+                                    const {
+                                        totalUploaded,
+                                        csvInvalidCount,
+                                        compareFailedCount,
+                                        notSelectedCount,
+                                        readyForMigrationCount,
+                                        notStartedCount,
+                                        migrationSuccessCount,
+                                        migrationSkippedCount,
+                                        migrationFailedCount,
+                                        verifiedCount,
+                                        verifyFailedCount
+                                    } = summaryStats;
 
                                     return (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -4117,33 +4369,33 @@ const validateAssignments = async () => {
                                                     <span className="text-lg font-bold text-gray-900 dark:text-gray-100">{totalUploaded}</span>
                                                 </div>
 
-                                                {csvInvalid > 0 && (
+                                                {csvInvalidCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <XCircle className="h-4 w-4 text-red-500"/>
                                                             <span className="text-sm text-red-700 dark:text-red-300">CSV Invalid</span>
                                                         </div>
-                                                        <span className="text-sm font-bold text-red-700 dark:text-red-300">{csvInvalid}</span>
+                                                        <span className="text-sm font-bold text-red-700 dark:text-red-300">{csvInvalidCount}</span>
                                                     </div>
                                                 )}
 
-                                                {compareFailed > 0 && (
+                                                {compareFailedCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <AlertTriangle className="h-4 w-4 text-orange-500"/>
-                                                            <span className="text-sm text-orange-700 dark:text-orange-300">Warnings/Errors (duplicates, not found)</span>
+                                                            <span className="text-sm text-orange-700 dark:text-orange-300">Compare Failed</span>
                                                         </div>
-                                                        <span className="text-sm font-bold text-orange-700 dark:text-orange-300">{compareFailed}</span>
+                                                        <span className="text-sm font-bold text-orange-700 dark:text-orange-300">{compareFailedCount}</span>
                                                     </div>
                                                 )}
 
-                                                {notSelected > 0 && (
+                                                {notSelectedCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <Circle className="h-4 w-4 text-gray-400"/>
                                                             <span className="text-sm text-gray-600 dark:text-gray-400">Already Migrated (Not Selected)</span>
                                                         </div>
-                                                        <span className="text-sm font-bold text-gray-600 dark:text-gray-400">{notSelected}</span>
+                                                        <span className="text-sm font-bold text-gray-600 dark:text-gray-400">{notSelectedCount}</span>
                                                     </div>
                                                 )}
 
@@ -4152,7 +4404,7 @@ const validateAssignments = async () => {
                                                         <CheckCircle className="h-4 w-4 text-blue-600"/>
                                                         <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Ready for Migration</span>
                                                     </div>
-                                                    <span className="text-lg font-bold text-blue-700 dark:text-blue-300">{readyForMigration}</span>
+                                                    <span className="text-lg font-bold text-blue-700 dark:text-blue-300">{readyForMigrationCount}</span>
                                                 </div>
                                             </div>
 
@@ -4160,56 +4412,79 @@ const validateAssignments = async () => {
                                             <div className="space-y-3">
                                                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 flex items-center gap-2">
                                                     <ArrowRight className="h-4 w-4"/>
-                                                    From {readyForMigration} ready:
+                                                    From {readyForMigrationCount} ready:
                                                 </div>
 
-                                                {migrationSuccess > 0 && (
+                                                {/* Show total processed to verify math */}
+                                                {(migrationSuccessCount + migrationSkippedCount + migrationFailedCount + notStartedCount) > 0 && (
+                                                    <div className="flex items-center justify-between p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded border border-blue-200/50 dark:border-blue-800/50 ml-4">
+                                                        <span className="text-xs text-blue-600 dark:text-blue-400">Total Accounted:</span>
+                                                        <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                                                            {migrationSuccessCount + migrationSkippedCount + migrationFailedCount + notStartedCount} / {readyForMigrationCount}
+                                                            {(migrationSuccessCount + migrationSkippedCount + migrationFailedCount + notStartedCount) !== readyForMigrationCount && (
+                                                                <span className="ml-2 text-orange-600">⚠️</span>
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                {migrationSuccessCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <CheckCircle2 className="h-4 w-4 text-green-600"/>
                                                             <span className="text-sm text-green-700 dark:text-green-300">Successfully Migrated</span>
                                                         </div>
-                                                        <span className="text-lg font-bold text-green-700 dark:text-green-300">{migrationSuccess}</span>
+                                                        <span className="text-lg font-bold text-green-700 dark:text-green-300">{migrationSuccessCount}</span>
                                                     </div>
                                                 )}
 
-                                                {migrationSkipped > 0 && (
+                                                {migrationSkippedCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <Circle className="h-4 w-4 text-gray-400"/>
                                                             <span className="text-sm text-gray-600 dark:text-gray-400">Skipped</span>
                                                         </div>
-                                                        <span className="text-sm font-bold text-gray-600 dark:text-gray-400">{migrationSkipped}</span>
+                                                        <span className="text-sm font-bold text-gray-600 dark:text-gray-400">{migrationSkippedCount}</span>
                                                     </div>
                                                 )}
 
-                                                {migrationFailed > 0 && (
+                                                {notStartedCount > 0 && (
+                                                    <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800 ml-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <AlertTriangle className="h-4 w-4 text-yellow-600"/>
+                                                            <span className="text-sm text-yellow-700 dark:text-yellow-300">Not Started 👻</span>
+                                                        </div>
+                                                        <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{notStartedCount}</span>
+                                                    </div>
+                                                )}
+
+                                                {migrationFailedCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <XCircle className="h-4 w-4 text-red-500"/>
                                                             <span className="text-sm text-red-700 dark:text-red-300">Migration Failed</span>
                                                         </div>
-                                                        <span className="text-sm font-bold text-red-700 dark:text-red-300">{migrationFailed}</span>
+                                                        <span className="text-sm font-bold text-red-700 dark:text-red-300">{migrationFailedCount}</span>
                                                     </div>
                                                 )}
 
-                                                {verified > 0 && (
+                                                {verifiedCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border-2 border-emerald-400 dark:border-emerald-600 ml-4 mt-4">
                                                         <div className="flex items-center gap-2">
                                                             <CheckCircle2 className="h-5 w-5 text-emerald-600"/>
                                                             <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Verified in Intune</span>
                                                         </div>
-                                                        <span className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{verified}</span>
+                                                        <span className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{verifiedCount}</span>
                                                     </div>
                                                 )}
 
-                                                {verifyFailed > 0 && (
+                                                {verifyFailedCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <XCircle className="h-4 w-4 text-red-500"/>
                                                             <span className="text-sm text-red-700 dark:text-red-300">Verification Failed</span>
                                                         </div>
-                                                        <span className="text-sm font-bold text-red-700 dark:text-red-300">{verifyFailed}</span>
+                                                        <span className="text-sm font-bold text-red-700 dark:text-red-300">{verifyFailedCount}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -4219,11 +4494,11 @@ const validateAssignments = async () => {
                             </div>
 
                             {/* ── Success banner ── */}
-                            {masterTrackingData.filter(r => r.masterStatus === 'validation_success').length > 0 && (
+                            {summaryStats.verifiedCount > 0 && (
                                 <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                                     <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0"/>
                                     <p className="text-sm text-green-800 dark:text-green-200">
-                                        <strong>{masterTrackingData.filter(r => r.masterStatus === 'validation_success').length}</strong> assignment(s) successfully migrated and verified in Intune. ✓
+                                        <strong>{summaryStats.verifiedCount}</strong> assignment(s) successfully migrated and verified in Intune.
                                     </p>
                                 </div>
                             )}
@@ -4243,17 +4518,114 @@ const validateAssignments = async () => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
+                                {/* Status Filter Buttons */}
+                                <div className="mb-4 flex flex-wrap gap-2">
+                                    <Button
+                                        onClick={() => setSummaryStatusFilter('all')}
+                                        variant={summaryStatusFilter === 'all' ? 'default' : 'outline'}
+                                        size="sm"
+                                        className="flex items-center gap-2"
+                                    >
+                                        <Circle className="h-3 w-3"/>
+                                        All ({summaryTableData.length})
+                                    </Button>
+                                    {summaryStats.csvInvalidCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('csv_invalid')}
+                                            variant={summaryStatusFilter === 'csv_invalid' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <XCircle className="h-3 w-3 text-red-500"/>
+                                            CSV Invalid ({summaryStats.csvInvalidCount})
+                                        </Button>
+                                    )}
+                                    {summaryStats.compareFailedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('compare_failed')}
+                                            variant={summaryStatusFilter === 'compare_failed' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <AlertTriangle className="h-3 w-3 text-orange-500"/>
+                                            Compare Failed ({summaryStats.compareFailedCount})
+                                        </Button>
+                                    )}
+                                    {summaryStats.notSelectedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('compare_ready')}
+                                            variant={summaryStatusFilter === 'compare_ready' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <Circle className="h-3 w-3 text-gray-400"/>
+                                            Not Selected ({summaryStats.notSelectedCount})
+                                        </Button>
+                                    )}
+                                    {summaryStats.migrationSuccessCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('migration_success')}
+                                            variant={summaryStatusFilter === 'migration_success' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <CheckCircle2 className="h-3 w-3 text-blue-500"/>
+                                            Migrated ({summaryStats.migrationSuccessCount})
+                                        </Button>
+                                    )}
+                                    {summaryStats.migrationFailedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('migration_failed')}
+                                            variant={summaryStatusFilter === 'migration_failed' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <XCircle className="h-3 w-3 text-red-500"/>
+                                            Migration Failed ({summaryStats.migrationFailedCount})
+                                        </Button>
+                                    )}
+                                    {summaryStats.verifiedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('validation_success')}
+                                            variant={summaryStatusFilter === 'validation_success' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <CheckCircle2 className="h-3 w-3 text-emerald-500"/>
+                                            Verified ({summaryStats.verifiedCount})
+                                        </Button>
+                                    )}
+                                    {summaryStats.verifyFailedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('validation_failed')}
+                                            variant={summaryStatusFilter === 'validation_failed' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <XCircle className="h-3 w-3 text-red-500"/>
+                                            Verify Failed ({summaryStats.verifyFailedCount})
+                                        </Button>
+                                    )}
+                                </div>
+
+                                {/* Filter indicator */}
+                                {summaryStatusFilter !== 'all' && (
+                                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                                            Showing <strong>{filteredSummaryTableData.length}</strong> of <strong>{summaryTableData.length}</strong> rows
+                                            {summaryStatusFilter === 'csv_invalid' && ' (CSV Invalid only)'}
+                                            {summaryStatusFilter === 'compare_failed' && ' (Compare Failed only)'}
+                                            {summaryStatusFilter === 'compare_ready' && ' (Not Selected only)'}
+                                            {summaryStatusFilter === 'migration_success' && ' (Migrated only)'}
+                                            {summaryStatusFilter === 'migration_failed' && ' (Migration Failed only)'}
+                                            {summaryStatusFilter === 'validation_success' && ' (Verified only)'}
+                                            {summaryStatusFilter === 'validation_failed' && ' (Verify Failed only)'}
+                                        </p>
+                                    </div>
+                                )}
+
                                 <DataTable
-                                    data={masterTrackingData.map(row => ({
-                                        id: row.id,
-                                        policy:    row.csvRow?.PolicyName   || row.policy?.name || row.providedPolicyName || '—',
-                                        action:    row.csvRow?.AssignmentAction    || '—',
-                                        group:     row.csvRow?.GroupName    || row.groupToMigrate || '—',
-                                        direction: row.csvRow?.AssignmentDirection || '—',
-                                        filter:    row.csvRow?.FilterName   ? `${row.csvRow.FilterName} (${row.csvRow.FilterType || ''})` : '—',
-                                        status:    row.masterStatus         || 'unknown',
-                                        notes:     row.failureReason        || row.masterStatusMessage || '—',
-                                    }))}
+                                    data={filteredSummaryTableData}
                                     columns={[
                                         {
                                             key: 'policy',
@@ -4301,6 +4673,7 @@ const validateAssignments = async () => {
                                                 const val = String(v);
                                                 const map: Record<string, { label: string; cls: string }> = {
                                                     csv_invalid:         { label: 'CSV Invalid',        cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
+                                                    csv_uploaded:        { label: 'Status Unknown',     cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' },
                                                     compare_ready:       { label: 'Ready (Not Migrated)', cls: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
                                                     compare_failed:      { label: 'Compare Failed',     cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
                                                     migration_ready:     { label: 'Ready',              cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' },
@@ -4311,6 +4684,18 @@ const validateAssignments = async () => {
                                                 };
                                                 const entry = map[val] ?? { label: val, cls: 'bg-gray-100 text-gray-600' };
                                                 return <span className={`px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${entry.cls}`}>{entry.label}</span>;
+                                            }
+                                        },
+                                        {
+                                            key: 'batch',
+                                            label: 'Batch',
+                                            render: (v) => {
+                                                if (v === null || v === undefined) return <span className="text-xs text-gray-400">—</span>;
+                                                return (
+                                                    <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                                                        #{String(v)}
+                                                    </span>
+                                                );
                                             }
                                         },
                                         {
