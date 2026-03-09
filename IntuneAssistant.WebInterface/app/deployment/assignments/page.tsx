@@ -392,13 +392,14 @@ function AssignmentRolloutContent() {
             totalUploaded: csvData.length,
             csvInvalidCount: masterTrackingData.filter(r => r.masterStatus === 'csv_invalid').length,
             compareFailedCount: compareFailedItems.length,
+            alreadyMigratedCount: alreadyMigratedItems.length,
             notSelectedCount: compareReadyThisSession.length + alreadyMigratedItems.length,
             readyForMigrationCount: readyForMigrationCount,
             missingCount: 0,
             notStartedCount: migrationResults.filter(r => r.status === 'NotStarted').length,
-            migrationSuccessCount: migrationResults.filter(r => r.status === 'Success').length,
+            migrationSuccessCount: masterTrackingData.filter(r => r.masterStatus === 'migration_success').length,
             migrationSkippedCount: migrationResults.filter(r => r.status === 'Skipped').length,
-            migrationFailedCount: migrationResults.filter(r => r.status === 'Failed').length,
+            migrationFailedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length,
             verifiedCount: masterTrackingData.filter(r => r.masterStatus === 'validation_success').length,
             verifyFailedCount: masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length,
         };
@@ -1534,7 +1535,7 @@ function AssignmentRolloutContent() {
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return result.policy ? (
-                    <div className="text-sm font-medium cursor-pointer truncate block w-full text-left"
+                    <div className="text-sm font-medium text-left"
                          title={result.policy.name}>
                         {result.policy.name}
                     </div>
@@ -1553,7 +1554,7 @@ function AssignmentRolloutContent() {
 
                 return result.csvRow?.GroupName ? (
                     <div
-                        className={`text-sm font-medium cursor-pointer truncate block w-full text-left ${
+                        className={`text-sm font-medium text-left ${
                             isNoAssignment ? 'italic text-gray-400' : ''
                         }`}
                         title={result.csvRow?.GroupName}
@@ -1576,6 +1577,30 @@ function AssignmentRolloutContent() {
                         {result.csvRow.AssignmentAction}
                     </Badge>
                 ) : null;
+            }
+        },
+        {
+            key: 'batchIndex',
+            label: 'Batch',
+            width: 80,
+            sortable: true,
+            sortValue: (row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                return result.batchIndex ?? -1;
+            },
+            render: (_: unknown, row: Record<string, unknown>) => {
+                const result = row as unknown as ComparisonResult;
+                const batchNumber = result.batchIndex !== null && result.batchIndex !== undefined
+                    ? result.batchIndex + 1
+                    : null;
+
+                return batchNumber !== null ? (
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                        #{batchNumber}
+                    </Badge>
+                ) : (
+                    <span className="text-sm text-gray-400">-</span>
+                );
             }
         },
         {
@@ -1622,7 +1647,7 @@ function AssignmentRolloutContent() {
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
                 return (
-                    <span className="text-sm font-medium cursor-pointer truncate block w-full text-left">
+                    <span className="text-sm font-medium text-left">
                     {result.validationMessage || '-'}
                 </span>
                 );
@@ -4567,6 +4592,17 @@ const validateAssignments = async () => {
                                             Not Selected ({summaryStats.notSelectedCount})
                                         </Button>
                                     )}
+                                    {summaryStats.alreadyMigratedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('already_migrated')}
+                                            variant={summaryStatusFilter === 'already_migrated' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <CheckCircle2 className="h-3 w-3 text-blue-500"/>
+                                            Already Migrated ({summaryStats.alreadyMigratedCount})
+                                        </Button>
+                                    )}
                                     {summaryStats.migrationSuccessCount > 0 && (
                                         <Button
                                             onClick={() => setSummaryStatusFilter('migration_success')}
@@ -4575,7 +4611,18 @@ const validateAssignments = async () => {
                                             className="flex items-center gap-2"
                                         >
                                             <CheckCircle2 className="h-3 w-3 text-blue-500"/>
-                                            Migrated ({summaryStats.migrationSuccessCount})
+                                            Migrated (Not Verified) ({summaryStats.migrationSuccessCount})
+                                        </Button>
+                                    )}
+                                    {summaryStats.verifiedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('validation_success')}
+                                            variant={summaryStatusFilter === 'validation_success' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <CheckCircle2 className="h-3 w-3 text-emerald-500"/>
+                                            Migrated (Verified) ({summaryStats.verifiedCount})
                                         </Button>
                                     )}
                                     {summaryStats.migrationFailedCount > 0 && (
@@ -4587,17 +4634,6 @@ const validateAssignments = async () => {
                                         >
                                             <XCircle className="h-3 w-3 text-red-500"/>
                                             Migration Failed ({summaryStats.migrationFailedCount})
-                                        </Button>
-                                    )}
-                                    {summaryStats.verifiedCount > 0 && (
-                                        <Button
-                                            onClick={() => setSummaryStatusFilter('validation_success')}
-                                            variant={summaryStatusFilter === 'validation_success' ? 'default' : 'outline'}
-                                            size="sm"
-                                            className="flex items-center gap-2"
-                                        >
-                                            <CheckCircle2 className="h-3 w-3 text-emerald-500"/>
-                                            Verified ({summaryStats.verifiedCount})
                                         </Button>
                                     )}
                                     {summaryStats.verifyFailedCount > 0 && (
@@ -4696,11 +4732,14 @@ const validateAssignments = async () => {
                                             key: 'batch',
                                             label: 'Batch',
                                             render: (v) => {
-                                                if (v === null || v === undefined) return <span className="text-xs text-gray-400">—</span>;
-                                                return (
-                                                    <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
-                                                        #{String(v)}
-                                                    </span>
+                                                const batchNumber = v !== null && v !== undefined ? v : null;
+
+                                                return batchNumber !== null ? (
+                                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                                                        #{String(batchNumber)}
+                                                    </Badge>
+                                                ) : (
+                                                    <span className="text-sm text-gray-400">-</span>
                                                 );
                                             }
                                         },
