@@ -157,7 +157,7 @@ interface ComparisonResult {
     validationMessage?: string;
     isCurrentSessionValidation?: boolean;
     // Master tracking fields for comprehensive status
-    masterStatus?: 'csv_invalid' | 'csv_uploaded' | 'compare_ready' | 'compare_failed' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed';
+    masterStatus?: 'csv_invalid' | 'csv_uploaded' | 'compare_ready' | 'compare_failed' | 'already_migrated' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed';
     masterStatusMessage?: string;
     failureReason?: string; // Why this item couldn't proceed
     batchIndex?: number | null; // Which batch this migration was part of
@@ -304,7 +304,7 @@ function AssignmentRolloutContent() {
     const [filteredComparisonResults, setFilteredComparisonResults] = useState<ComparisonResult[]>([]);
     const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed' | 'skipped' | 'notstarted'>('all');
     const [compareStatusFilter, setCompareStatusFilter] = useState<'all' | 'ready' | 'migrated' | 'warnings' | 'failed'>('all');
-    const [summaryStatusFilter, setSummaryStatusFilter] = useState<'all' | 'csv_invalid' | 'compare_failed' | 'compare_ready' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed'>('all');
+    const [summaryStatusFilter, setSummaryStatusFilter] = useState<'all' | 'csv_invalid' | 'compare_failed' | 'compare_ready' | 'already_migrated' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed'>('all');
 
     // Add pagination logic before the return statement
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -356,42 +356,45 @@ function AssignmentRolloutContent() {
         // Use ONLY masterTrackingData as single source of truth to prevent double counting
         // Each row appears ONCE in masterTrackingData with its final status
 
-        // Count items that were selected for migration (in migratedRowIds)
-        // This includes items in any post-compare status
-        const selectedForMigration = masterTrackingData.filter(r => migratedRowIds.includes(r.id));
-
+        // Count items by their status
         const compareFailedItems = masterTrackingData.filter(r => r.masterStatus === 'compare_failed');
 
-        // Debug logging
-        console.log('SUMMARY STATS DEBUG:');
-        console.log(`masterTrackingData.length: ${masterTrackingData.length}`);
-        console.log(`compareFailedItems.length: ${compareFailedItems.length}`);
-        console.log('Compare failed items:', compareFailedItems.map(r => ({
-            id: r.id,
-            policy: r.csvRow?.PolicyName || r.policy?.name,
-            status: r.masterStatus,
-            reason: r.failureReason
-        })));
+        // Items already migrated from previous sessions
+        const alreadyMigratedItems = masterTrackingData.filter(r => r.masterStatus === 'already_migrated');
+
+        // Items ready for migration in THIS session
+        const compareReadyThisSession = masterTrackingData.filter(r => r.masterStatus === 'compare_ready');
+
+        // Items migrated in THIS session
+        const migratedThisSession = masterTrackingData.filter(r =>
+            r.masterStatus === 'migration_success' ||
+            r.masterStatus === 'migration_failed' ||
+            r.masterStatus === 'validation_success' ||
+            r.masterStatus === 'validation_failed'
+        );
+
+        // Ready for migration = items ready this session + items migrated this session
+        const readyForMigrationCount = compareReadyThisSession.length + migratedThisSession.length;
 
         return {
             // Attention boxes data - all from masterTrackingData
             csvInvalid: masterTrackingData.filter(r => r.masterStatus === 'csv_invalid'),
             compareFailed: compareFailedItems,
-            notMigrated: masterTrackingData.filter(r => r.masterStatus === 'compare_ready' && !migratedRowIds.includes(r.id)),
+            notMigrated: compareReadyThisSession,
             migFailed: masterTrackingData.filter(r => r.masterStatus === 'migration_failed'),
             migNotVerified: masterTrackingData.filter(r => r.masterStatus === 'migration_success'),
             valFailed: masterTrackingData.filter(r => r.masterStatus === 'validation_failed'),
             skipped: migrationResults.filter(r => r.status === 'Skipped'),
             notStarted: migrationResults.filter(r => r.status === 'NotStarted'),
-            missing: [], // No longer needed - all rows are in masterTrackingData
+            missing: [],
 
             // Statistics counts - all from masterTrackingData
             totalUploaded: csvData.length,
             csvInvalidCount: masterTrackingData.filter(r => r.masterStatus === 'csv_invalid').length,
             compareFailedCount: compareFailedItems.length,
-            notSelectedCount: masterTrackingData.filter(r => r.masterStatus === 'compare_ready' && !migratedRowIds.includes(r.id)).length,
-            readyForMigrationCount: selectedForMigration.length, // All items that were selected for migration
-            missingCount: 0, // No missing rows - all accounted for in masterTrackingData
+            notSelectedCount: compareReadyThisSession.length + alreadyMigratedItems.length,
+            readyForMigrationCount: readyForMigrationCount,
+            missingCount: 0,
             notStartedCount: migrationResults.filter(r => r.status === 'NotStarted').length,
             migrationSuccessCount: migrationResults.filter(r => r.status === 'Success').length,
             migrationSkippedCount: migrationResults.filter(r => r.status === 'Skipped').length,
@@ -399,7 +402,7 @@ function AssignmentRolloutContent() {
             verifiedCount: masterTrackingData.filter(r => r.masterStatus === 'validation_success').length,
             verifyFailedCount: masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length,
         };
-    }, [masterTrackingData, migratedRowIds, migrationResults, csvData]);
+    }, [masterTrackingData, migrationResults, csvData]);
 
     // Memoize summary table data
     const summaryTableData = useMemo(() => {
@@ -422,18 +425,12 @@ function AssignmentRolloutContent() {
         }, {} as Record<string, number>);
 
         console.log('SUMMARY TABLE STATUS BREAKDOWN:', statusCounts);
-
-        // Debug: Show samples of "Ready (Not Migrated)" items
-        const compareReadyItems = data.filter(r => r.status === 'compare_ready');
-        if (compareReadyItems.length > 0) {
-            console.log(`Found ${compareReadyItems.length} items with 'compare_ready' status in summary:`);
-            console.log('Sample items:', compareReadyItems.slice(0, 3).map(r => ({
-                policy: r.policy,
-                group: r.group,
-                status: r.status,
-                notes: r.notes
-            })));
-        }
+        console.log('First 5 masterTrackingData items:', masterTrackingData.slice(0, 5).map(r => ({
+            policy: r.csvRow?.PolicyName || r.policy?.name,
+            masterStatus: r.masterStatus,
+            isMigrated: r.isMigrated,
+            batchIndex: r.batchIndex
+        })));
 
         return data;
     }, [masterTrackingData]);
@@ -448,27 +445,29 @@ function AssignmentRolloutContent() {
 
     // Compute validated items for verification results table
     const validatedItems = useMemo(() => {
-        const items = masterTrackingData.filter(r => r.masterStatus === 'validation_success' || r.masterStatus === 'validation_failed');
+        // First try items with validation status
+        const validationStatusItems = masterTrackingData.filter(r =>
+            r.masterStatus === 'validation_success' || r.masterStatus === 'validation_failed'
+        );
 
-        // Debug logging
-        console.log('🔍 VALIDATION RESULTS TABLE DEBUG:');
-        console.log(`validationComplete: ${validationComplete}`);
-        console.log(`validatedItemsCount: ${validatedItemsCount}`);
-        console.log(`masterTrackingData.length: ${masterTrackingData.length}`);
-        console.log(`validatedItems.length: ${items.length}`);
-        console.log('masterTrackingData statuses:', masterTrackingData.map(r => ({
-            id: r.id.substring(0, 8),
-            status: r.masterStatus,
-            policy: r.csvRow?.PolicyName || r.policy?.name
-        })).slice(0, 10)); // Show first 10
-
-        if (items.length === 0 && validationComplete && validatedItemsCount > 0) {
-            console.error('⚠️ NO VALIDATED ITEMS FOUND! But validatedItemsCount is', validatedItemsCount);
-            console.log('All masterStatus values:', [...new Set(masterTrackingData.map(r => r.masterStatus))]);
+        if (validationStatusItems.length > 0) {
+            return validationStatusItems;
         }
 
-        return items;
-    }, [masterTrackingData, validationComplete, validatedItemsCount]);
+        // If no validation status items but we have validatedItemsCount,
+        // try migration_success items
+        if (validatedItemsCount > 0) {
+            const migrationSuccessItems = masterTrackingData.filter(r => r.masterStatus === 'migration_success');
+            if (migrationSuccessItems.length > 0) {
+                return migrationSuccessItems;
+            }
+
+            // Last resort: use items from migratedRowIds list
+            return masterTrackingData.filter(r => migratedRowIds.includes(r.id));
+        }
+
+        return [];
+    }, [masterTrackingData, validatedItemsCount, migratedRowIds]);
 
     // Summary Component for consistent display across all steps
     const MigrationSummaryCard = ({ step }: { step: 'upload' | 'compare' | 'migrate' | 'results' | 'validate' }) => {
@@ -2092,8 +2091,14 @@ function AssignmentRolloutContent() {
                 let failureReason = '';
 
                 if (item.isReadyForMigration) {
-                    masterStatus = 'compare_ready';
-                    masterStatusMessage = 'Ready for migration';
+                    // Check if already migrated from a previous session
+                    if (item.isMigrated) {
+                        masterStatus = 'already_migrated';
+                        masterStatusMessage = 'Already migrated in previous session';
+                    } else {
+                        masterStatus = 'compare_ready';
+                        masterStatusMessage = 'Ready for migration';
+                    }
                 } else {
                     masterStatus = 'compare_failed';
 
@@ -2855,13 +2860,13 @@ function AssignmentRolloutContent() {
                     });
 
                     if (!matchingValidation) {
-                        console.log(`⚠️ No matching validation found for: ${result.csvRow?.PolicyName || result.policy?.name}`);
+                        console.log(`No matching validation found for: ${result.csvRow?.PolicyName || result.policy?.name}`);
                         return result;
                     }
 
                     const validationFields = resolveValidationFields(result, matchingValidation);
 
-                    console.log(`✓ Validation update for ${result.csvRow?.PolicyName || result.policy?.name}:`, {
+                    console.log(`Validation update for ${result.csvRow?.PolicyName || result.policy?.name}:`, {
                         oldStatus: result.masterStatus,
                         newStatus: validationFields.masterStatus,
                         wasSuccessfullyMigrated: result.masterStatus === 'migration_success',
@@ -2872,7 +2877,7 @@ function AssignmentRolloutContent() {
                     return { ...result, ...validationFields };
                 });
 
-                console.log('📝 Master tracking updated with validation results');
+                console.log('Master tracking updated with validation results');
                 return updated;
             });
 
@@ -4178,7 +4183,7 @@ const validateAssignments = async () => {
                                 {validatedItems.length === 0 && (
                                     <div className="p-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                                         <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                                            ⚠️ No validation results found in table data. Check browser console for debug info.
+                                            No validation results found in table data. Check browser console for debug info.
                                         </p>
                                     </div>
                                 )}
@@ -4393,7 +4398,7 @@ const validateAssignments = async () => {
                                                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <Circle className="h-4 w-4 text-gray-400"/>
-                                                            <span className="text-sm text-gray-600 dark:text-gray-400">Already Migrated (Not Selected)</span>
+                                                            <span className="text-sm text-gray-600 dark:text-gray-400">Not Selected for Migration</span>
                                                         </div>
                                                         <span className="text-sm font-bold text-gray-600 dark:text-gray-400">{notSelectedCount}</span>
                                                     </div>
@@ -4676,6 +4681,7 @@ const validateAssignments = async () => {
                                                     csv_uploaded:        { label: 'Status Unknown',     cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' },
                                                     compare_ready:       { label: 'Ready (Not Migrated)', cls: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
                                                     compare_failed:      { label: 'Compare Failed',     cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
+                                                    already_migrated:    { label: 'Already Migrated',   cls: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' },
                                                     migration_ready:     { label: 'Ready',              cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' },
                                                     migration_success:   { label: 'Migrated',         cls: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' },
                                                     migration_failed:    { label: 'Migration Failed',   cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
