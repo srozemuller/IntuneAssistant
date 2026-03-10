@@ -20,6 +20,7 @@ interface Column {
     minWidth?: number;
     sortable?: boolean;
     searchable?: boolean;
+    defaultHidden?: boolean; // Column hidden by default but can be shown via columns button
     sortValue?: (row: Record<string, unknown>) => number | string;
     render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
     hasExplicitWidth?: boolean; // internal: true when caller set an explicit width
@@ -218,10 +219,10 @@ function DataTableComponent(props: DataTableProps) {
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [resizing, setResizing] = useState<{ columnIndex: number; startX: number; startWidth: number } | null>(null);
     const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() => {
-        // Initialize all columns as visible
+        // Initialize columns: visible by default unless marked as defaultHidden
         const visibility: Record<string, boolean> = {};
         columnsWithSelection.forEach(col => {
-            visibility[col.key] = true;
+            visibility[col.key] = (col as Column).defaultHidden !== true;
         });
         return visibility;
     });
@@ -475,8 +476,6 @@ function DataTableComponent(props: DataTableProps) {
             rafId = requestAnimationFrame(() => {
                 const diff = e.clientX - resizing.startX;
                 const newWidth = Math.max(resizing.startWidth + diff, columns[resizing.columnIndex].minWidth || 100);
-
-                console.log('🔄 Resizing column:', resizing.columnIndex, 'New width:', newWidth, 'Diff:', diff);
 
                 setColumns(prev => prev.map((col, index) =>
                     index === resizing.columnIndex ? { ...col, width: newWidth } : col

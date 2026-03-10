@@ -13,7 +13,16 @@ export class ApiError extends Error {
     }
 }
 
-export async function apiRequest<T>(url: string, options: RequestInit = {}, token?: string): Promise<T> {
+// Track if we've already warned about missing correlation ID header
+let hasWarnedAboutCorrelationId = false;
+
+// Return type that includes both data and correlationId
+export interface ApiResponseWithCorrelation<T> {
+    data: T;
+    correlationId: string | null;
+}
+
+export async function apiRequest<T>(url: string, options: RequestInit = {}, token?: string): Promise<ApiResponseWithCorrelation<T>> {
     try {
         // Add authorization header if token is provided
         const headers = {
@@ -27,18 +36,17 @@ export async function apiRequest<T>(url: string, options: RequestInit = {}, toke
             headers
         });
 
-        // Extract correlation ID from response headers ALWAYS
-        const correlationId = response.headers.get('x-correlation-id') ||
-            response.headers.get('X-Correlation-ID') ||
-            response.headers.get('correlation-id') ||
-            response.headers.get('Correlation-ID');
-
         // Handle non-JSON responses
         const contentType = response.headers.get('content-type');
         const isJson = contentType && contentType.includes('application/json');
 
         // Parse response
         const data = isJson ? await response.json() : await response.text();
+
+        // Extract correlation ID from response headers AFTER response is complete
+        const correlationId = response.headers.get('x-correlation-id') ||
+            response.headers.get('X-Correlation-ID') ||
+            null;
 
         // Handle 401 specifically for consent
         if (response.status === 401) {
@@ -78,9 +86,18 @@ export async function apiRequest<T>(url: string, options: RequestInit = {}, toke
             throw new ApiError(errorMessage, correlationId, response.status);
         }
 
-        // Success case
-        console.log("Success response, correlation ID:", correlationId);
-        return data as T;
+        // Success case - log correlation ID if available
+        if (correlationId) {
+            console.log("Correlation ID:", correlationId);
+        } else if (!hasWarnedAboutCorrelationId) {
+            hasWarnedAboutCorrelationId = true;
+        }
+
+        // Return both data and correlationId
+        return {
+            data: data as T,
+            correlationId: correlationId
+        };
     } catch (error) {
         // Re-throw specific errors
         if (error instanceof UserConsentRequiredError || error instanceof ApiError) {

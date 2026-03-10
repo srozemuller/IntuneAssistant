@@ -602,7 +602,7 @@ export default function CustomerOnboardingModal({
                                         Sign in to automatically detect your tenant information and consent to the first application.
                                     </p>
                                     <p className="text-xs text-muted-foreground mb-4 px-4">
-                                        After login, we'll automatically extract your <strong>Tenant ID</strong> and <strong>Domain</strong> from your account.
+                                        After login, we&apos;ll automatically extract your <strong>Tenant ID</strong> and <strong>Domain</strong> from your account.
                                     </p>
 
                                     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4 text-left max-w-md mx-auto">
@@ -800,14 +800,13 @@ export default function CustomerOnboardingModal({
                                                 <Shield className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                                                 <div className="flex-1">
                                                     <h4 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
-                                                        Step 2: Assistant License Consent
+                                                        Step 2: Intune Assistant Consent
                                                     </h4>
                                                     <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
-                                                        Click below to grant admin consent for <strong>Assistant License 0</strong> in a popup window.
+                                                        Click below to grant admin consent for <strong>Intune Assistant API</strong> in a popup window.
                                                     </p>
                                                     <div className="text-xs text-amber-700 dark:text-amber-300 space-y-1">
                                                         <p><strong>Application ID:</strong> afe66ddf-67d4-4d61-8a51-beca7b799f52</p>
-                                                        <p><strong>License Type:</strong> Assistant License 0 (Basic tier)</p>
                                                     </div>
                                                 </div>
                                             </div>

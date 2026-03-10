@@ -4,7 +4,7 @@
 import { useRef, useCallback } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useTenant } from "@/contexts/TenantContext";
-import { apiRequest, ApiError } from "@/lib/apiRequest";
+import { apiRequest, ApiError, ApiResponseWithCorrelation } from "@/lib/apiRequest";
 import { apiScope } from '@/lib/msalConfig';
 import { UserConsentRequiredError } from '@/lib/errors';
 import { useError } from '@/contexts/ErrorContext';
@@ -18,8 +18,8 @@ export function useApiRequest() {
     const request = useCallback(async function<T>(
         url: string,
         options: RequestInit = {},
-        onConsentComplete?: () => Promise<T>
-    ): Promise<T | undefined> {
+        onConsentComplete?: () => Promise<ApiResponseWithCorrelation<T>>
+    ): Promise<ApiResponseWithCorrelation<T> | undefined> {
         // Cancel previous request if still running
         clearError();
 
