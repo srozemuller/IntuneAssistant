@@ -2243,6 +2243,9 @@ function AssignmentRolloutContent() {
     const migrateSelectedAssignments = async () => {
         if (!accounts.length || !selectedRows.length) return;
 
+        // Capture selectedRows NOW as a local const - prevents stale closure in async callbacks
+        const selectedRowsSnapshot = [...selectedRows];
+
         setLoading(true);
         setIsCancelling(false);
         const CHUNK_SIZE = 20;
@@ -2254,12 +2257,12 @@ function AssignmentRolloutContent() {
         try {
             console.log('Starting migration process:', {
                 totalRows: comparisonResults.length,
-                selectedRowIds: selectedRows.length,
+                selectedRowIds: selectedRowsSnapshot.length,
                 readyForMigration: comparisonResults.filter(r => r.isReadyForMigration).length
             });
 
             const selectedComparisonResults = comparisonResults.filter(result =>
-                selectedRows.includes(result.id)
+                selectedRowsSnapshot.includes(result.id)
             );
 
             console.log('Migration payload preparation:', {
@@ -2390,8 +2393,11 @@ function AssignmentRolloutContent() {
 
                 setComparisonResults(prev =>
                     prev.map(result => {
+                        // CRITICAL: Only update rows that were actually SELECTED
+                        const wasSelectedForMigration = selectedRowsSnapshot.includes(result.id);
+
                         const migrationResult = allResults.find(mr => mr.id === result.id);
-                        if (migrationResult) {
+                        if (migrationResult && wasSelectedForMigration) {
                             const isSuccess = migrationResult.status === 'Success';
                             const isSkipped = migrationResult.status === 'Skipped';
                             const isNotStarted = migrationResult.status === 'NotStarted';
@@ -2406,8 +2412,8 @@ function AssignmentRolloutContent() {
                                 failureReason = undefined;
                             } else if (isSkipped) {
                                 masterStatus = 'migration_skipped';
-                                masterStatusMessage = 'Skipped - not selected for migration';
-                                failureReason = migrationResult.errorMessage || 'Not selected';
+                                masterStatusMessage = 'Skipped during migration';
+                                failureReason = migrationResult.errorMessage || 'Skipped';
                             } else if (isNotStarted) {
                                 masterStatus = 'migration_notstarted';
                                 masterStatusMessage = 'Not started - sent to API but never processed';
@@ -2428,6 +2434,7 @@ function AssignmentRolloutContent() {
                                 failureReason
                             };
                         }
+                        // Return unchanged if not selected or no migration result
                         return result;
                     })
                 );
@@ -2452,6 +2459,10 @@ function AssignmentRolloutContent() {
                     });
 
                     return prev.map(result => {
+                        // CRITICAL: Only update rows that were actually SELECTED for migration
+                        // If a row wasn't selected, keep its compare_ready status
+                        const wasSelectedForMigration = selectedRowsSnapshot.includes(result.id);
+
                         // Try to match by ID first
                         let migrationResult = allResults.find(mr => mr.id === result.id);
 
@@ -2465,7 +2476,8 @@ function AssignmentRolloutContent() {
                             );
                         }
 
-                        if (migrationResult) {
+                        // Only update if: 1) we have a migration result AND 2) row was actually selected
+                        if (migrationResult && wasSelectedForMigration) {
                             const isSuccess = migrationResult.status === 'Success';
                             const isSkipped = migrationResult.status === 'Skipped';
                             const isNotStarted = migrationResult.status === 'NotStarted';
@@ -2480,8 +2492,8 @@ function AssignmentRolloutContent() {
                                 failureReason = undefined;
                             } else if (isSkipped) {
                                 masterStatus = 'migration_skipped';
-                                masterStatusMessage = 'Skipped - not selected for migration';
-                                failureReason = migrationResult.errorMessage || 'Not selected';
+                                masterStatusMessage = 'Skipped during migration';
+                                failureReason = migrationResult.errorMessage || 'Skipped';
                             } else if (isNotStarted) {
                                 masterStatus = 'migration_notstarted';
                                 masterStatusMessage = 'Not started - sent to API but never processed';
@@ -2504,7 +2516,7 @@ function AssignmentRolloutContent() {
                                 correlationIdMigrate: migrationResult.correlationIdMigrate // Add migrate correlation ID
                             };
                         }
-                        // Return unchanged if no match
+                        // Return unchanged if no match OR if row wasn't selected
                         return result;
                     });
                 });
@@ -4726,21 +4738,15 @@ const validateAssignments = async () => {
                                                 })()}
 
                                                 {(() => {
-                                                    const totalAccountedForMigration = summaryStats.migrationSuccessCount +
-                                                                                      summaryStats.migrationFailedCount +
-                                                                                      summaryStats.migrationSkippedCount +
-                                                                                      summaryStats.notStartedCount +
-                                                                                      summaryStats.verifiedCount +
-                                                                                      summaryStats.verifyFailedCount;
-                                                    const missingCount = readyForMigrationCount - totalAccountedForMigration;
+                                                    const notProcessed = summaryStats.notProcessedCount;
 
-                                                    return missingCount > 0 && (
+                                                    return notProcessed > 0 && (
                                                         <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-400 dark:border-orange-600 ml-4">
                                                             <div className="flex items-center gap-2">
                                                                 <AlertTriangle className="h-4 w-4 text-orange-600"/>
                                                                 <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">Not Processed (use filter below)</span>
                                                             </div>
-                                                            <span className="text-lg font-bold text-orange-700 dark:text-orange-300">{missingCount}</span>
+                                                            <span className="text-lg font-bold text-orange-700 dark:text-orange-300">{notProcessed}</span>
                                                         </div>
                                                     );
                                                 })()}
@@ -4901,27 +4907,17 @@ const validateAssignments = async () => {
                                             Already Migrated ({summaryStats.alreadyMigratedCount})
                                         </Button>
                                     )}
-                                    {(() => {
-                                        const totalAccountedForMigration = summaryStats.migrationSuccessCount +
-                                                                          summaryStats.migrationFailedCount +
-                                                                          summaryStats.migrationSkippedCount +
-                                                                          summaryStats.notStartedCount +
-                                                                          summaryStats.verifiedCount +
-                                                                          summaryStats.verifyFailedCount;
-                                        const missingCount = summaryStats.readyForMigrationCount - totalAccountedForMigration;
-
-                                        return missingCount > 0 && (
-                                            <Button
-                                                onClick={() => setSummaryStatusFilter('migration_ready')}
-                                                variant={summaryStatusFilter === 'migration_ready' ? 'default' : 'outline'}
-                                                size="sm"
-                                                className="flex items-center gap-2"
-                                            >
-                                                <AlertTriangle className="h-3 w-3 text-orange-500"/>
-                                                Not Processed ({missingCount})
-                                            </Button>
-                                        );
-                                    })()}
+                                    {summaryStats.notProcessedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('migration_notstarted')}
+                                            variant={summaryStatusFilter === 'migration_notstarted' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <AlertTriangle className="h-3 w-3 text-orange-500"/>
+                                            Not Processed ({summaryStats.notProcessedCount})
+                                        </Button>
+                                    )}
                                     {summaryStats.migrationSuccessCount > 0 && (
                                         <Button
                                             onClick={() => setSummaryStatusFilter('migration_success')}
