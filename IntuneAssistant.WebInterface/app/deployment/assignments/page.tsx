@@ -6,7 +6,7 @@ import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet, BarChart3
+    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet, BarChart3, HelpCircle
 } from 'lucide-react';
 import {useMsal} from '@azure/msal-react';
 import {
@@ -35,6 +35,7 @@ interface AssignmentCompareApiResponse {
         message?: string;
     }
     data?: ComparisonResult[] | string;
+    correlationId?: string; // Add correlation ID from API response
     errors?: {
         [key: string]: string[];
     };
@@ -157,10 +158,13 @@ interface ComparisonResult {
     validationMessage?: string;
     isCurrentSessionValidation?: boolean;
     // Master tracking fields for comprehensive status
-    masterStatus?: 'csv_invalid' | 'csv_uploaded' | 'compare_ready' | 'compare_failed' | 'already_migrated' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed';
+    masterStatus?: 'csv_invalid' | 'csv_uploaded' | 'compare_ready' | 'compare_failed' | 'already_migrated' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'migration_skipped' | 'migration_notstarted' | 'validation_success' | 'validation_failed';
     masterStatusMessage?: string;
     failureReason?: string; // Why this item couldn't proceed
     batchIndex?: number | null; // Which batch this migration was part of
+    correlationIdCompare?: string | null; // Correlation ID from compare API call
+    correlationIdMigrate?: string | null; // Correlation ID from migrate API call
+    correlationIdVerify?: string | null; // Correlation ID from verify/validation API call
 }
 
 interface RoleScopeTag {
@@ -188,6 +192,7 @@ interface MigrationResult {
     errorMessage: string | null;
     processedAt: string;
     batchIndex: number | null;
+    correlationIdMigrate?: string | null; // Correlation ID from migrate API call
     originalPayload?: {
         PolicyId: string;
         PolicyName: string;
@@ -304,7 +309,7 @@ function AssignmentRolloutContent() {
     const [filteredComparisonResults, setFilteredComparisonResults] = useState<ComparisonResult[]>([]);
     const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed' | 'skipped' | 'notstarted'>('all');
     const [compareStatusFilter, setCompareStatusFilter] = useState<'all' | 'ready' | 'migrated' | 'warnings' | 'failed'>('all');
-    const [summaryStatusFilter, setSummaryStatusFilter] = useState<'all' | 'csv_invalid' | 'compare_failed' | 'compare_ready' | 'already_migrated' | 'migration_success' | 'migration_failed' | 'validation_success' | 'validation_failed'>('all');
+    const [summaryStatusFilter, setSummaryStatusFilter] = useState<'all' | 'csv_invalid' | 'compare_failed' | 'compare_ready' | 'already_migrated' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'migration_skipped' | 'migration_notstarted' | 'validation_success' | 'validation_failed'>('all');
 
     // Add pagination logic before the return statement
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -393,12 +398,13 @@ function AssignmentRolloutContent() {
             csvInvalidCount: masterTrackingData.filter(r => r.masterStatus === 'csv_invalid').length,
             compareFailedCount: compareFailedItems.length,
             alreadyMigratedCount: alreadyMigratedItems.length,
-            notSelectedCount: compareReadyThisSession.length + alreadyMigratedItems.length,
+            notSelectedCount: compareReadyThisSession.length,
+            notProcessedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_ready').length,
             readyForMigrationCount: readyForMigrationCount,
             missingCount: 0,
-            notStartedCount: migrationResults.filter(r => r.status === 'NotStarted').length,
+            notStartedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_notstarted').length,
             migrationSuccessCount: masterTrackingData.filter(r => r.masterStatus === 'migration_success').length,
-            migrationSkippedCount: migrationResults.filter(r => r.status === 'Skipped').length,
+            migrationSkippedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_skipped').length,
             migrationFailedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length,
             verifiedCount: masterTrackingData.filter(r => r.masterStatus === 'validation_success').length,
             verifyFailedCount: masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length,
@@ -407,6 +413,20 @@ function AssignmentRolloutContent() {
 
     // Memoize summary table data
     const summaryTableData = useMemo(() => {
+        // Debug: Check batchIndex in masterTrackingData BEFORE mapping
+        const masterWithBatch = masterTrackingData.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).length;
+        console.log(`🔍 SUMMARY masterTrackingData: ${masterWithBatch} / ${masterTrackingData.length} have batchIndex`);
+        if (masterWithBatch > 0) {
+            const samples = masterTrackingData.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).slice(0, 3);
+            console.log('Sample masterTrackingData with batchIndex for SUMMARY:', samples.map(r => ({
+                id: r.id.substring(0, 8),
+                policy: r.csvRow?.PolicyName || r.policy?.name || '...',
+                batchIndex: r.batchIndex,
+                batchPlusOne: (r.batchIndex !== null && r.batchIndex !== undefined) ? r.batchIndex + 1 : null,
+                masterStatus: r.masterStatus
+            })));
+        }
+
         const data = masterTrackingData.map(row => ({
             id: row.id,
             policy: row.csvRow?.PolicyName || row.policy?.name || row.providedPolicyName || '—',
@@ -416,8 +436,24 @@ function AssignmentRolloutContent() {
             filter: row.csvRow?.FilterName ? `${row.csvRow.FilterName} (${row.csvRow.FilterType || ''})` : '—',
             status: row.masterStatus || 'unknown',
             batch: row.batchIndex !== null && row.batchIndex !== undefined ? row.batchIndex + 1 : null,
+            batchIndexRaw: row.batchIndex, // Keep raw value for sorting
+            correlationIdCompare: row.correlationIdCompare || null,
+            correlationIdMigrate: row.correlationIdMigrate || null,
+            correlationIdVerify: row.correlationIdVerify || null,
             notes: row.failureReason || row.masterStatusMessage || '—',
         }));
+
+        // Debug: Count batches in summaryTableData AFTER mapping
+        const withBatch = data.filter(r => r.batch !== null).length;
+        const withoutBatch = data.filter(r => r.batch === null).length;
+        console.log(`📊 summaryTableData: ${withBatch} rows with batch, ${withoutBatch} without batch`);
+        if (withBatch > 0) {
+            console.log('Sample summaryTableData with batch:', data.filter(r => r.batch !== null).slice(0, 3).map(r => ({
+                policy: r.policy,
+                batch: r.batch,
+                status: r.status
+            })));
+        }
 
         // Debug: Count statuses
         const statusCounts = data.reduce((acc, row) => {
@@ -470,6 +506,9 @@ function AssignmentRolloutContent() {
         return [];
     }, [masterTrackingData, validatedItemsCount, migratedRowIds]);
 
+    // State for help tooltip
+    const [showHelpTooltip, setShowHelpTooltip] = useState(false);
+
     // Summary Component for consistent display across all steps
     const MigrationSummaryCard = ({ step }: { step: 'upload' | 'compare' | 'migrate' | 'results' | 'validate' }) => {
         const uploadedCount = csvData.length;
@@ -491,72 +530,87 @@ function AssignmentRolloutContent() {
                         {step === 'compare' && 'Comparison Summary'}
                         {step === 'migrate' && 'Migration Summary'}
                         {step === 'results' && 'Results Summary'}
-                        {step === 'validate' && 'Validation Summary'}
+                        {step === 'validate' && 'Verification Summary'}
                     </h3>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
-                    {/* Upload Stats */}
-                    <div className="flex flex-col">
-                        <span className="text-gray-600 dark:text-gray-400 text-xs">Rows uploaded using CSV</span>
-                        <span className="text-lg font-bold text-purple-600">{uploadedCount}</span>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-gray-600 dark:text-gray-400 text-xs">Rows valid in CSV</span>
-                        <span className="text-lg font-bold text-green-600">{validCount}</span>
-                    </div>
-                    {invalidCount > 0 && (
+
+                {/* For validate step, show ONLY validation-specific stats */}
+                {step === 'validate' ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-sm">
                         <div className="flex flex-col">
-                            <span className="text-gray-600 dark:text-gray-400 text-xs">Row invalid in CSV</span>
-                            <span className="text-lg font-bold text-red-600">{invalidCount}</span>
+                            <span className="text-gray-600 dark:text-gray-400 text-xs">Items validated</span>
+                            <span className="text-lg font-bold text-blue-600">{validatedItemsCount}</span>
                         </div>
-                    )}
-
-                    {/* Compare Stats - show after compare step */}
-                    {(step !== 'upload') && (
-                        <>
+                        {verifiedCount > 0 && (
                             <div className="flex flex-col">
-                                <span className="text-gray-600 dark:text-gray-400 text-xs">Ready for migration</span>
-                                <span className="text-lg font-bold text-green-600">{readyCount}</span>
+                                <span className="text-gray-600 dark:text-gray-400 text-xs">Verified successfully</span>
+                                <span className="text-lg font-bold text-emerald-600">{verifiedCount}</span>
                             </div>
-                            {compareFailedCount > 0 && (
-                                <div className="flex flex-col">
-                                    <span className="text-gray-600 dark:text-gray-400 text-xs">Compare Failed</span>
-                                    <span className="text-lg font-bold text-red-600">{compareFailedCount}</span>
-                                </div>
-                            )}
-                        </>
-                    )}
-
-                    {/* Migration Stats - show after migrate step */}
-                    {(step === 'migrate' || step === 'results' || step === 'validate') && migrationResults.length > 0 && (
-                        <>
+                        )}
+                        {masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length > 0 && (
                             <div className="flex flex-col">
-                                <span className="text-gray-600 dark:text-gray-400 text-xs">Migrated</span>
-                                <span className="text-lg font-bold text-emerald-600">{migratedSuccessCount}</span>
+                                <span className="text-gray-600 dark:text-gray-400 text-xs">Verification failed</span>
+                                <span className="text-lg font-bold text-red-600">{masterTrackingData.filter(r => r.masterStatus === 'validation_failed').length}</span>
                             </div>
-                            {migratedFailedCount > 0 && (
-                                <div className="flex flex-col">
-                                    <span className="text-gray-600 dark:text-gray-400 text-xs">Failed</span>
-                                    <span className="text-lg font-bold text-red-600">{migratedFailedCount}</span>
-                                </div>
-                            )}
-                            {migratedSkippedCount > 0 && (
-                                <div className="flex flex-col">
-                                    <span className="text-gray-600 dark:text-gray-400 text-xs">Skipped</span>
-                                    <span className="text-lg font-bold text-gray-600">{migratedSkippedCount}</span>
-                                </div>
-                            )}
-                        </>
-                    )}
-
-                    {/* Validation Stats - show after validate step */}
-                    {step === 'validate' && verifiedCount > 0 && (
+                        )}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
+                        {/* Upload Stats */}
                         <div className="flex flex-col">
-                            <span className="text-gray-600 dark:text-gray-400 text-xs">Verified</span>
-                            <span className="text-lg font-bold text-teal-600">{verifiedCount}</span>
+                            <span className="text-gray-600 dark:text-gray-400 text-xs">Rows uploaded using CSV</span>
+                            <span className="text-lg font-bold text-purple-600">{uploadedCount}</span>
                         </div>
-                    )}
-                </div>
+                        <div className="flex flex-col">
+                            <span className="text-gray-600 dark:text-gray-400 text-xs">Rows valid in CSV</span>
+                            <span className="text-lg font-bold text-green-600">{validCount}</span>
+                        </div>
+                        {invalidCount > 0 && (
+                            <div className="flex flex-col">
+                                <span className="text-gray-600 dark:text-gray-400 text-xs">Row invalid in CSV</span>
+                                <span className="text-lg font-bold text-red-600">{invalidCount}</span>
+                            </div>
+                        )}
+
+                        {/* Compare Stats - show after compare step */}
+                        {(step !== 'upload') && (
+                            <>
+                                <div className="flex flex-col">
+                                    <span className="text-gray-600 dark:text-gray-400 text-xs">Ready for migration</span>
+                                    <span className="text-lg font-bold text-green-600">{readyCount}</span>
+                                </div>
+                                {compareFailedCount > 0 && (
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-600 dark:text-gray-400 text-xs">Compare Failed</span>
+                                        <span className="text-lg font-bold text-red-600">{compareFailedCount}</span>
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+                        {/* Migration Stats - show after migrate step */}
+                        {(step === 'migrate' || step === 'results') && migrationResults.length > 0 && (
+                            <>
+                                <div className="flex flex-col">
+                                    <span className="text-gray-600 dark:text-gray-400 text-xs">Migrated</span>
+                                    <span className="text-lg font-bold text-emerald-600">{migratedSuccessCount}</span>
+                                </div>
+                                {migratedFailedCount > 0 && (
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-600 dark:text-gray-400 text-xs">Failed</span>
+                                        <span className="text-lg font-bold text-red-600">{migratedFailedCount}</span>
+                                    </div>
+                                )}
+                                {migratedSkippedCount > 0 && (
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-600 dark:text-gray-400 text-xs">Skipped</span>
+                                        <span className="text-lg font-bold text-gray-600">{migratedSkippedCount}</span>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
         );
     };
@@ -1580,30 +1634,6 @@ function AssignmentRolloutContent() {
             }
         },
         {
-            key: 'batchIndex',
-            label: 'Batch',
-            width: 80,
-            sortable: true,
-            sortValue: (row: Record<string, unknown>) => {
-                const result = row as unknown as ComparisonResult;
-                return result.batchIndex ?? -1;
-            },
-            render: (_: unknown, row: Record<string, unknown>) => {
-                const result = row as unknown as ComparisonResult;
-                const batchNumber = result.batchIndex !== null && result.batchIndex !== undefined
-                    ? result.batchIndex + 1
-                    : null;
-
-                return batchNumber !== null ? (
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
-                        #{batchNumber}
-                    </Badge>
-                ) : (
-                    <span className="text-sm text-gray-400">-</span>
-                );
-            }
-        },
-        {
             key: 'validationStatus',
             label: 'Validation Status',
             minWidth: 150,
@@ -2100,13 +2130,20 @@ function AssignmentRolloutContent() {
                 body: JSON.stringify(payloadData)
             });
 
-            if (!apiResponse?.data || !Array.isArray(apiResponse.data)) {
+            // Capture correlation ID from response (now from wrapper, not response body)
+            const compareCorrelationId = apiResponse?.correlationId || null;
+            console.log('✅ Compare correlation ID:', compareCorrelationId || '(none)');
+
+            // Extract actual data from wrapper
+            const responseData = apiResponse?.data;
+
+            if (!responseData || !Array.isArray(responseData.data)) {
                 setError('Invalid data format received from server');
                 setLoading(false);
                 return;
             }
 
-            const enhancedResults = apiResponse.data.map((item: ComparisonResult, index: number) => {
+            const enhancedResults = responseData.data.map((item: ComparisonResult, index: number) => {
                 // Get the original CSV row to preserve its unique rowId
                 const originalCsvRow = validCsvData[index];
 
@@ -2156,7 +2193,8 @@ function AssignmentRolloutContent() {
                     validationStatus: 'pending' as const,
                     masterStatus,
                     masterStatusMessage,
-                    failureReason
+                    failureReason,
+                    correlationIdCompare: compareCorrelationId // Add compare correlation ID
                 };
             });
 
@@ -2265,12 +2303,19 @@ function AssignmentRolloutContent() {
                     signal: abortController.signal
                 });
 
-                if (!apiResponse || !apiResponse.data) {
+                // Extract correlation ID from response wrapper (from x-correlation-id header)
+                const correlationId = apiResponse?.correlationId || null;
+                console.log(`✅ Migrate chunk ${chunkIndex + 1} correlation ID:`, correlationId || '(none)');
+
+                // Extract actual data from wrapper
+                const responseData = apiResponse?.data;
+
+                if (!apiResponse || !responseData) {
                     throw new Error(`Failed to get response from server for chunk ${chunkIndex + 1}`);
                 }
 
-                if (apiResponse.status === 'Error' && apiResponse.message?.message === 'User challenge required') {
-                    setConsentUrl(apiResponse.message.url || '');
+                if (responseData.status === 'Error' && responseData.message?.message === 'User challenge required') {
+                    setConsentUrl(responseData.message.url || '');
                     setShowConsentDialog(true);
                     setLoading(false);
                     setMigrationChunkProgress(prev => ({ ...prev, isProcessing: false }));
@@ -2278,7 +2323,7 @@ function AssignmentRolloutContent() {
                 }
 
                 // Store results from this chunk
-                const chunkResults = (apiResponse.data as unknown as MigrationResult[]).map(result => {
+                const chunkResults = (responseData.data as unknown as MigrationResult[]).map(result => {
                     const originalPayload = chunk.find(p =>
                         p.PolicyName === result.providedPolicyName &&
                         p.AssignmentResourceName === result.groupToMigrate
@@ -2286,6 +2331,7 @@ function AssignmentRolloutContent() {
                     return {
                         ...result,
                         batchIndex: chunkIndex,
+                        correlationIdMigrate: correlationId, // Store migration correlation ID
                         originalPayload
                     };
                 });
@@ -2319,43 +2365,148 @@ function AssignmentRolloutContent() {
                         const migrationResult = allResults.find(mr => mr.id === result.id);
                         if (migrationResult) {
                             const isSuccess = migrationResult.status === 'Success';
+                            const isSkipped = migrationResult.status === 'Skipped';
+                            const isNotStarted = migrationResult.status === 'NotStarted';
+
+                            let masterStatus: ComparisonResult['masterStatus'];
+                            let masterStatusMessage: string;
+                            let failureReason: string | undefined;
+
+                            if (isSuccess) {
+                                masterStatus = 'migration_success';
+                                masterStatusMessage = 'Successfully migrated - pending validation';
+                                failureReason = undefined;
+                            } else if (isSkipped) {
+                                masterStatus = 'migration_skipped';
+                                masterStatusMessage = 'Skipped - not selected for migration';
+                                failureReason = migrationResult.errorMessage || 'Not selected';
+                            } else if (isNotStarted) {
+                                masterStatus = 'migration_notstarted';
+                                masterStatusMessage = 'Not started - sent to API but never processed';
+                                failureReason = 'API did not process this item';
+                            } else {
+                                masterStatus = 'migration_failed';
+                                masterStatusMessage = `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`;
+                                failureReason = migrationResult.errorMessage || 'Migration failed';
+                            }
+
                             return {
                                 ...result,
                                 isMigrated: isSuccess,
                                 validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
                                 isCurrentSessionValidation: isSuccess,
-                                masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
-                                masterStatusMessage: isSuccess
-                                    ? 'Successfully migrated - pending validation'
-                                    : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
-                                failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed')
+                                masterStatus,
+                                masterStatusMessage,
+                                failureReason
                             };
                         }
                         return result;
                     })
                 );
 
-                setMasterTrackingData(prev =>
-                    prev.map(result => {
-                        const migrationResult = allResults.find(mr => mr.id === result.id);
+                setMasterTrackingData(prev => {
+                    const matchedCount = prev.filter(result => {
+                        return allResults.find(mr => mr.id === result.id) ||
+                               allResults.find(mr => {
+                                   const resultPolicyName = result.csvRow?.PolicyName || result.policy?.name || result.providedPolicyName;
+                                   const resultGroupName = result.csvRow?.GroupName || result.groupToMigrate;
+                                   return (mr.providedPolicyName === resultPolicyName) &&
+                                          (mr.groupToMigrate === resultGroupName || (!mr.groupToMigrate && !resultGroupName));
+                               });
+                    }).length;
+
+                    console.log('🔍 Updating masterTrackingData:', {
+                        masterTrackingCount: prev.length,
+                        allResultsCount: allResults.length,
+                        willMatch: matchedCount,
+                        allResultsHaveBatch: allResults.every(r => r.batchIndex !== null && r.batchIndex !== undefined),
+                        sampleBatchIndexes: allResults.slice(0, 3).map(r => ({ id: r.id.substring(0, 8), batch: r.batchIndex }))
+                    });
+
+                    return prev.map(result => {
+                        // Try to match by ID first
+                        let migrationResult = allResults.find(mr => mr.id === result.id);
+
+                        // If no match by ID, try matching by policy name + group name
+                        if (!migrationResult) {
+                            const resultPolicyName = result.csvRow?.PolicyName || result.policy?.name || result.providedPolicyName;
+                            const resultGroupName = result.csvRow?.GroupName || result.groupToMigrate;
+                            migrationResult = allResults.find(mr =>
+                                (mr.providedPolicyName === resultPolicyName) &&
+                                (mr.groupToMigrate === resultGroupName || (!mr.groupToMigrate && !resultGroupName))
+                            );
+                        }
+
                         if (migrationResult) {
                             const isSuccess = migrationResult.status === 'Success';
+                            const isSkipped = migrationResult.status === 'Skipped';
+                            const isNotStarted = migrationResult.status === 'NotStarted';
+
+                            let masterStatus: ComparisonResult['masterStatus'];
+                            let masterStatusMessage: string;
+                            let failureReason: string | undefined;
+
+                            if (isSuccess) {
+                                masterStatus = 'migration_success';
+                                masterStatusMessage = 'Successfully migrated - pending validation';
+                                failureReason = undefined;
+                            } else if (isSkipped) {
+                                masterStatus = 'migration_skipped';
+                                masterStatusMessage = 'Skipped - not selected for migration';
+                                failureReason = migrationResult.errorMessage || 'Not selected';
+                            } else if (isNotStarted) {
+                                masterStatus = 'migration_notstarted';
+                                masterStatusMessage = 'Not started - sent to API but never processed';
+                                failureReason = 'API did not process this item';
+                            } else {
+                                masterStatus = 'migration_failed';
+                                masterStatusMessage = `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`;
+                                failureReason = migrationResult.errorMessage || 'Migration failed';
+                            }
+
                             return {
                                 ...result,
                                 isMigrated: isSuccess,
                                 validationStatus: isSuccess ? 'pending' as const : result.validationStatus,
                                 isCurrentSessionValidation: isSuccess,
-                                masterStatus: isSuccess ? 'migration_success' as const : 'migration_failed' as const,
-                                masterStatusMessage: isSuccess
-                                    ? 'Successfully migrated - pending validation'
-                                    : `Migration failed: ${migrationResult.errorMessage || 'Unknown error'}`,
-                                failureReason: isSuccess ? undefined : (migrationResult.errorMessage || 'Migration failed'),
-                                batchIndex: migrationResult.batchIndex // Add batch index from migration result
+                                masterStatus,
+                                masterStatusMessage,
+                                failureReason,
+                                batchIndex: migrationResult.batchIndex, // Add batch index from migration result
+                                correlationIdMigrate: migrationResult.correlationIdMigrate // Add migrate correlation ID
                             };
                         }
+                        // Return unchanged if no match
                         return result;
-                    })
-                );
+                    });
+                });
+
+                // Verify masterTrackingData was updated with batchIndex
+                setMasterTrackingData(prev => {
+                    const withBatch = prev.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).length;
+                    console.log('✅ masterTrackingData after update:', withBatch, '/', prev.length, 'have batchIndex');
+                    if (withBatch > 0) {
+                        console.log('Sample items with batchIndex:', prev.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).slice(0, 3).map(r => ({
+                            id: r.id.substring(0, 8),
+                            policy: r.csvRow?.PolicyName || '...',
+                            batchIndex: r.batchIndex,
+                            masterStatus: r.masterStatus
+                        })));
+                    } else {
+                        console.error('NO items have batchIndex after update! Check ID matching.');
+                    }
+                    return prev;
+                });
+
+                console.log('Migration complete. Updated masterTrackingData with batchIndex:',
+                    allResults.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).length,
+                    'items have batchIndex');
+                console.log('Sample migration results with batchIndex:',
+                    allResults.filter(r => r.batchIndex !== null && r.batchIndex !== undefined).slice(0, 3).map(r => ({
+                        id: r.id.substring(0, 8),
+                        status: r.status,
+                        batchIndex: r.batchIndex
+                    })));
 
                 // Add small delay to ensure UI updates are visible between chunks
                 if (chunkIndex < chunks.length - 1) {
@@ -2529,6 +2680,23 @@ function AssignmentRolloutContent() {
                 }
             }
 
+            // Mark items that were ready but never processed as 'migration_ready'
+            const migratedIds = new Set(allResults.map(r => r.id));
+            setMasterTrackingData(prev => prev.map(item => {
+                // If item was ready for migration but not in migration results, mark as migration_ready
+                if (item.isReadyForMigration && !migratedIds.has(item.id) && !item.masterStatus) {
+                    return {
+                        ...item,
+                        masterStatus: 'migration_ready' as const,
+                        masterStatusMessage: 'Ready but not migrated - not selected or not processed',
+                        failureReason: 'Item was ready but never sent to migration'
+                    };
+                }
+                return item;
+            }));
+
+            console.log('✅ Marked unprocessed ready items as migration_ready');
+
             setCurrentStep('results');
             setMigratedRowIds([...selectedRows]); // freeze the migrated row IDs for validation
             setSelectedRows([]);
@@ -2574,13 +2742,16 @@ function AssignmentRolloutContent() {
                 body: JSON.stringify([failedResult.originalPayload])
             });
 
-            if (!apiResponse || !apiResponse.data) {
+            // Extract data from wrapper
+            const responseData = apiResponse?.data;
+
+            if (!apiResponse || !responseData) {
                 setError('Failed to get response from server');
                 return;
             }
 
-            if (apiResponse.status === 'Error' && apiResponse.message?.message === 'User challenge required') {
-                setConsentUrl(apiResponse.message.url || '');
+            if (responseData.status === 'Error' && responseData.message?.message === 'User challenge required') {
+                setConsentUrl(responseData.message.url || '');
                 setShowConsentDialog(true);
                 setRetryingRows(prev => {
                     const newSet = new Set(prev);
@@ -2590,7 +2761,7 @@ function AssignmentRolloutContent() {
                 return;
             }
 
-            const retryResult = (apiResponse.data as unknown as MigrationResult[])[0];
+            const retryResult = (responseData.data as unknown as MigrationResult[])[0];
 
             if (retryResult) {
                 // Update the migration results with the retry result
@@ -2760,26 +2931,33 @@ function AssignmentRolloutContent() {
                 body: JSON.stringify(validationPayload)
             });
 
-            if (!validationData) {
+            // Capture correlation ID from validation response wrapper (from x-correlation-id header)
+            const verifyCorrelationId = validationData?.correlationId || null;
+            console.log('✅ Verify/Validation correlation ID:', verifyCorrelationId || '(none)');
+
+            // Extract actual data from wrapper
+            const responseData = validationData?.data;
+
+            if (!validationData || !responseData) {
                 setError('Failed to get response from server');
                 return;
             }
 
-            if (validationData.status === 'Error' &&
-                validationData.message?.message === 'User challenge required') {
+            if (responseData.status === 'Error' &&
+                responseData.message?.message === 'User challenge required') {
 
-                setConsentUrl(validationData.message.url || '');
+                setConsentUrl(responseData.message.url || '');
                 setShowConsentDialog(true);
                 setLoading(false);
                 return;
             }
 
-            if (!validationData.data || !Array.isArray(validationData.data)) {
+            if (!responseData.data || !Array.isArray(responseData.data)) {
                 setError('Invalid data format received from server');
                 return;
             }
 
-            const validationResults = validationData.data as ComparisonResult[];
+            const validationResults = responseData.data as ComparisonResult[];
             setValidationResults(validationResults as unknown as ValidationResult[]);
 
             // Helper: resolve validation status from a matching validation result
@@ -2790,22 +2968,29 @@ function AssignmentRolloutContent() {
                 let masterStatusMessage: string;
                 let failureReason: string | undefined;
 
+                // If assignment exists in Intune (already migrated or verified)
                 if (matchingValidation.isMigrated) {
                     validationStatus = 'valid';
                     masterStatus = 'validation_success';
                     masterStatusMessage = 'Assignment verified in environment';
                     failureReason = undefined;
-                } else if (wasSuccessfullyMigrated && !matchingValidation.isMigrated) {
+                }
+                // If we migrated it but now it's not found
+                else if (wasSuccessfullyMigrated && !matchingValidation.isMigrated) {
                     validationStatus = 'invalid';
                     masterStatus = 'validation_failed';
                     masterStatusMessage = 'Assignment not found after migration';
                     failureReason = 'Migration was reported successful but assignment not found in re-check';
-                } else if (matchingValidation.isReadyForMigration && !wasSuccessfullyMigrated) {
+                }
+                // If it's ready but wasn't migrated in this session (e.g., skipped items)
+                else if (matchingValidation.isReadyForMigration && !wasSuccessfullyMigrated) {
                     validationStatus = 'warning';
                     masterStatus = result.masterStatus;
-                    masterStatusMessage = 'Ready for migration but was not migrated';
+                    masterStatusMessage = 'Ready for migration but was not migrated in this session';
                     failureReason = undefined;
-                } else {
+                }
+                // Failed validation
+                else {
                     validationStatus = 'invalid';
                     masterStatus = 'validation_failed';
                     const check = matchingValidation.migrationCheckResult;
@@ -2832,7 +3017,8 @@ function AssignmentRolloutContent() {
                     policy: matchingValidation.policy || result.policy,
                     isMigrated: matchingValidation.isMigrated,
                     isReadyForMigration: matchingValidation.isReadyForMigration,
-                    migrationCheckResult: matchingValidation.migrationCheckResult
+                    migrationCheckResult: matchingValidation.migrationCheckResult,
+                    correlationIdVerify: verifyCorrelationId // Add verify correlation ID
                 };
             };
 
@@ -2855,12 +3041,30 @@ function AssignmentRolloutContent() {
                         const resultPolicyName = result.csvRow?.PolicyName || result.policy?.name;
                         const validationGroupName = vr.groupToMigrate;
                         const resultGroupName = result.csvRow?.GroupName || result.groupToMigrate;
-                        return validationPolicyName === resultPolicyName &&
-                               validationGroupName === resultGroupName;
+
+                        const policyMatch = validationPolicyName === resultPolicyName;
+
+                        // Special handling for NoAssignment: validation returns null for groupToMigrate
+                        // but CSV has the original group name
+                        const isNoAssignment = result.csvRow?.AssignmentAction === 'NoAssignment' ||
+                                               vr.assignmentAction === 'NoAssignment';
+
+                        const groupMatch = isNoAssignment ?
+                            true : // For NoAssignment, ignore group comparison
+                            validationGroupName === resultGroupName;
+
+                        return policyMatch && groupMatch;
                     });
 
                     if (!matchingValidation) {
-                        console.log(`No matching validation found for ${result.csvRow?.PolicyName || result.policy?.name}`);
+                        console.log(`No matching validation found for ${result.csvRow?.PolicyName || result.policy?.name}`, {
+                            resultPolicyName: result.csvRow?.PolicyName || result.policy?.name,
+                            resultGroupName: result.csvRow?.GroupName || result.groupToMigrate,
+                            availableValidations: validationResults.map(vr => ({
+                                policy: vr.providedPolicyName || vr.policy?.name,
+                                group: vr.groupToMigrate
+                            }))
+                        });
                         return result;
                     }
 
@@ -2880,8 +3084,18 @@ function AssignmentRolloutContent() {
                         const resultPolicyName = result.csvRow?.PolicyName || result.policy?.name;
                         const validationGroupName = vr.groupToMigrate;
                         const resultGroupName = result.csvRow?.GroupName || result.groupToMigrate;
-                        return validationPolicyName === resultPolicyName &&
-                               validationGroupName === resultGroupName;
+
+                        const policyMatch = validationPolicyName === resultPolicyName;
+
+                        // Special handling for NoAssignment
+                        const isNoAssignment = result.csvRow?.AssignmentAction === 'NoAssignment' ||
+                                               vr.assignmentAction === 'NoAssignment';
+
+                        const groupMatch = isNoAssignment ?
+                            true :
+                            validationGroupName === resultGroupName;
+
+                        return policyMatch && groupMatch;
                     });
 
                     if (!matchingValidation) {
@@ -2937,10 +3151,11 @@ function AssignmentRolloutContent() {
                 method: 'GET'
             });
 
-            if (response?.data) {
+            // Unwrap ApiResponse: response.data is GroupApiResponse, response.data.data is GroupData
+            if (response?.data?.data) {
                 setAssignmentGroups(prev => ({
                     ...prev,
-                    [groupId]: response.data
+                    [groupId]: response.data.data
                 }));
             }
         } catch (error) {
@@ -4446,17 +4661,60 @@ const validateAssignments = async () => {
                                                 </div>
 
                                                 {/* Show total processed to verify math */}
-                                                {(migrationSuccessCount + migrationSkippedCount + migrationFailedCount + notStartedCount) > 0 && (
-                                                    <div className="flex items-center justify-between p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded border border-blue-200/50 dark:border-blue-800/50 ml-4">
-                                                        <span className="text-xs text-blue-600 dark:text-blue-400">Total Accounted:</span>
-                                                        <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
-                                                            {migrationSuccessCount + migrationSkippedCount + migrationFailedCount + notStartedCount} / {readyForMigrationCount}
-                                                            {(migrationSuccessCount + migrationSkippedCount + migrationFailedCount + notStartedCount) !== readyForMigrationCount && (
-                                                                <span className="ml-2 text-orange-600">⚠️</span>
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                {(() => {
+                                                    const totalAccountedForMigration = summaryStats.migrationSuccessCount +
+                                                                                      summaryStats.migrationFailedCount +
+                                                                                      summaryStats.migrationSkippedCount +
+                                                                                      summaryStats.notStartedCount +
+                                                                                      summaryStats.verifiedCount +
+                                                                                      summaryStats.verifyFailedCount;
+
+                                                    return totalAccountedForMigration > 0 && (
+                                                        <div className="flex items-center justify-between p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded border border-blue-200/50 dark:border-blue-800/50 ml-4">
+                                                            <div className="flex items-center gap-1.5 relative">
+                                                                <span className="text-xs text-blue-600 dark:text-blue-400">Total Migrated:</span>
+                                                                <div
+                                                                    className="relative"
+                                                                    onMouseEnter={() => setShowHelpTooltip(true)}
+                                                                    onMouseLeave={() => setShowHelpTooltip(false)}
+                                                                >
+                                                                    <HelpCircle className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400 cursor-help" />
+                                                                    {showHelpTooltip && (
+                                                                        <div className="absolute left-0 top-full mt-1 z-50 w-64 p-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs rounded shadow-lg">
+                                                                            Shows how many items from &quot;Ready for Migration&quot; actually went through the migration process (successful + failed + verified). Should match the total ready count.
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                                                                {totalAccountedForMigration} / {readyForMigrationCount}
+                                                                {totalAccountedForMigration !== readyForMigrationCount && (
+                                                                    <span className="ml-2 text-orange-600">⚠️</span>
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })()}
+
+                                                {(() => {
+                                                    const totalAccountedForMigration = summaryStats.migrationSuccessCount +
+                                                                                      summaryStats.migrationFailedCount +
+                                                                                      summaryStats.migrationSkippedCount +
+                                                                                      summaryStats.notStartedCount +
+                                                                                      summaryStats.verifiedCount +
+                                                                                      summaryStats.verifyFailedCount;
+                                                    const missingCount = readyForMigrationCount - totalAccountedForMigration;
+
+                                                    return missingCount > 0 && (
+                                                        <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-400 dark:border-orange-600 ml-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <AlertTriangle className="h-4 w-4 text-orange-600"/>
+                                                                <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">Not Processed (use filter below)</span>
+                                                            </div>
+                                                            <span className="text-lg font-bold text-orange-700 dark:text-orange-300">{missingCount}</span>
+                                                        </div>
+                                                    );
+                                                })()}
 
                                                 {migrationSuccessCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 ml-4">
@@ -4592,6 +4850,17 @@ const validateAssignments = async () => {
                                             Not Selected ({summaryStats.notSelectedCount})
                                         </Button>
                                     )}
+                                    {summaryStats.notProcessedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('migration_ready')}
+                                            variant={summaryStatusFilter === 'migration_ready' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <AlertTriangle className="h-3 w-3 text-orange-500"/>
+                                            Not Processed ({summaryStats.notProcessedCount})
+                                        </Button>
+                                    )}
                                     {summaryStats.alreadyMigratedCount > 0 && (
                                         <Button
                                             onClick={() => setSummaryStatusFilter('already_migrated')}
@@ -4603,6 +4872,27 @@ const validateAssignments = async () => {
                                             Already Migrated ({summaryStats.alreadyMigratedCount})
                                         </Button>
                                     )}
+                                    {(() => {
+                                        const totalAccountedForMigration = summaryStats.migrationSuccessCount +
+                                                                          summaryStats.migrationFailedCount +
+                                                                          summaryStats.migrationSkippedCount +
+                                                                          summaryStats.notStartedCount +
+                                                                          summaryStats.verifiedCount +
+                                                                          summaryStats.verifyFailedCount;
+                                        const missingCount = summaryStats.readyForMigrationCount - totalAccountedForMigration;
+
+                                        return missingCount > 0 && (
+                                            <Button
+                                                onClick={() => setSummaryStatusFilter('migration_ready')}
+                                                variant={summaryStatusFilter === 'migration_ready' ? 'default' : 'outline'}
+                                                size="sm"
+                                                className="flex items-center gap-2"
+                                            >
+                                                <AlertTriangle className="h-3 w-3 text-orange-500"/>
+                                                Not Processed ({missingCount})
+                                            </Button>
+                                        );
+                                    })()}
                                     {summaryStats.migrationSuccessCount > 0 && (
                                         <Button
                                             onClick={() => setSummaryStatusFilter('migration_success')}
@@ -4636,6 +4926,28 @@ const validateAssignments = async () => {
                                             Migration Failed ({summaryStats.migrationFailedCount})
                                         </Button>
                                     )}
+                                    {summaryStats.migrationSkippedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('migration_skipped')}
+                                            variant={summaryStatusFilter === 'migration_skipped' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <Circle className="h-3 w-3 text-gray-500"/>
+                                            Skipped ({summaryStats.migrationSkippedCount})
+                                        </Button>
+                                    )}
+                                    {summaryStats.notStartedCount > 0 && (
+                                        <Button
+                                            onClick={() => setSummaryStatusFilter('migration_notstarted')}
+                                            variant={summaryStatusFilter === 'migration_notstarted' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="flex items-center gap-2"
+                                        >
+                                            <AlertTriangle className="h-3 w-3 text-orange-500"/>
+                                            Not Started ({summaryStats.notStartedCount})
+                                        </Button>
+                                    )}
                                     {summaryStats.verifyFailedCount > 0 && (
                                         <Button
                                             onClick={() => setSummaryStatusFilter('validation_failed')}
@@ -4657,6 +4969,7 @@ const validateAssignments = async () => {
                                             {summaryStatusFilter === 'csv_invalid' && ' (CSV Invalid only)'}
                                             {summaryStatusFilter === 'compare_failed' && ' (Compare Failed only)'}
                                             {summaryStatusFilter === 'compare_ready' && ' (Not Selected only)'}
+                                            {summaryStatusFilter === 'migration_ready' && ' (Not Processed only)'}
                                             {summaryStatusFilter === 'migration_success' && ' (Migrated only)'}
                                             {summaryStatusFilter === 'migration_failed' && ' (Migration Failed only)'}
                                             {summaryStatusFilter === 'validation_success' && ' (Verified only)'}
@@ -4668,6 +4981,26 @@ const validateAssignments = async () => {
                                 <DataTable
                                     data={filteredSummaryTableData}
                                     columns={[
+                                        {
+                                            key: 'batch',
+                                            label: 'Batch',
+                                            width: 80,
+                                            sortable: true,
+                                            sortValue: (row: Record<string, unknown>) => {
+                                                return (row.batchIndexRaw as number) ?? -1;
+                                            },
+                                            render: (v) => {
+                                                const batchNumber = v !== null && v !== undefined ? v : null;
+
+                                                return batchNumber !== null ? (
+                                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                                                        #{String(batchNumber)}
+                                                    </Badge>
+                                                ) : (
+                                                    <span className="text-sm text-gray-400">-</span>
+                                                );
+                                            }
+                                        },
                                         {
                                             key: 'policy',
                                             label: 'Policy',
@@ -4713,31 +5046,67 @@ const validateAssignments = async () => {
                                             render: (v) => {
                                                 const val = String(v);
                                                 const map: Record<string, { label: string; cls: string }> = {
-                                                    csv_invalid:         { label: 'CSV Invalid',        cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
-                                                    csv_uploaded:        { label: 'Status Unknown',     cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' },
-                                                    compare_ready:       { label: 'Ready (Not Migrated)', cls: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
-                                                    compare_failed:      { label: 'Compare Failed',     cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
-                                                    already_migrated:    { label: 'Already Migrated',   cls: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' },
-                                                    migration_ready:     { label: 'Ready',              cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' },
-                                                    migration_success:   { label: 'Migrated',         cls: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' },
-                                                    migration_failed:    { label: 'Migration Failed',   cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
-                                                    validation_success:  { label: 'Verified',         cls: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' },
-                                                    validation_failed:   { label: 'Verify Failed',      cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
+                                                    csv_invalid:           { label: 'CSV Invalid',        cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
+                                                    csv_uploaded:          { label: 'Status Unknown',     cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' },
+                                                    compare_ready:         { label: 'Ready (Not Migrated)', cls: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
+                                                    compare_failed:        { label: 'Compare Failed',     cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
+                                                    already_migrated:      { label: 'Already Migrated',   cls: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' },
+                                                    migration_ready:       { label: 'Not Processed',      cls: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300' },
+                                                    migration_success:     { label: 'Migrated',         cls: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' },
+                                                    migration_failed:      { label: 'Migration Failed',   cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
+                                                    migration_skipped:     { label: 'Skipped',            cls: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
+                                                    migration_notstarted:  { label: 'Not Started',        cls: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300' },
+                                                    validation_success:    { label: 'Verified',         cls: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' },
+                                                    validation_failed:     { label: 'Verify Failed',      cls: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' },
                                                 };
                                                 const entry = map[val] ?? { label: val, cls: 'bg-gray-100 text-gray-600' };
                                                 return <span className={`px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${entry.cls}`}>{entry.label}</span>;
                                             }
                                         },
+                                        // NOTE: Correlation ID columns - always include in exports even if not displayed
                                         {
-                                            key: 'batch',
-                                            label: 'Batch',
+                                            key: 'correlationIdCompare',
+                                            label: 'Corr ID (Compare)',
+                                            width: 140,
+                                            defaultHidden: true,
                                             render: (v) => {
-                                                const batchNumber = v !== null && v !== undefined ? v : null;
-
-                                                return batchNumber !== null ? (
-                                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
-                                                        #{String(batchNumber)}
-                                                    </Badge>
+                                                const corrId = v ? String(v) : null;
+                                                return corrId ? (
+                                                    <span className="text-xs font-mono text-gray-600 dark:text-gray-400" title={corrId}>
+                                                        {corrId.substring(0, 10)}...
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-sm text-gray-400">-</span>
+                                                );
+                                            }
+                                        },
+                                        {
+                                            key: 'correlationIdMigrate',
+                                            label: 'Corr ID (Migrate)',
+                                            width: 140,
+                                            defaultHidden: true,
+                                            render: (v) => {
+                                                const corrId = v ? String(v) : null;
+                                                return corrId ? (
+                                                    <span className="text-xs font-mono text-gray-600 dark:text-gray-400" title={corrId}>
+                                                        {corrId.substring(0, 10)}...
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-sm text-gray-400">-</span>
+                                                );
+                                            }
+                                        },
+                                        {
+                                            key: 'correlationIdVerify',
+                                            label: 'Corr ID (Verify)',
+                                            width: 140,
+                                            defaultHidden: true,
+                                            render: (v) => {
+                                                const corrId = v ? String(v) : null;
+                                                return corrId ? (
+                                                    <span className="text-xs font-mono text-gray-600 dark:text-gray-400" title={corrId}>
+                                                        {corrId.substring(0, 10)}...
+                                                    </span>
                                                 ) : (
                                                     <span className="text-sm text-gray-400">-</span>
                                                 );
