@@ -309,13 +309,15 @@ export default function AuditSearchPage() {
                 }
             );
 
-            if (response?.data?.items) {
+            // Unwrap ApiResponseWithCorrelation → response.data is the envelope, response.data.data.items is the events array
+            const envelope = response?.data;
+            if (envelope?.data?.items) {
                 // Sort events by activityDateTime, newest first
-                const sortedEvents = [...response.data.items].sort((a, b) =>
+                const sortedEvents = [...envelope.data.items].sort((a, b) =>
                     new Date(b.activityDateTime).getTime() - new Date(a.activityDateTime).getTime()
                 );
                 setEvents(sortedEvents);
-                setTotalCount(response.data.totalCount || response.data.items.length);
+                setTotalCount(envelope.data.totalCount || envelope.data.items.length);
 
                 // If metadata is not loaded/available, we could try to infer some common values from the first page of results
                 // to help populate filters if they are empty. However, unique* UseMemos handle this dynamic population

@@ -117,9 +117,10 @@ export default function AddMonitorPage() {
                     }
                 );
 
-                if (response?.data) {
+                // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope, response.data.data is the actual monitors
+                if (response?.data?.data) {
                     // Handle both array response and single object response
-                    const monitorsArray = Array.isArray(response.data) ? response.data : [response.data];
+                    const monitorsArray = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
 
                     // Store monitors with just id, displayName, and description
                     // We'll check by displayName instead of resource types
@@ -254,11 +255,13 @@ export default function AddMonitorPage() {
                 }
             );
 
-            if (response?.data?.id) {
-                setSnapshotJobId(response.data.id);
-                setSnapshotStatus(response.data.status);
+            // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope, response.data.data is the SnapshotJob
+            const envelope = response?.data;
+            if (envelope?.data?.id) {
+                setSnapshotJobId(envelope.data.id);
+                setSnapshotStatus(String(envelope.data.status));
                 setStep('polling');
-                startPolling(response.data.id);
+                startPolling(envelope.data.id);
             } else {
                 throw new Error('Failed to create snapshot - no job ID returned');
             }
@@ -287,14 +290,18 @@ export default function AddMonitorPage() {
                     }
                 );
 
-                if (response?.data) {
-                    setSnapshotStatus(response.data.status);
+                // Unwrap ApiResponseWithCorrelation
+                const envelope = response?.data;
+                if (envelope?.data) {
+                    const jobData = envelope.data;
+                    const statusStr = String(jobData.status);
+                    setSnapshotStatus(statusStr);
 
-                    if ((response.data.status === 'succeeded' || response.data.status === 'partiallySuccessful') && response.data.snapshotId) {
+                    if ((statusStr === 'succeeded' || statusStr === 'partiallySuccessful') && jobData.snapshotId) {
                         // Snapshot completed successfully or partially successfully
-                        await fetchSnapshotAndCreateMonitor(response.data.snapshotId, monitorName, monitorDescription);
-                    } else if (response.data.status === 'failed') {
-                        const errorMsg = response.data.error ? String(response.data.error) : 'Snapshot creation failed';
+                        await fetchSnapshotAndCreateMonitor(jobData.snapshotId, monitorName, monitorDescription);
+                    } else if (statusStr === 'failed') {
+                        const errorMsg = jobData.error ? String(jobData.error) : 'Snapshot creation failed';
                         throw new Error(errorMsg);
                     } else if (attempts >= maxAttempts) {
                         throw new Error('Snapshot creation timed out');
@@ -336,9 +343,10 @@ export default function AddMonitorPage() {
                 }
             );
 
-            if (snapshotResponse?.data) {
+            // Unwrap ApiResponseWithCorrelation → snapshotResponse.data is the envelope, snapshotResponse.data.data is the Snapshot
+            if (snapshotResponse?.data?.data) {
                 // Create monitor using the snapshot data
-                await createMonitor(snapshotResponse.data, name, description);
+                await createMonitor(snapshotResponse.data.data, name, description);
             } else {
                 throw new Error('Failed to fetch snapshot data');
             }
@@ -389,14 +397,17 @@ export default function AddMonitorPage() {
             );
 
             console.log('Full API Response:', response);
-            console.log('Response status:', response?.status);
-            console.log('Response message:', response?.message);
-            console.log('Response data:', response?.data);
+
+            // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope
+            const envelope = response?.data;
+            console.log('Envelope status:', envelope?.status);
+            console.log('Envelope message:', envelope?.message);
+            console.log('Envelope data:', envelope?.data);
 
             // Check if we have a response with data
-            if (response?.data) {
+            if (envelope?.data) {
                 // The data object should contain the id property
-                const responseData = response.data as Record<string, unknown>;
+                const responseData = envelope.data as Record<string, unknown>;
                 const monitorId = typeof responseData.id === 'string' ? responseData.id : null;
 
                 if (monitorId) {
@@ -404,12 +415,12 @@ export default function AddMonitorPage() {
                     setCreatedMonitorId(monitorId);
                     setStep('success');
                 } else {
-                    console.error('No ID found in response.data. Full data object:', responseData);
+                    console.error('No ID found in envelope.data. Full data object:', responseData);
                     console.error('Available keys in data:', Object.keys(responseData));
-                    throw new Error(`Failed to create monitor - no ID returned. Response message: ${response.message || 'Unknown'}`);
+                    throw new Error(`Failed to create monitor - no ID returned. Response message: ${envelope.message || 'Unknown'}`);
                 }
             } else {
-                console.error('No data property in response. Full response:', response);
+                console.error('No data property in envelope. Full envelope:', envelope);
                 throw new Error('Failed to create monitor - no data in response');
             }
         } catch (err) {

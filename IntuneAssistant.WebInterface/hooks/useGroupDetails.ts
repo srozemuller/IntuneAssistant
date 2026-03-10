@@ -69,14 +69,14 @@ export const useGroupDetails = () => {
         setGroupError(null);
 
         try {
-            const [groupData, membersArray] = await Promise.all([
+            const [groupResponse, membersResponse] = await Promise.all([
                 request<any>(`${GROUPS_ENDPOINT}?groupId=${resourceId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 }),
-                request<UserMember[]>(`${GROUPS_ENDPOINT}/${resourceId}/members`, {
+                request<any>(`${GROUPS_ENDPOINT}/${resourceId}/members`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -84,27 +84,32 @@ export const useGroupDetails = () => {
                 })
             ]);
 
-// Check for consent requirements
-            if (handleConsentCheck(groupData) || handleConsentCheck(membersArray)) {
+            // Unwrap ApiResponseWithCorrelation → response.data is the envelope
+            const groupEnvelope = groupResponse?.data;
+            const membersEnvelope = membersResponse?.data;
+
+            // Check for consent requirements using the unwrapped envelopes
+            if (handleConsentCheck(groupEnvelope) || handleConsentCheck(membersEnvelope)) {
                 return;
             }
 
-            if (!groupData || !membersArray) {
+            if (!groupEnvelope || !membersEnvelope) {
                 throw new Error('Failed to fetch group data or members');
             }
 
-            // Extract group details from the API response structure
-            const group = groupData.data;
+            // Extract group details from the API response structure (envelope.data is the actual data)
+            const group = groupEnvelope.data;
+            const membersArray = membersEnvelope.data;
 
             // Process members data
-            const processedMembers = membersArray.map((member: any): UserMember => ({
+            const processedMembers = Array.isArray(membersArray) ? membersArray.map((member: any): UserMember => ({
                 id: member.id || '',
                 displayName: member.displayName || member.userPrincipalName || 'Unknown',
                 type: member.type || (member['@odata.type']?.includes('.user') ? 'User' :
                     member['@odata.type']?.includes('.group') ? 'Group' : 'Device'),
                 accountEnabled: member.accountEnabled !== undefined ? member.accountEnabled : true,
                 userPrincipalName: member.userPrincipalName || null
-            }));
+            })) : [];
 
             // Merge group details with members
             const groupWithMembers = {

@@ -86,13 +86,14 @@ export default function DriftsOverviewPage() {
                 request<ApiResponse<Drift[]>>(MONITOR_CONFIGURATION_DRIFTS_ENDPOINT)
             ]);
 
-            if (monitorsResponse?.data) {
+            // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope, response.data.data is the actual data
+            if (monitorsResponse?.data?.data) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setMonitors(monitorsResponse.data as any);
+                setMonitors(monitorsResponse.data.data as any);
             }
 
-            if (driftsResponse?.data) {
-                setDrifts(driftsResponse.data);
+            if (driftsResponse?.data?.data) {
+                setDrifts(driftsResponse.data.data);
             }
 
             updateLastFetchTime();
