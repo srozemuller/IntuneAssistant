@@ -161,9 +161,10 @@ export default function GlobalOverviewPage() {
                 })
             ]);
 
-            if (monitorsResponse?.data) setMonitors(monitorsResponse.data);
-            if (driftsResponse?.data) setDrifts(driftsResponse.data);
-            if (resultsResponse?.data) setResults(resultsResponse.data);
+            // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope, response.data.data is the actual data
+            if (monitorsResponse?.data?.data) setMonitors(monitorsResponse.data.data);
+            if (driftsResponse?.data?.data) setDrifts(driftsResponse.data.data);
+            if (resultsResponse?.data?.data) setResults(resultsResponse.data.data);
             updateLastFetchTime();
         } catch (err) {
             console.error('Failed to fetch monitor data:', err);

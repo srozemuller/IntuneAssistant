@@ -79,7 +79,9 @@ export function MonitorLandingPage() {
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            if (!response?.data) {
+            // Unwrap ApiResponseWithCorrelation → response.data is the envelope, response.data.data is the actual data
+            const envelope = response?.data;
+            if (!envelope?.data) {
                 // UTCM service principal doesn't exist
                 setPermissionStatus({
                     configured: false,
@@ -88,7 +90,7 @@ export function MonitorLandingPage() {
                 return;
             }
 
-            const assignedPermissions = response.data.assignedPermissions || [];
+            const assignedPermissions = envelope.data.assignedPermissions || [];
             const missingPermissions = REQUIRED_PERMISSIONS.filter(
                 perm => !assignedPermissions.includes(perm)
             );

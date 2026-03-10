@@ -137,13 +137,14 @@ export default function MonitorsPage() {
                 }
             );
 
-            if (!monitorsResponse?.data) {
+            // Unwrap ApiResponseWithCorrelation → monitorsResponse.data is the ApiResponse envelope, monitorsResponse.data.data is the actual Monitor[]
+            if (!monitorsResponse?.data?.data) {
                 throw new Error('No monitor data received');
             }
 
-            const monitorsArray = Array.isArray(monitorsResponse.data)
-                ? monitorsResponse.data
-                : [monitorsResponse.data];
+            const monitorsArray = Array.isArray(monitorsResponse.data.data)
+                ? monitorsResponse.data.data
+                : [monitorsResponse.data.data];
 
             // Fetch results and drifts for all monitors
             const [resultsResponse, driftsResponse] = await Promise.all([
@@ -163,8 +164,9 @@ export default function MonitorsPage() {
                 )
             ]);
 
-            const results = Array.isArray(resultsResponse?.data) ? resultsResponse.data : [];
-            const drifts = Array.isArray(driftsResponse?.data) ? driftsResponse.data : [];
+            // Unwrap ApiResponseWithCorrelation for results and drifts
+            const results = Array.isArray(resultsResponse?.data?.data) ? resultsResponse.data.data : [];
+            const drifts = Array.isArray(driftsResponse?.data?.data) ? driftsResponse.data.data : [];
 
             // Update context with fetched data
             setContextMonitors(monitorsArray);

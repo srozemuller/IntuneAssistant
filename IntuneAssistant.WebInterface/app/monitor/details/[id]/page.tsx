@@ -158,14 +158,15 @@ export default function MonitorDetailsPage() {
                 )
             ]);
 
-            if (monitorResponse?.data) {
-                setMonitor(monitorResponse.data);
+            // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope, response.data.data is the actual data
+            if (monitorResponse?.data?.data) {
+                setMonitor(monitorResponse.data.data);
             }
 
-            if (driftsResponse?.data) {
+            if (driftsResponse?.data?.data) {
                 // Filter drifts to only show those for this monitor
-                const monitorSpecificDrifts = Array.isArray(driftsResponse.data)
-                    ? driftsResponse.data.filter(d => d.monitorId === monitorId)
+                const monitorSpecificDrifts = Array.isArray(driftsResponse.data.data)
+                    ? driftsResponse.data.data.filter(d => d.monitorId === monitorId)
                     : [];
                 setDrifts(monitorSpecificDrifts);
             }
