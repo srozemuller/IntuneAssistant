@@ -78,9 +78,11 @@ export default function AuditLogPage() {
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            if (response?.data?.logs) {
-                setLogs(response.data.logs);
-                setTotalCount(response.data.totalCount);
+            // Unwrap ApiResponseWithCorrelation → response.data is the envelope, response.data.data.logs is the logs array
+            const envelope = response?.data;
+            if (envelope?.data?.logs) {
+                setLogs(envelope.data.logs);
+                setTotalCount(envelope.data.totalCount);
             } else {
                 setError('Invalid response format');
             }

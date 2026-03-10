@@ -4,22 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Computer, Blocks } from 'lucide-react';
-
-interface AssignmentFilter {
-    id: string;
-    createdDateTime: string;
-    lastModifiedDateTime: string;
-    displayName: string;
-    description: string;
-    platform: number;
-    rule: string;
-    assignmentFilterManagementType: number;
-    payloads: unknown[];
-    roleScopeTags: string[];
-    additionalData: Record<string, unknown>;
-    backingStore: Record<string, unknown>;
-    odataType: string | null;
-}
+import { AssignmentFilter } from '@/types/assignmentFilter';
 
 interface FilterDetailsDialogProps {
     filter: AssignmentFilter | null;
@@ -76,15 +61,19 @@ export function FilterDetailsDialog({ filter, isOpen, onClose }: FilterDetailsDi
         }
     }, [isOpen]);
 
-    const getPlatformName = (platform: number): string => {
-        switch (platform) {
-            case 0: return 'All';
-            case 1: return 'Android';
-            case 2: return 'iOS';
-            case 3: return 'macOS';
-            case 4: return 'Windows';
-            default: return `Platform ${platform}`;
-        }
+    const getManagementTypeBadge = (managementType: string) => {
+        const isDevices = managementType?.toLowerCase() === 'devices';
+        return isDevices ? (
+            <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
+                <Computer className="h-3 w-3 mr-1" />
+                Devices
+            </Badge>
+        ) : (
+            <Badge variant="default" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
+                <Blocks className="h-3 w-3 mr-1" />
+                {managementType || 'Apps'}
+            </Badge>
+        );
     };
 
     return (
@@ -117,25 +106,15 @@ export function FilterDetailsDialog({ filter, isOpen, onClose }: FilterDetailsDi
                             <div>
                                 <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Management Type</label>
                                 <div className="flex items-center gap-2">
-                                    {filter.assignmentFilterManagementType === 0 ? (
-                                        <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700">
-                                            <Computer className="h-3 w-3 mr-1" />
-                                            Devices
-                                        </Badge>
-                                    ) : (
-                                        <Badge variant="default" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700">
-                                            <Blocks className="h-3 w-3 mr-1" />
-                                            Apps
-                                        </Badge>
-                                    )}
+                                    {getManagementTypeBadge(filter.assignmentFilterManagementType)}
                                 </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Platform</label>
                                 <p className="text-sm text-gray-900 dark:text-gray-100">
-                                    {getPlatformName(filter.platform)}
+                                    {filter.platform || 'All'}
                                 </p>
-            </div>
+                            </div>
                         </div>
 
                         {filter.description && (

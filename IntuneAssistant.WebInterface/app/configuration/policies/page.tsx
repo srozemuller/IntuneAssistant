@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,7 +28,8 @@ import {
     ASSIGNMENTS_FILTERS_ENDPOINT,
     ITEMS_PER_PAGE,
     CONFIGURATION_POLICIES_BULK_DELETE_ENDPOINT,
-    GROUPS_ENDPOINT
+    GROUPS_ENDPOINT,
+    GROUPS_LIST_ENDPOINT
 } from '@/lib/constants';
 import { apiScope } from "@/lib/msalConfig";
 import { MultiSelect, Option } from '@/components/ui/multi-select';
@@ -36,6 +37,7 @@ import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButto
 import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
 import { ConsentDialog } from '@/components/ConsentDialog';
+import {AssignmentFilter} from "@/types/assignmentFilter";
 
 import {
     DropdownMenu,
@@ -66,12 +68,13 @@ interface PolicyAssignment {
     id: string;
     sourceId: string;
     target: {
-        groupId: string;
         '@odata.type': string;
+        groupId?: string;
         deviceAndAppManagementAssignmentFilterId: string | null;
         deviceAndAppManagementAssignmentFilterType: string;
     };
 }
+
 
 interface ConfigurationPolicy extends Record<string, unknown> {
     '@odata.type': string | null;
@@ -80,6 +83,7 @@ interface ConfigurationPolicy extends Record<string, unknown> {
     createdDateTime: string;
     creationSource: string | null;
     description: string;
+    platform: string;
     platforms: string;
     lastModifiedDateTime: string;
     name: string;
@@ -90,27 +94,11 @@ interface ConfigurationPolicy extends Record<string, unknown> {
     settings: unknown[];
 }
 
-interface AssignmentFilter {
-    id: string;
-    createdDateTime: string;
-    lastModifiedDateTime: string;
-    displayName: string;
-    description: string;
-    platform: number;
-    rule: string;
-    assignmentFilterManagementType: number;
-    payloads: unknown[];
-    roleScopeTags: string[];
-    additionalData: Record<string, unknown>;
-    backingStore: Record<string, unknown>;
-    odataType: string | null;
-}
-
 interface ApiResponse {
     status: string;
     message: string;
     details: unknown[];
-    data: ConfigurationPolicy[] | { url: string; message: string };
+    data: ConfigurationPolicy[];
 }
 
 export default function ConfigurationPoliciesPage() {
@@ -322,11 +310,12 @@ export default function ConfigurationPoliciesPage() {
             throw new Error('No response received from API');
         }
 
-        if (!Array.isArray(response.data)) {
+        // Unwrap ApiResponseWithCorrelation → .data is ApiResponse envelope, .data.data is the array
+        if (!Array.isArray(response.data.data)) {
             throw new Error('Invalid data format received from API');
         }
 
-        const policiesData = response.data;
+        const policiesData = response.data.data;
         setPolicies(policiesData);
         setFilteredPolicies(policiesData);
     };
@@ -335,23 +324,16 @@ export default function ConfigurationPoliciesPage() {
         if (!accounts.length) return;
 
         try {
-            const groupResponse = await request<{ data: GroupDetails[] }>(
-                `${GROUPS_ENDPOINT}/list`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
+            const groupResponse = await request<{ message: string; details: unknown; data: GroupDetails[] }>(
+                GROUPS_LIST_ENDPOINT,
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
             );
 
-            console.log('Fetched groups response:', groupResponse);
-
-            if (groupResponse && Array.isArray(groupResponse.data)) {
-                setGroups(groupResponse.data);
-                console.log('Set groups:', groupResponse.data);
+            // Unwrap ApiResponseWithCorrelation → .data is the envelope, .data.data is the array
+            if (groupResponse && Array.isArray(groupResponse.data.data)) {
+                setGroups(groupResponse.data.data);
             } else {
-                console.log('Invalid groups response format:', groupResponse);
+                console.warn('Invalid groups response format:', groupResponse);
                 setGroups([]);
             }
         } catch (error) {
@@ -366,18 +348,14 @@ export default function ConfigurationPoliciesPage() {
         if (!accounts.length) return;
 
         try {
-            const filtersData = await request<AssignmentFilter[]>(
+            const filtersData = await request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(
                 ASSIGNMENTS_FILTERS_ENDPOINT,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
             );
 
-            if (Array.isArray(filtersData)) {
-                setFilters(filtersData);
+            // Unwrap ApiResponseWithCorrelation → .data.data is the AssignmentFilter array
+            if (filtersData && Array.isArray(filtersData.data.data)) {
+                setFilters(filtersData.data.data);
             }
         } catch (error) {
             console.error('Failed to fetch filters:', error);
@@ -393,9 +371,77 @@ export default function ConfigurationPoliciesPage() {
         const filter = filters.find(f => f.id === filterId);
         return {
             displayName: filter?.displayName || 'Unknown Filter',
-            managementType: filter?.assignmentFilterManagementType === 0 ? 'include' : 'exclude',
-            platform: filter?.platform
+            managementType: filter?.assignmentFilterManagementType?.toLowerCase() || null,
+            platform: filter?.platform || null
         };
+    };
+
+    const getTargetDisplay = (target: PolicyAssignment['target']): { label: string; groupId?: string; isBuiltIn: boolean } => {
+        const odataType = target['@odata.type'] || '';
+
+        if (odataType.endsWith('allDevicesAssignmentTarget')) {
+            return { label: 'All Devices', isBuiltIn: true };
+        }
+        if (odataType.endsWith('allLicensedUsersAssignmentTarget')) {
+            return { label: 'All Users', isBuiltIn: true };
+        }
+
+        // Resolve groupId — check multiple possible paths and casings
+        const raw = target as unknown as Record<string, unknown>;
+        let groupId = target.groupId || '';
+
+        // Try alternative casings and nested paths
+        if (!groupId) {
+            groupId = (raw['GroupId'] || raw['groupid'] || raw['group_id'] ||
+                      raw['groupID'] || raw['GROUPID'] || '') as string;
+        }
+
+        // Some responses nest it under 'target' or 'Target'
+        if (!groupId && raw['target'] && typeof raw['target'] === 'object') {
+            const nested = raw['target'] as Record<string, unknown>;
+            groupId = (nested['groupId'] || nested['GroupId'] || nested['id'] || '') as string;
+        }
+
+        // Try to find it anywhere in the object as a last resort
+        if (!groupId) {
+            const allValues = Object.values(raw);
+            // Look for a string that looks like a GUID and might be in groups
+            const possibleId = allValues.find(v =>
+                typeof v === 'string' &&
+                /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v) &&
+                groups.some(g => g.id === v)
+            );
+            if (possibleId) {
+                groupId = possibleId as string;
+            }
+        }
+
+        if (groupId) {
+            const group = groups.find(g => g.id === groupId);
+            return {
+                label: group?.displayName || (groups.length === 0 ? 'Loading…' : `Group ${groupId.substring(0, 8)}…`),
+                groupId,
+                isBuiltIn: false
+            };
+        }
+
+        // Debug: log when we can't find groupId for a group-type assignment
+        if (odataType.toLowerCase().includes('group')) {
+            console.warn('Could not resolve groupId for group assignment target:', {
+                odataType,
+                target,
+                availableKeys: Object.keys(raw),
+                groupsLoaded: groups.length > 0
+            });
+        }
+
+        // odata type contains "group" but no groupId resolved — show as non-clickable
+        if (odataType.toLowerCase().includes('group')) {
+            return { label: 'Unknown Group', isBuiltIn: true };
+        }
+
+        const shortType = odataType.replace('#microsoft.graph.', '').replace(/AssignmentTarget$/i, '') || 'Unknown';
+        return { label: shortType, isBuiltIn: true };
     };
 
     const handleFilterClick = (filterId: string) => {
@@ -440,7 +486,7 @@ export default function ConfigurationPoliciesPage() {
         }
 
         if (platformFilter.length > 0) {
-            filtered = filtered.filter(policy => platformFilter.includes(policy.platforms));
+            filtered = filtered.filter(policy => platformFilter.includes(policy.platform || policy.platforms));
         }
 
         setFilteredPolicies(filtered);
@@ -463,7 +509,8 @@ export default function ConfigurationPoliciesPage() {
     const getUniquePlatforms = (): Option[] => {
         const platforms = new Set<string>();
         policies.forEach(policy => {
-            platforms.add(policy.platforms);
+            const p = policy.platform || policy.platforms;
+            if (p) platforms.add(p);
         });
         return Array.from(platforms).sort().map(platform => ({ label: platform, value: platform }));
     };
@@ -487,7 +534,7 @@ export default function ConfigurationPoliciesPage() {
         }
     };
 
-    const columns = [
+    const columns = useMemo(() => [
         {
             key: 'name' as string,
             label: 'Policy Name',
@@ -542,25 +589,24 @@ export default function ConfigurationPoliciesPage() {
             )
         },
         {
-            key: 'platforms' as string,
+            key: 'platform' as string,
             label: 'Platform',
             width: 100,
             minWidth: 80,
-            render: (value: unknown) => {
-                const platform = String(value);
-                const getPlatformColor = (platform: string) => {
-                    switch (platform.toLowerCase()) {
-                        case 'windows10': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-                        case 'android': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const platform = String(value || row.platforms || '');
+                const getPlatformColor = (p: string) => {
+                    switch (p.toLowerCase()) {
+                        case 'windows10': case 'windows10andlater': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+                        case 'android': case 'androidforwork': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
                         case 'ios': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
                         case 'macos': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
                         default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
                     }
                 };
-
                 return (
                     <Badge className={`text-xs ${getPlatformColor(platform)}`}>
-                        {platform}
+                        {platform || '—'}
                     </Badge>
                 );
             }
@@ -572,7 +618,6 @@ export default function ConfigurationPoliciesPage() {
             minWidth: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const assignments = value as PolicyAssignment[];
-                const isAssigned = Boolean(row.isAssigned);
 
                 if (!assignments || assignments.length === 0) {
                     return (
@@ -585,39 +630,30 @@ export default function ConfigurationPoliciesPage() {
                 return (
                     <div className="space-y-1">
                         {assignments.slice(0, 2).map((assignment, index) => {
-                            // Handle different assignment types
-                            if (assignment.target['@odata.type'] === '#microsoft.graph.allDevicesAssignmentTarget') {
+                            const target = getTargetDisplay(assignment.target);
+                            const isExcluded = assignment.target['@odata.type']?.endsWith('exclusionGroupAssignmentTarget');
+
+                            if (target.isBuiltIn) {
                                 return (
                                     <Badge key={index} variant="outline" className="text-xs block">
-                                        All Devices
+                                        {target.label}
                                     </Badge>
                                 );
                             }
 
-                            if (assignment.target.groupId) {
-                                const group = groups.find(g => g.id === assignment.target.groupId);
-                                // Debug logging
-                                console.log('Looking for groupId:', assignment.target.groupId);
-                                console.log('Available groups:', groups.map(g => ({ id: g.id, name: g.displayName })));
-                                console.log('Found group:', group);
-                                const groupName = group?.displayName || 'Unknown Group';
-
-                                return (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleGroupClick(assignment.target.groupId)}
-                                        className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline block truncate max-w-full text-left"
-                                        title={groupName}
-                                    >
-                                        {groupName}
-                                    </button>
-                                );
-                            }
-
                             return (
-                                <Badge key={index} variant="secondary" className="text-xs block">
-                                    Unknown Target
-                                </Badge>
+                                <button
+                                    key={index}
+                                    onClick={() => target.groupId && handleGroupClick(target.groupId)}
+                                    className={`text-xs hover:underline block truncate max-w-full text-left ${
+                                        isExcluded
+                                            ? 'text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300'
+                                            : 'text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300'
+                                    }`}
+                                    title={`${isExcluded ? '[Excluded] ' : ''}${target.label}`}
+                                >
+                                    {isExcluded ? '⊖ ' : ''}{target.label}
+                                </button>
                             );
                         })}
                         {assignments.length > 2 && (
@@ -689,7 +725,7 @@ export default function ConfigurationPoliciesPage() {
                 );
             }
         }
-    ];
+    ], [groups, filters]);
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -1011,12 +1047,12 @@ export default function ConfigurationPoliciesPage() {
                                         </div>
                                         <div>
                                             <span className="font-medium">Platform:</span>
-                                            <span className="ml-2">{selectedFilter.platform}</span>
+                                            <span className="ml-2">{selectedFilter.platform || 'All'}</span>
                                         </div>
                                         <div>
                                             <span className="font-medium">Management Type:</span>
-                                            <Badge variant={selectedFilter.assignmentFilterManagementType === 0 ? "default" : "secondary"} className="ml-2">
-                                                {selectedFilter.assignmentFilterManagementType === 0 ? 'Include' : 'Exclude'}
+                                            <Badge variant="default" className="ml-2">
+                                                {selectedFilter.assignmentFilterManagementType || 'Devices'}
                                             </Badge>
                                         </div>
                                     </div>
@@ -1072,7 +1108,7 @@ export default function ConfigurationPoliciesPage() {
                                         <div>
                                             <span className="font-medium text-muted-foreground">Platform:</span>
                                             <div className="mt-1">
-                                                <Badge>{selectedPolicy.platforms}</Badge>
+                                                <Badge>{selectedPolicy.platform || selectedPolicy.platforms}</Badge>
                                             </div>
                                         </div>
                                         <div>
@@ -1111,8 +1147,8 @@ export default function ConfigurationPoliciesPage() {
                                     <h4 className="font-medium text-foreground mb-3">Assignments ({selectedPolicy.assignments.length})</h4>
                                     <div className="space-y-2 max-h-48 overflow-y-auto border rounded-md p-3">
                                         {selectedPolicy.assignments.map((assignment, index) => {
-                                            const group = groups.find(g => g.id === assignment.target.groupId);
-                                            const groupName = group?.displayName || 'Unknown Group';
+                                            const target = getTargetDisplay(assignment.target);
+                                            const isExcluded = assignment.target['@odata.type']?.endsWith('exclusionGroupAssignmentTarget');
                                             const filterInfo = getFilterInfo(
                                                 assignment.target.deviceAndAppManagementAssignmentFilterId,
                                                 assignment.target.deviceAndAppManagementAssignmentFilterType
@@ -1122,12 +1158,16 @@ export default function ConfigurationPoliciesPage() {
                                                 <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
                                                     <div className="flex items-center gap-3">
                                                         <Users className="h-4 w-4 text-muted-foreground" />
-                                                        <button
-                                                            onClick={() => handleGroupClick(assignment.target.groupId)}
-                                                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
-                                                        >
-                                                            {groupName}
-                                                        </button>
+                                                        {target.isBuiltIn ? (
+                                                            <Badge variant="outline" className="text-xs">{target.label}</Badge>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => target.groupId && handleGroupClick(target.groupId)}
+                                                                className={`hover:underline text-sm ${isExcluded ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}
+                                                            >
+                                                                {isExcluded ? '⊖ ' : ''}{target.label}
+                                                            </button>
+                                                        )}
                                                         {filterInfo.displayName !== 'None' && (
                                                             <button
                                                                 onClick={() => handleFilterClick(assignment.target.deviceAndAppManagementAssignmentFilterId || '')}

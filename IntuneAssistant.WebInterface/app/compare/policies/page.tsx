@@ -67,7 +67,7 @@ interface SearchableSelectProps {
 }
 
 export default function PolicyComparison() {
-    const { instance, accounts } = useMsal();
+    const { accounts } = useMsal();
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [sourcePolicy, setSourcePolicy] = useState<Policy | null>(null);
     const [targetPolicy, setTargetPolicy] = useState<Policy | null>(null);
@@ -79,7 +79,7 @@ export default function PolicyComparison() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
 
-    const { request, cancel } = useApiRequest();
+    const { request } = useApiRequest();
 
     const fetchPolicies = async () => {
         if (!accounts.length) return;
@@ -97,13 +97,12 @@ export default function PolicyComparison() {
             let allPolicies: Policy[] = [];
 
             // Handle the response data properly
-            if (Array.isArray(response)) {
-                allPolicies = response;
-            } else if (response.data) {
-                if (Array.isArray(response.data)) {
-                    allPolicies = response.data;
+            const innerData = response.data;
+            if (innerData?.data) {
+                if (Array.isArray(innerData.data)) {
+                    allPolicies = innerData.data;
                 } else {
-                    throw new Error(response.data.message || 'Failed to fetch policies');
+                    throw new Error((innerData.data as { message: string }).message || 'Failed to fetch policies');
                 }
             } else {
                 throw new Error('Invalid response format');
@@ -206,7 +205,7 @@ export default function PolicyComparison() {
        };
 
        return (
-           <div className="relative z-10" ref={dropdownRef}>
+           <div className="relative z-50" ref={dropdownRef}>
                <label className="block text-sm font-medium text-foreground mb-2">
                    {label}
                </label>
@@ -236,7 +235,7 @@ export default function PolicyComparison() {
                    </div></div>
 
                {isOpen && !disabled && (
-                   <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/30 dark:border-white/20 rounded-lg shadow-2xl overflow-hidden">
+                   <div className="absolute left-0 right-0 top-full mt-2 z-[100] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/30 dark:border-white/20 rounded-lg shadow-2xl overflow-hidden">
                        <div className="p-3 border-b border-border/20 bg-white/40 dark:bg-white/5">
                            <div className="relative">
                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -251,9 +250,9 @@ export default function PolicyComparison() {
                            </div>
                        </div>
 
-                       <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                       <div className="max-h-100 overflow-y-auto custom-scrollbar">
                            {filteredOptions.length > 0 ? (
-                               filteredOptions.map((policy, index) => (
+                               filteredOptions.map((policy) => (
                                    <div
                                        key={policy.id}
                                        onClick={() => handleSelect(policy)}
@@ -338,7 +337,7 @@ export default function PolicyComparison() {
                 </label>
                 <div
                     ref={triggerRef}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary/50 dark:focus:ring-primary/60 focus:border-transparent cursor-pointer bg-white dark:bg-gray-800 min-h-[42px] transition-colors"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary/50 dark:focus:ring-primary/60 focus:border-transparent cursor-pointer bg-white dark:bg-gray-800 min-h-10.5 transition-colors"
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     <div className="flex items-center justify-between">
@@ -382,7 +381,7 @@ export default function PolicyComparison() {
                 {isOpen && typeof window !== 'undefined' && ReactDOM.createPortal(
                     <div
                         ref={dropdownRef}
-                        className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-xl max-h-60 overflow-hidden"
+                        className="fixed z-9999 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-xl max-h-60 overflow-hidden"
                         style={{
                             top: `${dropdownPosition.top}px`,
                             left: `${dropdownPosition.left}px`,
@@ -461,7 +460,7 @@ export default function PolicyComparison() {
                 throw new Error('No response received from comparison API');
             }
 
-            setComparisonResult(data);
+            setComparisonResult(data.data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to compare policies');
             console.error('Error comparing policies:', err);
@@ -473,12 +472,10 @@ export default function PolicyComparison() {
     const getAllKeywords = () => {
         if (!comparisonResult?.results?.checkResults) return [];
 
-        const allKeywords = comparisonResult.results.checkResults
+        return comparisonResult.results.checkResults
             .flatMap(result => result.keywords || [])
             .filter((keyword, index, array) => array.indexOf(keyword) === index)
             .sort();
-
-        return allKeywords;
     };
 
 
@@ -1214,7 +1211,7 @@ export default function PolicyComparison() {
             {policies.length > 0 && (
                 <>
                     {/* Policy Selection Section */}
-                   <Card className="relative bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                   <Card className="relative z-40 bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center gap-2">
                                 <Settings className="h-5 w-5 text-gray-600" />
@@ -1223,7 +1220,7 @@ export default function PolicyComparison() {
                                 Choose two policies of the same type to compare their configurations. Found {policies.length} configuration policies.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="min-h-[100px]">
+                        <CardContent className="min-h-25">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <SearchableSelect
                                     value={sourcePolicy?.id || ''}
@@ -1250,7 +1247,7 @@ export default function PolicyComparison() {
                                         onClick={comparePolicies}
                                         disabled={compareLoading}
                                         size="lg"
-                                        className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                                        className="bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                                     >
                                         {compareLoading ? (
                                             <>

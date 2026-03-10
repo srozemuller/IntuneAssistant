@@ -1686,7 +1686,7 @@ function DataTableComponent(props) {
                                     onRowClick: onRowClick ? handleRowClick : undefined,
                                     rowClassName: rowClassName,
                                     getCellValue: getCellValue
-                                }, row.id ? String(row.id) : rowIndex, false, {
+                                }, row.id ? `${String(row.id)}-${rowIndex}` : rowIndex, false, {
                                     fileName: "[project]/components/DataTable.tsx",
                                     lineNumber: 699,
                                     columnNumber: 33

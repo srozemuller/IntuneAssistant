@@ -119,8 +119,10 @@ export const AuditEventsProvider: React.FC<AuditEventsProviderProps> = ({ childr
                 { method: 'GET', headers: { 'Content-Type': 'application/json' } }
             );
 
-            if (response?.status === 0 && response.data?.items) {
-                const events = response.data.items;
+            // Unwrap ApiResponseWithCorrelation → response.data is the envelope, response.data.data.items is the events array
+            const envelope = response?.data;
+            if (envelope?.status === 0 && envelope.data?.items) {
+                const events = envelope.data.items;
 
                 // Filter by time if needed
                 const now = new Date();
@@ -255,13 +257,13 @@ export const AuditEventsProvider: React.FC<AuditEventsProviderProps> = ({ childr
                 setRecentEvents(sortedEvents);
 
                 // Store pagination info
-                setHasMore(response.data.hasMore || false);
-                setNextPageToken(response.data.nextPageToken || null);
+                setHasMore(envelope.data.hasMore || false);
+                setNextPageToken(envelope.data.nextPageToken || null);
 
                 // Store fetch params for loadMore
                 setLastFetchParams({ filterType, activity, actor });
             } else {
-                throw new Error(response?.message || 'Failed to fetch audit events');
+                throw new Error(envelope?.message || 'Failed to fetch audit events');
             }
         } catch (err) {
             console.error('Failed to fetch audit data:', err);
@@ -323,8 +325,10 @@ export const AuditEventsProvider: React.FC<AuditEventsProviderProps> = ({ childr
                 { method: 'GET', headers: { 'Content-Type': 'application/json' } }
             );
 
-            if (response?.status === 0 && response.data?.items) {
-                const newEvents = response.data.items;
+            // Unwrap ApiResponseWithCorrelation
+            const envelope = response?.data;
+            if (envelope?.status === 0 && envelope.data?.items) {
+                const newEvents = envelope.data.items;
 
                 // Append new events to existing ones (avoiding duplicates)
                 const existingIds = new Set(recentEvents.map(e => e.id));
@@ -336,10 +340,10 @@ export const AuditEventsProvider: React.FC<AuditEventsProviderProps> = ({ childr
                 setRecentEvents(updatedEvents);
 
                 // Update pagination info
-                setHasMore(response.data.hasMore || false);
-                setNextPageToken(response.data.nextPageToken || null);
+                setHasMore(envelope.data.hasMore || false);
+                setNextPageToken(envelope.data.nextPageToken || null);
             } else {
-                throw new Error(response?.message || 'Failed to load more events');
+                throw new Error(envelope?.message || 'Failed to load more events');
             }
         } catch (err) {
             console.error('Failed to load more events:', err);
