@@ -78,17 +78,20 @@ export function VerifyConsentOnMount() {
 
                 console.log('VerifyConsent: Response received', response);
 
-                if (response && response.status === 3) {
-                    console.log('VerifyConsent: Consent required - missing permissions:', response.data?.missingPermissions);
+                // Unwrap ApiResponseWithCorrelation — actual payload is at response.data
+                const payload = response?.data;
+
+                if (payload && payload.status === 3) {
+                    console.log('VerifyConsent: Consent required - missing permissions:', payload.data?.missingPermissions);
                     setConsentNeeded(
-                        response.details?.consentUrl || '',
-                        response.data?.requiredPermissions || []
+                        payload.details?.consentUrl || '',
+                        payload.data?.requiredPermissions || []
                     );
-                } else if (response && response.status === 0) {
+                } else if (payload && payload.status === 0) {
                     console.log('VerifyConsent: All permissions granted');
                     clearConsent();
                 } else {
-                    console.log('VerifyConsent: Unexpected status:', response?.status);
+                    console.log('VerifyConsent: Unexpected status:', payload?.status);
                 }
             } catch (error) {
                 console.error('VerifyConsent: Error checking consent', error);

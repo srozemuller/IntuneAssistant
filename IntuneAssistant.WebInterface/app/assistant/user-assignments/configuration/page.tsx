@@ -31,6 +31,7 @@ import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
 import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
+import {AssignmentFilter} from "@/types/assignmentFilter";
 
 interface ApiResponse {
     status: string;
@@ -99,21 +100,6 @@ interface UserDetails {
     memberOf: unknown[] | null;
 }
 
-interface AssignmentFilter {
-    id: string;
-    createdDateTime: string;
-    lastModifiedDateTime: string;
-    displayName: string;
-    description: string;
-    platform: number;
-    rule: string;
-    assignmentFilterManagementType: number;
-    payloads: unknown[];
-    roleScopeTags: string[];
-    additionalData: Record<string, unknown>;
-    backingStore: Record<string, unknown>;
-    odataType: string | null;
-}
 
 type SearchMode = 'group' | 'user';
 
@@ -244,11 +230,14 @@ export default function AssignmentsOverview() {
                 throw new Error('No response received from API');
             }
 
-            if (handleConsentCheck(responseData as ApiResponse)) {
+            // Unwrap ApiResponseWithCorrelation → .data is the UserApiResponse envelope
+            const envelope = responseData.data;
+
+            if (handleConsentCheck(envelope as unknown as ApiResponse)) {
                 return;
             }
 
-            const userData = responseData.data as UserDetails | UserDetails[];
+            const userData = envelope.data as UserDetails | UserDetails[];
 
             if (Array.isArray(userData)) {
                 if (userData.length > 0) {
@@ -256,8 +245,10 @@ export default function AssignmentsOverview() {
                 } else {
                     setUserSearchError(`No users found matching "${userSearchInput.trim()}"`);
                 }
-            } else {
+            } else if (userData) {
                 setSearchedUser(userData);
+            } else {
+                setUserSearchError(`No users found matching "${userSearchInput.trim()}"`);
             }
 
         } catch (error) {
@@ -279,15 +270,11 @@ export default function AssignmentsOverview() {
             const [assignmentsData, filtersData] = await Promise.all([
                 request<ApiResponse>(`${ASSIGNMENTS_ENDPOINT}/user/${userId}`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 }),
-                request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
+                request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(ASSIGNMENTS_FILTERS_ENDPOINT, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 })
             ]);
 
@@ -295,22 +282,25 @@ export default function AssignmentsOverview() {
                 throw new Error('No response received from assignments API');
             }
 
+            // Unwrap filters
             if (!filtersData) {
                 console.warn('No response received from filters API, continuing with assignments only');
                 setFilters([]);
-            } else if (Array.isArray(filtersData)) {
-                setFilters(filtersData);
+            } else if (Array.isArray(filtersData.data.data)) {
+                setFilters(filtersData.data.data);
             }
 
-            if (assignmentsData.status === 'Success' && assignmentsData.data) {
-                const assignments = assignmentsData.data;
+            // Unwrap assignments: assignmentsData.data is the ApiResponse envelope
+            const assignmentsEnvelope = assignmentsData.data;
+
+            if (assignmentsEnvelope.status === 'Success' && assignmentsEnvelope.data) {
+                const assignments = assignmentsEnvelope.data;
 
                 if (Array.isArray(assignments)) {
                     setAssignments(assignments);
                     setFilteredAssignments(assignments);
 
                     if (!searchedUser || searchedUser.id !== userId) {
-                        // Find the user from search results or keep current searchedUser
                         const user = userSearchResults.find(u => u.id === userId) || searchedUser;
                         if (user && user.id === userId) {
                             setSearchedUser(user);
@@ -323,7 +313,7 @@ export default function AssignmentsOverview() {
                     throw new Error('Invalid data format received from API');
                 }
             } else {
-                throw new Error(assignmentsData.message || 'Failed to fetch user assignments');
+                throw new Error(assignmentsEnvelope.message || 'Failed to fetch user assignments');
             }
 
         } catch (error) {
@@ -537,12 +527,10 @@ export default function AssignmentsOverview() {
         if (!accounts.length) return;
 
         try {
-            const responseData = await request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const responseData = await request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(
+                ASSIGNMENTS_FILTERS_ENDPOINT,
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+            );
 
             if (!responseData) {
                 console.error('No response received from filters API');
@@ -550,20 +538,10 @@ export default function AssignmentsOverview() {
                 return;
             }
 
-            if (Array.isArray(responseData)) {
-                setFilters(responseData);
+            // Unwrap ApiResponseWithCorrelation → .data.data is the AssignmentFilter array
+            if (Array.isArray(responseData.data.data)) {
+                setFilters(responseData.data.data);
             } else {
-                const errorResponse = responseData as unknown as ApiResponse;
-                if (errorResponse.status === 'Error' &&
-                    errorResponse.message === 'User challenge required' &&
-                    typeof errorResponse.data === 'object' &&
-                    errorResponse.data !== null &&
-                    'url' in errorResponse.data) {
-
-                    setConsentUrl(errorResponse.data.url);
-                    setShowConsentDialog(true);
-                    return;
-                }
                 console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
             }
@@ -581,8 +559,8 @@ export default function AssignmentsOverview() {
         const filter = filters.find(f => f.id === filterId);
         return {
             displayName: filter?.displayName || 'Unknown Filter',
-            managementType: filter?.assignmentFilterManagementType === 0 ? 'include' : 'exclude',
-            platform: filter?.platform
+            managementType: filter?.assignmentFilterManagementType?.toLowerCase() || null,
+            platform: filter?.platform || null
         };
     };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useCallback, useRef} from 'react';
+import React, {useState, useCallback} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import { DataTable } from '@/components/DataTable';
@@ -29,20 +29,16 @@ import {
     Plus,
     AlertCircle,
     ArrowRight,
-    ArrowLeft,
-    ChevronLeft,
-    ChevronRight
+    ArrowLeft
 } from 'lucide-react';
 import {useMsal} from '@azure/msal-react';
 import {DEVICES_STATS_ENDPOINT, GROUPS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
-import {apiScope} from "@/lib/msalConfig";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {useApiRequest} from '@/hooks/useApiRequest';
 import {ConsentDialog} from "@/components/ConsentDialog";
 
-import {UserMember} from "@/hooks/useGroupDetails";
 interface ApiResponse {
     status: number;
     message: string;
@@ -60,19 +56,6 @@ interface ApiResponse {
 }
 
 
-interface GroupDetails {
-    id: string;
-    displayName: string;
-    description: string | null;
-    membershipRule: string | null;
-    createdDateTime: string;
-    groupCount: {
-        userCount: number;
-        deviceCount: number;
-        groupCount: number;
-    } | null;
-    members: UserMember[] | null;
-}
 
 interface DeviceHardwareInfo {
     serialNumber: string;
@@ -194,7 +177,7 @@ interface FilterOption {
 }
 
 export default function DeviceStatsPage() {
-    const {instance, accounts} = useMsal();
+    const { accounts } = useMsal();
     const { request } = useApiRequest();
     // Consent dialog state when not enough permissions
     const [showConsentDialog, setShowConsentDialog] = useState(false);
@@ -213,7 +196,7 @@ export default function DeviceStatsPage() {
     const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [filters, setFilters] = useState<DeviceFilters>({});
+    const [filters] = useState<DeviceFilters>({});
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -229,10 +212,7 @@ export default function DeviceStatsPage() {
     const paginatedResults = filteredStats.slice(startIndex, endIndex);
     const totalPages = Math.ceil(filteredStats.length / itemsPerPage);
 
-    const [groups, setGroups] = useState<GroupDetails[]>([]);
     const [groupCreationMode, setGroupCreationMode] = useState(false);
-    const [groupName, setGroupName] = useState('');
-    const [groupDescription, setGroupDescription] = useState('');
     const [isCreatingGroup, setIsCreatingGroup] = useState(false);
     const [showCreateGroupOption, setShowCreateGroupOption] = useState(false);
     const [newGroupName, setNewGroupName] = useState('');
@@ -240,17 +220,14 @@ export default function DeviceStatsPage() {
     const [createGroupError, setCreateGroupError] = useState<string | null>(null);
 
     const [activeFilters, setActiveFilters] = useState<{ [key: string]: string | boolean | number }>({});
-    const [filterHierarchy, setFilterHierarchy] = useState<string[]>([]);
-    const [availableFilterTypes, setAvailableFilterTypes] = useState<string[]>([]);
 
     // Add devices to group constants
     const [showAddToGroupDialog, setShowAddToGroupDialog] = useState(false);
     const [searchedGroup, setSearchedGroup] = useState<GroupSearchResult | null>(null);
 
     const [groupSearchInput, setGroupSearchInput] = useState(''); // Change this line
-    const [groupSearchLoading, setGroupSearchLoading] = useState(false);
     const [addMembersLoading, setAddMembersLoading] = useState(false);
-    const [groupSearchError, setGroupSearchError] = useState<string | null>(null);
+    const [, setGroupSearchError] = useState<string | null>(null);
     const [addMembersError, setAddMembersError] = useState<string | null>(null);
     const [addToGroupStep, setAddToGroupStep] = useState(1);
     const [addMembersResult, setAddMembersResult] = useState<AddMembersResult | null>(null);
@@ -437,21 +414,23 @@ export default function DeviceStatsPage() {
                 throw new Error('No response received from API');
             }
 
-            // Check if this is a consent required error with proper type checking
-            if (responseData.status === 'Error' &&
-                responseData.message === 'User challenge required' &&
-                typeof responseData.data === 'object' &&
-                responseData.data !== null &&
-                'url' in responseData.data &&
-                typeof responseData.data.url === 'string') {
+            const innerData = responseData.data;
 
-                setConsentUrl(responseData.data.url);
+            // Check if this is a consent required error with proper type checking
+            if (innerData.status === 'Error' &&
+                innerData.message === 'User challenge required' &&
+                typeof innerData.data === 'object' &&
+                innerData.data !== null &&
+                'url' in innerData.data &&
+                typeof (innerData.data as { url?: string }).url === 'string') {
+
+                setConsentUrl((innerData.data as { url: string }).url);
                 setShowConsentDialog(true);
                 setIsCreatingGroup(false);
                 return;
             }
 
-            if (responseData.message === "Group already exists") {
+            if (innerData.message === "Group already exists") {
                 // Show subtle warning and switch to search mode
                 setCreateGroupError("Group already exists");
                 // Auto-switch to search mode and filter by the attempted group name
@@ -463,8 +442,8 @@ export default function DeviceStatsPage() {
                     setNewGroupName('');
                     setNewGroupDescription('');
                 }, 2000); // Show warning for 2 seconds then switch
-            } else if (responseData.status === 'Error' && responseData.data) {
-                const newGroup = responseData.data;
+            } else if (innerData.status === 'Error' && innerData.data) {
+                const newGroup = innerData.data as GroupSearchResult;
                 setSearchedGroup(newGroup);
                 setAddToGroupStep(2);
                 // Reset create form
@@ -472,7 +451,7 @@ export default function DeviceStatsPage() {
                 setNewGroupDescription('');
                 setShowCreateGroupOption(false);
             } else {
-                throw new Error(responseData.message || 'Failed to create group');
+                throw new Error(innerData.message || 'Failed to create group');
             }
         } catch (error) {
             console.error('Failed to create group:', error);
@@ -504,8 +483,8 @@ export default function DeviceStatsPage() {
                 throw new Error('No response received from API');
             }
 
-            if (response.status === 0 && response.data) {
-                const groups = Array.isArray(response.data) ? response.data : [response.data];
+            if (response.data.status === 0 && response.data.data) {
+                const groups = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
                 setAllGroups(groups);
                 setFilteredGroups(groups);
             } else {
@@ -560,55 +539,6 @@ export default function DeviceStatsPage() {
     const selectGroup = (group: GroupSearchResult) => {
         setSearchedGroup(group);
         setAddToGroupStep(2);
-    };
-    // Enhanced function to apply dynamic filtering
-    const getFilteredDevicesForProperty = (excludeProperty?: string) => {
-        let filtered = [...deviceStats];
-
-        // Apply all active filters except the one we're calculating options for
-        Object.entries(activeFilters).forEach(([property, value]) => {
-            if (property !== excludeProperty) {
-                filtered = filtered.filter(device => {
-                    const propertyValue = getNestedProperty(device, property);
-                    return propertyValue === value;
-                });
-            }
-        });
-
-        return filtered;
-    };
-    const getAllAvailableFilters = () => {
-        const baseFilters = [
-            'platform',
-            'complianceState',
-            'managementState',
-            'manufacturer',
-            'isEncrypted',
-            'isSupervised',
-            'deviceRegistrationState',
-            'hardwareInfo.operatingSystemLanguage',
-            'hardwareInfo.tpmSpecificationVersion',
-            'hardwareInfo.tpmManufacturer',
-            'hardwareInfo.tpmVersion',
-            'hardwareInfo.systemManagementBIOSVersion',
-            'hardwareInfo.operatingSystemEdition',
-            'hardwareInfo.deviceLicensingStatus',
-            'hardwareInfo.cellularTechnology',
-            'hardwareInfo.subscriberCarrier',
-            'operatingSystem',
-            'processorArchitecture'
-        ];
-
-        // Add computed filters
-        const computedFilters = [
-            'storageUsage',
-            'batteryHealth',
-            'syncStatus',
-            'memorySize',
-            'deviceAge'
-        ];
-
-        return [...baseFilters, ...computedFilters];
     };
 // Enhanced function to get filtered devices for drill-down
     const getFilteredDevicesForDrillDown = (excludeProperty?: string) => {
@@ -872,10 +802,6 @@ export default function DeviceStatsPage() {
         setAddMembersError(null);
 
         try {
-            const selectedDeviceObjects = deviceStats.filter(device =>
-                selectedDevices.includes(device.id)
-            );
-
             const data = await request<AddMembersResult>(
                 `${GROUPS_ENDPOINT}/${searchedGroup.id}/members/devices`,
                 {
@@ -897,17 +823,17 @@ export default function DeviceStatsPage() {
                 return;
             }
 
-            if (data.status === 0) {
+            if (data.data.status === 0) {
                 // Store the result and move to step 3
-                setAddMembersResult(data);
+                setAddMembersResult(data.data);
                 setAddToGroupStep(3);
 
                 // Only clear selection if all devices were successful
-                if (data.data.totalSuccessful === selectedDevices.length) {
+                if (data.data.data.totalSuccessful === selectedDevices.length) {
                     setSelectedDevices([]);
                 }
             } else {
-                throw new Error(data.message || 'Failed to add devices to group');
+                throw new Error(data.data.message || 'Failed to add devices to group');
             }
         } catch (error) {
             console.error('Error adding members:', error);
@@ -939,6 +865,7 @@ export default function DeviceStatsPage() {
         if (showAddToGroupDialog && addToGroupStep === 1) {
             fetchAllGroups();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showAddToGroupDialog, addToGroupStep]);
 
 
@@ -983,21 +910,6 @@ export default function DeviceStatsPage() {
         setSelectedDevices([]);
     };
 
-    const getCountForPropertyValue = (propertyPath: string, value: string | boolean | number) => {
-        const filteredDevices = getFilteredDevicesForProperty(propertyPath);
-        return filteredDevices.filter(device => {
-            const propertyValue = getNestedProperty(device, propertyPath);
-            return propertyValue === value;
-        }).length;
-    };
-    const goToPreviousPage = () => {
-        setCurrentPage((prev) => Math.max(prev - 1, 1));
-    };
-
-    const goToNextPage = () => {
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-    };
-
     // Add this function to create an Entra ID group
 
 
@@ -1010,13 +922,6 @@ export default function DeviceStatsPage() {
         }, obj as Record<string, unknown>);
     };
 
-
-// Add this function to get unique values from nested properties
-    const getUniqueNestedValues = (propertyPath: string) => {
-        const values = deviceStats.map(device => getNestedProperty(device, propertyPath))
-            .filter(value => value !== null && value !== undefined);
-        return [...new Set(values)];
-    };
 
     // Fetch device statistics
     // Update the fetchDeviceStats function
@@ -1056,11 +961,11 @@ export default function DeviceStatsPage() {
                 throw new Error('No response received from API');
             }
 
-            if (!response.data?.data || !Array.isArray(response.data.data)) {
+            if (!response.data?.data?.data || !Array.isArray(response.data.data.data)) {
                 throw new Error('Invalid data format received from API');
             }
 
-            const newDevices = response.data.data;
+            const newDevices = response.data.data.data;
 
             if (append) {
                 setDeviceStats(prev => [...prev, ...newDevices]);
@@ -1070,9 +975,9 @@ export default function DeviceStatsPage() {
                 setFilteredStats(newDevices);
             }
 
-            setTotalDeviceCount(response.data.totalCount);
-            setHasMoreDevices(response.data.hasNextPage);
-            setNextPageToken(response.data.nextPageToken);
+            setTotalDeviceCount(response.data.data.totalCount);
+            setHasMoreDevices(response.data.data.hasNextPage);
+            setNextPageToken(response.data.data.nextPageToken);
 
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to fetch device statistics');
@@ -1089,11 +994,6 @@ export default function DeviceStatsPage() {
         }
     };
 
-// Add function to reset and fetch with different page size
-    const fetchWithPageSize = (newPageSize: number) => {
-        setFetchPageSize(newPageSize);
-        fetchDeviceStats(newPageSize);
-    };
 
     // Apply filters
     const applyFilters = useCallback(() => {
@@ -1137,6 +1037,7 @@ export default function DeviceStatsPage() {
 
         setFilteredStats(filtered);
         setCurrentPage(1); // Reset to first page when filtering
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deviceStats, filters, activeFilters]);
 
     // Apply filters when filters change
@@ -1219,10 +1120,6 @@ export default function DeviceStatsPage() {
         document.body.removeChild(a);
     };
 
-    // Get unique values for filter dropdowns
-    const getUniqueValues = (key: keyof DeviceStats) => {
-        return [...new Set(deviceStats.map(device => device[key] as string))].filter(Boolean);
-    };
 
     return (
         <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
@@ -1300,7 +1197,7 @@ export default function DeviceStatsPage() {
                             <div className="text-gray-400 mb-6">
                                 <Monitor className="h-16 w-16 mx-auto"/>
                             </div>
-                            <h3 className="text-xl font-medium font-bold text-gray-600 dark:text-white mb-4">
+                            <h3 className="text-xl font-bold text-gray-600 dark:text-white mb-4">
                                 Ready to view your device overview
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-md mx-auto">
@@ -1464,7 +1361,7 @@ export default function DeviceStatsPage() {
                         <CardContent className="space-y-6">
                             {/* Filter Breadcrumb */}
                             {Object.keys(activeFilters).length > 0 && (
-                                <div className="border rounded-lg p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                                <div className="border rounded-lg p-4 bg-linear-to-r from-blue-50 to-indigo-50">
                                     <div className="text-sm font-medium text-blue-800 mb-3">Active Filter Chain:</div>
                                     <div className="flex flex-wrap gap-2">
                                         {Object.entries(activeFilters).map(([property, value], index) => (
@@ -1816,7 +1713,7 @@ export default function DeviceStatsPage() {
 
             {/* Device Details Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
+                <DialogContent className="w-[90vw]! max-w-[90vw]! h-[75vh] max-h-none overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <Monitor className="h-5 w-5"/>
@@ -2093,17 +1990,17 @@ export default function DeviceStatsPage() {
                                                 <div>
                                                     <label className="text-sm font-medium text-gray-500">Device Guard
                                                         VBS Hardware</label>
-                                                    <p className="text-xs break-words">{selectedDevice.hardwareInfo.deviceGuardVirtualizationBasedSecurityHardwareRequirementState}</p>
+                                                    <p className="text-xs wrap-break-word">{selectedDevice.hardwareInfo.deviceGuardVirtualizationBasedSecurityHardwareRequirementState}</p>
                                                 </div>
                                                 <div>
                                                     <label className="text-sm font-medium text-gray-500">Device Guard
                                                         VBS State</label>
-                                                    <p className="text-xs break-words">{selectedDevice.hardwareInfo.deviceGuardVirtualizationBasedSecurityState}</p>
+                                                    <p className="text-xs wrap-break-word">{selectedDevice.hardwareInfo.deviceGuardVirtualizationBasedSecurityState}</p>
                                                 </div>
                                                 <div>
                                                     <label className="text-sm font-medium text-gray-500">Credential
                                                         Guard State</label>
-                                                    <p className="text-xs break-words">{selectedDevice.hardwareInfo.deviceGuardLocalSystemAuthorityCredentialGuardState}</p>
+                                                    <p className="text-xs wrap-break-word">{selectedDevice.hardwareInfo.deviceGuardLocalSystemAuthorityCredentialGuardState}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -2320,7 +2217,7 @@ export default function DeviceStatsPage() {
 
             {/* Group Creation Dialog */}
             <Dialog open={groupCreationMode} onOpenChange={setGroupCreationMode}>
-                <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
+                <DialogContent className="w-[90vw]! max-w-[90vw]! h-[75vh] max-h-none overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <Users className="h-5 w-5"/>
@@ -2443,7 +2340,7 @@ export default function DeviceStatsPage() {
             {/* Create Group Dialog */}
             {/* Create Group Dialog */}
             <Dialog open={showAddToGroupDialog} onOpenChange={setShowAddToGroupDialog}>
-                <DialogContent className="!w-[90vw] !max-w-[90vw] h-[75vh] max-h-none overflow-y-auto">
+                <DialogContent className="w-[90vw]! max-w-[90vw]! h-[75vh] max-h-none overflow-y-auto">
                     <DialogHeader className="pb-2">
                         <DialogTitle className="flex items-center gap-3">
                             <Users className="h-5 w-5 text-yellow-400 dark:text-yellow-400"/>
@@ -2492,7 +2389,7 @@ export default function DeviceStatsPage() {
                                             )}
                                         </div>
 
-                                        <div className="mt-1 text-center max-w-[120px]">
+                                        <div className="mt-1 text-center max-w-30">
                                             <h4 className={`text-xs font-medium transition-colors ${
                                                 addToGroupStep >= step
                                                     ? 'text-blue-600 dark:text-blue-400'
@@ -2507,7 +2404,7 @@ export default function DeviceStatsPage() {
                                     </div>
 
                                     {index < 2 && (
-                                        <div className="flex-1 h-px mx-3 mt-[-25px] relative">
+                                        <div className="flex-1 h-px mx-3 -mt-6.25 relative">
                                             <div className={`absolute inset-0 transition-all duration-500 ${
                                                 addToGroupStep > step
                                                     ? 'bg-blue-600 dark:bg-blue-500'
@@ -2524,8 +2421,8 @@ export default function DeviceStatsPage() {
                             <div
                                 className={`h-1 rounded-full transition-all duration-700 ease-out ${
                                     addToGroupStep === 3
-                                        ? 'bg-gradient-to-r from-green-500 to-green-600 dark:from-green-400 dark:to-green-500'
-                                        : 'bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500'
+                                        ? 'bg-linear-to-r from-green-500 to-green-600 dark:from-green-400 dark:to-green-500'
+                                        : 'bg-linear-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500'
                                 }`}
                                 style={{
                                     width: `${(addToGroupStep / 3) * 100}%`,
@@ -2593,7 +2490,7 @@ export default function DeviceStatsPage() {
                                     {groupsError && (
                                         <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
                                             <div className="flex items-center gap-2 text-red-800 dark:text-red-300">
-                                                <AlertCircle className="h-4 w-4 flex-shrink-0"/>
+                                                <AlertCircle className="h-4 w-4 shrink-0"/>
                                                 <span className="text-sm">{groupsError}</span>
                                             </div>
                                         </div>
@@ -2768,9 +2665,9 @@ export default function DeviceStatsPage() {
                                                         : "text-red-800 dark:text-red-300"
                                                 }`}>
                                                     {createGroupError === "Group already exists" ? (
-                                                        <AlertTriangle className="h-4 w-4 flex-shrink-0"/>
+                                                        <AlertTriangle className="h-4 w-4 shrink-0"/>
                                                     ) : (
-                                                        <AlertCircle className="h-4 w-4 flex-shrink-0"/>
+                                                        <AlertCircle className="h-4 w-4 shrink-0"/>
                                                     )}
                                                     <span className="text-sm">
                                             {createGroupError === "Group already exists"
@@ -2945,7 +2842,7 @@ export default function DeviceStatsPage() {
                                             const device = deviceStats.find(d => d.azureAdDeviceId === azureDeviceId);
                                             return (
                                                 <div key={azureDeviceId} className="flex items-center gap-2 text-sm">
-                                                    <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400 flex-shrink-0"/>
+                                                    <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400 shrink-0"/>
                                                     <span className="font-medium">
                                             {device ? device.deviceName : 'Unknown Device'}
                                         </span>
@@ -2977,7 +2874,7 @@ export default function DeviceStatsPage() {
                                             const error = addMembersResult.data.errors[azureDeviceId];
                                             return (
                                                 <div key={azureDeviceId} className="flex items-start gap-2 text-sm">
-                                                    <XCircle className="h-3 w-3 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"/>
+                                                    <XCircle className="h-3 w-3 text-red-600 dark:text-red-400 shrink-0 mt-0.5"/>
                                                     <div className="flex-1">
                                             <span className="font-medium">
                                                 {device ? device.deviceName : 'Unknown Device'}

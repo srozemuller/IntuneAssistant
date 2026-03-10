@@ -697,7 +697,7 @@ function DataTableComponent(props: DataTableProps) {
                         {hasData ? (
                             paginatedData.map((row, rowIndex) => (
                                 <TableRow
-                                    key={row.id ? String(row.id) : rowIndex}
+                                    key={row.id ? `${String(row.id)}-${rowIndex}` : rowIndex}
                                     row={row}
                                     rowIndex={rowIndex}
                                     visibleColumns={visibleColumns}

@@ -32,6 +32,7 @@ import {useApiRequest} from "@/hooks/useApiRequest";
 import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
 import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
+import {AssignmentFilter} from "@/types/assignmentFilter";
 
 
 interface ApiResponse {
@@ -73,29 +74,14 @@ interface RoleScopeTag {
     assignments: unknown[];
 }
 
-interface AssignmentFilter {
-    id: string;
-    createdDateTime: string;
-    lastModifiedDateTime: string;
-    displayName: string;
-    description: string;
-    platform: number;
-    rule: string;
-    assignmentFilterManagementType: number;
-    payloads: unknown[];
-    roleScopeTags: string[];
-    additionalData: Record<string, unknown>;
-    backingStore: Record<string, unknown>;
-    odataType: string | null;
-}
 
 
 
 
 export default function AssignmentsOverview() {
     // API CALLS
-    const {instance, accounts} = useMsal();
-    const {request, cancel} = useApiRequest();
+    const { instance, accounts } = useMsal();
+    const { request, cancel } = useApiRequest();
     // Consent dialog state when not enough permissions
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -111,15 +97,12 @@ export default function AssignmentsOverview() {
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
-    const [filterLoading, setFilterLoading] = useState(false);
-    const [filterError, setFilterError] = useState<string | null>(null);
 
     const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
     // Filter states
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
-    const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
     const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
     const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
@@ -357,12 +340,12 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             throw new Error('No response received from API');
         }
 
-        // Add type guard to ensure data is an array before processing
-        if (!Array.isArray(response.data)) {
+        // Unwrap ApiResponseWithCorrelation: response.data is ApiResponse, array is at response.data.data
+        if (!Array.isArray(response.data.data)) {
             throw new Error('Invalid data format received from API');
         }
 
-        const assignmentsData = response.data;
+        const assignmentsData = response.data.data as Assignments[];
         setAssignments(assignmentsData);
         setFilteredAssignments(assignmentsData);
     };
@@ -407,23 +390,23 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         if (!accounts.length) return;
 
         try {
-            const responseData = await request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const responseData = await request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(
+                ASSIGNMENTS_FILTERS_ENDPOINT,
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+            );
 
-            // Check if response exists
             if (!responseData) {
                 console.error('No response received from filters API');
                 setFilters([]);
                 return;
             }
 
-            // Handle successful response - filters endpoint returns array directly
-            if (Array.isArray(responseData)) {
-                setFilters(responseData);
+            // Unwrap ApiResponseWithCorrelation → .data is the API envelope, .data.data is the array
+            if (Array.isArray(responseData.data.data)) {
+                setFilters(responseData.data.data);
+            } else {
+                console.warn('Unexpected filters response format', responseData);
+                setFilters([]);
             }
         } catch (error) {
             console.error('Failed to fetch filters:', error);
@@ -448,8 +431,9 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                 return;
             }
 
-            if (responseData.data && Array.isArray(responseData.data)) {
-                setRoleScopeTags(responseData.data);
+            // Unwrap ApiResponseWithCorrelation: responseData.data is { data: RoleScopeTag[] }
+            if (responseData.data && Array.isArray(responseData.data.data)) {
+                setRoleScopeTags(responseData.data.data);
             }
         } catch (error) {
             console.error('Failed to fetch role scope tags:', error);
@@ -476,8 +460,8 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         const filter = filters.find(f => f.id === filterId);
         return {
             displayName: filter?.displayName || 'Unknown Filter',
-            managementType: filter?.assignmentFilterManagementType === 0 ? 'include' : 'exclude',
-            platform: filter?.platform
+            managementType: filter?.assignmentFilterManagementType?.toLowerCase() || null,
+            platform: filter?.platform || null
         };
     };
 
@@ -531,14 +515,10 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                 }
 
                 // Check for include filter
-                if (filterTypeFilter.includes('include') && filterType === 'Include') {
-                    return true;
-                }
+                if (filterTypeFilter.includes('include') && filterType === 'Include') return true;
 
                 // Check for exclude filter
-                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') {
-                    return true;
-                }
+                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') return true;
 
                 return false;
             });
@@ -701,7 +681,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                                 </button>
                                 {group?.membershipRule && (
                                     <span title="Dynamic Group">
-            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0"/>
+            <Blocks className="h-3 w-3 text-purple-500 shrink-0"/>
         </span>
                                 )}
                             </div>
@@ -819,7 +799,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             label: 'Role Scope Tags',
             width: 180,
             minWidth: 140,
-            render: (value: unknown, row: Record<string, unknown>) => {
+            render: (value: unknown) => {
                 const scopeTagIds = value as string[] | undefined;
                 const tagNames = getRoleScopeTagNames(scopeTagIds);
 
@@ -1033,6 +1013,25 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                         {/* Collapsible Content */}
                         {isFiltersExpanded && (
                             <CardContent className="space-y-4">
+                                {/* Search */}
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"/>
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={e => setSearchQuery(e.target.value)}
+                                        placeholder="Search by name, type, target, platform…"
+                                        className="w-full pl-9 pr-9 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            onClick={() => setSearchQuery('')}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        >
+                                            <X className="h-4 w-4"/>
+                                        </button>
+                                    )}
+                                </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {/* Resource Type Filter */}
                                     <div className="space-y-2">

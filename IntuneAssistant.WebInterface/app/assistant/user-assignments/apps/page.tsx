@@ -5,26 +5,20 @@ import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {DataTable} from '@/components/DataTable';
 import {Badge} from '@/components/ui/badge';
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {
     RefreshCw,
-    Download,
     Filter,
     Database,
     Search,
     X,
     Users,
-    User,
-    Group,
     ExternalLink,
-    Settings,
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, XCircle, Computer, Blocks, CircleQuestionMark
+    ChevronUp, XCircle, Blocks, CircleQuestionMark
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, USERS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
-import {apiScope} from "@/lib/msalConfig";
 import {MultiSelect, Option} from '@/components/ui/multi-select';
 
 import {ExportButton, ExportData, ExportColumn} from '@/components/ExportButton';
@@ -70,26 +64,6 @@ interface Assignments extends Record<string, unknown> {
     };
 }
 
-interface UserMember extends Record<string, unknown> {
-    id: string;
-    displayName: string;
-    accountEnabled: boolean;
-    type: string;
-}
-
-interface GroupDetails {
-    id: string;
-    displayName: string;
-    description: string | null;
-    membershipRule: string | null;
-    createdDateTime: string;
-    groupCount: {
-        userCount: number;
-        deviceCount: number;
-        groupCount: number;
-    } | null;
-    members: UserMember[] | null;
-}
 
 interface UserDetails {
     id: string;
@@ -121,8 +95,6 @@ type SearchMode = 'group' | 'user';
 
 export default function AssignmentsOverview() {
     const {instance, accounts} = useMsal();
-    const [showConsentDialog, setShowConsentDialog] = useState(false);
-    const [consentUrl, setConsentUrl] = useState('');
     const {request, cancel} = useApiRequest();
     const [isCancelled, setIsCancelled] = useState(false);
 
@@ -132,19 +104,9 @@ export default function AssignmentsOverview() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const [groupLoading, setGroupLoading] = useState(false);
-    const [groupError, setGroupError] = useState<string | null>(null);
-    const [selectedGroup, setSelectedGroup] = useState<GroupDetails | null>(null);
     const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
     const [installTypeFilter, setInstallTypeFilter] = useState<string[]>([]);
 
-
-    const [groupSearchResults, setGroupSearchResults] = useState<GroupDetails[]>([]);
-    const [groupSearchInput, setGroupSearchInput] = useState<string>('');
-    const [searchedGroup, setSearchedGroup] = useState<GroupDetails | null>(null);
-    const [groupSearchLoading, setGroupSearchLoading] = useState(false);
-    const [groupSearchError, setGroupSearchError] = useState<string | null>(null);
-    const [groupResultsSearch, setGroupResultsSearch] = useState<string>('');
 
     // User states
     const [userSearchResults, setUserSearchResults] = useState<UserDetails[]>([]);
@@ -152,15 +114,9 @@ export default function AssignmentsOverview() {
     const [searchedUser, setSearchedUser] = useState<UserDetails | null>(null);
     const [userSearchLoading, setUserSearchLoading] = useState(false);
     const [userSearchError, setUserSearchError] = useState<string | null>(null);
-    const [userResultsSearch, setUserResultsSearch] = useState<string>('');
 
     // Search mode
-    const [searchMode, setSearchMode] = useState<SearchMode>('group');
-
-    const isValidGuid = (str: string): boolean => {
-        const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        return guidRegex.test(str);
-    };
+    const [searchMode] = useState<SearchMode>('group');
 
     // Group details dialog states
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
@@ -169,8 +125,6 @@ export default function AssignmentsOverview() {
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
-    const [filterLoading, setFilterLoading] = useState(false);
-    const [filterError, setFilterError] = useState<string | null>(null);
 
     // Filter states
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
@@ -179,7 +133,6 @@ export default function AssignmentsOverview() {
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
     const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -196,36 +149,12 @@ export default function AssignmentsOverview() {
         {label: 'Exclude Filter', value: 'exclude'}
     ];
 
-    const filteredGroupResults = groupSearchResults.filter(group => {
-        if (!groupResultsSearch.trim()) return true;
-        const search = groupResultsSearch.toLowerCase();
-        return (
-            group.displayName.toLowerCase().includes(search) ||
-            group.description?.toLowerCase().includes(search) ||
-            group.id.toLowerCase().includes(search)
-        );
-    });
-
-    const filteredUserResults = userSearchResults.filter(user => {
-        if (!userResultsSearch.trim()) return true;
-        const search = userResultsSearch.toLowerCase();
-        return (
-            user.displayName.toLowerCase().includes(search) ||
-            user.userPrincipalName.toLowerCase().includes(search) ||
-            user.id.toLowerCase().includes(search)
-        );
-    });
-
-    const handleConsentCheck = (response: ApiResponse): boolean => {
+    const handleConsentCheck = (response: { status: string; message: string; data: unknown }): boolean => {
         if (response.status === 'Error' &&
             response.message === 'User challenge required' &&
             typeof response.data === 'object' &&
             response.data !== null &&
             'url' in response.data) {
-
-            setConsentUrl(response.data.url);
-            setShowConsentDialog(true);
-            setGroupSearchLoading(false);
             setUserSearchLoading(false);
             return true;
         }
@@ -250,14 +179,15 @@ export default function AssignmentsOverview() {
             });
 
             if (!responseData) {
-                throw new Error('No response received from API');
-            }
-
-            if (handleConsentCheck(responseData as ApiResponse)) {
+                setUserSearchError('No response received from API');
                 return;
             }
 
-            const userData = responseData.data as UserDetails | UserDetails[];
+            if (handleConsentCheck(responseData.data)) {
+                return;
+            }
+
+            const userData = responseData.data.data as unknown as UserDetails | UserDetails[];
 
             if (Array.isArray(userData)) {
                 if (userData.length > 0) {
@@ -307,7 +237,9 @@ export default function AssignmentsOverview() {
             ]);
 
             if (!assignmentsData) {
-                throw new Error('No response received from assignments API');
+                setError('No response received from assignments API');
+                setLoading(false);
+                return;
             }
 
             if (!filtersData) {
@@ -317,12 +249,12 @@ export default function AssignmentsOverview() {
                 setFilters(filtersData);
             }
 
-            if (handleConsentCheck(assignmentsData as ApiResponse)) {
+            if (handleConsentCheck(assignmentsData.data)) {
                 return;
             }
 
             // Handle nested { data: { data: [...] } } structure
-            let assignmentsPayload: unknown = assignmentsData.data;
+            let assignmentsPayload: unknown = assignmentsData.data.data;
 
             // Check if data contains nested data property
             if (hasDataProperty(assignmentsPayload)) {
@@ -347,7 +279,7 @@ export default function AssignmentsOverview() {
                 console.error('API response data is not an array:', assignmentsPayload);
                 setAssignments([]);
                 setFilteredAssignments([]);
-                throw new Error('Invalid data format received from API');
+                setError('Invalid data format received from API');
             }
         } catch (error) {
             console.error('Failed to fetch user assignments:', error);
@@ -577,17 +509,6 @@ export default function AssignmentsOverview() {
             if (Array.isArray(responseData)) {
                 setFilters(responseData);
             } else {
-                const errorResponse = responseData as unknown as ApiResponse;
-                if (errorResponse.status === 'Error' &&
-                    errorResponse.message === 'User challenge required' &&
-                    typeof errorResponse.data === 'object' &&
-                    errorResponse.data !== null &&
-                    'url' in errorResponse.data) {
-
-                    setConsentUrl(errorResponse.data.url);
-                    setShowConsentDialog(true);
-                    return;
-                }
                 console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
             }
@@ -662,11 +583,7 @@ export default function AssignmentsOverview() {
                     }
                 }
 
-                if (filterTypeFilter.includes('include') && filterType === 'Include') {
-                    return true;
-                }
-
-                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') {
+                if (filterTypeFilter.includes(filterType.toLowerCase())) {
                     return true;
                 }
 
@@ -675,7 +592,7 @@ export default function AssignmentsOverview() {
         }
 
         setFilteredAssignments(filtered);
-    }, [assignments, assignmentTypeFilter, statusFilter, platformFilter, filterTypeFilter]);
+    }, [assignments, assignmentTypeFilter, statusFilter, platformFilter, filterTypeFilter, installTypeFilter, resourceTypeFilter]);
 
 
     const getUniqueAssignmentTypes = (): Option[] => {
@@ -728,26 +645,6 @@ export default function AssignmentsOverview() {
         setFilterTypeFilter([]);
     };
 
-    const clearSearch = () => {
-        setSearchQuery('');
-    };
-
-    const clearAssignments = () => {
-        setAssignments([]);
-        setFilteredAssignments([]);
-        setSearchedGroup(null);
-        setSearchedUser(null);
-        setGroupSearchInput('');
-        setUserSearchInput('');
-        setGroupSearchError(null);
-        setUserSearchError(null);
-        setError(null);
-        setGroupSearchResults([]);
-        setUserSearchResults([]);
-        clearFilters();
-        setGroupResultsSearch('');
-        setUserResultsSearch('');
-    };
 
     const columns = [
         {
@@ -866,7 +763,7 @@ export default function AssignmentsOverview() {
                                 </button>
                                 {group?.membershipRule && (
                                     <span title="Dynamic Group">
-            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0"/>
+            <Blocks className="h-3 w-3 text-purple-500 shrink-0"/>
         </span>
                                 )}
                             </div>
@@ -1083,7 +980,7 @@ export default function AssignmentsOverview() {
                                             onChange={(e) => setUserSearchInput(e.target.value)}
                                             placeholder="Enter user name or part"
                                             className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                                            onKeyPress={(e) => {
+                                            onKeyDown={(e) => {
                                                 if (e.key === 'Enter') {
                                                     searchUser();
                                                 }
@@ -1532,7 +1429,7 @@ export default function AssignmentsOverview() {
                     )}
 
                     {/* Assignment Details Table */}
-                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden">
+                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <span>

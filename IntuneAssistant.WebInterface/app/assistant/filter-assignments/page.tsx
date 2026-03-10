@@ -35,6 +35,7 @@ import {useApiRequest} from "@/hooks/useApiRequest";
 import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
 import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
+import {AssignmentFilter} from "@/types/assignmentFilter";
 
 interface ApiResponse {
     status: string;
@@ -93,21 +94,6 @@ interface GroupDetails {
     members: UserMember[] | null;
 }
 
-interface AssignmentFilter {
-    id: string;
-    createdDateTime: string;
-    lastModifiedDateTime: string;
-    displayName: string;
-    description: string;
-    platform: number;
-    rule: string;
-    assignmentFilterManagementType: number;
-    payloads: unknown[];
-    roleScopeTags: string[];
-    additionalData: Record<string, unknown>;
-    backingStore: Record<string, unknown>;
-    odataType: string | null;
-}
 
 export default function AssignmentsOverview() {
     const {instance, accounts} = useMsal();
@@ -205,35 +191,30 @@ export default function AssignmentsOverview() {
             const [assignmentsData, filtersData] = await Promise.all([
                 request<ApiResponse>(`${ASSIGNMENTS_ENDPOINT}/groups/${groupId}`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 }),
-                request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
+                request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(ASSIGNMENTS_FILTERS_ENDPOINT, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 })
             ]);
 
-            // Check if assignments response exists
             if (!assignmentsData) {
                 throw new Error('No response received from assignments API');
             }
 
-            // Check if filters response exists and handle consent
+            // Unwrap filters
             if (!filtersData) {
                 console.warn('No response received from filters API, continuing with assignments only');
                 setFilters([]);
-            } else if (Array.isArray(filtersData)) {
-                setFilters(filtersData);
+            } else if (Array.isArray(filtersData.data.data)) {
+                setFilters(filtersData.data.data);
             }
 
-            // Process assignments
-            if (assignmentsData.status === 'Success' && assignmentsData.data) {
-                const assignments = assignmentsData.data;
-
+            // Unwrap assignments: assignmentsData.data is the ApiResponse envelope
+            const assignmentsEnvelope = assignmentsData.data;
+            if (assignmentsEnvelope.status === 'Success' && assignmentsEnvelope.data) {
+                const assignments = assignmentsEnvelope.data;
                 if (Array.isArray(assignments)) {
                     setAssignments(assignments);
                     setFilteredAssignments(assignments);
@@ -244,7 +225,7 @@ export default function AssignmentsOverview() {
                     throw new Error('Invalid data format received from API');
                 }
             } else {
-                throw new Error(assignmentsData.message || 'Failed to fetch group assignments');
+                throw new Error(assignmentsEnvelope.message || 'Failed to fetch group assignments');
             }
 
         } catch (error) {
@@ -423,7 +404,8 @@ export default function AssignmentsOverview() {
         if (!response) {
             throw new Error('No response received from API');
         }
-        const assignmentsData = response.data;
+        // Unwrap ApiResponseWithCorrelation → .data is ApiResponse envelope, .data.data is the array
+        const assignmentsData = response.data.data;
 
         if (Array.isArray(assignmentsData)) {
             setAssignments(assignmentsData);
@@ -474,12 +456,15 @@ export default function AssignmentsOverview() {
                 throw new Error('No response received from assignments API');
             }
 
-            if (handleConsentCheck(responseData)) {
+            // Unwrap ApiResponseWithCorrelation → .data is the ApiResponse envelope
+            const envelope = responseData.data;
+
+            if (handleConsentCheck(envelope as unknown as ApiResponse)) {
                 return;
             }
 
-            if (responseData.status === 'Success' && responseData.data) {
-                const assignments = responseData.data;
+            if (envelope.status === 'Success' && envelope.data) {
+                const assignments = envelope.data;
 
                 if (Array.isArray(assignments)) {
                     setAssignments(assignments);
@@ -491,7 +476,7 @@ export default function AssignmentsOverview() {
                     throw new Error('Invalid data format received from API');
                 }
             } else {
-                throw new Error(responseData.message || 'Failed to fetch filter assignments');
+                throw new Error(envelope.message || 'Failed to fetch filter assignments');
             }
         } catch (error) {
             console.error('Failed to fetch filter assignments:', error);
@@ -507,12 +492,10 @@ export default function AssignmentsOverview() {
         setFiltersLoading(true);
 
         try {
-            const responseData = await request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const responseData = await request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(
+                ASSIGNMENTS_FILTERS_ENDPOINT,
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+            );
 
             if (!responseData) {
                 console.error('No response received from filters API');
@@ -520,20 +503,10 @@ export default function AssignmentsOverview() {
                 return;
             }
 
-            if (Array.isArray(responseData)) {
-                setFilters(responseData);
+            // Unwrap ApiResponseWithCorrelation → .data.data is the AssignmentFilter array
+            if (Array.isArray(responseData.data.data)) {
+                setFilters(responseData.data.data);
             } else {
-                const errorResponse = responseData as unknown as ApiResponse;
-                if (errorResponse.status === 'Error' &&
-                    errorResponse.message === 'User challenge required' &&
-                    typeof errorResponse.data === 'object' &&
-                    errorResponse.data !== null &&
-                    'url' in errorResponse.data) {
-
-                    setConsentUrl(errorResponse.data.url);
-                    setShowConsentDialog(true);
-                    return;
-                }
                 console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
             }
@@ -558,8 +531,8 @@ export default function AssignmentsOverview() {
         const filter = filters.find(f => f.id === filterId);
         return {
             displayName: filter?.displayName || 'Unknown Filter',
-            managementType: filter?.assignmentFilterManagementType === 0 ? 'include' : 'exclude',
-            platform: filter?.platform
+            managementType: filter?.assignmentFilterManagementType?.toLowerCase() || null,
+            platform: filter?.platform || null
         };
     };
 
@@ -653,20 +626,23 @@ export default function AssignmentsOverview() {
                 throw new Error('No response received from API');
             }
 
+            // Unwrap ApiResponseWithCorrelation → .data is the GroupApiResponse envelope
+            const envelope = responseData.data;
+
             // Check for consent requirements
-            if (handleConsentCheck(responseData as ApiResponse)) {
+            if (handleConsentCheck(envelope as unknown as ApiResponse)) {
                 return;
             }
 
-            if (responseData.status === 'Success' && responseData.data) {
+            if (envelope.status === 'Success' && envelope.data) {
                 // Check if data is consent URL object
-                if (typeof responseData.data === 'object' && 'url' in responseData.data) {
-                    setConsentUrl(responseData.data.url);
+                if (typeof envelope.data === 'object' && !Array.isArray(envelope.data) && 'url' in envelope.data) {
+                    setConsentUrl((envelope.data as { url: string }).url);
                     setShowConsentDialog(true);
                     return;
                 }
 
-                const groupData = responseData.data as GroupDetails;
+                const groupData = envelope.data as GroupDetails;
                 // Found group, now fetch its assignments
                 await fetchGroupAssignments(groupData.id);
             } else {
@@ -731,23 +707,16 @@ export default function AssignmentsOverview() {
 
         // Apply platform filter
         if (filterPlatformFilter.length > 0) {
-            filtered = filtered.filter(filter => {
-                const platformName = filter.platform === 0 ? 'All Platforms' :
-                    filter.platform === 1 ? 'Android' :
-                        filter.platform === 2 ? 'iOS' :
-                            filter.platform === 3 ? 'macOS' :
-                                filter.platform === 4 ? 'Windows' :
-                                    `Platform ${filter.platform}`;
-                return filterPlatformFilter.includes(platformName);
-            });
+            filtered = filtered.filter(filter =>
+                filterPlatformFilter.includes(filter.platform || 'All')
+            );
         }
 
         // Apply management type filter
         if (filterManagementTypeFilter.length > 0) {
-            filtered = filtered.filter(filter => {
-                const type = filter.assignmentFilterManagementType === 0 ? 'Devices' : 'Apps';
-                return filterManagementTypeFilter.includes(type);
-            });
+            filtered = filtered.filter(filter =>
+                filterManagementTypeFilter.includes(filter.assignmentFilterManagementType || 'Devices')
+            );
         }
 
         return filtered;
@@ -1162,14 +1131,8 @@ export default function AssignmentsOverview() {
                                                         );
                                                     })
                                                     .map((filter) => {
-                                                        const platformName = filter.platform === 0 ? 'All' :
-                                                            filter.platform === 1 ? 'Android' :
-                                                            filter.platform === 2 ? 'iOS' :
-                                                            filter.platform === 3 ? 'macOS' :
-                                                            filter.platform === 4 ? 'Windows' :
-                                                            `Platform ${filter.platform}`;
-
-                                                        const managementType = filter.assignmentFilterManagementType === 0 ? 'Devices' : 'Apps';
+                                                        const platformName = filter.platform || 'All';
+                                                        const managementType = filter.assignmentFilterManagementType || 'Devices';
 
                                                         return (
                                                             <CommandItem
@@ -1228,15 +1191,10 @@ export default function AssignmentsOverview() {
                                                 )}
                                                 <div className="flex flex-wrap gap-2 text-xs">
                                                     <Badge variant="outline" className="bg-white/60 dark:bg-white/10 backdrop-blur-sm">
-                                                        Platform: {selectedFilterForSearch.platform === 0 ? 'All' :
-                                                        selectedFilterForSearch.platform === 1 ? 'Android' :
-                                                        selectedFilterForSearch.platform === 2 ? 'iOS' :
-                                                        selectedFilterForSearch.platform === 3 ? 'macOS' :
-                                                        selectedFilterForSearch.platform === 4 ? 'Windows' :
-                                                        `Platform ${selectedFilterForSearch.platform}`}
+                                                        Platform: {selectedFilterForSearch.platform || 'All'}
                                                     </Badge>
                                                     <Badge variant="secondary" className="bg-white/60 dark:bg-white/10 backdrop-blur-sm">
-                                                        {selectedFilterForSearch.assignmentFilterManagementType === 0 ? 'Devices' : 'Apps'}
+                                                        {selectedFilterForSearch.assignmentFilterManagementType || 'Devices'}
                                                     </Badge>
                                                 </div>
                                                 <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm p-2 rounded text-xs font-mono border border-border/20">

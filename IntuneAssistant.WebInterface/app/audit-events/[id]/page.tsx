@@ -65,9 +65,11 @@ export default function EventDetailsPage() {
                 };
             }>(`${AUDIT_LOGS_INTUNE_EVENTS}?pageSize=100`);
 
-            if (eventsResponse?.data?.items) {
+            // Unwrap ApiResponseWithCorrelation → eventsResponse.data is the envelope, eventsResponse.data.data.items is the events array
+            const envelope = eventsResponse?.data;
+            if (envelope?.data?.items) {
                 // Find the specific event by ID
-                const foundEvent = eventsResponse.data.items.find(e => e.id === eventId);
+                const foundEvent = envelope.data.items.find(e => e.id === eventId);
 
                 if (foundEvent) {
                     setEvent(foundEvent);
@@ -77,7 +79,7 @@ export default function EventDetailsPage() {
                     const eventTime = new Date(foundEvent.activityDateTime).getTime();
                     const resourceIds = foundEvent.resources?.map(r => r.resourceId) || [];
 
-                    const related = eventsResponse.data.items.filter(e => {
+                    const related = envelope.data.items.filter(e => {
                         if (e.id === eventId) return false;
                         const eTime = new Date(e.activityDateTime).getTime();
                         const timeDiff = Math.abs(eventTime - eTime);

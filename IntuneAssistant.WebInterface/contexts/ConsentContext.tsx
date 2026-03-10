@@ -28,10 +28,9 @@ export const ConsentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setConsentUrl(url);
         setRequiredPermissions(permissions);
 
-        // Start minimized by default for better UX (less intrusive)
-        // Check if user previously maximized it in this session
+        // Default to bottom-right button; only expand if user explicitly maximized before
         const wasMaximized = sessionStorage.getItem('ia_consent_minimized') === 'false';
-        setIsMinimized(!wasMaximized); // Default to minimized unless user explicitly maximized before
+        setIsMinimized(!wasMaximized);
     }, []);
 
     const clearConsent = useCallback(() => {

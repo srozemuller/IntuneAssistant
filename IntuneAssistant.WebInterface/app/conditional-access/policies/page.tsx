@@ -252,22 +252,25 @@ export default function ConditionalAccessPage() {
     };
     const fetchPolicies = async () => {
         setLoading(true);
-        setError(null); // Clear previous errors
+        setError(null);
 
         try {
             const response = await request<ApiResponse>(CA_POLICIES_ENDPOINT);
-            if (response && response.status === 'Success') {
-                if (Array.isArray(response.data)) {
-                    setPolicies(response.data);
-                    // If data is empty but response is successful, don't show error
-                    if (response.data.length === 0) {
-                        setError(null); // Ensure no error is shown for empty but successful response
+
+            // Unwrap ApiResponseWithCorrelation → response.data is the ApiResponse envelope
+            if (response && response.data) {
+                const envelope = response.data;
+
+                if (envelope.status === 'Success' && Array.isArray(envelope.data)) {
+                    setPolicies(envelope.data);
+                    if (envelope.data.length === 0) {
+                        setError(null); // No error for empty but successful response
                     }
                 } else {
                     setError('Invalid response format received');
                 }
             } else {
-                setError(response?.message || 'Failed to fetch policies');
+                setError('No response received from API');
             }
         } catch (error) {
             console.error('Failed to fetch policies:', error);
