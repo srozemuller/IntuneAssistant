@@ -162,9 +162,9 @@ interface ComparisonResult {
     masterStatusMessage?: string;
     failureReason?: string; // Why this item couldn't proceed
     batchIndex?: number | null; // Which batch this migration was part of
-    correlationIdCompare?: string | null; // Correlation ID from compare API call
-    correlationIdMigrate?: string | null; // Correlation ID from migrate API call
-    correlationIdVerify?: string | null; // Correlation ID from verify/validation API call
+    correlationIdCompare?: string | null; // Correlation ID from compare step
+    correlationIdMigrate?: string | null; // Correlation ID from migrate step
+    correlationIdVerify?: string | null; // Correlation ID from verify step
 }
 
 interface RoleScopeTag {
@@ -192,7 +192,7 @@ interface MigrationResult {
     errorMessage: string | null;
     processedAt: string;
     batchIndex: number | null;
-    correlationIdMigrate?: string | null; // Correlation ID from migrate API call
+    correlationIdMigrate?: string | null; // Correlation ID from migrate step
     originalPayload?: {
         PolicyId: string;
         PolicyName: string;
@@ -381,6 +381,17 @@ function AssignmentRolloutContent() {
         // Ready for migration = items ready this session + items migrated this session
         const readyForMigrationCount = compareReadyThisSession.length + migratedThisSession.length;
 
+        console.log('📊 SUMMARY STATS BREAKDOWN:', {
+            totalUploaded: csvData.length,
+            compareReady_NotSelected: compareReadyThisSession.length,
+            notProcessed_NotStarted: masterTrackingData.filter(r => r.masterStatus === 'migration_notstarted').length,
+            alreadyMigrated: alreadyMigratedItems.length,
+            migrationSuccess: masterTrackingData.filter(r => r.masterStatus === 'migration_success').length,
+            migrationSkipped: masterTrackingData.filter(r => r.masterStatus === 'migration_skipped').length,
+            migrationFailed: masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length,
+            verifiedSuccess: masterTrackingData.filter(r => r.masterStatus === 'validation_success').length
+        });
+
         return {
             // Attention boxes data - all from masterTrackingData
             csvInvalid: masterTrackingData.filter(r => r.masterStatus === 'csv_invalid'),
@@ -399,10 +410,10 @@ function AssignmentRolloutContent() {
             compareFailedCount: compareFailedItems.length,
             alreadyMigratedCount: alreadyMigratedItems.length,
             notSelectedCount: compareReadyThisSession.length,
-            notProcessedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_ready').length,
+            notProcessedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_notstarted').length,
             readyForMigrationCount: readyForMigrationCount,
+            notStartedCount: migrationResults.filter(r => r.status === 'NotStarted').length,
             missingCount: 0,
-            notStartedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_notstarted').length,
             migrationSuccessCount: masterTrackingData.filter(r => r.masterStatus === 'migration_success').length,
             migrationSkippedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_skipped').length,
             migrationFailedCount: masterTrackingData.filter(r => r.masterStatus === 'migration_failed').length,
@@ -2130,20 +2141,17 @@ function AssignmentRolloutContent() {
                 body: JSON.stringify(payloadData)
             });
 
-            // Capture correlation ID from response (now from wrapper, not response body)
-            const compareCorrelationId = apiResponse?.correlationId || null;
-            console.log('✅ Compare correlation ID:', compareCorrelationId || '(none)');
-
-            // Extract actual data from wrapper
-            const responseData = apiResponse?.data;
-
-            if (!responseData || !Array.isArray(responseData.data)) {
+            if (!apiResponse?.data?.data || !Array.isArray(apiResponse.data.data)) {
                 setError('Invalid data format received from server');
                 setLoading(false);
                 return;
             }
 
-            const enhancedResults = responseData.data.map((item: ComparisonResult, index: number) => {
+            // Capture correlation ID from compare step
+            const compareCorrelationId = apiResponse.correlationId;
+            console.log('📊 Compare correlation ID:', compareCorrelationId || '(not available)');
+
+            const enhancedResults = apiResponse.data.data.map((item: ComparisonResult, index: number) => {
                 // Get the original CSV row to preserve its unique rowId
                 const originalCsvRow = validCsvData[index];
 
@@ -2194,7 +2202,7 @@ function AssignmentRolloutContent() {
                     masterStatus,
                     masterStatusMessage,
                     failureReason,
-                    correlationIdCompare: compareCorrelationId // Add compare correlation ID
+                    correlationIdCompare: compareCorrelationId // Store compare correlation ID
                 };
             });
 
@@ -2244,9 +2252,20 @@ function AssignmentRolloutContent() {
         setMigrationAbortController(abortController);
 
         try {
+            console.log('Starting migration process:', {
+                totalRows: comparisonResults.length,
+                selectedRowIds: selectedRows.length,
+                readyForMigration: comparisonResults.filter(r => r.isReadyForMigration).length
+            });
+
             const selectedComparisonResults = comparisonResults.filter(result =>
                 selectedRows.includes(result.id)
             );
+
+            console.log('Migration payload preparation:', {
+                totalSelectedRows: selectedComparisonResults.length,
+                sampleIds: selectedComparisonResults.slice(0, 3).map(r => r.id.substring(0, 8))
+            });
 
             const migrationPayload = selectedComparisonResults.map(result => ({
                 PolicyId: result.policy?.id || '',
@@ -2303,16 +2322,16 @@ function AssignmentRolloutContent() {
                     signal: abortController.signal
                 });
 
-                // Extract correlation ID from response wrapper (from x-correlation-id header)
-                const correlationId = apiResponse?.correlationId || null;
-                console.log(`✅ Migrate chunk ${chunkIndex + 1} correlation ID:`, correlationId || '(none)');
-
-                // Extract actual data from wrapper
-                const responseData = apiResponse?.data;
-
-                if (!apiResponse || !responseData) {
+                if (!apiResponse || !apiResponse.data) {
                     throw new Error(`Failed to get response from server for chunk ${chunkIndex + 1}`);
                 }
+
+                // Capture correlation ID for this chunk
+                const migrateCorrelationId = apiResponse.correlationId;
+                console.log(`📊 Migrate chunk ${chunkIndex + 1} correlation ID:`, migrateCorrelationId || '(not available)');
+
+                // Extract actual data
+                const responseData = apiResponse.data;
 
                 if (responseData.status === 'Error' && responseData.message?.message === 'User challenge required') {
                     setConsentUrl(responseData.message.url || '');
@@ -2322,18 +2341,27 @@ function AssignmentRolloutContent() {
                     return;
                 }
 
-                // Store results from this chunk
+                // Store results from this chunk with correlation ID
                 const chunkResults = (responseData.data as unknown as MigrationResult[]).map(result => {
                     const originalPayload = chunk.find(p =>
                         p.PolicyName === result.providedPolicyName &&
                         p.AssignmentResourceName === result.groupToMigrate
                     );
+
                     return {
                         ...result,
                         batchIndex: chunkIndex,
-                        correlationIdMigrate: correlationId, // Store migration correlation ID
+                        correlationIdMigrate: migrateCorrelationId, // Store migrate correlation ID
                         originalPayload
                     };
+                });
+
+                console.log(`✅ Chunk ${chunkIndex + 1} results breakdown:`, {
+                    total: chunkResults.length,
+                    success: chunkResults.filter(r => r.status === 'Success').length,
+                    failed: chunkResults.filter(r => r.status === 'Failed').length,
+                    skipped: chunkResults.filter(r => r.status === 'Skipped').length,
+                    notStarted: chunkResults.filter(r => r.status === 'NotStarted').length
                 });
 
                 allResults.push(...chunkResults);
@@ -2742,13 +2770,12 @@ function AssignmentRolloutContent() {
                 body: JSON.stringify([failedResult.originalPayload])
             });
 
-            // Extract data from wrapper
-            const responseData = apiResponse?.data;
-
-            if (!apiResponse || !responseData) {
+            if (!apiResponse || !apiResponse.data) {
                 setError('Failed to get response from server');
                 return;
             }
+
+            const responseData = apiResponse.data;
 
             if (responseData.status === 'Error' && responseData.message?.message === 'User challenge required') {
                 setConsentUrl(responseData.message.url || '');
@@ -2931,17 +2958,17 @@ function AssignmentRolloutContent() {
                 body: JSON.stringify(validationPayload)
             });
 
-            // Capture correlation ID from validation response wrapper (from x-correlation-id header)
-            const verifyCorrelationId = validationData?.correlationId || null;
-            console.log('✅ Verify/Validation correlation ID:', verifyCorrelationId || '(none)');
-
-            // Extract actual data from wrapper
-            const responseData = validationData?.data;
-
-            if (!validationData || !responseData) {
+            if (!validationData) {
                 setError('Failed to get response from server');
                 return;
             }
+
+            // Capture correlation ID from verify step
+            const verifyCorrelationId = validationData.correlationId;
+            console.log('📊 Verify correlation ID:', verifyCorrelationId || '(not available)');
+
+            // Extract actual data
+            const responseData = validationData.data;
 
             if (responseData.status === 'Error' &&
                 responseData.message?.message === 'User challenge required') {
@@ -3151,11 +3178,10 @@ function AssignmentRolloutContent() {
                 method: 'GET'
             });
 
-            // Unwrap ApiResponse: response.data is GroupApiResponse, response.data.data is GroupData
             if (response?.data?.data) {
                 setAssignmentGroups(prev => ({
                     ...prev,
-                    [groupId]: response.data.data
+                    [groupId]: response.data.data as GroupData
                 }));
             }
         } catch (error) {
@@ -4485,6 +4511,9 @@ const validateAssignments = async () => {
                                                 Batch:      row.batchIndex !== null && row.batchIndex !== undefined ? (row.batchIndex + 1).toString() : '',
                                                 FinalStatus: row.masterStatus        || '',
                                                 Notes:      row.failureReason        || row.masterStatusMessage || '',
+                                                CorrelationID_Compare: row.correlationIdCompare || '',
+                                                CorrelationID_Migrate: row.correlationIdMigrate || '',
+                                                CorrelationID_Validate: row.correlationIdVerify || ''
                                             }));
                                             const csv = [
                                                 Object.keys(rows[0] || {}),
@@ -4740,7 +4769,7 @@ const validateAssignments = async () => {
                                                     <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <AlertTriangle className="h-4 w-4 text-yellow-600"/>
-                                                            <span className="text-sm text-yellow-700 dark:text-yellow-300">Not Started 👻</span>
+                                                            <span className="text-sm text-yellow-700 dark:text-yellow-300">Not Started</span>
                                                         </div>
                                                         <span className="text-sm font-bold text-yellow-700 dark:text-yellow-300">{notStartedCount}</span>
                                                     </div>
@@ -4852,8 +4881,8 @@ const validateAssignments = async () => {
                                     )}
                                     {summaryStats.notProcessedCount > 0 && (
                                         <Button
-                                            onClick={() => setSummaryStatusFilter('migration_ready')}
-                                            variant={summaryStatusFilter === 'migration_ready' ? 'default' : 'outline'}
+                                            onClick={() => setSummaryStatusFilter('migration_notstarted')}
+                                            variant={summaryStatusFilter === 'migration_notstarted' ? 'default' : 'outline'}
                                             size="sm"
                                             className="flex items-center gap-2"
                                         >
@@ -4937,17 +4966,6 @@ const validateAssignments = async () => {
                                             Skipped ({summaryStats.migrationSkippedCount})
                                         </Button>
                                     )}
-                                    {summaryStats.notStartedCount > 0 && (
-                                        <Button
-                                            onClick={() => setSummaryStatusFilter('migration_notstarted')}
-                                            variant={summaryStatusFilter === 'migration_notstarted' ? 'default' : 'outline'}
-                                            size="sm"
-                                            className="flex items-center gap-2"
-                                        >
-                                            <AlertTriangle className="h-3 w-3 text-orange-500"/>
-                                            Not Started ({summaryStats.notStartedCount})
-                                        </Button>
-                                    )}
                                     {summaryStats.verifyFailedCount > 0 && (
                                         <Button
                                             onClick={() => setSummaryStatusFilter('validation_failed')}
@@ -4969,7 +4987,7 @@ const validateAssignments = async () => {
                                             {summaryStatusFilter === 'csv_invalid' && ' (CSV Invalid only)'}
                                             {summaryStatusFilter === 'compare_failed' && ' (Compare Failed only)'}
                                             {summaryStatusFilter === 'compare_ready' && ' (Not Selected only)'}
-                                            {summaryStatusFilter === 'migration_ready' && ' (Not Processed only)'}
+                                            {summaryStatusFilter === 'migration_notstarted' && ' (Not Processed only)'}
                                             {summaryStatusFilter === 'migration_success' && ' (Migrated only)'}
                                             {summaryStatusFilter === 'migration_failed' && ' (Migration Failed only)'}
                                             {summaryStatusFilter === 'validation_success' && ' (Verified only)'}
@@ -5005,7 +5023,7 @@ const validateAssignments = async () => {
                                             key: 'policy',
                                             label: 'Policy',
                                             render: (v) => (
-                                                <span className="text-sm font-medium truncate block max-w-xs" title={String(v)}>{String(v)}</span>
+                                                <span className="text-sm font-medium truncate block" title={String(v)}>{String(v)}</span>
                                             )
                                         },
                                         {
@@ -5025,7 +5043,7 @@ const validateAssignments = async () => {
                                         {
                                             key: 'group',
                                             label: 'Group',
-                                            render: (v) => <span className="text-sm truncate block max-w-xs" title={String(v)}>{String(v)}</span>
+                                            render: (v) => <span className="text-sm truncate block" title={String(v)}>{String(v)}</span>
                                         },
                                         {
                                             key: 'direction',
@@ -5063,7 +5081,6 @@ const validateAssignments = async () => {
                                                 return <span className={`px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${entry.cls}`}>{entry.label}</span>;
                                             }
                                         },
-                                        // NOTE: Correlation ID columns - always include in exports even if not displayed
                                         {
                                             key: 'correlationIdCompare',
                                             label: 'Corr ID (Compare)',
@@ -5072,11 +5089,11 @@ const validateAssignments = async () => {
                                             render: (v) => {
                                                 const corrId = v ? String(v) : null;
                                                 return corrId ? (
-                                                    <span className="text-xs font-mono text-gray-600 dark:text-gray-400" title={corrId}>
-                                                        {corrId.substring(0, 10)}...
+                                                    <span className="text-sm truncate block max-w-xs font-mono text-gray-600 dark:text-gray-400" title={corrId}>
+                                                        {corrId}
                                                     </span>
                                                 ) : (
-                                                    <span className="text-sm text-gray-400">-</span>
+                                                    <span className="text-sm text-gray-400">—</span>
                                                 );
                                             }
                                         },
@@ -5088,11 +5105,11 @@ const validateAssignments = async () => {
                                             render: (v) => {
                                                 const corrId = v ? String(v) : null;
                                                 return corrId ? (
-                                                    <span className="text-xs font-mono text-gray-600 dark:text-gray-400" title={corrId}>
-                                                        {corrId.substring(0, 10)}...
+                                                    <span className="text-sm truncate block max-w-xs font-monotext-gray-600 dark:text-gray-400" title={corrId}>
+                                                        {corrId}
                                                     </span>
                                                 ) : (
-                                                    <span className="text-sm text-gray-400">-</span>
+                                                    <span className="text-sm text-gray-400">—</span>
                                                 );
                                             }
                                         },
@@ -5104,11 +5121,11 @@ const validateAssignments = async () => {
                                             render: (v) => {
                                                 const corrId = v ? String(v) : null;
                                                 return corrId ? (
-                                                    <span className="text-xs font-mono text-gray-600 dark:text-gray-400" title={corrId}>
-                                                        {corrId.substring(0, 10)}...
+                                                    <span className="text-sm truncate block max-w-xs font-mono text-gray-600 dark:text-gray-400" title={corrId}>
+                                                        {corrId}
                                                     </span>
                                                 ) : (
-                                                    <span className="text-sm text-gray-400">-</span>
+                                                    <span className="text-sm text-gray-400">—</span>
                                                 );
                                             }
                                         },

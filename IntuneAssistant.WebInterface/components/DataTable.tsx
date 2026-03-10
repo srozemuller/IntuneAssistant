@@ -477,8 +477,6 @@ function DataTableComponent(props: DataTableProps) {
                 const diff = e.clientX - resizing.startX;
                 const newWidth = Math.max(resizing.startWidth + diff, columns[resizing.columnIndex].minWidth || 100);
 
-                console.log('🔄 Resizing column:', resizing.columnIndex, 'New width:', newWidth, 'Diff:', diff);
-
                 setColumns(prev => prev.map((col, index) =>
                     index === resizing.columnIndex ? { ...col, width: newWidth } : col
                 ));
