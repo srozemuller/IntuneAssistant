@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom';
 import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
+import {ExportButton} from '@/components/ExportButton';
+import type {ExportColumn} from '@/components/ExportButton';
 import {Badge} from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet, BarChart3, HelpCircle
+    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet, BarChart3
 } from 'lucide-react';
 import {useMsal} from '@azure/msal-react';
 import {
@@ -518,7 +520,7 @@ function AssignmentRolloutContent() {
     }, [masterTrackingData, validatedItemsCount, migratedRowIds]);
 
     // State for help tooltip
-    const [showHelpTooltip, setShowHelpTooltip] = useState(false);
+    const [showHelpTooltip, setShowHelpTooltip] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
 
     // Summary Component for consistent display across all steps
     const MigrationSummaryCard = ({ step }: { step: 'upload' | 'compare' | 'migrate' | 'results' | 'validate' }) => {
@@ -1653,7 +1655,7 @@ function AssignmentRolloutContent() {
 
                 if (result.validationStatus === 'valid') {
                     return (
-                        <Badge variant="default" className="bg-green-100 text-green-800">
+                        <Badge variant="default" className="bg-green-800 text-green-800 text-sm text-green-700 dark:text-green-300">
                             <CheckCircle2 className="h-3 w-3 mr-1"/>
                             Valid
                         </Badge>
@@ -3858,50 +3860,8 @@ const validateAssignments = async () => {
                                     Select assignments to migrate
                                 </p>
                             </div>
-                            <div className="flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        const readyIds = filteredComparisonResults
-                                            .filter(r => r.isReadyForMigration && !r.isMigrated)
-                                            .map(r => r.id);
-                                        setSelectedRows(readyIds);
-                                    }}
-                                    disabled={filteredComparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
-                                >
-                                    Select All Ready
-                                    ({filteredComparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length})
-                                </Button>
-
-
-                                <Button
-                                    onClick={downloadBackups}
-                                    disabled={loading || comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
-                                    variant="outline"
-                                >
-                                    {backupLoading ? 'Creating Backup...' : 'Backup Ready Policies'}
-                                </Button>
-
-                                {!loading && (
-                                    <Button
-                                        onClick={migrateSelectedAssignments}
-                                        disabled={
-                                            selectedRows.filter(id => {
-                                                const result = comparisonResults.find(r => r.id === id);
-                                                return result?.isReadyForMigration && !result?.isMigrated;
-                                            }).length === 0
-                                        }
-                                    >
-                                        {`Migrate ${
-                                            selectedRows.filter(id => {
-                                                const result = comparisonResults.find(r => r.id === id);
-                                                return result?.isReadyForMigration && !result?.isMigrated;
-                                            }).length
-                                        } Selected`}
-                                    </Button>
-                                )}
-
+                            <div className="flex items-center gap-2 w-full ml-4">
+                                {/* Cancel button on the left */}
                                 {loading && (
                                     <Button
                                         onClick={cancelMigration}
@@ -3922,6 +3882,51 @@ const validateAssignments = async () => {
                                     </Button>
                                 )}
 
+                                {/* Right-side buttons pushed to the end */}
+                                <div className="flex gap-2 ml-auto">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            const readyIds = filteredComparisonResults
+                                                .filter(r => r.isReadyForMigration && !r.isMigrated)
+                                                .map(r => r.id);
+                                            setSelectedRows(readyIds);
+                                        }}
+                                        disabled={filteredComparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
+                                    >
+                                        Select All Ready
+                                        ({filteredComparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length})
+                                    </Button>
+
+
+                                    <Button
+                                        onClick={downloadBackups}
+                                        disabled={loading || comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length === 0}
+                                        variant="outline"
+                                    >
+                                        {backupLoading ? 'Creating Backup...' : 'Backup Ready Policies'}
+                                    </Button>
+
+                                    {!loading && (
+                                        <Button
+                                            onClick={migrateSelectedAssignments}
+                                            disabled={
+                                                selectedRows.filter(id => {
+                                                    const result = comparisonResults.find(r => r.id === id);
+                                                    return result?.isReadyForMigration && !result?.isMigrated;
+                                                }).length === 0
+                                            }
+                                        >
+                                            {`Migrate ${
+                                                selectedRows.filter(id => {
+                                                    const result = comparisonResults.find(r => r.id === id);
+                                                    return result?.isReadyForMigration && !result?.isMigrated;
+                                                }).length
+                                            } Selected`}
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </CardHeader>
@@ -4510,35 +4515,43 @@ const validateAssignments = async () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button
+                                    <ExportButton
                                         variant="outline"
-                                        onClick={() => {
-                                            const rows = masterTrackingData.map(row => ({
-                                                Policy:     row.csvRow?.PolicyName   || row.policy?.name || row.providedPolicyName || '',
-                                                Group:      row.csvRow?.GroupName    || row.groupToMigrate || '',
-                                                Action:     row.csvRow?.AssignmentAction    || '',
-                                                Direction:  row.csvRow?.AssignmentDirection || '',
-                                                Filter:     row.csvRow?.FilterName   || '',
-                                                FilterType: row.csvRow?.FilterType   || '',
-                                                Batch:      row.batchIndex !== null && row.batchIndex !== undefined ? (row.batchIndex + 1).toString() : '',
-                                                FinalStatus: row.masterStatus        || '',
-                                                Notes:      row.failureReason        || row.masterStatusMessage || '',
-                                                CorrelationID_Compare: row.correlationIdCompare || '',
-                                                CorrelationID_Migrate: row.correlationIdMigrate || '',
-                                                CorrelationID_Validate: row.correlationIdVerify || ''
-                                            }));
-                                            const csv = [
-                                                Object.keys(rows[0] || {}),
-                                                ...rows.map(r => Object.values(r))
-                                            ].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
-                                            const a = document.createElement('a');
-                                            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-                                            a.download = `migration-summary-${new Date().toISOString().split('T')[0]}.csv`;
-                                            a.click();
+                                        tenantId={accounts[0]?.tenantId || undefined}
+                                        data={{
+                                            filename: 'migration-summary',
+                                            title: 'Migration Summary',
+                                            description: `Migration summary for tenant ${accounts[0]?.tenantId || ''}`,
+                                            columns: [
+                                                { key: 'Policy',                 label: 'Policy' },
+                                                { key: 'Group',                  label: 'Group' },
+                                                { key: 'Action',                 label: 'Action' },
+                                                { key: 'Direction',              label: 'Direction' },
+                                                { key: 'Filter',                 label: 'Filter' },
+                                                { key: 'FilterType',             label: 'Filter Type' },
+                                                { key: 'Batch',                  label: 'Batch' },
+                                                { key: 'FinalStatus',            label: 'Final Status' },
+                                                { key: 'Notes',                  label: 'Notes' },
+                                                { key: 'CorrelationID_Compare',  label: 'Correlation ID (Compare)' },
+                                                { key: 'CorrelationID_Migrate',  label: 'Correlation ID (Migrate)' },
+                                                { key: 'CorrelationID_Validate', label: 'Correlation ID (Validate)' },
+                                            ] as ExportColumn[],
+                                            data: masterTrackingData.map(row => ({
+                                                Policy:                  row.csvRow?.PolicyName || row.policy?.name || row.providedPolicyName || '',
+                                                Group:                   row.csvRow?.GroupName || row.groupToMigrate || '',
+                                                Action:                  row.csvRow?.AssignmentAction || '',
+                                                Direction:               row.csvRow?.AssignmentDirection || '',
+                                                Filter:                  row.csvRow?.FilterName || '',
+                                                FilterType:              row.csvRow?.FilterType || '',
+                                                Batch:                   row.batchIndex !== null && row.batchIndex !== undefined ? (row.batchIndex + 1).toString() : '',
+                                                FinalStatus:             row.masterStatus || '',
+                                                Notes:                   row.failureReason || row.masterStatusMessage || '',
+                                                CorrelationID_Compare:   row.correlationIdCompare || '',
+                                                CorrelationID_Migrate:   row.correlationIdMigrate || '',
+                                                CorrelationID_Validate:  row.correlationIdVerify || '',
+                                            })),
                                         }}
-                                    >
-                                        <FileText className="h-4 w-4 mr-2"/>Export CSV
-                                    </Button>
+                                    />
                                     <Button variant="outline" onClick={resetProcess}>
                                         <RotateCcw className="h-4 w-4 mr-2"/>New Migration
                                     </Button>
@@ -4701,35 +4714,25 @@ const validateAssignments = async () => {
                                                     From {readyForMigrationCount} ready:
                                                 </div>
 
-                                                {/* Show total processed to verify math */}
+                                                {/* Show total processed */}
                                                 {(() => {
-                                                    const totalAccountedForMigration = summaryStats.migrationSuccessCount +
-                                                                                      summaryStats.migrationFailedCount +
-                                                                                      summaryStats.migrationSkippedCount +
-                                                                                      summaryStats.notStartedCount +
-                                                                                      summaryStats.verifiedCount +
-                                                                                      summaryStats.verifyFailedCount;
+                                                    const totalSelected = summaryStats.migrationSuccessCount +
+                                                                          summaryStats.migrationFailedCount +
+                                                                          summaryStats.migrationSkippedCount +
+                                                                          summaryStats.notProcessedCount +
+                                                                          summaryStats.verifiedCount +
+                                                                          summaryStats.verifyFailedCount;
 
-                                                    return totalAccountedForMigration > 0 && (
+                                                    if (totalSelected === 0) return null;
+
+                                                    const allProcessed = summaryStats.notProcessedCount === 0;
+
+                                                    return (
                                                         <div className="flex items-center justify-between p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded border border-blue-200/50 dark:border-blue-800/50 ml-4">
-                                                            <div className="flex items-center gap-1.5 relative">
-                                                                <span className="text-xs text-blue-600 dark:text-blue-400">Total Migrated:</span>
-                                                                <div
-                                                                    className="relative"
-                                                                    onMouseEnter={() => setShowHelpTooltip(true)}
-                                                                    onMouseLeave={() => setShowHelpTooltip(false)}
-                                                                >
-                                                                    <HelpCircle className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400 cursor-help" />
-                                                                    {showHelpTooltip && (
-                                                                        <div className="absolute left-0 top-full mt-1 z-50 w-64 p-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs rounded shadow-lg">
-                                                                            Shows how many items from &quot;Ready for Migration&quot; actually went through the migration process (successful + failed + verified). Should match the total ready count.
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            </div>
+                                                            <span className="text-xs text-blue-600 dark:text-blue-400">Selected for migration:</span>
                                                             <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
-                                                                {totalAccountedForMigration} / {readyForMigrationCount}
-                                                                {totalAccountedForMigration !== readyForMigrationCount && (
+                                                                {totalSelected}
+                                                                {!allProcessed && (
                                                                     <span className="ml-2 text-orange-600">⚠️</span>
                                                                 )}
                                                             </span>
@@ -4751,13 +4754,13 @@ const validateAssignments = async () => {
                                                     );
                                                 })()}
 
-                                                {migrationSuccessCount > 0 && (
+                                                {migrationSuccessCount + verifiedCount + verifyFailedCount > 0 && (
                                                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 ml-4">
                                                         <div className="flex items-center gap-2">
                                                             <CheckCircle2 className="h-4 w-4 text-green-600"/>
                                                             <span className="text-sm text-green-700 dark:text-green-300">Successfully Migrated</span>
                                                         </div>
-                                                        <span className="text-lg font-bold text-green-700 dark:text-green-300">{migrationSuccessCount}</span>
+                                                        <span className="text-lg font-bold text-green-700 dark:text-green-300">{migrationSuccessCount + verifiedCount + verifyFailedCount}</span>
                                                     </div>
                                                 )}
 
