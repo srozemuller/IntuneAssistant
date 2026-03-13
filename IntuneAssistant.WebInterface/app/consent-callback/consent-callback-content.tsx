@@ -16,6 +16,7 @@ export default function ConsentCallbackContent() {
         const errorDescription = searchParams.get('error_description');
         const adminConsent = searchParams.get('admin_consent');
         const state = searchParams.get('state');
+        const next = searchParams.get('next');
 
         if (error) {
             setStatus('error');
@@ -26,7 +27,8 @@ export default function ConsentCallbackContent() {
                     {
                         type: 'CONSENT_ERROR',
                         error: error,
-                        errorDescription: errorDescription || 'Unknown error'
+                        errorDescription: errorDescription || 'Unknown error',
+                        next: next
                     },
                     window.location.origin
                 );
@@ -41,7 +43,8 @@ export default function ConsentCallbackContent() {
                 window.opener.postMessage(
                     {
                         type: 'CONSENT_SUCCESS',
-                        state: state
+                        state: state,
+                        next: next
                     },
                     window.location.origin
                 );
@@ -57,7 +60,8 @@ export default function ConsentCallbackContent() {
                     {
                         type: 'CONSENT_ERROR',
                         error: 'invalid_response',
-                        errorDescription: 'Invalid consent response'
+                        errorDescription: 'Invalid consent response',
+                        next: next
                     },
                     window.location.origin
                 );

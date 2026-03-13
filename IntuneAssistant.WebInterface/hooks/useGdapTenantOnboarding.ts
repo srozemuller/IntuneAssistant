@@ -28,7 +28,7 @@ export const useGdapTenantOnboarding = (partnerTenantId?: string) => {
     const [error, setError] = useState<string | null>(null);
     const { request } = useApiRequest();
 
-    const fetchPartnerTenants = useCallback(async (): Promise<ApiResponse> => {
+    const fetchPartnerTenants = useCallback(async () => {
         if (!partnerTenantId) {
             setError('Your tenant ID is required to fetch partner tenants');
             throw new Error('Your tenant ID is required to fetch partner tenants');
@@ -46,8 +46,7 @@ export const useGdapTenantOnboarding = (partnerTenantId?: string) => {
                         'X-Tenant-ID': partnerTenantId,
                         'Content-Type': 'application/json'
                     }
-                },
-                fetchPartnerTenants
+                }
             );
 
             // Handle the case where data might be undefined
@@ -55,17 +54,19 @@ export const useGdapTenantOnboarding = (partnerTenantId?: string) => {
                 throw new Error('No data received from API');
             }
 
-            if (data.status === 'Success' && Array.isArray(data.data)) {
-                setPartnerTenants(data.data);
+            // Unwrap ApiResponseWithCorrelation → data.data is the ApiResponse envelope, data.data.data is the actual PartnerTenant[]
+            const envelope = data.data;
+            if (envelope.status === 'Success' && Array.isArray(envelope.data)) {
+                setPartnerTenants(envelope.data);
                 setError(null);
-            } else if (data.message) {
-                const errorMessage = typeof data.message === 'string'
-                    ? data.message
+            } else if (envelope.message) {
+                const errorMessage = typeof envelope.message === 'string'
+                    ? envelope.message
                     : 'Failed to fetch partner tenants';
                 setError(errorMessage);
             }
 
-            return data;
+            return envelope;
         } catch (error) {
             console.error('Failed to fetch partner tenants:', error);
             setError('Failed to fetch partner tenants');

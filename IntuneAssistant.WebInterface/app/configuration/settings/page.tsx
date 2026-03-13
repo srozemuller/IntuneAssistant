@@ -121,8 +121,9 @@ const toggleRowExpansion = (settingId: string) => {
             })
         ]);
 
-        const configSettings = configResponse?.data || [];
-        const groupSettings = groupResponse?.data || [];
+        // Unwrap ApiResponseWithCorrelation → .data is the ApiResponse envelope, .data.data is the array
+        const configSettings = configResponse?.data?.data || [];
+        const groupSettings = groupResponse?.data?.data || [];
 
         const combinedSettings = [
             ...configSettings.map(setting => ({ ...setting, source: 'configuration' as const })),

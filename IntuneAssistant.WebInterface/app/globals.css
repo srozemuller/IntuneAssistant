@@ -98,6 +98,13 @@
   --chart-2: oklch(0.7 0.15 130);
   --chart-3: oklch(0.65 0.18 240);
   --chart-4: oklch(0.75 0.14 310);
+
+  /* Audit Category Colors */
+  --category-default: #3b82f6;
+  --category-success: #22c55e;
+  --category-warning: #f59e0b;
+  --category-error: #ef4444;
+  --category-info: #06b6d4;
   --chart-5: oklch(0.8 0.12 50);
 
   /* Sidebar: Glass Effect */
@@ -187,7 +194,7 @@
   }
 
   body {
-    @apply text-sm bg-gradient-to-br from-gray-50 via-white to-gray-100/60 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-foreground;
+    @apply text-sm bg-gray-50 dark:bg-gray-950 text-foreground;
     height: 100%;
     overflow: hidden;
   }
@@ -196,8 +203,12 @@
   main {
     height: 100vh;
     overflow-y: auto;
-    overflow-x: hidden;
-    margin-left: 16rem; /* w-64 = 256px = 16rem */
+    overflow-x: auto;
+    margin-left: 16rem;
+    /* Add these for better scroll performance */
+    will-change: scroll-position;
+    -webkit-overflow-scrolling: touch;
+    transform: translateZ(0); /* Force GPU acceleration */
   }
 
   /* Table container */
@@ -207,12 +218,18 @@
 
   /* Responsive table width */
   table {
-    @apply w-full max-w-full;
+    /* Remove width constraints - let DataTable component control width */
+    /* Remove glass effect - use solid background */
+    @apply bg-white dark:bg-gray-800;
+    /* Simpler shadow */
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   }
 
-  /* Ensure table cells don't expand beyond viewport */
+
+  /* Ensure table cells render efficiently */
   th, td {
-    @apply max-w-xs overflow-hidden text-ellipsis;
+    @apply overflow-hidden text-ellipsis;
+    contain: layout style paint;
   }
 
   /* Sidebar - Fixed Position */
@@ -222,6 +239,8 @@
     @apply fixed top-0 left-0 h-screen;
     width: 16rem; /* w-64 */
     overflow: hidden;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   /* When sidebar is collapsed */
@@ -252,24 +271,25 @@
     @apply bg-gray-300/50 dark:bg-gray-700/50 rounded-full hover:bg-gray-400/50 dark:hover:bg-gray-600/50;
   }
 
-  /* Glass Effect Utilities */
+  /* Glass Effect Utilities - Optimized (removed backdrop-blur) */
   .glass {
-    @apply bg-white/70 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl;
+    @apply bg-white/95 dark:bg-gray-900/90 border border-white/20 dark:border-white/10 shadow-2xl;
   }
 
   .glass-card {
-    @apply bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 shadow-xl rounded-xl;
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700;
+    /* Simple shadow instead of xl */
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   }
 
-  /* Light Mode Tables with Glass */
+  /* Light Mode Tables - Optimized (no backdrop-blur) */
   table {
-    @apply bg-white/60 rounded-xl overflow-hidden shadow-lg;
-    backdrop-filter: blur(8px);
+    @apply bg-white rounded-xl overflow-hidden;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   }
 
   thead {
-    @apply bg-gradient-to-r from-gray-50/80 to-white/80 border-b border-gray-200/50;
-    backdrop-filter: blur(8px);
+    @apply bg-gray-50 border-b border-gray-200;
   }
 
   thead th {
@@ -278,10 +298,12 @@
 
   tbody tr {
     @apply border-gray-200/30;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 45px;
   }
 
   tbody tr:hover {
-    @apply bg-primary/5;
+    @apply bg-gray-50;
   }
 
   tbody td {
@@ -290,7 +312,11 @@
 
   /* Table Links - Yellow Accent */
   table a {
-    @apply text-primary hover:opacity-80 transition-opacity no-underline;
+    @apply text-primary no-underline;
+  }
+
+  table a:hover {
+    opacity: 0.8;
   }
 
   /* Table buttons styled as links - ensure visibility on row hover */
@@ -301,29 +327,31 @@
     @apply relative z-10;
   }
 
-  /* Dark Mode Tables with Glass Effect */
+  /* Dark Mode Tables - Optimized (no backdrop-blur) */
   .dark table {
-    @apply text-gray-100 bg-gray-700/30 backdrop-blur-md rounded-xl overflow-hidden;
+    @apply text-gray-100 bg-gray-800 rounded-xl overflow-hidden;
   }
 
   .dark thead {
-    @apply bg-gradient-to-r from-gray-800/60 to-gray-900/60 backdrop-blur-lg border-b border-primary/20;
+    @apply bg-gray-900 border-b border-gray-700;
   }
 
   .dark thead th {
-    @apply text-gray-100 font-semibold border-gray-700/30;
+    @apply text-gray-100 font-semibold;
   }
 
   .dark tbody tr {
-    @apply border-gray-700/20 bg-transparent;
+    @apply border-gray-700/20;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 45px;
   }
 
   .dark tbody tr:hover {
-    @apply bg-primary/5;
+    @apply bg-gray-700;
   }
 
   .dark tbody td {
-    @apply text-gray-200 border-gray-700/20;
+    @apply text-gray-200;
   }
 
 
@@ -349,7 +377,6 @@
   /* Card Hover Effects - Optimized for performance */
   .glass-card:hover {
     @apply shadow-2xl;
-    transform: scale(1.02);
   }
 
   @keyframes scale-in {
@@ -385,4 +412,31 @@
   .animate-shake {
       animation: shake 0.5s ease-out;
   }
+
+  /* Custom scrollbar styling for DataTable */
+  .overflow-x-auto::-webkit-scrollbar {
+      height: 8px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-track {
+      background: transparent;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+      background: rgb(203 213 225 / 0.5);
+      border-radius: 4px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+      background: rgb(203 213 225 / 0.8);
+  }
+
+  .dark .overflow-x-auto::-webkit-scrollbar-thumb {
+      background: rgb(71 85 105 / 0.5);
+  }
+
+  .dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+      background: rgb(71 85 105 / 0.8);
+  }
 }
+

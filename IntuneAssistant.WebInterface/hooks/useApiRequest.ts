@@ -1,16 +1,16 @@
 // hooks/useApiRequest.ts
+'use client';
+
 import { useRef, useCallback } from 'react';
 import { useMsal } from '@azure/msal-react';
-import { useConsent } from "@/contexts/ConsentContext";
 import { useTenant } from "@/contexts/TenantContext";
-import { apiRequest, ApiError } from "@/lib/apiRequest";
+import { apiRequest, ApiError, ApiResponseWithCorrelation } from "@/lib/apiRequest";
 import { apiScope } from '@/lib/msalConfig';
 import { UserConsentRequiredError } from '@/lib/errors';
 import { useError } from '@/contexts/ErrorContext';
 
 export function useApiRequest() {
     const { instance, accounts } = useMsal();
-    const { showConsent } = useConsent();
     const { showError, clearError } = useError();
     const { selectedTenant } = useTenant();
     const abortControllerRef = useRef<AbortController | null>(null);
@@ -18,8 +18,8 @@ export function useApiRequest() {
     const request = useCallback(async function<T>(
         url: string,
         options: RequestInit = {},
-        onConsentComplete?: () => Promise<T>
-    ): Promise<T | undefined> {
+        onConsentComplete?: () => Promise<ApiResponseWithCorrelation<T>>
+    ): Promise<ApiResponseWithCorrelation<T> | undefined> {
         // Cancel previous request if still running
         clearError();
 
@@ -59,7 +59,7 @@ export function useApiRequest() {
 
             if (err instanceof UserConsentRequiredError) {
                 console.log("Consent required, showing consent dialog with URL:", err.consentUrl);
-                showConsent(err.consentUrl, onConsentComplete ?
+                showError(`User consent required. Please grant the necessary permissions.`, onConsentComplete ?
                     async () => {
                         try {
                             return await onConsentComplete();
@@ -94,7 +94,7 @@ export function useApiRequest() {
 
             return;
         }
-    }, [instance, accounts, showConsent, selectedTenant, showError, clearError]);
+    }, [instance, accounts, selectedTenant, showError, clearError]);
 
     const cancel = useCallback(() => {
         if (abortControllerRef.current) {

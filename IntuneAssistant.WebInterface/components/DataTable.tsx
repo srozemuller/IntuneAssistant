@@ -2,8 +2,16 @@
 'use client';
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {ITEMS_PER_PAGE} from "@/lib/constants";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, Search, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown, Search, X, Settings2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuCheckboxItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface Column {
     key: string;
@@ -12,8 +20,10 @@ interface Column {
     minWidth?: number;
     sortable?: boolean;
     searchable?: boolean;
+    defaultHidden?: boolean; // Column hidden by default but can be shown via columns button
     sortValue?: (row: Record<string, unknown>) => number | string;
     render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
+    hasExplicitWidth?: boolean; // internal: true when caller set an explicit width
 }
 
 interface SortConfig {
@@ -43,13 +53,13 @@ interface DataTableProps {
 const TableRow = React.memo<{
     row: Record<string, unknown>;
     rowIndex: number;
-    columns: Column[];
+    visibleColumns: Column[];
     startIndex: number;
     isSelected: boolean;
     onRowClick?: (e: React.MouseEvent, row: Record<string, unknown>, index: number) => void;
     rowClassName?: (row: Record<string, unknown>) => string;
     getCellValue: (row: Record<string, unknown>, column: Column) => unknown;
-}>(({ row, rowIndex, columns, startIndex, isSelected, onRowClick, rowClassName, getCellValue }) => {
+}>(({ row, rowIndex, visibleColumns, startIndex, isSelected, onRowClick, rowClassName, getCellValue }) => {
     const handleClick = useCallback((e: React.MouseEvent) => {
         if (onRowClick) {
             onRowClick(e, row, startIndex + rowIndex);
@@ -59,29 +69,32 @@ const TableRow = React.memo<{
     return (
         <tr
             className={`
-                border-b border-border/10 last:border-b-0
-                transition-all duration-200
+                border-b border-gray-100 dark:border-gray-800 last:border-b-0
                 ${onRowClick ? 'cursor-pointer' : ''}
                 ${isSelected
-                    ? 'bg-primary/15 dark:bg-primary/20 text-foreground border-l-4 border-l-primary shadow-lg'
-                    : 'hover:bg-white/20 dark:hover:bg-white/5'
+                    ? 'bg-primary/10 dark:bg-primary/20 border-l-4 border-l-primary'
+                    : rowIndex % 2 === 0
+                        ? 'bg-white dark:bg-gray-900 hover:bg-gray-500/70 dark:hover:bg-gray-800/80'
+                        : 'bg-gray-50/30 dark:bg-gray-900/70 hover:bg-gray-50/70 dark:hover:bg-gray-800/40'
                 }
                 ${rowClassName ? rowClassName(row) : ''}
+                transition-colors duration-200 ease-in-out
             `}
             onClick={handleClick}
         >
-            {columns.map((column) => (
+            {visibleColumns.map((column) => (
                 <td
                     key={column.key}
-                    className="p-3 text-foreground first:pl-6 last:pr-6"
-                    style={{ width: `${column.width}px` }}
+                    className="p-3 text-gray-900 dark:text-gray-100 first:pl-6 last:pr-6"
+                    style={{
+                        width: `${column.width}px`,
+                        minWidth: `${column.minWidth}px`
+                    }}
                 >
-                    <div className="overflow-hidden">
-                        {column.render
-                            ? column.render(getCellValue(row, column), row)
-                            : String(getCellValue(row, column) || '')
-                        }
-                    </div>
+                    {column.render
+                        ? column.render(getCellValue(row, column), row)
+                        : String(getCellValue(row, column) || '')
+                    }
                 </td>
             ))}
         </tr>
@@ -90,27 +103,29 @@ const TableRow = React.memo<{
 
 TableRow.displayName = 'TableRow';
 
-export function DataTable({
-                              data,
-                              columns: initialColumns,
-                              className: _className = '',
-                              onRowClick,
-                              currentPage = 1,
-                              totalPages: _totalPages = 1,
-                              itemsPerPage = ITEMS_PER_PAGE,
-                              onPageChange,
-                              rowClassName,
-                              onItemsPerPageChange,
-                              showPagination = false,
-                              showSearch = true,
-                              searchPlaceholder = "Search...",
-                              onSelectionChange,
-                              selectedRows = [],
-                          }: DataTableProps) {
+function DataTableComponent(props: DataTableProps) {
+    const {
+        data,
+        columns: initialColumns,
+        className: _className = '',
+        onRowClick,
+        currentPage = 1,
+        totalPages: _totalPages = 1,
+        itemsPerPage = ITEMS_PER_PAGE,
+        rowClassName,
+        onPageChange,
+        onItemsPerPageChange,
+        showPagination = true,
+        showSearch = true,
+        searchPlaceholder = "Search...",
+        onSelectionChange,
+        selectedRows = [],
+    } = props;
 
     // Local pagination state to support uncontrolled usage
     const [internalCurrentPage, setInternalCurrentPage] = useState<number>(currentPage);
     const [internalItemsPerPage, setInternalItemsPerPage] = useState<number>(itemsPerPage);
+
 
     // Sync internal state when parent updates props
     useEffect(() => setInternalCurrentPage(currentPage), [currentPage]);
@@ -168,6 +183,7 @@ export function DataTable({
                     label: '',
                     width: 50,
                     minWidth: 40,
+                    hasExplicitWidth: true,
                     sortable: false,
                     searchable: false,
                     sortValue: undefined,
@@ -189,17 +205,31 @@ export function DataTable({
 
     const [columns, setColumns] = useState(columnsWithSelection.map(col => ({
         ...col,
+        hasExplicitWidth: col.key === '_select' ? true : col.width !== undefined,
         width: col.width || 150,
         minWidth: col.minWidth || 100,
         searchable: col.searchable !== false && col.key !== '_select',
         sortValue: col.sortValue
     })));
 
+    const [widthsReady, setWidthsReady] = useState(false);
+
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [resizing, setResizing] = useState<{ columnIndex: number; startX: number; startWidth: number } | null>(null);
+    const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() => {
+        // Initialize columns: visible by default unless marked as defaultHidden
+        const visibility: Record<string, boolean> = {};
+        columnsWithSelection.forEach(col => {
+            visibility[col.key] = (col as Column).defaultHidden !== true;
+        });
+        return visibility;
+    });
+    const [containerWidth, setContainerWidth] = useState<number>(0);
+    const initialWidthsCalculatedRef = useRef(false);
     const tableRef = useRef<HTMLTableElement>(null);
+    const tableContainerRef = useRef<HTMLDivElement>(null);
 
     // Debounce search term to improve performance
     useEffect(() => {
@@ -211,14 +241,121 @@ export function DataTable({
     }, [searchTerm]);
 
     useEffect(() => {
+        const container = tableContainerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            // Passive listener - browser can optimize
+        };
+
+        container.addEventListener('scroll', handleScroll, { passive: true });
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
+
+    useEffect(() => {
         setColumns(columnsWithSelection.map(col => ({
             ...col,
+            hasExplicitWidth: col.key === '_select' ? true : col.width !== undefined,
             width: col.width || 150,
             minWidth: col.minWidth || 100,
             searchable: col.searchable !== false && col.key !== '_select',
             sortValue: col.sortValue
         })));
+
+        setWidthsReady(false);
+
+        // Update visibility for any new columns
+        setColumnVisibility(prev => {
+            const newVisibility = { ...prev };
+            columnsWithSelection.forEach(col => {
+                if (!(col.key in newVisibility)) {
+                    newVisibility[col.key] = true;
+                }
+            });
+            return newVisibility;
+        });
+
+        // Reset width calculation flag when columns change
+        initialWidthsCalculatedRef.current = false;
     }, [columnsWithSelection]);
+
+    // Measure container width and calculate initial column widths to fill 100%
+    useEffect(() => {
+        if (!tableContainerRef.current || initialWidthsCalculatedRef.current || columns.length === 0) return;
+
+        const updateColumnWidths = () => {
+            const containerEl = tableContainerRef.current;
+            if (!containerEl) return;
+
+            const availableWidth = containerEl.clientWidth;
+            if (availableWidth === 0) return;
+
+            setContainerWidth(availableWidth);
+
+            // Fixed columns: _select or any column where the caller provided an explicit width
+            const fixedCols = columns.filter(col => col.hasExplicitWidth);
+            const autoCols  = columns.filter(col => !col.hasExplicitWidth);
+
+            const fixedWidth = fixedCols.reduce((sum, col) => sum + (col.width || 0), 0);
+            const availableForAuto = availableWidth - fixedWidth;
+
+            if (availableForAuto > 0 && autoCols.length > 0) {
+                // Equal share for every auto column, respecting its minWidth
+                const equalShare = Math.floor(availableForAuto / autoCols.length);
+
+                setColumns(prev => prev.map(col => {
+                    if (col.hasExplicitWidth) return col; // keep fixed columns untouched
+                    return {
+                        ...col,
+                        width: Math.max(equalShare, col.minWidth || 80),
+                    };
+                }));
+            }
+
+            initialWidthsCalculatedRef.current = true;
+            setWidthsReady(true);
+        };
+
+        // Use ResizeObserver for reliable measurement
+        const resizeObserver = new ResizeObserver(() => {
+            if (!initialWidthsCalculatedRef.current) {
+                updateColumnWidths();
+            }
+        });
+
+        if (tableContainerRef.current) {
+            resizeObserver.observe(tableContainerRef.current);
+        }
+
+        // Also try immediate calculation after a short delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+            updateColumnWidths();
+        }, 100);
+
+        return () => {
+            resizeObserver.disconnect();
+            clearTimeout(timer);
+        };
+    }, [columns.length]);
+
+    // Memoize visible columns
+    const visibleColumns = useMemo(() => {
+        return columns.filter(col => columnVisibility[col.key] !== false);
+    }, [columns, columnVisibility]);
+
+    // Calculate total table width based on visible column widths
+    const totalTableWidth = useMemo(() => {
+        return visibleColumns.reduce((sum, col) => sum + (col.width || 150), 0);
+    }, [visibleColumns]);
+
+    // Toggle column visibility
+    const toggleColumnVisibility = useCallback((columnKey: string) => {
+        setColumnVisibility(prev => ({
+            ...prev,
+            [columnKey]: !prev[columnKey]
+        }));
+    }, []);
 
     // Memoize filtered data to prevent unnecessary recalculations
     const filteredData = useMemo(() => {
@@ -329,27 +466,33 @@ export function DataTable({
     }, [effectiveItemsPerPage, sortedData.length, effectiveCurrentPage]);
 
     useEffect(() => {
+        if (!resizing) return;
+
+        let rafId: number;
+
         const handleMouseMove = (e: MouseEvent) => {
-            if (!resizing) return;
+            if (rafId) cancelAnimationFrame(rafId);
 
-            const diff = e.clientX - resizing.startX;
-            const newWidth = Math.max(resizing.startWidth + diff, columns[resizing.columnIndex].minWidth || 100);
+            rafId = requestAnimationFrame(() => {
+                const diff = e.clientX - resizing.startX;
+                const newWidth = Math.max(resizing.startWidth + diff, columns[resizing.columnIndex].minWidth || 100);
 
-            setColumns(prev => prev.map((col, index) =>
-                index === resizing.columnIndex ? { ...col, width: newWidth } : col
-            ));
+                setColumns(prev => prev.map((col, index) =>
+                    index === resizing.columnIndex ? { ...col, width: newWidth } : col
+                ));
+            });
         };
 
         const handleMouseUp = () => {
+            if (rafId) cancelAnimationFrame(rafId);
             setResizing(null);
         };
 
-        if (resizing) {
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-        }
+        document.addEventListener('mousemove', handleMouseMove, { passive: true });
+        document.addEventListener('mouseup', handleMouseUp);
 
         return () => {
+            if (rafId) cancelAnimationFrame(rafId);
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
@@ -406,31 +549,67 @@ export function DataTable({
         return pages;
     }, [totalFilteredPages, effectiveCurrentPage]);
 
+    // Memoize hasData check
+    const hasData = useMemo(() => paginatedData.length > 0, [paginatedData.length]);
+
     return (
         <div>
             {/* Search Section */}
             {showSearch && (
-                <div className="p-4 ">
-                    <div className="relative max-w-sm">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="p-4 flex items-center gap-4">
+                    <div className="relative flex-1 max-w-sm">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <input
                             type="text"
                             placeholder={searchPlaceholder}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-10 py-2 rounded-lg bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0 shadow-sm"
+                            className="w-full pl-10 pr-10 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"
                         />
                         {searchTerm && (
                             <button
                                 onClick={clearSearch}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                             >
                                 <X className="h-4 w-4" />
                             </button>
                         )}
                     </div>
+
+                    {/* Column Visibility Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <Settings2 className="h-4 w-4" />
+                                Columns
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-[200px]">
+                            <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {columns
+                                .filter(col => col.key !== '_select') // Don't allow hiding selection column
+                                .map((column) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.key}
+                                        checked={columnVisibility[column.key] !== false}
+                                        onCheckedChange={() => toggleColumnVisibility(column.key)}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            {columnVisibility[column.key] !== false ? (
+                                                <Eye className="h-4 w-4" />
+                                            ) : (
+                                                <EyeOff className="h-4 w-4" />
+                                            )}
+                                            {column.label}
+                                        </div>
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                     {searchTerm && (
-                        <div className="mt-2 text-sm text-muted-foreground">
+                        <div className="text-sm text-muted-foreground whitespace-nowrap">
                             {sortedData.length} of {data.length} results
                         </div>
                     )}
@@ -438,56 +617,90 @@ export function DataTable({
             )}
 
             {/* Table Section */}
-            <div className="overflow-auto custom-scrollbar bg-white/5 dark:bg-gray-900/5 backdrop-blur-sm">
-            <table ref={tableRef} className="w-full text-sm">
-                    <thead className="bg-gradient-to-b from-white/30 to-white/20 dark:from-white/10 dark:to-white/5 backdrop-blur-md sticky top-0 z-10">
+            <div
+                ref={tableContainerRef}
+                className="overflow-x-auto overflow-y-auto bg-white dark:bg-gray-900"
+                style={{
+                    width: '100%',
+                    maxWidth: '100%',
+                    willChange: 'scroll-position',
+                    transform: 'translateZ(0)',
+                    WebkitOverflowScrolling: 'touch',
+                    // Custom scrollbar styling
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'rgb(203 213 225) transparent',
+                }}
+            >
+            <table
+                ref={tableRef}
+                className="text-sm"
+                style={widthsReady ? {
+                    width: `${totalTableWidth}px`,
+                    minWidth: '100%',
+                    tableLayout: 'fixed',
+                } : {
+                    width: '100%',
+                    tableLayout: 'auto',
+                }}
+            >
+                    <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 border-b-2 border-gray-200 dark:border-gray-700">
                         <tr>
-                            {columns.map((column, index) => (
-                                <th
-                                    key={column.key}
-                                    className="relative text-left p-3 font-medium text-foreground first:pl-6 last:pr-6"
-                                    style={{ width: `${column.width}px` }}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div
-                                            className={`flex items-center gap-2 flex-1 ${
-                                                column.sortable !== false && column.key !== '_select'
-                                                    ? 'cursor-pointer hover:text-primary transition-colors'
-                                                    : ''
-                                            }`}
-                                            onClick={() => {
-                                                if (column.sortable !== false && column.key !== '_select') {
-                                                    handleSort(column.key);
-                                                }
-                                            }}
-                                        >
-                                            <span className="truncate pr-2">{column.label}</span>
-                                            {column.sortable !== false && column.key !== '_select' && (
-                                                getSortIcon(column.key)
-                                            )}
-                                        </div>
-                                    </div>
+                            {visibleColumns.map((column, visibleIndex) => {
+                                // Find the original index in the full columns array for resizing
+                                const originalIndex = columns.findIndex(col => col.key === column.key);
 
-                                    {column.key !== '_select' && index < columns.length - 1 && (
-                                        <div
-                                            className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50 group"
-                                            onMouseDown={(e) => handleResizeStart(e, index)}
-                                        >
-                                            <div className="h-full w-px bg-border/20 group-hover:bg-primary transition-colors" />
+                                return (
+                                    <th
+                                        key={column.key}
+                                        className="relative text-left p-3 font-medium text-foreground first:pl-6 last:pr-6"
+                                        style={{
+                                            width: `${column.width}px`,
+                                            minWidth: `${column.minWidth}px`
+                                        }}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div
+                                                className={`flex items-center gap-2 flex-1 ${
+                                                    column.sortable !== false && column.key !== '_select'
+                                                        ? 'cursor-pointer select-none'
+                                                        : ''
+                                                }`}
+                                                onClick={() => {
+                                                    if (column.sortable !== false && column.key !== '_select') {
+                                                        handleSort(column.key);
+                                                    }
+                                                }}
+                                            >
+                                                <span className="truncate pr-2">{column.label}</span>
+                                                {column.sortable !== false && column.key !== '_select' && (
+                                                    getSortIcon(column.key)
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
-                                </th>
-                            ))}
+
+                                        {/* Resize handle - show for all columns except selection column */}
+                                        {column.key !== '_select' && (
+                                            <div
+                                                className="absolute right-0 top-0 h-full w-3 cursor-col-resize hover:bg-primary/10 active:bg-primary/20 group z-20"
+                                                onMouseDown={(e) => handleResizeStart(e, originalIndex)}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <div className="absolute right-0 top-0 h-full w-px bg-transparent group-hover:bg-primary/50 group-active:bg-primary transition-colors" />
+                                            </div>
+                                        )}
+                                    </th>
+                                );
+                            })}
                         </tr>
                     </thead>
                     <tbody className="bg-transparent">
-                        {paginatedData.length > 0 ? (
+                        {hasData ? (
                             paginatedData.map((row, rowIndex) => (
                                 <TableRow
-                                    key={row.id ? String(row.id) : rowIndex}
+                                    key={row.id ? `${String(row.id)}-${rowIndex}` : rowIndex}
                                     row={row}
                                     rowIndex={rowIndex}
-                                    columns={columns}
+                                    visibleColumns={visibleColumns}
                                     startIndex={startIndex}
                                     isSelected={isRowSelected(row)}
                                     onRowClick={onRowClick ? handleRowClick : undefined}
@@ -498,7 +711,7 @@ export function DataTable({
                         ) : (
                             <tr>
                                 <td
-                                    colSpan={columns.length}
+                                    colSpan={visibleColumns.length}
                                     className="p-8 text-center text-muted-foreground"
                                 >
                                     {searchTerm ? 'No results found for your search.' : 'No data available.'}
@@ -511,14 +724,14 @@ export function DataTable({
 
             {/* Pagination Section */}
             {showPagination && sortedData.length > 0 && (
-                <div className="flex items-center justify-between p-4 bg-gradient-to-t from-white/20 to-transparent dark:from-white/5">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-4">
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
                             Showing {Math.min(startIndex + 1, sortedData.length)} to {Math.min(endIndex, sortedData.length)} of {sortedData.length} results
                             {searchTerm && ` (filtered from ${data.length} total)`}
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">Items per page:</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Items per page:</span>
                             <select
                                 value={effectiveItemsPerPage}
                                 onChange={(e) => {
@@ -526,7 +739,7 @@ export function DataTable({
                                     changeItemsPerPage(newItemsPerPage);
                                     changePage(1);
                                 }}
-                                className="rounded-lg px-3 py-1.5 text-sm bg-white/60 dark:bg-white/10 backdrop-blur-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-0 shadow-sm"
+                                className="rounded px-3 py-1.5 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"
                             >
                                 <option value={10}>10</option>
                                 <option value={25}>25</option>
@@ -541,7 +754,6 @@ export function DataTable({
                             size="sm"
                             onClick={() => changePage(Math.max(1, effectiveCurrentPage - 1))}
                             disabled={effectiveCurrentPage === 1}
-                            className="backdrop-blur-sm border-border/20 bg-white/40 dark:bg-white/5"
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -554,7 +766,7 @@ export function DataTable({
                                     variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => changePage(pageNum)}
-                                    className={`w-8 h-8 p-0 backdrop-blur-sm ${effectiveCurrentPage !== pageNum ? 'border-border/20 bg-white/40 dark:bg-white/5' : ''}`}
+                                    className="w-8 h-8 p-0"
                                 >
                                     {pageNum}
                                 </Button>
@@ -566,7 +778,6 @@ export function DataTable({
                             size="sm"
                             onClick={() => changePage(Math.min(totalFilteredPages, effectiveCurrentPage + 1))}
                             disabled={effectiveCurrentPage === totalFilteredPages}
-                            className="backdrop-blur-sm border-border/20 bg-white/40 dark:bg-white/5"
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />
@@ -577,3 +788,5 @@ export function DataTable({
         </div>
     );
 }
+
+export const DataTable = React.memo(DataTableComponent);

@@ -107,7 +107,7 @@ export default function LandingPage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-green-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-green-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center shadow-lg">
@@ -128,7 +128,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-green-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-green-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center shadow-lg">
@@ -149,7 +149,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-green-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-green-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center shadow-lg">
@@ -170,7 +170,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-green-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-green-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center shadow-lg">
@@ -191,7 +191,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-green-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-green-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center shadow-lg">
@@ -212,7 +212,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-green-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-green-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center shadow-lg">
@@ -266,7 +266,7 @@ export default function LandingPage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-blue-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center shadow-lg">
@@ -287,7 +287,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-blue-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center shadow-lg">
@@ -308,7 +308,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-blue-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center shadow-lg">
@@ -329,7 +329,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-blue-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center shadow-lg">
@@ -350,7 +350,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-blue-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center shadow-lg">
@@ -371,7 +371,7 @@ export default function LandingPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="relative hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-blue-500 dark:bg-gray-800/80 dark:border-gray-700 backdrop-blur-sm bg-white/80">
+                                <Card className="relative hover:shadow-lg border-l-4 border-l-blue-500 dark:bg-gray-800 dark:border-gray-700 bg-white">
                                     <CardHeader>
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center shadow-lg">
