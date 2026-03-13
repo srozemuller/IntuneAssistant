@@ -144,16 +144,8 @@ function getProperError(err) {
     if (isError(err)) {
         return err;
     }
-    if ("TURBOPACK compile-time truthy", 1) {
-        // Provide a better error message for cases where `throw undefined`
-        // is called in development
-        if (typeof err === 'undefined') {
-            return new Error('`undefined` was thrown instead of a real error');
-        }
-        if (err === null) {
-            return new Error('`null` was thrown instead of a real error');
-        }
-    }
+    if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+    ;
     return new Error(isPlainObject(err) ? JSON.stringify(err) : err + '');
 }
 function getObjectClassLabel(value) {

@@ -49,6 +49,7 @@ interface CustomerData {
     isMsp: boolean;
     isActive: boolean;
     isGdap: boolean;
+    isBetaTester: boolean;
     primaryContactEmail: string | null;
     homeTenantId: string;
     licenses: License[];

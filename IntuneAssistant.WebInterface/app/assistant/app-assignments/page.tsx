@@ -5,19 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
     RefreshCw,
     Filter,
     Database,
     Search,
     X,
-    Settings,
     Download,
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, Computer, Blocks, CircleQuestionMark, XCircle
+    ChevronUp, Blocks, CircleQuestionMark, XCircle
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import { MultiSelect, Option } from '@/components/ui/multi-select';
@@ -26,6 +24,8 @@ import { GroupDetailsDialog } from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
 import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
+import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
+import {AssignmentFilter} from "@/types/assignmentFilter";
 
 interface ApiResponse {
     status: string;
@@ -65,47 +65,11 @@ interface Assignments extends Record<string, unknown> {
     };
 }
 
-interface UserMember extends Record<string, unknown> {
-    id: string;
-    displayName: string;
-    accountEnabled: boolean;
-    type: string;
-}
 
-interface GroupDetails {
-    id: string;
-    displayName: string;
-    description: string | null;
-    membershipRule: string | null;
-    createdDateTime: string;
-    groupCount: {
-        userCount: number;
-        deviceCount: number;
-        groupCount: number;
-    } | null;
-    members: UserMember[] | null;
-}
 
-interface AssignmentFilter {
-    id: string;
-    createdDateTime: string;
-    lastModifiedDateTime: string;
-    displayName: string;
-    description: string;
-    platform: number;
-    rule: string;
-    assignmentFilterManagementType: number;
-    payloads: unknown[];
-    roleScopeTags: string[];
-    additionalData: Record<string, unknown>;
-    backingStore: Record<string, unknown>;
-    odataType: string | null;
-}
 
 export default function AssignmentsOverview() {
     const { instance, accounts } = useMsal();
-    const [showConsentDialog, setShowConsentDialog] = useState(false);
-    const [consentUrl, setConsentUrl] = useState('');
     const { request, cancel } = useApiRequest();
     const [isCancelled, setIsCancelled] = useState(false);
 
@@ -119,8 +83,6 @@ export default function AssignmentsOverview() {
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
-    const [filterLoading, setFilterLoading] = useState(false);
-    const [filterError, setFilterError] = useState<string | null>(null);
     const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
 
 
@@ -128,8 +90,7 @@ export default function AssignmentsOverview() {
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
+    const [searchQuery] = useState<string>('');
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
     const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
     const [installTypeFilter, setInstallTypeFilter] = useState<string[]>([]);
@@ -293,60 +254,58 @@ export default function AssignmentsOverview() {
     const fetchAssignmentsData = async (skipToken?: string) => {
         if (!accounts.length) return;
 
-        try {
-            const url = skipToken
-                ? `${ASSIGNMENTS_ENDPOINT}/apps?skipToken=${encodeURIComponent(skipToken)}`
-                : `${ASSIGNMENTS_ENDPOINT}/apps?pageSize=${fetchPageSize}`;
+        const url = skipToken
+            ? `${ASSIGNMENTS_ENDPOINT}/apps?skipToken=${encodeURIComponent(skipToken)}`
+            : `${ASSIGNMENTS_ENDPOINT}/apps?pageSize=${fetchPageSize}`;
 
-            const responseData = await request<ApiResponse>(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!responseData) {
-                throw new Error('No response received from API');
+        const responseData = await request<ApiResponse>(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
             }
+        });
 
-            if (responseData.status === 'Success' && responseData.data) {
-                const paginatedData = responseData.data;
+        if (!responseData) {
+            setError('No response received from API');
+            return;
+        }
 
-                if ('data' in paginatedData && Array.isArray(paginatedData.data)) {
-                    if (skipToken) {
-                        // Append to existing data for "Load More"
-                        setAssignments(prev => [...prev, ...paginatedData.data]);
-                        setFilteredAssignments(prev => [...prev, ...paginatedData.data]);
-                        setFetchedPages(prev => prev + 1);
-                    } else {
-                        // Replace data for initial load
-                        setAssignments(paginatedData.data);
-                        setFilteredAssignments(paginatedData.data);
-                        setFetchedPages(1);
-                    }
+        const apiResponse = responseData.data;
 
-                    // Update pagination info
-                    setPaginationInfo({
-                        totalCount: paginatedData.totalCount,
-                        hasNextPage: paginatedData.hasNextPage,
-                        nextPageToken: paginatedData.nextPageToken || null,
-                        currentPage: paginatedData.currentPage
-                    });
+        if (apiResponse.status === 'Success' && apiResponse.data) {
+            const paginatedData = apiResponse.data;
+
+            if ('data' in paginatedData && Array.isArray(paginatedData.data)) {
+                if (skipToken) {
+                    // Append to existing data for "Load More"
+                    setAssignments(prev => [...prev, ...paginatedData.data]);
+                    setFilteredAssignments(prev => [...prev, ...paginatedData.data]);
+                    setFetchedPages(prev => prev + 1);
                 } else {
-                    console.error('API response data is not in expected format:', paginatedData);
-                    if (!skipToken) {
-                        setAssignments([]);
-                        setFilteredAssignments([]);
-                        setFetchedPages(0);
-                    }
-                    throw new Error('Invalid data format received from API');
+                    // Replace data for initial load
+                    setAssignments(paginatedData.data);
+                    setFilteredAssignments(paginatedData.data);
+                    setFetchedPages(1);
                 }
+
+                // Update pagination info
+                setPaginationInfo({
+                    totalCount: paginatedData.totalCount,
+                    hasNextPage: paginatedData.hasNextPage,
+                    nextPageToken: paginatedData.nextPageToken || null,
+                    currentPage: paginatedData.currentPage
+                });
             } else {
-                throw new Error(responseData.message || 'Failed to fetch assignments');
+                console.error('API response data is not in expected format:', paginatedData);
+                if (!skipToken) {
+                    setAssignments([]);
+                    setFilteredAssignments([]);
+                    setFetchedPages(0);
+                }
+                setError('Invalid data format received from API');
             }
-        } catch (error) {
-            console.error('Failed to fetch assignments:', error);
-            throw error;
+        } else {
+            setError(apiResponse.message || 'Failed to fetch assignments');
         }
     };
 
@@ -365,26 +324,21 @@ export default function AssignmentsOverview() {
         if (!accounts.length) return;
 
         try {
-            const responseData = await request<AssignmentFilter[]>(`${ASSIGNMENTS_FILTERS_ENDPOINT}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const responseData = await request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(
+                ASSIGNMENTS_FILTERS_ENDPOINT,
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+            );
 
-            // Check if response exists
             if (!responseData) {
                 console.error('No response received from filters API');
                 setFilters([]);
                 return;
             }
 
-            // Handle successful response - filters endpoint returns array directly
-            if (Array.isArray(responseData)) {
-                setFilters(responseData);
+            // Unwrap ApiResponseWithCorrelation → .data.data is the AssignmentFilter array
+            if (Array.isArray(responseData.data.data)) {
+                setFilters(responseData.data.data);
             } else {
-                // If it's not an array, it might be an error response with consent info
-                const errorResponse = responseData as unknown as ApiResponse;
 
                 console.error('Filters API response is not an array:', responseData);
                 setFilters([]);
@@ -404,8 +358,8 @@ export default function AssignmentsOverview() {
         const filter = filters.find(f => f.id === filterId);
         return {
             displayName: filter?.displayName || 'Unknown Filter',
-            managementType: filter?.assignmentFilterManagementType === 0 ? 'include' : 'exclude',
-            platform: filter?.platform
+            managementType: filter?.assignmentFilterManagementType?.toLowerCase() || null,
+            platform: filter?.platform || null
         };
     };
 
@@ -460,23 +414,12 @@ export default function AssignmentsOverview() {
                 const filterType = assignment.filterType;
 
                 // Check for "No Filter" selection
-                if (filterTypeFilter.includes('none')) {
-                    if (!filterType || filterType === 'none' || filterType === 'None') {
-                        return true;
-                    }
-                }
-
-                // Check for include filter
-                if (filterTypeFilter.includes('include') && filterType === 'include') {
+                if (filterTypeFilter.includes('none') && (!filterType || filterType === 'none' || filterType === 'None')) {
                     return true;
                 }
 
-                // Check for exclude filter
-                if (filterTypeFilter.includes('exclude') && filterType === 'exclude') {
-                    return true;
-                }
-
-                return false;
+                // Check for include/exclude filter
+                return filterTypeFilter.includes(filterType);
             });
         }
         if (installTypeFilter.length > 0) {
@@ -521,18 +464,6 @@ export default function AssignmentsOverview() {
         return uniqueApps.size;
     };
 
-    const getDistinctAppsFromTotal = () => {
-        // This would ideally come from the API, but we can estimate based on current data
-        // For now, we'll use a ratio approach
-        if (assignments.length === 0 || paginationInfo.totalCount === 0) return 0;
-
-        const currentUniqueApps = getDistinctAppsCount();
-        const currentAssignments = assignments.length;
-        const ratio = currentUniqueApps / currentAssignments;
-
-        // Estimate total unique apps based on ratio
-        return Math.ceil(paginationInfo.totalCount * ratio);
-    };
 
     const clearFilters = () => {
         setAssignmentTypeFilter([]);
@@ -568,9 +499,12 @@ export default function AssignmentsOverview() {
                 }
 
                 return (
-                    <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                        {resourceName}
-                    </span>
+                    <div className="space-y-0.5">
+                        <span className="font-medium text-sm truncate block w-full" title={resourceName}>
+                            {resourceName}
+                        </span>
+                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                    </div>
                 );
             }
         },
@@ -658,7 +592,7 @@ export default function AssignmentsOverview() {
                                 </button>
                                 {group?.membershipRule && (
                                     <span title="Dynamic Group">
-            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0"/>
+            <Blocks className="h-3 w-3 text-purple-500 shrink-0"/>
         </span>
                                 )}
                             </div>
@@ -881,21 +815,15 @@ export default function AssignmentsOverview() {
             )}
 
 
-            {/* Loading state */}
-            {loading && assignments.length === 0 && (
-                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                Loading Assignments
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                Fetching assignment data from your Intune environment...
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* Loading state with skeleton */}
+            {loading && (
+                <AssignmentsTableSkeleton
+                    showStats={true}
+                    statsCount={4}
+                    showFilters={true}
+                    tableRows={10}
+                    tableColumns={7}
+                />
             )}
 
             {isCancelled && !loading && (
@@ -911,7 +839,7 @@ export default function AssignmentsOverview() {
             )}
 
             {/* Filters and content sections */}
-            {(assignments.length > 0 || loading) && (
+            {assignments.length > 0 && !loading && (
                 <>
                     {/* Filters Section */}
                     <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">

@@ -21,11 +21,12 @@ import {
     Key,
     ArrowRight,
     AlertCircle,
-    ExternalLink,Shield,
-    Users
+    ExternalLink,
+    Shield,
+    Users,
+    LogIn
 } from 'lucide-react';
 import { CONSENT_URL_ENDPOINT, CONSENT_CALLBACK } from '@/lib/constants';
-import { apiScope } from "@/lib/msalConfig";
 
 interface CustomerOnboardingModalProps {
     isOpen: boolean;
@@ -66,6 +67,7 @@ export default function CustomerOnboardingModal({
     const [consentCompleted, setConsentCompleted] = useState(false);
     const [consentWindow, setConsentWindow] = useState<Window | null>(null);
     const [scrollPosition, setScrollPosition] = useState(0);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     // Form data
     const [customerName, setCustomerName] = useState('');
@@ -83,47 +85,59 @@ export default function CustomerOnboardingModal({
         }
     }, [isOpen]);
 
-    const steps: OnboardingStep[] = [
-        {
-            id: 'customer-info',
-            title: 'Customer & Tenant',
-            description: 'Enter customer and tenant details',
-            completed: currentStep > 0
-        },
-        {
-            id: 'validation',
-            title: 'Validation',
-            description: 'Verify information',
-            completed: currentStep > 1
-        },
-        {
-            id: 'consent',
-            title: 'Admin Consent',
-            description: 'Grant permissions',
-            completed: currentStep > 2
-        },
-        {
-            id: 'completion',
-            title: 'Complete',
-            description: 'Setup finished',
-            completed: currentStep > 3
-        }
-    ];
+    // Check if user is already logged in and extract claims
+    useEffect(() => {
+        if (accounts && accounts.length > 0) {
+            setIsLoggedIn(true);
+            const account = accounts[0];
 
+            // Extract tenant ID from account
+            if (account.tenantId && !tenantId) {
+                setTenantId(account.tenantId);
+                console.log('Extracted Tenant ID:', account.tenantId);
+            }
+
+            // Extract domain from account username or idTokenClaims
+            if (account.username && !tenantDomainName) {
+                const domain = account.username.split('@')[1];
+                if (domain) {
+                    setTenantDomainName(domain);
+                    console.log('Extracted Domain:', domain);
+                }
+            }
+
+            // Try to extract domain from idTokenClaims
+            if (!tenantDomainName && account.idTokenClaims) {
+                const claims = account.idTokenClaims as Record<string, unknown>;
+                if (claims.preferred_username && typeof claims.preferred_username === 'string') {
+                    const domain = claims.preferred_username.split('@')[1];
+                    if (domain) {
+                        setTenantDomainName(domain);
+                        console.log('Extracted Domain from claims:', domain);
+                    }
+                }
+            }
+
+            // If already logged in, skip to step 1
+            if (currentStep === 0) {
+                setCurrentStep(1);
+            }
+        }
+    }, [accounts]);
+
+    // Listen for messages from consent popup window
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
             console.log('Received message from origin:', event.origin);
             console.log('Message data:', event.data);
-            console.log('Current window origin:', window.location.origin);
 
-            // Accept messages from both old and new domain
+            // Accept messages from allowed domains
             const allowedOrigins = [
                 'https://intuneassistant.cloud',
                 'https://test.intuneassistant.cloud',
                 'https://community.intuneassistant.cloud'
             ];
 
-            // Check if the origin is allowed (or in development, allow localhost)
             const isDevelopment = window.location.hostname === 'localhost';
             const isAllowedOrigin = allowedOrigins.some(origin => event.origin.startsWith(origin));
 
@@ -132,26 +146,28 @@ export default function CustomerOnboardingModal({
                 return;
             }
 
-            if (event.data?.type === 'CONSENT_SUCCESS' || event.data?.type === 'CONSENT_ERROR') {
-                console.log('Processing consent message:', event.data);
+            if (event.data?.type === 'CONSENT_SUCCESS') {
+                console.log('Consent successful, closing popup and continuing...');
+                setConsentCompleted(true);
 
-                if (event.data.type === 'CONSENT_SUCCESS') {
-                    setConsentCompleted(true);
-                    setLoading(false);
-
-                    if (consentWindow) {
-                        setConsentWindow(null);
-                    }
-
-                    handleConsentCallback();
-                } else if (event.data.type === 'CONSENT_ERROR') {
-                    setError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
-                    setLoading(false);
-
-                    if (consentWindow) {
-                        setConsentWindow(null);
-                    }
+                // Close the popup window
+                if (consentWindow && !consentWindow.closed) {
+                    consentWindow.close();
                 }
+                setConsentWindow(null);
+
+                // Call the callback to complete onboarding
+                handleConsentCallback();
+            } else if (event.data?.type === 'CONSENT_ERROR') {
+                console.error('Consent error:', event.data);
+                setError(`Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`);
+                setLoading(false);
+
+                // Close the popup window
+                if (consentWindow && !consentWindow.closed) {
+                    consentWindow.close();
+                }
+                setConsentWindow(null);
             }
         };
 
@@ -159,30 +175,65 @@ export default function CustomerOnboardingModal({
         return () => window.removeEventListener('message', handleMessage);
     }, [consentWindow]);
 
-
+    // Monitor popup window for manual closure
     useEffect(() => {
         if (!consentWindow) return;
 
-        // Since we're getting COOP errors and the message listener is working correctly,
-        // we can simplify this to just rely on the message listener
-        // Remove the interval that checks consentWindow.closed
+        const checkPopupClosed = setInterval(() => {
+            if (consentWindow.closed) {
+                console.log('Popup window was closed manually');
+                clearInterval(checkPopupClosed);
+                setConsentWindow(null);
 
-        console.log('Consent window reference set, relying on message listener for communication');
+                // Check if consent was completed before closing
+                if (!consentCompleted) {
+                    console.log('Popup closed without consent completion, attempting to verify...');
+                    setLoading(false);
 
-        // Optional: Add a timeout as a fallback
-        const timeoutId = setTimeout(() => {
-            if (!consentCompleted) {
-                console.log('Consent timeout reached, assuming window may be closed');
-                setLoading(false);
-                setError('Consent process timed out. Please try again.');
+                    // Try to verify if consent was actually granted
+                    // The user might have closed after granting but before redirect
+                    setTimeout(() => {
+                        handleConsentCallback();
+                    }, 1000);
+                }
             }
-        }, 300000); // 5 minute timeout
+        }, 500);
 
-        return () => {
-            clearTimeout(timeoutId);
-        };
+        return () => clearInterval(checkPopupClosed);
     }, [consentWindow, consentCompleted]);
 
+    const steps: OnboardingStep[] = [
+        {
+            id: 'login',
+            title: 'Login',
+            description: 'Sign in to continue',
+            completed: currentStep > 0
+        },
+        {
+            id: 'customer-info',
+            title: 'Customer & Tenant',
+            description: 'Enter customer and tenant details',
+            completed: currentStep > 1
+        },
+        {
+            id: 'validation',
+            title: 'Validation',
+            description: 'Verify information',
+            completed: currentStep > 2
+        },
+        {
+            id: 'consent',
+            title: 'Admin Consent',
+            description: 'Grant permissions',
+            completed: currentStep > 3
+        },
+        {
+            id: 'completion',
+            title: 'Complete',
+            description: 'Setup finished',
+            completed: currentStep > 4
+        }
+    ];
 
     const validateTenantId = (id: string) => {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -200,6 +251,10 @@ export default function CustomerOnboardingModal({
 
     const handleNext = () => {
         if (currentStep === 0) {
+            // Login step - trigger MSAL login
+            handleLogin();
+        } else if (currentStep === 1) {
+            // Customer info step - validate inputs
             if (!validateCustomerName(customerName)) {
                 setError('Please enter a valid customer name (minimum 2 characters)');
                 return;
@@ -211,11 +266,58 @@ export default function CustomerOnboardingModal({
             if (!validateDomainName(tenantDomainName)) {
                 setError('Please enter a valid domain name');
                 return;
-            }setError(null);
-            setCurrentStep(1);
-        } else if (currentStep === 1) {
+            }
+            setError(null);
             setCurrentStep(2);
+        } else if (currentStep === 2) {
+            // Validation step - proceed to consent
+            setCurrentStep(3);
             initiateOnboarding();
+        }
+    };
+
+    const handleLogin = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Login to the first application (3448bc04-cdbe-4a07-8e24-7e0e6f6980c1)
+            const result = await instance.loginPopup({
+                scopes: [
+                    'openid',
+                    'profile',
+                    'email',
+                    'User.Read' // Request User.Read to get more user information
+                ],
+                prompt: 'select_account'
+            });
+
+            console.log('Login successful:', result);
+            console.log('Account info:', result.account);
+            console.log('ID Token Claims:', result.idTokenClaims);
+
+            // Extract tenant ID and domain immediately after login
+            if (result.account) {
+                if (result.account.tenantId) {
+                    setTenantId(result.account.tenantId);
+                    console.log('Tenant ID extracted:', result.account.tenantId);
+                }
+
+                if (result.account.username) {
+                    const domain = result.account.username.split('@')[1];
+                    if (domain) {
+                        setTenantDomainName(domain);
+                        console.log('Domain extracted:', domain);
+                    }
+                }
+            }
+
+            setLoading(false);
+            setCurrentStep(1); // Move to customer info step
+        } catch (error) {
+            console.error('Login error:', error);
+            setError('Failed to sign in. Please try again.');
+            setLoading(false);
         }
     };
 
@@ -224,7 +326,30 @@ export default function CustomerOnboardingModal({
             setLoading(true);
             setError(null);
 
-            const url = `${CONSENT_URL_ENDPOINT}?customerName=${encodeURIComponent(customerName)}&tenantid=${tenantId}&tenantDomain=${encodeURIComponent(tenantDomainName)}&assistantLicense=0&redirectUri=${encodeURIComponent(window.location.origin + '/consent-callback')}`;
+            // Build consent URL with the new parameters - using assistant license 0
+            const consentClientId = 'afe66ddf-67d4-4d61-8a51-beca7b799f52';
+            const redirectUrl = window.location.origin + '/onboarding'; // Changed to /onboarding
+            const state = `InitialOnboarding`;
+
+            // Build URL with proper parameter order and encoding
+            const params = new URLSearchParams({
+                tenantid: tenantId,
+                clientId: consentClientId,
+                assistantLicense: '0', // Changed to '0' as requested
+                redirectUrl: redirectUrl,
+                tenantName: tenantDomainName,
+                tenantDomain: tenantDomainName,
+                purpose: state,
+                customerName: customerName
+            });
+
+            const url = `${CONSENT_URL_ENDPOINT}?${params.toString()}`;
+
+            console.log('Building consent URL for assistant license 0');
+            console.log('Consent ClientId:', consentClientId);
+            console.log('Tenant ID:', tenantId);
+            console.log('Domain:', tenantDomainName);
+            console.log('Full consent URL:', url);
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -248,14 +373,16 @@ export default function CustomerOnboardingModal({
             }
 
             const result: ConsentResponse = await response.json();
-            const state = extractStateFromConsentUrl(result.data.url);
-            setConsentState(state);
+            console.log('Consent URL received:', result);
+
+            const stateFromUrl = extractStateFromConsentUrl(result.data.url);
+            setConsentState(stateFromUrl || state);
             setConsentData(result);
             setLoading(false);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to initiate onboarding');
             setLoading(false);
-            setCurrentStep(1);
+            setCurrentStep(2);
         }
     };
 
@@ -289,7 +416,6 @@ export default function CustomerOnboardingModal({
             setConsentWindow(popup);
             popup.focus();
 
-            // Remove the setTimeout check for popup.closed since it causes COOP errors
             // The message listener will handle the success/error cases
             console.log('Consent window opened successfully, waiting for message...');
         } else {
@@ -324,6 +450,14 @@ export default function CustomerOnboardingModal({
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
+
+                // If consent wasn't found, it might not be completed yet
+                if (response.status === 404 || response.status === 400) {
+                    setError('Consent not completed. Please click "Retry Consent" to try again, or ensure you granted admin consent in the popup window.');
+                    setLoading(false);
+                    return;
+                }
+
                 throw new Error(errorData?.message || `Failed to complete onboarding: ${response.statusText}`);
             }
 
@@ -358,7 +492,7 @@ export default function CustomerOnboardingModal({
                 }
             });
 
-            setCurrentStep(3);
+            setCurrentStep(4);
             console.log('Onboarding completed successfully');
 
         } catch (err) {
@@ -446,44 +580,60 @@ export default function CustomerOnboardingModal({
                 </div>
 
                 <div className="space-y-6">
-                    {/* Step 0: Customer & Tenant Information */}
+                    {/* Step 0: Login */}
                     {currentStep === 0 && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Building className="h-4 w-4" />
-                                    Customer & Tenant Details
-                                </CardTitle><CardDescription>
-                                    Enter the customer name and their Microsoft tenant information
+                                    <LogIn className="h-4 w-4" />
+                                    Sign In to Continue
+                                </CardTitle>
+                                <CardDescription>
+                                    Sign in with your Microsoft account to consent to the Intune Assistant application
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="customerName">Customer Name</Label>
-                                    <Input
-                                        id="customerName"
-                                        value={customerName}
-                                        onChange={(e) => setCustomerName(e.target.value)}
-                                        placeholder="e.g. Acme Corporation"
-                                    />
-                                </div><Separator />
-                                <div className="space-y-2">
-                                    <Label htmlFor="tenantId">Tenant ID</Label>
-                                    <Input
-                                        id="tenantId"
-                                        value={tenantId}
-                                        onChange={(e) => setTenantId(e.target.value)}
-                                        placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="tenantDomainName">Tenant Domain Name</Label>
-                                    <Input
-                                        id="tenantDomainName"
-                                        value={tenantDomainName}
-                                        onChange={(e) => setTenantDomainName(e.target.value)}
-                                        placeholder="contoso.onmicrosoft.com"
-                                    />
+                                <div className="text-center py-6">
+                                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <LogIn className="h-8 w-8 text-blue-500" />
+                                    </div>
+                                    <h3 className="font-semibold mb-2">Step 1: Initial Login & Consent</h3>
+                                    <p className="text-sm text-muted-foreground mb-2">
+                                        Sign in to automatically detect your tenant information and consent to the first application.
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mb-4 px-4">
+                                        After login, we&apos;ll automatically extract your <strong>Tenant ID</strong> and <strong>Domain</strong> from your account.
+                                    </p>
+
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4 text-left max-w-md mx-auto">
+                                        <div className="flex items-start gap-2">
+                                            <Shield className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                            <div className="text-xs text-blue-900 dark:text-blue-100">
+                                                <strong>Application ID:</strong> 3448bc04-cdbe-4a07-8e24-7e0e6f6980c1
+                                                <br />
+                                                <span className="text-blue-700 dark:text-blue-300">This is the primary Intune Assistant application</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        onClick={handleLogin}
+                                        disabled={loading}
+                                        className="w-full max-w-xs mx-auto"
+                                        size="lg"
+                                    >
+                                        {loading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Signing in...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <LogIn className="mr-2 h-4 w-4" />
+                                                Sign In with Microsoft
+                                            </>
+                                        )}
+                                    </Button>
                                 </div>
 
                                 {error && (
@@ -496,8 +646,96 @@ export default function CustomerOnboardingModal({
                         </Card>
                     )}
 
-                    {/* Step 1: Validation */}
+                    {/* Step 1: Customer & Tenant Information */}
                     {currentStep === 1 && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Building className="h-4 w-4" />
+                                    Customer & Tenant Details
+                                </CardTitle>
+                                <CardDescription>
+                                    Enter the customer name and verify tenant information (auto-filled from your login)
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {isLoggedIn && tenantId && (
+                                    <div className="flex items-start gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-900/20 p-3 rounded-md mb-4">
+                                        <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                        <div>
+                                            <strong>Auto-detected from login:</strong> Tenant ID and Domain have been pre-filled using your account information.
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="customerName">Customer Name *</Label>
+                                    <Input
+                                        id="customerName"
+                                        value={customerName}
+                                        onChange={(e) => setCustomerName(e.target.value)}
+                                        placeholder="e.g. Acme Corporation"
+                                        autoFocus
+                                    />
+                                    <p className="text-xs text-muted-foreground">
+                                        Enter a friendly name for this customer
+                                    </p>
+                                </div>
+
+                                <Separator />
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="tenantId">Tenant ID *</Label>
+                                    <Input
+                                        id="tenantId"
+                                        value={tenantId}
+                                        onChange={(e) => setTenantId(e.target.value)}
+                                        placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                                        readOnly={isLoggedIn && !!tenantId}
+                                        className={isLoggedIn && tenantId ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed" : ""}
+                                    />
+                                    {isLoggedIn && tenantId && (
+                                        <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                                            <CheckCircle className="h-3 w-3" />
+                                            Automatically detected from your login
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="tenantDomainName">Tenant Domain Name *</Label>
+                                    <Input
+                                        id="tenantDomainName"
+                                        value={tenantDomainName}
+                                        onChange={(e) => setTenantDomainName(e.target.value)}
+                                        placeholder="contoso.onmicrosoft.com"
+                                        className={isLoggedIn && tenantDomainName ? "bg-gray-50 dark:bg-gray-900" : ""}
+                                    />
+                                    {isLoggedIn && tenantDomainName && (
+                                        <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                                            <CheckCircle className="h-3 w-3" />
+                                            Automatically detected from your login
+                                        </p>
+                                    )}
+                                    {!tenantDomainName && (
+                                        <p className="text-xs text-muted-foreground">
+                                            If not auto-filled, enter your primary domain (e.g., contoso.onmicrosoft.com)
+                                        </p>
+                                    )}
+                                </div>
+
+                                {error && (
+                                    <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+                                        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                        <div className="whitespace-pre-line">{error}</div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Step 2: Validation */}
+                    {currentStep === 2 && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
@@ -534,8 +772,8 @@ export default function CustomerOnboardingModal({
                         </Card>
                     )}
 
-                    {/* Step 2: Admin Consent */}
-                    {currentStep === 2 && (
+                    {/* Step 3: Admin Consent */}
+                    {currentStep === 3 && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
@@ -543,53 +781,83 @@ export default function CustomerOnboardingModal({
                                     Admin Consent Required
                                 </CardTitle>
                                 <CardDescription>
-                                    Grant permissions to manage this tenant
+                                    App iafe66ddf-67d4-4d61-8a51-beca7b799f52
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {!consentData ? (
-                                    <div className="flex items-center justify-center py-8">
-                                        <Loader2 className="h-6 w-6 animate-spin" />
-                                        <span className="ml-2">Preparing consent...</span>
+                                    <div className="flex flex-col items-center justify-center py-8 space-y-3">
+                                        <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                                        <div className="text-center">
+                                            <p className="font-medium">Preparing consent...</p>
+                                            <p className="text-sm text-muted-foreground">Building consent URL for Assistant License 0</p>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            <Key className="h-4 w-4" />
-                                            Click below to grant admin consent in a new window
+                                        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                                            <div className="flex items-start gap-3">
+                                                <Shield className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                                <div className="flex-1">
+                                                    <h4 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                                                        Step 2: Intune Assistant Consent
+                                                    </h4>
+                                                    <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
+                                                        Click below to grant admin consent for <strong>Intune Assistant API</strong> in a popup window.
+                                                    </p>
+                                                    <div className="text-xs text-amber-700 dark:text-amber-300 space-y-1">
+                                                        <p><strong>Application ID:</strong> afe66ddf-67d4-4d61-8a51-beca7b799f52</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+
                                         <Button
                                             onClick={openConsentWindow}
                                             disabled={loading}
                                             className="w-full"
+                                            size="lg"
                                         >
                                             {loading ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Processing...
+                                                    Waiting for consent...
                                                 </>
                                             ) : (
                                                 <>
                                                     <ExternalLink className="mr-2 h-4 w-4" />
-                                                    Open Consent Window
+                                                    {error ? 'Retry Admin Consent' : 'Open Consent Window'}
                                                 </>
                                             )}
                                         </Button>
+
+                                        {loading && !error && (
+                                            <div className="text-xs text-center text-muted-foreground">
+                                                <p>A popup window should have opened. If not, please allow popups and try again.</p>
+                                                <p className="mt-1">After granting consent, this window will automatically continue...</p>
+                                            </div>
+                                        )}
+
+                                        {error && (
+                                            <div className="text-xs text-center text-muted-foreground">
+                                                If you closed the popup after granting consent, the process will continue automatically.
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
                                 {error && (
-                                    <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-md">
-                                        <AlertCircle className="h-4 w-4" />
-                                        {error}
+                                    <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+                                        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                        <div className="flex-1 whitespace-pre-line">{error}</div>
                                     </div>
                                 )}
                             </CardContent>
                         </Card>
                     )}
 
-                    {/* Step 3: Completion */}
-                    {currentStep === 3 && (
+                    {/* Step 4: Completion */}
+                    {currentStep === 4 && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
@@ -630,21 +898,21 @@ export default function CustomerOnboardingModal({
                         variant="outline"
                         onClick={handleClose}
                     >
-                        {currentStep === 3 ? 'Close' : 'Cancel'}
+                        {currentStep === 4 ? 'Close' : 'Cancel'}
                     </Button>
 
                     <div className="flex gap-2">
-                        {currentStep < 2 && (
+                        {currentStep < 3 && (
                             <Button
                                 onClick={handleNext}
-                                disabled={currentStep === 0 && !isFormValid}
+                                disabled={currentStep === 1 && !isFormValid}
                             >
-                                {currentStep === 1 ? 'Start Consent' : 'Next'}
+                                {currentStep === 0 ? 'Sign In' : currentStep === 2 ? 'Start Consent' : 'Next'}
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         )}
 
-                        {currentStep === 3 && (
+                        {currentStep === 4 && (
                             <Button onClick={handleComplete}>
                                 Continue to Dashboard
                                 <ArrowRight className="ml-2 h-4 w-4" />

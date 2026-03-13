@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Download, ChevronDown, FileText, FileSpreadsheet, Globe } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { format } from 'date-fns';
 
 export interface ExportColumn {
     key: string;
@@ -44,7 +45,8 @@ export function ExportButton({ data, exportOptions, variant = "default", size = 
     // Helper function to generate filename with tenant ID
     const generateFilename = (baseFilename: string, extension: string): string => {
         const tenantPrefix = tenantId ? `${tenantId}-` : '';
-        return `${tenantPrefix}${baseFilename}.${extension}`;
+        const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+        return `${tenantPrefix}${baseFilename}_${timestamp}.${extension}`;
     };
 
     const exportToCSV = async (dataToExport?: ExportData) => {

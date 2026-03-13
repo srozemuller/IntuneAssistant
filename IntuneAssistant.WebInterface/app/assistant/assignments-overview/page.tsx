@@ -2,22 +2,20 @@
 import React, {useState, useEffect} from 'react';
 import {useMsal} from '@azure/msal-react';
 import {Button} from '@/components/ui/button';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {DataTable} from '@/components/DataTable';
 import {Badge} from '@/components/ui/badge';
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {
     RefreshCw,
     Filter,
     Database,
     Search,
     X,
-    Settings,
     Shield,
     ShieldCheck,
     ChevronDown,
     ChevronUp,
-    XCircle, Computer, Blocks, CircleQuestionMark
+    XCircle, Blocks, CircleQuestionMark
 } from 'lucide-react';
 import {
     ASSIGNMENTS_ENDPOINT,
@@ -33,6 +31,8 @@ import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 import {useApiRequest} from "@/hooks/useApiRequest";
 import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
+import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
+import {AssignmentFilter} from "@/types/assignmentFilter";
 
 
 interface ApiResponse {
@@ -46,6 +46,7 @@ interface ApiResponse {
 // Simple interface instead of complex schema
 interface Assignments extends Record<string, unknown> {
     resourceType: string;
+    subResourceType: string;
     assignmentType: string;
     platform: string | null;
     isAssigned: boolean;
@@ -73,29 +74,14 @@ interface RoleScopeTag {
     assignments: unknown[];
 }
 
-interface AssignmentFilter {
-    id: string;
-    createdDateTime: string;
-    lastModifiedDateTime: string;
-    displayName: string;
-    description: string;
-    platform: number;
-    rule: string;
-    assignmentFilterManagementType: number;
-    payloads: unknown[];
-    roleScopeTags: string[];
-    additionalData: Record<string, unknown>;
-    backingStore: Record<string, unknown>;
-    odataType: string | null;
-}
 
 
 
 
 export default function AssignmentsOverview() {
     // API CALLS
-    const {instance, accounts} = useMsal();
-    const {request, cancel} = useApiRequest();
+    const { instance, accounts } = useMsal();
+    const { request, cancel } = useApiRequest();
     // Consent dialog state when not enough permissions
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -111,15 +97,12 @@ export default function AssignmentsOverview() {
     // Filter dialog states
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<AssignmentFilter | null>(null);
-    const [filterLoading, setFilterLoading] = useState(false);
-    const [filterError, setFilterError] = useState<string | null>(null);
 
     const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
     // Filter states
     const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<string[]>([]);
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [platformFilter, setPlatformFilter] = useState<string[]>([]);
-    const [filterIdFilter, setFilterIdFilter] = useState<string[]>([]);
     const [resourceTypeFilter, setResourceTypeFilter] = useState<string[]>([]);
     const [filterTypeFilter, setFilterTypeFilter] = useState<string[]>([]);
     const [roleScopeTagFilter, setRoleScopeTagFilter] = useState<string[]>([]);
@@ -148,25 +131,21 @@ export default function AssignmentsOverview() {
             {
                 key: 'resourceName',
                 label: 'PolicyName',
-                width: 30,
                 getValue: (row) => String(row.resourceName || '')
             },
             {
                 key: 'targetName',
                 label: 'GroupName',
-                width: 30,
                 getValue: (row) => String(row.targetName || '')
             },
             {
                 key: 'assignmentType',
                 label: 'AssignmentDirection',
-                width: 25,
                 getValue: (row) => String(row.assignmentDirection || '')
             },
             {
                 key: '',
                 label: 'AssignmentAction',
-                width: 25,
                 getValue: (row) => {
                     const targetName = (row as Assignments).targetName as string | null | undefined;
                     return String(targetName ? 'Add' : 'NoAssignment');
@@ -175,7 +154,6 @@ export default function AssignmentsOverview() {
             {
                 key: 'filterId',
                 label: 'Filter',
-                width: 25,
                 getValue: (row) => {
                     const filterId = row.filterId as string | null;
                     if (!filterId || filterId === 'None') return ''; // Empty for rollout export
@@ -186,8 +164,16 @@ export default function AssignmentsOverview() {
             {
                 key: 'filterType',
                 label: 'Filter Type',
-                width: 25,
                 getValue: (row) => String(row.filterType || '')
+            },
+            {
+                key: 'scopeTagIds',
+                label: 'Role Scope Tags',
+                getValue: (row) => {
+                    const scopeTagIds = row.scopeTagIds as string[] | undefined;
+                    const tagNames = getRoleScopeTagNames(scopeTagIds);
+                    return tagNames.length > 0 ? tagNames.join(', ') : 'None';
+                }
             }
         ];
 
@@ -217,6 +203,12 @@ export default function AssignmentsOverview() {
                 label: 'Type',
                 width: 20,
                 getValue: (row) => String(row.resourceType || '')
+            },
+            {
+                key: 'subResourceType',
+                label: 'Type',
+                width: 20,
+                getValue: (row) => String(row.subResourceType || '')
             },
             {
                 key: 'resourceName',
@@ -264,6 +256,16 @@ export default function AssignmentsOverview() {
                 label: 'Filter Type',
                 width: 25,
                 getValue: (row) => String(row.filterType || '')
+            },
+            {
+                key: 'scopeTagIds',
+                label: 'Role Scope Tags',
+                width: 30,
+                getValue: (row) => {
+                    const scopeTagIds = row.scopeTagIds as string[] | undefined;
+                    const tagNames = getRoleScopeTagNames(scopeTagIds);
+                    return tagNames.length > 0 ? tagNames.join(', ') : 'None';
+                }
             }
         ];
 
@@ -338,12 +340,12 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             throw new Error('No response received from API');
         }
 
-        // Add type guard to ensure data is an array before processing
-        if (!Array.isArray(response.data)) {
+        // Unwrap ApiResponseWithCorrelation: response.data is ApiResponse, array is at response.data.data
+        if (!Array.isArray(response.data.data)) {
             throw new Error('Invalid data format received from API');
         }
 
-        const assignmentsData = response.data;
+        const assignmentsData = response.data.data as Assignments[];
         setAssignments(assignmentsData);
         setFilteredAssignments(assignmentsData);
     };
@@ -388,23 +390,23 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         if (!accounts.length) return;
 
         try {
-            const responseData = await request<AssignmentFilter[]>(ASSIGNMENTS_FILTERS_ENDPOINT, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const responseData = await request<{ status: number; message: string; details: unknown[]; data: AssignmentFilter[] }>(
+                ASSIGNMENTS_FILTERS_ENDPOINT,
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+            );
 
-            // Check if response exists
             if (!responseData) {
                 console.error('No response received from filters API');
                 setFilters([]);
                 return;
             }
 
-            // Handle successful response - filters endpoint returns array directly
-            if (Array.isArray(responseData)) {
-                setFilters(responseData);
+            // Unwrap ApiResponseWithCorrelation → .data is the API envelope, .data.data is the array
+            if (Array.isArray(responseData.data.data)) {
+                setFilters(responseData.data.data);
+            } else {
+                console.warn('Unexpected filters response format', responseData);
+                setFilters([]);
             }
         } catch (error) {
             console.error('Failed to fetch filters:', error);
@@ -429,8 +431,9 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                 return;
             }
 
-            if (responseData.data && Array.isArray(responseData.data)) {
-                setRoleScopeTags(responseData.data);
+            // Unwrap ApiResponseWithCorrelation: responseData.data is { data: RoleScopeTag[] }
+            if (responseData.data && Array.isArray(responseData.data.data)) {
+                setRoleScopeTags(responseData.data.data);
             }
         } catch (error) {
             console.error('Failed to fetch role scope tags:', error);
@@ -457,8 +460,8 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         const filter = filters.find(f => f.id === filterId);
         return {
             displayName: filter?.displayName || 'Unknown Filter',
-            managementType: filter?.assignmentFilterManagementType === 0 ? 'include' : 'exclude',
-            platform: filter?.platform
+            managementType: filter?.assignmentFilterManagementType?.toLowerCase() || null,
+            platform: filter?.platform || null
         };
     };
 
@@ -512,14 +515,10 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                 }
 
                 // Check for include filter
-                if (filterTypeFilter.includes('include') && filterType === 'Include') {
-                    return true;
-                }
+                if (filterTypeFilter.includes('include') && filterType === 'Include') return true;
 
                 // Check for exclude filter
-                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') {
-                    return true;
-                }
+                if (filterTypeFilter.includes('exclude') && filterType === 'Exclude') return true;
 
                 return false;
             });
@@ -578,61 +577,16 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         }
     };
 
-    const groupMemberColumns = [
-        {
-            key: 'displayName' as string,
-            label: 'Display Name',
-            render: (value: unknown) => (
-                <span className="font-medium">{String(value)}</span>
-            )
-        },
-        {
-            key: 'type' as string,
-            label: 'Type',
-            render: (value: unknown) => (
-                <Badge variant="outline" className="text-xs">
-                    {String(value)}
-                </Badge>
-            )
-        },
-        {
-            key: 'accountEnabled' as string,
-            label: 'Account Status',
-            render: (value: unknown, row: Record<string, unknown>) => {
-                const type = String(row.type).toLowerCase();
-
-                // Don't show account status for groups
-                if (type === 'group') {
-                    return <span className="text-xs text-gray-500">N/A</span>;
-                }
-
-                const isEnabled = Boolean(value);
-                return (
-                    <Badge variant={isEnabled ? 'default' : 'secondary'}
-                           className={isEnabled ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}>
-                        {isEnabled ? 'Enabled' : 'Disabled'}
-                    </Badge>
-                );
-            }
-        },
-        {
-            key: 'id' as string,
-            label: 'ID',
-            render: (value: unknown) => (
-                <span className="font-mono text-xs text-gray-500">{String(value)}</span>
-            )
-        }
-    ];
-
     const columns = [
         {
             key: 'resourceName' as string,
             label: 'Resource',
-            width: 200,
-            minWidth: 150,
+            minWidth: 400,
+            width: 400,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const resourceName = value ? String(value) : 'N/A';
                 const resourceType = String(row.resourceType);
+                const subResourceType = String(row.subResourceType);
                 const resourceId = String(row.resourceId);
 
                 if (resourceType === 'Group' && resourceId && resourceName !== 'N/A') {
@@ -645,7 +599,11 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                             >
                                 {resourceName}
                             </button>
-                            <span className="text-xs text-gray-400 block">{resourceType}</span>
+                            <span className="text-xs text-gray-400 block">
+                                {subResourceType && subResourceType !== 'undefined' && subResourceType !== 'null'
+                                    ? `${resourceType} - ${subResourceType}`
+                                    : resourceType}
+                            </span>
                         </div>
                     );
                 }
@@ -655,7 +613,11 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                         <span className="font-medium text-sm truncate block w-full" title={resourceName}>
                             {resourceName}
                         </span>
-                        <span className="text-xs text-gray-400 block">{resourceType}</span>
+                        <span className="text-xs text-gray-400 block">
+                            {subResourceType && subResourceType !== 'undefined' && subResourceType !== 'null'
+                                ? `${resourceType} - ${subResourceType}`
+                                : resourceType}
+                        </span>
                     </div>
                 );
             }
@@ -663,8 +625,8 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         {
             key: 'assignmentType' as string,
             label: 'Assignment',
-            width: 140,
             minWidth: 100,
+            width: 120,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const isAssigned = Boolean(row.isAssigned);
                 if (!isAssigned) {
@@ -691,8 +653,8 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         {
             key: 'targetName' as string,
             label: 'Target',
-            width: 180,
             minWidth: 120,
+            width: 150,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const targetName = String(value);
                 const assignmentType = String(row.assignmentType);
@@ -719,7 +681,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                                 </button>
                                 {group?.membershipRule && (
                                     <span title="Dynamic Group">
-            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0"/>
+            <Blocks className="h-3 w-3 text-purple-500 shrink-0"/>
         </span>
                                 )}
                             </div>
@@ -754,17 +716,32 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             label: 'Platform',
             width: 100,
             minWidth: 80,
-            render: (value: unknown) => (
-                <span className="text-sm text-gray-600 whitespace-nowrap">
-                    {value ? String(value) : 'All'}
-                </span>
-            )
+            render: (value: unknown) => {
+                const platform = value ? String(value) : 'All';
+                const platformColors: Record<string, string> = {
+                    'Windows': 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700',
+                    'iOS': 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600',
+                    'Android': 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700',
+                    'macOS': 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700',
+                    'Linux': 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700',
+                    'All': 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600',
+                };
+
+                return (
+                    <Badge
+                        variant="outline"
+                        className={`text-xs whitespace-nowrap ${platformColors[platform] || platformColors['All']}`}
+                    >
+                        {platform}
+                    </Badge>
+                );
+            }
         },
         {
             key: 'isAssigned' as string,
             label: 'Status',
             width: 120,
-            minWidth: 90,
+            minWidth: 120,
             render: (value: unknown) => {
                 const isAssigned = Boolean(value);
                 return (
@@ -822,7 +799,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
             label: 'Role Scope Tags',
             width: 180,
             minWidth: 140,
-            render: (value: unknown, row: Record<string, unknown>) => {
+            render: (value: unknown) => {
                 const scopeTagIds = value as string[] | undefined;
                 const tagNames = getRoleScopeTagNames(scopeTagIds);
 
@@ -922,7 +899,7 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
 
             {/* Show welcome card when no assignments are loaded and not loading */}
             {assignments.length === 0 && !loading && !error && (
-                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                <Card className="relative transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                     <CardContent className="pt-6">
                         <div className="text-center py-12">
                             <div className="text-gray-400 mb-6">
@@ -956,28 +933,22 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                 />
             )}
 
-            {/* Show loading state */}
-            {loading && assignments.length === 0 && (
-                <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
-                    <CardContent className="pt-6">
-                        <div className="text-center py-16">
-                            <RefreshCw className="h-12 w-12 mx-auto text-yellow-400 animate-spin mb-4"/>
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                                Loading Assignments
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                Fetching assignment data from your Intune environment...
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* Show loading state with skeleton */}
+            {loading && (
+                <AssignmentsTableSkeleton
+                    showStats={true}
+                    statsCount={4}
+                    showFilters={true}
+                    tableRows={10}
+                    tableColumns={8}
+                />
             )}
 
-            {/* Only show search, filters, and table when assignments are loaded or loading */}
-            {(assignments.length > 0 || loading) && (
+            {/* Only show search, filters, and table when assignments are loaded and not loading */}
+            {assignments.length > 0 && !loading && (
                 <>
                     {/* Filters Section */}
-                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                    <Card className="relative transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center justify-between">
                                 <button
@@ -1042,6 +1013,25 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                         {/* Collapsible Content */}
                         {isFiltersExpanded && (
                             <CardContent className="space-y-4">
+                                {/* Search */}
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"/>
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={e => setSearchQuery(e.target.value)}
+                                        placeholder="Search by name, type, target, platform…"
+                                        className="w-full pl-9 pr-9 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            onClick={() => setSearchQuery('')}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        >
+                                            <X className="h-4 w-4"/>
+                                        </button>
+                                    )}
+                                </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {/* Resource Type Filter */}
                                     <div className="space-y-2">
@@ -1165,35 +1155,25 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                     )}
 
                     {/* Assignment Details Table */}
-                    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 w-full overflow-hidden">
-                        <CardHeader className="pb-4">
-                            <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                <span>Assignment Details</span>
-                            </CardTitle>
-                            <CardDescription>
-                                Detailed view of all assignments with their targets and configurations
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            {loading ? (
-                                <div className="flex items-center justify-center h-32">
-                                    <RefreshCw className="h-6 w-6 animate-spin text-yellow-500"/>
-                                    <span className="ml-2 text-gray-600">Loading assignments...</span>
-                                </div>
-                            ) : (
-                                <DataTable
-                                    data={displayedAssignments}
-                                    columns={columns}
-                                    className="min-w-full"
-                                    showPagination={true}
-                                    currentPage={currentPage}
-                                    itemsPerPage={itemsPerPage}
-                                    onPageChange={setCurrentPage}
-                                    onItemsPerPageChange={setItemsPerPage}
-                                />
-                            )}
-                        </CardContent>
-                    </Card>
+                    <div className="relative">
+                        {loading ? (
+                            <div className="flex items-center justify-center h-32 bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10 rounded-lg">
+                                <RefreshCw className="h-6 w-6 animate-spin text-yellow-500"/>
+                                <span className="ml-2 text-gray-600 dark:text-gray-300">Loading assignments...</span>
+                            </div>
+                        ) : (
+                            <DataTable
+                                data={displayedAssignments}
+                                columns={columns}
+                                className="min-w-full"
+                                showPagination={true}
+                                currentPage={currentPage}
+                                itemsPerPage={itemsPerPage}
+                                onPageChange={setCurrentPage}
+                                onItemsPerPageChange={setItemsPerPage}
+                            />
+                        )}
+                    </div>
 
                     {/* Filtered empty state */}
                     {filteredAssignments.length === 0 && !loading && !error && assignments.length > 0 && (

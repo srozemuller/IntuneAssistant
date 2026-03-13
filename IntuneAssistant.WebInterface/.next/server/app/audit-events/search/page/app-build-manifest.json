@@ -1,0 +1,27 @@
+{
+  "pages": {
+    "/audit-events/search/page": [
+      "static/chunks/ff1a16fafef87110.js",
+      "static/chunks/9dfdbb2c51ed42a1.js",
+      "static/chunks/5e94ac056c49c201.css",
+      "static/chunks/6d60382852c3033d.css",
+      "static/chunks/11b00bfbb2cec372.js",
+      "static/chunks/04f943c4526ae0aa.js",
+      "static/chunks/099d18810bb11d6e.js",
+      "static/chunks/2b2128c0f9b96afd.js",
+      "static/chunks/98e5376a0c42bbaf.js",
+      "static/chunks/92f7ea3cb41e82cc.js",
+      "static/chunks/3e3725921559a46f.js",
+      "static/chunks/3e8dd21c2df6c11a.js",
+      "static/chunks/db2ad517ac75be64.js",
+      "static/chunks/c4ddf9a90f8aa023.js",
+      "static/chunks/085580525829458c.js",
+      "static/chunks/7b1d28d5b185952c.js",
+      "static/chunks/2ef891b1d22a9f67.js",
+      "static/chunks/9a6ae88a2bfa6de0.js",
+      "static/chunks/e04a9a15395b7060.js",
+      "static/chunks/a6d2d5021d1cf32c.js",
+      "static/chunks/turbopack-1dd7c9c31d457bd8.js"
+    ]
+  }
+}

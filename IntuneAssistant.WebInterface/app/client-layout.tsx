@@ -10,21 +10,25 @@ import { cn } from '@/lib/utils';
 import { CustomerProvider } from "@/contexts/CustomerContext";
 import { ConsentProvider } from "@/contexts/ConsentContext";
 import { ErrorProvider } from '@/contexts/ErrorContext';
+import { MonitorProvider } from '@/contexts/MonitorContext';
+import { AuditEventsProvider } from '@/contexts/AuditEventsContext';
 import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay';
 import { TenantIndicator } from '@/components/ui/tenant-indicator';
-import ConsentWarning from "@/components/ConsentWarning";
+import { ConsentBanner } from '@/components/ConsentBanner';
+import { VerifyConsentOnMount } from '@/components/VerifyConsentOnMount';
 
 function MainContent({ children }: { children: React.ReactNode }) {
     const { isCollapsed } = useSidebar();
 
     return (
         <div className={cn(isCollapsed && "sidebar-collapsed")}>
+            <VerifyConsentOnMount />
+            <ConsentBanner />
             <Sidebar />
             <main>
                 <div className="p-6">
                     <TenantIndicator />
                     <GlobalErrorDisplay />
-                    <ConsentWarning />
                     {children}
                 </div>
             </main>
@@ -44,12 +48,15 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                     <ConsentProvider>
                         <CustomerProvider>
                             <TenantProvider>
-                                <SidebarProvider>
-                                    <MainContent>
-                                        <ConsentWarning />
-                                        {children}
-                                    </MainContent>
-                                </SidebarProvider>
+                                <MonitorProvider>
+                                    <AuditEventsProvider>
+                                        <SidebarProvider>
+                                            <MainContent>
+                                                {children}
+                                            </MainContent>
+                                        </SidebarProvider>
+                                    </AuditEventsProvider>
+                                </MonitorProvider>
                             </TenantProvider>
                         </CustomerProvider>
                     </ConsentProvider>
