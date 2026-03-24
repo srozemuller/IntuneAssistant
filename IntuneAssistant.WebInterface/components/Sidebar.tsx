@@ -39,7 +39,6 @@ import {
     TrendingUp,
     ChevronRight,
     Crown,
-    Beaker,
     User,
     LogOut,
     HelpCircle,
@@ -179,7 +178,11 @@ export function Sidebar() {
                         <span className="flex-1">{item.title}</span>
                         <div className="flex items-center gap-1">
                             {item.isPaid && <Crown className="h-3 w-3 text-amber-500" />}
-                            {item.isBeta && <Beaker className="h-3 w-3 text-purple-500" />}
+                            {item.isBeta && (
+                                <Badge className="bg-purple-500 hover:bg-purple-600 text-white text-[9px] px-1.5 py-0 h-4 font-semibold">
+                                    BETA
+                                </Badge>
+                            )}
                             {item.submenu && level === 0 && (
                                 <ChevronRight className="h-3 w-3 text-gray-400" />
                             )}
@@ -200,7 +203,11 @@ export function Sidebar() {
                         <div className="flex items-center gap-2">
                             <span>{item.title}</span>
                             {item.isPaid && <Crown className="h-3 w-3 text-amber-500" />}
-                            {item.isBeta && <Beaker className="h-3 w-3 text-purple-500" />}
+                            {item.isBeta && (
+                                <Badge className="bg-purple-500 hover:bg-purple-600 text-white text-[9px] px-1.5 py-0 h-4 font-semibold">
+                                    BETA
+                                </Badge>
+                            )}
                         </div>
                     </TooltipContent>
                 </Tooltip>
@@ -350,6 +357,22 @@ export function Sidebar() {
                     href: "/deployment",
                     submenu: [
                         { title: "Deploy Assignments", href: "/deployment/assignments" }
+                    ]
+                }
+            ]
+        }] : []),
+        ...(isActiveCustomer && hasEnterpriseLicense() ? [{
+            title: "Worker",
+            badgeColor: "bg-slate-500",
+            items: [
+                {
+                    title: "Worker Overview",
+                    icon: "Bot",
+                    href: "/worker",
+                    isBeta: true,
+                    submenu: [
+                        { title: "Overview", href: "/worker" },
+                        { title: "Job Management", href: "/worker/jobs" }
                     ]
                 }
             ]
