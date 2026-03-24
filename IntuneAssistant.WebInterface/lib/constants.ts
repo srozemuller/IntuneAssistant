@@ -71,3 +71,15 @@ export const AUDIT_LOGS_INTUNE_FILTER = `${API_BASE_URL}/audit/intune/filter`;
 
 export const MONITOR_CONFIGURATION_SNAPSHOTS = `${API_BASE_URL}/monitor/snapshots`;
 export const ITEMS_PER_PAGE = 25;
+
+export const WORKER_ENDPOINT = `${API_BASE_URL}/worker`;
+export const WORKER_OVERVIEW_ENDPOINT = `${WORKER_ENDPOINT}/management/overview`;
+export const WORKER_CONFIG_ENDPOINT = `${WORKER_ENDPOINT}/management/settings`;
+export const WORKER_JOBS_ENDPOINT = `${WORKER_ENDPOINT}/management/jobs`;
+export const WORKER_JOB_BY_ID_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}`;
+export const WORKER_JOB_RUN_NOW_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}/run-now`;
+export const WORKER_JOB_EXECUTION_ENDPOINT = (jobId: string, executionId: string) => `${WORKER_ENDPOINT}/management/jobs/${jobId}/executions/${executionId}`;
+export const WORKER_JOB_LATEST_EXECUTION_ENDPOINT = (jobId: string) => `${WORKER_ENDPOINT}/management/jobs/${jobId}/executions/latest`;
+export const WORKER_JOB_EXECUTIONS_ENDPOINT = (jobId: string) => `${WORKER_ENDPOINT}/management/jobs/${jobId}/executions`;
+export const WORKER_JOB_HISTORY_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}/history`;
+export const WORKER_JOB_CLONE_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}/clone`;
