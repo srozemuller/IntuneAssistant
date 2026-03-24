@@ -89,7 +89,7 @@ export default function OnboardingSuccessPage() {
                         <div className="flex items-start gap-3 mb-4">
                             <Sparkles className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />
                             <div>
-                                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">What's Next?</h3>
+                                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">What&apos;s Next?</h3>
                                 <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                                     <li className="flex items-center gap-2">
                                         <CheckCircle className="h-4 w-4 text-green-600" />

@@ -153,7 +153,7 @@ export default function AuthVerifyPage() {
                         <div className="space-y-4">
                             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                                 <p className="text-sm text-blue-800 dark:text-blue-200">
-                                    You'll be redirected to the registration page in a moment. If you're not redirected automatically,{' '}
+                                    You&apos;ll be redirected to the registration page in a moment. If you&apos;re not redirected automatically,{' '}
                                     <button 
                                         onClick={handleStartOnboarding}
                                         className="text-blue-600 hover:underline font-semibold"
