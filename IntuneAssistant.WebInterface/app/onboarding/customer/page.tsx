@@ -79,7 +79,7 @@ export default function CustomerOnboardingPage() {
                     <CardHeader className="relative z-10">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle className="text-2xl mb-2">Let's Get You Started</CardTitle>
+                                <CardTitle className="text-2xl mb-2">Let&apos;s Get You Started</CardTitle>
                                 <CardDescription className="text-base">
                                     Our streamlined registration process will guide you through:
                                 </CardDescription>
