@@ -26,6 +26,15 @@ export function ConsentBanner() {
     const [verifyError, setVerifyError] = useState<string | null>(null);
     const [consentDone, setConsentDone] = useState(false);
 
+    // Don't show consent banner on auth/onboarding pages - let users complete registration first!
+    if (typeof window !== 'undefined') {
+        const path = window.location.pathname;
+        if (path === '/auth/verify' || path.startsWith('/onboarding')) {
+            console.log('[ConsentBanner] Hidden on auth/onboarding page:', path);
+            return null;
+        }
+    }
+
     if (!needsConsent || !consentUrl) {
         return null;
     }

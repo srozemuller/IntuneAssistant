@@ -8,6 +8,14 @@ import { hasTenantsNeedingConsent } from '@/contexts/CustomerContext';
 export default function ConsentWarning() {
     const { customerData } = useCustomer();
 
+    // Don't show consent warning on auth/onboarding pages - let users complete registration first!
+    if (typeof window !== 'undefined') {
+        const path = window.location.pathname;
+        if (path === '/auth/verify' || path.startsWith('/onboarding')) {
+            return null;
+        }
+    }
+
     if (!customerData || !hasTenantsNeedingConsent(customerData)) {
         return null;
     }

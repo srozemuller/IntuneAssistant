@@ -41,6 +41,16 @@ export function VerifyConsentOnMount() {
 
         const verifyConsent = async () => {
             console.log('VerifyConsent: Starting verification check...');
+            
+            // Skip consent check on auth/onboarding pages
+            if (typeof window !== 'undefined') {
+                const path = window.location.pathname;
+                if (path === '/auth/verify' || path.startsWith('/onboarding')) {
+                    console.log('VerifyConsent: Skipping on auth/onboarding page:', path);
+                    return;
+                }
+            }
+            
             console.log('VerifyConsent: Accounts count:', accounts.length);
 
             // Skip if no accounts
@@ -95,7 +105,19 @@ export function VerifyConsentOnMount() {
                 }
             } catch (error) {
                 console.error('VerifyConsent: Error checking consent', error);
-                // Even on error, keep the session flag so we don't retry constantly
+                
+                // Check if it's a 404 error (customer not found)
+                const errorMessage = error instanceof Error ? error.message.toLowerCase() : '';
+                if (errorMessage.includes('404') || errorMessage.includes('not found') || errorMessage.includes('no customer')) {
+                    console.log('VerifyConsent: Customer not found (404) - redirecting to onboarding');
+                    // Customer doesn't exist - redirect to onboarding
+                    if (typeof window !== 'undefined') {
+                        window.location.href = '/onboarding/customer';
+                    }
+                    return;
+                }
+                
+                // Even on other errors, keep the session flag so we don't retry constantly
                 // User can refresh page to retry if needed
             }
         };
