@@ -135,13 +135,26 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
             });
 
             if (!apiResponse.ok) {
+                // 404 means customer doesn't exist - this is expected for new users
+                if (apiResponse.status === 404) {
+                    console.log('[CustomerContext] Customer not found (404) - REDIRECTING TO ONBOARDING NOW!');
+                    setCustomerData(null);
+                    setCustomerError(null); // Don't treat 404 as an error
+                    
+                    // REDIRECT TO ONBOARDING IMMEDIATELY!
+                    if (typeof window !== 'undefined') {
+                        console.log('[CustomerContext] Executing redirect to /onboarding/customer');
+                        window.location.href = '/onboarding/customer';
+                    }
+                    return;
+                }
                 throw new Error(`Failed to fetch customer data: ${apiResponse.statusText}`);
             }
 
             const result = await apiResponse.json();
             setCustomerData(result.data);
         } catch (err) {
-            console.error('Error fetching customer data:', err);
+            console.error('[CustomerContext] Error fetching customer data:', err);
             setCustomerError(err instanceof Error ? err.message : 'An error occurred');
             setCustomerData(null);
         } finally {
@@ -210,6 +223,15 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
     }, [customerData, isAuthenticated]);
 
     useEffect(() => {
+        // Skip fetching customer data on auth verification and onboarding pages
+        if (typeof window !== 'undefined') {
+            const path = window.location.pathname;
+            if (path === '/auth/verify' || path.startsWith('/onboarding')) {
+                console.log('[CustomerContext] Skipping customer fetch on auth/onboarding page:', path);
+                return;
+            }
+        }
+        
         fetchCustomerData();
     }, [isAuthenticated, currentTenantId]);
 

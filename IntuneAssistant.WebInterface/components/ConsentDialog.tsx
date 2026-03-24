@@ -22,6 +22,7 @@ export function ConsentDialog({ isOpen, onClose, consentUrl, onConsentComplete, 
     const [consentCompleted, setConsentCompleted] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+
     // Reset state when dialog opens or consent URL changes
     useEffect(() => {
         if (isOpen) {
@@ -96,6 +97,15 @@ export function ConsentDialog({ isOpen, onClose, consentUrl, onConsentComplete, 
         setError(null);
         handleConsentClick();
     };
+
+    // Don't show consent dialog on auth/onboarding pages - let users complete registration first!
+    if (typeof window !== 'undefined') {
+        const path = window.location.pathname;
+        if (path === '/auth/verify' || path.startsWith('/onboarding')) {
+            console.log('[ConsentDialog] Hidden on auth/onboarding page:', path);
+            return null;
+        }
+    }
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>

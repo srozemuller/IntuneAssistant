@@ -7,7 +7,7 @@ export const msalConfig: Configuration = {
     auth: {
         clientId: clientId,
         authority: 'https://login.microsoftonline.com/organizations', // Changed from 'common' to 'organizations'
-        redirectUri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+        redirectUri: typeof window !== 'undefined' ? `${window.location.origin}/auth/verify` : 'http://localhost:3000/auth/verify'
     },
     cache: {
         cacheLocation: 'sessionStorage', // Changed to sessionStorage
