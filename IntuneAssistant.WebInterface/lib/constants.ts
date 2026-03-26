@@ -58,6 +58,9 @@ export const POLICY_SETTINGS_ENDPOINT = `${CONFIGURATION_POLICIES_ENDPOINT}/sett
 export const ROLE_SCOPETAGS_ENDPOINT = `${API_BASE_URL}/roles/scopeTags`;
 export const GROUP_POLICY_SETTINGS_ENDPOINT = `${POLICIES_ENDPOINT}/group/settings`;
 
+export const RBAC_ENDPOINT = `${API_BASE_URL}/rbac`;
+export const RBAC_ANALYSIS_ENDPOINT = `${RBAC_ENDPOINT}/analysis`;
+
 export const MONITOR_CONFIGURATION_ENDPOINT = `${API_BASE_URL}/monitor/configuration`;
 export const MONITOR_CONFIGURATION_DRIFTS_ENDPOINT = `${API_BASE_URL}/monitor/configuration/drifts`;
 export const MONITOR_CONFIGURATION_RESULTS_ENDPOINT = `${API_BASE_URL}/monitor/configuration/results`;
