@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +9,7 @@ import { Users, Plus, Building, Shield, ArrowRight, CheckCircle } from 'lucide-r
 import CustomerOnboardingModal from '@/components/onboarding/customer-onboarding';
 
 export default function CustomerOnboardingPage() {
+    const router = useRouter();
     const [showOnboarding, setShowOnboarding] = useState(false);
 
     const onboardingFeatures = [
@@ -32,9 +34,9 @@ export default function CustomerOnboardingPage() {
     ];
 
     const handleOnboardingSuccess = () => {
-        // Handle successful onboarding - redirect or refresh data
-        console.log('Customer onboarded successfully');
-        // You can add navigation logic here, e.g., router.push('/customers')
+        // Handle successful onboarding - redirect to success page
+        console.log('Customer onboarded successfully - redirecting to success page');
+        router.push('/onboarding/success');
     };
 
     return (
@@ -42,13 +44,18 @@ export default function CustomerOnboardingPage() {
             <div className="space-y-8">
                 {/* Header */}
                 <div className="text-center space-y-4">
-                    <Badge variant="outline" className="mb-4">
-                        Customer Management
+                    <Badge variant="outline" className="mb-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                        Required Setup
                     </Badge>
-                    <h1 className="text-4xl font-bold">Onboard New Customer</h1>
+                    <h1 className="text-4xl font-bold">Complete Your Registration</h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Add a new customer and connect their Microsoft tenant to your Intune management portal
+                        Before you can use Intune Assistant, we need to register your organization and connect your Microsoft tenant.
                     </p>
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg max-w-2xl mx-auto">
+                        <p className="text-sm text-amber-800 dark:text-amber-200">
+                            <strong>Important:</strong> This is a one-time setup process that typically takes 3-5 minutes to complete.
+                        </p>
+                    </div>
                 </div>
 
                 {/* Features Overview */}
@@ -67,18 +74,18 @@ export default function CustomerOnboardingPage() {
                 </div>
 
                 {/* Main Action Card */}
-                <Card className="relative overflow-hidden border-yellow-200 dark:border-yellow-800">
-                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/10 dark:to-amber-900/10"></div>
+                <Card className="relative overflow-hidden border-blue-200 dark:border-blue-800">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/10 dark:to-cyan-900/10"></div>
                     <CardHeader className="relative z-10">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle className="text-2xl mb-2">Ready to Add a New Customer?</CardTitle>
+                                <CardTitle className="text-2xl mb-2">Let&apos;s Get You Started</CardTitle>
                                 <CardDescription className="text-base">
-                                    Our streamlined onboarding process will guide you through:
+                                    Our streamlined registration process will guide you through:
                                 </CardDescription>
                             </div>
-                            <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
-                                <Users className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+                            <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+                                <Users className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                             </div>
                         </div>
                     </CardHeader>
@@ -87,7 +94,7 @@ export default function CustomerOnboardingPage() {
                         <div className="space-y-4 mb-6">
                             <div className="flex items-center gap-3">
                                 <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                                <span className="text-sm">Customer information and tenant details collection</span>
+                                <span className="text-sm">Organization information and tenant details collection</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
@@ -106,31 +113,21 @@ export default function CustomerOnboardingPage() {
                         <Button
                             onClick={() => setShowOnboarding(true)}
                             size="lg"
-                            className="w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-semibold"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                         >
                             <Plus className="mr-2 h-5 w-5" />
-                            Start Customer Onboarding
+                            Start Registration Process
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
-                        <div className="mt-3 text-center">
-                            <a
-                                href="https://docs.intuneassistant.cloud/docs/onboarding#why-onboarding"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-muted-foreground hover:text-primary underline"
-                            >
-                                Why register?
-                            </a>
-                        </div>
                     </CardContent>
                 </Card>
 
                 {/* Process Overview */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Onboarding Process</CardTitle>
+                        <CardTitle>Registration Process</CardTitle>
                         <CardDescription>
-                            Simple 4-step process to get your customer connected
+                            Simple 4-step process to get started with Intune Assistant
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -139,8 +136,8 @@ export default function CustomerOnboardingPage() {
                                 <div className="w-12 h-12 mx-auto mb-3 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                                     <Building className="h-6 w-6 text-blue-600" />
                                 </div>
-                                <h4 className="font-semibold mb-2">1. Customer Details</h4>
-                                <p className="text-sm text-muted-foreground">Enter customer and tenant information</p>
+                                <h4 className="font-semibold mb-2">1. Organization Details</h4>
+                                <p className="text-sm text-muted-foreground">Enter your organization and tenant information</p>
                             </div>
                             <div className="text-center p-4">
                                 <div className="w-12 h-12 mx-auto mb-3 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
@@ -157,11 +154,11 @@ export default function CustomerOnboardingPage() {
                                 <p className="text-sm text-muted-foreground">Grant necessary permissions</p>
                             </div>
                             <div className="text-center p-4">
-                                <div className="w-12 h-12 mx-auto mb-3 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
-                                    <Users className="h-6 w-6 text-yellow-600" />
+                                <div className="w-12 h-12 mx-auto mb-3 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                    <Users className="h-6 w-6 text-blue-600" />
                                 </div>
                                 <h4 className="font-semibold mb-2">4. Complete</h4>
-                                <p className="text-sm text-muted-foreground">Customer ready for management</p>
+                                <p className="text-sm text-muted-foreground">Ready to use Intune Assistant</p>
                             </div>
                         </div>
                     </CardContent>

@@ -39,7 +39,6 @@ import {
     TrendingUp,
     ChevronRight,
     Crown,
-    Beaker,
     User,
     LogOut,
     HelpCircle,
@@ -54,11 +53,12 @@ import {
     MonitorCog,
     ShieldCheck,
     MonitorCheck,
-    ScrollText
+    ScrollText, ShieldUser
 } from 'lucide-react';
 
 const iconMap = {
     LayoutDashboard,
+    ShieldUser,
     ArrowLeftRight,
     GitBranch,
     BarChart3,
@@ -179,7 +179,11 @@ export function Sidebar() {
                         <span className="flex-1">{item.title}</span>
                         <div className="flex items-center gap-1">
                             {item.isPaid && <Crown className="h-3 w-3 text-amber-500" />}
-                            {item.isBeta && <Beaker className="h-3 w-3 text-purple-500" />}
+                            {item.isBeta && (
+                                <Badge className="bg-purple-500 hover:bg-purple-600 text-white text-[9px] px-1.5 py-0 h-4 font-semibold">
+                                    BETA
+                                </Badge>
+                            )}
                             {item.submenu && level === 0 && (
                                 <ChevronRight className="h-3 w-3 text-gray-400" />
                             )}
@@ -200,7 +204,11 @@ export function Sidebar() {
                         <div className="flex items-center gap-2">
                             <span>{item.title}</span>
                             {item.isPaid && <Crown className="h-3 w-3 text-amber-500" />}
-                            {item.isBeta && <Beaker className="h-3 w-3 text-purple-500" />}
+                            {item.isBeta && (
+                                <Badge className="bg-purple-500 hover:bg-purple-600 text-white text-[9px] px-1.5 py-0 h-4 font-semibold">
+                                    BETA
+                                </Badge>
+                            )}
                         </div>
                     </TooltipContent>
                 </Tooltip>
@@ -304,6 +312,20 @@ export function Sidebar() {
             ]
         },
         {
+            title: "Security",
+            badgeColor: "bg-green-500",
+            items: [
+                {
+                    title: "RBAC Overview",
+                    icon: "ShieldUser",
+                    href: "/rbac",
+                    submenu: [
+                        { title: "Intune Admin Analyser", href: "/rbac/intune-admin-analyzer" },
+                    ]
+                }
+            ]
+        },
+        {
             title: "Drift Monitor",
             badgeColor: "bg-green-500",
             items: [
@@ -350,6 +372,22 @@ export function Sidebar() {
                     href: "/deployment",
                     submenu: [
                         { title: "Deploy Assignments", href: "/deployment/assignments" }
+                    ]
+                }
+            ]
+        }] : []),
+        ...(isActiveCustomer && hasEnterpriseLicense() ? [{
+            title: "Worker",
+            badgeColor: "bg-slate-500",
+            items: [
+                {
+                    title: "Worker Overview",
+                    icon: "Bot",
+                    href: "/worker",
+                    isBeta: true,
+                    submenu: [
+                        { title: "Overview", href: "/worker" },
+                        { title: "Job Management", href: "/worker/jobs" }
                     ]
                 }
             ]
@@ -419,34 +457,6 @@ export function Sidebar() {
                     {/* Navigation Menu */}
                     <div className="flex-1 overflow-y-auto p-4 min-h-0">
                         {/* Onboarding banner */}
-                        {!isAuthenticated && !isCollapsed && (
-                            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg border border-blue-200 dark:border-blue-800">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                    <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                            Start Your Journey
-                        </span>
-                                </div>
-                                <p className="text-xs text-blue-700 dark:text-blue-200 mb-3">
-                                    Sign in or register to unlock all Intune Assistant features and manage your environment.
-                                </p>
-                                <div className="flex gap-2">
-                                    <Button
-                                        onClick={handleLogin}
-                                        size="sm"
-                                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                                    >
-                                        Sign In
-                                    </Button>
-                                    <Link
-                                        href="/onboarding/customer"
-                                        className="flex-1 text-center bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 text-xs font-medium py-2 px-3 rounded-md transition-colors border border-blue-200 dark:border-blue-800"
-                                    >
-                                        Register
-                                    </Link>
-                                </div>
-                            </div>
-                        )}
 
                         <nav className="space-y-6">
                             {menuSections.map((section, index) => (
