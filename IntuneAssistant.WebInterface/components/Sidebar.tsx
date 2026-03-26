@@ -53,11 +53,12 @@ import {
     MonitorCog,
     ShieldCheck,
     MonitorCheck,
-    ScrollText
+    ScrollText, ShieldUser
 } from 'lucide-react';
 
 const iconMap = {
     LayoutDashboard,
+    ShieldUser,
     ArrowLeftRight,
     GitBranch,
     BarChart3,
@@ -306,6 +307,20 @@ export function Sidebar() {
                     href: "/compare",
                     submenu: [
                         { title: "Policies & Settings", href: "/compare/policies" }
+                    ]
+                }
+            ]
+        },
+        {
+            title: "Security",
+            badgeColor: "bg-green-500",
+            items: [
+                {
+                    title: "RBAC Overview",
+                    icon: "ShieldUser",
+                    href: "/rbac",
+                    submenu: [
+                        { title: "Intune Admin Analyser", href: "/rbac/intune-admin-analyzer" },
                     ]
                 }
             ]
