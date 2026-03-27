@@ -218,7 +218,7 @@ export default function RbacPage() {
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
                             <Button variant="outline" size="lg" asChild>
-                                <a href="https://docs.intuneassistant.cloud/docs/rbac" target="_blank" rel="noopener noreferrer">
+                                <a href="https://docs.intuneassistant.cloud/intune-assistant/security/rbac-overview" target="_blank" rel="noopener noreferrer">
                                     View Documentation
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </a>
