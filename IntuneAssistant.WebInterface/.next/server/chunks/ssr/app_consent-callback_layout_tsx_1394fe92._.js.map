@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/srozemuller/Repos/IntuneAssistant/IntuneAssistant.WebInterface/app/consent-callback/layout.tsx"],"sourcesContent":["// app/consent-callback/layout.tsx\nexport default function ConsentCallbackLayout({\n    children,\n}: {\n    children: React.ReactNode\n}) {\n    return (\n        <html lang=\"en\">\n            <body>{children}</body>\n        </html>\n    );\n}"],"names":[],"mappings":"AAAA,kCAAkC;;;;;;;AACnB,SAAS,sBAAsB,EAC1C,QAAQ,EAGX;IACG,qBACI,8OAAC;QAAK,MAAK;kBACP,cAAA,8OAAC;sBAAM;;;;;;;;;;;AAGnB","debugId":null}}]
+}

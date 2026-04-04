@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,7 @@ import { WORKER_OVERVIEW_ENDPOINT } from '@/lib/constants';
 import { WorkerOverview, WorkerInstance, HealthStatus, RegistrationStatus } from '@/types/worker';
 import { DataTable } from '@/components/DataTable';
 import { useRouter } from 'next/navigation';
+import {useMsal} from "@azure/msal-react";
 
 interface ApiResponse {
     status: string;
@@ -125,6 +126,7 @@ function formatDateTime(dateStr: string | null): string {
 }
 
 export default function WorkerOverviewPage() {
+    const { accounts } = useMsal();
     const { request } = useApiRequest();
     const router = useRouter();
     const [workerData, setWorkerData] = useState<WorkerOverview | null>(null);
@@ -132,6 +134,7 @@ export default function WorkerOverviewPage() {
     const [refreshing, setRefreshing] = useState(false);
 
     const fetchWorkerData = useCallback(async (isRefresh = false) => {
+        if (accounts.length === 0) return;          // ← no token without accounts
         if (isRefresh) {
             setRefreshing(true);
         } else {
@@ -140,7 +143,6 @@ export default function WorkerOverviewPage() {
 
         try {
             const response = await request<ApiResponse>(WORKER_OVERVIEW_ENDPOINT);
-
             if (response?.data?.data) {
                 setWorkerData(response.data.data);
             }
@@ -150,11 +152,16 @@ export default function WorkerOverviewPage() {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [request]);
+    }, [accounts, request]);
 
+    const didFetchRef = useRef(false);
     useEffect(() => {
+        if (accounts.length === 0) return;
+        if (didFetchRef.current) return;
+        didFetchRef.current = true;
         fetchWorkerData();
-    }, [fetchWorkerData]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [accounts.length]); // primitive — stable, won't re-fire on reference churn
 
     // Calculate summary statistics
     const stats = React.useMemo(() => {
@@ -191,6 +198,20 @@ export default function WorkerOverviewPage() {
                     <div className="flex flex-col">
                         <span className="font-medium text-gray-900 dark:text-gray-100">{value as string}</span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">{worker.workerInstanceId}</span>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'tenantDisplayName',
+            label: 'Tenant Name',
+            width: 200,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const worker = row as unknown as WorkerInstance;
+                return (
+                    <div className="flex flex-col">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">{value as string}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{worker.tenantDisplayName}</span>
                     </div>
                 );
             }

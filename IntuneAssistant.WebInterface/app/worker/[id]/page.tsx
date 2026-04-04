@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +25,7 @@ import {
     Plus,
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
+import { useMsal } from '@azure/msal-react';
 import { WORKER_OVERVIEW_ENDPOINT, WORKER_CONFIG_ENDPOINT } from '@/lib/constants';
 import { WorkerOverview, WorkerInstance, HealthStatus, RegistrationStatus } from '@/types/worker';
 
@@ -157,6 +158,7 @@ function compareVersions(current: string, available: string): boolean {
 export default function WorkerDetailPage() {
     const params = useParams();
     const router = useRouter();
+    const { accounts } = useMsal();
     const { request } = useApiRequest();
     
     const workerId = params.id as string;
@@ -173,6 +175,7 @@ export default function WorkerDetailPage() {
     const [senderEmail, setSenderEmail] = useState('');
 
     const fetchWorkerData = useCallback(async (isRefresh = false) => {
+        if (accounts.length === 0) return;          // ← no token without accounts
         if (isRefresh) {
             setRefreshing(true);
         } else {
@@ -180,13 +183,12 @@ export default function WorkerDetailPage() {
         }
 
         try {
-            const response = await request<ApiResponse>(WORKER_OVERVIEW_ENDPOINT, { method: 'GET' });
+            const response = await request<ApiResponse>(WORKER_OVERVIEW_ENDPOINT);
 
             if (response?.data?.data) {
                 const data = response.data.data;
                 setWorkerData(data);
                 
-                // Find the specific worker
                 const foundWorker = data.workers?.find(
                     (w: WorkerInstance) => w.workerRegistrationId === workerId
                 );
@@ -197,7 +199,6 @@ export default function WorkerDetailPage() {
                     router.push('/worker');
                 }
                 
-                // Set form values from global config
                 setAutoUpdate(data.autoUpdate);
                 setUpdateRing(data.updateRing);
                 setSenderEmail(data.senderEmail || '');
@@ -208,11 +209,16 @@ export default function WorkerDetailPage() {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [request, workerId, router]);
+    }, [accounts, request, workerId, router]);
 
+    const didFetchRef = useRef(false);
     useEffect(() => {
+        if (accounts.length === 0) return;
+        if (didFetchRef.current) return;
+        didFetchRef.current = true;
         fetchWorkerData();
-    }, [fetchWorkerData]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [accounts.length]); // primitive — won't re-fire on reference churn
 
     const handleSaveSettings = async () => {
         setSaving(true);

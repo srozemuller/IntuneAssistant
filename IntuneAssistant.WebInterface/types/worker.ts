@@ -1,4 +1,6 @@
 export interface WorkerInstance {
+    tenantId: string;
+    tenantDisplayName: string;
     workerRegistrationId: string;
     workerInstanceId: string;
     workerVersion: string;
