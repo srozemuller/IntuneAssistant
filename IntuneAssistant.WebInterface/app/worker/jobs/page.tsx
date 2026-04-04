@@ -39,11 +39,13 @@ import {
     Save,
     Mail,
     Trash2,
+    Server,
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
-import { WORKER_JOBS_ENDPOINT, WORKER_JOB_LATEST_EXECUTION_ENDPOINT } from '@/lib/constants';
+import { WORKER_JOBS_ENDPOINT, WORKER_JOB_LATEST_EXECUTION_ENDPOINT, WORKER_OVERVIEW_ENDPOINT } from '@/lib/constants';
 import { DataTable } from '@/components/DataTable';
 import { useTenant } from '@/contexts/TenantContext';
+import { WorkerOverview } from '@/types/worker';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -99,6 +101,67 @@ interface ParsedJobConfig {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function parseTimeSince(ts: string): { totalSeconds: number; display: string } {
+    const dayMatch = ts.match(/^(\d+)\.(\d+):(\d+):(\d+)/);
+    if (dayMatch) {
+        const d = parseInt(dayMatch[1], 10);
+        const h = parseInt(dayMatch[2], 10);
+        const m = parseInt(dayMatch[3], 10);
+        const s = parseInt(dayMatch[4], 10);
+        const total = d * 86400 + h * 3600 + m * 60 + s;
+        
+        const parts: string[] = [];
+        if (d > 0) parts.push(`${d}d`);
+        if (h > 0) parts.push(`${h}h`);
+        if (m > 0) parts.push(`${m}m`);
+        if (s > 0 || parts.length === 0) parts.push(`${s}s`);
+        
+        return { totalSeconds: total, display: parts.join(' ') };
+    }
+    
+    const match = ts.match(/^(\d+):(\d+):(\d+)/);
+    if (!match) return { totalSeconds: 0, display: ts };
+    const h = parseInt(match[1], 10);
+    const m = parseInt(match[2], 10);
+    const s = parseInt(match[3], 10);
+    const total = h * 3600 + m * 60 + s;
+
+    const parts: string[] = [];
+    if (h > 0) parts.push(`${h}h`);
+    if (m > 0) parts.push(`${m}m`);
+    if (s > 0 || parts.length === 0) parts.push(`${s}s`);
+
+    return { totalSeconds: total, display: parts.join(' ') };
+}
+
+function getHealthStatusInfo(healthStatus: number, timeSince: string) {
+    const { totalSeconds } = parseTimeSince(timeSince);
+    
+    // Critical if no heartbeat in 10 minutes or healthStatus is Critical (2)
+    if (totalSeconds > 600 || healthStatus === 2) {
+        return {
+            label: 'Critical',
+            color: 'bg-red-500',
+            icon: 'XCircle',
+        };
+    }
+    
+    // Warning if no heartbeat in 5 minutes or healthStatus is Warning (1)
+    if (totalSeconds > 300 || healthStatus === 1) {
+        return {
+            label: 'Warning',
+            color: 'bg-yellow-500',
+            icon: 'AlertTriangle',
+        };
+    }
+    
+    return {
+        label: 'Healthy',
+        color: 'bg-green-500',
+        icon: 'CheckCircle',
+    };
+}
 
 function getJobTypeName(jobType: number): string {
     const types: Record<number, string> = {
@@ -354,12 +417,14 @@ export default function WorkerJobsPage() {
     const effectiveTenantId = selectedTenant?.tenantId || tenantIdFromClaims;
 
     const [jobs, setJobs] = useState<WorkerJob[]>([]);
+    const [workerData, setWorkerData] = useState<WorkerOverview | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
     const [autoRefresh, setAutoRefresh] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterEnabled, setFilterEnabled] = useState<'all' | 'enabled' | 'disabled'>('all');
+    const [filterWorker, setFilterWorker] = useState<string>('all');
     const [selectedJob, setSelectedJob] = useState<WorkerJob | null>(null);
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const [jobExecutions, setJobExecutions] = useState<Map<string, ExecutionStatus>>(new Map());
@@ -382,6 +447,7 @@ export default function WorkerJobsPage() {
     const [formIsEnabled, setFormIsEnabled] = useState(true);
     const [formIntervalHours, setFormIntervalHours] = useState(168); // Weekly default
     const [formFirstRunAt, setFormFirstRunAt] = useState('');
+    const [formSelectedWorkers, setFormSelectedWorkers] = useState<string[]>([]); // Worker Registration IDs
     
     // Intune Audit Report Config
     const [formRecipientEmail, setFormRecipientEmail] = useState('');
@@ -396,9 +462,14 @@ export default function WorkerJobsPage() {
         setLoading(true);
         setError(null);
         try {
-            const result = await request<ApiResponse>(WORKER_JOBS_ENDPOINT);
-            if (result?.data?.data) {
-                const jobsList = result.data.data;
+            // Fetch jobs and worker data in parallel
+            const [jobsResult, workerResult] = await Promise.all([
+                request<ApiResponse>(WORKER_JOBS_ENDPOINT),
+                request<{ status: string; message: string; details: unknown[]; data: WorkerOverview }>(WORKER_OVERVIEW_ENDPOINT)
+            ]);
+            
+            if (jobsResult?.data?.data) {
+                const jobsList = jobsResult.data.data;
                 setJobs(jobsList);
                 setLastRefreshed(new Date());
                 
@@ -427,6 +498,10 @@ export default function WorkerJobsPage() {
                 
                 setJobExecutions(executionsMap);
             }
+            
+            if (workerResult?.data?.data) {
+                setWorkerData(workerResult.data.data);
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch jobs');
         } finally {
@@ -449,6 +524,10 @@ export default function WorkerJobsPage() {
         }
         if (!effectiveTenantId) {
             setCreateError('No tenant ID available. Please log in again.');
+            return;
+        }
+        if (formSelectedWorkers.length === 0) {
+            setCreateError('Please select at least one worker');
             return;
         }
 
@@ -484,30 +563,37 @@ export default function WorkerJobsPage() {
                 }
             }
 
-            // Build payload
-            const payload: Record<string, unknown> = {
-                jobType: formJobType,
-                jobName: formJobName.trim(),
-                isEnabled: formIsEnabled,
-                intervalHours: formIntervalHours,
-                jobConfigurationJson: JSON.stringify(jobConfig),
-            };
+            // Create jobs for all selected workers
+            const createPromises = formSelectedWorkers.map(workerId => {
+                // Build payload for each worker
+                const payload: Record<string, unknown> = {
+                    jobType: formJobType,
+                    jobName: formJobName.trim(),
+                    isEnabled: formIsEnabled,
+                    intervalHours: formIntervalHours,
+                    jobConfigurationJson: JSON.stringify(jobConfig),
+                    workerRegistrationId: workerId,
+                };
 
-            // Add firstRunAt if specified
-            if (formFirstRunAt) {
-                payload.firstRunAt = new Date(formFirstRunAt).toISOString();
-            }
-
-            const result = await request<ApiResponse>(
-                WORKER_JOBS_ENDPOINT,
-                {
-                    method: 'POST',
-                    body: JSON.stringify(payload),
+                // Add firstRunAt if specified
+                if (formFirstRunAt) {
+                    payload.firstRunAt = new Date(formFirstRunAt).toISOString();
                 }
-            );
 
-            if (result?.data?.data) {
-                setCreateSuccess('Job created successfully!');
+                return request<ApiResponse>(
+                    WORKER_JOBS_ENDPOINT,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(payload),
+                    }
+                );
+            });
+
+            const results = await Promise.all(createPromises);
+            const successCount = results.filter(r => r?.data?.data).length;
+
+            if (successCount > 0) {
+                setCreateSuccess(`Successfully created ${successCount} job(s) for ${formSelectedWorkers.length} worker(s)`);
                 // Refresh jobs list
                 await fetchJobs();
                 
@@ -516,6 +602,8 @@ export default function WorkerJobsPage() {
                     setShowCreateDialog(false);
                     resetCreateForm();
                 }, 1500);
+            } else {
+                setCreateError('Failed to create any jobs');
             }
         } catch (err) {
             setCreateError(err instanceof Error ? err.message : 'Failed to create job');
@@ -530,6 +618,7 @@ export default function WorkerJobsPage() {
         setFormIsEnabled(true);
         setFormIntervalHours(168);
         setFormFirstRunAt('');
+        setFormSelectedWorkers([]);
         setFormRecipientEmail('');
         setFormCcEmails('');
         setFormLookbackDays(7);
@@ -595,6 +684,11 @@ export default function WorkerJobsPage() {
     const filteredJobs = useMemo(() => {
         let result = jobs;
 
+        // Filter by worker
+        if (filterWorker !== 'all') {
+            result = result.filter(j => j.workerRegistrationId === filterWorker);
+        }
+
         // Filter by enabled status
         if (filterEnabled === 'enabled') {
             result = result.filter(j => j.isEnabled);
@@ -614,7 +708,7 @@ export default function WorkerJobsPage() {
         }
 
         return result;
-    }, [jobs, filterEnabled, searchQuery]);
+    }, [jobs, filterWorker, filterEnabled, searchQuery]);
 
     // ── Table columns ─────────────────────────────────────────────────────────
     const columns = useMemo(() => [
@@ -657,6 +751,30 @@ export default function WorkerJobsPage() {
                                 )}
                             </div>
                         </div>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'workerRegistrationId',
+            label: 'Worker',
+            width: 200,
+            render: (value: unknown) => {
+                const workerId = value as string;
+                const worker = workerData?.workers?.find(w => w.workerRegistrationId === workerId);
+                
+                if (!worker) {
+                    return (
+                        <div className="text-xs text-gray-400">
+                            <div className="font-mono truncate">{workerId.substring(0, 8)}...</div>
+                        </div>
+                    );
+                }
+                
+                return (
+                    <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{worker.machineName}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">{worker.workerInstanceId}</span>
                     </div>
                 );
             }
@@ -811,7 +929,7 @@ export default function WorkerJobsPage() {
                 );
             }
         }
-    ], [jobExecutions]);
+    ], [jobExecutions, workerData?.workers]);
 
     // ── Loading state ─────────────────────────────────────────────────────────
     if (loading && jobs.length === 0) {
@@ -993,6 +1111,24 @@ export default function WorkerJobsPage() {
                                 />
                             </div>
                         </div>
+                        {/* Worker filter */}
+                        {workerData?.workers && workerData.workers.length > 0 && (
+                            <div className="flex items-center gap-2">
+                                <Server className="h-4 w-4 text-gray-400 shrink-0" />
+                                <select
+                                    value={filterWorker}
+                                    onChange={(e) => setFilterWorker(e.target.value)}
+                                    className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                                >
+                                    <option value="all">All Workers</option>
+                                    {workerData.workers.map((w) => (
+                                        <option key={w.workerRegistrationId} value={w.workerRegistrationId}>
+                                            {w.machineName} – {w.workerInstanceId}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                         <div className="flex gap-2">
                             <Button
                                 variant={filterEnabled === 'all' ? 'default' : 'outline'}
@@ -1033,6 +1169,11 @@ export default function WorkerJobsPage() {
                         </Badge>
                     </CardTitle>
                     <CardDescription>
+                        {filterWorker !== 'all' && (() => {
+                            const w = workerData?.workers?.find(x => x.workerRegistrationId === filterWorker);
+                            return w ? `Worker: ${w.machineName}` : 'Filtered by worker';
+                        })()}
+                        {filterWorker !== 'all' && filterEnabled !== 'all' && ' · '}
                         {filterEnabled !== 'all' && `Showing ${filterEnabled} jobs`}
                         {searchQuery && ` · Search: "${searchQuery}"`}
                     </CardDescription>
@@ -1199,6 +1340,96 @@ export default function WorkerJobsPage() {
                                         minute: '2-digit',
                                         timeZoneName: 'short'
                                     })}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Worker Selection */}
+                        <div className="space-y-2">
+                            <Label className="flex items-center gap-2">
+                                <Server className="h-4 w-4" />
+                                Select Workers *
+                            </Label>
+                            <div className="text-xs text-gray-500 mb-3">
+                                Choose which workers should execute this job. The job will be created for each selected worker.
+                            </div>
+                            {workerData && workerData.workers && workerData.workers.length > 0 ? (
+                                <div className="space-y-2 max-h-60 overflow-y-auto border rounded-lg p-3">
+                                    {/* Select All */}
+                                    <div className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                                        <input
+                                            type="checkbox"
+                                            id="select-all-workers"
+                                            checked={formSelectedWorkers.length === workerData.workers.length}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setFormSelectedWorkers(workerData.workers.map(w => w.workerRegistrationId));
+                                                } else {
+                                                    setFormSelectedWorkers([]);
+                                                }
+                                            }}
+                                            className="h-4 w-4 rounded border-gray-300"
+                                        />
+                                        <label
+                                            htmlFor="select-all-workers"
+                                            className="text-sm font-medium cursor-pointer flex-1"
+                                        >
+                                            Select All ({workerData.workers.length} workers)
+                                        </label>
+                                    </div>
+                                    <Separator />
+                                    {/* Individual Workers */}
+                                    {workerData.workers.map((worker) => {
+                                        const isSelected = formSelectedWorkers.includes(worker.workerRegistrationId);
+                                        const healthInfo = getHealthStatusInfo(worker.healthStatus, worker.timeSinceLastHeartbeat);
+                                        
+                                        return (
+                                            <div
+                                                key={worker.workerRegistrationId}
+                                                className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    id={`worker-${worker.workerRegistrationId}`}
+                                                    checked={isSelected}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setFormSelectedWorkers([...formSelectedWorkers, worker.workerRegistrationId]);
+                                                        } else {
+                                                            setFormSelectedWorkers(formSelectedWorkers.filter(id => id !== worker.workerRegistrationId));
+                                                        }
+                                                    }}
+                                                    className="h-4 w-4 rounded border-gray-300"
+                                                />
+                                                <label
+                                                    htmlFor={`worker-${worker.workerRegistrationId}`}
+                                                    className="text-sm cursor-pointer flex-1"
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <div className="font-medium text-gray-900 dark:text-gray-100">{worker.machineName}</div>
+                                                            <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{worker.workerInstanceId}</div>
+                                                        </div>
+                                                        <Badge className={`${healthInfo.color} text-white text-xs`}>
+                                                            {healthInfo.label}
+                                                        </Badge>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+                                    <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        <span className="text-sm">No workers available. Please register a worker first.</span>
+                                    </div>
+                                </div>
+                            )}
+                            {formSelectedWorkers.length > 0 && (
+                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                                    ✓ {formSelectedWorkers.length} worker(s) selected
                                 </p>
                             )}
                         </div>
