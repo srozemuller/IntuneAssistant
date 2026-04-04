@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -654,12 +654,14 @@ export default function WorkerJobsPage() {
         }
     };
 
+    const didFetchRef = useRef(false);
     useEffect(() => {
-        if (accounts.length > 0) {
-            fetchJobs();
-        }
+        if (accounts.length === 0) return;
+        if (didFetchRef.current) return;
+        didFetchRef.current = true;
+        fetchJobs();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accounts.length]); // Only run when accounts.length changes
+    }, [accounts.length]); // primitive dep — safe against reference churn
 
     useEffect(() => {
         if (!autoRefresh) return;
