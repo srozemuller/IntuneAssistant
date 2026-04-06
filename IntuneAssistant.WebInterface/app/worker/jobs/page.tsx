@@ -15,6 +15,7 @@ import {
     RefreshCw, BriefcaseBusiness, CheckCircle, XCircle, AlertTriangle,
     Clock, Calendar, Search, Loader2, Zap, ZapOff, Skull, Settings,
     TrendingUp, Activity, Plus, Save, Mail, Trash2, Server,
+    Filter, ChevronDown, ChevronUp, X,
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { WORKER_JOBS_ENDPOINT, WORKER_JOB_LATEST_EXECUTION_ENDPOINT, WORKER_OVERVIEW_ENDPOINT } from '@/lib/constants';
@@ -34,8 +35,8 @@ interface WorkerJob extends Record<string, unknown> {
     cronExpression: string | null;
     lastRunAt: string | null;
     nextScheduledRun: string | null;
-    failureCount: number;        // API field
-    lastFailureAt: string | null; // API field
+    consecutiveFailureCount: number;
+    lastConsecutiveFailureAt: string | null;
     isPoisoned: boolean;
     jobConfigurationJson: string;
     workerRegistrationId: string;
@@ -43,6 +44,11 @@ interface WorkerJob extends Record<string, unknown> {
     updatedAt: string;
     createdBy: string;
     updatedBy: string | null;
+    totalExecutions: number;
+    totalSuccessCount: number;
+    totalFailedCount: number;
+    lastSuccessAt: string | null;
+    lastFailedAt: string | null;
 }
 
 interface ApiResponse {
@@ -137,6 +143,14 @@ function getRelativeTime(iso: string | null): string {
     } catch { return iso; }
 }
 
+/** Extract tenantId from jobConfigurationJson (handles both PascalCase and camelCase). */
+function getTenantIdFromConfig(json: string): string | null {
+    try {
+        const parsed = JSON.parse(json) as Record<string, unknown>;
+        return (parsed.TenantId ?? parsed.tenantId ?? null) as string | null;
+    } catch { return null; }
+}
+
 function getNextRunRelative(iso: string | null): string {
     if (!iso) return '—';
     try {
@@ -172,9 +186,11 @@ export default function WorkerJobsPage() {
 
     // ── UI state ──────────────────────────────────────────────────────────────
     const [autoRefresh, setAutoRefresh] = useState(false);
+    const [isFiltersExpanded, setIsFiltersExpanded] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterEnabled, setFilterEnabled] = useState<'all' | 'enabled' | 'disabled'>('all');
     const [filterWorker, setFilterWorker] = useState<string>('all');
+    const [filterCustomer, setFilterCustomer] = useState<string>('all');
 
     // ── Delete dialog state ───────────────────────────────────────────────────
     const [jobToDelete, setJobToDelete] = useState<WorkerJob | null>(null);
@@ -344,17 +360,39 @@ export default function WorkerJobsPage() {
     // ── Derived state ─────────────────────────────────────────────────────────
 
     const stats = useMemo(() => ({
-        total:        jobs.length,
-        enabled:      jobs.filter(j => j.isEnabled).length,
-        disabled:     jobs.filter(j => !j.isEnabled).length,
-        poisoned:     jobs.filter(j => j.isPoisoned).length,
-        withFailures: jobs.filter(j => j.failureCount > 0).length,
-        totalFailures: jobs.reduce((s, j) => s + j.failureCount, 0),
+        total:         jobs.length,
+        enabled:       jobs.filter(j => j.isEnabled).length,
+        disabled:      jobs.filter(j => !j.isEnabled).length,
+        poisoned:      jobs.filter(j => j.isPoisoned).length,
+        withFailures:  jobs.filter(j => j.totalFailedCount > 0).length,
+        totalFailures: jobs.reduce((s, j) => s + j.totalFailedCount, 0),
     }), [jobs]);
+
+    /** Unique customers derived from jobs — resolved via worker tenantId / tenantDisplayName. */
+    const uniqueCustomers = useMemo(() => {
+        const map = new Map<string, string>(); // tenantId → display label
+        jobs.forEach(job => {
+            const worker = workerData?.workers?.find(w => w.workerRegistrationId === job.workerRegistrationId);
+            const tenantId = worker?.tenantId || getTenantIdFromConfig(job.jobConfigurationJson);
+            if (!tenantId) return;
+            if (!map.has(tenantId)) {
+                const label = worker?.tenantDisplayName || tenantId;
+                map.set(tenantId, label);
+            }
+        });
+        return Array.from(map.entries()).map(([id, label]) => ({ id, label }));
+    }, [jobs, workerData?.workers]);
 
     const filteredJobs = useMemo(() => {
         let r = jobs;
-        if (filterWorker !== 'all')    r = r.filter(j => j.workerRegistrationId === filterWorker);
+        if (filterCustomer !== 'all') {
+            r = r.filter(j => {
+                const worker = workerData?.workers?.find(w => w.workerRegistrationId === j.workerRegistrationId);
+                const tenantId = worker?.tenantId || getTenantIdFromConfig(j.jobConfigurationJson);
+                return tenantId === filterCustomer;
+            });
+        }
+        if (filterWorker !== 'all')       r = r.filter(j => j.workerRegistrationId === filterWorker);
         if (filterEnabled === 'enabled')  r = r.filter(j => j.isEnabled);
         if (filterEnabled === 'disabled') r = r.filter(j => !j.isEnabled);
         if (searchQuery.trim()) {
@@ -367,7 +405,19 @@ export default function WorkerJobsPage() {
             );
         }
         return r;
-    }, [jobs, filterWorker, filterEnabled, searchQuery]);
+    }, [jobs, filterCustomer, filterWorker, filterEnabled, searchQuery, workerData?.workers]);
+
+    const activeFilterCount = (filterCustomer !== 'all' ? 1 : 0)
+        + (filterWorker !== 'all' ? 1 : 0)
+        + (filterEnabled !== 'all' ? 1 : 0)
+        + (searchQuery.trim() ? 1 : 0);
+
+    const clearFilters = () => {
+        setFilterCustomer('all');
+        setFilterWorker('all');
+        setFilterEnabled('all');
+        setSearchQuery('');
+    };
 
     // ── Table columns ─────────────────────────────────────────────────────────
 
@@ -417,6 +467,31 @@ export default function WorkerJobsPage() {
                     <div>
                         <div className="text-sm font-medium">{worker.machineName}</div>
                         <div className="text-xs text-gray-500 font-mono">{worker.workerInstanceId}</div>
+                    </div>
+                );
+            },
+        },
+        {
+            key: 'jobConfigurationJson',
+            label: 'Customer',
+            width: 200,
+            render: (value: unknown, row: Record<string, unknown>) => {
+                const job = row as unknown as WorkerJob;
+                // Prefer tenantDisplayName from the mapped worker; fall back to tenantId in the config
+                const worker = workerData?.workers?.find(w => w.workerRegistrationId === job.workerRegistrationId);
+                const displayName = worker?.tenantDisplayName;
+                const tenantId = worker?.tenantId || getTenantIdFromConfig(String(value));
+                if (!displayName && !tenantId) {
+                    return <span className="text-xs text-gray-400">—</span>;
+                }
+                return (
+                    <div>
+                        {displayName && <div className="text-sm font-medium">{displayName}</div>}
+                        {tenantId && (
+                            <div className="text-xs text-gray-500 font-mono truncate" title={tenantId}>
+                                {tenantId}
+                            </div>
+                        )}
                     </div>
                 );
             },
@@ -484,18 +559,17 @@ export default function WorkerJobsPage() {
             },
         },
         {
-            key: 'failureCount',
+            key: 'lastSuccessAt',
             label: 'Last Status',
             width: 120,
-            render: (value: unknown, row: Record<string, unknown>) => {
+            render: (_: unknown, row: Record<string, unknown>) => {
                 const job = row as unknown as WorkerJob;
                 if (!job.lastRunAt) {
                     return <Badge variant="outline" className="border-gray-400 text-gray-600"><Clock className="h-3 w-3 mr-1" />Never Run</Badge>;
                 }
-                const failures = value as number;
-                const lastFailTime = job.lastFailureAt ? new Date(job.lastFailureAt).getTime() : 0;
-                const lastRunTime  = new Date(job.lastRunAt).getTime();
-                const lastWasFail  = failures > 0 && lastFailTime >= lastRunTime;
+                const lastSuccessTime = job.lastSuccessAt ? new Date(job.lastSuccessAt).getTime() : 0;
+                const lastFailedTime  = job.lastFailedAt  ? new Date(job.lastFailedAt).getTime()  : 0;
+                const lastWasFail     = lastFailedTime > lastSuccessTime;
                 return lastWasFail
                     ? <Badge className="bg-red-500 hover:bg-red-600 text-white"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>
                     : <Badge className="bg-green-500 hover:bg-green-600 text-white"><CheckCircle className="h-3 w-3 mr-1" />Success</Badge>;
@@ -602,69 +676,189 @@ export default function WorkerJobsPage() {
             </div>
 
             {/* Filters */}
-            <Card>
-                <CardContent className="pt-4">
-                    <div className="flex flex-col lg:flex-row gap-3">
-                        <div className="relative flex-1">
+            <Card className="relative transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+                <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center justify-between">
+                        <button
+                            onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
+                            className="flex items-center gap-2 hover:text-yellow-400 transition-colors"
+                        >
+                            <Filter className="h-5 w-5" />
+                            Filters
+                            {isFiltersExpanded
+                                ? <ChevronUp className="h-4 w-4" />
+                                : <ChevronDown className="h-4 w-4" />
+                            }
+                        </button>
+                        <div className="flex items-center gap-2">
+                            {!isFiltersExpanded && activeFilterCount > 0 && (
+                                <Badge variant="secondary" className="text-xs">
+                                    {activeFilterCount} active
+                                </Badge>
+                            )}
+                            {activeFilterCount > 0 && (
+                                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                                    <X className="h-4 w-4 mr-1" />
+                                    Clear All
+                                </Button>
+                            )}
+                        </div>
+                    </CardTitle>
+
+                    {/* Active filter chips shown when collapsed */}
+                    {!isFiltersExpanded && activeFilterCount > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-2">
+                            {searchQuery && (
+                                <Badge variant="outline" className="text-xs">Search: {searchQuery}</Badge>
+                            )}
+                            {filterCustomer !== 'all' && (
+                                <Badge variant="outline" className="text-xs">
+                                    Customer: {uniqueCustomers.find(c => c.id === filterCustomer)?.label ?? filterCustomer}
+                                </Badge>
+                            )}
+                            {filterWorker !== 'all' && (
+                                <Badge variant="outline" className="text-xs">
+                                    Worker: {workerData?.workers?.find(w => w.workerRegistrationId === filterWorker)?.machineName ?? filterWorker}
+                                </Badge>
+                            )}
+                            {filterEnabled !== 'all' && (
+                                <Badge variant="outline" className="text-xs">
+                                    Status: {filterEnabled}
+                                </Badge>
+                            )}
+                        </div>
+                    )}
+                </CardHeader>
+
+                {isFiltersExpanded && (
+                    <CardContent className="space-y-4">
+                        {/* Search */}
+                        <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <Input
-                                placeholder="Search by name, ID, type, or configuration…"
+                            <input
+                                type="text"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
-                                className="pl-10"
+                                placeholder="Search by name, ID, type, or configuration…"
+                                className="w-full pl-9 pr-9 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/50"
                             />
-                        </div>
-                        {workerData?.workers && workerData.workers.length > 0 && (
-                            <div className="flex items-center gap-2">
-                                <Server className="h-4 w-4 text-gray-400 shrink-0" />
-                                <select
-                                    value={filterWorker}
-                                    onChange={e => setFilterWorker(e.target.value)}
-                                    className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                 >
-                                    <option value="all">All Workers</option>
-                                    {workerData.workers.map(w => (
-                                        <option key={w.workerRegistrationId} value={w.workerRegistrationId}>
-                                            {w.machineName} – {w.workerInstanceId}
-                                        </option>
+                                    <X className="h-4 w-4" />
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {/* Customer filter */}
+                            {uniqueCustomers.length > 0 && (
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium dark:text-gray-200">Customer</label>
+                                    <select
+                                        value={filterCustomer}
+                                        onChange={e => setFilterCustomer(e.target.value)}
+                                        className="w-full h-9 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    >
+                                        <option value="all">All Customers</option>
+                                        {uniqueCustomers.map(c => (
+                                            <option key={c.id} value={c.id}>{c.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Worker filter */}
+                            {workerData?.workers && workerData.workers.length > 0 && (
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium dark:text-gray-200">Worker</label>
+                                    <select
+                                        value={filterWorker}
+                                        onChange={e => setFilterWorker(e.target.value)}
+                                        className="w-full h-9 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    >
+                                        <option value="all">All Workers</option>
+                                        {workerData.workers.map(w => (
+                                            <option key={w.workerRegistrationId} value={w.workerRegistrationId}>
+                                                {w.machineName} – {w.workerInstanceId}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Status filter */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium dark:text-gray-200">Status</label>
+                                <div className="flex gap-2">
+                                    {(['all', 'enabled', 'disabled'] as const).map(f => (
+                                        <Button
+                                            key={f}
+                                            size="sm"
+                                            variant={filterEnabled === f ? 'default' : 'outline'}
+                                            onClick={() => setFilterEnabled(f)}
+                                        >
+                                            {f === 'enabled' && <Zap className="h-3 w-3 mr-1" />}
+                                            {f === 'disabled' && <ZapOff className="h-3 w-3 mr-1" />}
+                                            {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
+                                        </Button>
                                     ))}
-                                </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Active filter chips with remove buttons */}
+                        {activeFilterCount > 0 && (
+                            <div className="flex flex-wrap gap-2 pt-2 border-t">
+                                <span className="text-sm text-gray-600 dark:text-gray-400">Active filters:</span>
+                                {searchQuery && (
+                                    <Badge variant="outline" className="text-xs">
+                                        Search: {searchQuery}
+                                        <button onClick={() => setSearchQuery('')} className="ml-1 hover:text-red-600">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </Badge>
+                                )}
+                                {filterCustomer !== 'all' && (
+                                    <Badge variant="outline" className="text-xs">
+                                        Customer: {uniqueCustomers.find(c => c.id === filterCustomer)?.label ?? filterCustomer}
+                                        <button onClick={() => setFilterCustomer('all')} className="ml-1 hover:text-red-600">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </Badge>
+                                )}
+                                {filterWorker !== 'all' && (
+                                    <Badge variant="outline" className="text-xs">
+                                        Worker: {workerData?.workers?.find(w => w.workerRegistrationId === filterWorker)?.machineName ?? filterWorker}
+                                        <button onClick={() => setFilterWorker('all')} className="ml-1 hover:text-red-600">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </Badge>
+                                )}
+                                {filterEnabled !== 'all' && (
+                                    <Badge variant="outline" className="text-xs">
+                                        Status: {filterEnabled}
+                                        <button onClick={() => setFilterEnabled('all')} className="ml-1 hover:text-red-600">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </Badge>
+                                )}
                             </div>
                         )}
-                        <div className="flex gap-2">
-                            {(['all', 'enabled', 'disabled'] as const).map(f => (
-                                <Button
-                                    key={f}
-                                    size="sm"
-                                    variant={filterEnabled === f ? 'default' : 'outline'}
-                                    onClick={() => setFilterEnabled(f)}
-                                >
-                                    {f === 'enabled' && <Zap className="h-3 w-3 mr-1" />}
-                                    {f === 'disabled' && <ZapOff className="h-3 w-3 mr-1" />}
-                                    {f.charAt(0).toUpperCase() + f.slice(1)}{f === 'all' ? ' Jobs' : ''}
-                                </Button>
-                            ))}
-                        </div>
-                    </div>
-                </CardContent>
+                    </CardContent>
+                )}
             </Card>
 
             {/* Table */}
-            <Card>
+            <Card className="relative transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Activity className="h-5 w-5" />
                         Jobs
                         <Badge variant="secondary">{filteredJobs.length}</Badge>
                     </CardTitle>
-                    {(filterWorker !== 'all' || filterEnabled !== 'all' || searchQuery) && (
-                        <CardDescription>
-                            {filterWorker !== 'all' && `Worker: ${workerData?.workers?.find(w => w.workerRegistrationId === filterWorker)?.machineName ?? filterWorker}`}
-                            {filterWorker !== 'all' && filterEnabled !== 'all' && ' · '}
-                            {filterEnabled !== 'all' && `${filterEnabled} only`}
-                            {searchQuery && ` · "${searchQuery}"`}
-                        </CardDescription>
-                    )}
                 </CardHeader>
                 <CardContent>
                     {filteredJobs.length > 0 ? (
@@ -678,11 +872,14 @@ export default function WorkerJobsPage() {
                     ) : (
                         <div className="text-center py-12">
                             <BriefcaseBusiness className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                            <p className="text-gray-500">
-                                {searchQuery || filterEnabled !== 'all' || filterWorker !== 'all'
-                                    ? 'No jobs match your filters'
-                                    : 'No jobs configured yet'}
+                            <p className="text-gray-500 mb-4">
+                                {activeFilterCount > 0 ? 'No jobs match your filters' : 'No jobs configured yet'}
                             </p>
+                            {activeFilterCount > 0 && (
+                                <Button variant="outline" onClick={clearFilters}>
+                                    Clear All Filters
+                                </Button>
+                            )}
                         </div>
                     )}
                 </CardContent>
