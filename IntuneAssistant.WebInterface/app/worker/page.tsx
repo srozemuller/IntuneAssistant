@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { WORKER_OVERVIEW_ENDPOINT } from '@/lib/constants';
-import { WorkerOverview, WorkerInstance, HealthStatus, RegistrationStatus } from '@/types/worker';
+import { WorkerOverview, WorkerInstance } from '@/types/worker';
 import { DataTable } from '@/components/DataTable';
 import { useRouter } from 'next/navigation';
 import {useMsal} from "@azure/msal-react";
@@ -69,14 +69,14 @@ function getHealthStatusInfo(healthStatus: number, timeSince: string) {
     const { totalSeconds } = parseTimeSince(timeSince);
 
     // Offline: no heartbeat 60+ min OR backend says Offline (2)
-    if (totalSeconds > 3600 || healthStatus === HealthStatus.Offline) {
+    if (totalSeconds > 3600 || healthStatus === 2) {
         return { label: 'Offline',  color: 'bg-red-500 hover:bg-red-600',    icon: XCircle,       textColor: 'text-red-600 dark:text-red-400' };
     }
     // Stale: no heartbeat 10+ min OR backend says Stale (1)
-    if (totalSeconds > 600  || healthStatus === HealthStatus.Stale) {
+    if (totalSeconds > 600  || healthStatus === 1) {
         return { label: 'Stale',    color: 'bg-yellow-500 hover:bg-yellow-600', icon: AlertTriangle, textColor: 'text-yellow-600 dark:text-yellow-400' };
     }
-    if (healthStatus === HealthStatus.Unknown) {
+    if (healthStatus === 3) {
         return { label: 'Unknown',  color: 'bg-gray-500 hover:bg-gray-600',   icon: AlertTriangle, textColor: 'text-gray-500 dark:text-gray-400' };
     }
     return { label: 'Healthy', color: 'bg-green-500 hover:bg-green-600', icon: CheckCircle, textColor: 'text-green-600 dark:text-green-400' };
@@ -84,11 +84,11 @@ function getHealthStatusInfo(healthStatus: number, timeSince: string) {
 
 function getRegistrationStatusInfo(status: number) {
     switch (status) {
-        case RegistrationStatus.Approved:      return { label: 'Approved',  color: 'bg-green-500 hover:bg-green-600' };
-        case RegistrationStatus.Pending:       return { label: 'Pending',   color: 'bg-yellow-500 hover:bg-yellow-600' };
-        case RegistrationStatus.Rejected:      return { label: 'Rejected',  color: 'bg-red-500 hover:bg-red-600' };
-        case RegistrationStatus.Revoked:       return { label: 'Revoked',   color: 'bg-orange-500 hover:bg-orange-600' };
-        default:                               return { label: 'Unknown',   color: 'bg-gray-500 hover:bg-gray-600' };
+        case 1: return { label: 'Approved', color: 'bg-green-500 hover:bg-green-600' };  // Approved
+        case 0: return { label: 'Pending',  color: 'bg-yellow-500 hover:bg-yellow-600' }; // Pending
+        case 2: return { label: 'Rejected', color: 'bg-red-500 hover:bg-red-600' };       // Rejected
+        case 3: return { label: 'Revoked',  color: 'bg-orange-500 hover:bg-orange-600' }; // Revoked
+        default: return { label: 'Unknown', color: 'bg-gray-500 hover:bg-gray-600' };
     }
 }
 
@@ -155,17 +155,17 @@ export default function WorkerOverviewPage() {
             total: workers.length,
             healthy: workers.filter(w => {
                 const { totalSeconds } = parseTimeSince(w.timeSinceLastHeartbeat);
-                return totalSeconds <= 600 && w.healthStatus === HealthStatus.Healthy;
+                return totalSeconds <= 600 && w.healthStatus === 0; // Healthy
             }).length,
             warning: workers.filter(w => {
                 const { totalSeconds } = parseTimeSince(w.timeSinceLastHeartbeat);
-                return (totalSeconds > 600 && totalSeconds <= 3600) || w.healthStatus === HealthStatus.Stale;
+                return (totalSeconds > 600 && totalSeconds <= 3600) || w.healthStatus === 1; // Stale
             }).length,
             critical: workers.filter(w => {
                 const { totalSeconds } = parseTimeSince(w.timeSinceLastHeartbeat);
-                return totalSeconds > 3600 || w.healthStatus === HealthStatus.Offline;
+                return totalSeconds > 3600 || w.healthStatus === 2; // Offline
             }).length,
-            active: workers.filter(w => w.registrationStatus === RegistrationStatus.Approved).length,
+            active: workers.filter(w => w.registrationStatus === 1).length, // Approved
         };
     }, [workerData]);
 

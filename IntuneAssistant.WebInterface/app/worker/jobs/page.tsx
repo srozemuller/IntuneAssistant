@@ -10,36 +10,11 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from '@/components/ui/dialog';
-import {
-    RefreshCw,
-    BriefcaseBusiness,
-    CheckCircle,
-    XCircle,
-    AlertTriangle,
-    Clock,
-    Calendar,
-    Search,
-    Loader2,
-    Eye,
-    Zap,
-    ZapOff,
-    Skull,
-    Settings,
-    TrendingUp,
-    Activity,
-    Plus,
-    Save,
-    Mail,
-    Trash2,
-    Server,
+    RefreshCw, BriefcaseBusiness, CheckCircle, XCircle, AlertTriangle,
+    Clock, Calendar, Search, Loader2, Zap, ZapOff, Skull, Settings,
+    TrendingUp, Activity, Plus, Save, Mail, Trash2, Server,
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { WORKER_JOBS_ENDPOINT, WORKER_JOB_LATEST_EXECUTION_ENDPOINT, WORKER_OVERVIEW_ENDPOINT } from '@/lib/constants';
@@ -47,8 +22,9 @@ import { DataTable } from '@/components/DataTable';
 import { useTenant } from '@/contexts/TenantContext';
 import { WorkerOverview } from '@/types/worker';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
+// Matches the actual API response fields
 interface WorkerJob extends Record<string, unknown> {
     id: string;
     jobType: number;
@@ -58,8 +34,8 @@ interface WorkerJob extends Record<string, unknown> {
     cronExpression: string | null;
     lastRunAt: string | null;
     nextScheduledRun: string | null;
-    consecutiveFailureCount: number;
-    lastConsecutiveFailureAt: string | null;
+    failureCount: number;        // API field
+    lastFailureAt: string | null; // API field
     isPoisoned: boolean;
     jobConfigurationJson: string;
     workerRegistrationId: string;
@@ -67,11 +43,6 @@ interface WorkerJob extends Record<string, unknown> {
     updatedAt: string;
     createdBy: string;
     updatedBy: string | null;
-    totalExecutions: number;
-    totalSuccessCount: number;
-    totalFailedCount: number;
-    lastSuccessAt: string | null;
-    lastFailedAt: string | null;
 }
 
 interface ApiResponse {
@@ -81,72 +52,44 @@ interface ApiResponse {
     data: WorkerJob[];
 }
 
-interface ExecutionStatus {
+interface ActiveExecution {
     id: string;
     jobConfigId: string;
-    status: number; // 0=Pending, 1=Claimed, 2=Running, 3=Completed, 4=Failed
-    progressPercentage: number | null;
-    progressMessage: string | null;
+    status: number; // 0=Pending, 1=Claimed, 2=InProgress
 }
 
-interface ExecutionStatusResponse {
+interface ActiveExecutionResponse {
     status: string;
     message: string;
     details: unknown[];
-    data: ExecutionStatus;
+    data: ActiveExecution;
 }
 
-interface ParsedJobConfig {
-    [key: string]: unknown;
-}
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function parseTimeSince(ts: string): { totalSeconds: number; display: string } {
+function parseTimeSince(ts: string): { totalSeconds: number } {
     const dayMatch = ts.match(/^(\d+)\.(\d+):(\d+):(\d+)/);
     if (dayMatch) {
-        const d = parseInt(dayMatch[1], 10);
-        const h = parseInt(dayMatch[2], 10);
-        const m = parseInt(dayMatch[3], 10);
-        const s = parseInt(dayMatch[4], 10);
-        const total = d * 86400 + h * 3600 + m * 60 + s;
-        
-        const parts: string[] = [];
-        if (d > 0) parts.push(`${d}d`);
-        if (h > 0) parts.push(`${h}h`);
-        if (m > 0) parts.push(`${m}m`);
-        if (s > 0 || parts.length === 0) parts.push(`${s}s`);
-        
-        return { totalSeconds: total, display: parts.join(' ') };
+        const total = parseInt(dayMatch[1], 10) * 86400
+            + parseInt(dayMatch[2], 10) * 3600
+            + parseInt(dayMatch[3], 10) * 60
+            + parseInt(dayMatch[4], 10);
+        return { totalSeconds: total };
     }
-    
     const match = ts.match(/^(\d+):(\d+):(\d+)/);
-    if (!match) return { totalSeconds: 0, display: ts };
-    const h = parseInt(match[1], 10);
-    const m = parseInt(match[2], 10);
-    const s = parseInt(match[3], 10);
-    const total = h * 3600 + m * 60 + s;
-
-    const parts: string[] = [];
-    if (h > 0) parts.push(`${h}h`);
-    if (m > 0) parts.push(`${m}m`);
-    if (s > 0 || parts.length === 0) parts.push(`${s}s`);
-
-    return { totalSeconds: total, display: parts.join(' ') };
+    if (!match) return { totalSeconds: 0 };
+    return {
+        totalSeconds: parseInt(match[1], 10) * 3600
+            + parseInt(match[2], 10) * 60
+            + parseInt(match[3], 10),
+    };
 }
 
 function getHealthStatusInfo(healthStatus: number, timeSince: string) {
     const { totalSeconds } = parseTimeSince(timeSince);
-
-    if (totalSeconds > 3600 || healthStatus === 2) {
-        return { label: 'Offline',  color: 'bg-red-500' };
-    }
-    if (totalSeconds > 600  || healthStatus === 1) {
-        return { label: 'Stale',    color: 'bg-yellow-500' };
-    }
-    if (healthStatus === 3) {
-        return { label: 'Unknown',  color: 'bg-gray-500' };
-    }
+    if (totalSeconds > 3600 || healthStatus === 2) return { label: 'Offline', color: 'bg-red-500' };
+    if (totalSeconds > 600  || healthStatus === 1) return { label: 'Stale',   color: 'bg-yellow-500' };
+    if (healthStatus === 3)                         return { label: 'Unknown', color: 'bg-gray-500' };
     return { label: 'Healthy', color: 'bg-green-500' };
 }
 
@@ -165,30 +108,8 @@ function getJobTypeName(jobType: number): string {
 
 function getJobTypeColor(jobType: number): string {
     const colors: Record<number, string> = {
-        1: 'bg-blue-500',
-        2: 'bg-purple-500',
-        3: 'bg-green-500',
-        4: 'bg-orange-500',
-        5: 'bg-cyan-500',
-        6: 'bg-red-500',
-        7: 'bg-yellow-500',
-    };
-    return colors[jobType] || 'bg-gray-500';
-}
-    };
-    return types[jobType] || `Job Type ${jobType}`;
-}
-
-function getJobTypeColor(jobType: number): string {
-    const colors: Record<number, string> = {
-        1: 'bg-blue-500',
-        2: 'bg-purple-500',
-        3: 'bg-green-500',
-        4: 'bg-orange-500',
-        5: 'bg-cyan-500',
-        6: 'bg-red-500',
-        7: 'bg-yellow-500',
-        8: 'bg-pink-500',
+        1: 'bg-blue-500', 2: 'bg-purple-500', 3: 'bg-green-500',
+        4: 'bg-orange-500', 5: 'bg-cyan-500', 6: 'bg-red-500', 7: 'bg-yellow-500',
     };
     return colors[jobType] || 'bg-gray-500';
 }
@@ -197,261 +118,82 @@ function formatDateTime(iso: string | null): string {
     if (!iso) return '—';
     try {
         return new Intl.DateTimeFormat(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
+            year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit',
         }).format(new Date(iso));
-    } catch {
-        return iso;
-    }
+    } catch { return iso; }
 }
 
 function getRelativeTime(iso: string | null): string {
     if (!iso) return '—';
     try {
-        const now = new Date();
-        const then = new Date(iso);
-        const diffMs = now.getTime() - then.getTime();
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMins / 60);
-        const diffDays = Math.floor(diffHours / 24);
-
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        return `${diffDays}d ago`;
-    } catch {
-        return iso;
-    }
+        const diffMs = Date.now() - new Date(iso).getTime();
+        const mins = Math.floor(diffMs / 60000);
+        const hours = Math.floor(mins / 60);
+        const days = Math.floor(hours / 24);
+        if (mins < 1) return 'Just now';
+        if (mins < 60) return `${mins}m ago`;
+        if (hours < 24) return `${hours}h ago`;
+        return `${days}d ago`;
+    } catch { return iso; }
 }
 
 function getNextRunRelative(iso: string | null): string {
     if (!iso) return '—';
     try {
-        const now = new Date();
-        const then = new Date(iso);
-        const diffMs = then.getTime() - now.getTime();
-
+        const diffMs = new Date(iso).getTime() - Date.now();
         if (diffMs < 0) return 'Overdue';
-
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMins / 60);
-        const diffDays = Math.floor(diffHours / 24);
-
-        if (diffMins < 60) return `in ${diffMins}m`;
-        if (diffHours < 24) return `in ${diffHours}h`;
-        return `in ${diffDays}d`;
-    } catch {
-        return iso;
-    }
+        const mins = Math.floor(diffMs / 60000);
+        const hours = Math.floor(mins / 60);
+        const days = Math.floor(hours / 24);
+        if (mins < 60) return `in ${mins}m`;
+        if (hours < 24) return `in ${hours}h`;
+        return `in ${days}d`;
+    } catch { return iso; }
 }
 
-function parseJobConfig(json: string): ParsedJobConfig {
-    try {
-        return JSON.parse(json);
-    } catch {
-        return {};
-    }
-}
-
-// ─── Job Details Dialog ──────────────────────────────────────────────────────
-
-interface JobDetailsDialogProps {
-    job: WorkerJob | null;
-    isOpen: boolean;
-    onClose: () => void;
-}
-
-function JobDetailsDialog({ job, isOpen, onClose }: JobDetailsDialogProps) {
-    if (!job) return null;
-
-    const config = parseJobConfig(job.jobConfigurationJson);
-
-    return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <BriefcaseBusiness className="h-5 w-5 text-blue-500" />
-                        {job.jobName}
-                    </DialogTitle>
-                    <DialogDescription>
-                        Job ID: <span className="font-mono text-xs">{job.id}</span>
-                    </DialogDescription>
-                </DialogHeader>
-
-                <div className="space-y-6">
-                    {/* Status Overview */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 border">
-                            <div className="text-xs text-gray-500 dark:text-gray-400 uppercase font-medium mb-1">Status</div>
-                            <div className="flex items-center gap-2">
-                                {job.isEnabled ? (
-                                    <Badge className="bg-green-500 hover:bg-green-600 text-white">
-                                        <Zap className="h-3 w-3 mr-1" />
-                                        Enabled
-                                    </Badge>
-                                ) : (
-                                    <Badge variant="secondary">
-                                        <ZapOff className="h-3 w-3 mr-1" />
-                                        Disabled
-                                    </Badge>
-                                )}
-                                {job.isPoisoned && (
-                                    <Badge className="bg-red-500 hover:bg-red-600 text-white">
-                                        <Skull className="h-3 w-3 mr-1" />
-                                        Poisoned
-                                    </Badge>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 border">
-                            <div className="text-xs text-gray-500 dark:text-gray-400 uppercase font-medium mb-1">Job Type</div>
-                            <Badge className={`${getJobTypeColor(job.jobType)} hover:opacity-90 text-white`}>
-                                {getJobTypeName(job.jobType)}
-                            </Badge>
-                        </div>
-                    </div>
-
-                    {/* Timing Info */}
-                    <div className="space-y-3">
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                            <Clock className="h-4 w-4" />
-                            Scheduling
-                        </h4>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border">
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Interval</div>
-                                <div className="font-medium">{job.intervalHours}h</div>
-                            </div>
-                            <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border">
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Cron Expression</div>
-                                <div className="font-mono text-xs">{job.cronExpression || '—'}</div>
-                            </div>
-                            <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border">
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Last Run</div>
-                                <div className="text-sm">{formatDateTime(job.lastRunAt)}</div>
-                                <div className="text-xs text-gray-400">{getRelativeTime(job.lastRunAt)}</div>
-                            </div>
-                            <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border">
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Next Scheduled Run</div>
-                                <div className="text-sm">{formatDateTime(job.nextScheduledRun)}</div>
-                                <div className="text-xs text-gray-400">{getNextRunRelative(job.nextScheduledRun)}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Failure Info */}
-                    {(job.totalFailedCount > 0 || job.lastFailedAt) && (
-                        <div className="space-y-3">
-                            <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                                <AlertTriangle className="h-4 w-4 text-red-500" />
-                                Failures
-                            </h4>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                    <div className="text-xs text-red-600 dark:text-red-400 mb-1">Failure Count</div>
-                                    <div className="text-xl font-bold text-red-600 dark:text-red-400">{job.totalFailedCount}</div>
-                                </div>
-                                {job.lastFailedAt && (
-                                    <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                        <div className="text-xs text-red-600 dark:text-red-400 mb-1">Last Failure</div>
-                                        <div className="text-sm text-red-600 dark:text-red-400">{formatDateTime(job.lastFailedAt)}</div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Configuration */}
-                    <div className="space-y-3">
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                            <Settings className="h-4 w-4" />
-                            Configuration
-                        </h4>
-                        <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 border font-mono text-xs overflow-x-auto">
-                            <pre>{JSON.stringify(config, null, 2)}</pre>
-                        </div>
-                    </div>
-
-                    {/* Metadata */}
-                    <div className="space-y-3">
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            Metadata
-                        </h4>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Created</div>
-                                <div>{formatDateTime(job.createdAt)}</div>
-                                <div className="text-xs text-gray-500">by {job.createdBy}</div>
-                            </div>
-                            <div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Updated</div>
-                                <div>{formatDateTime(job.updatedAt)}</div>
-                                {job.updatedBy && <div className="text-xs text-gray-500">by {job.updatedBy}</div>}
-                            </div>
-                            <div className="col-span-2">
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Worker Registration ID</div>
-                                <div className="font-mono text-xs break-all">{job.workerRegistrationId}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-// ─── Main Page ───────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WorkerJobsPage() {
     const { accounts } = useMsal();
     const { request } = useApiRequest();
     const router = useRouter();
     const { selectedTenant } = useTenant();
-    
-    // Get tenant ID from claims as fallback
-    const tenantIdFromClaims = accounts[0]?.tenantId || accounts[0]?.idTokenClaims?.tid as string | undefined;
+
+    const tenantIdFromClaims = accounts[0]?.tenantId || (accounts[0]?.idTokenClaims?.tid as string | undefined);
     const effectiveTenantId = selectedTenant?.tenantId || tenantIdFromClaims;
 
+    // ── Data state ────────────────────────────────────────────────────────────
     const [jobs, setJobs] = useState<WorkerJob[]>([]);
     const [workerData, setWorkerData] = useState<WorkerOverview | null>(null);
+    const [activeExecutions, setActiveExecutions] = useState<Map<string, ActiveExecution>>(new Map());
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+
+    // ── UI state ──────────────────────────────────────────────────────────────
     const [autoRefresh, setAutoRefresh] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterEnabled, setFilterEnabled] = useState<'all' | 'enabled' | 'disabled'>('all');
     const [filterWorker, setFilterWorker] = useState<string>('all');
-    const [selectedJob, setSelectedJob] = useState<WorkerJob | null>(null);
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-    const [jobExecutions, setJobExecutions] = useState<Map<string, ExecutionStatus>>(new Map());
-    
-    // Delete Job Dialog State
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+    // ── Delete dialog state ───────────────────────────────────────────────────
     const [jobToDelete, setJobToDelete] = useState<WorkerJob | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState<string | null>(null);
-    
-    // Create Job Dialog State
+
+    // ── Create dialog state ───────────────────────────────────────────────────
     const [showCreateDialog, setShowCreateDialog] = useState(false);
     const [creating, setCreating] = useState(false);
     const [createError, setCreateError] = useState<string | null>(null);
     const [createSuccess, setCreateSuccess] = useState<string | null>(null);
-    
-    // Form fields
-    const [formJobType, setFormJobType] = useState(1); // Default to Intune Audit Report
+
+    // Create form fields
+    const [formJobType, setFormJobType] = useState(1);
     const [formJobName, setFormJobName] = useState('');
     const [formIsEnabled, setFormIsEnabled] = useState(true);
-    const [formIntervalHours, setFormIntervalHours] = useState(168); // Weekly default
+    const [formIntervalHours, setFormIntervalHours] = useState(168);
     const [formFirstRunAt, setFormFirstRunAt] = useState('');
-    const [formSelectedWorkers, setFormSelectedWorkers] = useState<string[]>([]); // Worker Registration IDs
-    
-    // Intune Audit Report Config
+    const [formSelectedWorkers, setFormSelectedWorkers] = useState<string[]>([]);
     const [formRecipientEmail, setFormRecipientEmail] = useState('');
     const [formCcEmails, setFormCcEmails] = useState('');
     const [formLookbackDays, setFormLookbackDays] = useState(7);
@@ -459,49 +201,41 @@ export default function WorkerJobsPage() {
     const [formOnlyReportIfEventsFound, setFormOnlyReportIfEventsFound] = useState(false);
     const [formMaxEvents, setFormMaxEvents] = useState(500);
 
+    // ── Fetch ─────────────────────────────────────────────────────────────────
+
     const fetchJobs = useCallback(async () => {
         if (accounts.length === 0) return;
         setLoading(true);
         setError(null);
         try {
-            // Fetch jobs and worker data in parallel
             const [jobsResult, workerResult] = await Promise.all([
                 request<ApiResponse>(WORKER_JOBS_ENDPOINT),
-                request<{ status: string; message: string; details: unknown[]; data: WorkerOverview }>(WORKER_OVERVIEW_ENDPOINT)
+                request<{ status: string; data: WorkerOverview }>(WORKER_OVERVIEW_ENDPOINT),
             ]);
-            
+
             if (jobsResult?.data?.data) {
-                const jobsList = jobsResult.data.data;
-                setJobs(jobsList);
+                const list = jobsResult.data.data;
+                setJobs(list);
                 setLastRefreshed(new Date());
-                
-                // Fetch execution status for all jobs
-                const executionsMap = new Map<string, ExecutionStatus>();
-                
-                await Promise.all(
-                    jobsList.map(async (job) => {
-                        try {
-                            const execResult = await request<ExecutionStatusResponse>(
-                                WORKER_JOB_LATEST_EXECUTION_ENDPOINT(job.id)
-                            );
-                            
-                            if (execResult?.data?.data) {
-                                const execution = execResult.data.data;
-                                // Only store if pending or running
-                                if (execution.status === 0 || execution.status === 1 || execution.status === 2) {
-                                    // Pending, Claimed, InProgress
-                                    executionsMap.set(job.id, execution);
-                                }
+
+                // Fetch active (non-terminal) execution status for each job
+                const execMap = new Map<string, ActiveExecution>();
+                await Promise.all(list.map(async (job) => {
+                    try {
+                        const r = await request<ActiveExecutionResponse>(
+                            WORKER_JOB_LATEST_EXECUTION_ENDPOINT(job.id)
+                        );
+                        if (r?.data?.data) {
+                            const ex = r.data.data;
+                            if (ex.status === 0 || ex.status === 1 || ex.status === 2) {
+                                execMap.set(job.id, ex);
                             }
-                        } catch {
-                            // No active execution for this job
                         }
-                    })
-                );
-                
-                setJobExecutions(executionsMap);
+                    } catch { /* no active execution */ }
+                }));
+                setActiveExecutions(execMap);
             }
-            
+
             if (workerResult?.data?.data) {
                 setWorkerData(workerResult.data.data);
             }
@@ -512,99 +246,74 @@ export default function WorkerJobsPage() {
         }
     }, [accounts, request]);
 
+    const didFetchRef = useRef(false);
+    useEffect(() => {
+        if (accounts.length === 0 || didFetchRef.current) return;
+        didFetchRef.current = true;
+        fetchJobs();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [accounts.length]);
+
+    useEffect(() => {
+        if (!autoRefresh) return;
+        const id = setInterval(fetchJobs, 30_000);
+        return () => clearInterval(id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [autoRefresh]);
+
+    // ── Create ────────────────────────────────────────────────────────────────
+
+    const resetCreateForm = () => {
+        setFormJobType(1); setFormJobName(''); setFormIsEnabled(true);
+        setFormIntervalHours(168); setFormFirstRunAt(''); setFormSelectedWorkers([]);
+        setFormRecipientEmail(''); setFormCcEmails(''); setFormLookbackDays(7);
+        setFormCategories(''); setFormOnlyReportIfEventsFound(false); setFormMaxEvents(500);
+        setCreateError(null); setCreateSuccess(null);
+    };
+
     const handleCreateJob = async () => {
         setCreateError(null);
         setCreateSuccess(null);
 
-        // Validation
-        if (!formJobName.trim()) {
-            setCreateError('Job name is required');
-            return;
-        }
-        if (!formRecipientEmail.trim()) {
-            setCreateError('Recipient email is required');
-            return;
-        }
-        if (!effectiveTenantId) {
-            setCreateError('No tenant ID available. Please log in again.');
-            return;
-        }
-        if (formSelectedWorkers.length === 0) {
-            setCreateError('Please select at least one worker');
-            return;
-        }
-
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formRecipientEmail)) {
-            setCreateError('Invalid recipient email format');
-            return;
-        }
+        if (!formJobName.trim())           return setCreateError('Job name is required');
+        if (!formRecipientEmail.trim())    return setCreateError('Recipient email is required');
+        if (!effectiveTenantId)            return setCreateError('No tenant ID available. Please log in again.');
+        if (formSelectedWorkers.length === 0) return setCreateError('Please select at least one worker');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formRecipientEmail))
+            return setCreateError('Invalid recipient email format');
 
         setCreating(true);
-
         try {
-            // Build job configuration based on job type
-            let jobConfig: Record<string, unknown> = {};
+            const jobConfig: Record<string, unknown> = {
+                RecipientEmail: formRecipientEmail,
+                TenantId: effectiveTenantId,
+                LookbackDays: formLookbackDays,
+                MaxEvents: formMaxEvents,
+                OnlyReportIfEventsFound: formOnlyReportIfEventsFound,
+                ...(formCcEmails.trim()   && { CcEmails:   formCcEmails }),
+                ...(formCategories.trim() && { Categories: formCategories }),
+            };
 
-            if (formJobType === 1) {
-                // Intune Audit Report
-                jobConfig = {
-                    RecipientEmail: formRecipientEmail,
-                    TenantId: effectiveTenantId,
-                    LookbackDays: formLookbackDays,
-                    MaxEvents: formMaxEvents,
-                    OnlyReportIfEventsFound: formOnlyReportIfEventsFound,
-                };
+            const results = await Promise.all(
+                formSelectedWorkers.map(workerId => {
+                    const payload: Record<string, unknown> = {
+                        jobType: formJobType,
+                        jobName: formJobName.trim(),
+                        isEnabled: formIsEnabled,
+                        intervalHours: formIntervalHours,
+                        jobConfigurationJson: JSON.stringify(jobConfig),
+                        workerRegistrationId: workerId,
+                    };
+                    if (formFirstRunAt) payload.firstRunAt = new Date(formFirstRunAt).toISOString();
+                    return request<ApiResponse>(WORKER_JOBS_ENDPOINT, { method: 'POST', body: JSON.stringify(payload) });
+                })
+            );
 
-                if (formCcEmails.trim()) {
-                    jobConfig.CcEmails = formCcEmails;
-                }
-
-                if (formCategories.trim()) {
-                    jobConfig.Categories = formCategories;
-                }
-            }
-
-            // Create jobs for all selected workers
-            const createPromises = formSelectedWorkers.map(workerId => {
-                // Build payload for each worker
-                const payload: Record<string, unknown> = {
-                    jobType: formJobType,
-                    jobName: formJobName.trim(),
-                    isEnabled: formIsEnabled,
-                    intervalHours: formIntervalHours,
-                    jobConfigurationJson: JSON.stringify(jobConfig),
-                    workerRegistrationId: workerId,
-                };
-
-                // Add firstRunAt if specified
-                if (formFirstRunAt) {
-                    payload.firstRunAt = new Date(formFirstRunAt).toISOString();
-                }
-
-                return request<ApiResponse>(
-                    WORKER_JOBS_ENDPOINT,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify(payload),
-                    }
-                );
-            });
-
-            const results = await Promise.all(createPromises);
-            const successCount = results.filter(r => r?.data?.data).length;
-
-            if (successCount > 0) {
-                setCreateSuccess(`Successfully created ${successCount} job(s) for ${formSelectedWorkers.length} worker(s)`);
-                // Refresh jobs list
+            const ok = results.filter(r => r?.data?.data).length;
+            if (ok > 0) {
+                setCreateSuccess(`Created ${ok} job(s) for ${formSelectedWorkers.length} worker(s)`);
                 await fetchJobs();
-                
-                // Reset form and close dialog after brief delay
-                setTimeout(() => {
-                    setShowCreateDialog(false);
-                    resetCreateForm();
-                }, 1500);
+                setTimeout(() => { setShowCreateDialog(false); resetCreateForm(); }, 1500);
             } else {
                 setCreateError('Failed to create any jobs');
             }
@@ -615,39 +324,14 @@ export default function WorkerJobsPage() {
         }
     };
 
-    const resetCreateForm = () => {
-        setFormJobType(1);
-        setFormJobName('');
-        setFormIsEnabled(true);
-        setFormIntervalHours(168);
-        setFormFirstRunAt('');
-        setFormSelectedWorkers([]);
-        setFormRecipientEmail('');
-        setFormCcEmails('');
-        setFormLookbackDays(7);
-        setFormCategories('');
-        setFormOnlyReportIfEventsFound(false);
-        setFormMaxEvents(500);
-        setCreateError(null);
-        setCreateSuccess(null);
-    };
+    // ── Delete ────────────────────────────────────────────────────────────────
 
     const handleDeleteJob = async () => {
         if (!jobToDelete) return;
-
         setDeleting(true);
         setDeleteError(null);
-
         try {
-            await request(
-                `${WORKER_JOBS_ENDPOINT}/${jobToDelete.id}`,
-                {
-                    method: 'DELETE',
-                }
-            );
-
-            // Close dialog and refresh jobs list
-            setShowDeleteDialog(false);
+            await request(`${WORKER_JOBS_ENDPOINT}/${jobToDelete.id}`, { method: 'DELETE' });
             setJobToDelete(null);
             await fetchJobs();
         } catch (err) {
@@ -657,65 +341,36 @@ export default function WorkerJobsPage() {
         }
     };
 
-    const didFetchRef = useRef(false);
-    useEffect(() => {
-        if (accounts.length === 0) return;
-        if (didFetchRef.current) return;
-        didFetchRef.current = true;
-        fetchJobs();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accounts.length]); // primitive dep — safe against reference churn
+    // ── Derived state ─────────────────────────────────────────────────────────
 
-    useEffect(() => {
-        if (!autoRefresh) return;
-        const interval = setInterval(() => fetchJobs(), 30_000);
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [autoRefresh]); // Only run when autoRefresh changes
+    const stats = useMemo(() => ({
+        total:        jobs.length,
+        enabled:      jobs.filter(j => j.isEnabled).length,
+        disabled:     jobs.filter(j => !j.isEnabled).length,
+        poisoned:     jobs.filter(j => j.isPoisoned).length,
+        withFailures: jobs.filter(j => j.failureCount > 0).length,
+        totalFailures: jobs.reduce((s, j) => s + j.failureCount, 0),
+    }), [jobs]);
 
-    // ── Derived stats ─────────────────────────────────────────────────────────
-    const stats = useMemo(() => {
-        const total = jobs.length;
-        const enabled = jobs.filter(j => j.isEnabled).length;
-        const disabled = jobs.filter(j => !j.isEnabled).length;
-        const poisoned = jobs.filter(j => j.isPoisoned).length;
-        const withFailures = jobs.filter(j => j.totalFailedCount > 0).length;
-        const totalFailures = jobs.reduce((sum, j) => sum + j.totalFailedCount, 0);
-
-        return { total, enabled, disabled, poisoned, withFailures, totalFailures };
-    }, [jobs]);
-
-    // ── Filtered jobs ─────────────────────────────────────────────────────────
     const filteredJobs = useMemo(() => {
-        let result = jobs;
-
-        // Filter by worker
-        if (filterWorker !== 'all') {
-            result = result.filter(j => j.workerRegistrationId === filterWorker);
-        }
-
-        // Filter by enabled status
-        if (filterEnabled === 'enabled') {
-            result = result.filter(j => j.isEnabled);
-        } else if (filterEnabled === 'disabled') {
-            result = result.filter(j => !j.isEnabled);
-        }
-
-        // Search filter
+        let r = jobs;
+        if (filterWorker !== 'all')    r = r.filter(j => j.workerRegistrationId === filterWorker);
+        if (filterEnabled === 'enabled')  r = r.filter(j => j.isEnabled);
+        if (filterEnabled === 'disabled') r = r.filter(j => !j.isEnabled);
         if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            result = result.filter(j =>
-                j.jobName.toLowerCase().includes(query) ||
-                j.id.toLowerCase().includes(query) ||
-                getJobTypeName(j.jobType).toLowerCase().includes(query) ||
-                j.jobConfigurationJson.toLowerCase().includes(query)
+            const q = searchQuery.toLowerCase();
+            r = r.filter(j =>
+                j.jobName.toLowerCase().includes(q) ||
+                j.id.toLowerCase().includes(q) ||
+                getJobTypeName(j.jobType).toLowerCase().includes(q) ||
+                j.jobConfigurationJson.toLowerCase().includes(q)
             );
         }
-
-        return result;
+        return r;
     }, [jobs, filterWorker, filterEnabled, searchQuery]);
 
     // ── Table columns ─────────────────────────────────────────────────────────
+
     const columns = useMemo(() => [
         {
             key: 'jobName',
@@ -723,253 +378,169 @@ export default function WorkerJobsPage() {
             width: 280,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const job = row as unknown as WorkerJob;
-                const execution = jobExecutions.get(job.id);
-                
+                const ex = activeExecutions.get(job.id);
                 return (
                     <div className="flex items-center gap-2">
-                        {execution && (
-                            <div className="relative">
-                                {execution.status === 2 ? (
-                                    // InProgress - spinning loader
-                                    <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />
-                                ) : (
-                                    // Pending/Claimed - pulsing dot
-                                    <div className="relative flex h-4 w-4 items-center justify-center">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-                                    </div>
-                                )}
-                            </div>
+                        {ex && (
+                            ex.status === 2
+                                ? <Loader2 className="h-4 w-4 text-yellow-500 animate-spin shrink-0" />
+                                : <span className="relative flex h-3 w-3 shrink-0">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500" />
+                                  </span>
                         )}
-                        <div className="flex-1">
-                            <div className="font-medium text-sm text-gray-900 dark:text-gray-100">
-                                {String(value)}
-                            </div>
-                            <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                        <div>
+                            <div className="font-medium text-sm">{String(value)}</div>
+                            <div className="flex items-center gap-1 mt-0.5">
                                 <Badge className={`${getJobTypeColor(job.jobType)} text-white text-xs px-1.5 py-0`}>
                                     {getJobTypeName(job.jobType)}
                                 </Badge>
-                                {execution && (
+                                {ex && (
                                     <Badge variant="outline" className="text-xs px-1.5 py-0 border-blue-300 text-blue-600">
-                                        {execution.status === 2 ? 'In Progress' : execution.status === 1 ? 'Claimed' : 'Pending'}
+                                        {ex.status === 2 ? 'In Progress' : ex.status === 1 ? 'Claimed' : 'Pending'}
                                     </Badge>
                                 )}
                             </div>
                         </div>
                     </div>
                 );
-            }
+            },
         },
         {
             key: 'workerRegistrationId',
             label: 'Worker',
             width: 200,
             render: (value: unknown) => {
-                const workerId = value as string;
-                const worker = workerData?.workers?.find(w => w.workerRegistrationId === workerId);
-                
-                if (!worker) {
-                    return (
-                        <div className="text-xs text-gray-400">
-                            <div className="font-mono truncate">{workerId.substring(0, 8)}...</div>
-                        </div>
-                    );
-                }
-                
+                const worker = workerData?.workers?.find(w => w.workerRegistrationId === value);
+                if (!worker) return <span className="text-xs text-gray-400 font-mono">{String(value).substring(0, 8)}…</span>;
                 return (
-                    <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{worker.machineName}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">{worker.workerInstanceId}</span>
+                    <div>
+                        <div className="text-sm font-medium">{worker.machineName}</div>
+                        <div className="text-xs text-gray-500 font-mono">{worker.workerInstanceId}</div>
                     </div>
                 );
-            }
+            },
         },
         {
             key: 'isEnabled',
             label: 'Status',
-            width: 140,
+            width: 130,
             render: (value: unknown, row: Record<string, unknown>) => {
                 const job = row as unknown as WorkerJob;
                 return (
                     <div className="flex flex-col gap-1">
-                        {value ? (
-                            <Badge className="bg-green-500 hover:bg-green-600 text-white w-fit">
-                                <Zap className="h-3 w-3 mr-1" />
-                                Enabled
-                            </Badge>
-                        ) : (
-                            <Badge variant="secondary" className="w-fit">
-                                <ZapOff className="h-3 w-3 mr-1" />
-                                Disabled
-                            </Badge>
-                        )}
+                        {value
+                            ? <Badge className="bg-green-500 hover:bg-green-600 text-white w-fit"><Zap className="h-3 w-3 mr-1" />Enabled</Badge>
+                            : <Badge variant="secondary" className="w-fit"><ZapOff className="h-3 w-3 mr-1" />Disabled</Badge>
+                        }
                         {job.isPoisoned && (
-                            <Badge className="bg-red-500 hover:bg-red-600 text-white w-fit">
-                                <Skull className="h-3 w-3 mr-1" />
-                                Poisoned
-                            </Badge>
+                            <Badge className="bg-red-500 hover:bg-red-600 text-white w-fit"><Skull className="h-3 w-3 mr-1" />Poisoned</Badge>
                         )}
                     </div>
                 );
-            }
+            },
         },
         {
             key: 'lastRunAt',
             label: 'Last Run',
-            width: 180,
+            width: 160,
             render: (value: unknown) => {
                 const iso = value as string | null;
                 return (
                     <div className="text-sm">
-                        <div className="text-gray-900 dark:text-gray-100">{getRelativeTime(iso)}</div>
+                        <div>{getRelativeTime(iso)}</div>
                         <div className="text-xs text-gray-500">{formatDateTime(iso)}</div>
                     </div>
                 );
-            }
+            },
         },
         {
             key: 'nextScheduledRun',
             label: 'Next Run',
-            width: 180,
+            width: 160,
             render: (value: unknown) => {
                 const iso = value as string | null;
-                const relative = getNextRunRelative(iso);
+                const rel = getNextRunRelative(iso);
                 return (
                     <div className="text-sm">
-                        <div className={`font-medium ${relative === 'Overdue' ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'}`}>
-                            {relative}
-                        </div>
+                        <div className={rel === 'Overdue' ? 'font-medium text-red-600 dark:text-red-400' : ''}>{rel}</div>
                         <div className="text-xs text-gray-500">{formatDateTime(iso)}</div>
                     </div>
                 );
-            }
+            },
         },
         {
             key: 'intervalHours',
             label: 'Interval',
-            width: 100,
+            width: 90,
             render: (value: unknown) => {
-                const hours = value as number;
-                const days = hours / 24;
+                const h = value as number;
                 return (
                     <div className="text-sm">
-                        <div className="font-medium">{hours}h</div>
-                        {days >= 1 && <div className="text-xs text-gray-500">({days}d)</div>}
+                        <div className="font-medium">{h}h</div>
+                        {h >= 24 && <div className="text-xs text-gray-500">{h / 24}d</div>}
                     </div>
                 );
-            }
+            },
         },
         {
-            key: 'lastSuccessAt',
-            label: 'Last Job Status',
-            width: 140,
-            render: (_: unknown, row: Record<string, unknown>) => {
+            key: 'failureCount',
+            label: 'Last Status',
+            width: 120,
+            render: (value: unknown, row: Record<string, unknown>) => {
                 const job = row as unknown as WorkerJob;
-                const lastSuccess = job.lastSuccessAt ? new Date(job.lastSuccessAt).getTime() : 0;
-                const lastFailed = job.lastFailedAt ? new Date(job.lastFailedAt).getTime() : 0;
-                
-                // Determine the status based on most recent execution
-                if (!lastSuccess && !lastFailed) {
-                    // Never executed
-                    return (
-                        <Badge variant="outline" className="border-gray-400 text-gray-600">
-                            <Clock className="h-3 w-3 mr-1" />
-                            Never Run
-                        </Badge>
-                    );
-                } else if (lastSuccess > lastFailed) {
-                    // Last run was successful
-                    return (
-                        <Badge className="bg-green-500 hover:bg-green-600 text-white">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Success
-                        </Badge>
-                    );
-                } else {
-                    // Last run failed
-                    return (
-                        <Badge className="bg-red-500 hover:bg-red-600 text-white">
-                            <XCircle className="h-3 w-3 mr-1" />
-                            Failed
-                        </Badge>
-                    );
+                if (!job.lastRunAt) {
+                    return <Badge variant="outline" className="border-gray-400 text-gray-600"><Clock className="h-3 w-3 mr-1" />Never Run</Badge>;
                 }
-            }
+                const failures = value as number;
+                const lastFailTime = job.lastFailureAt ? new Date(job.lastFailureAt).getTime() : 0;
+                const lastRunTime  = new Date(job.lastRunAt).getTime();
+                const lastWasFail  = failures > 0 && lastFailTime >= lastRunTime;
+                return lastWasFail
+                    ? <Badge className="bg-red-500 hover:bg-red-600 text-white"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>
+                    : <Badge className="bg-green-500 hover:bg-green-600 text-white"><CheckCircle className="h-3 w-3 mr-1" />Success</Badge>;
+            },
         },
         {
             key: 'id',
-            label: 'Actions',
-            width: 100,
+            label: '',
+            width: 60,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const job = row as unknown as WorkerJob;
                 return (
-                    <div className="flex items-center gap-2">
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedJob(job);
-                                setIsDetailsOpen(true);
-                            }}
-                            title="View Details"
-                        >
-                            <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setJobToDelete(job);
-                                setDeleteError(null);
-                                setShowDeleteDialog(true);
-                            }}
-                            title="Delete Job"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        onClick={(e) => { e.stopPropagation(); setJobToDelete(job); setDeleteError(null); }}
+                        title="Delete Job"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
                 );
-            }
-        }
-    ], [jobExecutions, workerData?.workers]);
+            },
+        },
+    ], [activeExecutions, workerData?.workers]);
 
-    // ── Loading state ─────────────────────────────────────────────────────────
+    // ── Render ────────────────────────────────────────────────────────────────
+
     if (loading && jobs.length === 0) {
         return (
-            <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
-                <Card>
-                    <CardContent className="pt-6">
-                        <div className="text-center py-16">
-                            <Loader2 className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                Loading Jobs
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                Fetching job data…
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
+            <div className="flex items-center justify-center h-96">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
             </div>
         );
     }
 
-    // ── Error state ───────────────────────────────────────────────────────────
     if (error && jobs.length === 0) {
         return (
-            <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
-                <Card className="border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                            <XCircle className="h-5 w-5" />
-                            <span className="font-medium">Error: {error}</span>
-                        </div>
-                        <Button onClick={fetchJobs} className="mt-4" variant="outline">
-                            <RefreshCw className="h-4 w-4 mr-2" />
-                            Try Again
+            <div className="p-6">
+                <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+                    <CardContent className="pt-6 flex items-center gap-3">
+                        <XCircle className="h-5 w-5 text-red-600" />
+                        <span className="text-red-600 font-medium">{error}</span>
+                        <Button onClick={fetchJobs} variant="outline" size="sm" className="ml-auto">
+                            <RefreshCw className="h-4 w-4 mr-2" />Retry
                         </Button>
                     </CardContent>
                 </Card>
@@ -977,156 +548,82 @@ export default function WorkerJobsPage() {
         );
     }
 
-    // ── Main render ───────────────────────────────────────────────────────────
     return (
-        <div className="p-4 lg:p-8 space-y-6 w-full max-w-none">
+        <div className="p-6 space-y-6">
 
-            {/* ── Header ─────────────────────────────────────────────────────── */}
+            {/* Header */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
                         <BriefcaseBusiness className="h-8 w-8 text-blue-500" />
                         Job Management
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-300 mt-1">
-                        Monitor and manage all worker jobs
-                    </p>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Monitor and manage all worker jobs</p>
                     {lastRefreshed && (
-                        <p className="text-xs text-gray-400 mt-1">
-                            Last refreshed: {formatDateTime(lastRefreshed.toISOString())}
-                        </p>
+                        <p className="text-xs text-gray-400 mt-1">Last refreshed: {formatDateTime(lastRefreshed.toISOString())}</p>
                     )}
                 </div>
-
-                <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center gap-2">
-                        <Switch
-                            id="auto-refresh"
-                            checked={autoRefresh}
-                            onCheckedChange={setAutoRefresh}
-                        />
-                        <Label htmlFor="auto-refresh" className="text-sm">Auto-refresh (30s)</Label>
+                        <Switch id="auto-refresh" checked={autoRefresh} onCheckedChange={setAutoRefresh} />
+                        <Label htmlFor="auto-refresh" className="text-sm cursor-pointer">Auto-refresh (30s)</Label>
                     </div>
-                    <Button 
-                        onClick={() => {
-                            resetCreateForm();
-                            setShowCreateDialog(true);
-                        }} 
-                        variant="default" 
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Job
+                    <Button onClick={() => { resetCreateForm(); setShowCreateDialog(true); }}>
+                        <Plus className="h-4 w-4 mr-2" />Create Job
                     </Button>
-                    <Button onClick={fetchJobs} variant="outline" size="sm" disabled={loading}>
-                        <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                        Refresh
+                    <Button onClick={fetchJobs} variant="outline" disabled={loading}>
+                        <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />Refresh
                     </Button>
                 </div>
             </div>
 
-            {/* ── Stat Cards ────────────────────────────────────────────────── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-800">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Total Jobs</p>
-                                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{stats.total}</p>
+            {/* Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                {[
+                    { label: 'Total',          value: stats.total,        icon: BriefcaseBusiness, color: 'text-blue-600' },
+                    { label: 'Enabled',        value: stats.enabled,      icon: Zap,               color: 'text-green-600' },
+                    { label: 'Disabled',       value: stats.disabled,     icon: ZapOff,            color: 'text-gray-600' },
+                    { label: 'Poisoned',       value: stats.poisoned,     icon: Skull,             color: 'text-red-600' },
+                    { label: 'With Failures',  value: stats.withFailures, icon: AlertTriangle,     color: 'text-orange-600' },
+                    { label: 'Total Failures', value: stats.totalFailures,icon: TrendingUp,        color: 'text-purple-600' },
+                ].map(({ label, value, icon: Icon, color }) => (
+                    <Card key={label}>
+                        <CardContent className="pt-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-xs text-gray-500">{label}</p>
+                                    <p className={`text-2xl font-bold mt-1 ${color}`}>{value}</p>
+                                </div>
+                                <Icon className={`h-8 w-8 opacity-30 ${color}`} />
                             </div>
-                            <BriefcaseBusiness className="h-10 w-10 text-blue-500 opacity-40" />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Enabled</p>
-                                <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.enabled}</p>
-                            </div>
-                            <Zap className="h-10 w-10 text-green-500 opacity-40" />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20 border-gray-200 dark:border-gray-800">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Disabled</p>
-                                <p className="text-2xl font-bold text-gray-600 dark:text-gray-400 mt-1">{stats.disabled}</p>
-                            </div>
-                            <ZapOff className="h-10 w-10 text-gray-500 opacity-40" />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 border-red-200 dark:border-red-800">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Poisoned</p>
-                                <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{stats.poisoned}</p>
-                            </div>
-                            <Skull className="h-10 w-10 text-red-500 opacity-40" />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-orange-200 dark:border-orange-800">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300">With Failures</p>
-                                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">{stats.withFailures}</p>
-                            </div>
-                            <AlertTriangle className="h-10 w-10 text-orange-500 opacity-40" />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Total Failures</p>
-                                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">{stats.totalFailures}</p>
-                            </div>
-                            <TrendingUp className="h-10 w-10 text-purple-500 opacity-40" />
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
 
-            {/* ── Filters & Search ──────────────────────────────────────────── */}
-            <Card className="bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
-                <CardContent className="pt-6">
-                    <div className="flex flex-col lg:flex-row gap-4">
-                        <div className="flex-1">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <Input
-                                    placeholder="Search jobs by name, ID, type, or configuration..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10"
-                                />
-                            </div>
+            {/* Filters */}
+            <Card>
+                <CardContent className="pt-4">
+                    <div className="flex flex-col lg:flex-row gap-3">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                                placeholder="Search by name, ID, type, or configuration…"
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                className="pl-10"
+                            />
                         </div>
-                        {/* Worker filter */}
                         {workerData?.workers && workerData.workers.length > 0 && (
                             <div className="flex items-center gap-2">
                                 <Server className="h-4 w-4 text-gray-400 shrink-0" />
                                 <select
                                     value={filterWorker}
-                                    onChange={(e) => setFilterWorker(e.target.value)}
+                                    onChange={e => setFilterWorker(e.target.value)}
                                     className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                                 >
                                     <option value="all">All Workers</option>
-                                    {workerData.workers.map((w) => (
+                                    {workerData.workers.map(w => (
                                         <option key={w.workerRegistrationId} value={w.workerRegistrationId}>
                                             {w.machineName} – {w.workerInstanceId}
                                         </option>
@@ -1135,134 +632,91 @@ export default function WorkerJobsPage() {
                             </div>
                         )}
                         <div className="flex gap-2">
-                            <Button
-                                variant={filterEnabled === 'all' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setFilterEnabled('all')}
-                            >
-                                All Jobs
-                            </Button>
-                            <Button
-                                variant={filterEnabled === 'enabled' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setFilterEnabled('enabled')}
-                            >
-                                <Zap className="h-4 w-4 mr-1" />
-                                Enabled
-                            </Button>
-                            <Button
-                                variant={filterEnabled === 'disabled' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setFilterEnabled('disabled')}
-                            >
-                                <ZapOff className="h-4 w-4 mr-1" />
-                                Disabled
-                            </Button>
+                            {(['all', 'enabled', 'disabled'] as const).map(f => (
+                                <Button
+                                    key={f}
+                                    size="sm"
+                                    variant={filterEnabled === f ? 'default' : 'outline'}
+                                    onClick={() => setFilterEnabled(f)}
+                                >
+                                    {f === 'enabled' && <Zap className="h-3 w-3 mr-1" />}
+                                    {f === 'disabled' && <ZapOff className="h-3 w-3 mr-1" />}
+                                    {f.charAt(0).toUpperCase() + f.slice(1)}{f === 'all' ? ' Jobs' : ''}
+                                </Button>
+                            ))}
                         </div>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* ── Jobs Table ────────────────────────────────────────────────── */}
-            <Card className="bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10">
+            {/* Table */}
+            <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Activity className="h-5 w-5" />
-                        Active Jobs
-                        <Badge variant="secondary" className="ml-2">
-                            {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'}
-                        </Badge>
+                        Jobs
+                        <Badge variant="secondary">{filteredJobs.length}</Badge>
                     </CardTitle>
-                    <CardDescription>
-                        {filterWorker !== 'all' && (() => {
-                            const w = workerData?.workers?.find(x => x.workerRegistrationId === filterWorker);
-                            return w ? `Worker: ${w.machineName}` : 'Filtered by worker';
-                        })()}
-                        {filterWorker !== 'all' && filterEnabled !== 'all' && ' · '}
-                        {filterEnabled !== 'all' && `Showing ${filterEnabled} jobs`}
-                        {searchQuery && ` · Search: "${searchQuery}"`}
-                    </CardDescription>
+                    {(filterWorker !== 'all' || filterEnabled !== 'all' || searchQuery) && (
+                        <CardDescription>
+                            {filterWorker !== 'all' && `Worker: ${workerData?.workers?.find(w => w.workerRegistrationId === filterWorker)?.machineName ?? filterWorker}`}
+                            {filterWorker !== 'all' && filterEnabled !== 'all' && ' · '}
+                            {filterEnabled !== 'all' && `${filterEnabled} only`}
+                            {searchQuery && ` · "${searchQuery}"`}
+                        </CardDescription>
+                    )}
                 </CardHeader>
                 <CardContent>
                     {filteredJobs.length > 0 ? (
                         <DataTable
                             data={filteredJobs}
                             columns={columns}
-                            showPagination={true}
+                            showPagination
                             itemsPerPage={25}
-                            onRowClick={(row) => {
-                                const job = row as unknown as WorkerJob;
-                                router.push(`/worker/jobs/${job.id}`);
-                            }}
+                            onRowClick={row => router.push(`/worker/jobs/${(row as unknown as WorkerJob).id}`)}
                         />
                     ) : (
                         <div className="text-center py-12">
                             <BriefcaseBusiness className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                No jobs found
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                {searchQuery || filterEnabled !== 'all'
-                                    ? 'Try adjusting your filters'
-                                    : 'No jobs have been configured yet'}
+                            <p className="text-gray-500">
+                                {searchQuery || filterEnabled !== 'all' || filterWorker !== 'all'
+                                    ? 'No jobs match your filters'
+                                    : 'No jobs configured yet'}
                             </p>
                         </div>
                     )}
                 </CardContent>
             </Card>
 
-            {/* ── Job Details Dialog ────────────────────────────────────────── */}
-            <JobDetailsDialog
-                job={selectedJob}
-                isOpen={isDetailsOpen}
-                onClose={() => {
-                    setIsDetailsOpen(false);
-                    setSelectedJob(null);
-                }}
-            />
-
-            {/* ── Create Job Dialog ──────────────────────────────────────────── */}
-            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            {/* Create Job Dialog */}
+            <Dialog open={showCreateDialog} onOpenChange={open => { if (!open) resetCreateForm(); setShowCreateDialog(open); }}>
                 <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <Plus className="h-5 w-5 text-blue-500" />
-                            Create New Job
+                            <Plus className="h-5 w-5 text-blue-500" />Create New Job
                         </DialogTitle>
-                        <DialogDescription>
-                            Configure a new worker job to run automated tasks
-                        </DialogDescription>
+                        <DialogDescription>Configure a new worker job</DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-6 py-4">
-                        {/* Success Message */}
+                    <div className="space-y-5 py-2">
                         {createSuccess && (
-                            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                                <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                                    <CheckCircle className="h-4 w-4" />
-                                    <span className="text-sm font-medium">{createSuccess}</span>
-                                </div>
+                            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 flex items-center gap-2 text-green-700 dark:text-green-400">
+                                <CheckCircle className="h-4 w-4 shrink-0" />{createSuccess}
                             </div>
                         )}
-
-                        {/* Error Message */}
                         {createError && (
-                            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                                    <XCircle className="h-4 w-4" />
-                                    <span className="text-sm font-medium">{createError}</span>
-                                </div>
+                            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 flex items-center gap-2 text-red-700 dark:text-red-400">
+                                <XCircle className="h-4 w-4 shrink-0" />{createError}
                             </div>
                         )}
 
                         {/* Job Type */}
-                        <div className="space-y-2">
-                            <Label htmlFor="jobType">Job Type *</Label>
+                        <div className="space-y-1.5">
+                            <Label>Job Type *</Label>
                             <select
-                                id="jobType"
                                 value={formJobType}
-                                onChange={(e) => setFormJobType(Number(e.target.value))}
-                                className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm"
+                                onChange={e => setFormJobType(Number(e.target.value))}
+                                className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                             >
                                 <option value={1}>Intune Audit Report</option>
                                 <option value={2}>Entra Audit Report</option>
@@ -1272,460 +726,214 @@ export default function WorkerJobsPage() {
                                 <option value={6}>Automated Remediation</option>
                                 <option value={7}>Configuration Drift Monitor</option>
                             </select>
-                            <p className="text-xs text-gray-500">Select the type of automated task</p>
                         </div>
 
                         {/* Job Name */}
-                        <div className="space-y-2">
-                            <Label htmlFor="jobName">Job Name *</Label>
-                            <Input
-                                id="jobName"
-                                type="text"
-                                value={formJobName}
-                                onChange={(e) => setFormJobName(e.target.value)}
-                                placeholder="e.g., Weekly Intune Audit Report"
-                                required
-                            />
-                            <p className="text-xs text-gray-500">A descriptive name for this job</p>
+                        <div className="space-y-1.5">
+                            <Label>Job Name *</Label>
+                            <Input value={formJobName} onChange={e => setFormJobName(e.target.value)} placeholder="e.g., Weekly Intune Audit Report" />
                         </div>
 
-                        {/* Enable Job */}
-                        <div className="flex items-center justify-between p-4 rounded-lg border">
-                            <div className="flex items-center gap-3">
-                                {formIsEnabled ? <Zap className="h-5 w-5 text-green-500" /> : <ZapOff className="h-5 w-5 text-gray-400" />}
-                                <div>
-                                    <Label htmlFor="isEnabled" className="text-base font-medium cursor-pointer">
-                                        Enable Job
-                                    </Label>
-                                    <p className="text-sm text-gray-500 mt-0.5">
-                                        Start executing this job immediately after creation
-                                    </p>
-                                </div>
+                        {/* Enabled toggle */}
+                        <div className="flex items-center justify-between p-3 rounded-lg border">
+                            <div>
+                                <Label className="text-sm font-medium cursor-pointer">Enable Job</Label>
+                                <p className="text-xs text-gray-500 mt-0.5">Start executing immediately after creation</p>
                             </div>
-                            <Switch
-                                id="isEnabled"
-                                checked={formIsEnabled}
-                                onCheckedChange={setFormIsEnabled}
-                            />
+                            <Switch checked={formIsEnabled} onCheckedChange={setFormIsEnabled} />
                         </div>
 
-                        {/* Interval Hours */}
-                        <div className="space-y-2">
-                            <Label htmlFor="intervalHours">Run Interval (Hours) *</Label>
-                            <Input
-                                id="intervalHours"
-                                type="number"
-                                min="1"
-                                max="8760"
-                                value={formIntervalHours}
-                                onChange={(e) => setFormIntervalHours(Number(e.target.value))}
-                            />
-                            <p className="text-xs text-gray-500">
-                                Common: 24 (daily), 168 (weekly), 720 (monthly)
-                            </p>
+                        {/* Interval */}
+                        <div className="space-y-1.5">
+                            <Label>Interval (hours) *</Label>
+                            <Input type="number" min={1} max={8760} value={formIntervalHours} onChange={e => setFormIntervalHours(Number(e.target.value))} className="max-w-xs" />
+                            <p className="text-xs text-gray-500">24 = daily · 168 = weekly · 720 = monthly</p>
                         </div>
 
                         {/* First Run At */}
-                        <div className="space-y-2">
-                            <Label htmlFor="firstRunAt" className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4" />
-                                First Run At (Optional)
-                            </Label>
+                        <div className="space-y-1.5">
+                            <Label className="flex items-center gap-2"><Calendar className="h-4 w-4" />First Run At (optional)</Label>
                             <Input
-                                id="firstRunAt"
                                 type="datetime-local"
                                 value={formFirstRunAt}
-                                onChange={(e) => setFormFirstRunAt(e.target.value)}
+                                onChange={e => setFormFirstRunAt(e.target.value)}
                                 min={new Date().toISOString().slice(0, 16)}
+                                className="max-w-xs"
                             />
-                            <p className="text-xs text-gray-500">
-                                Schedule when this job should start. If empty, starts immediately based on interval.
-                            </p>
                             {formFirstRunAt && (
-                                <p className="text-xs text-blue-600 dark:text-blue-400">
-                                    ⏰ Will start at: {new Date(formFirstRunAt).toLocaleString(undefined, {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        timeZoneName: 'short'
-                                    })}
-                                </p>
+                                <p className="text-xs text-blue-600">⏰ {new Date(formFirstRunAt).toLocaleString(undefined, { dateStyle: 'long', timeStyle: 'short' })}</p>
                             )}
                         </div>
 
                         {/* Worker Selection */}
                         <div className="space-y-2">
-                            <Label className="flex items-center gap-2">
-                                <Server className="h-4 w-4" />
-                                Select Workers *
-                            </Label>
-                            <div className="text-xs text-gray-500 mb-3">
-                                Choose which workers should execute this job. The job will be created for each selected worker.
-                            </div>
-                            {workerData && workerData.workers && workerData.workers.length > 0 ? (
-                                <div className="space-y-2 max-h-60 overflow-y-auto border rounded-lg p-3">
+                            <Label className="flex items-center gap-2"><Server className="h-4 w-4" />Select Workers *</Label>
+                            {workerData?.workers?.length ? (
+                                <div className="border rounded-lg overflow-hidden">
                                     {/* Select All */}
-                                    <div className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                                    <label className="flex items-center gap-3 px-3 py-2 bg-gray-50 dark:bg-gray-800 border-b cursor-pointer">
                                         <input
                                             type="checkbox"
-                                            id="select-all-workers"
                                             checked={formSelectedWorkers.length === workerData.workers.length}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setFormSelectedWorkers(workerData.workers.map(w => w.workerRegistrationId));
-                                                } else {
-                                                    setFormSelectedWorkers([]);
-                                                }
-                                            }}
-                                            className="h-4 w-4 rounded border-gray-300"
+                                            onChange={e => setFormSelectedWorkers(e.target.checked ? workerData.workers.map(w => w.workerRegistrationId) : [])}
+                                            className="h-4 w-4"
                                         />
-                                        <label
-                                            htmlFor="select-all-workers"
-                                            className="text-sm font-medium cursor-pointer flex-1"
-                                        >
-                                            Select All ({workerData.workers.length} workers)
-                                        </label>
-                                    </div>
-                                    <Separator />
-                                    {/* Individual Workers */}
-                                    {workerData.workers.map((worker) => {
-                                        const isSelected = formSelectedWorkers.includes(worker.workerRegistrationId);
-                                        const healthInfo = getHealthStatusInfo(worker.healthStatus, worker.timeSinceLastHeartbeat);
-                                        
-                                        return (
-                                            <div
-                                                key={worker.workerRegistrationId}
-                                                className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    id={`worker-${worker.workerRegistrationId}`}
-                                                    checked={isSelected}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setFormSelectedWorkers([...formSelectedWorkers, worker.workerRegistrationId]);
-                                                        } else {
-                                                            setFormSelectedWorkers(formSelectedWorkers.filter(id => id !== worker.workerRegistrationId));
-                                                        }
-                                                    }}
-                                                    className="h-4 w-4 rounded border-gray-300"
-                                                />
-                                                <label
-                                                    htmlFor={`worker-${worker.workerRegistrationId}`}
-                                                    className="text-sm cursor-pointer flex-1"
-                                                >
-                                                    <div className="flex items-center justify-between">
-                                                        <div>
-                                                            <div className="font-medium text-gray-900 dark:text-gray-100">{worker.machineName}</div>
-                                                            <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{worker.workerInstanceId}</div>
-                                                        </div>
-                                                        <Badge className={`${healthInfo.color} text-white text-xs`}>
-                                                            {healthInfo.label}
-                                                        </Badge>
+                                        <span className="text-sm font-medium">Select all ({workerData.workers.length})</span>
+                                    </label>
+                                    {/* Workers list */}
+                                    <div className="max-h-48 overflow-y-auto divide-y">
+                                        {workerData.workers.map(w => {
+                                            const health = getHealthStatusInfo(w.healthStatus, w.timeSinceLastHeartbeat);
+                                            return (
+                                                <label key={w.workerRegistrationId} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formSelectedWorkers.includes(w.workerRegistrationId)}
+                                                        onChange={e => setFormSelectedWorkers(
+                                                            e.target.checked
+                                                                ? [...formSelectedWorkers, w.workerRegistrationId]
+                                                                : formSelectedWorkers.filter(id => id !== w.workerRegistrationId)
+                                                        )}
+                                                        className="h-4 w-4"
+                                                    />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="text-sm font-medium truncate">{w.machineName}</div>
+                                                        <div className="text-xs text-gray-500 font-mono truncate">{w.workerInstanceId}</div>
                                                     </div>
+                                                    <Badge className={`${health.color} text-white text-xs shrink-0`}>{health.label}</Badge>
                                                 </label>
-                                            </div>
-                                        );
-                                    })}
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-                                    <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
-                                        <AlertTriangle className="h-4 w-4" />
-                                        <span className="text-sm">No workers available. Please register a worker first.</span>
-                                    </div>
+                                <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 flex items-center gap-2 text-yellow-700">
+                                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                                    <span className="text-sm">No workers available. Please register a worker first.</span>
                                 </div>
                             )}
                             {formSelectedWorkers.length > 0 && (
-                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-                                    ✓ {formSelectedWorkers.length} worker(s) selected
-                                </p>
+                                <p className="text-xs text-blue-600">✓ {formSelectedWorkers.length} worker(s) selected</p>
                             )}
                         </div>
 
                         <Separator />
 
-                        {/* Job-Specific Configuration */}
+                        {/* Job-specific config — currently only type 1 has a UI */}
                         {formJobType === 1 && (
-                            <>
-                                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                                    <Settings className="h-4 w-4" />
-                                    Intune Audit Report Configuration
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-semibold flex items-center gap-2">
+                                    <Settings className="h-4 w-4" />Intune Audit Report Configuration
                                 </h3>
 
-                                {/* Recipient Email */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="recipientEmail" className="flex items-center gap-2">
-                                        <Mail className="h-4 w-4" />
-                                        Recipient Email *
-                                    </Label>
-                                    <Input
-                                        id="recipientEmail"
-                                        type="email"
-                                        value={formRecipientEmail}
-                                        onChange={(e) => setFormRecipientEmail(e.target.value)}
-                                        placeholder="admin@contoso.com"
-                                        required
-                                    />
-                                    <p className="text-xs text-gray-500">Primary email recipient for the audit report</p>
+                                <div className="space-y-1.5">
+                                    <Label className="flex items-center gap-2"><Mail className="h-4 w-4" />Recipient Email *</Label>
+                                    <Input type="email" value={formRecipientEmail} onChange={e => setFormRecipientEmail(e.target.value)} placeholder="admin@contoso.com" />
                                 </div>
 
-                                {/* CC Emails */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="ccEmails">CC Emails (Optional)</Label>
-                                    <Input
-                                        id="ccEmails"
-                                        type="text"
-                                        value={formCcEmails}
-                                        onChange={(e) => setFormCcEmails(e.target.value)}
-                                        placeholder="manager@contoso.com, security@contoso.com"
-                                    />
-                                    <p className="text-xs text-gray-500">Comma-separated list of additional recipients</p>
+                                <div className="space-y-1.5">
+                                    <Label>CC Emails (optional)</Label>
+                                    <Input value={formCcEmails} onChange={e => setFormCcEmails(e.target.value)} placeholder="manager@contoso.com, security@contoso.com" />
+                                    <p className="text-xs text-gray-500">Comma-separated</p>
                                 </div>
 
-                                {/* Tenant Information (Auto-populated) */}
-                                {selectedTenant ? (
-                                    <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                                        <div className="flex items-start gap-2">
-                                            <Settings className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                                    Target Tenant
-                                                </p>
-                                                <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
-                                                    {selectedTenant.displayName || selectedTenant.domainName}
-                                                </p>
-                                                <p className="text-xs text-blue-600 dark:text-blue-300 font-mono mt-1">
-                                                    {selectedTenant.tenantId}
-                                                </p>
-                                            </div>
-                                        </div>
+                                {/* Tenant info (read-only) */}
+                                <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 text-sm">
+                                    <p className="font-medium text-blue-900 dark:text-blue-100">Target Tenant</p>
+                                    {selectedTenant ? (
+                                        <>
+                                            <p className="text-blue-800 dark:text-blue-200 mt-0.5">{selectedTenant.displayName || selectedTenant.domainName}</p>
+                                            <p className="text-xs text-blue-600 font-mono mt-0.5">{selectedTenant.tenantId}</p>
+                                        </>
+                                    ) : effectiveTenantId ? (
+                                        <p className="text-xs text-blue-600 font-mono mt-0.5">{effectiveTenantId}</p>
+                                    ) : (
+                                        <p className="text-amber-600 mt-0.5">No tenant available — please log in again</p>
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <Label>Lookback Days</Label>
+                                        <Input type="number" min={1} max={90} value={formLookbackDays} onChange={e => setFormLookbackDays(Number(e.target.value))} />
                                     </div>
-                                ) : effectiveTenantId ? (
-                                    <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                                        <div className="flex items-start gap-2">
-                                            <Settings className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                                    Target Tenant (from login)
-                                                </p>
-                                                <p className="text-xs text-blue-600 dark:text-blue-300 font-mono mt-1">
-                                                    {effectiveTenantId}
-                                                </p>
-                                                <p className="text-xs text-blue-500 dark:text-blue-400 mt-1">
-                                                    Using tenant from your authentication session
-                                                </p>
-                                            </div>
-                                        </div>
+                                    <div className="space-y-1.5">
+                                        <Label>Max Events</Label>
+                                        <Input type="number" min={1} max={10000} value={formMaxEvents} onChange={e => setFormMaxEvents(Number(e.target.value))} />
                                     </div>
-                                ) : (
-                                    <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-                                        <div className="flex items-start gap-2">
-                                            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5" />
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                                                    No Tenant Available
-                                                </p>
-                                                <p className="text-sm text-amber-800 dark:text-amber-200 mt-1">
-                                                    Please log in again to continue
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Lookback Days */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="lookbackDays">Lookback Days</Label>
-                                    <Input
-                                        id="lookbackDays"
-                                        type="number"
-                                        min="1"
-                                        max="90"
-                                        value={formLookbackDays}
-                                        onChange={(e) => setFormLookbackDays(Number(e.target.value))}
-                                        className="max-w-xs"
-                                    />
-                                    <p className="text-xs text-gray-500">Number of days to look back for audit events (1-90)</p>
                                 </div>
 
-                                {/* Max Events */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="maxEvents">Maximum Events</Label>
-                                    <Input
-                                        id="maxEvents"
-                                        type="number"
-                                        min="1"
-                                        max="10000"
-                                        value={formMaxEvents}
-                                        onChange={(e) => setFormMaxEvents(Number(e.target.value))}
-                                        className="max-w-xs"
-                                    />
-                                    <p className="text-xs text-gray-500">Maximum number of events to include in report</p>
+                                <div className="space-y-1.5">
+                                    <Label>Categories (optional)</Label>
+                                    <Input value={formCategories} onChange={e => setFormCategories(e.target.value)} placeholder="Application, Policy, Device, Role" />
+                                    <p className="text-xs text-gray-500">Comma-separated</p>
                                 </div>
 
-
-                                {/* Only Report If Events Found */}
-                                <div className="flex items-center justify-between p-4 rounded-lg border">
+                                <div className="flex items-center justify-between p-3 rounded-lg border">
                                     <div>
-                                        <Label htmlFor="onlyReportIfEventsFound" className="text-base font-medium cursor-pointer">
-                                            Only Report If Events Found
-                                        </Label>
-                                        <p className="text-sm text-gray-500 mt-0.5">
-                                            Skip sending report if no audit events are found
-                                        </p>
+                                        <Label className="text-sm font-medium cursor-pointer">Only Report If Events Found</Label>
+                                        <p className="text-xs text-gray-500 mt-0.5">Skip sending if no events found</p>
                                     </div>
-                                    <Switch
-                                        id="onlyReportIfEventsFound"
-                                        checked={formOnlyReportIfEventsFound}
-                                        onCheckedChange={setFormOnlyReportIfEventsFound}
-                                    />
+                                    <Switch checked={formOnlyReportIfEventsFound} onCheckedChange={setFormOnlyReportIfEventsFound} />
                                 </div>
-                            </>
+                            </div>
                         )}
                     </div>
 
-                    <DialogFooter className="flex gap-2 sm:gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowCreateDialog(false)}
-                            disabled={creating}
-                        >
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => { setShowCreateDialog(false); resetCreateForm(); }} disabled={creating}>
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleCreateJob}
-                            disabled={creating || !effectiveTenantId || !formRecipientEmail}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                            title={!effectiveTenantId ? 'No tenant ID available' : !formRecipientEmail ? 'Please enter recipient email' : ''}
-                        >
-                            {creating ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Creating...
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Create Job
-                                </>
-                            )}
+                        <Button onClick={handleCreateJob} disabled={creating || !effectiveTenantId}>
+                            {creating ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Creating…</> : <><Save className="h-4 w-4 mr-2" />Create Job</>}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* ── Delete Job Confirmation Dialog ─────────────────────────────── */}
-            <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={!!jobToDelete} onOpenChange={open => { if (!open) { setJobToDelete(null); setDeleteError(null); } }}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                            <Trash2 className="h-5 w-5" />
-                            Delete Job
+                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                            <Trash2 className="h-5 w-5" />Delete Job
                         </DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to delete this job? This action cannot be undone.
-                        </DialogDescription>
+                        <DialogDescription>This action cannot be undone.</DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-4 py-4">
-                        {/* Job Info */}
-                        {jobToDelete && (
-                            <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                <div className="flex items-start gap-3">
-                                    <BriefcaseBusiness className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                                            {jobToDelete.jobName}
-                                        </p>
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <Badge className={`${getJobTypeColor(jobToDelete.jobType)} text-white text-xs`}>
-                                                {getJobTypeName(jobToDelete.jobType)}
-                                            </Badge>
-                                            {jobToDelete.isEnabled ? (
-                                                <Badge variant="outline" className="text-xs border-green-500 text-green-600">
-                                                    <Zap className="h-3 w-3 mr-1" />
-                                                    Enabled
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant="outline" className="text-xs border-gray-400 text-gray-600">
-                                                    <ZapOff className="h-3 w-3 mr-1" />
-                                                    Disabled
-                                                </Badge>
-                                            )}
-                                        </div>
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-                                            Interval: {jobToDelete.intervalHours}h
-                                            {jobToDelete.lastRunAt && (
-                                                <> • Last run: {formatDateTime(jobToDelete.lastRunAt)}</>
-                                            )}
-                                        </p>
-                                    </div>
+                    {jobToDelete && (
+                        <div className="space-y-4 py-2">
+                            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200">
+                                <p className="font-semibold text-sm">{jobToDelete.jobName}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <Badge className={`${getJobTypeColor(jobToDelete.jobType)} text-white text-xs`}>{getJobTypeName(jobToDelete.jobType)}</Badge>
+                                    <span className="text-xs text-gray-500">{jobToDelete.intervalHours}h interval</span>
                                 </div>
                             </div>
-                        )}
 
-                        {/* Error Message */}
-                        {deleteError && (
-                            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                                    <XCircle className="h-4 w-4" />
-                                    <span className="text-sm font-medium">{deleteError}</span>
+                            {deleteError && (
+                                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 flex items-center gap-2 text-red-700">
+                                    <XCircle className="h-4 w-4 shrink-0" />{deleteError}
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Warning */}
-                        <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
-                            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
-                            <div>
-                                <p className="font-medium text-gray-900 dark:text-gray-100">Warning</p>
-                                <p className="mt-1">
-                                    Deleting this job will:
-                                </p>
-                                <ul className="list-disc list-inside mt-1 space-y-1 text-xs">
-                                    <li>Stop all scheduled executions</li>
-                                    <li>Remove job configuration permanently</li>
-                                    <li>Delete execution history</li>
-                                </ul>
+                            <div className="flex items-start gap-2 text-sm text-gray-600">
+                                <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                                <p>All scheduled executions and execution history will be permanently removed.</p>
                             </div>
                         </div>
-                    </div>
+                    )}
 
-                    <DialogFooter className="flex gap-2 sm:gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                setShowDeleteDialog(false);
-                                setJobToDelete(null);
-                                setDeleteError(null);
-                            }}
-                            disabled={deleting}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleDeleteJob}
-                            disabled={deleting}
-                            className="bg-red-600 hover:bg-red-700 text-white"
-                        >
-                            {deleting ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Deleting...
-                                </>
-                            ) : (
-                                <>
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Delete Job
-                                </>
-                            )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => { setJobToDelete(null); setDeleteError(null); }} disabled={deleting}>Cancel</Button>
+                        <Button onClick={handleDeleteJob} disabled={deleting} className="bg-red-600 hover:bg-red-700 text-white">
+                            {deleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Deleting…</> : <><Trash2 className="h-4 w-4 mr-2" />Delete</>}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
         </div>
     );
 }
+
