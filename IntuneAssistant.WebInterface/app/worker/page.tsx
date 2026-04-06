@@ -67,45 +67,28 @@ function parseTimeSince(ts: string): { totalSeconds: number; display: string } {
 
 function getHealthStatusInfo(healthStatus: number, timeSince: string) {
     const { totalSeconds } = parseTimeSince(timeSince);
-    
-    // Critical if no heartbeat in 10 minutes or healthStatus is Critical
-    if (totalSeconds > 600 || healthStatus === HealthStatus.Critical) {
-        return {
-            label: 'Critical',
-            color: 'bg-red-500 hover:bg-red-600',
-            icon: XCircle,
-            textColor: 'text-red-600 dark:text-red-400'
-        };
+
+    // Offline: no heartbeat 60+ min OR backend says Offline (2)
+    if (totalSeconds > 3600 || healthStatus === HealthStatus.Offline) {
+        return { label: 'Offline',  color: 'bg-red-500 hover:bg-red-600',    icon: XCircle,       textColor: 'text-red-600 dark:text-red-400' };
     }
-    
-    // Warning if no heartbeat in 5 minutes or healthStatus is Warning
-    if (totalSeconds > 300 || healthStatus === HealthStatus.Warning) {
-        return {
-            label: 'Warning',
-            color: 'bg-yellow-500 hover:bg-yellow-600',
-            icon: AlertTriangle,
-            textColor: 'text-yellow-600 dark:text-yellow-400'
-        };
+    // Stale: no heartbeat 10+ min OR backend says Stale (1)
+    if (totalSeconds > 600  || healthStatus === HealthStatus.Stale) {
+        return { label: 'Stale',    color: 'bg-yellow-500 hover:bg-yellow-600', icon: AlertTriangle, textColor: 'text-yellow-600 dark:text-yellow-400' };
     }
-    
-    return {
-        label: 'Healthy',
-        color: 'bg-green-500 hover:bg-green-600',
-        icon: CheckCircle,
-        textColor: 'text-green-600 dark:text-green-400'
-    };
+    if (healthStatus === HealthStatus.Unknown) {
+        return { label: 'Unknown',  color: 'bg-gray-500 hover:bg-gray-600',   icon: AlertTriangle, textColor: 'text-gray-500 dark:text-gray-400' };
+    }
+    return { label: 'Healthy', color: 'bg-green-500 hover:bg-green-600', icon: CheckCircle, textColor: 'text-green-600 dark:text-green-400' };
 }
 
 function getRegistrationStatusInfo(status: number) {
     switch (status) {
-        case RegistrationStatus.Active:
-            return { label: 'Active', color: 'bg-green-500 hover:bg-green-600' };
-        case RegistrationStatus.Inactive:
-            return { label: 'Inactive', color: 'bg-gray-500 hover:bg-gray-600' };
-        case RegistrationStatus.Decommissioned:
-            return { label: 'Decommissioned', color: 'bg-red-500 hover:bg-red-600' };
-        default:
-            return { label: 'Unknown', color: 'bg-gray-500 hover:bg-gray-600' };
+        case RegistrationStatus.Approved:      return { label: 'Approved',  color: 'bg-green-500 hover:bg-green-600' };
+        case RegistrationStatus.Pending:       return { label: 'Pending',   color: 'bg-yellow-500 hover:bg-yellow-600' };
+        case RegistrationStatus.Rejected:      return { label: 'Rejected',  color: 'bg-red-500 hover:bg-red-600' };
+        case RegistrationStatus.Revoked:       return { label: 'Revoked',   color: 'bg-orange-500 hover:bg-orange-600' };
+        default:                               return { label: 'Unknown',   color: 'bg-gray-500 hover:bg-gray-600' };
     }
 }
 
@@ -172,17 +155,17 @@ export default function WorkerOverviewPage() {
             total: workers.length,
             healthy: workers.filter(w => {
                 const { totalSeconds } = parseTimeSince(w.timeSinceLastHeartbeat);
-                return totalSeconds <= 300 && w.healthStatus === HealthStatus.Healthy;
+                return totalSeconds <= 600 && w.healthStatus === HealthStatus.Healthy;
             }).length,
             warning: workers.filter(w => {
                 const { totalSeconds } = parseTimeSince(w.timeSinceLastHeartbeat);
-                return (totalSeconds > 300 && totalSeconds <= 600) || w.healthStatus === HealthStatus.Warning;
+                return (totalSeconds > 600 && totalSeconds <= 3600) || w.healthStatus === HealthStatus.Stale;
             }).length,
             critical: workers.filter(w => {
                 const { totalSeconds } = parseTimeSince(w.timeSinceLastHeartbeat);
-                return totalSeconds > 600 || w.healthStatus === HealthStatus.Critical;
+                return totalSeconds > 3600 || w.healthStatus === HealthStatus.Offline;
             }).length,
-            active: workers.filter(w => w.registrationStatus === RegistrationStatus.Active).length,
+            active: workers.filter(w => w.registrationStatus === RegistrationStatus.Approved).length,
         };
     }, [workerData]);
 

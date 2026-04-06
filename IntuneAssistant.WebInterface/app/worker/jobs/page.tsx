@@ -137,42 +137,44 @@ function parseTimeSince(ts: string): { totalSeconds: number; display: string } {
 
 function getHealthStatusInfo(healthStatus: number, timeSince: string) {
     const { totalSeconds } = parseTimeSince(timeSince);
-    
-    // Critical if no heartbeat in 10 minutes or healthStatus is Critical (2)
-    if (totalSeconds > 600 || healthStatus === 2) {
-        return {
-            label: 'Critical',
-            color: 'bg-red-500',
-            icon: 'XCircle',
-        };
+
+    if (totalSeconds > 3600 || healthStatus === 2) {
+        return { label: 'Offline',  color: 'bg-red-500' };
     }
-    
-    // Warning if no heartbeat in 5 minutes or healthStatus is Warning (1)
-    if (totalSeconds > 300 || healthStatus === 1) {
-        return {
-            label: 'Warning',
-            color: 'bg-yellow-500',
-            icon: 'AlertTriangle',
-        };
+    if (totalSeconds > 600  || healthStatus === 1) {
+        return { label: 'Stale',    color: 'bg-yellow-500' };
     }
-    
-    return {
-        label: 'Healthy',
-        color: 'bg-green-500',
-        icon: 'CheckCircle',
-    };
+    if (healthStatus === 3) {
+        return { label: 'Unknown',  color: 'bg-gray-500' };
+    }
+    return { label: 'Healthy', color: 'bg-green-500' };
 }
 
 function getJobTypeName(jobType: number): string {
     const types: Record<number, string> = {
-        1: 'Audit Report',
-        2: 'Backup',
-        3: 'Deployment',
-        4: 'Compliance Check',
-        5: 'Sync',
-        6: 'Cleanup',
-        7: 'Drift Check',
-        8: 'Health Check',
+        1: 'Intune Audit Report',
+        2: 'Entra Audit Report',
+        3: 'Compliance Report',
+        4: 'Security Report',
+        5: 'Configuration Backup',
+        6: 'Automated Remediation',
+        7: 'Configuration Drift Monitor',
+    };
+    return types[jobType] || `Job Type ${jobType}`;
+}
+
+function getJobTypeColor(jobType: number): string {
+    const colors: Record<number, string> = {
+        1: 'bg-blue-500',
+        2: 'bg-purple-500',
+        3: 'bg-green-500',
+        4: 'bg-orange-500',
+        5: 'bg-cyan-500',
+        6: 'bg-red-500',
+        7: 'bg-yellow-500',
+    };
+    return colors[jobType] || 'bg-gray-500';
+}
     };
     return types[jobType] || `Job Type ${jobType}`;
 }
@@ -487,6 +489,7 @@ export default function WorkerJobsPage() {
                                 const execution = execResult.data.data;
                                 // Only store if pending or running
                                 if (execution.status === 0 || execution.status === 1 || execution.status === 2) {
+                                    // Pending, Claimed, InProgress
                                     executionsMap.set(job.id, execution);
                                 }
                             }
@@ -727,7 +730,7 @@ export default function WorkerJobsPage() {
                         {execution && (
                             <div className="relative">
                                 {execution.status === 2 ? (
-                                    // Running - spinning loader
+                                    // InProgress - spinning loader
                                     <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />
                                 ) : (
                                     // Pending/Claimed - pulsing dot
@@ -748,7 +751,7 @@ export default function WorkerJobsPage() {
                                 </Badge>
                                 {execution && (
                                     <Badge variant="outline" className="text-xs px-1.5 py-0 border-blue-300 text-blue-600">
-                                        {execution.status === 2 ? 'Running' : 'Pending'}
+                                        {execution.status === 2 ? 'In Progress' : execution.status === 1 ? 'Claimed' : 'Pending'}
                                     </Badge>
                                 )}
                             </div>
@@ -1262,6 +1265,12 @@ export default function WorkerJobsPage() {
                                 className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm"
                             >
                                 <option value={1}>Intune Audit Report</option>
+                                <option value={2}>Entra Audit Report</option>
+                                <option value={3}>Compliance Report</option>
+                                <option value={4}>Security Report</option>
+                                <option value={5}>Configuration Backup</option>
+                                <option value={6}>Automated Remediation</option>
+                                <option value={7}>Configuration Drift Monitor</option>
                             </select>
                             <p className="text-xs text-gray-500">Select the type of automated task</p>
                         </div>
