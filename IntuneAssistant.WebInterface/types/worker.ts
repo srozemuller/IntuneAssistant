@@ -84,25 +84,33 @@ export interface JobExecution {
 export enum JobType {
     IntuneAuditReport = 1,
     EntraAuditReport = 2,
-    ConfigurationDriftMonitor = 7
+    ComplianceReport = 3,
+    SecurityReport = 4,
+    ConfigurationBackup = 5,
+    AutomatedRemediation = 6,
+    ConfigurationDriftMonitor = 7,
 }
 
 export enum ExecutionStatus {
     Pending = 0,
-    Running = 1,
-    Completed = 3,
-    Failed = 4
+    Claimed = 1,
+    InProgress = 2,
+    Success = 3,
+    Failed = 4,
+    Expired = 5,
+    Cancelled = 6,
 }
 
 export enum HealthStatus {
     Healthy = 0,
-    Warning = 1,
-    Critical = 2
+    Stale = 1,    // No heartbeat for 10 min
+    Offline = 2,  // No heartbeat for 60 min
+    Unknown = 3,
 }
 
 export enum RegistrationStatus {
-    Active = 0,
-    Inactive = 1,
-    Decommissioned = 2
+    Pending = 0,       // Awaiting admin approval
+    Approved = 1,      // Approved, worker can authenticate
+    Rejected = 2,      // Rejected by admin
+    Revoked = 3,       // Approved but later revoked
 }
-

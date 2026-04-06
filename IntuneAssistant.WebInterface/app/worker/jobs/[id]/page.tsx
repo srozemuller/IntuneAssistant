@@ -141,8 +141,13 @@ type JobConfig = IntuneAuditJobConfig | ConfigurationDriftJobConfig;
 
 function getJobTypeName(jobType: number): string {
     const types: Record<number, string> = {
-        1: 'Audit Report',
-        7: 'Drift Check',
+        1: 'Intune Audit Report',
+        2: 'Entra Audit Report',
+        3: 'Compliance Report',
+        4: 'Security Report',
+        5: 'Configuration Backup',
+        6: 'Automated Remediation',
+        7: 'Configuration Drift Monitor',
     };
     return types[jobType] || `Job Type ${jobType}`;
 }
@@ -150,6 +155,11 @@ function getJobTypeName(jobType: number): string {
 function getJobTypeColor(jobType: number): string {
     const colors: Record<number, string> = {
         1: 'bg-blue-500',
+        2: 'bg-purple-500',
+        3: 'bg-green-500',
+        4: 'bg-orange-500',
+        5: 'bg-cyan-500',
+        6: 'bg-red-500',
         7: 'bg-yellow-500',
     };
     return colors[jobType] || 'bg-gray-500';
@@ -174,11 +184,13 @@ function getExecutionStatusText(status: number): string {
     const statuses: Record<number, string> = {
         0: 'Pending',
         1: 'Claimed',
-        2: 'Running',
-        3: 'Completed',
+        2: 'In Progress',
+        3: 'Success',
         4: 'Failed',
+        5: 'Expired',
+        6: 'Cancelled',
     };
-    return statuses[status] || 'Unknown';
+    return statuses[status] ?? 'Unknown';
 }
 
 function getExecutionStatusColor(status: number): string {
@@ -188,12 +200,15 @@ function getExecutionStatusColor(status: number): string {
         2: 'bg-yellow-500',
         3: 'bg-green-500',
         4: 'bg-red-500',
+        5: 'bg-orange-500',
+        6: 'bg-gray-400',
     };
-    return colors[status] || 'bg-gray-500';
+    return colors[status] ?? 'bg-gray-500';
 }
 
 function isExecutionCompleted(status: number): boolean {
-    return status === 3 || status === 4; // Completed or Failed
+    // Success(3), Failed(4), Expired(5), Cancelled(6) are all terminal states
+    return status >= 3;
 }
 
 function parseJobConfig(json: string, jobType: number): JobConfig {
@@ -310,7 +325,7 @@ export default function EditJobPage() {
                     setRunning(false);
 
                     if (execution.status === 3) {
-                        // Completed successfully
+                        // Success
                         setSuccessMessage('Job completed successfully!');
                         // Refresh job data inline
                         const jobResult = await request<ApiResponse>(WORKER_JOB_BY_ID_ENDPOINT(jobId));
@@ -1039,24 +1054,28 @@ export default function EditJobPage() {
                                             <div className="flex items-start justify-between gap-4">
                                                 <div className="flex items-start gap-3 flex-1">
                                                     <div className="mt-1">
-                                                        {execution.status === 2 ? (
-                                                            <Loader2 className="h-5 w-5 text-yellow-500 animate-spin" />
-                                                        ) : execution.status === 3 ? (
-                                                            <CheckCircle className="h-5 w-5 text-green-500" />
-                                                        ) : execution.status === 4 ? (
-                                                            <XCircle className="h-5 w-5 text-red-500" />
-                                                        ) : execution.status === 1 ? (
-                                                            <Clock className="h-5 w-5 text-blue-500" />
-                                                        ) : (
-                                                            <Clock className="h-5 w-5 text-gray-500" />
-                                                        )}
+                                        {execution.status === 2 ? (
+                                            <Loader2 className="h-5 w-5 text-yellow-500 animate-spin" />
+                                        ) : execution.status === 3 ? (
+                                            <CheckCircle className="h-5 w-5 text-green-500" />
+                                        ) : execution.status === 4 ? (
+                                            <XCircle className="h-5 w-5 text-red-500" />
+                                        ) : execution.status === 5 ? (
+                                            <XCircle className="h-5 w-5 text-orange-500" />
+                                        ) : execution.status === 6 ? (
+                                            <XCircle className="h-5 w-5 text-gray-400" />
+                                        ) : execution.status === 1 ? (
+                                            <Clock className="h-5 w-5 text-blue-500" />
+                                        ) : (
+                                            <Clock className="h-5 w-5 text-gray-500" />
+                                        )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <Badge className={`${getExecutionStatusColor(execution.status)} text-white`}>
                                                                 {getExecutionStatusText(execution.status)}
                                                             </Badge>
-                                                            {index === 0 && execution.status < 3 && (
+                                                            {index === 0 && !isExecutionCompleted(execution.status) && (
                                                                 <Badge variant="outline" className="border-blue-500 text-blue-600">
                                                                     Latest
                                                                 </Badge>

@@ -71,43 +71,26 @@ function parseTimeSince(ts: string): { totalSeconds: number; display: string } {
 
 function getHealthStatusInfo(healthStatus: number, timeSince: string) {
     const { totalSeconds } = parseTimeSince(timeSince);
-    
-    if (totalSeconds > 600 || healthStatus === HealthStatus.Critical) {
-        return {
-            label: 'Critical',
-            color: 'bg-red-500',
-            icon: XCircle,
-            textColor: 'text-red-600 dark:text-red-400'
-        };
+
+    if (totalSeconds > 3600 || healthStatus === HealthStatus.Offline) {
+        return { label: 'Offline',  color: 'bg-red-500',    icon: XCircle,       textColor: 'text-red-600 dark:text-red-400' };
     }
-    
-    if (totalSeconds > 300 || healthStatus === HealthStatus.Warning) {
-        return {
-            label: 'Warning',
-            color: 'bg-yellow-500',
-            icon: AlertTriangle,
-            textColor: 'text-yellow-600 dark:text-yellow-400'
-        };
+    if (totalSeconds > 600  || healthStatus === HealthStatus.Stale) {
+        return { label: 'Stale',    color: 'bg-yellow-500', icon: AlertTriangle, textColor: 'text-yellow-600 dark:text-yellow-400' };
     }
-    
-    return {
-        label: 'Healthy',
-        color: 'bg-green-500',
-        icon: CheckCircle,
-        textColor: 'text-green-600 dark:text-green-400'
-    };
+    if (healthStatus === HealthStatus.Unknown) {
+        return { label: 'Unknown',  color: 'bg-gray-500',   icon: AlertTriangle, textColor: 'text-gray-500 dark:text-gray-400' };
+    }
+    return { label: 'Healthy', color: 'bg-green-500', icon: CheckCircle, textColor: 'text-green-600 dark:text-green-400' };
 }
 
 function getRegistrationStatusInfo(status: number) {
     switch (status) {
-        case RegistrationStatus.Active:
-            return { label: 'Active', color: 'bg-green-500' };
-        case RegistrationStatus.Inactive:
-            return { label: 'Inactive', color: 'bg-gray-500' };
-        case RegistrationStatus.Decommissioned:
-            return { label: 'Decommissioned', color: 'bg-red-500' };
-        default:
-            return { label: 'Unknown', color: 'bg-gray-500' };
+        case RegistrationStatus.Approved: return { label: 'Approved', color: 'bg-green-500' };
+        case RegistrationStatus.Pending:  return { label: 'Pending',  color: 'bg-yellow-500' };
+        case RegistrationStatus.Rejected: return { label: 'Rejected', color: 'bg-red-500' };
+        case RegistrationStatus.Revoked:  return { label: 'Revoked',  color: 'bg-orange-500' };
+        default:                          return { label: 'Unknown',  color: 'bg-gray-500' };
     }
 }
 
