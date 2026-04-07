@@ -8,7 +8,7 @@ import type {ExportColumn} from '@/components/ExportButton';
 import {Badge} from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet, BarChart3
+    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet, BarChart3, ChevronDown, ChevronRight
 } from 'lucide-react';
 import {useMsal} from '@azure/msal-react';
 import {
@@ -1176,10 +1176,13 @@ function AssignmentRolloutContent() {
                     <div className="flex items-center gap-2">
                         {hasDuplicates && (
                             <button
-                                onClick={() => toggleExpanded(result.id)}
-                                className="text-blue-500 hover:text-blue-700"
+                                onClick={(e) => { e.stopPropagation(); toggleExpanded(result.id); }}
+                                className="flex-shrink-0 text-blue-500 hover:text-blue-700 p-0.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                                title="Show duplicate policies"
                             >
-                                {isExpanded ? '▼' : '▶'}
+                                {isExpanded
+                                    ? <ChevronDown className="h-4 w-4" />
+                                    : <ChevronRight className="h-4 w-4" />}
                             </button>
                         )}
                         <div>
@@ -1798,6 +1801,60 @@ function AssignmentRolloutContent() {
         );
     };
 
+    const renderExpandedDuplicates = (row: Record<string, unknown>): React.ReactNode | null => {
+        const result = row as unknown as ComparisonResult;
+        if (!expandedRows.includes(result.id)) return null;
+        if (!result.policies || result.policies.length <= 1) return null;
+
+        return (
+            <div className="px-6 py-3 border-t border-blue-200 dark:border-blue-800">
+                <div className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    {result.policies.length} duplicate policies found — please make the policy name unique
+                </div>
+                <table className="w-full text-xs border border-blue-200 dark:border-blue-800 rounded overflow-hidden">
+                    <thead>
+                        <tr className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
+                            <th className="text-left px-3 py-1.5 font-medium">#</th>
+                            <th className="text-left px-3 py-1.5 font-medium">Policy ID</th>
+                            <th className="text-left px-3 py-1.5 font-medium">Name</th>
+                            <th className="text-left px-3 py-1.5 font-medium">Type</th>
+                            <th className="text-left px-3 py-1.5 font-medium">Platform</th>
+                            <th className="text-left px-3 py-1.5 font-medium">Scope Tags</th>
+                            <th className="text-left px-3 py-1.5 font-medium">Assigned</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {result.policies.map((policy, idx) => (
+                            <tr key={policy.id || idx}
+                                className={idx % 2 === 0
+                                    ? 'bg-white dark:bg-gray-900'
+                                    : 'bg-blue-50/40 dark:bg-blue-900/10'}>
+                                <td className="px-3 py-1.5 text-gray-500">{idx + 1}</td>
+                                <td className="px-3 py-1.5 font-mono text-gray-600 dark:text-gray-400 max-w-[180px] truncate" title={policy.id}>
+                                    {policy.id}
+                                </td>
+                                <td className="px-3 py-1.5 font-medium">{policy.name || '—'}</td>
+                                <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{policy.policyType || '—'}</td>
+                                <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{policy.platform || '—'}</td>
+                                <td className="px-3 py-1.5">
+                                    {policy.scopeTagIds && policy.scopeTagIds.length > 0
+                                        ? getRoleScopeTagNames(policy.scopeTagIds).join(', ')
+                                        : <span className="text-gray-400">None</span>}
+                                </td>
+                                <td className="px-3 py-1.5">
+                                    <Badge variant={policy.isAssigned ? 'default' : 'outline'} className="text-xs">
+                                        {policy.isAssigned ? 'Yes' : 'No'}
+                                    </Badge>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    };
+
     // CSV File Processing
     const parseCSV = (content: string): CSVRow[] => {
         const lines = content.split('\n').filter(line => line.trim());
@@ -1917,7 +1974,7 @@ function AssignmentRolloutContent() {
         if (!accounts.length) return;
 
         try {
-            const responseData = await request<{ data: RoleScopeTag[] }>(ROLE_SCOPETAGS_ENDPOINT, {
+            const responseData = await request<{ status: string; data: RoleScopeTag[] }>(ROLE_SCOPETAGS_ENDPOINT, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1930,8 +1987,8 @@ function AssignmentRolloutContent() {
                 return;
             }
 
-            if (responseData.data && Array.isArray(responseData.data)) {
-                setRoleScopeTags(responseData.data);
+            if (responseData.data.data && Array.isArray(responseData.data.data)) {
+                setRoleScopeTags(responseData.data.data);
             }
         } catch (error) {
             console.error('Failed to fetch role scope tags:', error);
@@ -1944,7 +2001,7 @@ function AssignmentRolloutContent() {
 
         return scopeTagIds
             .map(id => {
-                const tag = roleScopeTags.find(t => t.id === id);
+                const tag = roleScopeTags.find(t => String(t.id) === String(id));
                 return tag?.displayName || `Unknown (${id})`;
             })
             .filter(Boolean);
@@ -1959,7 +2016,7 @@ function AssignmentRolloutContent() {
 
         return Array.from(tagIds)
             .map(id => {
-                const tag = roleScopeTags.find(t => t.id === id);
+                const tag = roleScopeTags.find(t => String(t.id) === String(id));
                 return {
                     label: tag?.displayName || `Unknown (${id})`,
                     value: id
@@ -3478,7 +3535,7 @@ const validateAssignments = async () => {
         if (roleScopeTagFilter.length > 0) {
             filtered = filtered.filter((result) => {
                 const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
-                return displayPolicy?.scopeTagIds?.some(id => roleScopeTagFilter.includes(id));
+                return displayPolicy?.scopeTagIds?.some(id => roleScopeTagFilter.map(String).includes(String(id)));
             });
         }
 
@@ -4177,6 +4234,7 @@ const validateAssignments = async () => {
                                     showPagination={true}
                                     onSelectionChange={setSelectedRows}
                                     searchPlaceholder="Search policies..."
+                                    expandedRowRender={renderExpandedDuplicates}
                                     rowClassName={(row) => {
                                         const result = row as unknown as ComparisonResult;
                                         const isProcessing = migrationChunkProgress.isProcessing &&

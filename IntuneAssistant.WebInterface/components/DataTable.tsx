@@ -47,6 +47,7 @@ interface DataTableProps {
     searchPlaceholder?: string;
     selectedRows?: string[];
     onSelectionChange?: (rowIds: string[]) => void;
+    expandedRowRender?: (row: Record<string, unknown>) => React.ReactNode | null;
 }
 
 // Memoized TableRow component to prevent unnecessary re-renders
@@ -120,6 +121,7 @@ function DataTableComponent(props: DataTableProps) {
         searchPlaceholder = "Search...",
         onSelectionChange,
         selectedRows = [],
+        expandedRowRender,
     } = props;
 
     // Local pagination state to support uncontrolled usage
@@ -695,19 +697,33 @@ function DataTableComponent(props: DataTableProps) {
                     </thead>
                     <tbody className="bg-transparent">
                         {hasData ? (
-                            paginatedData.map((row, rowIndex) => (
-                                <TableRow
-                                    key={row.id ? `${String(row.id)}-${rowIndex}` : rowIndex}
-                                    row={row}
-                                    rowIndex={rowIndex}
-                                    visibleColumns={visibleColumns}
-                                    startIndex={startIndex}
-                                    isSelected={isRowSelected(row)}
-                                    onRowClick={onRowClick ? handleRowClick : undefined}
-                                    rowClassName={rowClassName}
-                                    getCellValue={getCellValue}
-                                />
-                            ))
+                            paginatedData.map((row, rowIndex) => {
+                                const expandedContent = expandedRowRender ? expandedRowRender(row) : null;
+                                return (
+                                    <React.Fragment key={row.id ? `${String(row.id)}-${rowIndex}` : rowIndex}>
+                                        <TableRow
+                                            row={row}
+                                            rowIndex={rowIndex}
+                                            visibleColumns={visibleColumns}
+                                            startIndex={startIndex}
+                                            isSelected={isRowSelected(row)}
+                                            onRowClick={onRowClick ? handleRowClick : undefined}
+                                            rowClassName={rowClassName}
+                                            getCellValue={getCellValue}
+                                        />
+                                        {expandedContent && (
+                                            <tr>
+                                                <td
+                                                    colSpan={visibleColumns.length}
+                                                    className="p-0 bg-blue-50/40 dark:bg-blue-900/10 border-b border-blue-200 dark:border-blue-800"
+                                                >
+                                                    {expandedContent}
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
+                                );
+                            })
                         ) : (
                             <tr>
                                 <td
