@@ -117,6 +117,7 @@ interface ComparisonResult {
         settingCount: number;
         platform: string;
         settings: PolicySettings;
+        scopeTagIds?: string[];
     }>;
     providedPolicyName?: string;
     assignedGroups?: AssignedGroup[];
@@ -155,6 +156,7 @@ interface ComparisonResult {
         compatibilityErrors: string[];
     };
     csvRow?: CSVRow;
+    csvRows?: CSVRow[]; // all original CSV rows when this is a consolidated duplicate row
     isBackedUp?: boolean;
     validationStatus?: 'pending' | 'valid' | 'invalid' | 'warning';
     validationMessage?: string;
@@ -1192,8 +1194,13 @@ function AssignmentRolloutContent() {
                                     {displayPolicy.name || 'Unknown Policy'}
                                 </div>
                                 {hasDuplicates && (
-                                    <Badge variant="secondary" className="text-xs">
-                                        {result.policies?.length || 0} duplicates
+                                    <Badge variant="secondary" className="text-xs whitespace-nowrap">
+                                        {result.policies?.length || 0} policies found
+                                    </Badge>
+                                )}
+                                {result.csvRows && result.csvRows.length > 1 && (
+                                    <Badge variant="outline" className="text-xs whitespace-nowrap border-orange-400 text-orange-700 dark:text-orange-300">
+                                        {result.csvRows.length} assignments
                                     </Badge>
                                 )}
                             </div>
@@ -1253,6 +1260,13 @@ function AssignmentRolloutContent() {
             width: 180,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
+                if (result.csvRows && result.csvRows.length > 1) {
+                    return (
+                        <span className="text-xs text-orange-600 dark:text-orange-400 italic">
+                            {result.csvRows.length} groups (see details)
+                        </span>
+                    );
+                }
                 return result.groupToMigrate || result.csvRow?.GroupName || '-';
             }
         },
@@ -1806,51 +1820,97 @@ function AssignmentRolloutContent() {
         if (!expandedRows.includes(result.id)) return null;
         if (!result.policies || result.policies.length <= 1) return null;
 
+        const attemptedRows = result.csvRows && result.csvRows.length > 0 ? result.csvRows : (result.csvRow ? [result.csvRow] : []);
+
         return (
-            <div className="px-6 py-3 border-t border-blue-200 dark:border-blue-800">
-                <div className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-1">
-                    <AlertTriangle className="h-3 w-3" />
-                    {result.policies.length} duplicate policies found — please make the policy name unique
-                </div>
-                <table className="w-full text-xs border border-blue-200 dark:border-blue-800 rounded overflow-hidden">
-                    <thead>
-                        <tr className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
-                            <th className="text-left px-3 py-1.5 font-medium">#</th>
-                            <th className="text-left px-3 py-1.5 font-medium">Policy ID</th>
-                            <th className="text-left px-3 py-1.5 font-medium">Name</th>
-                            <th className="text-left px-3 py-1.5 font-medium">Type</th>
-                            <th className="text-left px-3 py-1.5 font-medium">Platform</th>
-                            <th className="text-left px-3 py-1.5 font-medium">Scope Tags</th>
-                            <th className="text-left px-3 py-1.5 font-medium">Assigned</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {result.policies.map((policy, idx) => (
-                            <tr key={policy.id || idx}
-                                className={idx % 2 === 0
-                                    ? 'bg-white dark:bg-gray-900'
-                                    : 'bg-blue-50/40 dark:bg-blue-900/10'}>
-                                <td className="px-3 py-1.5 text-gray-500">{idx + 1}</td>
-                                <td className="px-3 py-1.5 font-mono text-gray-600 dark:text-gray-400 max-w-[180px] truncate" title={policy.id}>
-                                    {policy.id}
-                                </td>
-                                <td className="px-3 py-1.5 font-medium">{policy.name || '—'}</td>
-                                <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{policy.policyType || '—'}</td>
-                                <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{policy.platform || '—'}</td>
-                                <td className="px-3 py-1.5">
-                                    {policy.scopeTagIds && policy.scopeTagIds.length > 0
-                                        ? getRoleScopeTagNames(policy.scopeTagIds).join(', ')
-                                        : <span className="text-gray-400">None</span>}
-                                </td>
-                                <td className="px-3 py-1.5">
-                                    <Badge variant={policy.isAssigned ? 'default' : 'outline'} className="text-xs">
-                                        {policy.isAssigned ? 'Yes' : 'No'}
-                                    </Badge>
-                                </td>
+            <div className="px-6 py-3 border-t border-blue-200 dark:border-blue-800 space-y-3">
+                {/* Duplicate policies found */}
+                <div>
+                    <div className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" />
+                        {result.policies.length} duplicate policies found — please make the policy name unique before migrating
+                    </div>
+                    <table className="w-full text-xs border border-blue-200 dark:border-blue-800 rounded overflow-hidden">
+                        <thead>
+                            <tr className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
+                                <th className="text-left px-3 py-1.5 font-medium">#</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Policy ID</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Name</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Type</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Platform</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Scope Tags</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Assigned</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {result.policies.map((policy, idx) => (
+                                <tr key={policy.id || idx}
+                                    className={idx % 2 === 0
+                                        ? 'bg-white dark:bg-gray-900'
+                                        : 'bg-blue-50/40 dark:bg-blue-900/10'}>
+                                    <td className="px-3 py-1.5 text-gray-500">{idx + 1}</td>
+                                    <td className="px-3 py-1.5 font-mono text-gray-600 dark:text-gray-400 max-w-[180px] truncate" title={policy.id}>
+                                        {policy.id}
+                                    </td>
+                                    <td className="px-3 py-1.5 font-medium">{policy.name || '—'}</td>
+                                    <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{policy.policyType || '—'}</td>
+                                    <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{policy.platform || '—'}</td>
+                                    <td className="px-3 py-1.5">
+                                        {policy.scopeTagIds && policy.scopeTagIds.length > 0
+                                            ? getRoleScopeTagNames(policy.scopeTagIds).join(', ')
+                                            : <span className="text-gray-400">None</span>}
+                                    </td>
+                                    <td className="px-3 py-1.5">
+                                        <Badge variant={policy.isAssigned ? 'default' : 'outline'} className="text-xs">
+                                            {policy.isAssigned ? 'Yes' : 'No'}
+                                        </Badge>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Attempted CSV assignments (only shown when multiple CSV rows were consolidated) */}
+                {attemptedRows.length > 0 && (
+                    <div>
+                        <div className="text-xs font-semibold text-orange-700 dark:text-orange-300 mb-2 flex items-center gap-1">
+                            <FileText className="h-3 w-3" />
+                            {attemptedRows.length} assignment{attemptedRows.length > 1 ? 's' : ''} from CSV — blocked until policy name is unique
+                        </div>
+                        <table className="w-full text-xs border border-orange-200 dark:border-orange-800 rounded overflow-hidden">
+                            <thead>
+                                <tr className="bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-200">
+                                    <th className="text-left px-3 py-1.5 font-medium">#</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Group</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Direction</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Action</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Filter</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Filter Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {attemptedRows.map((csvRow, idx) => (
+                                    <tr key={idx}
+                                        className={idx % 2 === 0
+                                            ? 'bg-white dark:bg-gray-900'
+                                            : 'bg-orange-50/40 dark:bg-orange-900/10'}>
+                                        <td className="px-3 py-1.5 text-gray-500">{idx + 1}</td>
+                                        <td className="px-3 py-1.5 font-medium">{csvRow.GroupName || <span className="text-gray-400">—</span>}</td>
+                                        <td className="px-3 py-1.5">
+                                            <Badge variant={csvRow.AssignmentDirection === 'Include' ? 'default' : 'destructive'} className="text-xs">
+                                                {csvRow.AssignmentDirection}
+                                            </Badge>
+                                        </td>
+                                        <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{csvRow.AssignmentAction}</td>
+                                        <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{csvRow.FilterName || <span className="text-gray-400">—</span>}</td>
+                                        <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{csvRow.FilterType || <span className="text-gray-400">—</span>}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         );
     };
@@ -3552,7 +3612,32 @@ const validateAssignments = async () => {
         // 'all' doesn't need additional filtering
 
         console.log('Filtered results:', filtered.length);
-        setFilteredComparisonResults(filtered);
+
+        // Consolidate rows with the same providedPolicyName that have duplicate policies (policyIsUnique === false)
+        const consolidated: ComparisonResult[] = [];
+        const seenDuplicatePolicy = new Map<string, ComparisonResult>();
+
+        for (const result of filtered) {
+            const isDuplicate = result.migrationCheckResult?.policyIsUnique === false;
+            const key = result.providedPolicyName || result.policy?.name || '';
+
+            if (isDuplicate && key) {
+                if (seenDuplicatePolicy.has(key)) {
+                    // Merge this row into the existing consolidated row
+                    const existing = seenDuplicatePolicy.get(key)!;
+                    existing.csvRows = [...(existing.csvRows || [existing.csvRow].filter(Boolean) as CSVRow[]), ...(result.csvRow ? [result.csvRow] : [])];
+                } else {
+                    // First occurrence — keep as-is but initialise csvRows
+                    const merged = { ...result, csvRows: result.csvRow ? [result.csvRow] : [] };
+                    seenDuplicatePolicy.set(key, merged);
+                    consolidated.push(merged);
+                }
+            } else {
+                consolidated.push(result);
+            }
+        }
+
+        setFilteredComparisonResults(consolidated);
     }, [comparisonResults, roleScopeTagFilter, compareStatusFilter]);
 
     return (
