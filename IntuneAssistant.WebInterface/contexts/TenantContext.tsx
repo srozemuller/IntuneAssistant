@@ -1,6 +1,7 @@
 // contexts/TenantContext.tsx
 'use client';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useMsal } from '@azure/msal-react';
 
 interface Tenant {
     id: string;
@@ -20,6 +21,7 @@ interface TenantContextType {
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
 export function TenantProvider({ children }: { children: ReactNode }) {
+    const { accounts } = useMsal();
     const [selectedTenant, setSelectedTenantState] = useState<Tenant | null>(null);
 
     // Load tenant from localStorage on mount
@@ -34,6 +36,14 @@ export function TenantProvider({ children }: { children: ReactNode }) {
             }
         }
     }, []);
+
+    // Clear tenant when user logs out (MSAL accounts become empty)
+    useEffect(() => {
+        if (accounts.length === 0) {
+            setSelectedTenantState(null);
+            localStorage.removeItem('selectedTenant');
+        }
+    }, [accounts.length]);
 
     // Save tenant to localStorage when it changes
     const setSelectedTenant = (tenant: Tenant | null) => {

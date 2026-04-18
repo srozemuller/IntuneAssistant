@@ -760,41 +760,48 @@ export default function CustomerPage() {
                 setLicenseOnboardingWizard(prev => prev ? {
                     ...prev,
                     consentCompleted: true,
+                    consentWindow: null,
                     loading: false
                 } : null);
-
-                if (licenseOnboardingWizard.consentWindow) {
-                    licenseOnboardingWizard.consentWindow.close();
-                    setLicenseOnboardingWizard(prev => prev ? {
-                        ...prev,
-                        consentWindow: null
-                    } : null);
-                }
-
-                // Complete the license creation process
+                licenseOnboardingWizard.consentWindow?.close();
                 completeLicenseCreation();
-
             } else if (event.data.type === 'CONSENT_ERROR') {
                 console.log('License consent error received:', event.data);
                 setLicenseOnboardingWizard(prev => prev ? {
                     ...prev,
                     error: `Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`,
+                    consentWindow: null,
                     loading: false
                 } : null);
-
-                if (licenseOnboardingWizard.consentWindow) {
-                    licenseOnboardingWizard.consentWindow.close();
-                    setLicenseOnboardingWizard(prev => prev ? {
-                        ...prev,
-                        consentWindow: null
-                    } : null);
-                }
+                licenseOnboardingWizard.consentWindow?.close();
             }
         };
 
         window.addEventListener('message', handleLicenseConsentMessage);
         return () => window.removeEventListener('message', handleLicenseConsentMessage);
     }, [licenseOnboardingWizard]);
+
+    // Poll popup closed state as a fallback — postMessage won't fire for cross-origin redirects
+    useEffect(() => {
+        const popup = licenseOnboardingWizard?.consentWindow;
+        if (!popup || licenseOnboardingWizard?.consentCompleted) return;
+
+        const interval = setInterval(() => {
+            if (popup.closed) {
+                clearInterval(interval);
+                // If the popup closed without a postMessage (e.g. user dismissed it),
+                // treat it as if consent was granted and let completeLicenseCreation
+                // verify with the backend.
+                setLicenseOnboardingWizard(prev => {
+                    if (!prev || prev.consentCompleted) return prev;
+                    return { ...prev, consentWindow: null, consentCompleted: true };
+                });
+                completeLicenseCreation();
+            }
+        }, 500);
+
+        return () => clearInterval(interval);
+    }, [licenseOnboardingWizard?.consentWindow]);
 
     const extractStateFromConsentUrl = (url: string): string | null => {
         try {
@@ -807,6 +814,23 @@ export default function CustomerPage() {
     };
     const initiateLicenseConsent = async () => {
         if (!licenseOnboardingWizard) return;
+
+        // Open popup SYNCHRONOUSLY before any awaits so the browser keeps the user-gesture chain.
+        // If we open it after an await the browser treats it as a script-initiated popup and blocks it.
+        const popup = window.open(
+            'about:blank',
+            'licenseConsentWindow',
+            'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no'
+        );
+
+        if (!popup) {
+            setLicenseOnboardingWizard(prev => prev ? {
+                ...prev,
+                error: 'Failed to open consent window. Please allow popups for this site and try again.',
+                loading: false
+            } : null);
+            return;
+        }
 
         try {
             setLicenseOnboardingWizard(prev => prev ? {
@@ -835,6 +859,7 @@ export default function CustomerPage() {
 
             if (!createLicenseResponse.ok) {
                 const errorData = await createLicenseResponse.json().catch(() => null);
+                popup.close();
                 throw new Error(errorData?.message || `Failed to create license: ${createLicenseResponse.statusText}`);
             }
 
@@ -844,6 +869,7 @@ export default function CustomerPage() {
             const consentUrl = licenseResult.data?.consentUrl || licenseResult.consentUrl;
 
             if (!consentUrl) {
+                popup.close();
                 throw new Error('No consent URL received from license creation');
             }
 
@@ -853,27 +879,20 @@ export default function CustomerPage() {
                 consentState: extractedState
             } : null);
 
+            // Navigate the already-open popup to the consent URL
+            popup.location.href = consentUrl;
 
-            // Open consent window with the URL from license creation
-            const popup = window.open(
-                consentUrl,
-                'licenseConsentWindow',
-                'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no'
-            );
-
-            if (popup) {
-                setLicenseOnboardingWizard(prev => prev ? {
-                    ...prev,
-                    consentWindow: popup,
-                    currentStep: 1
-                } : null);
-                popup.focus();
-            } else {
-                throw new Error('Failed to open consent window. Please check your popup blocker settings.');
-            }
+            setLicenseOnboardingWizard(prev => prev ? {
+                ...prev,
+                consentWindow: popup,
+                currentStep: 1,
+                loading: false
+            } : null);
+            popup.focus();
 
         } catch (err) {
             console.error('Error initiating license consent:', err);
+            if (popup && !popup.closed) popup.close();
             setLicenseOnboardingWizard(prev => prev ? {
                 ...prev,
                 error: err instanceof Error ? err.message : 'Failed to initiate consent',
