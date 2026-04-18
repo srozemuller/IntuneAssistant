@@ -29,6 +29,7 @@ import {useApiRequest} from "@/hooks/useApiRequest";
 import {UserConsentRequiredError} from '@/lib/errors';
 import {PlanProtection} from '@/components/PlanProtection';
 import {MultiSelect} from "@/components/ui/multi-select";
+import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 
 interface AssignmentCompareApiResponse {
     status: string;
@@ -314,6 +315,7 @@ function AssignmentRolloutContent() {
     const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed' | 'skipped' | 'notstarted'>('all');
     const [compareStatusFilter, setCompareStatusFilter] = useState<'all' | 'ready' | 'migrated' | 'warnings' | 'failed'>('all');
     const [summaryStatusFilter, setSummaryStatusFilter] = useState<'all' | 'csv_invalid' | 'compare_failed' | 'compare_ready' | 'already_migrated' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'migration_skipped' | 'migration_notstarted' | 'validation_success' | 'validation_failed'>('all');
+    const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
 
     // Add pagination logic before the return statement
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -736,7 +738,7 @@ function AssignmentRolloutContent() {
                         hasError ? 'text-red-600 font-bold' :
                             csvRow.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''
                     }`} title={String(value)}>
-                        {String(value) || (hasError ? <span className="text-red-500 italic">Missing</span> : '-')}
+                        {String(value) || (hasError ? <span className="text-red-500 italic">Missing</span> : <span className="text-xs text-gray-500">None</span>)}
                     </div>
                 );
             }
@@ -839,7 +841,7 @@ function AssignmentRolloutContent() {
                         {csvRow.FilterName}
                     </div>
                 ) : (
-                    <span className="text-gray-400">-</span>
+                    <span className="text-xs text-gray-500">None</span>
                 );
             }
         },
@@ -858,7 +860,7 @@ function AssignmentRolloutContent() {
                         {csvRow.FilterType}
                     </Badge>
                 ) : (
-                    <span className="text-gray-400">-</span>
+                    <span className="text-xs text-gray-500">None</span>
                 );
             }
         }
@@ -1273,7 +1275,10 @@ function AssignmentRolloutContent() {
                         </span>
                     );
                 }
-                return result.groupToMigrate || result.csvRow?.GroupName || '-';
+                const groupName = result.groupToMigrate || result.csvRow?.GroupName;
+                return groupName
+                    ? groupName
+                    : <span className="text-xs text-gray-500">None</span>;
             }
         },
         {
@@ -1314,7 +1319,10 @@ function AssignmentRolloutContent() {
             width: 130,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
-                return result.filterName || result.csvRow?.FilterName || '-';
+                const filterName = result.filterName || result.csvRow?.FilterName;
+                return filterName
+                    ? filterName
+                    : <span className="text-xs text-gray-500">None</span>;
             }
         },
         {
@@ -1324,22 +1332,17 @@ function AssignmentRolloutContent() {
             width: 110,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
-                if (!result.filterType) return null;
+                const filterType = result.filterType || result.csvRow?.FilterType;
 
-                if (result.filterType.toLowerCase() === 'none') {
-                    return (
-                        <Badge variant="outline"
-                               className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                            {result.filterType}
-                        </Badge>
-                    );
+                if (!filterType || filterType.toLowerCase() === 'none') {
+                    return <span className="text-xs text-gray-500">None</span>;
                 }
 
                 return (
-                    <Badge variant={result.filterType === 'include' ? 'default' : 'destructive'}
-                           className={result.filterType === 'include' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
+                    <Badge variant={filterType.toLowerCase() === 'include' ? 'default' : 'destructive'}
+                           className={filterType.toLowerCase() === 'include' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
                     >
-                        {result.filterType}
+                        {filterType}
                     </Badge>
 
                 );
@@ -1436,7 +1439,7 @@ function AssignmentRolloutContent() {
                         #{batchNumber}
                     </Badge>
                 ) : (
-                    <span className="text-sm text-gray-400">-</span>
+                    <span className="text-xs text-gray-500">None</span>
                 );
             }
         },
@@ -1454,11 +1457,12 @@ function AssignmentRolloutContent() {
             key: 'groupToMigrate',
             label: 'Group',
             minWidth: 150,
-            render: (value: unknown) => (
-                <span className="text-sm" title={String(value)}>
-                    {String(value)}
-                </span>
-            )
+            render: (value: unknown) => {
+                const group = value as string | null | undefined;
+                return group
+                    ? <span className="text-sm" title={group}>{group}</span>
+                    : <span className="text-xs text-gray-500">None</span>;
+            }
         },
         {
             key: 'assignmentAction',
@@ -1509,14 +1513,9 @@ function AssignmentRolloutContent() {
                 const filterType = result.filterType;
                 const filterName = result.filterName;
 
-                // If no filter type or it's 'None', show None badge
+                // If no filter type or it's 'None', show None
                 if (!filterType || filterType.toLowerCase() === 'none') {
-                    return (
-                        <Badge variant="outline"
-                               className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                            None
-                        </Badge>
-                    );
+                    return <span className="text-xs text-gray-500">None</span>;
                 }
 
                 // If filter type exists but no name
@@ -1528,7 +1527,7 @@ function AssignmentRolloutContent() {
                             >
                                 {filterType}
                             </Badge>
-                            <span className="text-gray-400 text-sm">-</span>
+                            <span className="text-xs text-gray-500">None</span>
                         </div>
                     );
                 }
@@ -1652,7 +1651,7 @@ function AssignmentRolloutContent() {
                         {result.csvRow?.GroupName}
                     </div>
                 ) : (
-                    <span className="text-red-600">-</span>
+                    <span className="text-xs text-gray-500">None</span>
                 );
             }
         },
@@ -1714,7 +1713,7 @@ function AssignmentRolloutContent() {
                 const result = row as unknown as ComparisonResult;
                 return (
                     <span className="text-sm font-medium text-left">
-                    {result.validationMessage || '-'}
+                    {result.validationMessage || <span className="text-xs text-gray-500">None</span>}
                 </span>
                 );
             }
@@ -3499,8 +3498,11 @@ const validateAssignments = async () => {
 
                 <div className="space-y-4">
                     {selectedAssignments.map((assignment) => {
-                        const isGroupAssignment = assignment.target?.['@odata.type']?.includes('groupAssignmentTarget');
-                        const isExcludeAssignment = assignment.target?.['@odata.type']?.includes('exclusionGroupAssignmentTarget');
+                        const odataType = assignment.target?.['@odata.type'] ?? '';
+                        const isGroupAssignment = odataType.includes('groupAssignmentTarget');
+                        const isExcludeAssignment = odataType.includes('exclusionGroupAssignmentTarget');
+                        const isAllDevices = odataType.includes('allDevicesAssignmentTarget');
+                        const isAllUsers = odataType.includes('allLicensedUsersAssignmentTarget');
                         const groupId = assignment.target?.groupId;
                         const groupData = groupId ? assignmentGroups[groupId] : null;
                         const isLoading = groupId ? loadingAssignmentGroups.includes(groupId) : false;
@@ -3509,20 +3511,28 @@ const validateAssignments = async () => {
                         const assignmentDirection = isExcludeAssignment ? 'Exclude' : 'Include';
                         const directionColor = isExcludeAssignment ? 'destructive' : 'default';
 
+                        // Label for the header
+                        const targetLabel = isGroupAssignment || isExcludeAssignment
+                            ? 'Group Assignment'
+                            : isAllDevices
+                                ? 'All Devices'
+                                : isAllUsers
+                                    ? 'All Licensed Users'
+                                    : 'All Users & Devices';
+
                         return (
                             <div key={assignment.id} className="border rounded-lg p-4 space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Shield className="h-4 w-4 text-blue-500"/>
-                                        <span className="font-medium">
-                                        {isGroupAssignment ? 'Group Assignment' : 'All Users/Devices'}
-                                    </span>
+                                        <span className="font-medium">{targetLabel}</span>
                                         <Badge variant={directionColor} className="text-xs">
                                             {assignmentDirection}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        {assignment.target?.deviceAndAppManagementAssignmentFilterType !== 'None' && (
+                                        {assignment.target?.deviceAndAppManagementAssignmentFilterType &&
+                                            assignment.target.deviceAndAppManagementAssignmentFilterType !== 'None' && (
                                             <Badge variant="outline" className="text-xs">
                                                 Filtered
                                             </Badge>
@@ -3530,7 +3540,7 @@ const validateAssignments = async () => {
                                     </div>
                                 </div>
 
-                                {isGroupAssignment && groupId && (
+                                {(isGroupAssignment || isExcludeAssignment) && groupId && (
                                     <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
                                         {isLoading ? (
                                             <div className="flex items-center gap-2">
@@ -3547,7 +3557,7 @@ const validateAssignments = async () => {
                                                     <h4 className="font-medium text-sm flex items-center gap-1">
                                                         {groupData.displayName}
                                                         {groupData.membershipRule && groupData.membershipRule.trim() !== '' && (
-                                                            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0"/>
+                                                            <Blocks className="h-3 w-3 text-purple-500 shrink-0"/>
                                                         )}
                                                     </h4>
                                                     <Button
@@ -3584,24 +3594,47 @@ const validateAssignments = async () => {
                                     </div>
                                 )}
 
-                                {!isGroupAssignment && (
+                                {isAllDevices && (
+                                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 text-gray-500"/>
+                                            <span className="text-sm font-medium">All Devices</span>
+                                        </div>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            This assignment targets all enrolled devices in your organization.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {isAllUsers && (
                                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
                                         <div className="flex items-center gap-2">
                                             <Users className="h-4 w-4 text-blue-500"/>
-                                            <span className="text-sm font-medium">All Users and Devices</span>
+                                            <span className="text-sm font-medium">All Licensed Users</span>
                                         </div>
                                         <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                            This assignment applies to all users and devices in your organization
+                                            This assignment targets all licensed users in your organization.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {!isGroupAssignment && !isExcludeAssignment && !isAllDevices && !isAllUsers && (
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 text-blue-500"/>
+                                            <span className="text-sm font-medium">All Users &amp; Devices</span>
+                                        </div>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                            This assignment applies to all users and devices in your organization.
                                         </p>
                                     </div>
                                 )}
 
                                 {assignment.target?.deviceAndAppManagementAssignmentFilterId && (
-                                    <div className="text-xs text-gray-500">
-                                        <span
-                                            className="font-medium">Filter:</span> {assignment.target.deviceAndAppManagementAssignmentFilterType}
-                                        <span
-                                            className="ml-2">ID: {assignment.target.deviceAndAppManagementAssignmentFilterId}</span>
+                                    <div className="text-xs text-gray-500 bg-amber-50 dark:bg-amber-900/20 rounded p-2 flex gap-2">
+                                        <span className="font-medium">Filter:</span>
+                                        <span>{assignment.target.deviceAndAppManagementAssignmentFilterType}</span>
+                                        <span className="text-gray-400 font-mono truncate">({assignment.target.deviceAndAppManagementAssignmentFilterId})</span>
                                     </div>
                                 )}
                             </div>
@@ -4814,11 +4847,21 @@ const validateAssignments = async () => {
                             })()}
 
                             {/* ── Migration Statistics Summary ── */}
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                                    <BarChart3 className="h-5 w-5 text-blue-600"/>
-                                    Migration Statistics
-                                </h3>
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                <button
+                                    onClick={() => setIsSummaryExpanded(prev => !prev)}
+                                    className="w-full flex items-center justify-between p-6 text-left"
+                                >
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                        <BarChart3 className="h-5 w-5 text-blue-600"/>
+                                        Migration Statistics
+                                    </h3>
+                                    {isSummaryExpanded
+                                        ? <ChevronDown className="h-4 w-4 text-gray-500"/>
+                                        : <ChevronRight className="h-4 w-4 text-gray-500"/>
+                                    }
+                                </button>
+                                {isSummaryExpanded && <div className="px-6 pb-6">
                                 {(() => {
                                     const {
                                         totalUploaded,
@@ -4995,6 +5038,7 @@ const validateAssignments = async () => {
                                         </div>
                                     );
                                 })()}
+                                </div>}
                             </div>
 
                             {/* ── Success banner ── */}
@@ -5325,6 +5369,12 @@ const validateAssignments = async () => {
                     )}
                 </>
             )}
+            <AssignmentsDialog />
+            <GroupDetailsDialog
+                groupId={selectedGroup?.id ?? null}
+                isOpen={isDialogOpen}
+                onClose={closeDialog}
+            />
         </div>
     );
 }
