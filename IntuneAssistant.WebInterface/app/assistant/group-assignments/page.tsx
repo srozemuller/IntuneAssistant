@@ -1,3 +1,8 @@
+                const warningIcon = warnings.length > 0 ? (
+                    <span title={warnings.join('\n')} className="inline-flex shrink-0 items-center cursor-help ml-1">
+                        <TriangleAlert className="h-3 w-3 text-amber-400 dark:text-amber-500" />
+                    </span>
+                ) : null;
 'use client';
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import {useMsal} from '@azure/msal-react';
@@ -20,7 +25,7 @@ import {
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, XCircle, Computer, Blocks
+    ChevronUp, XCircle, Computer, Blocks, TriangleAlert
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
@@ -32,7 +37,6 @@ import {useApiRequest} from "@/hooks/useApiRequest";
 import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
 import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
-import {AssignmentFilter} from "@/types/assignmentFilter";
 
 interface ApiResponse {
     status: string;

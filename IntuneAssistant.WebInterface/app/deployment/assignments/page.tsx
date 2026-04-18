@@ -140,19 +140,19 @@ interface ComparisonResult {
     isMigrated?: boolean;
     excludeGroupFromSource?: boolean;
     removeGroupFromSource?: boolean;
-    isReadyForMigration?: boolean;
+    isReadyForMigration?: boolean | null;
     migrationCheckResult?: {
-        assignmentExists: boolean;
+        assignmentExists: boolean | null;
         policyExists: boolean;
-        policyIsUnique: boolean;
-        groupExists: boolean;
-        correctAssignmentTypeProvided: boolean;
+        policyIsUnique: boolean | null;
+        groupExists: boolean | null;
+        correctAssignmentTypeProvided: boolean | null;
         correctAssignmentActionProvided: boolean;
-        filterExist: boolean;
-        filterIsUnique: boolean;
-        correctFilterPlatform: boolean;
-        correctFilterTypeProvided: boolean;
-        assignmentIsCompatible: boolean;
+        filterExist: boolean | null;
+        filterIsUnique: boolean | null;
+        correctFilterPlatform: boolean | null;
+        correctFilterTypeProvided: boolean | null;
+        assignmentIsCompatible: boolean | null;
         compatibilityErrors: string[];
     };
     csvRow?: CSVRow;
@@ -385,7 +385,7 @@ function AssignmentRolloutContent() {
         // Ready for migration = items ready this session + items migrated this session
         const readyForMigrationCount = compareReadyThisSession.length + migratedThisSession.length;
 
-        console.log('📊 SUMMARY STATS BREAKDOWN:', {
+        console.log('SUMMARY STATS BREAKDOWN:', {
             totalUploaded: csvData.length,
             compareReady_NotSelected: compareReadyThisSession.length,
             notProcessed_NotStarted: masterTrackingData.filter(r => r.masterStatus === 'migration_notstarted').length,
@@ -461,7 +461,7 @@ function AssignmentRolloutContent() {
         // Debug: Count batches in summaryTableData AFTER mapping
         const withBatch = data.filter(r => r.batch !== null).length;
         const withoutBatch = data.filter(r => r.batch === null).length;
-        console.log(`📊 summaryTableData: ${withBatch} rows with batch, ${withoutBatch} without batch`);
+        console.log(`summaryTableData: ${withBatch} rows with batch, ${withoutBatch} without batch`);
         if (withBatch > 0) {
             console.log('Sample summaryTableData with batch:', data.filter(r => r.batch !== null).slice(0, 3).map(r => ({
                 policy: r.policy,
@@ -952,9 +952,12 @@ function AssignmentRolloutContent() {
             );
         }
 
-        const allChecksPass = check.policyExists && check.policyIsUnique &&
-            check.groupExists && check.correctAssignmentTypeProvided &&
-            check.correctAssignmentActionProvided && check.assignmentIsCompatible;
+        const allChecksPass = check.policyExists &&
+            check.policyIsUnique !== false &&
+            check.groupExists !== false &&
+            check.correctAssignmentTypeProvided !== false &&
+            check.correctAssignmentActionProvided &&
+            check.assignmentIsCompatible !== false;
 
         const hasWarnings = check.filterExist === false || check.filterIsUnique === false ||
             check.correctFilterPlatform === false || check.correctFilterTypeProvided === false;
@@ -964,9 +967,9 @@ function AssignmentRolloutContent() {
         const compatibilityErrors: string[] = [];
 
         if (!check.policyExists) errors.push("Policy not found");
-        if (!check.policyIsUnique) errors.push("Multiple policies found");
-        if (!check.groupExists) errors.push("Group not found");
-        if (!check.correctAssignmentTypeProvided) errors.push("Invalid assignment type");
+        if (check.policyIsUnique === false) errors.push("Multiple policies found");
+        if (check.groupExists === false) errors.push("Group not found");
+        if (check.correctAssignmentTypeProvided === false) errors.push("Invalid assignment type");
         if (!check.correctAssignmentActionProvided) errors.push("Invalid assignment action");
 
         if (check.filterExist === false) warnings.push("Filter not found");
@@ -1142,9 +1145,12 @@ function AssignmentRolloutContent() {
 
                 if (hasCompatibilityErrors) return 0;
 
-                const allChecksPass = check.policyExists && check.policyIsUnique &&
-                    check.groupExists && check.correctAssignmentTypeProvided &&
-                    check.correctAssignmentActionProvided && check.assignmentIsCompatible;
+                const allChecksPass = check.policyExists &&
+                    check.policyIsUnique !== false &&
+                    check.groupExists !== false &&
+                    check.correctAssignmentTypeProvided !== false &&
+                    check.correctAssignmentActionProvided &&
+                    check.assignmentIsCompatible !== false;
 
                 // If checks fail, return 0 (errors)
                 if (!allChecksPass) return 0;
@@ -2275,7 +2281,7 @@ function AssignmentRolloutContent() {
 
             // Capture correlation ID from compare step
             const compareCorrelationId = apiResponse.correlationId;
-            console.log('📊 Compare correlation ID:', compareCorrelationId || '(not available)');
+            console.log('Compare correlation ID:', compareCorrelationId || '(not available)');
 
             const enhancedResults = apiResponse.data.data.map((item: ComparisonResult, index: number) => {
                 // Get the original CSV row to preserve its unique rowId
@@ -2286,7 +2292,28 @@ function AssignmentRolloutContent() {
                 let masterStatusMessage = '';
                 let failureReason = '';
 
-                if (item.isReadyForMigration) {
+                // Log first few items to diagnose API response shape
+                if (index < 3) {
+                    console.log(`Compare item[${index}]:`, {
+                        isReadyForMigration: item.isReadyForMigration,
+                        isMigrated: item.isMigrated,
+                        checkResult: item.migrationCheckResult
+                    });
+                }
+
+                // isReadyForMigration can be true/false/null from the API.
+                // null means "not yet determined" — derive from migrationCheckResult.
+                const check = item.migrationCheckResult;
+                const derivedReady = item.isReadyForMigration === true ||
+                    (item.isReadyForMigration === null && check != null &&
+                        check.policyExists &&
+                        check.policyIsUnique !== false &&
+                        check.groupExists !== false &&
+                        check.correctAssignmentTypeProvided !== false &&
+                        check.correctAssignmentActionProvided &&
+                        check.assignmentIsCompatible !== false);
+
+                if (derivedReady) {
                     // Check if already migrated from a previous session
                     if (item.isMigrated) {
                         masterStatus = 'already_migrated';
@@ -2299,15 +2326,14 @@ function AssignmentRolloutContent() {
                     masterStatus = 'compare_failed';
 
                     // Build detailed failure reason from migrationCheckResult
-                    const check = item.migrationCheckResult;
                     if (check) {
                         const failures: string[] = [];
                         if (!check.policyExists) failures.push('Policy not found');
-                        if (!check.policyIsUnique) failures.push('Multiple policies found with same name');
-                        if (!check.groupExists) failures.push('Group not found');
-                        if (!check.correctAssignmentTypeProvided) failures.push('Invalid assignment type');
+                        if (check.policyIsUnique === false) failures.push('Multiple policies found with same name');
+                        if (check.groupExists === false) failures.push('Group not found');
+                        if (check.correctAssignmentTypeProvided === false) failures.push('Invalid assignment type');
                         if (!check.correctAssignmentActionProvided) failures.push('Invalid assignment action');
-                        if (!check.assignmentIsCompatible && check.compatibilityErrors) {
+                        if (check.assignmentIsCompatible === false && check.compatibilityErrors) {
                             failures.push(...check.compatibilityErrors);
                         }
                         failureReason = failures.join('; ');
@@ -2317,11 +2343,13 @@ function AssignmentRolloutContent() {
                     masterStatusMessage = `Cannot migrate: ${failureReason}`;
                 }
 
+                const isReadyForMigration = derivedReady;
+
                 return {
                     ...item,
-                    id: originalCsvRow.rowId || item.id, // Use original CSV rowId for tracking
+                    id: originalCsvRow.rowId || item.id,
                     csvRow: originalCsvRow,
-                    isReadyForMigration: item.isReadyForMigration,
+                    isReadyForMigration,
                     isMigrated: item.isMigrated || false,
                     isBackedUp: false,
                     validationStatus: 'pending' as const,
@@ -2457,7 +2485,7 @@ function AssignmentRolloutContent() {
 
                 // Capture correlation ID for this chunk
                 const migrateCorrelationId = apiResponse.correlationId;
-                console.log(`📊 Migrate chunk ${chunkIndex + 1} correlation ID:`, migrateCorrelationId || '(not available)');
+                console.log(`Migrate chunk ${chunkIndex + 1} correlation ID:`, migrateCorrelationId || '(not available)');
 
                 // Extract actual data
                 const responseData = apiResponse.data;
@@ -3103,7 +3131,7 @@ function AssignmentRolloutContent() {
 
             // Capture correlation ID from verify step
             const verifyCorrelationId = validationData.correlationId;
-            console.log('📊 Verify correlation ID:', verifyCorrelationId || '(not available)');
+            console.log('Verify correlation ID:', verifyCorrelationId || '(not available)');
 
             // Extract actual data
             const responseData = validationData.data;
@@ -3162,9 +3190,9 @@ function AssignmentRolloutContent() {
                     const failures: string[] = [];
                     if (check) {
                         if (!check.policyExists) failures.push('Policy not found');
-                        if (!check.policyIsUnique) failures.push('Multiple policies found');
-                        if (!check.groupExists) failures.push('Group not found');
-                        if (!check.assignmentIsCompatible && check.compatibilityErrors) {
+                        if (check.policyIsUnique === false) failures.push('Multiple policies found');
+                        if (check.groupExists === false) failures.push('Group not found');
+                        if (check.assignmentIsCompatible === false && check.compatibilityErrors) {
                             failures.push(...check.compatibilityErrors);
                         }
                     }
@@ -3587,14 +3615,14 @@ const validateAssignments = async () => {
     useEffect(() => {
         let filtered = comparisonResults;
 
-        console.log('📊 Compare Filter Debug:', {
+        console.log('Compare Filter Debug:', {
             totalComparisonResults: comparisonResults.length,
             compareStatusFilter,
             statusBreakdown: {
                 ready: comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length,
                 migrated: comparisonResults.filter(r => r.isMigrated).length,
                 warnings: comparisonResults.filter(r => !r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'compare_failed').length,
-                failed: comparisonResults.filter(r => r.masterStatus === 'compare_failed' || (!r.isReadyForMigration && !r.isMigrated)).length,
+                failed: comparisonResults.filter(r => r.masterStatus === 'compare_failed').length,
             }
         });
 
