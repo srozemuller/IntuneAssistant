@@ -1924,7 +1924,8 @@ function AssignmentRolloutContent() {
             const values = line.split(';');
             const validationErrors: CSVValidationError[] = [];
 
-            const nullIfEmpty = (value: string) => value?.trim() === '' ? null : value?.trim() || null;
+            // Keep raw values for the compare payload — do NOT trim
+            const nullIfEmpty = (value: string) => value === '' || value == null ? null : value;
 
             const getAssignmentDirection = (value: string): 'Include' | 'Exclude' => {
                 const normalized = value?.trim().toLowerCase();
@@ -1958,17 +1959,23 @@ function AssignmentRolloutContent() {
             console.log('FilterName raw value:', values[4]);
             console.log('FilterName after nullIfEmpty:', nullIfEmpty(values[4]));
 
-            // Validate required fields
-            const policyName = values[0]?.trim() || '';
-            const groupName = values[1]?.trim() || '';
-            const assignmentDirection = values[2]?.trim() || '';
-            const assignmentAction = values[3]?.trim() || '';
+            // Raw values — used in the compare payload, spaces preserved
+            const policyName = values[0] ?? '';
+            const groupName  = values[1] ?? '';
+            const assignmentDirection = values[2] ?? '';
+            const assignmentAction    = values[3] ?? '';
+
+            // Trimmed copies — used only for validation / empty-checks
+            const policyNameTrimmed        = policyName.trim();
+            const groupNameTrimmed         = groupName.trim();
+            const assignmentDirectionTrimmed = assignmentDirection.trim();
+            const assignmentActionTrimmed  = assignmentAction.trim();
 
             // Get action result first to determine if other fields are needed
-            const actionResult = getAssignmentAction(assignmentAction);
+            const actionResult = getAssignmentAction(assignmentActionTrimmed);
 
             // Check PolicyName (always required)
-            if (!policyName) {
+            if (!policyNameTrimmed) {
                 validationErrors.push({
                     rowIndex: index + 2,
                     field: 'PolicyName',
@@ -1979,7 +1986,7 @@ function AssignmentRolloutContent() {
             // Only validate GroupName and AssignmentDirection if action is not 'NoAssignment'
             if (actionResult.action !== 'NoAssignment') {
                 // Check GroupName
-                if (!groupName) {
+                if (!groupNameTrimmed) {
                     validationErrors.push({
                         rowIndex: index + 2,
                         field: 'GroupName',
@@ -1988,7 +1995,7 @@ function AssignmentRolloutContent() {
                 }
 
                 // Check AssignmentDirection
-                if (!assignmentDirection) {
+                if (!assignmentDirectionTrimmed) {
                     validationErrors.push({
                         rowIndex: index + 2,
                         field: 'AssignmentDirection',
@@ -1998,7 +2005,7 @@ function AssignmentRolloutContent() {
             }
 
             // Check AssignmentAction validity
-            if (!assignmentAction) {
+            if (!assignmentActionTrimmed) {
                 validationErrors.push({
                     rowIndex: index + 2,
                     field: 'AssignmentAction',
@@ -2013,12 +2020,12 @@ function AssignmentRolloutContent() {
             }
 
             return {
-                PolicyName: policyName,
-                GroupName: groupName,
+                PolicyName: policyName,            // raw — preserves spaces for compare
+                GroupName: groupName,              // raw — preserves spaces for compare
                 AssignmentDirection: getAssignmentDirection(assignmentDirection),
                 AssignmentAction: actionResult.action,
-                FilterName: nullIfEmpty(values[4]),
-                FilterType: nullIfEmpty(values[5]),
+                FilterName: nullIfEmpty(values[4] ?? ''),
+                FilterType: nullIfEmpty(values[5] ?? ''),
                 isValidAction: actionResult.isValid,
                 originalActionValue: actionResult.originalValue,
                 validationErrors,
@@ -2391,7 +2398,7 @@ function AssignmentRolloutContent() {
 
             const migrationPayload = selectedComparisonResults.map(result => ({
                 PolicyId: result.policy?.id || '',
-                PolicyName: result.policy?.name || result.providedPolicyName || '',
+                PolicyName: result.csvRow?.PolicyName || result.policy?.name || result.providedPolicyName || '',
                 PolicyType: result.policy?.policyType || '',
                 AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
                 AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
