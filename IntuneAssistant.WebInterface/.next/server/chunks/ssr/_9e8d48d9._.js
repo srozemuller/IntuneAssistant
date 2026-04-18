@@ -59,18 +59,18 @@ const TableRow = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$n
                 children: column.render ? column.render(getCellValue(row, column), row) : String(getCellValue(row, column) || '')
             }, column.key, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 86,
+                lineNumber: 87,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0)))
     }, void 0, false, {
         fileName: "[project]/components/DataTable.tsx",
-        lineNumber: 70,
+        lineNumber: 71,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 });
 TableRow.displayName = 'TableRow';
 function DataTableComponent(props) {
-    const { data, columns: initialColumns, className: _className = '', onRowClick, currentPage = 1, totalPages: _totalPages = 1, itemsPerPage = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ITEMS_PER_PAGE"], rowClassName, onPageChange, onItemsPerPageChange, showPagination = true, showSearch = true, searchPlaceholder = "Search...", onSelectionChange, selectedRows = [] } = props;
+    const { data, columns: initialColumns, className: _className = '', onRowClick, currentPage = 1, totalPages: _totalPages = 1, itemsPerPage = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ITEMS_PER_PAGE"], rowClassName, onPageChange, onItemsPerPageChange, showPagination = true, showSearch = true, searchPlaceholder = "Search...", onSelectionChange, selectedRows = [], expandedRowRender } = props;
     // Local pagination state to support uncontrolled usage
     const [internalCurrentPage, setInternalCurrentPage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(currentPage);
     const [internalItemsPerPage, setInternalItemsPerPage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(itemsPerPage);
@@ -152,7 +152,7 @@ function DataTableComponent(props) {
                             className: "rounded border-input text-primary focus:ring-ring"
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 191,
+                            lineNumber: 193,
                             columnNumber: 25
                         }, this)
                 },
@@ -395,7 +395,7 @@ function DataTableComponent(props) {
                 className: "h-4 w-4 text-muted-foreground"
             }, void 0, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 440,
+                lineNumber: 442,
                 columnNumber: 20
             }, this);
         }
@@ -403,13 +403,13 @@ function DataTableComponent(props) {
             className: "h-4 w-4 text-foreground"
         }, void 0, false, {
             fileName: "[project]/components/DataTable.tsx",
-            lineNumber: 444,
+            lineNumber: 446,
             columnNumber: 15
         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
             className: "h-4 w-4 text-foreground"
         }, void 0, false, {
             fileName: "[project]/components/DataTable.tsx",
-            lineNumber: 445,
+            lineNumber: 447,
             columnNumber: 15
         }, this);
     }, [
@@ -537,7 +537,7 @@ function DataTableComponent(props) {
                                 className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 561,
+                                lineNumber: 563,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -548,7 +548,7 @@ function DataTableComponent(props) {
                                 className: "w-full pl-10 pr-10 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 562,
+                                lineNumber: 564,
                                 columnNumber: 25
                             }, this),
                             searchTerm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -558,18 +558,18 @@ function DataTableComponent(props) {
                                     className: "h-4 w-4"
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 574,
+                                    lineNumber: 576,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 570,
+                                lineNumber: 572,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 560,
+                        lineNumber: 562,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenu"], {
@@ -585,19 +585,19 @@ function DataTableComponent(props) {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 583,
+                                            lineNumber: 585,
                                             columnNumber: 33
                                         }, this),
                                         "Columns"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 582,
+                                    lineNumber: 584,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 581,
+                                lineNumber: 583,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -608,12 +608,12 @@ function DataTableComponent(props) {
                                         children: "Toggle columns"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 588,
+                                        lineNumber: 590,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 589,
+                                        lineNumber: 591,
                                         columnNumber: 29
                                     }, this),
                                     columns.filter((col)=>col.key !== '_select') // Don't allow hiding selection column
@@ -627,37 +627,37 @@ function DataTableComponent(props) {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/DataTable.tsx",
-                                                        lineNumber: 600,
+                                                        lineNumber: 602,
                                                         columnNumber: 49
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$eye$2d$off$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__EyeOff$3e$__["EyeOff"], {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/DataTable.tsx",
-                                                        lineNumber: 602,
+                                                        lineNumber: 604,
                                                         columnNumber: 49
                                                     }, this),
                                                     column.label
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 598,
+                                                lineNumber: 600,
                                                 columnNumber: 41
                                             }, this)
                                         }, column.key, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 593,
+                                            lineNumber: 595,
                                             columnNumber: 37
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 587,
+                                lineNumber: 589,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 580,
+                        lineNumber: 582,
                         columnNumber: 21
                     }, this),
                     searchTerm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -670,13 +670,13 @@ function DataTableComponent(props) {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 612,
+                        lineNumber: 614,
                         columnNumber: 25
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 559,
+                lineNumber: 561,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -732,19 +732,19 @@ function DataTableComponent(props) {
                                                             children: column.label
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/DataTable.tsx",
-                                                            lineNumber: 674,
+                                                            lineNumber: 676,
                                                             columnNumber: 49
                                                         }, this),
                                                         column.sortable !== false && column.key !== '_select' && getSortIcon(column.key)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/DataTable.tsx",
-                                                    lineNumber: 662,
+                                                    lineNumber: 664,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 661,
+                                                lineNumber: 663,
                                                 columnNumber: 41
                                             }, this),
                                             column.key !== '_select' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -755,75 +755,101 @@ function DataTableComponent(props) {
                                                     className: "absolute right-0 top-0 h-full w-px bg-transparent group-hover:bg-primary/50 group-active:bg-primary transition-colors"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/DataTable.tsx",
-                                                    lineNumber: 688,
+                                                    lineNumber: 690,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 683,
+                                                lineNumber: 685,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, column.key, true, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 653,
+                                        lineNumber: 655,
                                         columnNumber: 37
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 647,
+                                lineNumber: 649,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 646,
+                            lineNumber: 648,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
                             className: "bg-transparent",
-                            children: hasData ? paginatedData.map((row, rowIndex)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(TableRow, {
-                                    row: row,
-                                    rowIndex: rowIndex,
-                                    visibleColumns: visibleColumns,
-                                    startIndex: startIndex,
-                                    isSelected: isRowSelected(row),
-                                    onRowClick: onRowClick ? handleRowClick : undefined,
-                                    rowClassName: rowClassName,
-                                    getCellValue: getCellValue
-                                }, row.id ? `${String(row.id)}-${rowIndex}` : rowIndex, false, {
+                            children: hasData ? paginatedData.map((row, rowIndex)=>{
+                                const expandedContent = expandedRowRender ? expandedRowRender(row) : null;
+                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].Fragment, {
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(TableRow, {
+                                            row: row,
+                                            rowIndex: rowIndex,
+                                            visibleColumns: visibleColumns,
+                                            startIndex: startIndex,
+                                            isSelected: isRowSelected(row),
+                                            onRowClick: onRowClick ? handleRowClick : undefined,
+                                            rowClassName: rowClassName,
+                                            getCellValue: getCellValue
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/DataTable.tsx",
+                                            lineNumber: 704,
+                                            columnNumber: 41
+                                        }, this),
+                                        expandedContent && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                colSpan: visibleColumns.length,
+                                                className: "p-0 bg-blue-50/40 dark:bg-blue-900/10 border-b border-blue-200 dark:border-blue-800",
+                                                children: expandedContent
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/DataTable.tsx",
+                                                lineNumber: 716,
+                                                columnNumber: 49
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/DataTable.tsx",
+                                            lineNumber: 715,
+                                            columnNumber: 45
+                                        }, this)
+                                    ]
+                                }, row.id ? `${String(row.id)}-${rowIndex}` : rowIndex, true, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 699,
-                                    columnNumber: 33
-                                }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                    lineNumber: 703,
+                                    columnNumber: 37
+                                }, this);
+                            }) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                     colSpan: visibleColumns.length,
                                     className: "p-8 text-center text-muted-foreground",
                                     children: searchTerm ? 'No results found for your search.' : 'No data available.'
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 713,
+                                    lineNumber: 729,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 712,
+                                lineNumber: 728,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 696,
+                            lineNumber: 698,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/DataTable.tsx",
-                    lineNumber: 634,
+                    lineNumber: 636,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 620,
+                lineNumber: 622,
                 columnNumber: 13
             }, this),
             showPagination && sortedData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -846,7 +872,7 @@ function DataTableComponent(props) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 729,
+                                lineNumber: 745,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -857,7 +883,7 @@ function DataTableComponent(props) {
                                         children: "Items per page:"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 734,
+                                        lineNumber: 750,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -874,7 +900,7 @@ function DataTableComponent(props) {
                                                 children: "10"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 744,
+                                                lineNumber: 760,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -882,7 +908,7 @@ function DataTableComponent(props) {
                                                 children: "25"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 745,
+                                                lineNumber: 761,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -890,7 +916,7 @@ function DataTableComponent(props) {
                                                 children: "50"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 746,
+                                                lineNumber: 762,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -898,25 +924,25 @@ function DataTableComponent(props) {
                                                 children: "100"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 747,
+                                                lineNumber: 763,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 735,
+                                        lineNumber: 751,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 733,
+                                lineNumber: 749,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 728,
+                        lineNumber: 744,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -932,14 +958,14 @@ function DataTableComponent(props) {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 758,
+                                        lineNumber: 774,
                                         columnNumber: 29
                                     }, this),
                                     "Previous"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 752,
+                                lineNumber: 768,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -952,12 +978,12 @@ function DataTableComponent(props) {
                                         children: pageNum
                                     }, pageNum, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 764,
+                                        lineNumber: 780,
                                         columnNumber: 33
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 762,
+                                lineNumber: 778,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -971,31 +997,31 @@ function DataTableComponent(props) {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 783,
+                                        lineNumber: 799,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 776,
+                                lineNumber: 792,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 751,
+                        lineNumber: 767,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 727,
+                lineNumber: 743,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/DataTable.tsx",
-        lineNumber: 556,
+        lineNumber: 558,
         columnNumber: 9
     }, this);
 }
@@ -1588,6 +1614,28 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$msalConfig$2e$ts__$5b
 const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSuccess, gdapTenant, type = 'regular' })=>{
     // State management
     const { instance, accounts } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMsal"])();
+    // Capture the original logged-in account once when the modal opens.
+    // After the consent popup for a customer tenant MSAL may add new accounts to its
+    // cache (or lose the active account), so we must hold a stable reference here.
+    const originAccountRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(accounts[0] ?? null);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if (isOpen && accounts.length > 0) {
+            originAccountRef.current = accounts[0];
+        }
+    }, [
+        isOpen
+    ]); // eslint-disable-line react-hooks/exhaustive-deps
+    // Helper: always acquire a token for OUR account, never the customer's
+    const acquireToken = async ()=>{
+        const account = originAccountRef.current ?? accounts[0];
+        if (!account) throw new Error('No authenticated account found. Please log in again.');
+        return instance.acquireTokenSilent({
+            scopes: [
+                __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$msalConfig$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["apiScope"]
+            ],
+            account
+        });
+    };
     const [consentState, setConsentState] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [onboardingResult, setOnboardingResult] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [currentStep, setCurrentStep] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(0);
@@ -1598,6 +1646,9 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [consentWindow, setConsentWindow] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [consentCompleted, setConsentCompleted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    // New customer provisioning fields (for non-onboarded GDAP tenants)
+    const [newCustomerDisplayName, setNewCustomerDisplayName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    const [newCustomerIsGdap, setNewCustomerIsGdap] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const loggedInUserTenantId = accounts[0]?.tenantId || accounts[0]?.homeAccountId?.split('.')[1];
     const { partnerTenants, selectedTenant, setSelectedTenant, loading: gdapLoading, error: gdapError, fetchPartnerTenants, resetSelection } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useGdapTenantOnboarding$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useGdapTenantOnboarding"])(loggedInUserTenantId);
     // Initialize component when opening
@@ -1607,12 +1658,17 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                 setIsGdapMode(true);
                 setTenantId(gdapTenant.tenantId);
                 setTenantDomainName(gdapTenant.domain);
-                setCurrentStep(1); // Skip step 0 for pre-selected GDAP tenant
+                setNewCustomerIsGdap(true);
+                setNewCustomerDisplayName('');
+                // Non-onboarded: go to customer details step; onboarded: skip to validation
+                setCurrentStep(gdapTenant.isOnboarded ? 2 : 1);
             } else {
                 setCurrentStep(0);
-                setIsGdapMode(true); // Always default to GDAP
+                setIsGdapMode(true);
                 setTenantId('');
                 setTenantDomainName('');
+                setNewCustomerDisplayName('');
+                setNewCustomerIsGdap(true);
             }
             setError(null);
             setConsentCompleted(false);
@@ -1679,12 +1735,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
             if (!finalTenantId) {
                 throw new Error('Missing tenant ID');
             }
-            const token = await instance.acquireTokenSilent({
-                scopes: [
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$msalConfig$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["apiScope"]
-                ],
-                account: accounts[0]
-            });
+            const token = await acquireToken();
             const response = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CUSTOMER_ENDPOINT"]}/tenants`, {
                 method: 'POST',
                 headers: {
@@ -1707,7 +1758,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                 status: 'success',
                 message: 'Tenant linked successfully'
             });
-            setCurrentStep(3);
+            setCurrentStep(4);
         } catch (err) {
             console.error('Error linking tenant:', err);
             setError(err instanceof Error ? err.message : 'Failed to link tenant');
@@ -1719,43 +1770,36 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
         try {
             setLoading(true);
             setError(null);
-            console.log('Processing consent callback...');
-            // Wait a moment for the consent to be processed
-            await new Promise((resolve)=>setTimeout(resolve, 2000));
-            const token = await instance.acquireTokenSilent({
-                scopes: [
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$msalConfig$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["apiScope"]
-                ],
-                account: accounts[0]
-            });
-            // Check onboarding status or complete the process
-            const response = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CONSENT_CALLBACK"]}${consentState ? `?state=${consentState}` : ''}`, {
-                method: 'GET',
+            // For tenant onboarding the consent just grants permissions — there is no
+            // separate callback to process (that endpoint is for initial MSP onboarding only).
+            // We simply link the tenant directly after consent succeeds.
+            const token = await acquireToken();
+            const finalTenantId = isGdapMode ? selectedTenant?.tenantId : tenantId;
+            if (!finalTenantId) {
+                throw new Error('Missing tenant ID for linking');
+            }
+            console.log('Linking tenant after consent:', finalTenantId);
+            const linkResponse = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CUSTOMER_ENDPOINT"]}/tenants`, {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token.accessToken}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    isEnabled: true,
+                    isGdap: isGdapMode,
+                    tenantId: finalTenantId
+                })
             });
-            if (!response.ok) {
-                const errorData = await response.json().catch(()=>null);
-                throw new Error(errorData?.message || `Failed to complete onboarding: ${response.statusText}`);
+            if (!linkResponse.ok) {
+                const errorData = await linkResponse.json().catch(()=>null);
+                throw new Error(errorData?.message || `Failed to link tenant: ${linkResponse.statusText}`);
             }
-            let result = null;
-            if (response.status === 204) {
-                console.log('Onboarding completed (204 No Content)');
-                result = {
-                    status: 'success',
-                    message: 'Onboarding completed successfully'
-                };
-            } else {
-                result = await response.json();
-                console.log('Onboarding completed:', result);
-            }
-            setOnboardingResult(result);
-            setCurrentStep(3);
+            console.log('Tenant linked successfully after consent');
+            setCurrentStep(4);
         } catch (err) {
-            console.error('Error completing onboarding:', err);
-            setError(err instanceof Error ? err.message : 'Failed to complete onboarding');
+            console.error('Error linking tenant after consent:', err);
+            setError(err instanceof Error ? err.message : 'Failed to link tenant');
         } finally{
             setLoading(false);
         }
@@ -1764,7 +1808,6 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
     const handleNext = ()=>{
         setError(null);
         if (currentStep === 0) {
-            // Step 1: Method selection and data entry
             if (isGdapMode && !selectedTenant) {
                 setError('Please select a partner tenant for GDAP onboarding');
                 return;
@@ -1773,54 +1816,95 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                 setError('Please enter tenant ID and domain name');
                 return;
             }
-            setCurrentStep(1);
+            // Non-onboarded GDAP tenant → customer details step
+            const isNewCustomer = isGdapMode && selectedTenant && !selectedTenant.isOnboarded;
+            if (isNewCustomer) {
+                // Pre-fill GDAP toggle from selected tenant
+                setNewCustomerIsGdap(true);
+                setCurrentStep(1);
+            } else {
+                setCurrentStep(2);
+            }
         } else if (currentStep === 1) {
-            // Check if tenant is already onboarded but not linked
-            const isOnboardedNotLinked = isGdapMode ? selectedTenant?.isOnboarded && !selectedTenant?.isLinked : false; // For manual entry, we can't determine this easily
+            // Customer details step — validate then provision
+            if (!newCustomerDisplayName.trim()) {
+                setError('Please enter a customer name');
+                return;
+            }
+            provisionNewCustomer();
+        } else if (currentStep === 2) {
+            const isOnboardedNotLinked = isGdapMode ? selectedTenant?.isOnboarded && !selectedTenant?.isLinked : false;
             if (isOnboardedNotLinked) {
-                // Skip consent step and go directly to linking
                 linkExistingTenant();
             } else {
-                // Step 2: Validation -> Admin Consent
-                setCurrentStep(2);
+                setCurrentStep(3);
                 initiateConsent();
             }
-        } else if (currentStep === 2) {
-            // This step is handled by consent completion
-            setCurrentStep(3);
+        } else if (currentStep === 3) {
+            setCurrentStep(4);
         }
     };
     const handleBack = ()=>{
-        if (currentStep > 0) {
+        if (currentStep === 2) {
+            // Go back to customer details if it was a new customer, else back to method selection
+            const isNewCustomer = isGdapMode && selectedTenant && !selectedTenant.isOnboarded;
+            setCurrentStep(isNewCustomer ? 1 : 0);
+        } else if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
         }
     };
+    const provisionNewCustomer = async ()=>{
+        try {
+            setLoading(true);
+            setError(null);
+            const finalTenantId = selectedTenant?.tenantId || tenantId;
+            const finalDomain = selectedTenant?.domain || tenantDomainName;
+            const token = await acquireToken();
+            const response = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CUSTOMER_TENANTS_ENDPOINT"]}/${finalTenantId}/provision`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token.accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    displayName: newCustomerDisplayName.trim(),
+                    domain: finalDomain,
+                    gdap: newCustomerIsGdap
+                })
+            });
+            if (!response.ok) {
+                const errorData = await response.json().catch(()=>null);
+                throw new Error(errorData?.message || `Failed to provision customer: ${response.statusText}`);
+            }
+            console.log('Customer provisioned successfully');
+            setCurrentStep(2);
+        } catch (err) {
+            console.error('Error provisioning customer:', err);
+            setError(err instanceof Error ? err.message : 'Failed to provision customer');
+        } finally{
+            setLoading(false);
+        }
+    };
     const initiateConsent = async ()=>{
+        // Open popup SYNCHRONOUSLY first — browsers block popups opened after an await.
+        const popup = window.open('about:blank', 'consentWindow', 'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no');
+        if (!popup) {
+            setError('Failed to open consent window. Please allow popups for this site and try again.');
+            setLoading(false);
+            return;
+        }
         try {
             setLoading(true);
             setError(null);
             const finalTenantId = isGdapMode ? selectedTenant?.tenantId : tenantId;
             const finalDomainName = isGdapMode ? selectedTenant?.domain : tenantDomainName;
-            const finalDisplayName = isGdapMode ? selectedTenant?.displayName : undefined;
-            console.log('Initiating consent for tenant:', {
-                tenantId: finalTenantId,
-                domainName: finalDomainName,
-                displayName: finalDisplayName,
-                isGdap: isGdapMode
-            });
+            const finalDisplayName = newCustomerDisplayName.trim() || (isGdapMode ? selectedTenant?.displayName : undefined);
             if (!finalTenantId || !finalDomainName) {
+                popup.close();
                 throw new Error('Missing tenant information');
             }
-            const tokenResponse = await instance.acquireTokenSilent({
-                scopes: [
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$msalConfig$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["apiScope"]
-                ],
-                account: accounts[0]
-            });
-            // Build API URL to get consent URL
-            const apiUrl = `${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CUSTOMER_ENDPOINT"]}/tenants/onboarding?tenantid=${finalTenantId}&tenantName=${finalDisplayName}&domainName=${encodeURIComponent(finalDomainName)}&isGdap=${isGdapMode}`;
-            console.log('API URL:', apiUrl);
-            // Make API call to get consent URL
+            const tokenResponse = await acquireToken();
+            const apiUrl = `${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CUSTOMER_ENDPOINT"]}/tenants/onboarding?tenantid=${finalTenantId}&tenantName=${encodeURIComponent(finalDisplayName || '')}&domainName=${encodeURIComponent(finalDomainName)}&isGdap=${isGdapMode}`;
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
@@ -1830,28 +1914,25 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
             });
             if (!response.ok) {
                 const errorData = await response.json().catch(()=>null);
+                popup.close();
                 throw new Error(errorData?.message || `Failed to get consent URL: ${response.statusText}`);
             }
             const result = await response.json();
-            console.log('🔵 API Response:', result);
-            // Extract consent URL from API response
             const consentUrl = result.data?.url || result.url;
             if (!consentUrl) {
+                popup.close();
                 throw new Error('No consent URL received from API');
             }
-            const state = extractStateFromConsentUrl(result.data.url);
+            const state = extractStateFromConsentUrl(result.data?.url || consentUrl);
             setConsentState(state);
-            console.log('🔵 Opening consent URL:', consentUrl);
-            // Open consent window with the URL from API
-            const popup = window.open(consentUrl, 'consentWindow', 'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no');
-            if (popup) {
-                setConsentWindow(popup);
-                popup.focus();
-            } else {
-                throw new Error('Failed to open consent window. Please check your popup blocker settings.');
-            }
+            // Navigate the already-open popup to the consent URL
+            popup.location.href = consentUrl;
+            setConsentWindow(popup);
+            popup.focus();
+            setLoading(false);
         } catch (err) {
             console.error('Error initiating consent:', err);
+            if (popup && !popup.closed) popup.close();
             setError(err instanceof Error ? err.message : 'Failed to initiate consent');
             setLoading(false);
         }
@@ -1881,20 +1962,20 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                     children: "Step 1: Choose Onboarding Method"
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 386,
+                                    lineNumber: 453,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Select how you want to onboard this tenant"
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 387,
+                                    lineNumber: 454,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 385,
+                            lineNumber: 452,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1913,20 +1994,20 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                         children: "Authentication Method"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 394,
+                                                        lineNumber: 461,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__["Info"], {
                                                         className: "h-4 w-4 text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 395,
+                                                        lineNumber: 462,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 393,
+                                                lineNumber: 460,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1951,7 +2032,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                 disabled: true
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                lineNumber: 399,
+                                                                lineNumber: 466,
                                                                 columnNumber: 45
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1959,13 +2040,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                 children: isGdapMode ? 'GDAP (Recommended)' : 'Interactive Authentication'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                lineNumber: 415,
+                                                                lineNumber: 482,
                                                                 columnNumber: 45
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 398,
+                                                        lineNumber: 465,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1974,35 +2055,35 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                             children: "Use Granular Delegated Admin Privileges for secure partner access. Select from your existing GDAP relationships."
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 421,
+                                                            lineNumber: 488,
                                                             columnNumber: 49
                                                         }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             children: "Traditional interactive authentication requiring customer admin consent. Enter tenant details manually."
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 426,
+                                                            lineNumber: 493,
                                                             columnNumber: 49
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 419,
+                                                        lineNumber: 486,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 397,
+                                                lineNumber: 464,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                        lineNumber: 392,
+                                        lineNumber: 459,
                                         columnNumber: 33
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 391,
+                                    lineNumber: 458,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 isGdapMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -2021,27 +2102,27 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                         className: "h-5 w-5"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                        lineNumber: 444,
+                                                                        lineNumber: 511,
                                                                         columnNumber: 53
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     "Select Partner Tenant"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                lineNumber: 443,
+                                                                lineNumber: 510,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                                 children: "Choose from your available GDAP partner tenants"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                lineNumber: 447,
+                                                                lineNumber: 514,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 442,
+                                                        lineNumber: 509,
                                                         columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -2053,23 +2134,23 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                             className: "h-4 w-4 animate-spin"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 458,
+                                                            lineNumber: 525,
                                                             columnNumber: 53
                                                         }, ("TURBOPACK compile-time value", void 0)) : 'Refresh'
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 451,
+                                                        lineNumber: 518,
                                                         columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 441,
+                                                lineNumber: 508,
                                                 columnNumber: 41
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 440,
+                                            lineNumber: 507,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2080,7 +2161,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Load Partner Tenants"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 467,
+                                                    lineNumber: 534,
                                                     columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 gdapLoading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2090,7 +2171,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                             className: "h-6 w-6 animate-spin mx-auto mb-2"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 474,
+                                                            lineNumber: 541,
                                                             columnNumber: 49
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2098,13 +2179,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                             children: "Loading partner tenants..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 475,
+                                                            lineNumber: 542,
                                                             columnNumber: 49
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 473,
+                                                    lineNumber: 540,
                                                     columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 gdapError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2114,14 +2195,14 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                             className: "h-4 w-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 481,
+                                                            lineNumber: 548,
                                                             columnNumber: 49
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         gdapError
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 480,
+                                                    lineNumber: 547,
                                                     columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 !gdapLoading && !gdapError && partnerTenants.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$command$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Command"], {
@@ -2131,7 +2212,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                             placeholder: "Search tenants..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 488,
+                                                            lineNumber: 555,
                                                             columnNumber: 49
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$command$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CommandList"], {
@@ -2141,7 +2222,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                     children: "No tenants found."
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                    lineNumber: 490,
+                                                                    lineNumber: 557,
                                                                     columnNumber: 53
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$command$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CommandGroup"], {
@@ -2166,7 +2247,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                                                     children: tenant.domain
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                                    lineNumber: 508,
+                                                                                                    lineNumber: 575,
                                                                                                     columnNumber: 73
                                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                                 tenant.displayName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2178,13 +2259,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                                    lineNumber: 510,
+                                                                                                    lineNumber: 577,
                                                                                                     columnNumber: 77
                                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                            lineNumber: 507,
+                                                                                            lineNumber: 574,
                                                                                             columnNumber: 69
                                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2192,7 +2273,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                                             children: tenant.tenantId
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                            lineNumber: 515,
+                                                                                            lineNumber: 582,
                                                                                             columnNumber: 69
                                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2204,7 +2285,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                                                     children: tenant.isOnboarded ? 'Onboarded' : 'Not Onboarded'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                                    lineNumber: 519,
+                                                                                                    lineNumber: 586,
                                                                                                     columnNumber: 73
                                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2213,49 +2294,49 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                                                     children: tenant.isLinked ? 'Linked' : 'Not Linked'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                                    lineNumber: 525,
+                                                                                                    lineNumber: 592,
                                                                                                     columnNumber: 73
                                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                            lineNumber: 518,
+                                                                                            lineNumber: 585,
                                                                                             columnNumber: 69
                                                                                         }, ("TURBOPACK compile-time value", void 0))
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                    lineNumber: 506,
+                                                                                    lineNumber: 573,
                                                                                     columnNumber: 65
                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                 selectedTenant?.tenantId === tenant.tenantId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__["CheckCircle"], {
                                                                                     className: "h-5 w-5 text-green-600"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                                    lineNumber: 534,
+                                                                                    lineNumber: 601,
                                                                                     columnNumber: 69
                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                             ]
                                                                         }, tenant.tenantId, true, {
                                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                            lineNumber: 493,
+                                                                            lineNumber: 560,
                                                                             columnNumber: 61
                                                                         }, ("TURBOPACK compile-time value", void 0)))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                    lineNumber: 491,
+                                                                    lineNumber: 558,
                                                                     columnNumber: 53
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 489,
+                                                            lineNumber: 556,
                                                             columnNumber: 49
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 487,
+                                                    lineNumber: 554,
                                                     columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 selectedTenant && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -2275,7 +2356,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                            lineNumber: 548,
+                                                                            lineNumber: 615,
                                                                             columnNumber: 61
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2283,7 +2364,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                             children: selectedTenant.displayName || 'No display name'
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                            lineNumber: 551,
+                                                                            lineNumber: 618,
                                                                             columnNumber: 61
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2291,13 +2372,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                             children: selectedTenant.tenantId
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                            lineNumber: 554,
+                                                                            lineNumber: 621,
                                                                             columnNumber: 61
                                                                         }, ("TURBOPACK compile-time value", void 0))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                    lineNumber: 547,
+                                                                    lineNumber: 614,
                                                                     columnNumber: 57
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -2312,40 +2393,40 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                         className: "h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                        lineNumber: 567,
+                                                                        lineNumber: 634,
                                                                         columnNumber: 61
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                    lineNumber: 558,
+                                                                    lineNumber: 625,
                                                                     columnNumber: 57
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                            lineNumber: 546,
+                                                            lineNumber: 613,
                                                             columnNumber: 53
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 545,
+                                                        lineNumber: 612,
                                                         columnNumber: 49
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 544,
+                                                    lineNumber: 611,
                                                     columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 465,
+                                            lineNumber: 532,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 439,
+                                    lineNumber: 506,
                                     columnNumber: 33
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 !isGdapMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2358,7 +2439,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Tenant ID"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 581,
+                                                    lineNumber: 648,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -2369,7 +2450,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     className: "font-mono"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 582,
+                                                    lineNumber: 649,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2377,13 +2458,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "The Azure AD tenant ID in UUID format"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 589,
+                                                    lineNumber: 656,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 580,
+                                            lineNumber: 647,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2393,7 +2474,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Domain Name"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 594,
+                                                    lineNumber: 661,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -2403,7 +2484,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     placeholder: "Enter domain name (e.g., contoso.onmicrosoft.com)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 595,
+                                                    lineNumber: 662,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2411,56 +2492,293 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "The primary domain name of the tenant"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 601,
+                                                    lineNumber: 668,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 593,
+                                            lineNumber: 660,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 579,
+                                    lineNumber: 646,
                                     columnNumber: 33
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 389,
+                            lineNumber: 456,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                    lineNumber: 384,
+                    lineNumber: 451,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0));
             case 1:
+                {
+                    // New customer provisioning — enter display name, GDAP toggle; tenant id + domain pre-filled
+                    const provTenantId = selectedTenant?.tenantId || tenantId;
+                    const provDomain = selectedTenant?.domain || tenantDomainName;
+                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardHeader"], {
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardTitle"], {
+                                        children: "Step 2: New Customer Details"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                        lineNumber: 686,
+                                        columnNumber: 29
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
+                                        children: "This tenant is not yet onboarded. Provide a customer name to create the record."
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                        lineNumber: 687,
+                                        columnNumber: 29
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                lineNumber: 685,
+                                columnNumber: 25
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
+                                className: "space-y-5",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "space-y-1",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Label"], {
+                                                htmlFor: "newCustomerDisplayName",
+                                                children: [
+                                                    "Customer Name ",
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-red-500",
+                                                        children: "*"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 692,
+                                                        columnNumber: 87
+                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 692,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
+                                                id: "newCustomerDisplayName",
+                                                value: newCustomerDisplayName,
+                                                onChange: (e)=>setNewCustomerDisplayName(e.target.value),
+                                                placeholder: "e.g. Contoso Ltd",
+                                                autoFocus: true
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 693,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-xs text-gray-500",
+                                                children: "The friendly display name for this customer"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 700,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                        lineNumber: 691,
+                                        columnNumber: 29
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "flex justify-between items-center",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-sm font-medium text-gray-600 dark:text-gray-400",
+                                                        children: "Tenant ID"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 706,
+                                                        columnNumber: 37
+                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "font-mono text-xs text-gray-800 dark:text-gray-200",
+                                                        children: provTenantId
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 707,
+                                                        columnNumber: 37
+                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 705,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "flex justify-between items-center",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-sm font-medium text-gray-600 dark:text-gray-400",
+                                                        children: "Domain"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 710,
+                                                        columnNumber: 37
+                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-sm text-gray-800 dark:text-gray-200",
+                                                        children: provDomain
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 711,
+                                                        columnNumber: 37
+                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 709,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            selectedTenant?.displayName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "flex justify-between items-center",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-sm font-medium text-gray-600 dark:text-gray-400",
+                                                        children: "Azure Display Name"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 715,
+                                                        columnNumber: 41
+                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-sm text-gray-800 dark:text-gray-200",
+                                                        children: selectedTenant.displayName
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 716,
+                                                        columnNumber: 41
+                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 714,
+                                                columnNumber: 37
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                        lineNumber: 704,
+                                        columnNumber: 29
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center justify-between p-4 border rounded-lg",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "font-medium",
+                                                        children: "GDAP Access"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 724,
+                                                        columnNumber: 37
+                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-sm text-gray-500",
+                                                        children: "Use Granular Delegated Admin Privileges for this tenant"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                        lineNumber: 725,
+                                                        columnNumber: 37
+                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 723,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$switch$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Switch"], {
+                                                checked: newCustomerIsGdap,
+                                                onCheckedChange: setNewCustomerIsGdap
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 727,
+                                                columnNumber: 33
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                        lineNumber: 722,
+                                        columnNumber: 29
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-2 text-sm text-blue-600",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$loader$2d$circle$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Loader2$3e$__["Loader2"], {
+                                                className: "h-4 w-4 animate-spin"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 735,
+                                                columnNumber: 37
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            "Provisioning customer record…"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                        lineNumber: 734,
+                                        columnNumber: 33
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                lineNumber: 689,
+                                columnNumber: 25
+                            }, ("TURBOPACK compile-time value", void 0))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                        lineNumber: 684,
+                        columnNumber: 21
+                    }, ("TURBOPACK compile-time value", void 0));
+                }
+            case 2:
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardHeader"], {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                    children: "Step 2: Validation"
-                                }, void 0, false, {
+                                    children: [
+                                        "Step ",
+                                        newCustomerDisplayName ? '3' : '2',
+                                        ": Validation"
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 616,
+                                    lineNumber: 748,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Verify and confirm information"
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 617,
+                                    lineNumber: 749,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 615,
+                            lineNumber: 747,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2477,21 +2795,21 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Customer:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 623,
+                                                    lineNumber: 754,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "text-gray-900 dark:text-gray-100",
-                                                    children: customerName
+                                                    children: newCustomerDisplayName || customerName
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 624,
+                                                    lineNumber: 755,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 622,
+                                            lineNumber: 753,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2502,7 +2820,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Method:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 627,
+                                                    lineNumber: 758,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2510,13 +2828,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: isGdapMode ? 'GDAP' : 'Interactive'
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 628,
+                                                    lineNumber: 759,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 626,
+                                            lineNumber: 757,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2527,7 +2845,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Tenant ID:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 633,
+                                                    lineNumber: 764,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2535,13 +2853,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: isGdapMode ? selectedTenant?.tenantId : tenantId
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 634,
+                                                    lineNumber: 765,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 632,
+                                            lineNumber: 763,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2552,7 +2870,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Domain:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 639,
+                                                    lineNumber: 770,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2560,13 +2878,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: isGdapMode ? selectedTenant?.domain : tenantDomainName
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 640,
+                                                    lineNumber: 771,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 638,
+                                            lineNumber: 769,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         isGdapMode && selectedTenant?.displayName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2577,7 +2895,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Display Name:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 644,
+                                                    lineNumber: 775,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2585,13 +2903,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: selectedTenant.displayName
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 645,
+                                                    lineNumber: 776,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 643,
+                                            lineNumber: 774,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         isGdapMode && selectedTenant && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2602,28 +2920,28 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     children: "Status:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 650,
+                                                    lineNumber: 781,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
                                                     variant: "outline",
                                                     className: "text-xs",
-                                                    children: selectedTenant.isOnboarded ? 'Previously Onboarded' : 'New Tenant'
+                                                    children: selectedTenant.isOnboarded ? 'Previously Onboarded' : 'New Customer'
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 651,
+                                                    lineNumber: 782,
                                                     columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 649,
+                                            lineNumber: 780,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 621,
+                                    lineNumber: 752,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2635,7 +2953,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                 className: "h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 659,
+                                                lineNumber: 790,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2646,14 +2964,14 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                         children: "Next Step:"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 661,
+                                                        lineNumber: 792,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     isGdapMode && selectedTenant?.isOnboarded && !selectedTenant?.isLinked ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                         children: "This tenant is already onboarded. We will link it to your customer account."
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 663,
+                                                        lineNumber: 794,
                                                         columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                                                         children: [
@@ -2661,7 +2979,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                 children: "Admin consent will be initiated to grant necessary permissions for monitoring and management."
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                lineNumber: 666,
+                                                                lineNumber: 797,
                                                                 columnNumber: 49
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             isGdapMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2669,7 +2987,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                                 children: "Using GDAP relationship for secure delegated access."
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                                lineNumber: 668,
+                                                                lineNumber: 799,
                                                                 columnNumber: 53
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
@@ -2677,55 +2995,59 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 660,
+                                                lineNumber: 791,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                        lineNumber: 658,
+                                        lineNumber: 789,
                                         columnNumber: 33
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 657,
+                                    lineNumber: 788,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 620,
+                            lineNumber: 751,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                    lineNumber: 614,
+                    lineNumber: 746,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0));
-            case 2:
+            case 3:
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardHeader"], {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                    children: "Step 3: Admin Consent"
-                                }, void 0, false, {
+                                    children: [
+                                        "Step ",
+                                        newCustomerDisplayName ? '4' : '3',
+                                        ": Admin Consent"
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 683,
+                                    lineNumber: 814,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Grant necessary permissions"
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 684,
+                                    lineNumber: 815,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 682,
+                            lineNumber: 813,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2738,7 +3060,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             className: "h-8 w-8 animate-spin mx-auto mb-4"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 689,
+                                            lineNumber: 820,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2746,7 +3068,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             children: "Initiating consent process..."
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 690,
+                                            lineNumber: 821,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2754,13 +3076,13 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             children: "A popup window will open for admin consent"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 691,
+                                            lineNumber: 822,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 688,
+                                    lineNumber: 819,
                                     columnNumber: 33
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 consentWindow && !consentCompleted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2770,7 +3092,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             className: "h-8 w-8 mx-auto mb-4 text-blue-600"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 699,
+                                            lineNumber: 830,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2778,7 +3100,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             children: "Consent window is open"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 700,
+                                            lineNumber: 831,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2786,28 +3108,24 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             children: "Please complete the consent process in the popup window"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 701,
+                                            lineNumber: 832,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                                             variant: "outline",
                                             size: "sm",
-                                            onClick: ()=>{
-                                                if (consentWindow) {
-                                                    consentWindow.focus();
-                                                }
-                                            },
+                                            onClick: ()=>consentWindow?.focus(),
                                             className: "mt-4",
                                             children: "Focus Consent Window"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 704,
+                                            lineNumber: 835,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 698,
+                                    lineNumber: 829,
                                     columnNumber: 33
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 !loading && !consentWindow && !consentCompleted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2817,7 +3135,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             className: "h-8 w-8 mx-auto mb-4 text-gray-400"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 721,
+                                            lineNumber: 848,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2825,50 +3143,54 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             children: "Consent process will start automatically"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 722,
+                                            lineNumber: 849,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 720,
+                                    lineNumber: 847,
                                     columnNumber: 33
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 686,
+                            lineNumber: 817,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                    lineNumber: 681,
+                    lineNumber: 812,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0));
-            case 3:
+            case 4:
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardHeader"], {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                    children: "Step 4: Complete"
-                                }, void 0, false, {
+                                    children: [
+                                        "Step ",
+                                        newCustomerDisplayName ? '5' : '4',
+                                        ": Complete"
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 733,
+                                    lineNumber: 860,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Onboarding completed successfully"
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 734,
+                                    lineNumber: 861,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 732,
+                            lineNumber: 859,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2881,7 +3203,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             className: "h-12 w-12 mx-auto mb-4 text-green-600"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 738,
+                                            lineNumber: 865,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2889,24 +3211,24 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                             children: "Onboarding Complete!"
                                         }, void 0, false, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 739,
+                                            lineNumber: 866,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-gray-600",
                                             children: [
-                                                customerName,
+                                                newCustomerDisplayName || customerName,
                                                 " has been successfully onboarded and is ready for monitoring."
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                            lineNumber: 740,
+                                            lineNumber: 867,
                                             columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 737,
+                                    lineNumber: 864,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2919,7 +3241,7 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                 children: "What happens next:"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 746,
+                                                lineNumber: 873,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -2929,49 +3251,51 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                         children: "Tenant becomes available in the tenants list"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 748,
+                                                        lineNumber: 875,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                                         children: "If needed, add the additional license"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                        lineNumber: 749,
+                                                        lineNumber: 876,
                                                         columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 747,
+                                                lineNumber: 874,
                                                 columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                        lineNumber: 745,
+                                        lineNumber: 872,
                                         columnNumber: 33
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 744,
+                                    lineNumber: 871,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 736,
+                            lineNumber: 863,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                    lineNumber: 731,
+                    lineNumber: 858,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0));
             default:
                 return null;
         }
     };
+    const isNewCustomer = isGdapMode && selectedTenant && !selectedTenant.isOnboarded;
+    const totalSteps = isNewCustomer ? 5 : 4;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Dialog"], {
         open: isOpen,
         onOpenChange: onClose,
@@ -2986,20 +3310,20 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                 className: "h-5 w-5"
                             }, void 0, false, {
                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                lineNumber: 767,
+                                lineNumber: 897,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0)),
                             "Tenant Onboarding - ",
-                            customerName
+                            newCustomerDisplayName || customerName
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                        lineNumber: 766,
+                        lineNumber: 896,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0))
                 }, void 0, false, {
                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                    lineNumber: 765,
+                    lineNumber: 895,
                     columnNumber: 13
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -3010,25 +3334,28 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                     children: "Onboarding Process"
                                 }, void 0, false, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 775,
+                                    lineNumber: 905,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                    children: "4-step process to onboard your customer"
-                                }, void 0, false, {
+                                    children: [
+                                        totalSteps,
+                                        "-step process to onboard your customer"
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                    lineNumber: 776,
+                                    lineNumber: 906,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 774,
+                            lineNumber: 904,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "grid grid-cols-1 md:grid-cols-4 gap-4",
+                                className: `grid grid-cols-1 md:grid-cols-${totalSteps} gap-4`,
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: `text-center p-4 ${currentStep >= 0 ? 'opacity-100' : 'opacity-50'}`,
@@ -3039,59 +3366,101 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                     className: `h-6 w-6 ${currentStep >= 0 ? 'text-blue-600' : 'text-gray-400'}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 784,
+                                                    lineNumber: 914,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 781,
+                                                lineNumber: 911,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
                                                 className: "font-semibold mb-2",
-                                                children: "1. Method Selection"
+                                                children: "1. Select Tenant"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 787,
+                                                lineNumber: 916,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "text-sm text-muted-foreground",
-                                                children: "Choose onboarding method"
+                                                children: "Choose GDAP tenant"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 788,
+                                                lineNumber: 917,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                        lineNumber: 780,
+                                        lineNumber: 910,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    isNewCustomer && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: `text-center p-4 ${currentStep >= 1 ? 'opacity-100' : 'opacity-50'}`,
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: `w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-100'}`,
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__["CheckCircle"], {
-                                                    className: `h-6 w-6 ${currentStep >= 1 ? 'text-green-600' : 'text-gray-400'}`
+                                                className: `w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-orange-100 dark:bg-orange-900' : 'bg-gray-100'}`,
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$users$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Users$3e$__["Users"], {
+                                                    className: `h-6 w-6 ${currentStep >= 1 ? 'text-orange-600' : 'text-gray-400'}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 794,
+                                                    lineNumber: 925,
+                                                    columnNumber: 41
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 922,
+                                                columnNumber: 37
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                                className: "font-semibold mb-2",
+                                                children: "2. Customer Details"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 927,
+                                                columnNumber: 37
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-sm text-muted-foreground",
+                                                children: "Create customer record"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                lineNumber: 928,
+                                                columnNumber: 37
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                        lineNumber: 921,
+                                        columnNumber: 33
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: `text-center p-4 ${currentStep >= 2 ? 'opacity-100' : 'opacity-50'}`,
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: `w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${currentStep >= 2 ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-100'}`,
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__["CheckCircle"], {
+                                                    className: `h-6 w-6 ${currentStep >= 2 ? 'text-green-600' : 'text-gray-400'}`
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                                    lineNumber: 936,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 791,
+                                                lineNumber: 933,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
                                                 className: "font-semibold mb-2",
-                                                children: "2. Validation"
-                                            }, void 0, false, {
+                                                children: [
+                                                    isNewCustomer ? '3' : '2',
+                                                    ". Validation"
+                                                ]
+                                            }, void 0, true, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 797,
+                                                lineNumber: 938,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3099,38 +3468,41 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                 children: "Verify information"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 798,
+                                                lineNumber: 939,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                        lineNumber: 790,
+                                        lineNumber: 932,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: `text-center p-4 ${currentStep >= 2 ? 'opacity-100' : 'opacity-50'}`,
+                                        className: `text-center p-4 ${currentStep >= 3 ? 'opacity-100' : 'opacity-50'}`,
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: `w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${currentStep >= 2 ? 'bg-purple-100 dark:bg-purple-900' : 'bg-gray-100'}`,
+                                                className: `w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${currentStep >= 3 ? 'bg-purple-100 dark:bg-purple-900' : 'bg-gray-100'}`,
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__["Lock"], {
-                                                    className: `h-6 w-6 ${currentStep >= 2 ? 'text-purple-600' : 'text-gray-400'}`
+                                                    className: `h-6 w-6 ${currentStep >= 3 ? 'text-purple-600' : 'text-gray-400'}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 804,
+                                                    lineNumber: 946,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 801,
+                                                lineNumber: 943,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
                                                 className: "font-semibold mb-2",
-                                                children: "3. Admin Consent"
-                                            }, void 0, false, {
+                                                children: [
+                                                    isNewCustomer ? '4' : '3',
+                                                    ". Admin Consent"
+                                                ]
+                                            }, void 0, true, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 807,
+                                                lineNumber: 948,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3138,38 +3510,41 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                 children: "Grant permissions"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 808,
+                                                lineNumber: 949,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                        lineNumber: 800,
+                                        lineNumber: 942,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: `text-center p-4 ${currentStep >= 3 ? 'opacity-100' : 'opacity-50'}`,
+                                        className: `text-center p-4 ${currentStep >= 4 ? 'opacity-100' : 'opacity-50'}`,
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: `w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${currentStep >= 3 ? 'bg-yellow-100 dark:bg-yellow-900' : 'bg-gray-100'}`,
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$users$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Users$3e$__["Users"], {
-                                                    className: `h-6 w-6 ${currentStep >= 3 ? 'text-yellow-600' : 'text-gray-400'}`
+                                                className: `w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${currentStep >= 4 ? 'bg-yellow-100 dark:bg-yellow-900' : 'bg-gray-100'}`,
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__["CheckCircle"], {
+                                                    className: `h-6 w-6 ${currentStep >= 4 ? 'text-yellow-600' : 'text-gray-400'}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                    lineNumber: 814,
+                                                    lineNumber: 956,
                                                     columnNumber: 37
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 811,
+                                                lineNumber: 953,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
                                                 className: "font-semibold mb-2",
-                                                children: "4. Complete"
-                                            }, void 0, false, {
+                                                children: [
+                                                    isNewCustomer ? '5' : '4',
+                                                    ". Complete"
+                                                ]
+                                            }, void 0, true, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 817,
+                                                lineNumber: 958,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3177,30 +3552,30 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                                                 children: "Ready for monitoring"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                                lineNumber: 818,
+                                                lineNumber: 959,
                                                 columnNumber: 33
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                        lineNumber: 810,
+                                        lineNumber: 952,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                                lineNumber: 779,
+                                lineNumber: 909,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 778,
+                            lineNumber: 908,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                    lineNumber: 773,
+                    lineNumber: 903,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 renderStepContent(),
@@ -3211,71 +3586,82 @@ const TenantOnboardingModal = ({ isOpen, onClose, customerId, customerName, onSu
                             className: "h-4 w-4"
                         }, void 0, false, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 830,
+                            lineNumber: 971,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         error
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                    lineNumber: 829,
+                    lineNumber: 970,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex gap-3 pt-4",
                     children: [
-                        currentStep > 0 && currentStep < 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
+                        currentStep > 0 && currentStep < 4 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                             variant: "outline",
                             onClick: handleBack,
                             disabled: loading,
                             children: "Back"
                         }, void 0, false, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 838,
+                            lineNumber: 979,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
-                        currentStep < 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
+                        currentStep < 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                             onClick: handleNext,
                             disabled: loading,
-                            children: currentStep === 1 && isGdapMode && selectedTenant?.isOnboarded && !selectedTenant?.isLinked ? 'Link Customer' : currentStep === 1 ? 'Start Consent' : 'Next'
+                            children: loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$loader$2d$circle$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Loader2$3e$__["Loader2"], {
+                                        className: "h-4 w-4 mr-2 animate-spin"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
+                                        lineNumber: 987,
+                                        columnNumber: 35
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    "Processing…"
+                                ]
+                            }, void 0, true) : currentStep === 2 && isGdapMode && selectedTenant?.isOnboarded && !selectedTenant?.isLinked ? 'Link Customer' : currentStep === 2 ? 'Start Consent' : currentStep === 1 ? 'Provision & Continue' : 'Next'
                         }, void 0, false, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 844,
+                            lineNumber: 985,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
-                        currentStep === 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
+                        currentStep === 4 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                             onClick: handleComplete,
                             children: "Complete Onboarding"
                         }, void 0, false, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 855,
+                            lineNumber: 1000,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                             variant: "outline",
                             onClick: onClose,
                             disabled: loading,
-                            children: currentStep === 3 ? 'Close' : 'Cancel'
+                            children: currentStep === 4 ? 'Close' : 'Cancel'
                         }, void 0, false, {
                             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                            lineNumber: 860,
+                            lineNumber: 1005,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-                    lineNumber: 836,
+                    lineNumber: 977,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-            lineNumber: 764,
+            lineNumber: 894,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/components/onboarding/tenant-onboarding.tsx",
-        lineNumber: 763,
+        lineNumber: 893,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -4036,37 +4422,51 @@ function CustomerPage() {
                 setLicenseOnboardingWizard((prev)=>prev ? {
                         ...prev,
                         consentCompleted: true,
+                        consentWindow: null,
                         loading: false
                     } : null);
-                if (licenseOnboardingWizard.consentWindow) {
-                    licenseOnboardingWizard.consentWindow.close();
-                    setLicenseOnboardingWizard((prev)=>prev ? {
-                            ...prev,
-                            consentWindow: null
-                        } : null);
-                }
-                // Complete the license creation process
+                licenseOnboardingWizard.consentWindow?.close();
                 completeLicenseCreation();
             } else if (event.data.type === 'CONSENT_ERROR') {
                 console.log('License consent error received:', event.data);
                 setLicenseOnboardingWizard((prev)=>prev ? {
                         ...prev,
                         error: `Consent failed: ${event.data.errorDescription || event.data.error || 'Unknown error'}`,
+                        consentWindow: null,
                         loading: false
                     } : null);
-                if (licenseOnboardingWizard.consentWindow) {
-                    licenseOnboardingWizard.consentWindow.close();
-                    setLicenseOnboardingWizard((prev)=>prev ? {
-                            ...prev,
-                            consentWindow: null
-                        } : null);
-                }
+                licenseOnboardingWizard.consentWindow?.close();
             }
         };
         window.addEventListener('message', handleLicenseConsentMessage);
         return ()=>window.removeEventListener('message', handleLicenseConsentMessage);
     }, [
         licenseOnboardingWizard
+    ]);
+    // Poll popup closed state as a fallback — postMessage won't fire for cross-origin redirects
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        const popup = licenseOnboardingWizard?.consentWindow;
+        if (!popup || licenseOnboardingWizard?.consentCompleted) return;
+        const interval = setInterval(()=>{
+            if (popup.closed) {
+                clearInterval(interval);
+                // If the popup closed without a postMessage (e.g. user dismissed it),
+                // treat it as if consent was granted and let completeLicenseCreation
+                // verify with the backend.
+                setLicenseOnboardingWizard((prev)=>{
+                    if (!prev || prev.consentCompleted) return prev;
+                    return {
+                        ...prev,
+                        consentWindow: null,
+                        consentCompleted: true
+                    };
+                });
+                completeLicenseCreation();
+            }
+        }, 500);
+        return ()=>clearInterval(interval);
+    }, [
+        licenseOnboardingWizard?.consentWindow
     ]);
     const extractStateFromConsentUrl = (url)=>{
         try {
@@ -4079,6 +4479,17 @@ function CustomerPage() {
     };
     const initiateLicenseConsent = async ()=>{
         if (!licenseOnboardingWizard) return;
+        // Open popup SYNCHRONOUSLY before any awaits so the browser keeps the user-gesture chain.
+        // If we open it after an await the browser treats it as a script-initiated popup and blocks it.
+        const popup = window.open('about:blank', 'licenseConsentWindow', 'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no');
+        if (!popup) {
+            setLicenseOnboardingWizard((prev)=>prev ? {
+                    ...prev,
+                    error: 'Failed to open consent window. Please allow popups for this site and try again.',
+                    loading: false
+                } : null);
+            return;
+        }
         try {
             setLicenseOnboardingWizard((prev)=>prev ? {
                     ...prev,
@@ -4105,12 +4516,14 @@ function CustomerPage() {
             });
             if (!createLicenseResponse.ok) {
                 const errorData = await createLicenseResponse.json().catch(()=>null);
+                popup.close();
                 throw new Error(errorData?.message || `Failed to create license: ${createLicenseResponse.statusText}`);
             }
             const licenseResult = await createLicenseResponse.json();
             // Get consent URL from the license creation response
             const consentUrl = licenseResult.data?.consentUrl || licenseResult.consentUrl;
             if (!consentUrl) {
+                popup.close();
                 throw new Error('No consent URL received from license creation');
             }
             const extractedState = extractStateFromConsentUrl(consentUrl);
@@ -4118,20 +4531,18 @@ function CustomerPage() {
                     ...prev,
                     consentState: extractedState
                 } : null);
-            // Open consent window with the URL from license creation
-            const popup = window.open(consentUrl, 'licenseConsentWindow', 'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no');
-            if (popup) {
-                setLicenseOnboardingWizard((prev)=>prev ? {
-                        ...prev,
-                        consentWindow: popup,
-                        currentStep: 1
-                    } : null);
-                popup.focus();
-            } else {
-                throw new Error('Failed to open consent window. Please check your popup blocker settings.');
-            }
+            // Navigate the already-open popup to the consent URL
+            popup.location.href = consentUrl;
+            setLicenseOnboardingWizard((prev)=>prev ? {
+                    ...prev,
+                    consentWindow: popup,
+                    currentStep: 1,
+                    loading: false
+                } : null);
+            popup.focus();
         } catch (err) {
             console.error('Error initiating license consent:', err);
+            if (popup && !popup.closed) popup.close();
             setLicenseOnboardingWizard((prev)=>prev ? {
                     ...prev,
                     error: err instanceof Error ? err.message : 'Failed to initiate consent',
@@ -4274,7 +4685,7 @@ function CustomerPage() {
                         className: "h-8 w-8 animate-spin"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1041,
+                        lineNumber: 1060,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4282,18 +4693,18 @@ function CustomerPage() {
                         children: "Loading customer information..."
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1042,
+                        lineNumber: 1061,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1040,
+                lineNumber: 1059,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/customer/page.tsx",
-            lineNumber: 1039,
+            lineNumber: 1058,
             columnNumber: 13
         }, this);
     }
@@ -4312,7 +4723,7 @@ function CustomerPage() {
                                     className: "h-5 w-5"
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1054,
+                                    lineNumber: 1073,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4322,13 +4733,13 @@ function CustomerPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1055,
+                                    lineNumber: 1074,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1053,
+                            lineNumber: 1072,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -4337,23 +4748,23 @@ function CustomerPage() {
                             children: "Retry"
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1057,
+                            lineNumber: 1076,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1052,
+                    lineNumber: 1071,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1051,
+                lineNumber: 1070,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/customer/page.tsx",
-            lineNumber: 1050,
+            lineNumber: 1069,
             columnNumber: 13
         }, this);
     }
@@ -4368,7 +4779,7 @@ function CustomerPage() {
                             children: "No customer data available"
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1071,
+                            lineNumber: 1090,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -4377,23 +4788,23 @@ function CustomerPage() {
                             children: "Go Back"
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1072,
+                            lineNumber: 1091,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1070,
+                    lineNumber: 1089,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1069,
+                lineNumber: 1088,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/customer/page.tsx",
-            lineNumber: 1068,
+            lineNumber: 1087,
             columnNumber: 13
         }, this);
     }
@@ -4410,7 +4821,7 @@ function CustomerPage() {
                         children: "← Back"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1084,
+                        lineNumber: 1103,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -4418,7 +4829,7 @@ function CustomerPage() {
                         children: "Customer Information"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1091,
+                        lineNumber: 1110,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4426,13 +4837,13 @@ function CustomerPage() {
                         children: "Manage customer details and tenant access"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1092,
+                        lineNumber: 1111,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1083,
+                lineNumber: 1102,
                 columnNumber: 13
             }, this),
             consentError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4442,14 +4853,14 @@ function CustomerPage() {
                         className: "h-4 w-4"
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1097,
+                        lineNumber: 1116,
                         columnNumber: 21
                     }, this),
                     consentError
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1096,
+                lineNumber: 1115,
                 columnNumber: 17
             }, this),
             updateError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4463,7 +4874,7 @@ function CustomerPage() {
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1108,
+                                lineNumber: 1127,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4471,23 +4882,23 @@ function CustomerPage() {
                                 children: updateError
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1109,
+                                lineNumber: 1128,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1107,
+                        lineNumber: 1126,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1106,
+                    lineNumber: 1125,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1105,
+                lineNumber: 1124,
                 columnNumber: 17
             }, this),
             deleteError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4501,7 +4912,7 @@ function CustomerPage() {
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1119,
+                                lineNumber: 1138,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4509,23 +4920,23 @@ function CustomerPage() {
                                 children: deleteError
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1120,
+                                lineNumber: 1139,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1118,
+                        lineNumber: 1137,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1117,
+                    lineNumber: 1136,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1116,
+                lineNumber: 1135,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4543,19 +4954,19 @@ function CustomerPage() {
                                                 className: "h-5 w-5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1132,
+                                                lineNumber: 1151,
                                                 columnNumber: 33
                                             }, this),
                                             "Customer Details"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1131,
+                                        lineNumber: 1150,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1130,
+                                    lineNumber: 1149,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4570,7 +4981,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1140,
+                                                        lineNumber: 1159,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4580,7 +4991,7 @@ function CustomerPage() {
                                                                 children: "Customer Name"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1142,
+                                                                lineNumber: 1161,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4588,19 +4999,19 @@ function CustomerPage() {
                                                                 children: customerData.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1143,
+                                                                lineNumber: 1162,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1141,
+                                                        lineNumber: 1160,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1139,
+                                                lineNumber: 1158,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4610,7 +5021,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1148,
+                                                        lineNumber: 1167,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4620,7 +5031,7 @@ function CustomerPage() {
                                                                 children: "Address"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1150,
+                                                                lineNumber: 1169,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4628,19 +5039,19 @@ function CustomerPage() {
                                                                 children: customerData.address || 'Not provided'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1151,
+                                                                lineNumber: 1170,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1149,
+                                                        lineNumber: 1168,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1147,
+                                                lineNumber: 1166,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4650,7 +5061,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1158,
+                                                        lineNumber: 1177,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4660,7 +5071,7 @@ function CustomerPage() {
                                                                 children: "Primary Contact"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1160,
+                                                                lineNumber: 1179,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4668,19 +5079,19 @@ function CustomerPage() {
                                                                 children: customerData.primaryContactEmail || 'Not provided'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1161,
+                                                                lineNumber: 1180,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1159,
+                                                        lineNumber: 1178,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1157,
+                                                lineNumber: 1176,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4690,7 +5101,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1168,
+                                                        lineNumber: 1187,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4700,7 +5111,7 @@ function CustomerPage() {
                                                                 children: "Account Type"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1170,
+                                                                lineNumber: 1189,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4711,7 +5122,7 @@ function CustomerPage() {
                                                                         children: customerData.isMsp ? 'MSP' : 'Direct'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1172,
+                                                                        lineNumber: 1191,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -4719,7 +5130,7 @@ function CustomerPage() {
                                                                         children: customerData.isActive ? 'Active' : 'Community'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1175,
+                                                                        lineNumber: 1194,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -4727,25 +5138,25 @@ function CustomerPage() {
                                                                         children: customerData.isGdap ? 'GDAP' : 'No GDAP'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1178,
+                                                                        lineNumber: 1197,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1171,
+                                                                lineNumber: 1190,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1169,
+                                                        lineNumber: 1188,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1167,
+                                                lineNumber: 1186,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4755,7 +5166,7 @@ function CustomerPage() {
                                                         className: "h-4 w-4 text-gray-500 dark:text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1186,
+                                                        lineNumber: 1205,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4765,7 +5176,7 @@ function CustomerPage() {
                                                                 children: "Home Tenant ID"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1188,
+                                                                lineNumber: 1207,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
@@ -4773,41 +5184,41 @@ function CustomerPage() {
                                                                 children: customerData.homeTenantId
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1189,
+                                                                lineNumber: 1208,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1187,
+                                                        lineNumber: 1206,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1185,
+                                                lineNumber: 1204,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1138,
+                                        lineNumber: 1157,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1136,
+                                    lineNumber: 1155,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1129,
+                            lineNumber: 1148,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1128,
+                        lineNumber: 1147,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4823,19 +5234,19 @@ function CustomerPage() {
                                                     className: "h-5 w-5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1206,
+                                                    lineNumber: 1225,
                                                     columnNumber: 37
                                                 }, this),
                                                 "License Information"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1205,
+                                            lineNumber: 1224,
                                             columnNumber: 33
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1204,
+                                        lineNumber: 1223,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4850,7 +5261,7 @@ function CustomerPage() {
                                                                 className: "h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1215,
+                                                                lineNumber: 1234,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4864,13 +5275,13 @@ function CustomerPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1216,
+                                                                lineNumber: 1235,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1214,
+                                                        lineNumber: 1233,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4878,13 +5289,13 @@ function CustomerPage() {
                                                         children: "Contact support to increase your tenant limit or upgrade your license."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1220,
+                                                        lineNumber: 1239,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1213,
+                                                lineNumber: 1232,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4901,7 +5312,7 @@ function CustomerPage() {
                                                                         children: getCustomerLicenseTypeName(license.licenseType)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1230,
+                                                                        lineNumber: 1249,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4913,7 +5324,7 @@ function CustomerPage() {
                                                                                 children: license.isActive ? 'Active' : 'Inactive'
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1234,
+                                                                                lineNumber: 1253,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             license.isTrial && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -4922,19 +5333,19 @@ function CustomerPage() {
                                                                                 children: "Trial"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1238,
+                                                                                lineNumber: 1257,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1233,
+                                                                        lineNumber: 1252,
                                                                         columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1229,
+                                                                lineNumber: 1248,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4948,7 +5359,7 @@ function CustomerPage() {
                                                                                 children: "Max Tenants:"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1244,
+                                                                                lineNumber: 1263,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4956,13 +5367,13 @@ function CustomerPage() {
                                                                                 children: license.maxTenants
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1245,
+                                                                                lineNumber: 1264,
                                                                                 columnNumber: 53
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1243,
+                                                                        lineNumber: 1262,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4973,7 +5384,7 @@ function CustomerPage() {
                                                                                 children: "Expires:"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1248,
+                                                                                lineNumber: 1267,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4981,42 +5392,42 @@ function CustomerPage() {
                                                                                 children: license.expiryDate ? new Date(license.expiryDate).toLocaleDateString() : 'Never'
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1249,
+                                                                                lineNumber: 1268,
                                                                                 columnNumber: 53
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1247,
+                                                                        lineNumber: 1266,
                                                                         columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1242,
+                                                                lineNumber: 1261,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, index, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1228,
+                                                        lineNumber: 1247,
                                                         columnNumber: 41
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1226,
+                                                lineNumber: 1245,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1210,
+                                        lineNumber: 1229,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1203,
+                                lineNumber: 1222,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -5026,12 +5437,12 @@ function CustomerPage() {
                                             children: "Summary"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1267,
+                                            lineNumber: 1286,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1266,
+                                        lineNumber: 1285,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5046,7 +5457,7 @@ function CustomerPage() {
                                                             children: customerData.tenants.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1272,
+                                                            lineNumber: 1291,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5054,13 +5465,13 @@ function CustomerPage() {
                                                             children: "Total Tenants"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1275,
+                                                            lineNumber: 1294,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1271,
+                                                    lineNumber: 1290,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5071,7 +5482,7 @@ function CustomerPage() {
                                                             children: customerData.tenants.filter((t)=>t.isActive).length
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1278,
+                                                            lineNumber: 1297,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5079,42 +5490,42 @@ function CustomerPage() {
                                                             children: "Enabled Tenants"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1281,
+                                                            lineNumber: 1300,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1277,
+                                                    lineNumber: 1296,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1270,
+                                            lineNumber: 1289,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1269,
+                                        lineNumber: 1288,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1265,
+                                lineNumber: 1284,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1200,
+                        lineNumber: 1219,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1126,
+                lineNumber: 1145,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -5129,14 +5540,14 @@ function CustomerPage() {
                                         className: "h-5 w-5"
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1293,
+                                        lineNumber: 1312,
                                         columnNumber: 25
                                     }, this),
                                     "Tenant Management"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1292,
+                                lineNumber: 1311,
                                 columnNumber: 21
                             }, this),
                             customerData.isMsp && customerData.isActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5151,14 +5562,14 @@ function CustomerPage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1303,
+                                                lineNumber: 1322,
                                                 columnNumber: 33
                                             }, this),
                                             "Add Tenant"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1298,
+                                        lineNumber: 1317,
                                         columnNumber: 29
                                     }, this),
                                     isTenantLimitReached() && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5172,19 +5583,19 @@ function CustomerPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1307,
+                                        lineNumber: 1326,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1297,
+                                lineNumber: 1316,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1291,
+                        lineNumber: 1310,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5194,7 +5605,7 @@ function CustomerPage() {
                                 className: "absolute inset-0 bg-gradient-to-r from-transparent via-blue-200 to-transparent opacity-60 animate-shimmer"
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1317,
+                                lineNumber: 1336,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DataTable$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DataTable"], {
@@ -5212,19 +5623,19 @@ function CustomerPage() {
                                 showPagination: true
                             }, void 0, false, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1320,
+                                lineNumber: 1339,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/customer/page.tsx",
-                        lineNumber: 1315,
+                        lineNumber: 1334,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1290,
+                lineNumber: 1309,
                 columnNumber: 13
             }, this),
             deleteConfirmation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5240,19 +5651,19 @@ function CustomerPage() {
                                         className: "h-5 w-5"
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1344,
+                                        lineNumber: 1363,
                                         columnNumber: 33
                                     }, this),
                                     "Confirm Delete"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1343,
+                                lineNumber: 1362,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1342,
+                            lineNumber: 1361,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5271,14 +5682,14 @@ function CustomerPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1350,
+                                            lineNumber: 1369,
                                             columnNumber: 65
                                         }, this),
                                         "?"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1349,
+                                    lineNumber: 1368,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5286,7 +5697,7 @@ function CustomerPage() {
                                     children: "This action cannot be undone and will permanently remove the tenant from the system."
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1352,
+                                    lineNumber: 1371,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5299,7 +5710,7 @@ function CustomerPage() {
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1356,
+                                            lineNumber: 1375,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5316,30 +5727,30 @@ function CustomerPage() {
                                             children: "Delete Tenant"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1363,
+                                            lineNumber: 1382,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1355,
+                                    lineNumber: 1374,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1348,
+                            lineNumber: 1367,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1341,
+                    lineNumber: 1360,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1340,
+                lineNumber: 1359,
                 columnNumber: 17
             }, this),
             editTenant && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5356,7 +5767,7 @@ function CustomerPage() {
                                             className: "h-5 w-5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1388,
+                                            lineNumber: 1407,
                                             columnNumber: 33
                                         }, this),
                                         "Tenant Management - ",
@@ -5364,7 +5775,7 @@ function CustomerPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1387,
+                                    lineNumber: 1406,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5372,13 +5783,13 @@ function CustomerPage() {
                                     children: "Manage tenant settings, licenses, and permissions in one place."
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1391,
+                                    lineNumber: 1410,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1386,
+                            lineNumber: 1405,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5393,7 +5804,7 @@ function CustomerPage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1399,
+                                                lineNumber: 1418,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5401,18 +5812,18 @@ function CustomerPage() {
                                                 children: editError || licenseError
                                             }, void 0, false, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1400,
+                                                lineNumber: 1419,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1398,
+                                        lineNumber: 1417,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1397,
+                                    lineNumber: 1416,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5431,14 +5842,14 @@ function CustomerPage() {
                                                                     className: "h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1411,
+                                                                    lineNumber: 1430,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 "Tenant Settings"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1410,
+                                                            lineNumber: 1429,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -5464,7 +5875,7 @@ function CustomerPage() {
                                                                             children: "Display Name"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1429,
+                                                                            lineNumber: 1448,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -5475,13 +5886,13 @@ function CustomerPage() {
                                                                             required: true
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1430,
+                                                                            lineNumber: 1449,
                                                                             columnNumber: 49
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1428,
+                                                                    lineNumber: 1447,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5492,7 +5903,7 @@ function CustomerPage() {
                                                                             children: "Tenant Information"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1440,
+                                                                            lineNumber: 1459,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5506,7 +5917,7 @@ function CustomerPage() {
                                                                                             children: "Tenant ID:"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1443,
+                                                                                            lineNumber: 1462,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
@@ -5514,13 +5925,13 @@ function CustomerPage() {
                                                                                             children: editTenant.tenant?.tenantId
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1444,
+                                                                                            lineNumber: 1463,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1442,
+                                                                                    lineNumber: 1461,
                                                                                     columnNumber: 53
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5531,7 +5942,7 @@ function CustomerPage() {
                                                                                             children: "Domain:"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1447,
+                                                                                            lineNumber: 1466,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
@@ -5539,13 +5950,13 @@ function CustomerPage() {
                                                                                             children: editTenant.tenant?.domainName
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1448,
+                                                                                            lineNumber: 1467,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1446,
+                                                                                    lineNumber: 1465,
                                                                                     columnNumber: 53
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5556,7 +5967,7 @@ function CustomerPage() {
                                                                                             children: "Status:"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1451,
+                                                                                            lineNumber: 1470,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -5564,13 +5975,13 @@ function CustomerPage() {
                                                                                             children: editTenant.tenant?.isActive ? 'Active' : 'Inactive'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1452,
+                                                                                            lineNumber: 1471,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1450,
+                                                                                    lineNumber: 1469,
                                                                                     columnNumber: 53
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5581,7 +5992,7 @@ function CustomerPage() {
                                                                                             children: "GDAP:"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1457,
+                                                                                            lineNumber: 1476,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -5589,25 +6000,25 @@ function CustomerPage() {
                                                                                             children: editTenant.tenant?.isGdap ? 'Enabled' : 'Disabled'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1458,
+                                                                                            lineNumber: 1477,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1456,
+                                                                                    lineNumber: 1475,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1441,
+                                                                            lineNumber: 1460,
                                                                             columnNumber: 49
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1439,
+                                                                    lineNumber: 1458,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5620,7 +6031,7 @@ function CustomerPage() {
                                                                                 className: "h-4 w-4 animate-spin mr-2"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1472,
+                                                                                lineNumber: 1491,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             "Saving..."
@@ -5628,19 +6039,19 @@ function CustomerPage() {
                                                                     }, void 0, true) : 'Save Settings'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1465,
+                                                                    lineNumber: 1484,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1415,
+                                                            lineNumber: 1434,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1409,
+                                                    lineNumber: 1428,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5653,14 +6064,14 @@ function CustomerPage() {
                                                                     className: "h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1485,
+                                                                    lineNumber: 1504,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 "Quick Actions"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1484,
+                                                            lineNumber: 1503,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5681,7 +6092,7 @@ function CustomerPage() {
                                                                                 className: "h-4 w-4 mr-2"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1505,
+                                                                                lineNumber: 1524,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             "Active Context"
@@ -5692,7 +6103,7 @@ function CustomerPage() {
                                                                                 className: "h-4 w-4 mr-2"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1510,
+                                                                                lineNumber: 1529,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             "Set as Context"
@@ -5700,7 +6111,7 @@ function CustomerPage() {
                                                                     }, void 0, true)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1489,
+                                                                    lineNumber: 1508,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5713,14 +6124,14 @@ function CustomerPage() {
                                                                             className: "h-4 w-4 mr-2"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1522,
+                                                                            lineNumber: 1541,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         "Add New License"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1515,
+                                                                    lineNumber: 1534,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5739,32 +6150,32 @@ function CustomerPage() {
                                                                             className: "h-4 w-4 mr-2"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                            lineNumber: 1537,
+                                                                            lineNumber: 1556,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         "Delete Tenant"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                    lineNumber: 1525,
+                                                                    lineNumber: 1544,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1488,
+                                                            lineNumber: 1507,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1483,
+                                                    lineNumber: 1502,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1408,
+                                            lineNumber: 1427,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5782,14 +6193,14 @@ function CustomerPage() {
                                                                         className: "h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1549,
+                                                                        lineNumber: 1568,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     "License Management"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1548,
+                                                                lineNumber: 1567,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5800,13 +6211,13 @@ function CustomerPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1552,
+                                                                lineNumber: 1571,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1547,
+                                                        lineNumber: 1566,
                                                         columnNumber: 41
                                                     }, this),
                                                     editTenant.tenant?.licenses && editTenant.tenant.licenses.length > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5825,7 +6236,7 @@ function CustomerPage() {
                                                                                 children: getLicenseTypeName(license.licenseType)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1566,
+                                                                                lineNumber: 1585,
                                                                                 columnNumber: 65
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5835,7 +6246,7 @@ function CustomerPage() {
                                                                                         className: "h-4 w-4 animate-spin text-blue-600"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1571,
+                                                                                        lineNumber: 1590,
                                                                                         columnNumber: 73
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5855,24 +6266,24 @@ function CustomerPage() {
                                                                                             className: "h-3 w-3"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/customer/page.tsx",
-                                                                                            lineNumber: 1587,
+                                                                                            lineNumber: 1606,
                                                                                             columnNumber: 73
                                                                                         }, this)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1573,
+                                                                                        lineNumber: 1592,
                                                                                         columnNumber: 67
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1569,
+                                                                                lineNumber: 1588,
                                                                                 columnNumber: 65
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1565,
+                                                                        lineNumber: 1584,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5883,7 +6294,7 @@ function CustomerPage() {
                                                                                     className: "h-4 w-4 text-green-500"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1596,
+                                                                                    lineNumber: 1615,
                                                                                     columnNumber: 73
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5894,7 +6305,7 @@ function CustomerPage() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1597,
+                                                                                    lineNumber: 1616,
                                                                                     columnNumber: 73
                                                                                 }, this)
                                                                             ]
@@ -5904,7 +6315,7 @@ function CustomerPage() {
                                                                                     className: "h-4 w-4 text-orange-500"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1603,
+                                                                                    lineNumber: 1622,
                                                                                     columnNumber: 73
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5912,14 +6323,14 @@ function CustomerPage() {
                                                                                     children: "Consent Required"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/customer/page.tsx",
-                                                                                    lineNumber: 1604,
+                                                                                    lineNumber: 1623,
                                                                                     columnNumber: 73
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1593,
+                                                                        lineNumber: 1612,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     !license.isConsentGranted && license.consentUrl && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5930,7 +6341,7 @@ function CustomerPage() {
                                                                         children: "Grant Consent"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1613,
+                                                                        lineNumber: 1632,
                                                                         columnNumber: 65
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5943,7 +6354,7 @@ function CustomerPage() {
                                                                                         children: "Active:"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1626,
+                                                                                        lineNumber: 1645,
                                                                                         columnNumber: 69
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -5964,26 +6375,26 @@ function CustomerPage() {
                                                                                                 className: "sr-only peer"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                                lineNumber: 1628,
+                                                                                                lineNumber: 1647,
                                                                                                 columnNumber: 73
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                 className: "w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-3 peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                                lineNumber: 1642,
+                                                                                                lineNumber: 1661,
                                                                                                 columnNumber: 73
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1627,
+                                                                                        lineNumber: 1646,
                                                                                         columnNumber: 69
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1625,
+                                                                                lineNumber: 1644,
                                                                                 columnNumber: 65
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5993,7 +6404,7 @@ function CustomerPage() {
                                                                                         children: "Trial:"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1646,
+                                                                                        lineNumber: 1665,
                                                                                         columnNumber: 69
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -6014,32 +6425,32 @@ function CustomerPage() {
                                                                                                 className: "sr-only peer"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                                lineNumber: 1648,
+                                                                                                lineNumber: 1667,
                                                                                                 columnNumber: 73
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                 className: "w-7 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-3 peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                                lineNumber: 1662,
+                                                                                                lineNumber: 1681,
                                                                                                 columnNumber: 73
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                                        lineNumber: 1647,
+                                                                                        lineNumber: 1666,
                                                                                         columnNumber: 69
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1645,
+                                                                                lineNumber: 1664,
                                                                                 columnNumber: 65
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1624,
+                                                                        lineNumber: 1643,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6052,7 +6463,7 @@ function CustomerPage() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1669,
+                                                                                lineNumber: 1688,
                                                                                 columnNumber: 65
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6062,25 +6473,25 @@ function CustomerPage() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                                lineNumber: 1670,
+                                                                                lineNumber: 1689,
                                                                                 columnNumber: 65
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/customer/page.tsx",
-                                                                        lineNumber: 1668,
+                                                                        lineNumber: 1687,
                                                                         columnNumber: 61
                                                                     }, this)
                                                                 ]
                                                             }, license.id, true, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1564,
+                                                                lineNumber: 1583,
                                                                 columnNumber: 57
                                                             }, this);
                                                         })
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1558,
+                                                        lineNumber: 1577,
                                                         columnNumber: 45
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "text-center py-6 text-gray-500 border rounded-lg bg-gray-50 dark:bg-gray-900",
@@ -6089,7 +6500,7 @@ function CustomerPage() {
                                                                 className: "h-6 w-6 mx-auto mb-2 opacity-50"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1678,
+                                                                lineNumber: 1697,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6097,30 +6508,30 @@ function CustomerPage() {
                                                                 children: "No licenses assigned"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/customer/page.tsx",
-                                                                lineNumber: 1679,
+                                                                lineNumber: 1698,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1677,
+                                                        lineNumber: 1696,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1546,
+                                                lineNumber: 1565,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1545,
+                                            lineNumber: 1564,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1406,
+                                    lineNumber: 1425,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6135,29 +6546,29 @@ function CustomerPage() {
                                         children: "Close"
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1688,
+                                        lineNumber: 1707,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1687,
+                                    lineNumber: 1706,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1395,
+                            lineNumber: 1414,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1385,
+                    lineNumber: 1404,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1384,
+                lineNumber: 1403,
                 columnNumber: 17
             }, this),
             deleteLicenseConfirmation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6173,19 +6584,19 @@ function CustomerPage() {
                                         className: "h-5 w-5"
                                     }, void 0, false, {
                                         fileName: "[project]/app/customer/page.tsx",
-                                        lineNumber: 1709,
+                                        lineNumber: 1728,
                                         columnNumber: 33
                                     }, this),
                                     "Confirm License Deletion"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/customer/page.tsx",
-                                lineNumber: 1708,
+                                lineNumber: 1727,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1707,
+                            lineNumber: 1726,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6204,14 +6615,14 @@ function CustomerPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1715,
+                                            lineNumber: 1734,
                                             columnNumber: 69
                                         }, this),
                                         " license?"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1714,
+                                    lineNumber: 1733,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6219,7 +6630,7 @@ function CustomerPage() {
                                     children: "This action cannot be undone and will remove access to features provided by this license."
                                 }, void 0, false, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1717,
+                                    lineNumber: 1736,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6232,7 +6643,7 @@ function CustomerPage() {
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1721,
+                                            lineNumber: 1740,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -6248,30 +6659,30 @@ function CustomerPage() {
                                             children: "Delete License"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1728,
+                                            lineNumber: 1747,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1720,
+                                    lineNumber: 1739,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1713,
+                            lineNumber: 1732,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1706,
+                    lineNumber: 1725,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1705,
+                lineNumber: 1724,
                 columnNumber: 17
             }, this),
             licenseOnboardingWizard && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6288,7 +6699,7 @@ function CustomerPage() {
                                             className: "h-5 w-5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1753,
+                                            lineNumber: 1772,
                                             columnNumber: 33
                                         }, this),
                                         "Add License - ",
@@ -6296,7 +6707,7 @@ function CustomerPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1752,
+                                    lineNumber: 1771,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6308,13 +6719,13 @@ function CustomerPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1756,
+                                    lineNumber: 1775,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1751,
+                            lineNumber: 1770,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6332,12 +6743,12 @@ function CustomerPage() {
                                                         className: `h-5 w-5 ${licenseOnboardingWizard.currentStep >= 0 ? 'text-blue-600' : 'text-gray-400'}`
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1767,
+                                                        lineNumber: 1786,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1764,
+                                                    lineNumber: 1783,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -6345,13 +6756,13 @@ function CustomerPage() {
                                                     children: "Select License"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1769,
+                                                    lineNumber: 1788,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1763,
+                                            lineNumber: 1782,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6363,12 +6774,12 @@ function CustomerPage() {
                                                         className: `h-5 w-5 ${licenseOnboardingWizard.currentStep >= 1 ? 'text-purple-600' : 'text-gray-400'}`
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1775,
+                                                        lineNumber: 1794,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1772,
+                                                    lineNumber: 1791,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -6376,13 +6787,13 @@ function CustomerPage() {
                                                     children: "Grant Consent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1777,
+                                                    lineNumber: 1796,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1771,
+                                            lineNumber: 1790,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6394,12 +6805,12 @@ function CustomerPage() {
                                                         className: `h-5 w-5 ${licenseOnboardingWizard.currentStep >= 2 ? 'text-green-600' : 'text-gray-400'}`
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1783,
+                                                        lineNumber: 1802,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1780,
+                                                    lineNumber: 1799,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -6407,19 +6818,19 @@ function CustomerPage() {
                                                     children: "Complete"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1785,
+                                                    lineNumber: 1804,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1779,
+                                            lineNumber: 1798,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1762,
+                                    lineNumber: 1781,
                                     columnNumber: 29
                                 }, this),
                                 licenseOnboardingWizard.currentStep === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -6430,20 +6841,20 @@ function CustomerPage() {
                                                     children: "Select License Type"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1793,
+                                                    lineNumber: 1812,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "Choose which license type to add to this tenant"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1794,
+                                                    lineNumber: 1813,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1792,
+                                            lineNumber: 1811,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6466,7 +6877,7 @@ function CustomerPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1805,
+                                                            lineNumber: 1824,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -6478,13 +6889,13 @@ function CustomerPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1818,
+                                                            lineNumber: 1837,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1797,
+                                                    lineNumber: 1816,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6492,19 +6903,19 @@ function CustomerPage() {
                                                     children: "License types already assigned to this tenant are disabled."
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1832,
+                                                    lineNumber: 1851,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1796,
+                                            lineNumber: 1815,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1791,
+                                    lineNumber: 1810,
                                     columnNumber: 33
                                 }, this),
                                 licenseOnboardingWizard.currentStep === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -6515,20 +6926,20 @@ function CustomerPage() {
                                                     children: "Grant Admin Consent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1842,
+                                                    lineNumber: 1861,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "Admin consent is required for the new license"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1843,
+                                                    lineNumber: 1862,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1841,
+                                            lineNumber: 1860,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6541,7 +6952,7 @@ function CustomerPage() {
                                                             className: "h-8 w-8 animate-spin mx-auto mb-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1848,
+                                                            lineNumber: 1867,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6549,13 +6960,13 @@ function CustomerPage() {
                                                             children: "Processing consent..."
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1849,
+                                                            lineNumber: 1868,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1847,
+                                                    lineNumber: 1866,
                                                     columnNumber: 45
                                                 }, this),
                                                 licenseOnboardingWizard.consentWindow && !licenseOnboardingWizard.consentCompleted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6565,7 +6976,7 @@ function CustomerPage() {
                                                             className: "h-8 w-8 mx-auto mb-4 text-blue-600"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1855,
+                                                            lineNumber: 1874,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6573,7 +6984,7 @@ function CustomerPage() {
                                                             children: "Consent window is open"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1856,
+                                                            lineNumber: 1875,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6581,25 +6992,25 @@ function CustomerPage() {
                                                             children: "Please complete the consent process in the popup window"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/customer/page.tsx",
-                                                            lineNumber: 1857,
+                                                            lineNumber: 1876,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1854,
+                                                    lineNumber: 1873,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1845,
+                                            lineNumber: 1864,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1840,
+                                    lineNumber: 1859,
                                     columnNumber: 33
                                 }, this),
                                 licenseOnboardingWizard.currentStep === 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -6610,20 +7021,20 @@ function CustomerPage() {
                                                     children: "License Added Successfully"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1869,
+                                                    lineNumber: 1888,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "The license has been added to the tenant"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/customer/page.tsx",
-                                                    lineNumber: 1870,
+                                                    lineNumber: 1889,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1868,
+                                            lineNumber: 1887,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6635,7 +7046,7 @@ function CustomerPage() {
                                                         className: "h-12 w-12 mx-auto mb-4 text-green-600"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1874,
+                                                        lineNumber: 1893,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6643,7 +7054,7 @@ function CustomerPage() {
                                                         children: "License Added!"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1875,
+                                                        lineNumber: 1894,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6656,24 +7067,24 @@ function CustomerPage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/customer/page.tsx",
-                                                        lineNumber: 1876,
+                                                        lineNumber: 1895,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/customer/page.tsx",
-                                                lineNumber: 1873,
+                                                lineNumber: 1892,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1872,
+                                            lineNumber: 1891,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1867,
+                                    lineNumber: 1886,
                                     columnNumber: 33
                                 }, this),
                                 licenseOnboardingWizard.error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6683,14 +7094,14 @@ function CustomerPage() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1887,
+                                            lineNumber: 1906,
                                             columnNumber: 37
                                         }, this),
                                         licenseOnboardingWizard.error
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1886,
+                                    lineNumber: 1905,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6702,7 +7113,7 @@ function CustomerPage() {
                                             children: "Start Consent Process"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1895,
+                                            lineNumber: 1914,
                                             columnNumber: 37
                                         }, this),
                                         licenseOnboardingWizard.currentStep === 2 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -6710,7 +7121,7 @@ function CustomerPage() {
                                             children: "Complete"
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1904,
+                                            lineNumber: 1923,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -6720,30 +7131,30 @@ function CustomerPage() {
                                             children: licenseOnboardingWizard.currentStep === 2 ? 'Close' : 'Cancel'
                                         }, void 0, false, {
                                             fileName: "[project]/app/customer/page.tsx",
-                                            lineNumber: 1909,
+                                            lineNumber: 1928,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/customer/page.tsx",
-                                    lineNumber: 1893,
+                                    lineNumber: 1912,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/customer/page.tsx",
-                            lineNumber: 1760,
+                            lineNumber: 1779,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/customer/page.tsx",
-                    lineNumber: 1750,
+                    lineNumber: 1769,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1749,
+                lineNumber: 1768,
                 columnNumber: 17
             }, this),
             showOnboardingModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$onboarding$2f$tenant$2d$onboarding$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -6754,13 +7165,13 @@ function CustomerPage() {
                 customerName: customerData.name
             }, void 0, false, {
                 fileName: "[project]/app/customer/page.tsx",
-                lineNumber: 1922,
+                lineNumber: 1941,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/customer/page.tsx",
-        lineNumber: 1082,
+        lineNumber: 1101,
         columnNumber: 9
     }, this);
 }

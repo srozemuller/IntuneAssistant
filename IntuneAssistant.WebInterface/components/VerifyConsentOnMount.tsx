@@ -61,18 +61,10 @@ export function VerifyConsentOnMount() {
 
             // Check if already verified this session
             const alreadyVerified = sessionStorage.getItem(CONSENT_CHECK_KEY);
-            console.log('VerifyConsent: Session storage flag:', alreadyVerified);
-            console.log('VerifyConsent: hasVerified.current:', hasVerified.current);
-
-            // TEMPORARILY DISABLED FOR TESTING - ALWAYS RUN THE CHECK
-            console.log('VerifyConsent: SESSION CHECK DISABLED - FORCING API CALL FOR TESTING');
-            /*
             if (alreadyVerified || hasVerified.current) {
                 console.log('VerifyConsent: Already verified this session, skipping');
-                console.log('VerifyConsent: To force re-check, run: window.forceConsentCheck()');
                 return;
             }
-            */
 
             // Mark as verified to prevent multiple calls
             hasVerified.current = true;
@@ -93,6 +85,9 @@ export function VerifyConsentOnMount() {
 
                 if (payload && payload.status === 3) {
                     console.log('VerifyConsent: Consent required - missing permissions:', payload.data?.missingPermissions);
+                    // Clear the session flag so ConsentBanner's post-consent verify is not blocked
+                    sessionStorage.removeItem(CONSENT_CHECK_KEY);
+                    hasVerified.current = false;
                     setConsentNeeded(
                         payload.details?.consentUrl || '',
                         payload.data?.requiredPermissions || []

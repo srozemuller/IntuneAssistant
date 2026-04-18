@@ -38,6 +38,12 @@ export function useAuth(): UseAuthReturn {
     const logout = async () => {
         try {
             setError(null);
+            // Clear all app-specific storage before signing out
+            localStorage.removeItem('selectedTenant');
+            localStorage.removeItem('auditFilterPresets');
+            sessionStorage.removeItem('ia_consent_verified');
+            sessionStorage.removeItem('ia_consent_minimized');
+            sessionStorage.removeItem('customerPageScrollPosition');
             await instance.logoutPopup();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Logout failed');

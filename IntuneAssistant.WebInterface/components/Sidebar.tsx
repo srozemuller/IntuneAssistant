@@ -125,6 +125,12 @@ export function Sidebar() {
     };
 
     const handleLogout = () => {
+        // Clear all app-specific storage on logout
+        localStorage.removeItem('selectedTenant');
+        localStorage.removeItem('auditFilterPresets');
+        sessionStorage.removeItem('ia_consent_verified');
+        sessionStorage.removeItem('ia_consent_minimized');
+        sessionStorage.removeItem('customerPageScrollPosition');
         instance.logoutRedirect({
             postLogoutRedirectUri: '/',
         });
@@ -414,16 +420,6 @@ export function Sidebar() {
                     title: "Docs",
                     icon: "BookOpen",
                     href: "https://docs.intuneassistant.cloud"
-                }
-            ]
-        },
-        {
-            title: "Enterprise",
-            items: [
-                {
-                    title: "Plans",
-                    icon: "Crown",
-                    href: "/plans"
                 }
             ]
         }

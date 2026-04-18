@@ -42,6 +42,7 @@ export const GROUPS_LIST_ENDPOINT = `${API_BASE_URL}/groups/list`;
 
 export const COMPARE_ENDPOINT = `${API_BASE_URL}/compare`;
 export const CUSTOMER_ENDPOINT = `${API_BASE_URL}/customer`;
+export const CUSTOMER_TENANTS_ENDPOINT = `${API_BASE_URL}/customer/tenants`;
 
 export const POLICIES_ENDPOINT = `${API_BASE_URL}/policies`;
 export const EXPORT_ENDPOINT = `${API_BASE_URL}/export`;

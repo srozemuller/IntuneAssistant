@@ -216,6 +216,7 @@ export default function WorkerJobsPage() {
     const [formCategories, setFormCategories] = useState('');
     const [formOnlyReportIfEventsFound, setFormOnlyReportIfEventsFound] = useState(false);
     const [formMaxEvents, setFormMaxEvents] = useState(500);
+    const [formWorkerSearch, setFormWorkerSearch] = useState('');
 
     // ── Fetch ─────────────────────────────────────────────────────────────────
 
@@ -284,6 +285,7 @@ export default function WorkerJobsPage() {
         setFormIntervalHours(168); setFormFirstRunAt(''); setFormSelectedWorkers([]);
         setFormRecipientEmail(''); setFormCcEmails(''); setFormLookbackDays(7);
         setFormCategories(''); setFormOnlyReportIfEventsFound(false); setFormMaxEvents(500);
+        setFormWorkerSearch('');
         setCreateError(null); setCreateSuccess(null);
     };
 
@@ -967,41 +969,122 @@ export default function WorkerJobsPage() {
                             <Label className="flex items-center gap-2"><Server className="h-4 w-4" />Select Workers *</Label>
                             {workerData?.workers?.length ? (
                                 <div className="border rounded-lg overflow-hidden">
-                                    {/* Select All */}
-                                    <label className="flex items-center gap-3 px-3 py-2 bg-gray-50 dark:bg-gray-800 border-b cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formSelectedWorkers.length === workerData.workers.length}
-                                            onChange={e => setFormSelectedWorkers(e.target.checked ? workerData.workers.map(w => w.workerRegistrationId) : [])}
-                                            className="h-4 w-4"
-                                        />
-                                        <span className="text-sm font-medium">Select all ({workerData.workers.length})</span>
-                                    </label>
-                                    {/* Workers list */}
-                                    <div className="max-h-48 overflow-y-auto divide-y">
-                                        {workerData.workers.map(w => {
-                                            const health = getHealthStatusInfo(w.healthStatus, w.timeSinceLastHeartbeat);
-                                            return (
-                                                <label key={w.workerRegistrationId} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
+                                    {/* Search */}
+                                    <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border-b">
+                                        <div className="relative">
+                                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                value={formWorkerSearch}
+                                                onChange={e => setFormWorkerSearch(e.target.value)}
+                                                placeholder="Search by machine name, customer, instance ID…"
+                                                className="w-full pl-8 pr-7 py-1.5 text-xs rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                            />
+                                            {formWorkerSearch && (
+                                                <button
+                                                    onClick={() => setFormWorkerSearch('')}
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                    type="button"
+                                                >
+                                                    <X className="h-3.5 w-3.5" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {/* Select All (approved only, respects search) */}
+                                    {(() => {
+                                        const q = formWorkerSearch.toLowerCase().trim();
+                                        const visibleWorkers = workerData.workers.filter(w =>
+                                            !q ||
+                                            w.machineName.toLowerCase().includes(q) ||
+                                            (w.tenantDisplayName || '').toLowerCase().includes(q) ||
+                                            w.workerInstanceId.toLowerCase().includes(q) ||
+                                            w.workerRegistrationId.toLowerCase().includes(q) ||
+                                            (w.tenantId || '').toLowerCase().includes(q)
+                                        );
+                                        const approvedVisible = visibleWorkers.filter(w => w.registrationStatus === 1);
+                                        const allApprovedSelected = approvedVisible.length > 0 && approvedVisible.every(w => formSelectedWorkers.includes(w.workerRegistrationId));
+                                        const totalApproved = workerData.workers.filter(w => w.registrationStatus === 1).length;
+                                        return (
+                                            <>
+                                                <label className="flex items-center gap-3 px-3 py-2 bg-gray-50/70 dark:bg-gray-800/70 border-b cursor-pointer">
                                                     <input
                                                         type="checkbox"
-                                                        checked={formSelectedWorkers.includes(w.workerRegistrationId)}
+                                                        checked={allApprovedSelected}
+                                                        disabled={approvedVisible.length === 0}
                                                         onChange={e => setFormSelectedWorkers(
                                                             e.target.checked
-                                                                ? [...formSelectedWorkers, w.workerRegistrationId]
-                                                                : formSelectedWorkers.filter(id => id !== w.workerRegistrationId)
+                                                                ? [...new Set([...formSelectedWorkers, ...approvedVisible.map(w => w.workerRegistrationId)])]
+                                                                : formSelectedWorkers.filter(id => !approvedVisible.some(w => w.workerRegistrationId === id))
                                                         )}
                                                         className="h-4 w-4"
                                                     />
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="text-sm font-medium truncate">{w.machineName}</div>
-                                                        <div className="text-xs text-gray-500 font-mono truncate">{w.workerInstanceId}</div>
-                                                    </div>
-                                                    <Badge className={`${health.color} text-white text-xs shrink-0`}>{health.label}</Badge>
+                                                    <span className="text-sm font-medium">
+                                                        {q
+                                                            ? `Select all approved in results (${approvedVisible.length})`
+                                                            : `Select all approved (${totalApproved} of ${workerData.workers.length})`
+                                                        }
+                                                    </span>
                                                 </label>
-                                            );
-                                        })}
-                                    </div>
+                                                {/* Workers list */}
+                                                <div className="max-h-56 overflow-y-auto divide-y">
+                                                    {visibleWorkers.length === 0 ? (
+                                                        <div className="px-3 py-4 text-center text-xs text-gray-500">
+                                                            No workers match &quot;{formWorkerSearch}&quot;
+                                                        </div>
+                                                    ) : (
+                                                        visibleWorkers.map(w => {
+                                                            const health = getHealthStatusInfo(w.healthStatus, w.timeSinceLastHeartbeat);
+                                                            const isApproved = w.registrationStatus === 1;
+                                                            const registrationLabel = w.registrationStatus === 0 ? 'Pending'
+                                                                : w.registrationStatus === 2 ? 'Rejected'
+                                                                : null;
+                                                            return (
+                                                                <label
+                                                                    key={w.workerRegistrationId}
+                                                                    className={`flex items-center gap-3 px-3 py-2.5 transition-colors ${
+                                                                        isApproved
+                                                                            ? 'hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer'
+                                                                            : 'cursor-not-allowed opacity-50 bg-gray-50/50 dark:bg-gray-800/30'
+                                                                    }`}
+                                                                >
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={formSelectedWorkers.includes(w.workerRegistrationId)}
+                                                                        disabled={!isApproved}
+                                                                        onChange={e => {
+                                                                            if (!isApproved) return;
+                                                                            setFormSelectedWorkers(
+                                                                                e.target.checked
+                                                                                    ? [...formSelectedWorkers, w.workerRegistrationId]
+                                                                                    : formSelectedWorkers.filter(id => id !== w.workerRegistrationId)
+                                                                            );
+                                                                        }}
+                                                                        className="h-4 w-4"
+                                                                    />
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="text-sm font-medium truncate">{w.machineName}</span>
+                                                                            {!isApproved && registrationLabel && (
+                                                                                <Badge variant="outline" className="text-xs shrink-0 border-amber-400 text-amber-600 dark:text-amber-400">
+                                                                                    {registrationLabel}
+                                                                                </Badge>
+                                                                            )}
+                                                                        </div>
+                                                                        {w.tenantDisplayName && (
+                                                                            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium truncate">{w.tenantDisplayName}</div>
+                                                                        )}
+                                                                        <div className="text-xs text-gray-500 font-mono truncate">{w.workerInstanceId}</div>
+                                                                    </div>
+                                                                    <Badge className={`${health.color} text-white text-xs shrink-0`}>{health.label}</Badge>
+                                                                </label>
+                                                            );
+                                                        })
+                                                    )}
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
                                 </div>
                             ) : (
                                 <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 flex items-center gap-2 text-yellow-700">
