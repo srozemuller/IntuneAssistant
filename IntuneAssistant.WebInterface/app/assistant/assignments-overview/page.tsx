@@ -15,7 +15,7 @@ import {
     ShieldCheck,
     ChevronDown,
     ChevronUp,
-    XCircle, Blocks, CircleQuestionMark
+    XCircle, Blocks, CircleQuestionMark, TriangleAlert
 } from 'lucide-react';
 import {
     ASSIGNMENTS_ENDPOINT,
@@ -59,6 +59,7 @@ interface Assignments extends Record<string, unknown> {
     assignmentDirection: string;
     isExcluded: boolean;
     scopeTagIds?: string[];
+    warnings?: string[];
     group?: {
         id: string;
         displayName: string;
@@ -588,17 +589,31 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                 const resourceType = String(row.resourceType);
                 const subResourceType = String(row.subResourceType);
                 const resourceId = String(row.resourceId);
+                const warnings = (row.warnings as string[] | undefined) ?? [];
+                const hasWarnings = warnings.length > 0;
+
+                const warningIcon = hasWarnings ? (
+                    <span
+                        title={warnings.join('\n')}
+                        className="inline-flex shrink-0 items-center cursor-help ml-1"
+                    >
+                        <TriangleAlert className="h-3 w-3 text-amber-400 dark:text-amber-500" />
+                    </span>
+                ) : null;
 
                 if (resourceType === 'Group' && resourceId && resourceName !== 'N/A') {
                     return (
                         <div className="space-y-0.5">
-                            <button
-                                onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
-                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
-                                title={resourceName}
-                            >
-                                {resourceName}
-                            </button>
+                            <div className="flex items-center gap-0.5">
+                                <button
+                                    onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
+                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate text-left"
+                                    title={resourceName}
+                                >
+                                    {resourceName}
+                                </button>
+                                {warningIcon}
+                            </div>
                             <span className="text-xs text-gray-400 block">
                                 {subResourceType && subResourceType !== 'undefined' && subResourceType !== 'null'
                                     ? `${resourceType} - ${subResourceType}`
@@ -610,9 +625,12 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
 
                 return (
                     <div className="space-y-0.5">
-                        <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                            {resourceName}
-                        </span>
+                        <div className="flex items-center gap-0.5">
+                            <span className="font-medium text-sm truncate" title={resourceName}>
+                                {resourceName}
+                            </span>
+                            {warningIcon}
+                        </div>
                         <span className="text-xs text-gray-400 block">
                             {subResourceType && subResourceType !== 'undefined' && subResourceType !== 'null'
                                 ? `${resourceType} - ${subResourceType}`
