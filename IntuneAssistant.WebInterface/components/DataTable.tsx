@@ -48,6 +48,7 @@ interface DataTableProps {
     selectedRows?: string[];
     onSelectionChange?: (rowIds: string[]) => void;
     expandedRowRender?: (row: Record<string, unknown>) => React.ReactNode | null;
+    onSearchChange?: (term: string) => void;
 }
 
 // Memoized TableRow component to prevent unnecessary re-renders
@@ -122,6 +123,7 @@ function DataTableComponent(props: DataTableProps) {
         onSelectionChange,
         selectedRows = [],
         expandedRowRender,
+        onSearchChange,
     } = props;
 
     // Local pagination state to support uncontrolled usage
@@ -237,10 +239,11 @@ function DataTableComponent(props: DataTableProps) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearchTerm(searchTerm);
+            onSearchChange?.(searchTerm);
         }, 300);
 
         return () => clearTimeout(timer);
-    }, [searchTerm]);
+    }, [searchTerm, onSearchChange]);
 
     useEffect(() => {
         const container = tableContainerRef.current;
