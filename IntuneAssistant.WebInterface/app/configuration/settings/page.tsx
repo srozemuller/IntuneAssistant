@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +14,7 @@ import {
     POLICY_SETTINGS_CATALOG_ENDPOINT,
     POLICY_SETTINGS_DEVICECONFIG_ENDPOINT,
     POLICY_SETTINGS_GROUPPOLICY_ENDPOINT,
+    GROUPS_ENDPOINT,
 } from '@/lib/constants';
 import { ExportButton, ExportData, ExportColumn } from '@/components/ExportButton';
 import { useApiRequest } from '@/hooks/useApiRequest';
@@ -298,14 +299,57 @@ interface AssignmentInfo {
     assignments: PolicyAssignment[];
 }
 
+interface GroupInfo {
+    displayName: string;
+    loading: boolean;
+    error?: string;
+}
+
 function AssignmentsDialog({ info, onClose, onGroupClick }: {
     info: AssignmentInfo | null;
     onClose: () => void;
     onGroupClick: (groupId: string) => void;
 }) {
+    const { request } = useApiRequest();
+    const [groupNames, setGroupNames] = useState<Record<string, GroupInfo>>({});
+    const fetchedRef = useRef<Set<string>>(new Set());
+
+    const groupAssignments = useMemo(
+        () => (info?.assignments ?? []).filter(a => a.target?.groupId),
+        [info]
+    );
+    const otherAssignments = useMemo(
+        () => (info?.assignments ?? []).filter(a => !a.target?.groupId),
+        [info]
+    );
+
+    // Fetch display names for all group IDs when dialog opens
+    useEffect(() => {
+        if (!info) {
+            fetchedRef.current.clear();
+            setGroupNames({});
+            return;
+        }
+        const ids = groupAssignments.map(a => a.target!.groupId!).filter(id => !fetchedRef.current.has(id));
+        if (!ids.length) return;
+
+        ids.forEach(id => {
+            fetchedRef.current.add(id);
+            setGroupNames(prev => ({ ...prev, [id]: { displayName: id, loading: true } }));
+
+            request<{ data: { id: string; displayName: string } }>(`${GROUPS_ENDPOINT}?groupId=${id}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            }).then(resp => {
+                const displayName = resp?.data?.data?.displayName ?? id;
+                setGroupNames(prev => ({ ...prev, [id]: { displayName, loading: false } }));
+            }).catch(() => {
+                setGroupNames(prev => ({ ...prev, [id]: { displayName: id, loading: false, error: 'Failed to load' } }));
+            });
+        });
+    }, [info, groupAssignments, request]);
+
     if (!info) return null;
-    const groupAssignments = info.assignments.filter(a => a.target?.groupId);
-    const otherAssignments = info.assignments.filter(a => !a.target?.groupId);
 
     return (
         <Dialog open={!!info} onOpenChange={onClose}>
@@ -323,22 +367,41 @@ function AssignmentsDialog({ info, onClose, onGroupClick }: {
                     {groupAssignments.length > 0 && (
                         <div className="space-y-2">
                             <h4 className="text-sm font-medium text-muted-foreground">Group Assignments</h4>
-                            {groupAssignments.map((a, i) => (
-                                <div key={i} className="flex items-center justify-between p-2 rounded border bg-muted/30">
-                                    <div className="flex items-center gap-2">
-                                        <Users className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-xs font-mono text-muted-foreground">{a.target?.groupId}</span>
+                            {groupAssignments.map((a, i) => {
+                                const groupId = a.target!.groupId!;
+                                const groupInfo = groupNames[groupId];
+                                const isLoading = groupInfo?.loading ?? true;
+                                const displayName = groupInfo?.displayName ?? groupId;
+                                return (
+                                    <div key={i} className="flex items-center justify-between p-3 rounded border bg-muted/30 gap-3">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <Users className="h-4 w-4 text-muted-foreground shrink-0" />
+                                            <div className="min-w-0">
+                                                {isLoading ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+                                                        <div className="h-3 w-48 bg-muted animate-pulse rounded" />
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <div className="font-medium text-sm text-foreground truncate">{displayName}</div>
+                                                        <div className="text-xs font-mono text-muted-foreground truncate">{groupId}</div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="text-xs h-7 shrink-0"
+                                            disabled={isLoading}
+                                            onClick={() => onGroupClick(groupId)}
+                                        >
+                                            View Group
+                                        </Button>
                                     </div>
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="text-xs h-7"
-                                        onClick={() => onGroupClick(a.target!.groupId!)}
-                                    >
-                                        View Group
-                                    </Button>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                     {otherAssignments.length > 0 && (
