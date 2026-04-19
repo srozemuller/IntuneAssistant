@@ -3656,13 +3656,13 @@ function ConflictPeersDialog({ info, onClose }) {
                                     className: "h-5 w-5 text-red-500"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 240,
+                                    lineNumber: 241,
                                     columnNumber: 31
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$copy$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Copy$3e$__["Copy"], {
                                     className: "h-5 w-5 text-yellow-500"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 241,
+                                    lineNumber: 242,
                                     columnNumber: 31
                                 }, this),
                                 isConflict ? 'Conflicting' : 'Duplicate',
@@ -3670,7 +3670,7 @@ function ConflictPeersDialog({ info, onClose }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 238,
+                            lineNumber: 239,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogDescription"], {
@@ -3681,20 +3681,20 @@ function ConflictPeersDialog({ info, onClose }) {
                                     children: info.settingName
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 245,
+                                    lineNumber: 246,
                                     columnNumber: 33
                                 }, this),
                                 " appears in multiple policies with overlapping assignments."
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 244,
+                            lineNumber: 245,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/configuration/settings/page.tsx",
-                    lineNumber: 237,
+                    lineNumber: 238,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3707,7 +3707,7 @@ function ConflictPeersDialog({ info, onClose }) {
                                     children: "THIS POLICY"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 252,
+                                    lineNumber: 253,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3718,7 +3718,7 @@ function ConflictPeersDialog({ info, onClose }) {
                                             children: info.policyName
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 254,
+                                            lineNumber: 255,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3730,25 +3730,25 @@ function ConflictPeersDialog({ info, onClose }) {
                                                     children: info.settingValue || '(empty)'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 256,
+                                                    lineNumber: 257,
                                                     columnNumber: 40
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 255,
+                                            lineNumber: 256,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 253,
+                                    lineNumber: 254,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 251,
+                            lineNumber: 252,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3764,7 +3764,7 @@ function ConflictPeersDialog({ info, onClose }) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 263,
+                                    lineNumber: 264,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3782,7 +3782,7 @@ function ConflictPeersDialog({ info, onClose }) {
                                                             children: peer.policyName
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                                            lineNumber: 272,
+                                                            lineNumber: 273,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3791,13 +3791,13 @@ function ConflictPeersDialog({ info, onClose }) {
                                                             children: sourceLabelMap[peer.source] ?? peer.source
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                                            lineNumber: 273,
+                                                            lineNumber: 274,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 271,
+                                                    lineNumber: 272,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3809,62 +3809,117 @@ function ConflictPeersDialog({ info, onClose }) {
                                                             children: peer.settingValue || '(empty)'
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                                            lineNumber: 278,
+                                                            lineNumber: 279,
                                                             columnNumber: 52
                                                         }, this),
                                                         valuesDiffer && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
                                                             className: "h-3 w-3 text-red-500 ml-1"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                                            lineNumber: 281,
+                                                            lineNumber: 282,
                                                             columnNumber: 62
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 277,
+                                                    lineNumber: 278,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, i, true, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 270,
+                                            lineNumber: 271,
                                             columnNumber: 37
                                         }, this);
                                     })
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 266,
+                                    lineNumber: 267,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 262,
+                            lineNumber: 263,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/configuration/settings/page.tsx",
-                    lineNumber: 249,
+                    lineNumber: 250,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/configuration/settings/page.tsx",
-            lineNumber: 236,
+            lineNumber: 237,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/configuration/settings/page.tsx",
-        lineNumber: 235,
+        lineNumber: 236,
         columnNumber: 9
     }, this);
 }
 function AssignmentsDialog({ info, onClose, onGroupClick }) {
+    const { request } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useApiRequest"])();
+    const [groupNames, setGroupNames] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({});
+    const fetchedRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(new Set());
+    const groupAssignments = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>(info?.assignments ?? []).filter((a)=>a.target?.groupId), [
+        info
+    ]);
+    const otherAssignments = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>(info?.assignments ?? []).filter((a)=>!a.target?.groupId), [
+        info
+    ]);
+    // Fetch display names for all group IDs when dialog opens
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if (!info) {
+            fetchedRef.current.clear();
+            setGroupNames({});
+            return;
+        }
+        const ids = groupAssignments.map((a)=>a.target.groupId).filter((id)=>!fetchedRef.current.has(id));
+        if (!ids.length) return;
+        ids.forEach((id)=>{
+            fetchedRef.current.add(id);
+            setGroupNames((prev)=>({
+                    ...prev,
+                    [id]: {
+                        displayName: id,
+                        loading: true
+                    }
+                }));
+            request(`${__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["GROUPS_ENDPOINT"]}?groupId=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((resp)=>{
+                const displayName = resp?.data?.data?.displayName ?? id;
+                setGroupNames((prev)=>({
+                        ...prev,
+                        [id]: {
+                            displayName,
+                            loading: false
+                        }
+                    }));
+            }).catch(()=>{
+                setGroupNames((prev)=>({
+                        ...prev,
+                        [id]: {
+                            displayName: id,
+                            loading: false,
+                            error: 'Failed to load'
+                        }
+                    }));
+            });
+        });
+    }, [
+        info,
+        groupAssignments,
+        request
+    ]);
     if (!info) return null;
-    const groupAssignments = info.assignments.filter((a)=>a.target?.groupId);
-    const otherAssignments = info.assignments.filter((a)=>!a.target?.groupId);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Dialog"], {
         open: !!info,
         onOpenChange: onClose,
@@ -3880,7 +3935,7 @@ function AssignmentsDialog({ info, onClose, onGroupClick }) {
                                     className: "h-5 w-5"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 315,
+                                    lineNumber: 359,
                                     columnNumber: 25
                                 }, this),
                                 "Assignments — ",
@@ -3888,7 +3943,7 @@ function AssignmentsDialog({ info, onClose, onGroupClick }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 314,
+                            lineNumber: 358,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogDescription"], {
@@ -3900,13 +3955,13 @@ function AssignmentsDialog({ info, onClose, onGroupClick }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 318,
+                            lineNumber: 362,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/configuration/settings/page.tsx",
-                    lineNumber: 313,
+                    lineNumber: 357,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3920,57 +3975,105 @@ function AssignmentsDialog({ info, onClose, onGroupClick }) {
                                     children: "Group Assignments"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 325,
+                                    lineNumber: 369,
                                     columnNumber: 29
                                 }, this),
-                                groupAssignments.map((a, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center justify-between p-2 rounded border bg-muted/30",
+                                groupAssignments.map((a, i)=>{
+                                    const groupId = a.target.groupId;
+                                    const groupInfo = groupNames[groupId];
+                                    const isLoading = groupInfo?.loading ?? true;
+                                    const displayName = groupInfo?.displayName ?? groupId;
+                                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center justify-between p-3 rounded border bg-muted/30 gap-3",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center gap-2",
+                                                className: "flex items-center gap-2 min-w-0",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$users$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Users$3e$__["Users"], {
-                                                        className: "h-4 w-4 text-muted-foreground"
+                                                        className: "h-4 w-4 text-muted-foreground shrink-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 329,
-                                                        columnNumber: 41
+                                                        lineNumber: 378,
+                                                        columnNumber: 45
                                                     }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "text-xs font-mono text-muted-foreground",
-                                                        children: a.target?.groupId
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "min-w-0",
+                                                        children: isLoading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex items-center gap-2",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "h-4 w-32 bg-muted animate-pulse rounded"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/configuration/settings/page.tsx",
+                                                                    lineNumber: 382,
+                                                                    columnNumber: 57
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "h-3 w-48 bg-muted animate-pulse rounded"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/configuration/settings/page.tsx",
+                                                                    lineNumber: 383,
+                                                                    columnNumber: 57
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/configuration/settings/page.tsx",
+                                                            lineNumber: 381,
+                                                            columnNumber: 53
+                                                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "font-medium text-sm text-foreground truncate",
+                                                                    children: displayName
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/configuration/settings/page.tsx",
+                                                                    lineNumber: 387,
+                                                                    columnNumber: 57
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "text-xs font-mono text-muted-foreground truncate",
+                                                                    children: groupId
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/configuration/settings/page.tsx",
+                                                                    lineNumber: 388,
+                                                                    columnNumber: 57
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 330,
-                                                        columnNumber: 41
+                                                        lineNumber: 379,
+                                                        columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 328,
-                                                columnNumber: 37
+                                                lineNumber: 377,
+                                                columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                                                 size: "sm",
                                                 variant: "outline",
-                                                className: "text-xs h-7",
-                                                onClick: ()=>onGroupClick(a.target.groupId),
+                                                className: "text-xs h-7 shrink-0",
+                                                disabled: isLoading,
+                                                onClick: ()=>onGroupClick(groupId),
                                                 children: "View Group"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 332,
-                                                columnNumber: 37
+                                                lineNumber: 393,
+                                                columnNumber: 41
                                             }, this)
                                         ]
                                     }, i, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 327,
-                                        columnNumber: 33
-                                    }, this))
+                                        lineNumber: 376,
+                                        columnNumber: 37
+                                    }, this);
+                                })
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 324,
+                            lineNumber: 368,
                             columnNumber: 25
                         }, this),
                         otherAssignments.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3981,7 +4084,7 @@ function AssignmentsDialog({ info, onClose, onGroupClick }) {
                                     children: "Other Assignments"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 346,
+                                    lineNumber: 409,
                                     columnNumber: 29
                                 }, this),
                                 otherAssignments.map((a, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3989,13 +4092,13 @@ function AssignmentsDialog({ info, onClose, onGroupClick }) {
                                         children: a.target?.['@odata.type'] ?? JSON.stringify(a.target)
                                     }, i, false, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 348,
+                                        lineNumber: 411,
                                         columnNumber: 33
                                     }, this))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 345,
+                            lineNumber: 408,
                             columnNumber: 25
                         }, this),
                         info.assignments.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4003,24 +4106,24 @@ function AssignmentsDialog({ info, onClose, onGroupClick }) {
                             children: "No assignments configured."
                         }, void 0, false, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 355,
+                            lineNumber: 418,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/configuration/settings/page.tsx",
-                    lineNumber: 322,
+                    lineNumber: 366,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/configuration/settings/page.tsx",
-            lineNumber: 312,
+            lineNumber: 356,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/configuration/settings/page.tsx",
-        lineNumber: 311,
+        lineNumber: 355,
         columnNumber: 9
     }, this);
 }
@@ -4299,7 +4402,7 @@ function PolicySettingsPage() {
                                 children: policyName
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 549,
+                                lineNumber: 612,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4311,7 +4414,7 @@ function PolicySettingsPage() {
                                         children: sourceLabel[src] ?? src
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 551,
+                                        lineNumber: 614,
                                         columnNumber: 29
                                     }, this),
                                     status === 'duplicate' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4330,19 +4433,19 @@ function PolicySettingsPage() {
                                                     className: "h-3 w-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 557,
+                                                    lineNumber: 620,
                                                     columnNumber: 41
                                                 }, this),
                                                 " Duplicate"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 556,
+                                            lineNumber: 619,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 555,
+                                        lineNumber: 618,
                                         columnNumber: 33
                                     }, this),
                                     status === 'conflict' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4361,31 +4464,31 @@ function PolicySettingsPage() {
                                                     className: "h-3 w-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 564,
+                                                    lineNumber: 627,
                                                     columnNumber: 41
                                                 }, this),
                                                 " Conflict"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 563,
+                                            lineNumber: 626,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 562,
+                                        lineNumber: 625,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 550,
+                                lineNumber: 613,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 548,
+                        lineNumber: 611,
                         columnNumber: 21
                     }, this);
                 }
@@ -4407,7 +4510,7 @@ function PolicySettingsPage() {
                                 children: name
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 585,
+                                lineNumber: 648,
                                 columnNumber: 25
                             }, this),
                             omaUri && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4416,7 +4519,7 @@ function PolicySettingsPage() {
                                 children: omaUri
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 586,
+                                lineNumber: 649,
                                 columnNumber: 36
                             }, this),
                             showId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4425,13 +4528,13 @@ function PolicySettingsPage() {
                                 children: settingId
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 587,
+                                lineNumber: 650,
                                 columnNumber: 36
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 584,
+                        lineNumber: 647,
                         columnNumber: 21
                     }, this);
                 }
@@ -4450,7 +4553,7 @@ function PolicySettingsPage() {
                         children: str.length > 50 ? `${str.slice(0, 50)}…` : str
                     }, void 0, false, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 601,
+                        lineNumber: 664,
                         columnNumber: 21
                     }, this);
                 }
@@ -4465,7 +4568,7 @@ function PolicySettingsPage() {
                         children: String(value ?? 'N/A')
                     }, void 0, false, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 613,
+                        lineNumber: 676,
                         columnNumber: 17
                     }, this)
             },
@@ -4485,7 +4588,7 @@ function PolicySettingsPage() {
                             children: "Not Assigned"
                         }, void 0, false, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 626,
+                            lineNumber: 689,
                             columnNumber: 28
                         }, this);
                     }
@@ -4503,19 +4606,19 @@ function PolicySettingsPage() {
                                     className: "h-3 w-3"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 637,
+                                    lineNumber: 700,
                                     columnNumber: 29
                                 }, this),
                                 "Assigned"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 633,
+                            lineNumber: 696,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 629,
+                        lineNumber: 692,
                         columnNumber: 21
                     }, this);
                 }
@@ -4534,7 +4637,7 @@ function PolicySettingsPage() {
                             children: "—"
                         }, void 0, false, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 653,
+                            lineNumber: 716,
                             columnNumber: 28
                         }, this);
                     }
@@ -4555,13 +4658,13 @@ function PolicySettingsPage() {
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 666,
+                                        lineNumber: 729,
                                         columnNumber: 43
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 666,
+                                        lineNumber: 729,
                                         columnNumber: 81
                                     }, this),
                                     children.length,
@@ -4575,13 +4678,13 @@ function PolicySettingsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 668,
+                                        lineNumber: 731,
                                         columnNumber: 53
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 662,
+                                lineNumber: 725,
                                 columnNumber: 25
                             }, this),
                             isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4596,7 +4699,7 @@ function PolicySettingsPage() {
                                                 children: c.name
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 676,
+                                                lineNumber: 739,
                                                 columnNumber: 45
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4605,25 +4708,25 @@ function PolicySettingsPage() {
                                                 children: c.value.length > 30 ? `${c.value.slice(0, 30)}…` : c.value
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 677,
+                                                lineNumber: 740,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, i, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 675,
+                                        lineNumber: 738,
                                         columnNumber: 41
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 671,
+                                lineNumber: 734,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 661,
+                        lineNumber: 724,
                         columnNumber: 21
                     }, this);
                 }
@@ -4650,7 +4753,7 @@ function PolicySettingsPage() {
                                 children: "Policy Settings"
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 696,
+                                lineNumber: 759,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4658,13 +4761,13 @@ function PolicySettingsPage() {
                                 children: "View all settings across Settings Catalog, Device Configuration and Group Policy"
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 697,
+                                lineNumber: 760,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 695,
+                        lineNumber: 758,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4681,14 +4784,14 @@ function PolicySettingsPage() {
                                             className: `h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 705,
+                                            lineNumber: 768,
                                             columnNumber: 33
                                         }, this),
                                         "Refresh"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 704,
+                                    lineNumber: 767,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ExportButton$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ExportButton"], {
@@ -4708,7 +4811,7 @@ function PolicySettingsPage() {
                                     tenantId: instance.getActiveAccount()?.tenantId || accounts[0]?.tenantId || ''
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 708,
+                                    lineNumber: 771,
                                     columnNumber: 29
                                 }, this)
                             ]
@@ -4723,14 +4826,14 @@ function PolicySettingsPage() {
                                             className: `h-4 w-4 ${loading ? 'animate-spin' : ''}`
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 718,
+                                            lineNumber: 781,
                                             columnNumber: 33
                                         }, this),
                                         "Load Settings"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 717,
+                                    lineNumber: 780,
                                     columnNumber: 29
                                 }, this),
                                 loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -4749,27 +4852,27 @@ function PolicySettingsPage() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 726,
+                                            lineNumber: 789,
                                             columnNumber: 37
                                         }, this),
                                         " Cancel"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 722,
+                                    lineNumber: 785,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true)
                     }, void 0, false, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 701,
+                        lineNumber: 764,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/configuration/settings/page.tsx",
-                lineNumber: 694,
+                lineNumber: 757,
                 columnNumber: 13
             }, this),
             settings.length === 0 && !loading && !error && !isCancelled && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -4785,12 +4888,12 @@ function PolicySettingsPage() {
                                     className: "h-16 w-16 mx-auto"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 739,
+                                    lineNumber: 802,
                                     columnNumber: 65
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 739,
+                                lineNumber: 802,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -4798,7 +4901,7 @@ function PolicySettingsPage() {
                                 children: "Ready to view your policy settings"
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 740,
+                                lineNumber: 803,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4806,7 +4909,7 @@ function PolicySettingsPage() {
                                 children: 'Click "Load Settings" to fetch all settings across Settings Catalog, Device Configuration and Group Policy.'
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 741,
+                                lineNumber: 804,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -4818,30 +4921,30 @@ function PolicySettingsPage() {
                                         className: "h-5 w-5"
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 745,
+                                        lineNumber: 808,
                                         columnNumber: 33
                                     }, this),
                                     " Load Settings"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 744,
+                                lineNumber: 807,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 738,
+                        lineNumber: 801,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/configuration/settings/page.tsx",
-                    lineNumber: 737,
+                    lineNumber: 800,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/configuration/settings/page.tsx",
-                lineNumber: 736,
+                lineNumber: 799,
                 columnNumber: 17
             }, this),
             loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -4858,7 +4961,7 @@ function PolicySettingsPage() {
                                             children: progressLabel
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 758,
+                                            lineNumber: 821,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4870,13 +4973,13 @@ function PolicySettingsPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 759,
+                                            lineNumber: 822,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 757,
+                                    lineNumber: 820,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Progress"], {
@@ -4884,7 +4987,7 @@ function PolicySettingsPage() {
                                     className: "h-2"
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 761,
+                                    lineNumber: 824,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4898,23 +5001,23 @@ function PolicySettingsPage() {
                                             ]
                                         }, step.source, true, {
                                             fileName: "[project]/app/configuration/settings/page.tsx",
-                                            lineNumber: 764,
+                                            lineNumber: 827,
                                             columnNumber: 37
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 762,
+                                    lineNumber: 825,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 756,
+                            lineNumber: 819,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 755,
+                        lineNumber: 818,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AssignmentsTableSkeleton$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AssignmentsTableSkeleton"], {
@@ -4924,7 +5027,7 @@ function PolicySettingsPage() {
                         tableColumns: 6
                     }, void 0, false, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 771,
+                        lineNumber: 834,
                         columnNumber: 21
                     }, this)
                 ]
@@ -4938,7 +5041,7 @@ function PolicySettingsPage() {
                             className: "h-5 w-5"
                         }, void 0, false, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 779,
+                            lineNumber: 842,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4946,25 +5049,25 @@ function PolicySettingsPage() {
                             children: "Error:"
                         }, void 0, false, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 779,
+                            lineNumber: 842,
                             columnNumber: 50
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                             children: error
                         }, void 0, false, {
                             fileName: "[project]/app/configuration/settings/page.tsx",
-                            lineNumber: 779,
+                            lineNumber: 842,
                             columnNumber: 93
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/configuration/settings/page.tsx",
-                    lineNumber: 778,
+                    lineNumber: 841,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/configuration/settings/page.tsx",
-                lineNumber: 777,
+                lineNumber: 840,
                 columnNumber: 17
             }, this),
             isCancelled && !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CancelledCard$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CancelledCard"], {
@@ -4977,7 +5080,7 @@ function PolicySettingsPage() {
                 buttonText: "Load Settings"
             }, void 0, false, {
                 fileName: "[project]/app/configuration/settings/page.tsx",
-                lineNumber: 786,
+                lineNumber: 849,
                 columnNumber: 17
             }, this),
             settings.length > 0 && !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -4999,7 +5102,7 @@ function PolicySettingsPage() {
                                                         className: "h-5 w-5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 805,
+                                                        lineNumber: 868,
                                                         columnNumber: 37
                                                     }, this),
                                                     "Filters",
@@ -5007,19 +5110,19 @@ function PolicySettingsPage() {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 807,
+                                                        lineNumber: 870,
                                                         columnNumber: 58
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 807,
+                                                        lineNumber: 870,
                                                         columnNumber: 94
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 801,
+                                                lineNumber: 864,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5034,7 +5137,7 @@ function PolicySettingsPage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 811,
+                                                        lineNumber: 874,
                                                         columnNumber: 41
                                                     }, this),
                                                     activeFilterCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -5046,26 +5149,26 @@ function PolicySettingsPage() {
                                                                 className: "h-4 w-4 mr-1"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                                lineNumber: 815,
+                                                                lineNumber: 878,
                                                                 columnNumber: 45
                                                             }, this),
                                                             " Clear All"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 814,
+                                                        lineNumber: 877,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 809,
+                                                lineNumber: 872,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 800,
+                                        lineNumber: 863,
                                         columnNumber: 29
                                     }, this),
                                     !isFiltersExpanded && activeFilterCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5080,7 +5183,7 @@ function PolicySettingsPage() {
                                                     ]
                                                 }, f, true, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 823,
+                                                    lineNumber: 886,
                                                     columnNumber: 60
                                                 }, this)),
                                             platformFilter.map((f)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -5092,7 +5195,7 @@ function PolicySettingsPage() {
                                                     ]
                                                 }, f, true, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 824,
+                                                    lineNumber: 887,
                                                     columnNumber: 62
                                                 }, this)),
                                             statusFilter.map((f)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -5104,7 +5207,7 @@ function PolicySettingsPage() {
                                                     ]
                                                 }, f, true, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 825,
+                                                    lineNumber: 888,
                                                     columnNumber: 60
                                                 }, this)),
                                             assignedFilter.map((f)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -5116,19 +5219,19 @@ function PolicySettingsPage() {
                                                     ]
                                                 }, f, true, {
                                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                                    lineNumber: 826,
+                                                    lineNumber: 889,
                                                     columnNumber: 62
                                                 }, this))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 822,
+                                        lineNumber: 885,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 799,
+                                lineNumber: 862,
                                 columnNumber: 25
                             }, this),
                             isFiltersExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5145,7 +5248,7 @@ function PolicySettingsPage() {
                                                         children: "Source"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 835,
+                                                        lineNumber: 898,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -5155,13 +5258,13 @@ function PolicySettingsPage() {
                                                         placeholder: "All sources…"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 836,
+                                                        lineNumber: 899,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 834,
+                                                lineNumber: 897,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5172,7 +5275,7 @@ function PolicySettingsPage() {
                                                         children: "Platform"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 839,
+                                                        lineNumber: 902,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -5182,13 +5285,13 @@ function PolicySettingsPage() {
                                                         placeholder: "All platforms…"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 840,
+                                                        lineNumber: 903,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 838,
+                                                lineNumber: 901,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5199,7 +5302,7 @@ function PolicySettingsPage() {
                                                         children: "Status"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 843,
+                                                        lineNumber: 906,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -5209,13 +5312,13 @@ function PolicySettingsPage() {
                                                         placeholder: "All statuses…"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 844,
+                                                        lineNumber: 907,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 842,
+                                                lineNumber: 905,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5226,7 +5329,7 @@ function PolicySettingsPage() {
                                                         children: "Assignment"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 847,
+                                                        lineNumber: 910,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -5236,19 +5339,19 @@ function PolicySettingsPage() {
                                                         placeholder: "All…"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                                        lineNumber: 848,
+                                                        lineNumber: 911,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 846,
+                                                lineNumber: 909,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 833,
+                                        lineNumber: 896,
                                         columnNumber: 33
                                     }, this),
                                     activeFilterCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5262,19 +5365,19 @@ function PolicySettingsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 852,
+                                        lineNumber: 915,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 832,
+                                lineNumber: 895,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 798,
+                        lineNumber: 861,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5293,12 +5396,12 @@ function PolicySettingsPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 868,
+                                    lineNumber: 931,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 863,
+                                lineNumber: 926,
                                 columnNumber: 25
                             }, this),
                             [
@@ -5339,12 +5442,12 @@ function PolicySettingsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 892,
+                                        lineNumber: 955,
                                         columnNumber: 37
                                     }, this)
                                 }, value, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 886,
+                                    lineNumber: 949,
                                     columnNumber: 33
                                 }, this);
                             }),
@@ -5365,7 +5468,7 @@ function PolicySettingsPage() {
                                                 className: "h-3 w-3"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 915,
+                                                lineNumber: 978,
                                                 columnNumber: 41
                                             }, this),
                                             " ",
@@ -5375,12 +5478,12 @@ function PolicySettingsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 911,
+                                        lineNumber: 974,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 906,
+                                    lineNumber: 969,
                                     columnNumber: 33
                                 }, this);
                             })(),
@@ -5401,7 +5504,7 @@ function PolicySettingsPage() {
                                                 className: "h-3 w-3"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                                lineNumber: 934,
+                                                lineNumber: 997,
                                                 columnNumber: 41
                                             }, this),
                                             " ",
@@ -5411,12 +5514,12 @@ function PolicySettingsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/settings/page.tsx",
-                                        lineNumber: 930,
+                                        lineNumber: 993,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/settings/page.tsx",
-                                    lineNumber: 925,
+                                    lineNumber: 988,
                                     columnNumber: 33
                                 }, this);
                             })(),
@@ -5430,13 +5533,13 @@ function PolicySettingsPage() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/settings/page.tsx",
-                                lineNumber: 942,
+                                lineNumber: 1005,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/settings/page.tsx",
-                        lineNumber: 861,
+                        lineNumber: 924,
                         columnNumber: 21
                     }, this)
                 ]
@@ -5451,7 +5554,7 @@ function PolicySettingsPage() {
                 className: "relative overflow-hidden transition-all duration-300 hover:shadow-2xl bg-white/60 dark:bg-gray-900/30 backdrop-blur-lg border border-white/30 dark:border-white/10"
             }, void 0, false, {
                 fileName: "[project]/app/configuration/settings/page.tsx",
-                lineNumber: 952,
+                lineNumber: 1015,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(ConflictPeersDialog, {
@@ -5459,7 +5562,7 @@ function PolicySettingsPage() {
                 onClose: ()=>setPeersDialogInfo(null)
             }, void 0, false, {
                 fileName: "[project]/app/configuration/settings/page.tsx",
-                lineNumber: 964,
+                lineNumber: 1027,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(AssignmentsDialog, {
@@ -5472,7 +5575,7 @@ function PolicySettingsPage() {
                 }
             }, void 0, false, {
                 fileName: "[project]/app/configuration/settings/page.tsx",
-                lineNumber: 970,
+                lineNumber: 1033,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$GroupDetailsDialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["GroupDetailsDialog"], {
@@ -5484,13 +5587,13 @@ function PolicySettingsPage() {
                 }
             }, void 0, false, {
                 fileName: "[project]/app/configuration/settings/page.tsx",
-                lineNumber: 981,
+                lineNumber: 1044,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/configuration/settings/page.tsx",
-        lineNumber: 692,
+        lineNumber: 755,
         columnNumber: 9
     }, this);
 }
