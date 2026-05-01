@@ -645,7 +645,7 @@ export default function ConfigurationComparePage() {
                     const raw = JSON.parse(e.target?.result as string) as Record<string, unknown>;
                     resolve(parseUploadedFile(file.name, raw));
                 } catch {
-                    resolve({ fileName: file.name, raw: {}, kind: 'Unknown', name: file.name, platform: '', odataType: '', settings: [], error: 'Invalid JSON' });
+                    resolve({ fileName: file.name, raw: {}, kind: 'Unknown', name: file.name, platform: '', odataType: '', settings: [], definitionMap: new Map(), error: 'Invalid JSON' });
                 }
             };
             reader.readAsText(file);
