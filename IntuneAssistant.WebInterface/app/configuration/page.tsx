@@ -18,7 +18,8 @@ import {
     Users,
     CheckCircle,
     FileText,
-    BarChart3
+    BarChart3,
+    ArrowLeftRight
 } from 'lucide-react';
 
 export default function DeviceConfigurationLandingPage() {
@@ -56,6 +57,23 @@ export default function DeviceConfigurationLandingPage() {
             ],
             badge: "SETTINGS",
             highlight: "Advanced"
+        },
+        {
+            title: "Compare External Policies",
+            description: "Upload exported JSON policy files and compare them against your tenant. Identify what's missing, conflicting, or already present — across Settings Catalog, Device Configuration, and Administrative Templates.",
+            href: "/configuration/compare",
+            icon: ArrowLeftRight,
+            gradient: "from-violet-500 to-pink-500",
+            bgGradient: "from-violet-50 to-pink-50 dark:from-violet-900/20 dark:to-pink-900/20",
+            borderColor: "border-violet-200 dark:border-violet-800",
+            features: [
+                "Upload one or multiple JSON files",
+                "Auto-detect policy type from @odata.type",
+                "Many-to-many comparison against tenant",
+                "Match / Conflict / Missing / Extra breakdown"
+            ],
+            badge: "COMPARE",
+            highlight: "New"
         }
     ];
 

@@ -296,7 +296,8 @@ export function Sidebar() {
                     href: "/configuration",
                     submenu: [
                         { title: "Config Policies", href: "/configuration/policies" },
-                        { title: "Config Settings", href: "/configuration/settings" }
+                        { title: "Config Settings", href: "/configuration/settings" },
+                        { title: "Compare External", href: "/configuration/compare" }
                     ]
                 },
                 {
