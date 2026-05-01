@@ -58,6 +58,7 @@ export const POLICY_SETTINGS_ENDPOINT = `${CONFIGURATION_POLICIES_ENDPOINT}/sett
 export const POLICY_SETTINGS_CATALOG_ENDPOINT = `${POLICIES_ENDPOINT}/settings/catalog`;
 export const POLICY_SETTINGS_DEVICECONFIG_ENDPOINT = `${POLICIES_ENDPOINT}/settings/deviceconfig`;
 export const POLICY_SETTINGS_GROUPPOLICY_ENDPOINT = `${POLICIES_ENDPOINT}/settings/grouppolicy`;
+export const SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT = `${API_BASE_URL}/settings/definitions/resolve`;
 
 export const ROLE_SCOPETAGS_ENDPOINT = `${API_BASE_URL}/roles/scopeTags`;
 export const GROUP_POLICY_SETTINGS_ENDPOINT = `${POLICIES_ENDPOINT}/group/settings`;
