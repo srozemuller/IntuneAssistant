@@ -62,7 +62,8 @@ interface UploadedPolicy {
 interface NormalizedSetting {
     id: string;
     displayName: string;   // friendly name if available, else raw id
-    value: string;         // raw value (used for matching)
+    value: string;         // human-readable value (settingValue from tenant, or suffix from upload)
+    valueId?: string;      // full option item ID (settingValueId from tenant, or raw value from upload)
     friendlyValue?: string; // human-readable label for the value
     childSettings?: { name: string; value: string; friendlyName?: string; friendlyValue?: string }[];
 }
@@ -73,6 +74,7 @@ interface TenantSettingsCatalogSetting {
     policyName: string;
     settingName: string | null;
     settingValue: string | null;
+    settingValueId: string | null;   // full option item ID — use this for ID-based comparison
     childSettingInfo: { name: string; value: string | null }[] | null;
     settingDefinitions: { id: string; name: string | null; displayName: string | null }[] | null;
 }
@@ -135,7 +137,8 @@ interface ResolveApiResponse {
 
 interface SettingOccurrence {
     tenantPolicy: TenantPolicy;
-    tenantValue: string;
+    tenantValue: string;       // human-readable (settingValue)
+    tenantValueId?: string;    // full option item ID (settingValueId) — used for comparison
     friendlyTenantValue?: string;
     status: 'match' | 'conflict';
 }
@@ -156,6 +159,11 @@ interface PolicyAnalysisSummary {
     missingPercent: number;
     platformMatchedPolicyCount: number;
     totalTenantPoliciesOfKind: number;
+    // assigned (production) breakdown
+    assignedMatchSettings: number;
+    assignedConflictSettings: number;
+    assignedMatchPercent: number;
+    assignedConflictPercent: number;
 }
 
 interface PolicyAnalysis {
@@ -343,7 +351,6 @@ function platformMatches(uploadedPlatform: string, tenantPlatform: string): bool
 function normalizeTenantSettings(policy: TenantPolicy): NormalizedSetting[] {
     if (policy.settings?.length) {
         return policy.settings.map(s => {
-            // Prefer settingName; fall back to displayName from settingDefinitions
             const displayName = s.settingName
                 ?? s.settingDefinitions?.find(d => d.id === s.id)?.displayName
                 ?? s.id;
@@ -351,6 +358,7 @@ function normalizeTenantSettings(policy: TenantPolicy): NormalizedSetting[] {
                 id: s.id,
                 displayName,
                 value: s.settingValue ?? s.childSettingInfo?.filter(c => c.value != null).map(c => `${c.name}: ${c.value}`).join(', ') ?? '',
+                valueId: s.settingValueId ?? undefined,
             };
         });
     }
@@ -369,14 +377,9 @@ function normalizeTenantSettings(policy: TenantPolicy): NormalizedSetting[] {
 
 // ── Value normalization for comparison ────────────────────────────────────────
 //
-// The uploaded JSON stores full option item IDs as choice values, e.g.:
-//   device_vendor_msft_passportforwork_biometrics_facialfeaturesuseenhancedantispoofing_true
-// The tenant API returns simplified values, e.g.: "true", "Enabled", "Not Configured"
-//
-// Resolution order:
-//   1. Use friendlyValue from the options map (if available)
-//   2. Strip the settingId prefix + underscore to get the raw suffix ("_true" → "true")
-//   3. Fall back to the raw value as-is
+// Primary: compare uploaded raw value (full option item ID) against tenant settingValueId.
+// Both are full option item IDs so they can be compared directly as strings.
+// Fallback (DeviceConfig / GroupPolicy): strip the settingId prefix suffix and compare.
 
 function extractOptionSuffix(settingId: string, optionId: string): string {
     const prefix = settingId.toLowerCase() + '_';
@@ -385,10 +388,19 @@ function extractOptionSuffix(settingId: string, optionId: string): string {
     return optionId;
 }
 
-function normalizeForComparison(settingId: string, rawValue: string, friendlyValue?: string): string {
-    if (friendlyValue) return friendlyValue.toLowerCase().trim();
-    const suffix = extractOptionSuffix(settingId, rawValue);
-    return suffix.toLowerCase().trim();
+function valuesMatch(
+    settingId: string,
+    uploadedRawValue: string,
+    tenantValue: string,
+    tenantValueId?: string,
+): boolean {
+    // Best path: compare full option IDs directly
+    if (tenantValueId) {
+        return uploadedRawValue.toLowerCase() === tenantValueId.toLowerCase();
+    }
+    // Fallback: strip prefix from uploaded value and compare against tenant human-readable value
+    const uploadedSuffix = extractOptionSuffix(settingId, uploadedRawValue);
+    return uploadedSuffix.toLowerCase().trim() === tenantValue.toLowerCase().trim();
 }
 
 // ── Analysis engine ───────────────────────────────────────────────────────────
@@ -396,48 +408,60 @@ function normalizeForComparison(settingId: string, rawValue: string, friendlyVal
 function analyzePolicy(uploaded: UploadedPolicy, allTenantPolicies: TenantPolicy[]): PolicyAnalysis {
     const platformMatchedPolicies = allTenantPolicies.filter(tp => platformMatches(uploaded.platform, tp.platform));
 
-    // Build map: settingId (lower) → [{policy, value, displayName}]
-    const tenantSettingMap = new Map<string, { policy: TenantPolicy; value: string; displayName: string }[]>();
+    // Build map: settingId (lower) → [{policy, value, valueId, displayName}]
+    const tenantSettingMap = new Map<string, { policy: TenantPolicy; value: string; valueId?: string; displayName: string }[]>();
     for (const tp of platformMatchedPolicies) {
         for (const ts of normalizeTenantSettings(tp)) {
             const key = ts.id.toLowerCase();
             if (!tenantSettingMap.has(key)) tenantSettingMap.set(key, []);
-            tenantSettingMap.get(key)!.push({ policy: tp, value: ts.value, displayName: ts.displayName });
+            tenantSettingMap.get(key)!.push({ policy: tp, value: ts.value, valueId: ts.valueId, displayName: ts.displayName });
         }
     }
 
     const settingAnalyses: SettingAnalysis[] = uploaded.settings.map(setting => {
         const hits = tenantSettingMap.get(setting.id.toLowerCase()) ?? [];
 
-        // Resolve friendly setting name: uploaded JSON rarely has settingDefinitions,
-        // but the tenant API always returns settingName — use it as fallback.
+        // Resolve friendly setting name from tenant data
         const resolvedDisplayName =
             setting.displayName !== setting.id
                 ? setting.displayName
                 : hits.find(h => h.displayName && h.displayName !== setting.id)?.displayName
                     ?? setting.id;
 
-        const enrichedSetting: NormalizedSetting = resolvedDisplayName !== setting.displayName
-            ? { ...setting, displayName: resolvedDisplayName }
+        // Resolve friendly value for the UPLOADED setting:
+        // 1. Already set from options map in uploaded JSON
+        // 2. Borrow tenant's human-readable settingValue when its settingValueId matches our raw value
+        // 3. Suffix-strip fallback (handled by FriendlyValue component)
+        let resolvedFriendlyValue = setting.friendlyValue;
+        if (!resolvedFriendlyValue) {
+            const matchingHit = hits.find(h =>
+                h.valueId && h.valueId.toLowerCase() === setting.value.toLowerCase()
+            );
+            if (matchingHit && matchingHit.value && matchingHit.value !== setting.value) {
+                resolvedFriendlyValue = matchingHit.value;
+            }
+        }
+
+        const enrichedSetting: NormalizedSetting = (resolvedDisplayName !== setting.displayName || resolvedFriendlyValue !== setting.friendlyValue)
+            ? { ...setting, displayName: resolvedDisplayName, friendlyValue: resolvedFriendlyValue }
             : setting;
 
         if (hits.length === 0) return { setting: enrichedSetting, occurrences: [], isMissing: true };
         const defEntry = uploaded.definitionMap.get(setting.id.toLowerCase());
 
-        // Normalize the uploaded value for comparison
-        const uploadedNorm = normalizeForComparison(setting.id, setting.value, setting.friendlyValue);
-
-        const occurrences: SettingOccurrence[] = hits.map(({ policy, value }) => {
-            const fv = defEntry?.optionMap.get(value.toLowerCase());
-            const tenantNorm = value.toLowerCase().trim();
-            const status = uploadedNorm === tenantNorm ? 'match' : 'conflict';
+        const occurrences: SettingOccurrence[] = hits.map(({ policy, value, valueId }) => {
+            const fv = defEntry?.optionMap.get((valueId ?? value).toLowerCase());
+            const status = valuesMatch(setting.id, setting.value, value, valueId) ? 'match' : 'conflict';
             return {
                 tenantPolicy: policy,
                 tenantValue: value,
+                tenantValueId: valueId,
                 friendlyTenantValue: fv && fv !== value ? fv : undefined,
                 status,
             };
         });
+        // Sort occurrences: assigned (production) first
+        occurrences.sort((a, b) => (b.tenantPolicy.isAssigned ? 1 : 0) - (a.tenantPolicy.isAssigned ? 1 : 0));
         return { setting: enrichedSetting, occurrences, isMissing: false };
     });
 
@@ -445,6 +469,15 @@ function analyzePolicy(uploaded: UploadedPolicy, allTenantPolicies: TenantPolicy
     const matchSettings = settingAnalyses.filter(sa => !sa.isMissing && sa.occurrences.some(o => o.status === 'match')).length;
     const conflictSettings = settingAnalyses.filter(sa => !sa.isMissing && sa.occurrences.every(o => o.status === 'conflict')).length;
     const missingSettings = settingAnalyses.filter(sa => sa.isMissing).length;
+
+    // Assigned (production) breakdown — only considers occurrences from assigned policies
+    const assignedMatchSettings = settingAnalyses.filter(sa =>
+        !sa.isMissing && sa.occurrences.some(o => o.status === 'match' && o.tenantPolicy.isAssigned)
+    ).length;
+    const assignedConflictSettings = settingAnalyses.filter(sa =>
+        !sa.isMissing && sa.occurrences.filter(o => o.tenantPolicy.isAssigned).length > 0 &&
+        sa.occurrences.filter(o => o.tenantPolicy.isAssigned).every(o => o.status === 'conflict')
+    ).length;
 
     return {
         uploadedPolicy: uploaded,
@@ -460,6 +493,10 @@ function analyzePolicy(uploaded: UploadedPolicy, allTenantPolicies: TenantPolicy
             missingPercent: totalSettings === 0 ? 0 : Math.round((missingSettings / totalSettings) * 100),
             platformMatchedPolicyCount: platformMatchedPolicies.length,
             totalTenantPoliciesOfKind: allTenantPolicies.length,
+            assignedMatchSettings,
+            assignedConflictSettings,
+            assignedMatchPercent: totalSettings === 0 ? 0 : Math.round((assignedMatchSettings / totalSettings) * 100),
+            assignedConflictPercent: totalSettings === 0 ? 0 : Math.round((assignedConflictSettings / totalSettings) * 100),
         },
     };
 }
@@ -501,6 +538,56 @@ function ProgressBar({ value, color }: { value: number; color: string }) {
     );
 }
 
+/** Skeleton loading banner shown while fetching / resolving */
+function LoadingBanner({ phase, onCancel }: { phase: 'fetching' | 'resolving'; onCancel: () => void }) {
+    const phaseLabel = phase === 'fetching' ? 'Fetching tenant policies…' : 'Resolving setting definitions…';
+    const phaseDesc = phase === 'fetching'
+        ? 'Downloading policy data from your tenant. This may take a moment.'
+        : 'Looking up friendly names for settings not found in the tenant.';
+
+    return (
+        <Card className="border overflow-hidden">
+            <CardContent className="p-4 space-y-4">
+                {/* Phase label + cancel */}
+                <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                        <p className="text-sm font-semibold">{phaseLabel}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{phaseDesc}</p>
+                    </div>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={onCancel}
+                        className="flex-shrink-0 border-destructive/50 text-destructive hover:bg-destructive/10 gap-1.5"
+                    >
+                        <XCircle className="h-4 w-4" />
+                        Cancel
+                    </Button>
+                </div>
+
+                {/* Skeleton header row */}
+                <div className="flex gap-3 items-center px-1">
+                    <div className="h-3 w-2/5 rounded bg-muted animate-pulse" />
+                    <div className="h-3 w-1/5 rounded bg-muted animate-pulse" />
+                    <div className="h-3 w-16 rounded bg-muted animate-pulse ml-auto" />
+                </div>
+
+                {/* Skeleton data rows — staggered opacity for wave effect */}
+                {([1, 0.65, 0.4, 0.2] as const).map((opacity, i) => (
+                    <div key={i} className="flex gap-3 items-center px-1" style={{ opacity }}>
+                        <div className="h-8 w-8 rounded bg-muted animate-pulse flex-shrink-0" />
+                        <div className="flex-1 space-y-1.5 min-w-0">
+                            <div className="h-2.5 rounded bg-muted animate-pulse" style={{ width: `${60 + (i * 7) % 25}%` }} />
+                            <div className="h-2 rounded bg-muted/60 animate-pulse" style={{ width: `${35 + (i * 11) % 20}%` }} />
+                        </div>
+                        <div className="h-5 w-20 rounded-full bg-muted animate-pulse flex-shrink-0" />
+                    </div>
+                ))}
+            </CardContent>
+        </Card>
+    );
+}
+
 /** Turns a raw setting ID into a best-effort human readable string by taking
  *  the last meaningful segment (after known vendor prefixes) and title-casing it. */
 function humanizeSettingId(id: string): string {
@@ -528,14 +615,39 @@ function FriendlyName({ id, friendly }: { id: string; friendly?: string }) {
     );
 }
 
-/** Shows the friendly value prominently; raw value underneath if different */
-function FriendlyValue({ raw, friendly }: { raw: string; friendly?: string }) {
+/** Shows the value in the most readable form:
+ *  - If friendlyValue and suffix both exist → "suffix (friendlyValue)"
+ *  - If only friendlyValue → "friendlyValue"
+ *  - If only suffix → "suffix"
+ *  Raw option ID shown in muted small text underneath when it differs from the display. */
+function FriendlyValue({ raw, friendly, settingId }: { raw: string; friendly?: string; settingId?: string }) {
     if (!raw) return <span className="italic text-muted-foreground text-xs">(empty)</span>;
-    if (!friendly || friendly === raw) return <span className="text-xs break-all">{raw}</span>;
+
+    const suffix = settingId && raw.toLowerCase().startsWith(settingId.toLowerCase() + '_')
+        ? raw.slice(settingId.length + 1)
+        : null;
+
+    // Build primary display: "suffix (friendly)" or "friendly" or "suffix" or raw
+    let primary: string;
+    if (suffix && friendly && friendly !== suffix && friendly !== raw) {
+        primary = `${suffix} (${friendly})`;
+    } else if (friendly && friendly !== raw) {
+        primary = friendly;
+    } else if (suffix && suffix !== raw) {
+        primary = suffix;
+    } else {
+        primary = raw;
+    }
+
+    // Always show raw underneath when it differs from primary
+    const showRaw = primary !== raw;
+
     return (
         <div className="min-w-0">
-            <span className="text-xs font-medium">{friendly}</span>
-            <span className="block font-mono text-[10px] text-muted-foreground/60 break-all leading-tight">{raw}</span>
+            <span className="text-xs font-medium break-words">{primary}</span>
+            {showRaw && (
+                <span className="block font-mono text-[10px] text-muted-foreground/60 break-all leading-tight">{raw}</span>
+            )}
         </div>
     );
 }
@@ -552,13 +664,16 @@ export default function ConfigurationComparePage() {
     const [resolvedDefinitionsCache, setResolvedDefinitionsCache] = useState<Map<string, ResolvedDefinition>>(new Map());
     const [hasFetched, setHasFetched] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingPhase, setLoadingPhase] = useState<'idle' | 'fetching' | 'resolving'>('idle');
     const [error, setError] = useState<string | null>(null);
     const [expandedPolicies, setExpandedPolicies] = useState<Set<string>>(new Set());
     const [expandedSettings, setExpandedSettings] = useState<Set<string>>(new Set());
     const [settingFilter, setSettingFilter] = useState<'all' | 'match' | 'conflict' | 'missing'>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'detail' | 'summary'>('detail');
+    const [uploadCollapsed, setUploadCollapsed] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const abortRef = useRef<AbortController | null>(null);
 
     // ── Derived analyses via useMemo ──────────────────────────────────────────
     const analyses = useMemo<PolicyAnalysis[]>(() => {
@@ -567,25 +682,45 @@ export default function ConfigurationComparePage() {
             const tenantPolicies = tenantPoliciesCache.get(uploaded.kind) ?? [];
             const analysis = analyzePolicy(uploaded, tenantPolicies);
 
-            // Enrich missing settings with resolved definitions
+            // Enrich settings with resolved definitions (missing + non-missing with option-ID values)
             if (resolvedDefinitionsCache.size === 0) return analysis;
+
             const enrichedSettingAnalyses = analysis.settingAnalyses.map(sa => {
-                if (!sa.isMissing) return sa;
                 const resolved = resolvedDefinitionsCache.get(sa.setting.id.toLowerCase());
                 if (!resolved) return sa;
+
+                // Build option map: full itemId (lower) → displayName
                 const optionMap = new Map<string, string>();
                 resolved.options?.forEach(o => optionMap.set(o.itemId.toLowerCase(), o.displayName));
-                const friendlyValue = optionMap.get(sa.setting.value.toLowerCase())
-                    ?? (sa.setting.value.toLowerCase().startsWith(sa.setting.id.toLowerCase() + '_')
-                        ? sa.setting.value.slice(sa.setting.id.length + 1)
-                        : undefined);
+
+                // Resolve friendly value from options map
+                const rawLower = sa.setting.value.toLowerCase();
+                const suffix = rawLower.startsWith(sa.setting.id.toLowerCase() + '_')
+                    ? sa.setting.value.slice(sa.setting.id.length + 1)
+                    : null;
+                const resolvedFriendlyValue =
+                    optionMap.get(rawLower)                                       // exact full itemId → displayName e.g. "Enabled"
+                    ?? (suffix ? optionMap.get(suffix.toLowerCase()) : undefined) // bare suffix → displayName
+                    ?? suffix                                                      // bare suffix as last resort e.g. "1"
+                    ?? undefined;
+
+                // Always prefer a proper displayName from the options map over a bare suffix.
+                // e.g. replace "1" with "Enabled" when the map has a better label.
+                const currentFriendly = sa.setting.friendlyValue;
+                const isBareShortSuffix = currentFriendly !== undefined && /^[\w]{1,5}$/.test(currentFriendly);
+                const friendlyValue =
+                    resolvedFriendlyValue && resolvedFriendlyValue !== sa.setting.value &&
+                    (!currentFriendly || isBareShortSuffix || currentFriendly === resolvedFriendlyValue)
+                        ? resolvedFriendlyValue
+                        : currentFriendly;
+
+                // Only update displayName for missing settings (non-missing already have it from tenant)
+                const displayName = sa.isMissing ? resolved.displayName : sa.setting.displayName;
+
+                if (friendlyValue === sa.setting.friendlyValue && displayName === sa.setting.displayName) return sa;
                 return {
                     ...sa,
-                    setting: {
-                        ...sa.setting,
-                        displayName: resolved.displayName,
-                        friendlyValue: friendlyValue !== sa.setting.value ? friendlyValue : sa.setting.friendlyValue,
-                    },
+                    setting: { ...sa.setting, displayName, friendlyValue },
                 };
             });
             return { ...analysis, settingAnalyses: enrichedSettingAnalyses };
@@ -673,9 +808,23 @@ export default function ConfigurationComparePage() {
     };
 
     // ── Fetch / refresh ───────────────────────────────────────────────────────
+    const cancelFetch = () => {
+        abortRef.current?.abort();
+        abortRef.current = null;
+        setLoading(false);
+        setLoadingPhase('idle');
+    };
+
     const fetchTenantData = async (clearCache = false) => {
         if (!uploadedPolicies.length || !accounts.length) return;
+
+        // Cancel any in-flight request
+        abortRef.current?.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+
         setLoading(true);
+        setLoadingPhase('fetching');
         setError(null);
 
         const cache: Map<PolicyKind, TenantPolicy[]> = clearCache ? new Map() : new Map(tenantPoliciesCache);
@@ -684,54 +833,80 @@ export default function ConfigurationComparePage() {
 
         try {
             await Promise.all(toFetch.map(async kind => {
+                if (controller.signal.aborted) return;
                 const endpoint = endpointForKind(kind);
                 if (!endpoint) return;
                 try {
-                    const response = await request<ApiResponse>(endpoint, { method: 'GET' });
+                    const response = await request<ApiResponse>(endpoint, { method: 'GET', signal: controller.signal });
                     cache.set(kind, response?.data?.data ?? []);
-                } catch {
+                } catch (e) {
+                    if ((e as Error)?.name === 'AbortError') throw e;
                     cache.set(kind, []);
                 }
             }));
+
+            if (controller.signal.aborted) return;
+
             setTenantPoliciesCache(cache);
             setHasFetched(true);
+            setUploadCollapsed(true);
             setExpandedPolicies(new Set(uploadedPolicies.map(p => p.fileName)));
 
-            // ── Resolve missing setting definitions ──────────────────────────
-            // Run a quick analysis with the new cache to find all missing IDs
+            // ── Resolve setting definitions (missing + any with option-ID values) ──
             const quickAnalyses = uploadedPolicies.map(uploaded => {
                 const tenantPolicies = cache.get(uploaded.kind) ?? [];
                 return analyzePolicy(uploaded, tenantPolicies);
             });
-            const missingIds = new Set<string>();
+            const settingIdsToResolve = new Set<string>();
             for (const a of quickAnalyses) {
                 for (const sa of a.settingAnalyses) {
-                    if (sa.isMissing) missingIds.add(sa.setting.id);
+                    // Always resolve missing settings
+                    if (sa.isMissing) {
+                        settingIdsToResolve.add(sa.setting.id);
+                        continue;
+                    }
+                    // Also resolve when the uploaded value looks like a full option item ID
+                    // (starts with settingId + '_') — even if a bare suffix is already set,
+                    // we want the proper displayName (e.g. "Enabled") not just "1"
+                    if (sa.setting.value.toLowerCase().startsWith(sa.setting.id.toLowerCase() + '_')) {
+                        settingIdsToResolve.add(sa.setting.id);
+                    }
                 }
             }
 
             const existingCache = clearCache ? new Map<string, ResolvedDefinition>() : new Map(resolvedDefinitionsCache);
-            const toResolve = [...missingIds].filter(id => !existingCache.has(id.toLowerCase()));
+            const toResolve = [...settingIdsToResolve].filter(id => !existingCache.has(id.toLowerCase()));
 
-            if (toResolve.length > 0) {
+            if (toResolve.length > 0 && !controller.signal.aborted) {
+                setLoadingPhase('resolving');
                 try {
                     const resolveResponse = await request<ResolveApiResponse>(
                         SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT,
-                        { method: 'POST', body: JSON.stringify(toResolve) }
+                        { method: 'POST', body: JSON.stringify(toResolve), signal: controller.signal }
                     );
-                    const definitions: ResolvedDefinition[] = resolveResponse?.data?.data ?? [];
-                    for (const def of definitions) {
-                        existingCache.set(def.id.toLowerCase(), def);
+                    if (!controller.signal.aborted) {
+                        const definitions: ResolvedDefinition[] = resolveResponse?.data?.data ?? [];
+                        for (const def of definitions) {
+                            existingCache.set(def.id.toLowerCase(), def);
+                        }
+                        setResolvedDefinitionsCache(new Map(existingCache));
                     }
-                    setResolvedDefinitionsCache(new Map(existingCache));
-                } catch {
-                    // resolve failed — analyses will still work, just without friendly names for missing settings
+                } catch (e) {
+                    if ((e as Error)?.name !== 'AbortError') {
+                        // resolve failed silently — analyses still work without friendly names
+                    }
                 }
             }
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Fetch failed');
+            if ((err as Error)?.name !== 'AbortError') {
+                setError(err instanceof Error ? err.message : 'Fetch failed');
+            }
         } finally {
-            setLoading(false);
+            if (!controller.signal.aborted) {
+                abortRef.current = null;
+                setLoading(false);
+                setLoadingPhase('idle');
+            }
         }
     };
 
@@ -800,11 +975,18 @@ export default function ConfigurationComparePage() {
                 </div>
                 {analyses.length > 0 && (
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => fetchTenantData(true)} disabled={loading}>
-                            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                            Refresh Tenant Data
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={exportResults}>
+                        {loading ? (
+                            <Button variant="outline" size="sm" onClick={cancelFetch} className="border-destructive/50 text-destructive hover:bg-destructive/10 gap-1.5">
+                                <XCircle className="h-4 w-4" />
+                                Cancel
+                            </Button>
+                        ) : (
+                            <Button variant="outline" size="sm" onClick={() => fetchTenantData(true)} disabled={loading}>
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                                Refresh Tenant Data
+                            </Button>
+                        )}
+                        <Button variant="outline" size="sm" onClick={exportResults} disabled={loading}>
                             <Download className="h-4 w-4 mr-2" />
                             Export CSV
                         </Button>
@@ -814,20 +996,40 @@ export default function ConfigurationComparePage() {
 
             {/* Upload Zone */}
             <Card>
-                <CardHeader>
-                    <CardTitle className="text-base">Upload Policy Files</CardTitle>
-                    <CardDescription>
-                        Drop exported Intune policy JSON files. Policy type and platform are auto-detected. Tenant data
-                        is fetched once and reused — use <strong>Refresh Tenant Data</strong> to re-fetch.
-                    </CardDescription>
+                <CardHeader
+                    className="cursor-pointer select-none"
+                    onClick={() => setUploadCollapsed(c => !c)}
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                            <CardTitle className="text-base flex items-center gap-2">
+                                {uploadCollapsed ? <ChevronRight className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                                Upload Policy Files
+                                {uploadCollapsed && uploadedPolicies.length > 0 && (
+                                    <span className="ml-2 flex gap-1.5 flex-wrap">
+                                        {uploadedPolicies.map(p => (
+                                            <Badge key={p.fileName} className={`text-xs ${kindColor[p.kind]}`}>{p.name}</Badge>
+                                        ))}
+                                    </span>
+                                )}
+                            </CardTitle>
+                            {!uploadCollapsed && (
+                                <CardDescription className="mt-1">
+                                    Drop exported Intune policy JSON files. Policy type and platform are auto-detected. Tenant data
+                                    is fetched once and reused — use <strong>Refresh Tenant Data</strong> to re-fetch.
+                                </CardDescription>
+                            )}
+                        </div>
+                    </div>
                 </CardHeader>
+                {!uploadCollapsed && (
                 <CardContent className="space-y-4">
                     <div
                         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/30'}`}
                         onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={handleDrop}
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }}
                     >
                         <Upload className={`h-10 w-10 mx-auto mb-3 ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
                         <p className="font-medium text-sm">{isDragging ? 'Drop files here' : 'Click or drag & drop JSON files here'}</p>
@@ -850,7 +1052,7 @@ export default function ConfigurationComparePage() {
                                         </div>
                                         <p className="text-xs text-muted-foreground mt-0.5">{policy.fileName} · {policy.settings.length} settings detected</p>
                                     </div>
-                                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => removeUploadedPolicy(policy.fileName)}>
+                                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={e => { e.stopPropagation(); removeUploadedPolicy(policy.fileName); }}>
                                         <X className="h-4 w-4" />
                                     </Button>
                                 </div>
@@ -858,13 +1060,13 @@ export default function ConfigurationComparePage() {
                         </div>
                     )}
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3" onClick={e => e.stopPropagation()}>
                         <Button onClick={() => fetchTenantData(false)} disabled={!uploadedPolicies.length || loading || !accounts.length} className="gap-2">
-                            {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                            {loading ? 'Fetching...' : hasFetched ? 'Re-run Analysis' : 'Compare Against Tenant'}
+                            <Search className="h-4 w-4" />
+                            {hasFetched ? 'Re-run Analysis' : 'Compare Against Tenant'}
                         </Button>
                         {uploadedPolicies.length > 0 && (
-                            <Button variant="outline" size="sm" onClick={() => { setUploadedPolicies([]); setHasFetched(false); setResolvedDefinitionsCache(new Map()); }}>
+                            <Button variant="outline" size="sm" onClick={() => { setUploadedPolicies([]); setHasFetched(false); setResolvedDefinitionsCache(new Map()); setUploadCollapsed(false); }}>
                                 Clear All
                             </Button>
                         )}
@@ -875,7 +1077,13 @@ export default function ConfigurationComparePage() {
                         )}
                     </div>
                 </CardContent>
+                )}
             </Card>
+
+            {/* Loading banner with cancel */}
+            {loading && loadingPhase !== 'idle' && (
+                <LoadingBanner phase={loadingPhase} onCancel={cancelFetch} />
+            )}
 
             {error && (
                 <Card className="border-destructive">
@@ -1030,11 +1238,17 @@ export default function ConfigurationComparePage() {
                                                                 <p className="text-lg font-bold text-green-600 dark:text-green-400">{a.summary.matchSettings}</p>
                                                                 <p className="text-[10px] text-green-700 dark:text-green-300">match</p>
                                                                 <p className="text-[10px] text-muted-foreground">{a.summary.matchPercent}%</p>
+                                                                {a.summary.assignedMatchSettings > 0 && (
+                                                                    <p className="text-[10px] text-primary font-medium mt-0.5">{a.summary.assignedMatchSettings} assigned</p>
+                                                                )}
                                                             </div>
                                                             <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-2 py-1.5 text-center">
                                                                 <p className="text-lg font-bold text-amber-600 dark:text-amber-400">{a.summary.conflictSettings}</p>
                                                                 <p className="text-[10px] text-amber-700 dark:text-amber-300">conflict</p>
                                                                 <p className="text-[10px] text-muted-foreground">{a.summary.conflictPercent}%</p>
+                                                                {a.summary.assignedConflictSettings > 0 && (
+                                                                    <p className="text-[10px] text-amber-600 font-medium mt-0.5">{a.summary.assignedConflictSettings} assigned</p>
+                                                                )}
                                                             </div>
                                                             <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-2 py-1.5 text-center">
                                                                 <p className="text-lg font-bold text-red-600 dark:text-red-400">{a.summary.missingSettings}</p>
@@ -1234,18 +1448,39 @@ export default function ConfigurationComparePage() {
                                                                                 }
                                                                                 <FriendlyName id={sa.setting.id} friendly={sa.setting.displayName !== sa.setting.id ? sa.setting.displayName : undefined} />
                                                                             </div>
-                                                                            <FriendlyValue raw={sa.setting.value} friendly={sa.setting.friendlyValue} />
-                                                                            <div className="w-44 flex justify-end pr-2">
-                                                                                {status === 'match' && (
-                                                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium text-green-600 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-900/20 dark:border-green-800">
-                                                                                        <CheckCircle2 className="h-3 w-3" />Match ({sa.occurrences.filter(o => o.status === 'match').length} policies)
-                                                                                    </span>
-                                                                                )}
-                                                                                {status === 'conflict' && (
-                                                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-800">
-                                                                                        <AlertTriangle className="h-3 w-3" />Conflict ({sa.occurrences.length} policies)
-                                                                                    </span>
-                                                                                )}
+                                                                            <FriendlyValue raw={sa.setting.value} friendly={sa.setting.friendlyValue} settingId={sa.setting.id} />
+                                                                            <div className="w-44 flex flex-col items-end gap-0.5 pr-2">
+                                                                                {status === 'match' && (() => {
+                                                                                    const matchCount = sa.occurrences.filter(o => o.status === 'match').length;
+                                                                                    const assignedMatch = sa.occurrences.filter(o => o.status === 'match' && o.tenantPolicy.isAssigned).length;
+                                                                                    return (
+                                                                                        <>
+                                                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium text-green-600 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-900/20 dark:border-green-800">
+                                                                                                <CheckCircle2 className="h-3 w-3" />Match ({matchCount})
+                                                                                            </span>
+                                                                                            {assignedMatch > 0 && (
+                                                                                                <span className="text-[10px] text-primary font-medium flex items-center gap-0.5">
+                                                                                                    <CheckCircle2 className="h-2.5 w-2.5" />{assignedMatch} assigned
+                                                                                                </span>
+                                                                                            )}
+                                                                                        </>
+                                                                                    );
+                                                                                })()}
+                                                                                {status === 'conflict' && (() => {
+                                                                                    const assignedConflict = sa.occurrences.filter(o => o.tenantPolicy.isAssigned && o.status === 'conflict').length;
+                                                                                    return (
+                                                                                        <>
+                                                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-800">
+                                                                                                <AlertTriangle className="h-3 w-3" />Conflict ({sa.occurrences.length})
+                                                                                            </span>
+                                                                                            {assignedConflict > 0 && (
+                                                                                                <span className="text-[10px] text-amber-600 font-medium flex items-center gap-0.5">
+                                                                                                    <AlertTriangle className="h-2.5 w-2.5" />{assignedConflict} assigned
+                                                                                                </span>
+                                                                                            )}
+                                                                                        </>
+                                                                                    );
+                                                                                })()}
                                                                                 {status === 'missing' && (
                                                                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:border-red-800">
                                                                                         <XCircle className="h-3 w-3" />Not in Tenant
@@ -1266,10 +1501,29 @@ export default function ConfigurationComparePage() {
                                                                             <span className="block font-mono text-[10px] text-muted-foreground/60 break-all leading-tight">{sa.setting.id}</span>
                                                                         )}
                                                                         <span className="block text-[10px] text-muted-foreground mt-0.5">
-                                                                            Uploaded value: <strong>{sa.setting.friendlyValue ?? sa.setting.value}</strong>
-                                                                            {sa.setting.friendlyValue && sa.setting.friendlyValue !== sa.setting.value && (
-                                                                                <span className="font-mono ml-1 opacity-60">({sa.setting.value})</span>
-                                                                            )}
+                                                                            {(() => {
+                                                                                const suffix = sa.setting.value.toLowerCase().startsWith(sa.setting.id.toLowerCase() + '_')
+                                                                                    ? sa.setting.value.slice(sa.setting.id.length + 1)
+                                                                                    : null;
+                                                                                const friendly = sa.setting.friendlyValue;
+                                                                                let displayVal: string;
+                                                                                if (suffix && friendly && friendly !== suffix && friendly !== sa.setting.value) {
+                                                                                    displayVal = `${suffix} (${friendly})`;
+                                                                                } else if (friendly && friendly !== sa.setting.value) {
+                                                                                    displayVal = friendly;
+                                                                                } else {
+                                                                                    displayVal = suffix ?? sa.setting.value;
+                                                                                }
+                                                                                const rawDiffers = displayVal !== sa.setting.value;
+                                                                                return (
+                                                                                    <>
+                                                                                        Uploaded value: <strong>{displayVal}</strong>
+                                                                                        {rawDiffers && (
+                                                                                            <span className="font-mono ml-1 opacity-60">({sa.setting.value})</span>
+                                                                                        )}
+                                                                                    </>
+                                                                                );
+                                                                            })()}
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -1278,21 +1532,26 @@ export default function ConfigurationComparePage() {
                                                                     <span>Tenant Value</span>
                                                                     <span className="w-44 text-right pr-2">Match?</span>
                                                                 </div>
-                                                                                {sa.occurrences.map((occ, j) => (
-                                                                                    <div key={j} className={`grid grid-cols-[2fr_1fr_auto] gap-2 px-8 py-2 text-xs items-center border-t ${occ.status === 'match' ? 'bg-green-50/20 dark:bg-green-900/5' : 'bg-amber-50/20 dark:bg-amber-900/5'}`}>
-                                                                                        <div className="flex items-center gap-2 min-w-0">
-                                                                                            <span className="font-medium truncate">{occ.tenantPolicy.name}</span>
-                                                                                            {occ.tenantPolicy.platform && <Badge variant="outline" className="text-xs flex-shrink-0">{occ.tenantPolicy.platform}</Badge>}
-                                                                                        </div>
-                                                                                        <FriendlyValue raw={occ.tenantValue} friendly={occ.friendlyTenantValue} />
-                                                                                        <div className="w-44 flex justify-end pr-2">
-                                                                                            {occ.status === 'match'
-                                                                                                ? <span className="inline-flex items-center gap-1 text-green-600 dark:text-green-400"><CheckCircle2 className="h-3 w-3" />Match</span>
-                                                                                                : <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400"><AlertTriangle className="h-3 w-3" />Conflict</span>
-                                                                                            }
-                                                                                        </div>
-                                                                                    </div>
-                                                                                ))}
+                                                                {sa.occurrences.map((occ, j) => (
+                                                                    <div key={j} className={`grid grid-cols-[2fr_1fr_auto] gap-2 px-8 py-2 text-xs items-center border-t ${occ.tenantPolicy.isAssigned ? 'border-l-2 border-l-primary/60' : ''} ${occ.status === 'match' ? 'bg-green-50/20 dark:bg-green-900/5' : 'bg-amber-50/20 dark:bg-amber-900/5'}`}>
+                                                                        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                                                                            <span className="font-medium truncate">{occ.tenantPolicy.name}</span>
+                                                                            {occ.tenantPolicy.platform && <Badge variant="outline" className="text-xs flex-shrink-0">{occ.tenantPolicy.platform}</Badge>}
+                                                                            {occ.tenantPolicy.isAssigned && (
+                                                                                <Badge className="text-[10px] px-1.5 py-0 flex-shrink-0 bg-primary/10 text-primary border border-primary/30">
+                                                                                    Assigned
+                                                                                </Badge>
+                                                                            )}
+                                                                        </div>
+                                                                        <FriendlyValue raw={occ.tenantValueId ?? occ.tenantValue} friendly={occ.tenantValueId ? occ.tenantValue : occ.friendlyTenantValue} settingId={sa.setting.id} />
+                                                                        <div className="w-44 flex justify-end pr-2">
+                                                                            {occ.status === 'match'
+                                                                                ? <span className="inline-flex items-center gap-1 text-green-600 dark:text-green-400"><CheckCircle2 className="h-3 w-3" />Match</span>
+                                                                                : <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400"><AlertTriangle className="h-3 w-3" />Conflict</span>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
                                                                             </div>
                                                                         )}
                                                                     </div>
