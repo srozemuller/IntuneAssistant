@@ -23,6 +23,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-check-big.js [app-client] (ecmascript) <export default as CheckCircle>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$text$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileText$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/file-text.js [app-client] (ecmascript) <export default as FileText>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$column$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BarChart3$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chart-column.js [app-client] (ecmascript) <export default as BarChart3>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$left$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowLeftRight$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/arrow-left-right.js [app-client] (ecmascript) <export default as ArrowLeftRight>");
 'use client';
 ;
 ;
@@ -65,6 +66,23 @@ function DeviceConfigurationLandingPage() {
             ],
             badge: "SETTINGS",
             highlight: "Advanced"
+        },
+        {
+            title: "Compare External Policies",
+            description: "Upload exported JSON policy files and compare them against your tenant. Identify what's missing, conflicting, or already present — across Settings Catalog, Device Configuration, and Administrative Templates.",
+            href: "/configuration/compare",
+            icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$left$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowLeftRight$3e$__["ArrowLeftRight"],
+            gradient: "from-violet-500 to-pink-500",
+            bgGradient: "from-violet-50 to-pink-50 dark:from-violet-900/20 dark:to-pink-900/20",
+            borderColor: "border-violet-200 dark:border-violet-800",
+            features: [
+                "Upload one or multiple JSON files",
+                "Auto-detect policy type from @odata.type",
+                "Many-to-many comparison against tenant",
+                "Match / Conflict / Missing / Extra breakdown"
+            ],
+            badge: "COMPARE",
+            highlight: "New"
         }
     ];
     const quickFeatures = [
@@ -171,12 +189,12 @@ function DeviceConfigurationLandingPage() {
                                             className: "h-6 w-6"
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/page.tsx",
-                                            lineNumber: 158,
+                                            lineNumber: 176,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 157,
+                                        lineNumber: 175,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -185,13 +203,13 @@ function DeviceConfigurationLandingPage() {
                                         children: "Configuration Management"
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 160,
+                                        lineNumber: 178,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 156,
+                                lineNumber: 174,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -199,7 +217,7 @@ function DeviceConfigurationLandingPage() {
                                 children: "Configuration Management Center"
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 164,
+                                lineNumber: 182,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -207,7 +225,7 @@ function DeviceConfigurationLandingPage() {
                                 children: "Comprehensive Configuration oversight and policy management for your Microsoft Intune environment. Monitor, analyze, and optimize your entire configuration with powerful analytics and insights."
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 167,
+                                lineNumber: 185,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -224,19 +242,19 @@ function DeviceConfigurationLandingPage() {
                                                     className: "mr-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/configuration/page.tsx",
-                                                    lineNumber: 174,
+                                                    lineNumber: 192,
                                                     columnNumber: 33
                                                 }, this),
                                                 "View Policy Overview"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/configuration/page.tsx",
-                                            lineNumber: 173,
+                                            lineNumber: 191,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 172,
+                                        lineNumber: 190,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -253,31 +271,31 @@ function DeviceConfigurationLandingPage() {
                                                     className: "mr-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/configuration/page.tsx",
-                                                    lineNumber: 180,
+                                                    lineNumber: 198,
                                                     columnNumber: 33
                                                 }, this),
                                                 "View Documentation"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/configuration/page.tsx",
-                                            lineNumber: 179,
+                                            lineNumber: 197,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 178,
+                                        lineNumber: 196,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 171,
+                                lineNumber: 189,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/page.tsx",
-                        lineNumber: 155,
+                        lineNumber: 173,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -287,26 +305,26 @@ function DeviceConfigurationLandingPage() {
                                 className: "absolute top-20 right-20 w-64 h-64 rounded-full bg-gradient-to-br from-white to-yellow-200 blur-3xl"
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 189,
+                                lineNumber: 207,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "absolute bottom-20 left-20 w-48 h-48 rounded-full bg-gradient-to-br from-amber-200 to-orange-300 blur-2xl"
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 190,
+                                lineNumber: 208,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/page.tsx",
-                        lineNumber: 188,
+                        lineNumber: 206,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/configuration/page.tsx",
-                lineNumber: 154,
+                lineNumber: 172,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -324,12 +342,12 @@ function DeviceConfigurationLandingPage() {
                                             className: "h-5 w-5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/page.tsx",
-                                            lineNumber: 201,
+                                            lineNumber: 219,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 200,
+                                        lineNumber: 218,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -340,7 +358,7 @@ function DeviceConfigurationLandingPage() {
                                                 children: feature.title
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/page.tsx",
-                                                lineNumber: 204,
+                                                lineNumber: 222,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -348,34 +366,34 @@ function DeviceConfigurationLandingPage() {
                                                 children: feature.description
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/page.tsx",
-                                                lineNumber: 205,
+                                                lineNumber: 223,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 203,
+                                        lineNumber: 221,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 199,
+                                lineNumber: 217,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/configuration/page.tsx",
-                            lineNumber: 198,
+                            lineNumber: 216,
                             columnNumber: 25
                         }, this)
                     }, index, false, {
                         fileName: "[project]/app/configuration/page.tsx",
-                        lineNumber: 197,
+                        lineNumber: 215,
                         columnNumber: 21
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/configuration/page.tsx",
-                lineNumber: 195,
+                lineNumber: 213,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -387,7 +405,7 @@ function DeviceConfigurationLandingPage() {
                                 className: "absolute inset-0 bg-gradient-to-br ".concat(block.bgGradient)
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 217,
+                                lineNumber: 235,
                                 columnNumber: 25
                             }, this),
                             block.highlight && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -397,12 +415,12 @@ function DeviceConfigurationLandingPage() {
                                     children: block.highlight
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/page.tsx",
-                                    lineNumber: 222,
+                                    lineNumber: 240,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 221,
+                                lineNumber: 239,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
@@ -417,12 +435,12 @@ function DeviceConfigurationLandingPage() {
                                                     className: "h-7 w-7"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/configuration/page.tsx",
-                                                    lineNumber: 231,
+                                                    lineNumber: 249,
                                                     columnNumber: 37
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/page.tsx",
-                                                lineNumber: 230,
+                                                lineNumber: 248,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -431,13 +449,13 @@ function DeviceConfigurationLandingPage() {
                                                 children: block.badge
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/page.tsx",
-                                                lineNumber: 233,
+                                                lineNumber: 251,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 229,
+                                        lineNumber: 247,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
@@ -445,7 +463,7 @@ function DeviceConfigurationLandingPage() {
                                         children: block.title
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 237,
+                                        lineNumber: 255,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -453,13 +471,13 @@ function DeviceConfigurationLandingPage() {
                                         children: block.description
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 238,
+                                        lineNumber: 256,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 228,
+                                lineNumber: 246,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -476,7 +494,7 @@ function DeviceConfigurationLandingPage() {
                                                             className: "w-4 h-4 text-green-500 flex-shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/configuration/page.tsx",
-                                                            lineNumber: 249,
+                                                            lineNumber: 267,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -484,18 +502,18 @@ function DeviceConfigurationLandingPage() {
                                                             children: feature
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/configuration/page.tsx",
-                                                            lineNumber: 250,
+                                                            lineNumber: 268,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, featureIndex, true, {
                                                     fileName: "[project]/app/configuration/page.tsx",
-                                                    lineNumber: 248,
+                                                    lineNumber: 266,
                                                     columnNumber: 41
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/page.tsx",
-                                            lineNumber: 246,
+                                            lineNumber: 264,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -511,45 +529,45 @@ function DeviceConfigurationLandingPage() {
                                                             className: "ml-2 h-4 w-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/configuration/page.tsx",
-                                                            lineNumber: 260,
+                                                            lineNumber: 278,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/configuration/page.tsx",
-                                                    lineNumber: 258,
+                                                    lineNumber: 276,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/page.tsx",
-                                                lineNumber: 257,
+                                                lineNumber: 275,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/configuration/page.tsx",
-                                            lineNumber: 256,
+                                            lineNumber: 274,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/configuration/page.tsx",
-                                    lineNumber: 244,
+                                    lineNumber: 262,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 243,
+                                lineNumber: 261,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, index, true, {
                         fileName: "[project]/app/configuration/page.tsx",
-                        lineNumber: 216,
+                        lineNumber: 234,
                         columnNumber: 21
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/configuration/page.tsx",
-                lineNumber: 214,
+                lineNumber: 232,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -567,17 +585,17 @@ function DeviceConfigurationLandingPage() {
                                         className: "h-8 w-8 text-yellow-600 dark:text-yellow-400"
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 309,
+                                        lineNumber: 327,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/configuration/page.tsx",
-                                    lineNumber: 308,
+                                    lineNumber: 326,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 307,
+                                lineNumber: 325,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -585,7 +603,7 @@ function DeviceConfigurationLandingPage() {
                                 children: "Ready to Optimize Your Device Configurations?"
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 312,
+                                lineNumber: 330,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -593,7 +611,7 @@ function DeviceConfigurationLandingPage() {
                                 children: "Take control of your Intune environment with advanced policy management and configuration optimization. Start exploring our comprehensive tools and analytics to streamline your device governance."
                             }, void 0, false, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 313,
+                                lineNumber: 331,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -613,18 +631,18 @@ function DeviceConfigurationLandingPage() {
                                                     className: "ml-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/configuration/page.tsx",
-                                                    lineNumber: 321,
+                                                    lineNumber: 339,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/configuration/page.tsx",
-                                            lineNumber: 319,
+                                            lineNumber: 337,
                                             columnNumber: 33
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 318,
+                                        lineNumber: 336,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -636,48 +654,48 @@ function DeviceConfigurationLandingPage() {
                                                 children: "Get Started"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/page.tsx",
-                                                lineNumber: 325,
+                                                lineNumber: 343,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
                                                 className: "ml-2 h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/configuration/page.tsx",
-                                                lineNumber: 328,
+                                                lineNumber: 346,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/configuration/page.tsx",
-                                        lineNumber: 324,
+                                        lineNumber: 342,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/configuration/page.tsx",
-                                lineNumber: 317,
+                                lineNumber: 335,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/configuration/page.tsx",
-                        lineNumber: 306,
+                        lineNumber: 324,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/configuration/page.tsx",
-                    lineNumber: 305,
+                    lineNumber: 323,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/configuration/page.tsx",
-                lineNumber: 304,
+                lineNumber: 322,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/configuration/page.tsx",
-        lineNumber: 152,
+        lineNumber: 170,
         columnNumber: 9
     }, this);
 }

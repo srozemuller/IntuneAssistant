@@ -296,8 +296,7 @@ export function Sidebar() {
                     href: "/configuration",
                     submenu: [
                         { title: "Config Policies", href: "/configuration/policies" },
-                        { title: "Config Settings", href: "/configuration/settings" },
-                        { title: "Compare External", href: "/configuration/compare" }
+                        { title: "Config Settings", href: "/configuration/settings" }
                     ]
                 },
                 {
@@ -313,7 +312,8 @@ export function Sidebar() {
                     icon: "ArrowLeftRight",
                     href: "/compare",
                     submenu: [
-                        { title: "Policies & Settings", href: "/compare/policies" }
+                        { title: "Policies & Settings", href: "/compare/policies" },
+                        { title: "Compare External", href: "/compare/configuration" },
                     ]
                 }
             ]
