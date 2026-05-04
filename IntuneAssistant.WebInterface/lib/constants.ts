@@ -41,6 +41,7 @@ export const DEVICES_STATS_ENDPOINT = `${DEVICES_ENDPOINT}/stats`;
 export const GROUPS_LIST_ENDPOINT = `${API_BASE_URL}/groups/list`;
 
 export const COMPARE_ENDPOINT = `${API_BASE_URL}/compare`;
+export const COMPARE_SET_ANALYSIS_ENDPOINT = (policyType: string) => `${API_BASE_URL}/compare/${policyType}/set-analysis`;
 export const CUSTOMER_ENDPOINT = `${API_BASE_URL}/customer`;
 export const CUSTOMER_TENANTS_ENDPOINT = `${API_BASE_URL}/customer/tenants`;
 
