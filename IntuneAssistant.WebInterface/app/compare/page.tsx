@@ -12,12 +12,15 @@ import {
     ArrowRight,
     Filter,
     Settings,
+    // Settings already imported below
     CheckCircle,
     AlertTriangle,
     Target,
     Zap,
     Shield,
-    Globe
+    Globe,
+    Tags,
+    Crown,
 } from 'lucide-react';
 
 // Remove the export from the function declaration
@@ -39,36 +42,36 @@ function CompareLandingPage() {
             badge: "CORE"
         },
         {
-            title: "Baseline Analysis",
-            description: "Compare your policies against security baselines and best practice templates to identify configuration gaps.",
-            href: "#",
-            icon: Shield,
-            gradient: "from-emerald-500 to-teal-500",
-            bgGradient: "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20",
-            borderColor: "border-emerald-200 dark:border-emerald-800",
+            title: "Compare External Policies",
+            description: "Upload exported JSON policy files and compare them against your tenant. Identify what's missing, conflicting, or already present — across Settings Catalog, Device Configuration, and Administrative Templates.",
+            href: "/compare/configuration",
+            icon: Settings,
+            gradient: "from-violet-500 to-pink-500",
+            bgGradient: "from-violet-50 to-pink-50 dark:from-violet-900/20 dark:to-pink-900/20",
+            borderColor: "border-violet-200 dark:border-violet-800",
             features: [
-                "Security baseline validation",
-                "Compliance gap analysis",
-                "Best practice recommendations",
+                "Upload one or multiple JSON files",
+                "Auto-detect policy type from @odata.type",
+                "Many-to-many comparison against tenant",
+                "Match / Conflict / Missing / Extra breakdown"
             ],
-            badge: "COMING SOON",
-            disabled: true // Marked as coming soon
+            badge: "CORE"
         },
         {
             title: "Bulk Comparison",
             description: "Compare multiple policies at once to identify patterns, inconsistencies, and standardization opportunities across your environment.",
-            href: "#",
+            href: "/compare/policies",
             icon: ArrowLeftRight,
-            gradient: "from-purple-500 to-pink-500",
-            bgGradient: "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
-            borderColor: "border-purple-200 dark:border-purple-800",
+            gradient: "from-emerald-500 to-cyan-500",
+            bgGradient: "from-emerald-50 to-cyan-50 dark:from-emerald-900/20 dark:to-cyan-900/20",
+            borderColor: "border-emerald-200 dark:border-emerald-800",
             features: [
                 "Multi-policy comparison matrix",
                 "Standardization insights",
                 "Configuration pattern analysis"
             ],
-            badge: "COMING SOON",
-            disabled: true // Marked as coming soon
+            badge: "CORE",
+            disabled: false // Marked as coming soon
         }
     ];
 
