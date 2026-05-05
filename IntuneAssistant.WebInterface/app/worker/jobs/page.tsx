@@ -918,11 +918,11 @@ export default function WorkerJobsPage() {
                                 className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                             >
                                 <option value={1}>Intune Audit Report</option>
-                                <option value={2}>Entra Audit Report</option>
-                                <option value={3}>Compliance Report</option>
-                                <option value={4}>Security Report</option>
-                                <option value={5}>Configuration Backup</option>
-                                <option value={6}>Automated Remediation</option>
+                                {/*<option value={2}>Entra Audit Report</option>*/}
+                                {/*<option value={3}>Compliance Report</option>*/}
+                                {/*<option value={4}>Security Report</option>*/}
+                                {/*<option value={5}>Configuration Backup</option>*/}
+                                {/*<option value={6}>Automated Remediation</option>*/}
                                 <option value={7}>Configuration Drift Monitor</option>
                             </select>
                         </div>
