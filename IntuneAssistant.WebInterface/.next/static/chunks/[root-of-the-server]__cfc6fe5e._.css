@@ -4201,6 +4201,16 @@
     background-color: var(--color-orange-50);
   }
 
+  .bg-orange-50\/20 {
+    background-color: rgba(255, 247, 237, .2);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-orange-50\/20 {
+      background-color: color-mix(in oklab, var(--color-orange-50) 20%, transparent);
+    }
+  }
+
   .bg-orange-50\/40 {
     background-color: rgba(255, 247, 237, .4);
   }
@@ -9101,6 +9111,16 @@
 
   .dark\:bg-orange-900:is(.dark *) {
     background-color: var(--color-orange-900);
+  }
+
+  .dark\:bg-orange-900\/5:is(.dark *) {
+    background-color: rgba(126, 42, 12, .05);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .dark\:bg-orange-900\/5:is(.dark *) {
+      background-color: color-mix(in oklab, var(--color-orange-900) 5%, transparent);
+    }
   }
 
   .dark\:bg-orange-900\/10:is(.dark *) {

@@ -49,6 +49,39 @@ var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.sign
 ;
 ;
 ;
+// Normalize API status strings or numeric enum values → SetAnalysisStatus
+function normalizeSetAnalysisStatus(raw) {
+    // Numeric enum: 0=Overlap,1=Conflict,2=Duplicate,3=MissingInRight,4=MissingInLeft,5=Match,6=NewInLeft,7=NewInRight
+    const numericMap = {
+        0: 'Overlap',
+        1: 'Conflict',
+        2: 'Duplicate',
+        3: 'MissingInRight',
+        4: 'MissingInLeft',
+        5: 'Match',
+        6: 'NewInLeft',
+        7: 'NewInRight'
+    };
+    var _numericMap_raw;
+    if (typeof raw === 'number') return (_numericMap_raw = numericMap[raw]) !== null && _numericMap_raw !== void 0 ? _numericMap_raw : 'Match';
+    if (!raw || typeof raw !== 'string') return 'Match';
+    const map = {
+        'match': 'Match',
+        'duplicate': 'Duplicate',
+        'conflict': 'Conflict',
+        'missinginleft': 'MissingInLeft',
+        'missing in left': 'MissingInLeft',
+        'missinginright': 'MissingInRight',
+        'missing in right': 'MissingInRight',
+        'newinleft': 'NewInLeft',
+        'new in left': 'NewInLeft',
+        'newinright': 'NewInRight',
+        'new in right': 'NewInRight',
+        'overlap': 'Overlap'
+    };
+    var _map_raw_toLowerCase;
+    return (_map_raw_toLowerCase = map[raw.toLowerCase()]) !== null && _map_raw_toLowerCase !== void 0 ? _map_raw_toLowerCase : raw;
+}
 /** How each state reads from the perspective of "should I enable this new policy?" */ const stateLabel = {
     InBothTheSame: 'Already covered',
     InBothDifferent: 'Conflict',
@@ -72,28 +105,28 @@ const stateIcon = {
         className: "h-3 w-3"
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 161,
+        lineNumber: 193,
         columnNumber: 22
     }, ("TURBOPACK compile-time value", void 0)),
     InBothDifferent: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
         className: "h-3 w-3"
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 162,
+        lineNumber: 194,
         columnNumber: 22
     }, ("TURBOPACK compile-time value", void 0)),
     InSource: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$sparkles$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Sparkles$3e$__["Sparkles"], {
         className: "h-3 w-3"
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 163,
+        lineNumber: 195,
         columnNumber: 22
     }, ("TURBOPACK compile-time value", void 0)),
     InChecked: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$minus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MinusCircle$3e$__["MinusCircle"], {
         className: "h-3 w-3"
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 164,
+        lineNumber: 196,
         columnNumber: 22
     }, ("TURBOPACK compile-time value", void 0))
 };
@@ -107,7 +140,7 @@ function StatusBadge(param) {
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 169,
+        lineNumber: 201,
         columnNumber: 9
     }, this);
 }
@@ -123,12 +156,12 @@ function ProgressBar(param) {
             }
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 178,
+            lineNumber: 210,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 177,
+        lineNumber: 209,
         columnNumber: 9
     }, this);
 }
@@ -160,21 +193,21 @@ function LoadingBanner(param) {
                                     children: "Analysing policy overlap…"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 201,
+                                    lineNumber: 233,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                     className: "text-xs text-muted-foreground mt-0.5",
-                                    children: batchProgress ? batchProgress.total === 1 ? 'Running set analysis across all selected policies…' : "Batch ".concat(batchProgress.done, " of ").concat(batchProgress.total, " — comparing ").concat(batchProgress.done * 25, " policies so far") : 'Preparing…'
+                                    children: batchProgress ? batchProgress.total === 1 ? 'Running comparison…' : "Type group ".concat(batchProgress.done, " of ").concat(batchProgress.total, " — comparing policies of the same type") : 'Preparing…'
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 202,
+                                    lineNumber: 234,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 200,
+                            lineNumber: 232,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -187,20 +220,20 @@ function LoadingBanner(param) {
                                     className: "h-4 w-4"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 213,
+                                    lineNumber: 245,
                                     columnNumber: 25
                                 }, this),
                                 "Cancel"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 211,
+                            lineNumber: 243,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 199,
+                    lineNumber: 231,
                     columnNumber: 17
                 }, this),
                 batchProgress && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -215,12 +248,12 @@ function LoadingBanner(param) {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 220,
+                                lineNumber: 252,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 219,
+                            lineNumber: 251,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -235,7 +268,7 @@ function LoadingBanner(param) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 226,
+                                    lineNumber: 258,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -245,19 +278,19 @@ function LoadingBanner(param) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 227,
+                                    lineNumber: 259,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 225,
+                            lineNumber: 257,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 218,
+                    lineNumber: 250,
                     columnNumber: 21
                 }, this),
                 [
@@ -275,7 +308,7 @@ function LoadingBanner(param) {
                                 className: "h-8 w-8 rounded bg-muted animate-pulse flex-shrink-0"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 234,
+                                lineNumber: 266,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -288,7 +321,7 @@ function LoadingBanner(param) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 236,
+                                        lineNumber: 268,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -298,37 +331,37 @@ function LoadingBanner(param) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 237,
+                                        lineNumber: 269,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 235,
+                                lineNumber: 267,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "h-5 w-24 rounded-full bg-muted animate-pulse flex-shrink-0"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 239,
+                                lineNumber: 271,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, i, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 233,
+                        lineNumber: 265,
                         columnNumber: 21
                     }, this))
             ]
         }, void 0, true, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 198,
+            lineNumber: 230,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 197,
+        lineNumber: 229,
         columnNumber: 9
     }, this);
 }
@@ -391,7 +424,7 @@ function ValueCell(param) {
         children: "—"
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 290,
+        lineNumber: 322,
         columnNumber: 24
     }, this);
     // Resolve friendly value
@@ -411,7 +444,7 @@ function ValueCell(param) {
                         children: line
                     }, i, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 304,
+                        lineNumber: 336,
                         columnNumber: 43
                     }, this)),
                 !expanded && hidden > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -427,7 +460,7 @@ function ValueCell(param) {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 305,
+                    lineNumber: 337,
                     columnNumber: 45
                 }, this),
                 expanded && hidden > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -439,13 +472,13 @@ function ValueCell(param) {
                     children: "show less"
                 }, void 0, false, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 306,
+                    lineNumber: 338,
                     columnNumber: 44
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 303,
+            lineNumber: 335,
             columnNumber: 13
         }, this);
     }
@@ -462,7 +495,7 @@ function ValueCell(param) {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 317,
+                    lineNumber: 349,
                     columnNumber: 21
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -474,7 +507,7 @@ function ValueCell(param) {
                     children: "more"
                 }, void 0, false, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 318,
+                    lineNumber: 350,
                     columnNumber: 21
                 }, this)
             ]
@@ -483,12 +516,12 @@ function ValueCell(param) {
             children: primary
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 321,
+            lineNumber: 353,
             columnNumber: 17
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 314,
+        lineNumber: 346,
         columnNumber: 9
     }, this);
 }
@@ -557,7 +590,7 @@ function MultiPolicySelect(param) {
                 children: label
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 358,
+                lineNumber: 390,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -569,7 +602,7 @@ function MultiPolicySelect(param) {
                         children: placeholder
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 362,
+                        lineNumber: 394,
                         columnNumber: 23
                     }, this) : selected.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                             className: "inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded px-1.5 py-0.5 text-xs",
@@ -584,31 +617,31 @@ function MultiPolicySelect(param) {
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 366,
+                                        lineNumber: 398,
                                         columnNumber: 91
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 366,
+                                    lineNumber: 398,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, p.id, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 364,
+                            lineNumber: 396,
                             columnNumber: 25
                         }, this)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                         className: "h-4 w-4 text-muted-foreground ml-auto self-center flex-shrink-0 transition-transform ".concat(open ? 'rotate-180' : '')
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 369,
+                        lineNumber: 401,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 359,
+                lineNumber: 391,
                 columnNumber: 13
             }, this),
             open && !disabled && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -623,7 +656,7 @@ function MultiPolicySelect(param) {
                                     className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 375,
+                                    lineNumber: 407,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -635,18 +668,18 @@ function MultiPolicySelect(param) {
                                     className: "w-full pl-9 pr-3 py-2 text-sm bg-background rounded border-0 outline-none focus:ring-1 focus:ring-primary/50"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 376,
+                                    lineNumber: 408,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 374,
+                            lineNumber: 406,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 373,
+                        lineNumber: 405,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -663,20 +696,20 @@ function MultiPolicySelect(param) {
                                                 className: "h-3 w-3 text-primary-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 388,
+                                                lineNumber: 420,
                                                 columnNumber: 53
                                             }, this),
                                             someSelected && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 className: "block w-2 h-0.5 bg-primary-foreground rounded"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 389,
+                                                lineNumber: 421,
                                                 columnNumber: 54
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 387,
+                                        lineNumber: 419,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -684,7 +717,7 @@ function MultiPolicySelect(param) {
                                         children: allSelected ? 'Deselect all' : "Select all (".concat(filtered.length, ")")
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 391,
+                                        lineNumber: 423,
                                         columnNumber: 33
                                     }, this),
                                     selected.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -696,13 +729,13 @@ function MultiPolicySelect(param) {
                                         children: "Clear"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 395,
+                                        lineNumber: 427,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 383,
+                                lineNumber: 415,
                                 columnNumber: 29
                             }, this),
                             filtered.length > 0 ? filtered.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -715,12 +748,12 @@ function MultiPolicySelect(param) {
                                                 className: "h-3 w-3 text-primary-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 407,
+                                                lineNumber: 439,
                                                 columnNumber: 68
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 406,
+                                            lineNumber: 438,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -731,7 +764,7 @@ function MultiPolicySelect(param) {
                                                     children: p.name
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 410,
+                                                    lineNumber: 442,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -741,21 +774,21 @@ function MultiPolicySelect(param) {
                                                             children: p.policyType
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 412,
+                                                            lineNumber: 444,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             children: "·"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 412,
+                                                            lineNumber: 444,
                                                             columnNumber: 68
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             children: p.platform
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 412,
+                                                            lineNumber: 444,
                                                             columnNumber: 82
                                                         }, this),
                                                         p.isAssigned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -763,50 +796,50 @@ function MultiPolicySelect(param) {
                                                             children: "Assigned"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 413,
+                                                            lineNumber: 445,
                                                             columnNumber: 58
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 411,
+                                                    lineNumber: 443,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 409,
+                                            lineNumber: 441,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, p.id, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 405,
+                                    lineNumber: 437,
                                     columnNumber: 29
                                 }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "p-6 text-center text-sm text-muted-foreground",
                                 children: "No policies found"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 417,
+                                lineNumber: 449,
                                 columnNumber: 30
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 380,
+                        lineNumber: 412,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 372,
+                lineNumber: 404,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 357,
+        lineNumber: 389,
         columnNumber: 9
     }, this);
 }
@@ -857,7 +890,7 @@ function DecisionCard(param) {
                 className: "h-6 w-6 text-green-600"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 462,
+                lineNumber: 494,
                 columnNumber: 105
             }, this),
             text: 'text-green-800 dark:text-green-200',
@@ -869,7 +902,7 @@ function DecisionCard(param) {
                 className: "h-6 w-6 text-amber-600"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 463,
+                lineNumber: 495,
                 columnNumber: 105
             }, this),
             text: 'text-amber-800 dark:text-amber-200',
@@ -881,7 +914,7 @@ function DecisionCard(param) {
                 className: "h-6 w-6 text-red-600"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 464,
+                lineNumber: 496,
                 columnNumber: 105
             }, this),
             text: 'text-red-800 dark:text-red-200',
@@ -900,7 +933,7 @@ function DecisionCard(param) {
                         children: colors.icon
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 471,
+                        lineNumber: 503,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -911,7 +944,7 @@ function DecisionCard(param) {
                                 children: title
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 473,
+                                lineNumber: 505,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -919,7 +952,7 @@ function DecisionCard(param) {
                                 children: description
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 474,
+                                lineNumber: 506,
                                 columnNumber: 25
                             }, this),
                             conflictPolicies.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -930,7 +963,7 @@ function DecisionCard(param) {
                                         children: "Conflicts with:"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 477,
+                                        lineNumber: 509,
                                         columnNumber: 33
                                     }, this),
                                     conflictPolicies.map((name)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -938,19 +971,19 @@ function DecisionCard(param) {
                                             children: name
                                         }, name, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 479,
+                                            lineNumber: 511,
                                             columnNumber: 37
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 476,
+                                lineNumber: 508,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 472,
+                        lineNumber: 504,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -964,7 +997,7 @@ function DecisionCard(param) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 486,
+                                lineNumber: 518,
                                 columnNumber: 25
                             }, this),
                             conflicts > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -976,7 +1009,7 @@ function DecisionCard(param) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 487,
+                                lineNumber: 519,
                                 columnNumber: 43
                             }, this),
                             newOnly > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -987,29 +1020,29 @@ function DecisionCard(param) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 488,
+                                lineNumber: 520,
                                 columnNumber: 41
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 485,
+                        lineNumber: 517,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 470,
+                lineNumber: 502,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 469,
+            lineNumber: 501,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 468,
+        lineNumber: 500,
         columnNumber: 9
     }, this);
 }
@@ -1023,7 +1056,7 @@ const coverageStatusConfig = {
             className: "h-4 w-4 text-green-600"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 510,
+            lineNumber: 542,
             columnNumber: 140
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -1035,7 +1068,7 @@ const coverageStatusConfig = {
             className: "h-4 w-4 text-red-500"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 511,
+            lineNumber: 543,
             columnNumber: 141
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -1047,7 +1080,7 @@ const coverageStatusConfig = {
             className: "h-4 w-4 text-blue-500"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 512,
+            lineNumber: 544,
             columnNumber: 141
         }, ("TURBOPACK compile-time value", void 0))
     }
@@ -1098,7 +1131,7 @@ function CoverageTab(param) {
                                             children: "Overall setting coverage across all compared policies"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 548,
+                                            lineNumber: 580,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1106,13 +1139,13 @@ function CoverageTab(param) {
                                             children: "Each setting in your new policy — is it covered by at least one existing policy?"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 549,
+                                            lineNumber: 581,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 547,
+                                    lineNumber: 579,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1123,13 +1156,13 @@ function CoverageTab(param) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 553,
+                                    lineNumber: 585,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 546,
+                            lineNumber: 578,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1143,7 +1176,7 @@ function CoverageTab(param) {
                                     title: "".concat(summary.covered, " covered")
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 556,
+                                    lineNumber: 588,
                                     columnNumber: 41
                                 }, this),
                                 confPct > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1154,7 +1187,7 @@ function CoverageTab(param) {
                                     title: "".concat(summary.conflict, " conflict")
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 557,
+                                    lineNumber: 589,
                                     columnNumber: 41
                                 }, this),
                                 notPct > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1165,13 +1198,13 @@ function CoverageTab(param) {
                                     title: "".concat(summary.notInTenant, " not in tenant")
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 558,
+                                    lineNumber: 590,
                                     columnNumber: 41
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 555,
+                            lineNumber: 587,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1202,7 +1235,7 @@ function CoverageTab(param) {
                                             className: "inline-block w-2.5 h-2.5 rounded-sm ".concat(k.color)
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 567,
+                                            lineNumber: 599,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1210,7 +1243,7 @@ function CoverageTab(param) {
                                             children: k.label
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 568,
+                                            lineNumber: 600,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1218,7 +1251,7 @@ function CoverageTab(param) {
                                             children: k.n
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 569,
+                                            lineNumber: 601,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1230,29 +1263,29 @@ function CoverageTab(param) {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 570,
+                                            lineNumber: 602,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, k.label, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 566,
+                                    lineNumber: 598,
                                     columnNumber: 29
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 560,
+                            lineNumber: 592,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 545,
+                    lineNumber: 577,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 544,
+                lineNumber: 576,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1269,7 +1302,7 @@ function CoverageTab(param) {
                             children: f === 'all' ? "All (".concat(rows.length, ")") : f === 'covered' ? "Covered (".concat(summary.covered, ")") : f === 'conflict' ? "Conflict (".concat(summary.conflict, ")") : "Not in tenant (".concat(summary.notInTenant, ")")
                         }, f, false, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 580,
+                            lineNumber: 612,
                             columnNumber: 21
                         }, this)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1279,7 +1312,7 @@ function CoverageTab(param) {
                                 className: "h-3.5 w-3.5 text-muted-foreground"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 589,
+                                lineNumber: 621,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1290,7 +1323,7 @@ function CoverageTab(param) {
                                 className: "border rounded px-2 py-1 text-xs bg-background w-48 focus:ring-1 focus:ring-primary/50 outline-none"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 590,
+                                lineNumber: 622,
                                 columnNumber: 21
                             }, this),
                             search && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1299,24 +1332,24 @@ function CoverageTab(param) {
                                     className: "h-3.5 w-3.5 text-muted-foreground"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 592,
+                                    lineNumber: 624,
                                     columnNumber: 70
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 592,
+                                lineNumber: 624,
                                 columnNumber: 32
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 588,
+                        lineNumber: 620,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 578,
+                lineNumber: 610,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1329,14 +1362,14 @@ function CoverageTab(param) {
                                 children: "Setting"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 600,
+                                lineNumber: 632,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 children: "Value in new policy"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 601,
+                                lineNumber: 633,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1344,13 +1377,13 @@ function CoverageTab(param) {
                                 children: "Overall status"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 602,
+                                lineNumber: 634,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 599,
+                        lineNumber: 631,
                         columnNumber: 17
                     }, this),
                     filtered.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1358,7 +1391,7 @@ function CoverageTab(param) {
                         children: "No settings match the current filter."
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 606,
+                        lineNumber: 638,
                         columnNumber: 21
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "divide-y",
@@ -1380,19 +1413,19 @@ function CoverageTab(param) {
                                                         className: "h-3.5 w-3.5 text-muted-foreground shrink-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 623,
+                                                        lineNumber: 655,
                                                         columnNumber: 55
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                         className: "h-3.5 w-3.5 text-muted-foreground shrink-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 624,
+                                                        lineNumber: 656,
                                                         columnNumber: 55
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "w-3.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 625,
+                                                        lineNumber: 657,
                                                         columnNumber: 51
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1403,7 +1436,7 @@ function CoverageTab(param) {
                                                                 children: row.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 628,
+                                                                lineNumber: 660,
                                                                 columnNumber: 49
                                                             }, this),
                                                             hasDetail && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1420,25 +1453,25 @@ function CoverageTab(param) {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 633,
+                                                                        lineNumber: 665,
                                                                         columnNumber: 89
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 630,
+                                                                lineNumber: 662,
                                                                 columnNumber: 53
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 627,
+                                                        lineNumber: 659,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 620,
+                                                lineNumber: 652,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ValueCell, {
@@ -1447,7 +1480,7 @@ function CoverageTab(param) {
                                                 resolvedMap: resolvedMap
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 638,
+                                                lineNumber: 670,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1460,18 +1493,18 @@ function CoverageTab(param) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 640,
+                                                    lineNumber: 672,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 639,
+                                                lineNumber: 671,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 616,
+                                        lineNumber: 648,
                                         columnNumber: 37
                                     }, this),
                                     isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1487,7 +1520,7 @@ function CoverageTab(param) {
                                                                 className: "h-3 w-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 656,
+                                                                lineNumber: 688,
                                                                 columnNumber: 57
                                                             }, this),
                                                             "Matched in ",
@@ -1497,7 +1530,7 @@ function CoverageTab(param) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 655,
+                                                        lineNumber: 687,
                                                         columnNumber: 53
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1510,7 +1543,7 @@ function CoverageTab(param) {
                                                                         children: m.policyName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 661,
+                                                                        lineNumber: 693,
                                                                         columnNumber: 65
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ValueCell, {
@@ -1519,24 +1552,24 @@ function CoverageTab(param) {
                                                                         resolvedMap: resolvedMap
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 662,
+                                                                        lineNumber: 694,
                                                                         columnNumber: 65
                                                                     }, this)
                                                                 ]
                                                             }, i, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 660,
+                                                                lineNumber: 692,
                                                                 columnNumber: 61
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 658,
+                                                        lineNumber: 690,
                                                         columnNumber: 53
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 654,
+                                                lineNumber: 686,
                                                 columnNumber: 49
                                             }, this),
                                             row.conflictedIn.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1549,7 +1582,7 @@ function CoverageTab(param) {
                                                                 className: "h-3 w-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 671,
+                                                                lineNumber: 703,
                                                                 columnNumber: 57
                                                             }, this),
                                                             "Different value in ",
@@ -1559,7 +1592,7 @@ function CoverageTab(param) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 670,
+                                                        lineNumber: 702,
                                                         columnNumber: 53
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1572,7 +1605,7 @@ function CoverageTab(param) {
                                                                         children: c.policyName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 676,
+                                                                        lineNumber: 708,
                                                                         columnNumber: 65
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ValueCell, {
@@ -1581,54 +1614,54 @@ function CoverageTab(param) {
                                                                         resolvedMap: resolvedMap
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 677,
+                                                                        lineNumber: 709,
                                                                         columnNumber: 65
                                                                     }, this)
                                                                 ]
                                                             }, i, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 675,
+                                                                lineNumber: 707,
                                                                 columnNumber: 61
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 673,
+                                                        lineNumber: 705,
                                                         columnNumber: 53
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 669,
+                                                lineNumber: 701,
                                                 columnNumber: 49
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 652,
+                                        lineNumber: 684,
                                         columnNumber: 41
                                     }, this)
                                 ]
                             }, row.id, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 614,
+                                lineNumber: 646,
                                 columnNumber: 33
                             }, this);
                         })
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 608,
+                        lineNumber: 640,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 597,
+                lineNumber: 629,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 542,
+        lineNumber: 574,
         columnNumber: 9
     }, this);
 }
@@ -1683,13 +1716,13 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                         className: "h-4 w-4 text-muted-foreground flex-shrink-0"
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 729,
+                        lineNumber: 761,
                         columnNumber: 31
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                         className: "h-4 w-4 text-muted-foreground flex-shrink-0"
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 729,
+                        lineNumber: 761,
                         columnNumber: 105
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1700,7 +1733,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                 children: result.checkedPolicyName
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 731,
+                                lineNumber: 763,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1717,7 +1750,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 734,
+                                        lineNumber: 766,
                                         columnNumber: 25
                                     }, this),
                                     conflicts > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1730,19 +1763,19 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 735,
+                                        lineNumber: 767,
                                         columnNumber: 43
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 732,
+                                lineNumber: 764,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 730,
+                        lineNumber: 762,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1755,14 +1788,14 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 739,
+                                        lineNumber: 771,
                                         columnNumber: 78
                                     }, this),
                                     same
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 739,
+                                lineNumber: 771,
                                 columnNumber: 21
                             }, this),
                             conflicts > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1772,14 +1805,14 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 740,
+                                        lineNumber: 772,
                                         columnNumber: 94
                                     }, this),
                                     conflicts
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 740,
+                                lineNumber: 772,
                                 columnNumber: 39
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1789,26 +1822,26 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 741,
+                                        lineNumber: 773,
                                         columnNumber: 77
                                     }, this),
                                     newOnly
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 741,
+                                lineNumber: 773,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 738,
+                        lineNumber: 770,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 728,
+                lineNumber: 760,
                 columnNumber: 13
             }, this),
             isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1858,7 +1891,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         children: k.count
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 756,
+                                        lineNumber: 788,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1866,7 +1899,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         children: k.label
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 757,
+                                        lineNumber: 789,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1874,18 +1907,18 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         children: k.pct
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 758,
+                                        lineNumber: 790,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, k.label, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 755,
+                                lineNumber: 787,
                                 columnNumber: 29
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 748,
+                        lineNumber: 780,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1901,7 +1934,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 766,
+                                        lineNumber: 798,
                                         columnNumber: 53
                                     }, this),
                                     conflictPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1911,7 +1944,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 767,
+                                        lineNumber: 799,
                                         columnNumber: 53
                                     }, this),
                                     newOnly > 0 && total > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1921,13 +1954,13 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 768,
+                                        lineNumber: 800,
                                         columnNumber: 58
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 765,
+                                lineNumber: 797,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1940,7 +1973,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                 className: "inline-block w-2 h-2 rounded-sm bg-green-500"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 771,
+                                                lineNumber: 803,
                                                 columnNumber: 71
                                             }, this),
                                             "Covered ",
@@ -1949,7 +1982,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 771,
+                                        lineNumber: 803,
                                         columnNumber: 29
                                     }, this),
                                     conflictPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1959,7 +1992,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                 className: "inline-block w-2 h-2 rounded-sm bg-red-400"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 772,
+                                                lineNumber: 804,
                                                 columnNumber: 95
                                             }, this),
                                             "Conflict ",
@@ -1968,19 +2001,19 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 772,
+                                        lineNumber: 804,
                                         columnNumber: 53
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 770,
+                                lineNumber: 802,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 764,
+                        lineNumber: 796,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1994,7 +2027,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         children: "New policy (evaluating)"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 779,
+                                        lineNumber: 811,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2002,13 +2035,13 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         children: result.sourcePolicyName
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 780,
+                                        lineNumber: 812,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 778,
+                                lineNumber: 810,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2019,7 +2052,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         children: "Existing policy"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 783,
+                                        lineNumber: 815,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2027,19 +2060,19 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         children: result.checkedPolicyName
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 784,
+                                        lineNumber: 816,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 782,
+                                lineNumber: 814,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 777,
+                        lineNumber: 809,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2057,7 +2090,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                     children: f === 'all' ? 'All' : stateLabel[f]
                                 }, f, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 791,
+                                    lineNumber: 823,
                                     columnNumber: 29
                                 }, this)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2067,7 +2100,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         className: "h-3.5 w-3.5 text-muted-foreground"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 797,
+                                        lineNumber: 829,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2078,19 +2111,19 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                         className: "border rounded px-2 py-1 text-xs bg-background w-44 focus:ring-1 focus:ring-primary/50 outline-none"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 798,
+                                        lineNumber: 830,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 796,
+                                lineNumber: 828,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 789,
+                        lineNumber: 821,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2100,21 +2133,21 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                 children: "Setting"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 805,
+                                lineNumber: 837,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 children: "New Policy Value"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 805,
+                                lineNumber: 837,
                                 columnNumber: 45
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 children: "Existing Policy Value"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 805,
+                                lineNumber: 837,
                                 columnNumber: 74
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2122,13 +2155,13 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                 children: "Decision Signal"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 805,
+                                lineNumber: 837,
                                 columnNumber: 108
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 804,
+                        lineNumber: 836,
                         columnNumber: 21
                     }, this),
                     filtered.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2136,7 +2169,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                         children: "No settings match current filter."
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 809,
+                        lineNumber: 841,
                         columnNumber: 27
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "divide-y",
@@ -2163,13 +2196,13 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                         className: "h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 829,
+                                                        lineNumber: 861,
                                                         columnNumber: 59
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                         className: "h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 830,
+                                                        lineNumber: 862,
                                                         columnNumber: 59
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2177,13 +2210,13 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                         children: r.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 832,
+                                                        lineNumber: 864,
                                                         columnNumber: 53
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 827,
+                                                lineNumber: 859,
                                                 columnNumber: 49
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ValueCell, {
@@ -2192,7 +2225,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                 resolvedMap: resolvedMap
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 834,
+                                                lineNumber: 866,
                                                 columnNumber: 49
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ValueCell, {
@@ -2201,7 +2234,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                 resolvedMap: resolvedMap
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 835,
+                                                lineNumber: 867,
                                                 columnNumber: 49
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2210,18 +2243,18 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                     state: r.settingCheckState
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 837,
+                                                    lineNumber: 869,
                                                     columnNumber: 53
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 836,
+                                                lineNumber: 868,
                                                 columnNumber: 49
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 825,
+                                        lineNumber: 857,
                                         columnNumber: 45
                                     }, this),
                                     expanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2235,7 +2268,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                         children: r.description
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 848,
+                                                        lineNumber: 880,
                                                         columnNumber: 65
                                                     }, this),
                                                     ((_r_keywords1 = r.keywords) === null || _r_keywords1 === void 0 ? void 0 : _r_keywords1.length) > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2245,18 +2278,18 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                                 children: k
                                                             }, ki, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 853,
+                                                                lineNumber: 885,
                                                                 columnNumber: 73
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 851,
+                                                        lineNumber: 883,
                                                         columnNumber: 65
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 846,
+                                                lineNumber: 878,
                                                 columnNumber: 57
                                             }, this),
                                             hasChildren && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2269,34 +2302,34 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                                 children: "Child Setting"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 864,
+                                                                lineNumber: 896,
                                                                 columnNumber: 65
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 children: "New Policy"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 864,
+                                                                lineNumber: 896,
                                                                 columnNumber: 91
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 children: "Existing Policy"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 864,
+                                                                lineNumber: 896,
                                                                 columnNumber: 114
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "w-32"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 864,
+                                                                lineNumber: 896,
                                                                 columnNumber: 142
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 863,
+                                                        lineNumber: 895,
                                                         columnNumber: 61
                                                     }, this),
                                                     r.childSettings.map((child, ci)=>{
@@ -2310,7 +2343,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                                     children: child.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                                    lineNumber: 870,
+                                                                    lineNumber: 902,
                                                                     columnNumber: 73
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ValueCell, {
@@ -2319,7 +2352,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                                     resolvedMap: resolvedMap
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                                    lineNumber: 871,
+                                                                    lineNumber: 903,
                                                                     columnNumber: 73
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ValueCell, {
@@ -2328,7 +2361,7 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                                     resolvedMap: resolvedMap
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                                    lineNumber: 872,
+                                                                    lineNumber: 904,
                                                                     columnNumber: 73
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2340,14 +2373,14 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                                                 className: "h-3 w-3"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                                lineNumber: 875,
+                                                                                lineNumber: 907,
                                                                                 columnNumber: 153
                                                                             }, this),
                                                                             "Conflict"
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 875,
+                                                                        lineNumber: 907,
                                                                         columnNumber: 83
                                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                         className: "inline-flex items-center gap-1 text-green-600 text-xs",
@@ -2356,62 +2389,62 @@ const ResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f
                                                                                 className: "h-3 w-3"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                                lineNumber: 876,
+                                                                                lineNumber: 908,
                                                                                 columnNumber: 155
                                                                             }, this),
                                                                             "Same"
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 876,
+                                                                        lineNumber: 908,
                                                                         columnNumber: 83
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                                    lineNumber: 873,
+                                                                    lineNumber: 905,
                                                                     columnNumber: 73
                                                                 }, this)
                                                             ]
                                                         }, ci, true, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 869,
+                                                            lineNumber: 901,
                                                             columnNumber: 69
                                                         }, this);
                                                     })
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 862,
+                                                lineNumber: 894,
                                                 columnNumber: 57
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 843,
+                                        lineNumber: 875,
                                         columnNumber: 49
                                     }, this)
                                 ]
                             }, i, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 823,
+                                lineNumber: 855,
                                 columnNumber: 41
                             }, this);
                         })
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 811,
+                        lineNumber: 843,
                         columnNumber: 29
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 746,
+                lineNumber: 778,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 727,
+        lineNumber: 759,
         columnNumber: 9
     }, this);
 }, "Hkjt/lCsmOOUnDXcnccuxXqLJ2c="));
@@ -2426,7 +2459,7 @@ const setAnalysisStatusConfig = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 899,
+            lineNumber: 931,
             columnNumber: 198
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -2438,7 +2471,7 @@ const setAnalysisStatusConfig = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 900,
+            lineNumber: 932,
             columnNumber: 199
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -2450,7 +2483,7 @@ const setAnalysisStatusConfig = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 901,
+            lineNumber: 933,
             columnNumber: 199
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -2462,7 +2495,7 @@ const setAnalysisStatusConfig = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 902,
+            lineNumber: 934,
             columnNumber: 200
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -2474,7 +2507,7 @@ const setAnalysisStatusConfig = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 903,
+            lineNumber: 935,
             columnNumber: 200
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -2486,7 +2519,7 @@ const setAnalysisStatusConfig = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 904,
+            lineNumber: 936,
             columnNumber: 199
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -2498,14 +2531,31 @@ const setAnalysisStatusConfig = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/policies/page.tsx",
-            lineNumber: 905,
+            lineNumber: 937,
             columnNumber: 203
+        }, ("TURBOPACK compile-time value", void 0))
+    },
+    Overlap: {
+        label: 'Overlap',
+        badge: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300',
+        row: 'bg-orange-50/20 dark:bg-orange-900/5',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$layers$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Layers$3e$__["Layers"], {
+            className: "h-3 w-3"
+        }, void 0, false, {
+            fileName: "[project]/app/compare/policies/page.tsx",
+            lineNumber: 938,
+            columnNumber: 206
         }, ("TURBOPACK compile-time value", void 0))
     }
 };
 function SetAnalysisStatusBadge(param) {
     let { status } = param;
-    const c = setAnalysisStatusConfig[status];
+    var _setAnalysisStatusConfig_status;
+    const c = (_setAnalysisStatusConfig_status = setAnalysisStatusConfig[status]) !== null && _setAnalysisStatusConfig_status !== void 0 ? _setAnalysisStatusConfig_status : {
+        label: status,
+        badge: 'bg-muted text-muted-foreground border-border',
+        icon: null
+    };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
         className: "inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium whitespace-nowrap ".concat(c.badge),
         children: [
@@ -2514,7 +2564,7 @@ function SetAnalysisStatusBadge(param) {
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 911,
+        lineNumber: 944,
         columnNumber: 9
     }, this);
 }
@@ -2555,7 +2605,7 @@ function SetAnalysisView(param) {
                 className: "h-5 w-5 text-muted-foreground"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 945,
+                lineNumber: 978,
                 columnNumber: 108
             }, this)
         },
@@ -2568,7 +2618,7 @@ function SetAnalysisView(param) {
                 className: "h-5 w-5 text-green-600"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 946,
+                lineNumber: 979,
                 columnNumber: 134
             }, this)
         },
@@ -2581,7 +2631,7 @@ function SetAnalysisView(param) {
                 className: "h-5 w-5 text-amber-500"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 947,
+                lineNumber: 980,
                 columnNumber: 134
             }, this)
         },
@@ -2594,7 +2644,7 @@ function SetAnalysisView(param) {
                 className: "h-5 w-5 text-red-600"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 948,
+                lineNumber: 981,
                 columnNumber: 134
             }, this)
         },
@@ -2607,7 +2657,7 @@ function SetAnalysisView(param) {
                 className: "h-5 w-5 text-blue-600"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 949,
+                lineNumber: 982,
                 columnNumber: 134
             }, this)
         },
@@ -2620,7 +2670,7 @@ function SetAnalysisView(param) {
                 className: "h-5 w-5 text-purple-600"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 950,
+                lineNumber: 983,
                 columnNumber: 134
             }, this)
         },
@@ -2633,7 +2683,7 @@ function SetAnalysisView(param) {
                 className: "h-5 w-5 text-muted-foreground"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 951,
+                lineNumber: 984,
                 columnNumber: 134
             }, this)
         },
@@ -2646,7 +2696,7 @@ function SetAnalysisView(param) {
                 className: "h-5 w-5 text-muted-foreground"
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 952,
+                lineNumber: 985,
                 columnNumber: 134
             }, this)
         }
@@ -2672,7 +2722,7 @@ function SetAnalysisView(param) {
                                         children: k.icon
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 965,
+                                        lineNumber: 998,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2682,7 +2732,7 @@ function SetAnalysisView(param) {
                                                 children: k.label
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 967,
+                                                lineNumber: 1000,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2690,7 +2740,7 @@ function SetAnalysisView(param) {
                                                 children: k.count
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 968,
+                                                lineNumber: 1001,
                                                 columnNumber: 37
                                             }, this),
                                             k.status && k.status !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2698,34 +2748,34 @@ function SetAnalysisView(param) {
                                                 children: pct(k.count)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 970,
+                                                lineNumber: 1003,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 966,
+                                        lineNumber: 999,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 964,
+                                lineNumber: 997,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 963,
+                            lineNumber: 996,
                             columnNumber: 25
                         }, this)
                     }, k.label, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 960,
+                        lineNumber: 993,
                         columnNumber: 21
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 958,
+                lineNumber: 991,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2739,7 +2789,7 @@ function SetAnalysisView(param) {
                         title: "Match: ".concat(summary.matchCount)
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 981,
+                        lineNumber: 1014,
                         columnNumber: 48
                     }, this),
                     summary.duplicateCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2750,7 +2800,7 @@ function SetAnalysisView(param) {
                         title: "Duplicate: ".concat(summary.duplicateCount)
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 982,
+                        lineNumber: 1015,
                         columnNumber: 48
                     }, this),
                     summary.conflictCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2761,7 +2811,7 @@ function SetAnalysisView(param) {
                         title: "Conflict: ".concat(summary.conflictCount)
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 983,
+                        lineNumber: 1016,
                         columnNumber: 48
                     }, this),
                     summary.newInLeftCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2772,7 +2822,7 @@ function SetAnalysisView(param) {
                         title: "New in left: ".concat(summary.newInLeftCount)
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 984,
+                        lineNumber: 1017,
                         columnNumber: 48
                     }, this),
                     summary.newInRightCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2783,13 +2833,13 @@ function SetAnalysisView(param) {
                         title: "New in right: ".concat(summary.newInRightCount)
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 985,
+                        lineNumber: 1018,
                         columnNumber: 49
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 980,
+                lineNumber: 1013,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2807,7 +2857,7 @@ function SetAnalysisView(param) {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 990,
+                        lineNumber: 1023,
                         columnNumber: 17
                     }, this),
                     [
@@ -2834,7 +2884,7 @@ function SetAnalysisView(param) {
                             ]
                         }, s, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 998,
+                            lineNumber: 1031,
                             columnNumber: 25
                         }, this);
                     }),
@@ -2845,7 +2895,7 @@ function SetAnalysisView(param) {
                                 className: "h-3.5 w-3.5 text-muted-foreground"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1005,
+                                lineNumber: 1038,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2856,7 +2906,7 @@ function SetAnalysisView(param) {
                                 className: "border rounded px-2 py-1 text-xs bg-background w-48 outline-none focus:ring-1 focus:ring-primary/50"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1006,
+                                lineNumber: 1039,
                                 columnNumber: 21
                             }, this),
                             search && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2865,24 +2915,24 @@ function SetAnalysisView(param) {
                                     className: "h-3.5 w-3.5 text-muted-foreground"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1009,
+                                    lineNumber: 1042,
                                     columnNumber: 70
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1009,
+                                lineNumber: 1042,
                                 columnNumber: 32
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1004,
+                        lineNumber: 1037,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 989,
+                lineNumber: 1022,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2895,7 +2945,7 @@ function SetAnalysisView(param) {
                                 children: "Setting"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1016,
+                                lineNumber: 1049,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2903,7 +2953,7 @@ function SetAnalysisView(param) {
                                 children: "← Left policies"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1017,
+                                lineNumber: 1050,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2911,7 +2961,7 @@ function SetAnalysisView(param) {
                                 children: "Right policies →"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1018,
+                                lineNumber: 1051,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2919,13 +2969,13 @@ function SetAnalysisView(param) {
                                 children: "Status"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1019,
+                                lineNumber: 1052,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1015,
+                        lineNumber: 1048,
                         columnNumber: 17
                     }, this),
                     filtered.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2933,10 +2983,16 @@ function SetAnalysisView(param) {
                         children: "No settings match the current filter."
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1022,
+                        lineNumber: 1055,
                         columnNumber: 23
                     }, this) : filtered.map((item)=>{
-                        const cfg = setAnalysisStatusConfig[item.status];
+                        var _setAnalysisStatusConfig_item_status;
+                        const cfg = (_setAnalysisStatusConfig_item_status = setAnalysisStatusConfig[item.status]) !== null && _setAnalysisStatusConfig_item_status !== void 0 ? _setAnalysisStatusConfig_item_status : {
+                            label: item.status,
+                            badge: 'bg-muted text-muted-foreground border-border',
+                            row: '',
+                            icon: null
+                        };
                         const isExpanded = expandedIds.has(item.settingDefinitionId);
                         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "border-b last:border-b-0 ".concat(cfg.row),
@@ -2952,13 +3008,13 @@ function SetAnalysisView(param) {
                                                     className: "h-3 w-3 text-muted-foreground shrink-0 mt-0.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1034,
+                                                    lineNumber: 1067,
                                                     columnNumber: 47
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                     className: "h-3 w-3 text-muted-foreground shrink-0 mt-0.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1035,
+                                                    lineNumber: 1068,
                                                     columnNumber: 47
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2969,7 +3025,7 @@ function SetAnalysisView(param) {
                                                             children: item.settingName
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 1037,
+                                                            lineNumber: 1070,
                                                             columnNumber: 45
                                                         }, this),
                                                         item.settingName !== item.settingDefinitionId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2977,19 +3033,19 @@ function SetAnalysisView(param) {
                                                             children: item.settingDefinitionId
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 1039,
+                                                            lineNumber: 1072,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1036,
+                                                    lineNumber: 1069,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1032,
+                                            lineNumber: 1065,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3001,7 +3057,7 @@ function SetAnalysisView(param) {
                                                     children: "—"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1046,
+                                                    lineNumber: 1079,
                                                     columnNumber: 47
                                                 }, this) : (()=>{
                                                     const uniqueVals = [
@@ -3017,7 +3073,7 @@ function SetAnalysisView(param) {
                                                             children: friendly
                                                         }, i, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 1053,
+                                                            lineNumber: 1086,
                                                             columnNumber: 60
                                                         }, this);
                                                     });
@@ -3031,13 +3087,13 @@ function SetAnalysisView(param) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1058,
+                                                    lineNumber: 1091,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1044,
+                                            lineNumber: 1077,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3049,7 +3105,7 @@ function SetAnalysisView(param) {
                                                     children: "—"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1064,
+                                                    lineNumber: 1097,
                                                     columnNumber: 47
                                                 }, this) : (()=>{
                                                     const uniqueVals = [
@@ -3065,7 +3121,7 @@ function SetAnalysisView(param) {
                                                             children: friendly
                                                         }, i, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 1071,
+                                                            lineNumber: 1104,
                                                             columnNumber: 60
                                                         }, this);
                                                     });
@@ -3079,13 +3135,13 @@ function SetAnalysisView(param) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1076,
+                                                    lineNumber: 1109,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1062,
+                                            lineNumber: 1095,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3094,18 +3150,18 @@ function SetAnalysisView(param) {
                                                 status: item.status
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1080,
+                                                lineNumber: 1113,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1079,
+                                            lineNumber: 1112,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1029,
+                                    lineNumber: 1062,
                                     columnNumber: 33
                                 }, this),
                                 isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3125,7 +3181,7 @@ function SetAnalysisView(param) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1089,
+                                                        lineNumber: 1122,
                                                         columnNumber: 49
                                                     }, this),
                                                     item.leftOccurrences.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3133,7 +3189,7 @@ function SetAnalysisView(param) {
                                                         children: "Not present"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1093,
+                                                        lineNumber: 1126,
                                                         columnNumber: 55
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "space-y-1.5",
@@ -3148,7 +3204,7 @@ function SetAnalysisView(param) {
                                                                         children: o.policyName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 1101,
+                                                                        lineNumber: 1134,
                                                                         columnNumber: 69
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3156,25 +3212,25 @@ function SetAnalysisView(param) {
                                                                         children: friendly
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 1102,
+                                                                        lineNumber: 1135,
                                                                         columnNumber: 69
                                                                     }, this)
                                                                 ]
                                                             }, i, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1100,
+                                                                lineNumber: 1133,
                                                                 columnNumber: 65
                                                             }, this);
                                                         })
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1094,
+                                                        lineNumber: 1127,
                                                         columnNumber: 55
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1088,
+                                                lineNumber: 1121,
                                                 columnNumber: 45
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3189,7 +3245,7 @@ function SetAnalysisView(param) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1110,
+                                                        lineNumber: 1143,
                                                         columnNumber: 49
                                                     }, this),
                                                     item.rightOccurrences.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3197,7 +3253,7 @@ function SetAnalysisView(param) {
                                                         children: "Not present"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1114,
+                                                        lineNumber: 1147,
                                                         columnNumber: 55
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "space-y-1.5",
@@ -3212,7 +3268,7 @@ function SetAnalysisView(param) {
                                                                         children: o.policyName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 1122,
+                                                                        lineNumber: 1155,
                                                                         columnNumber: 69
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3220,49 +3276,49 @@ function SetAnalysisView(param) {
                                                                         children: friendly
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 1123,
+                                                                        lineNumber: 1156,
                                                                         columnNumber: 69
                                                                     }, this)
                                                                 ]
                                                             }, i, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1121,
+                                                                lineNumber: 1154,
                                                                 columnNumber: 65
                                                             }, this);
                                                         })
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1115,
+                                                        lineNumber: 1148,
                                                         columnNumber: 55
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1109,
+                                                lineNumber: 1142,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1087,
+                                        lineNumber: 1120,
                                         columnNumber: 41
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1086,
+                                    lineNumber: 1119,
                                     columnNumber: 37
                                 }, this)
                             ]
                         }, item.settingDefinitionId, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 1027,
+                            lineNumber: 1060,
                             columnNumber: 29
                         }, this);
                     })
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1014,
+                lineNumber: 1047,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3276,13 +3332,13 @@ function SetAnalysisView(param) {
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1138,
+                lineNumber: 1171,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 956,
+        lineNumber: 989,
         columnNumber: 9
     }, this);
 }
@@ -3299,7 +3355,7 @@ function ScopeTagFilter(param) {
                 children: label
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1153,
+                lineNumber: 1186,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -3312,7 +3368,7 @@ function ScopeTagFilter(param) {
                         children: "All scope tags"
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1156,
+                        lineNumber: 1189,
                         columnNumber: 17
                     }, this),
                     scopeTags.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -3320,13 +3376,13 @@ function ScopeTagFilter(param) {
                             children: t.displayName
                         }, t.id, false, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 1157,
+                            lineNumber: 1190,
                             columnNumber: 37
                         }, this))
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1154,
+                lineNumber: 1187,
                 columnNumber: 13
             }, this),
             value && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3336,18 +3392,18 @@ function ScopeTagFilter(param) {
                     className: "h-3.5 w-3.5"
                 }, void 0, false, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 1161,
+                    lineNumber: 1194,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1160,
+                lineNumber: 1193,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 1152,
+        lineNumber: 1185,
         columnNumber: 9
     }, this);
 }
@@ -3488,7 +3544,6 @@ function PolicyComparison() {
         setSetAnalysisSummary(null);
         setPage(0);
         try {
-            var _sourcePolicies_;
             const tokenResp = await instance.acquireTokenSilent({
                 scopes: [
                     __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$msalConfig$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["apiScope"]
@@ -3497,14 +3552,22 @@ function PolicyComparison() {
             });
             const accessToken = tokenResp.accessToken;
             const allResults = [];
-            // Derive policyType from the first source policy
             const sourcePolicies = policies.filter((p)=>sourcePolicyIds.includes(p.id));
-            var _sourcePolicies__policyType;
-            const policyType = (_sourcePolicies__policyType = (_sourcePolicies_ = sourcePolicies[0]) === null || _sourcePolicies_ === void 0 ? void 0 : _sourcePolicies_.policyType) !== null && _sourcePolicies__policyType !== void 0 ? _sourcePolicies__policyType : 'SettingsCatalog';
+            const existingPolicies = policies.filter((p)=>existingPolicyIds.includes(p.id));
             if (sourcePolicyIds.length === 1) {
-                // ── Single source: use existing batched /compare/{type} endpoint ──────
+                // ── Single source: group right-side by type and send a request per type ──
+                const sourcePolicy = sourcePolicies[0];
+                var _sourcePolicy_policyType;
+                const policyType = (_sourcePolicy_policyType = sourcePolicy === null || sourcePolicy === void 0 ? void 0 : sourcePolicy.policyType) !== null && _sourcePolicy_policyType !== void 0 ? _sourcePolicy_policyType : 'SettingsCatalog';
+                // Only compare right-side policies of the same type
+                const matchingRight = existingPolicies.filter((p)=>p.policyType === policyType).map((p)=>p.id);
+                if (matchingRight.length === 0) {
+                    setError('No existing policies of the same type as the selected source policy.');
+                    setComparing(false);
+                    return;
+                }
                 const batches = [];
-                for(let i = 0; i < existingPolicyIds.length; i += BATCH_SIZE)batches.push(existingPolicyIds.slice(i, i + BATCH_SIZE));
+                for(let i = 0; i < matchingRight.length; i += BATCH_SIZE)batches.push(matchingRight.slice(i, i + BATCH_SIZE));
                 setBatchProgress({
                     done: 0,
                     total: batches.length
@@ -3537,32 +3600,90 @@ function PolicyComparison() {
                     });
                 }
             } else {
-                var _this, _this1;
-                // ── Multiple sources: single /compare/{type}/set-analysis call ────────
+                // ── Multiple sources: group by policyType and send one set-analysis request per type ──
+                // Build a map: policyType → { leftIds, rightIds }
+                const typeGroups = new Map();
+                for (const p of sourcePolicies){
+                    if (!typeGroups.has(p.policyType)) typeGroups.set(p.policyType, {
+                        leftIds: [],
+                        rightIds: []
+                    });
+                    typeGroups.get(p.policyType).leftIds.push(p.id);
+                }
+                for (const p of existingPolicies){
+                    if (typeGroups.has(p.policyType)) {
+                        typeGroups.get(p.policyType).rightIds.push(p.id);
+                    }
+                // Silently skip right-side policies whose type has no left-side counterpart
+                }
+                const typeEntries = [
+                    ...typeGroups.entries()
+                ].filter((param)=>{
+                    let [, g] = param;
+                    return g.leftIds.length > 0 && g.rightIds.length > 0;
+                });
+                if (typeEntries.length === 0) {
+                    setError('No matching policy types between left and right selections. Please compare policies of the same type.');
+                    setComparing(false);
+                    return;
+                }
                 setBatchProgress({
                     done: 0,
-                    total: 1
+                    total: typeEntries.length
                 });
-                const response = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$apiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["apiRequest"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["COMPARE_SET_ANALYSIS_ENDPOINT"])(policyType), {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        leftPolicyIds: sourcePolicyIds,
-                        rightPolicyIds: existingPolicyIds
-                    }),
-                    signal: controller.signal
-                }, accessToken);
-                if (controller.signal.aborted) return;
-                // Normalize response: API may return the SetAnalysisResponse directly or
-                // wrapped in an extra { data: ... } envelope.
-                const rawResp = response === null || response === void 0 ? void 0 : response.data;
-                const saResp = (rawResp === null || rawResp === void 0 ? void 0 : rawResp.summary) !== undefined && Array.isArray(rawResp === null || rawResp === void 0 ? void 0 : rawResp.data) ? rawResp : ((_this = rawResp === null || rawResp === void 0 ? void 0 : rawResp.data) === null || _this === void 0 ? void 0 : _this.summary) !== undefined && Array.isArray((_this1 = rawResp === null || rawResp === void 0 ? void 0 : rawResp.data) === null || _this1 === void 0 ? void 0 : _this1.data) ? rawResp.data : null;
-                if (saResp === null || saResp === void 0 ? void 0 : saResp.data) {
-                    setSetAnalysisItems(saResp.data);
-                    var _saResp_summary;
-                    setSetAnalysisSummary((_saResp_summary = saResp.summary) !== null && _saResp_summary !== void 0 ? _saResp_summary : null);
+                const allSetItems = [];
+                let mergedSummary = null;
+                for(let t = 0; t < typeEntries.length; t++){
+                    var _this, _this1;
+                    if (controller.signal.aborted) return;
+                    const [policyType, group] = typeEntries[t];
+                    const response = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$apiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["apiRequest"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["COMPARE_SET_ANALYSIS_ENDPOINT"])(policyType), {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            leftPolicyIds: group.leftIds,
+                            rightPolicyIds: group.rightIds
+                        }),
+                        signal: controller.signal
+                    }, accessToken);
+                    if (controller.signal.aborted) return;
+                    const rawResp = response === null || response === void 0 ? void 0 : response.data;
+                    const saResp = (rawResp === null || rawResp === void 0 ? void 0 : rawResp.summary) !== undefined && Array.isArray(rawResp === null || rawResp === void 0 ? void 0 : rawResp.data) ? rawResp : ((_this = rawResp === null || rawResp === void 0 ? void 0 : rawResp.data) === null || _this === void 0 ? void 0 : _this.summary) !== undefined && Array.isArray((_this1 = rawResp === null || rawResp === void 0 ? void 0 : rawResp.data) === null || _this1 === void 0 ? void 0 : _this1.data) ? rawResp.data : null;
+                    if (saResp === null || saResp === void 0 ? void 0 : saResp.data) {
+                        allSetItems.push(...saResp.data.map((item)=>({
+                                ...item,
+                                status: normalizeSetAnalysisStatus(item.status)
+                            })));
+                        if (!mergedSummary) {
+                            mergedSummary = {
+                                ...saResp.summary
+                            };
+                        } else {
+                            // Merge summaries across types
+                            const s = saResp.summary;
+                            mergedSummary.leftPolicyCount += s.leftPolicyCount;
+                            mergedSummary.rightPolicyCount += s.rightPolicyCount;
+                            mergedSummary.matchCount += s.matchCount;
+                            mergedSummary.overlapCount += s.overlapCount;
+                            mergedSummary.conflictCount += s.conflictCount;
+                            mergedSummary.duplicateCount += s.duplicateCount;
+                            mergedSummary.missingInRightCount += s.missingInRightCount;
+                            mergedSummary.missingInLeftCount += s.missingInLeftCount;
+                            mergedSummary.totalSettings += s.totalSettings;
+                            mergedSummary.newInLeftCount += s.newInLeftCount;
+                            mergedSummary.newInRightCount += s.newInRightCount;
+                        }
+                    }
+                    setBatchProgress({
+                        done: t + 1,
+                        total: typeEntries.length
+                    });
+                }
+                if (allSetItems.length > 0 && mergedSummary) {
+                    setSetAnalysisItems(allSetItems);
+                    setSetAnalysisSummary(mergedSummary);
                     // Resolve definitions for friendly values
                     const ids = [
-                        ...new Set(saResp.data.map((i)=>i.settingDefinitionId))
+                        ...new Set(allSetItems.map((i)=>i.settingDefinitionId))
                     ];
                     if (ids.length > 0) {
                         try {
@@ -3579,10 +3700,6 @@ function PolicyComparison() {
                         } catch (e) {}
                     }
                 }
-                setBatchProgress({
-                    done: 1,
-                    total: 1
-                });
             }
             setSelectionCollapsed(true);
             setActiveTab('coverage');
@@ -3820,14 +3937,14 @@ function PolicyComparison() {
                                         className: "h-6 w-6 text-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1493,
+                                        lineNumber: 1587,
                                         columnNumber: 25
                                     }, this),
                                     "Compare existing policies in your environment"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1492,
+                                lineNumber: 1586,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3835,13 +3952,13 @@ function PolicyComparison() {
                                 children: "Select a new (unassigned) policy and compare it against existing policies to identify coverage, conflicts, and unique settings before enabling it."
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1496,
+                                lineNumber: 1590,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1491,
+                        lineNumber: 1585,
                         columnNumber: 17
                     }, this),
                     results.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3857,14 +3974,14 @@ function PolicyComparison() {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1504,
+                                        lineNumber: 1598,
                                         columnNumber: 33
                                     }, this),
                                     "Cancel"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1503,
+                                lineNumber: 1597,
                                 columnNumber: 29
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                 variant: "outline",
@@ -3876,14 +3993,14 @@ function PolicyComparison() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1508,
+                                        lineNumber: 1602,
                                         columnNumber: 33
                                     }, this),
                                     "Re-run"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1507,
+                                lineNumber: 1601,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3896,26 +4013,26 @@ function PolicyComparison() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1512,
+                                        lineNumber: 1606,
                                         columnNumber: 29
                                     }, this),
                                     "Export CSV"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1511,
+                                lineNumber: 1605,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1501,
+                        lineNumber: 1595,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1490,
+                lineNumber: 1584,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3931,13 +4048,13 @@ function PolicyComparison() {
                                         className: "h-4 w-4 text-muted-foreground"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1522,
+                                        lineNumber: 1616,
                                         columnNumber: 47
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                         className: "h-4 w-4 text-muted-foreground"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1522,
+                                        lineNumber: 1616,
                                         columnNumber: 108
                                     }, this),
                                     "Policy Selection",
@@ -3953,7 +4070,7 @@ function PolicyComparison() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1526,
+                                                lineNumber: 1620,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3965,19 +4082,19 @@ function PolicyComparison() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1527,
+                                                lineNumber: 1621,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1525,
+                                        lineNumber: 1619,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1521,
+                                lineNumber: 1615,
                                 columnNumber: 21
                             }, this),
                             !selectionCollapsed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -3988,7 +4105,7 @@ function PolicyComparison() {
                                         children: "source policies"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1533,
+                                        lineNumber: 1627,
                                         columnNumber: 48
                                     }, this),
                                     " on the left and one or more ",
@@ -3996,7 +4113,7 @@ function PolicyComparison() {
                                         children: "target policies"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1533,
+                                        lineNumber: 1627,
                                         columnNumber: 109
                                     }, this),
                                     " on the right. Use scope tag filters to quickly narrow down each side.",
@@ -4007,7 +4124,7 @@ function PolicyComparison() {
                                                 children: policies.length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1535,
+                                                lineNumber: 1629,
                                                 columnNumber: 62
                                             }, this),
                                             " policies."
@@ -4016,13 +4133,13 @@ function PolicyComparison() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1532,
+                                lineNumber: 1626,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1520,
+                        lineNumber: 1614,
                         columnNumber: 17
                     }, this),
                     !selectionCollapsed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4035,7 +4152,7 @@ function PolicyComparison() {
                                     className: "h-12 w-12 text-muted-foreground/40"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1544,
+                                    lineNumber: 1638,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4043,7 +4160,7 @@ function PolicyComparison() {
                                     children: "Load policies to get started."
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1545,
+                                    lineNumber: 1639,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4055,26 +4172,26 @@ function PolicyComparison() {
                                             className: "h-4 w-4 animate-spin"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1547,
+                                            lineNumber: 1641,
                                             columnNumber: 56
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__["RefreshCw"], {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1547,
+                                            lineNumber: 1641,
                                             columnNumber: 105
                                         }, this),
                                         loadingPolicies ? 'Loading…' : 'Load Policies'
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1546,
+                                    lineNumber: 1640,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/policies/page.tsx",
-                            lineNumber: 1543,
+                            lineNumber: 1637,
                             columnNumber: 29
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                             children: [
@@ -4094,7 +4211,7 @@ function PolicyComparison() {
                                                     label: "Filter by scope tag:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1556,
+                                                    lineNumber: 1650,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(MultiPolicySelect, {
@@ -4109,7 +4226,7 @@ function PolicyComparison() {
                                                     disabled: comparing
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1562,
+                                                    lineNumber: 1656,
                                                     columnNumber: 41
                                                 }, this),
                                                 sourcePolicyIds.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4120,7 +4237,7 @@ function PolicyComparison() {
                                                                 className: "h-3.5 w-3.5 text-green-500"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1573,
+                                                                lineNumber: 1667,
                                                                 columnNumber: 57
                                                             }, this),
                                                             "Single source — uses ",
@@ -4132,7 +4249,7 @@ function PolicyComparison() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1573,
+                                                                lineNumber: 1667,
                                                                 columnNumber: 133
                                                             }, this)
                                                         ]
@@ -4142,7 +4259,7 @@ function PolicyComparison() {
                                                                 className: "h-3.5 w-3.5 text-blue-500"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1574,
+                                                                lineNumber: 1668,
                                                                 columnNumber: 57
                                                             }, this),
                                                             sourcePolicyIds.length,
@@ -4156,14 +4273,14 @@ function PolicyComparison() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1574,
+                                                                lineNumber: 1668,
                                                                 columnNumber: 147
                                                             }, this)
                                                         ]
                                                     }, void 0, true)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1571,
+                                                    lineNumber: 1665,
                                                     columnNumber: 45
                                                 }, this),
                                                 loadingScopeTags && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4173,20 +4290,20 @@ function PolicyComparison() {
                                                             className: "h-3 w-3 animate-spin"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                                            lineNumber: 1578,
+                                                            lineNumber: 1672,
                                                             columnNumber: 131
                                                         }, this),
                                                         "Loading scope tags…"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1578,
+                                                    lineNumber: 1672,
                                                     columnNumber: 62
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1555,
+                                            lineNumber: 1649,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4202,7 +4319,7 @@ function PolicyComparison() {
                                                     label: "Filter by scope tag:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1583,
+                                                    lineNumber: 1677,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(MultiPolicySelect, {
@@ -4214,19 +4331,19 @@ function PolicyComparison() {
                                                     disabled: comparing
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1589,
+                                                    lineNumber: 1683,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1582,
+                                            lineNumber: 1676,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1553,
+                                    lineNumber: 1647,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4241,14 +4358,14 @@ function PolicyComparison() {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1601,
+                                                    lineNumber: 1695,
                                                     columnNumber: 41
                                                 }, this),
                                                 results.length > 0 ? 'Re-run Analysis' : setAnalysisItems ? 'Re-run Set Analysis' : 'Analyse Policy Overlap'
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1600,
+                                            lineNumber: 1694,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4264,14 +4381,14 @@ function PolicyComparison() {
                                                     className: "h-4 w-4 mr-2 ".concat(loadingPolicies ? 'animate-spin' : '')
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1605,
+                                                    lineNumber: 1699,
                                                     columnNumber: 41
                                                 }, this),
                                                 "Refresh"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1604,
+                                            lineNumber: 1698,
                                             columnNumber: 37
                                         }, this),
                                         !accounts.length && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4281,33 +4398,33 @@ function PolicyComparison() {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1607,
+                                                    lineNumber: 1701,
                                                     columnNumber: 123
                                                 }, this),
                                                 "Sign in first."
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1607,
+                                            lineNumber: 1701,
                                             columnNumber: 58
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1599,
+                                    lineNumber: 1693,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true)
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1541,
+                        lineNumber: 1635,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1519,
+                lineNumber: 1613,
                 columnNumber: 13
             }, this),
             comparing && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(LoadingBanner, {
@@ -4315,7 +4432,7 @@ function PolicyComparison() {
                 batchProgress: batchProgress
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1615,
+                lineNumber: 1709,
                 columnNumber: 27
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -4329,24 +4446,24 @@ function PolicyComparison() {
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1620,
+                                lineNumber: 1714,
                                 columnNumber: 89
                             }, this),
                             error
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1620,
+                        lineNumber: 1714,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/compare/policies/page.tsx",
-                    lineNumber: 1619,
+                    lineNumber: 1713,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1618,
+                lineNumber: 1712,
                 columnNumber: 17
             }, this),
             setAnalysisItems && setAnalysisSummary && !comparing && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4364,14 +4481,14 @@ function PolicyComparison() {
                                                 className: "h-5 w-5 text-primary"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1631,
+                                                lineNumber: 1725,
                                                 columnNumber: 33
                                             }, this),
                                             "Set Analysis Results"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1630,
+                                        lineNumber: 1724,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4386,13 +4503,13 @@ function PolicyComparison() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1633,
+                                        lineNumber: 1727,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1629,
+                                lineNumber: 1723,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4441,20 +4558,20 @@ function PolicyComparison() {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1647,
+                                        lineNumber: 1741,
                                         columnNumber: 29
                                     }, this),
                                     "Export CSV"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1637,
+                                lineNumber: 1731,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1628,
+                        lineNumber: 1722,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SetAnalysisView, {
@@ -4463,13 +4580,13 @@ function PolicyComparison() {
                         resolvedMap: resolvedMap
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1650,
+                        lineNumber: 1744,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1627,
+                lineNumber: 1721,
                 columnNumber: 17
             }, this),
             results.length > 0 && globalSummary && !comparing && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4479,7 +4596,7 @@ function PolicyComparison() {
                         results: results
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1658,
+                        lineNumber: 1752,
                         columnNumber: 21
                     }, this),
                     coverageSummary && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4499,12 +4616,12 @@ function PolicyComparison() {
                                                     className: "h-5 w-5 text-green-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1666,
+                                                    lineNumber: 1760,
                                                     columnNumber: 89
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1666,
+                                                lineNumber: 1760,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4514,7 +4631,7 @@ function PolicyComparison() {
                                                         children: "Covered settings"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1668,
+                                                        lineNumber: 1762,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4522,7 +4639,7 @@ function PolicyComparison() {
                                                         children: smartPct(coverageSummary.covered, coverageSummary.total)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1669,
+                                                        lineNumber: 1763,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4535,29 +4652,29 @@ function PolicyComparison() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1670,
+                                                        lineNumber: 1764,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1667,
+                                                lineNumber: 1761,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1665,
+                                        lineNumber: 1759,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1664,
+                                    lineNumber: 1758,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1663,
+                                lineNumber: 1757,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -4574,12 +4691,12 @@ function PolicyComparison() {
                                                     className: "h-5 w-5 text-red-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1678,
+                                                    lineNumber: 1772,
                                                     columnNumber: 87
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1678,
+                                                lineNumber: 1772,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4589,7 +4706,7 @@ function PolicyComparison() {
                                                         children: "Conflicting settings"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1680,
+                                                        lineNumber: 1774,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4597,7 +4714,7 @@ function PolicyComparison() {
                                                         children: smartPct(coverageSummary.conflict, coverageSummary.total)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1681,
+                                                        lineNumber: 1775,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4610,29 +4727,29 @@ function PolicyComparison() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1682,
+                                                        lineNumber: 1776,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1679,
+                                                lineNumber: 1773,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1677,
+                                        lineNumber: 1771,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1676,
+                                    lineNumber: 1770,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1675,
+                                lineNumber: 1769,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -4649,12 +4766,12 @@ function PolicyComparison() {
                                                     className: "h-5 w-5 text-blue-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1690,
+                                                    lineNumber: 1784,
                                                     columnNumber: 88
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1690,
+                                                lineNumber: 1784,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4664,7 +4781,7 @@ function PolicyComparison() {
                                                         children: "Not in tenant"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1692,
+                                                        lineNumber: 1786,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4672,7 +4789,7 @@ function PolicyComparison() {
                                                         children: smartPct(coverageSummary.notInTenant, coverageSummary.total)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1693,
+                                                        lineNumber: 1787,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4685,29 +4802,29 @@ function PolicyComparison() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1694,
+                                                        lineNumber: 1788,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1691,
+                                                lineNumber: 1785,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1689,
+                                        lineNumber: 1783,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1688,
+                                    lineNumber: 1782,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1687,
+                                lineNumber: 1781,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -4722,12 +4839,12 @@ function PolicyComparison() {
                                                     className: "h-5 w-5 text-muted-foreground"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1702,
+                                                    lineNumber: 1796,
                                                     columnNumber: 82
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1702,
+                                                lineNumber: 1796,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4737,7 +4854,7 @@ function PolicyComparison() {
                                                         children: "Policies analysed"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1704,
+                                                        lineNumber: 1798,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4745,7 +4862,7 @@ function PolicyComparison() {
                                                         children: results.length
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1705,
+                                                        lineNumber: 1799,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4756,35 +4873,35 @@ function PolicyComparison() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1706,
+                                                        lineNumber: 1800,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1703,
+                                                lineNumber: 1797,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1701,
+                                        lineNumber: 1795,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1700,
+                                    lineNumber: 1794,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1699,
+                                lineNumber: 1793,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1662,
+                        lineNumber: 1756,
                         columnNumber: 25
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4802,7 +4919,7 @@ function PolicyComparison() {
                                             className: "h-4 w-4 inline mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1721,
+                                            lineNumber: 1815,
                                             columnNumber: 41
                                         }, this),
                                         "Overall Coverage"
@@ -4813,7 +4930,7 @@ function PolicyComparison() {
                                             className: "h-4 w-4 inline mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1723,
+                                            lineNumber: 1817,
                                             columnNumber: 41
                                         }, this),
                                         "Per-Policy Detail"
@@ -4824,7 +4941,7 @@ function PolicyComparison() {
                                             className: "h-4 w-4 inline mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/policies/page.tsx",
-                                            lineNumber: 1724,
+                                            lineNumber: 1818,
                                             columnNumber: 41
                                         }, this),
                                         "Summary"
@@ -4832,12 +4949,12 @@ function PolicyComparison() {
                                 }, void 0, true)
                             }, tab, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1717,
+                                lineNumber: 1811,
                                 columnNumber: 29
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1715,
+                        lineNumber: 1809,
                         columnNumber: 21
                     }, this),
                     activeTab === 'coverage' && coverageSummary && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(CoverageTab, {
@@ -4846,7 +4963,7 @@ function PolicyComparison() {
                         resolvedMap: resolvedMap
                     }, void 0, false, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1730,
+                        lineNumber: 1824,
                         columnNumber: 25
                     }, this),
                     activeTab === 'detail' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4868,20 +4985,20 @@ function PolicyComparison() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1742,
+                                                lineNumber: 1836,
                                                 columnNumber: 53
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1742,
+                                                lineNumber: 1836,
                                                 columnNumber: 81
                                             }, this),
                                             detailFilter ? 'Show all policies' : 'Conflicts / new only'
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1741,
+                                        lineNumber: 1835,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4897,7 +5014,7 @@ function PolicyComparison() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1745,
+                                        lineNumber: 1839,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4912,12 +5029,12 @@ function PolicyComparison() {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1750,
+                                                    lineNumber: 1844,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1749,
+                                                lineNumber: 1843,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4929,24 +5046,24 @@ function PolicyComparison() {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                                    lineNumber: 1753,
+                                                    lineNumber: 1847,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1752,
+                                                lineNumber: 1846,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1748,
+                                        lineNumber: 1842,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1740,
+                                lineNumber: 1834,
                                 columnNumber: 29
                             }, this),
                             pagedResults.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4954,14 +5071,14 @@ function PolicyComparison() {
                                 children: "No policies match current filter."
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1759,
+                                lineNumber: 1853,
                                 columnNumber: 35
                             }, this) : pagedResults.map((r)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ResultCard, {
                                     result: r,
                                     resolvedMap: resolvedMap
                                 }, r.checkedPolicyId, false, {
                                     fileName: "[project]/app/compare/policies/page.tsx",
-                                    lineNumber: 1760,
+                                    lineNumber: 1854,
                                     columnNumber: 57
                                 }, this)),
                             pageCount > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4977,14 +5094,14 @@ function PolicyComparison() {
                                                 className: "h-4 w-4 mr-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1767,
+                                                lineNumber: 1861,
                                                 columnNumber: 41
                                             }, this),
                                             "Prev"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1766,
+                                        lineNumber: 1860,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4997,7 +5114,7 @@ function PolicyComparison() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1769,
+                                        lineNumber: 1863,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -5011,25 +5128,25 @@ function PolicyComparison() {
                                                 className: "h-4 w-4 ml-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1771,
+                                                lineNumber: 1865,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1770,
+                                        lineNumber: 1864,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1765,
+                                lineNumber: 1859,
                                 columnNumber: 33
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1738,
+                        lineNumber: 1832,
                         columnNumber: 25
                     }, this),
                     activeTab === 'summary' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -5043,27 +5160,27 @@ function PolicyComparison() {
                                                 className: "h-4 w-4 text-primary"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1781,
+                                                lineNumber: 1875,
                                                 columnNumber: 90
                                             }, this),
                                             "Per-Policy Overlap Breakdown"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1781,
+                                        lineNumber: 1875,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                         children: "Coverage, conflicts and unique settings per existing policy compared."
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1782,
+                                        lineNumber: 1876,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1780,
+                                lineNumber: 1874,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5089,7 +5206,7 @@ function PolicyComparison() {
                                                         children: r.checkedPolicyName
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1797,
+                                                        lineNumber: 1891,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5100,13 +5217,13 @@ function PolicyComparison() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1798,
+                                                        lineNumber: 1892,
                                                         columnNumber: 49
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1796,
+                                                lineNumber: 1890,
                                                 columnNumber: 45
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5119,7 +5236,7 @@ function PolicyComparison() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1801,
+                                                        lineNumber: 1895,
                                                         columnNumber: 60
                                                     }, this),
                                                     dp > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5129,7 +5246,7 @@ function PolicyComparison() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1802,
+                                                        lineNumber: 1896,
                                                         columnNumber: 60
                                                     }, this),
                                                     t > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5139,13 +5256,13 @@ function PolicyComparison() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1803,
+                                                        lineNumber: 1897,
                                                         columnNumber: 61
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1800,
+                                                lineNumber: 1894,
                                                 columnNumber: 45
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5181,7 +5298,7 @@ function PolicyComparison() {
                                                                         children: k.label
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 1814,
+                                                                        lineNumber: 1908,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5189,13 +5306,13 @@ function PolicyComparison() {
                                                                         children: smartPct(k.n, t)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                                        lineNumber: 1815,
+                                                                        lineNumber: 1909,
                                                                         columnNumber: 61
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1813,
+                                                                lineNumber: 1907,
                                                                 columnNumber: 57
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ProgressBar, {
@@ -5203,7 +5320,7 @@ function PolicyComparison() {
                                                                 color: k.color
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1817,
+                                                                lineNumber: 1911,
                                                                 columnNumber: 57
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5214,48 +5331,48 @@ function PolicyComparison() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                                lineNumber: 1818,
+                                                                lineNumber: 1912,
                                                                 columnNumber: 57
                                                             }, this)
                                                         ]
                                                     }, k.label, true, {
                                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                                        lineNumber: 1812,
+                                                        lineNumber: 1906,
                                                         columnNumber: 53
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                                lineNumber: 1805,
+                                                lineNumber: 1899,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, r.checkedPolicyId, true, {
                                         fileName: "[project]/app/compare/policies/page.tsx",
-                                        lineNumber: 1795,
+                                        lineNumber: 1889,
                                         columnNumber: 41
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/policies/page.tsx",
-                                lineNumber: 1784,
+                                lineNumber: 1878,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/policies/page.tsx",
-                        lineNumber: 1779,
+                        lineNumber: 1873,
                         columnNumber: 25
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/policies/page.tsx",
-                lineNumber: 1656,
+                lineNumber: 1750,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/policies/page.tsx",
-        lineNumber: 1488,
+        lineNumber: 1582,
         columnNumber: 9
     }, this);
 }
