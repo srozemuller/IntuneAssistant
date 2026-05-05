@@ -35,7 +35,39 @@ interface ScopeTag {
 
 // ── Set-analysis types ─────────────────────────────────────────────────────────
 
-type SetAnalysisStatus = 'Match' | 'Duplicate' | 'Conflict' | 'MissingInLeft' | 'MissingInRight' | 'NewInLeft' | 'NewInRight';
+type SetAnalysisStatus = 'Match' | 'Duplicate' | 'Conflict' | 'MissingInLeft' | 'MissingInRight' | 'NewInLeft' | 'NewInRight' | 'Overlap';
+
+// Normalize API status strings or numeric enum values → SetAnalysisStatus
+function normalizeSetAnalysisStatus(raw: unknown): SetAnalysisStatus {
+    // Numeric enum: 0=Overlap,1=Conflict,2=Duplicate,3=MissingInRight,4=MissingInLeft,5=Match,6=NewInLeft,7=NewInRight
+    const numericMap: Record<number, SetAnalysisStatus> = {
+        0: 'Overlap',
+        1: 'Conflict',
+        2: 'Duplicate',
+        3: 'MissingInRight',
+        4: 'MissingInLeft',
+        5: 'Match',
+        6: 'NewInLeft',
+        7: 'NewInRight',
+    };
+    if (typeof raw === 'number') return numericMap[raw] ?? 'Match';
+    if (!raw || typeof raw !== 'string') return 'Match';
+    const map: Record<string, SetAnalysisStatus> = {
+        'match': 'Match',
+        'duplicate': 'Duplicate',
+        'conflict': 'Conflict',
+        'missinginleft': 'MissingInLeft',
+        'missing in left': 'MissingInLeft',
+        'missinginright': 'MissingInRight',
+        'missing in right': 'MissingInRight',
+        'newinleft': 'NewInLeft',
+        'new in left': 'NewInLeft',
+        'newinright': 'NewInRight',
+        'new in right': 'NewInRight',
+        'overlap': 'Overlap',
+    };
+    return map[raw.toLowerCase()] ?? (raw as SetAnalysisStatus);
+}
 
 interface SetAnalysisOccurrence {
     policyId: string;
@@ -202,8 +234,8 @@ function LoadingBanner({ onCancel, batchProgress }: { onCancel: () => void; batc
                     <p className="text-xs text-muted-foreground mt-0.5">
                         {batchProgress
                             ? batchProgress.total === 1
-                                ? 'Running set analysis across all selected policies…'
-                                : `Batch ${batchProgress.done} of ${batchProgress.total} — comparing ${batchProgress.done * 25} policies so far`
+                                ? 'Running comparison…'
+                                : `Type group ${batchProgress.done} of ${batchProgress.total} — comparing policies of the same type`
                             : 'Preparing…'
                         }
                     </p>
@@ -903,10 +935,11 @@ const setAnalysisStatusConfig: Record<SetAnalysisStatus, { label: string; badge:
     MissingInRight: { label: 'Missing in right',  badge: 'bg-muted text-muted-foreground border-border',                                             row: '',                                    icon: <MinusCircle className="h-3 w-3" /> },
     NewInLeft:      { label: 'New in left',       badge: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300',        row: 'bg-blue-50/20 dark:bg-blue-900/5',    icon: <Sparkles className="h-3 w-3" /> },
     NewInRight:     { label: 'New in right',      badge: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300', row: 'bg-purple-50/20 dark:bg-purple-900/5', icon: <Sparkles className="h-3 w-3" /> },
+    Overlap:        { label: 'Overlap',           badge: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300',   row: 'bg-orange-50/20 dark:bg-orange-900/5',  icon: <Layers className="h-3 w-3" /> },
 };
 
 function SetAnalysisStatusBadge({ status }: { status: SetAnalysisStatus }) {
-    const c = setAnalysisStatusConfig[status];
+    const c = setAnalysisStatusConfig[status] ?? { label: status, badge: 'bg-muted text-muted-foreground border-border', icon: null };
     return (
         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium whitespace-nowrap ${c.badge}`}>
             {c.icon}{c.label}
@@ -1021,7 +1054,7 @@ function SetAnalysisView({ items, summary, resolvedMap }: {
                 {filtered.length === 0
                     ? <div className="p-8 text-center text-sm text-muted-foreground">No settings match the current filter.</div>
                     : filtered.map(item => {
-                        const cfg = setAnalysisStatusConfig[item.status];
+                        const cfg = setAnalysisStatusConfig[item.status] ?? { label: item.status, badge: 'bg-muted text-muted-foreground border-border', row: '', icon: null };
                         const isExpanded = expandedIds.has(item.settingDefinitionId);
                         return (
                             <div key={item.settingDefinitionId} className={`border-b last:border-b-0 ${cfg.row}`}>
@@ -1270,15 +1303,25 @@ export default function PolicyComparison() {
             const accessToken = tokenResp.accessToken;
             const allResults: PolicyCompareResult[] = [];
 
-            // Derive policyType from the first source policy
             const sourcePolicies = policies.filter(p => sourcePolicyIds.includes(p.id));
-            const policyType = sourcePolicies[0]?.policyType ?? 'SettingsCatalog';
+            const existingPolicies = policies.filter(p => existingPolicyIds.includes(p.id));
 
             if (sourcePolicyIds.length === 1) {
-                // ── Single source: use existing batched /compare/{type} endpoint ──────
+                // ── Single source: group right-side by type and send a request per type ──
+                const sourcePolicy = sourcePolicies[0];
+                const policyType = sourcePolicy?.policyType ?? 'SettingsCatalog';
+                // Only compare right-side policies of the same type
+                const matchingRight = existingPolicies.filter(p => p.policyType === policyType).map(p => p.id);
+
+                if (matchingRight.length === 0) {
+                    setError('No existing policies of the same type as the selected source policy.');
+                    setComparing(false);
+                    return;
+                }
+
                 const batches: string[][] = [];
-                for (let i = 0; i < existingPolicyIds.length; i += BATCH_SIZE)
-                    batches.push(existingPolicyIds.slice(i, i + BATCH_SIZE));
+                for (let i = 0; i < matchingRight.length; i += BATCH_SIZE)
+                    batches.push(matchingRight.slice(i, i + BATCH_SIZE));
 
                 setBatchProgress({ done: 0, total: batches.length });
 
@@ -1305,38 +1348,90 @@ export default function PolicyComparison() {
                     setBatchProgress({ done: b + 1, total: batches.length });
                 }
             } else {
-                // ── Multiple sources: single /compare/{type}/set-analysis call ────────
-                setBatchProgress({ done: 0, total: 1 });
+                // ── Multiple sources: group by policyType and send one set-analysis request per type ──
+                // Build a map: policyType → { leftIds, rightIds }
+                const typeGroups = new Map<string, { leftIds: string[]; rightIds: string[] }>();
+                for (const p of sourcePolicies) {
+                    if (!typeGroups.has(p.policyType)) typeGroups.set(p.policyType, { leftIds: [], rightIds: [] });
+                    typeGroups.get(p.policyType)!.leftIds.push(p.id);
+                }
+                for (const p of existingPolicies) {
+                    if (typeGroups.has(p.policyType)) {
+                        typeGroups.get(p.policyType)!.rightIds.push(p.id);
+                    }
+                    // Silently skip right-side policies whose type has no left-side counterpart
+                }
 
-                const response = await apiRequest<{ data: SetAnalysisResponse }>(
-                    COMPARE_SET_ANALYSIS_ENDPOINT(policyType),
-                    {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            leftPolicyIds: sourcePolicyIds,
-                            rightPolicyIds: existingPolicyIds,
-                        }),
-                        signal: controller.signal,
-                    },
-                    accessToken
-                );
-                if (controller.signal.aborted) return;
+                const typeEntries = [...typeGroups.entries()].filter(([, g]) => g.leftIds.length > 0 && g.rightIds.length > 0);
+                if (typeEntries.length === 0) {
+                    setError('No matching policy types between left and right selections. Please compare policies of the same type.');
+                    setComparing(false);
+                    return;
+                }
 
-                // Normalize response: API may return the SetAnalysisResponse directly or
-                // wrapped in an extra { data: ... } envelope.
-                const rawResp = response?.data as unknown as Record<string, unknown>;
-                const saResp: SetAnalysisResponse | null =
-                    (rawResp?.summary !== undefined && Array.isArray(rawResp?.data))
-                        ? (rawResp as unknown as SetAnalysisResponse)
-                        : ((rawResp?.data as Record<string, unknown>)?.summary !== undefined &&
-                           Array.isArray((rawResp?.data as Record<string, unknown>)?.data))
-                            ? (rawResp.data as unknown as SetAnalysisResponse)
-                            : null;
-                if (saResp?.data) {
-                    setSetAnalysisItems(saResp.data);
-                    setSetAnalysisSummary(saResp.summary ?? null);
+                setBatchProgress({ done: 0, total: typeEntries.length });
+
+                const allSetItems: SetAnalysisItem[] = [];
+                let mergedSummary: SetAnalysisSummary | null = null;
+
+                for (let t = 0; t < typeEntries.length; t++) {
+                    if (controller.signal.aborted) return;
+                    const [policyType, group] = typeEntries[t];
+
+                    const response = await apiRequest<{ data: SetAnalysisResponse }>(
+                        COMPARE_SET_ANALYSIS_ENDPOINT(policyType),
+                        {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                leftPolicyIds: group.leftIds,
+                                rightPolicyIds: group.rightIds,
+                            }),
+                            signal: controller.signal,
+                        },
+                        accessToken
+                    );
+                    if (controller.signal.aborted) return;
+
+                    const rawResp = response?.data as unknown as Record<string, unknown>;
+                    const saResp: SetAnalysisResponse | null =
+                        (rawResp?.summary !== undefined && Array.isArray(rawResp?.data))
+                            ? (rawResp as unknown as SetAnalysisResponse)
+                            : ((rawResp?.data as Record<string, unknown>)?.summary !== undefined &&
+                               Array.isArray((rawResp?.data as Record<string, unknown>)?.data))
+                                ? (rawResp.data as unknown as SetAnalysisResponse)
+                                : null;
+
+                    if (saResp?.data) {
+                        allSetItems.push(...saResp.data.map(item => ({
+                            ...item,
+                            status: normalizeSetAnalysisStatus(item.status),
+                        })));
+                        if (!mergedSummary) {
+                            mergedSummary = { ...saResp.summary };
+                        } else {
+                            // Merge summaries across types
+                            const s = saResp.summary;
+                            mergedSummary.leftPolicyCount  += s.leftPolicyCount;
+                            mergedSummary.rightPolicyCount += s.rightPolicyCount;
+                            mergedSummary.matchCount       += s.matchCount;
+                            mergedSummary.overlapCount     += s.overlapCount;
+                            mergedSummary.conflictCount    += s.conflictCount;
+                            mergedSummary.duplicateCount   += s.duplicateCount;
+                            mergedSummary.missingInRightCount += s.missingInRightCount;
+                            mergedSummary.missingInLeftCount  += s.missingInLeftCount;
+                            mergedSummary.totalSettings    += s.totalSettings;
+                            mergedSummary.newInLeftCount   += s.newInLeftCount;
+                            mergedSummary.newInRightCount  += s.newInRightCount;
+                        }
+                    }
+                    setBatchProgress({ done: t + 1, total: typeEntries.length });
+                }
+
+                if (allSetItems.length > 0 && mergedSummary) {
+                    setSetAnalysisItems(allSetItems);
+                    setSetAnalysisSummary(mergedSummary);
                     // Resolve definitions for friendly values
-                    const ids = [...new Set(saResp.data.map(i => i.settingDefinitionId))];
+                    const ids = [...new Set(allSetItems.map(i => i.settingDefinitionId))];
                     if (ids.length > 0) {
                         try {
                             const resolveResp = await apiRequest<ResolveApiResponse>(
@@ -1351,7 +1446,6 @@ export default function PolicyComparison() {
                         } catch { /* non-critical */ }
                     }
                 }
-                setBatchProgress({ done: 1, total: 1 });
             }
 
             setSelectionCollapsed(true);

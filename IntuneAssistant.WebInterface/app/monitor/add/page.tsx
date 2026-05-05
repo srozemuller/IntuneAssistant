@@ -15,7 +15,7 @@ import {
     CheckCircle,
     Loader2,
     AlertCircle,
-    Clock
+    Clock, LaptopIcon
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import {
@@ -98,6 +98,32 @@ export default function AddMonitorPage() {
     }>>([]);
     const [loadingMonitors, setLoadingMonitors] = useState(true);
 
+    const TemplatesSkeleton = () => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+            {[...Array(3)].map((_, i) => (
+                <div key={i} className="border-l-4 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5"></div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                        <div className="flex flex-wrap gap-1">
+                            {[...Array(3)].map((_, j) => (
+                                <div key={j} className="h-5 bg-gray-200 dark:bg-gray-700 rounded-full w-28"></div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded w-full mt-2"></div>
+                </div>
+            ))}
+        </div>
+    );
+
     // Fetch existing monitors on mount - only if user is authenticated
     useEffect(() => {
         const fetchExistingMonitors = async () => {
@@ -154,6 +180,39 @@ export default function AddMonitorPage() {
                 'microsoft.intune.devicecompliancepolicyios',
                 'microsoft.intune.devicecompliancepolicymacos',
                 'microsoft.intune.devicecompliancepolicywindows10'
+            ]
+        },
+        {
+            id: 'windows10-config-policies',
+            title: 'Windows Configuration Policies Monitor',
+            description: 'Monitor all device configuration policies for Windows platforms.',
+            icon: LaptopIcon,
+            gradient: 'from-yellow-500 to-amber-500',
+            bgGradient: 'from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20',
+            borderColor: 'border-yellow-200 dark:border-yellow-800',
+            resources: [
+                "microsoft.intune.deviceconfigurationadministrativetemplatepolicywindows10",
+                "microsoft.intune.deviceconfigurationcustompolicywindows10",
+                "microsoft.intune.deviceconfigurationdefenderforendpointonboardingpolicywindows10",
+                "microsoft.intune.deviceconfigurationdeliveryoptimizationpolicywindows10",
+                "microsoft.intune.deviceconfigurationdomainjoinpolicywindows10",
+                "microsoft.intune.deviceconfigurationemailprofilepolicywindows10",
+                "microsoft.intune.deviceconfigurationendpointprotectionpolicywindows10",
+                "microsoft.intune.deviceconfigurationfirmwareinterfacepolicywindows10",
+                "microsoft.intune.deviceconfigurationhealthmonitoringconfigurationpolicywindows10",
+                "microsoft.intune.deviceconfigurationidentityprotectionpolicywindows10",
+                "microsoft.intune.deviceconfigurationimportedpfxcertificatepolicywindows10",
+                "microsoft.intune.deviceconfigurationkioskpolicywindows10",
+                "microsoft.intune.deviceconfigurationnetworkboundarypolicywindows10",
+                "microsoft.intune.deviceconfigurationpkcscertificatepolicywindows10",
+                "microsoft.intune.deviceconfigurationpolicywindows10",
+                "microsoft.intune.deviceconfigurationscepcertificatepolicywindows10",
+                "microsoft.intune.deviceconfigurationsecureassessmentpolicywindows10",
+                "microsoft.intune.deviceconfigurationsharedmultidevicepolicywindows10",
+                "microsoft.intune.deviceconfigurationtrustedcertificatepolicywindows10",
+                "microsoft.intune.deviceconfigurationvpnpolicywindows10",
+                "microsoft.intune.deviceconfigurationwindowsteampolicywindows10",
+                "microsoft.intune.deviceconfigurationwirednetworkpolicywindows10",
             ]
         },
         {
@@ -518,21 +577,7 @@ export default function AddMonitorPage() {
                         </Card>
                     )}
 
-                    {loadingMonitors && accounts.length > 0 && (
-                        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                            <CardContent className="pt-6">
-                                <div className="text-center py-12">
-                                    <Loader2 className="h-12 w-12 mx-auto text-blue-500 animate-spin mb-4" />
-                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                        Loading Available Monitors
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-300">
-                                        Checking existing monitors...
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                    {loadingMonitors && accounts.length > 0 && <TemplatesSkeleton />}
 
                     {!loadingMonitors && accounts.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
