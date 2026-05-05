@@ -102,11 +102,11 @@ function getHealthStatusInfo(healthStatus: number, timeSince: string) {
 function getJobTypeName(jobType: number): string {
     const types: Record<number, string> = {
         1: 'Intune Audit Report',
-        2: 'Entra Audit Report',
-        3: 'Compliance Report',
-        4: 'Security Report',
-        5: 'Configuration Backup',
-        6: 'Automated Remediation',
+        //2: 'Entra Audit Report',
+        //3: 'Compliance Report',
+        //4: 'Security Report',
+        //5: 'Configuration Backup',
+        //6: 'Automated Remediation',
         7: 'Configuration Drift Monitor',
     };
     return types[jobType] || `Job Type ${jobType}`;
