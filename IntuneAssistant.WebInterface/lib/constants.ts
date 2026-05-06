@@ -41,6 +41,11 @@ export const DEVICES_STATS_ENDPOINT = `${DEVICES_ENDPOINT}/stats`;
 export const GROUPS_LIST_ENDPOINT = `${API_BASE_URL}/groups/list`;
 
 export const COMPARE_ENDPOINT = `${API_BASE_URL}/compare`;
+
+export const CA_ASSIGNMENTS_COMPARE_ENDPOINT = `${API_BASE_URL}/assignments/ca/compare`;
+export const CA_ASSIGNMENTS_MIGRATE_ENDPOINT = `${API_BASE_URL}/assignments/ca/migrate`;
+// Dedicated post-migration validation endpoint for CA assignments
+export const CA_ASSIGNMENTS_VALIDATE_ENDPOINT = `${API_BASE_URL}/assignments/ca/validate`;
 export const COMPARE_SET_ANALYSIS_ENDPOINT = (policyType: string) => `${API_BASE_URL}/compare/${policyType}/set-analysis`;
 export const CUSTOMER_ENDPOINT = `${API_BASE_URL}/customer`;
 export const CUSTOMER_TENANTS_ENDPOINT = `${API_BASE_URL}/customer/tenants`;

@@ -378,7 +378,8 @@ export function Sidebar() {
                     icon: "Rocket",
                     href: "/deployment",
                     submenu: [
-                        { title: "Deploy Assignments", href: "/deployment/assignments" }
+                        { title: "Intune Assignments", href: "/deployment/assignments" },
+                        ...(isBetaTester() ? [{ title: "Conditional Access Assignments", href: "/deployment/conditional-access" }] : [])
                     ]
                 }
             ]
