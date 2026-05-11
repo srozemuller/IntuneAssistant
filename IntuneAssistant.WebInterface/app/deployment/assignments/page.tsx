@@ -18,7 +18,8 @@ import {
     GROUPS_ENDPOINT,
     ASSIGNMENTS_FILTERS_ENDPOINT,
     ITEMS_PER_PAGE,
-    ROLE_SCOPETAGS_ENDPOINT
+    ROLE_SCOPETAGS_ENDPOINT,
+    MIGRATION_BUILDER_DEPLOYMENT_KEY,
 } from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
 import {useGroupDetails} from '@/hooks/useGroupDetails';
@@ -281,6 +282,7 @@ function AssignmentRolloutContent() {
     const [currentStep, setCurrentStep] = useState<'upload' | 'compare' | 'migrate' | 'results' | 'validate' | 'summary'>('upload');
 
     const [csvData, setCsvData] = useState<CSVRow[]>([]);
+    const [fromMigrationBuilder, setFromMigrationBuilder] = useState(false);
     const [comparisonResults, setComparisonResults] = useState<ComparisonResult[]>([]);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [migratedRowIds, setMigratedRowIds] = useState<string[]>([]); // frozen snapshot of what was actually migrated
@@ -3645,6 +3647,23 @@ const validateAssignments = async () => {
         </Dialog>
     );
 
+    // ── Auto-load from Migration Builder ─────────────────────────────────────
+    useEffect(() => {
+        const stored = sessionStorage.getItem(MIGRATION_BUILDER_DEPLOYMENT_KEY);
+        if (!stored) return;
+        sessionStorage.removeItem(MIGRATION_BUILDER_DEPLOYMENT_KEY); // consume once
+        try {
+            const parsed = parseCSV(stored);
+            setCsvData(parsed);
+            setFromMigrationBuilder(true);
+            setCurrentStep('upload'); // land on the upload/preview step so user can review & compare
+        } catch (e) {
+            console.error('Failed to load migration builder data', e);
+        }
+        // parseCSV is stable (defined in render scope but doesn't change)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     useEffect(() => {
         let filtered = comparisonResults;
 
@@ -3872,6 +3891,25 @@ const validateAssignments = async () => {
                         </p>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                        {/* Banner when loaded from Migration Builder */}
+                        {fromMigrationBuilder && csvData.length > 0 && (
+                            <div className="flex items-start gap-3 rounded-lg border border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700 px-4 py-3">
+                                <CheckCircle2 className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 shrink-0" />
+                                <div className="flex-1 text-sm">
+                                    <p className="font-semibold text-purple-800 dark:text-purple-200">
+                                        {csvData.length} rows loaded from the Migration Builder
+                                    </p>
+                                    <p className="text-purple-700 dark:text-purple-300 mt-0.5">
+                                        Review the rows below, then click <strong>Compare Assignments</strong> to continue.
+                                    </p>
+                                </div>
+                                <button className="text-purple-400 hover:text-purple-600"
+                                    onClick={() => setFromMigrationBuilder(false)}>
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
+                        )}
+
                         <div
                             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                                 isDragOver

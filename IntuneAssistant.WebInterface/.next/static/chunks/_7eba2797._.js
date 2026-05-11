@@ -422,12 +422,12 @@ const TableRow = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$n
                 children: column.render ? column.render(getCellValue(row, column), row) : String(getCellValue(row, column) || '')
             }, column.key, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 87,
+                lineNumber: 88,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0)))
     }, void 0, false, {
         fileName: "[project]/components/DataTable.tsx",
-        lineNumber: 71,
+        lineNumber: 72,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 }, "PRIOWs9bezaAbp8UlGmbaZMoYYA="));
@@ -435,7 +435,7 @@ _c = TableRow;
 TableRow.displayName = 'TableRow';
 function DataTableComponent(props) {
     _s1();
-    const { data, columns: initialColumns, className: _className = '', onRowClick, currentPage = 1, totalPages: _totalPages = 1, itemsPerPage = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ITEMS_PER_PAGE"], rowClassName, onPageChange, onItemsPerPageChange, showPagination = true, showSearch = true, searchPlaceholder = "Search...", onSelectionChange, selectedRows = [], expandedRowRender } = props;
+    const { data, columns: initialColumns, className: _className = '', onRowClick, currentPage = 1, totalPages: _totalPages = 1, itemsPerPage = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ITEMS_PER_PAGE"], rowClassName, onPageChange, onItemsPerPageChange, showPagination = true, showSearch = true, searchPlaceholder = "Search...", onSelectionChange, selectedRows = [], expandedRowRender, onSearchChange } = props;
     // Local pagination state to support uncontrolled usage
     const [internalCurrentPage, setInternalCurrentPage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(currentPage);
     const [internalItemsPerPage, setInternalItemsPerPage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(itemsPerPage);
@@ -539,7 +539,7 @@ function DataTableComponent(props) {
                                     className: "rounded border-input text-primary focus:ring-ring"
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 193,
+                                    lineNumber: 195,
                                     columnNumber: 25
                                 }, this)
                         }["DataTableComponent.useMemo[columnsWithSelection]"]
@@ -592,6 +592,7 @@ function DataTableComponent(props) {
             const timer = setTimeout({
                 "DataTableComponent.useEffect.timer": ()=>{
                     setDebouncedSearchTerm(searchTerm);
+                    onSearchChange === null || onSearchChange === void 0 ? void 0 : onSearchChange(searchTerm);
                 }
             }["DataTableComponent.useEffect.timer"], 300);
             return ({
@@ -599,7 +600,8 @@ function DataTableComponent(props) {
             })["DataTableComponent.useEffect"];
         }
     }["DataTableComponent.useEffect"], [
-        searchTerm
+        searchTerm,
+        onSearchChange
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "DataTableComponent.useEffect": ()=>{
@@ -862,7 +864,7 @@ function DataTableComponent(props) {
                     className: "h-4 w-4 text-muted-foreground"
                 }, void 0, false, {
                     fileName: "[project]/components/DataTable.tsx",
-                    lineNumber: 442,
+                    lineNumber: 445,
                     columnNumber: 20
                 }, this);
             }
@@ -870,13 +872,13 @@ function DataTableComponent(props) {
                 className: "h-4 w-4 text-foreground"
             }, void 0, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 446,
+                lineNumber: 449,
                 columnNumber: 15
             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                 className: "h-4 w-4 text-foreground"
             }, void 0, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 447,
+                lineNumber: 450,
                 columnNumber: 15
             }, this);
         }
@@ -1035,7 +1037,7 @@ function DataTableComponent(props) {
                                 className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 563,
+                                lineNumber: 566,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1046,7 +1048,7 @@ function DataTableComponent(props) {
                                 className: "w-full pl-10 pr-10 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 564,
+                                lineNumber: 567,
                                 columnNumber: 25
                             }, this),
                             searchTerm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1056,18 +1058,18 @@ function DataTableComponent(props) {
                                     className: "h-4 w-4"
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 576,
+                                    lineNumber: 579,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 572,
+                                lineNumber: 575,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 562,
+                        lineNumber: 565,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenu"], {
@@ -1083,19 +1085,19 @@ function DataTableComponent(props) {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 585,
+                                            lineNumber: 588,
                                             columnNumber: 33
                                         }, this),
                                         "Columns"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 584,
+                                    lineNumber: 587,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 583,
+                                lineNumber: 586,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -1106,12 +1108,12 @@ function DataTableComponent(props) {
                                         children: "Toggle columns"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 590,
+                                        lineNumber: 593,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 591,
+                                        lineNumber: 594,
                                         columnNumber: 29
                                     }, this),
                                     columns.filter((col)=>col.key !== '_select') // Don't allow hiding selection column
@@ -1125,37 +1127,37 @@ function DataTableComponent(props) {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/DataTable.tsx",
-                                                        lineNumber: 602,
+                                                        lineNumber: 605,
                                                         columnNumber: 49
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$eye$2d$off$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__EyeOff$3e$__["EyeOff"], {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/DataTable.tsx",
-                                                        lineNumber: 604,
+                                                        lineNumber: 607,
                                                         columnNumber: 49
                                                     }, this),
                                                     column.label
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 600,
+                                                lineNumber: 603,
                                                 columnNumber: 41
                                             }, this)
                                         }, column.key, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 595,
+                                            lineNumber: 598,
                                             columnNumber: 37
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 589,
+                                lineNumber: 592,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 582,
+                        lineNumber: 585,
                         columnNumber: 21
                     }, this),
                     searchTerm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1168,13 +1170,13 @@ function DataTableComponent(props) {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 614,
+                        lineNumber: 617,
                         columnNumber: 25
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 561,
+                lineNumber: 564,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1230,19 +1232,19 @@ function DataTableComponent(props) {
                                                             children: column.label
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/DataTable.tsx",
-                                                            lineNumber: 676,
+                                                            lineNumber: 679,
                                                             columnNumber: 49
                                                         }, this),
                                                         column.sortable !== false && column.key !== '_select' && getSortIcon(column.key)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/DataTable.tsx",
-                                                    lineNumber: 664,
+                                                    lineNumber: 667,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 663,
+                                                lineNumber: 666,
                                                 columnNumber: 41
                                             }, this),
                                             column.key !== '_select' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1253,29 +1255,29 @@ function DataTableComponent(props) {
                                                     className: "absolute right-0 top-0 h-full w-px bg-transparent group-hover:bg-primary/50 group-active:bg-primary transition-colors"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/DataTable.tsx",
-                                                    lineNumber: 690,
+                                                    lineNumber: 693,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 685,
+                                                lineNumber: 688,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, column.key, true, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 655,
+                                        lineNumber: 658,
                                         columnNumber: 37
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 649,
+                                lineNumber: 652,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 648,
+                            lineNumber: 651,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1295,7 +1297,7 @@ function DataTableComponent(props) {
                                             getCellValue: getCellValue
                                         }, void 0, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 704,
+                                            lineNumber: 707,
                                             columnNumber: 41
                                         }, this),
                                         expandedContent && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -1305,18 +1307,18 @@ function DataTableComponent(props) {
                                                 children: expandedContent
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 716,
+                                                lineNumber: 719,
                                                 columnNumber: 49
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/DataTable.tsx",
-                                            lineNumber: 715,
+                                            lineNumber: 718,
                                             columnNumber: 45
                                         }, this)
                                     ]
                                 }, row.id ? "".concat(String(row.id), "-").concat(rowIndex) : rowIndex, true, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 703,
+                                    lineNumber: 706,
                                     columnNumber: 37
                                 }, this);
                             }) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -1326,28 +1328,28 @@ function DataTableComponent(props) {
                                     children: searchTerm ? 'No results found for your search.' : 'No data available.'
                                 }, void 0, false, {
                                     fileName: "[project]/components/DataTable.tsx",
-                                    lineNumber: 729,
+                                    lineNumber: 732,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 728,
+                                lineNumber: 731,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/DataTable.tsx",
-                            lineNumber: 698,
+                            lineNumber: 701,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/DataTable.tsx",
-                    lineNumber: 636,
+                    lineNumber: 639,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 622,
+                lineNumber: 625,
                 columnNumber: 13
             }, this),
             showPagination && sortedData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1370,7 +1372,7 @@ function DataTableComponent(props) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 745,
+                                lineNumber: 748,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1381,7 +1383,7 @@ function DataTableComponent(props) {
                                         children: "Items per page:"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 750,
+                                        lineNumber: 753,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1398,7 +1400,7 @@ function DataTableComponent(props) {
                                                 children: "10"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 760,
+                                                lineNumber: 763,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1406,7 +1408,7 @@ function DataTableComponent(props) {
                                                 children: "25"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 761,
+                                                lineNumber: 764,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1414,7 +1416,7 @@ function DataTableComponent(props) {
                                                 children: "50"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 762,
+                                                lineNumber: 765,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1422,25 +1424,25 @@ function DataTableComponent(props) {
                                                 children: "100"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/DataTable.tsx",
-                                                lineNumber: 763,
+                                                lineNumber: 766,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 751,
+                                        lineNumber: 754,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 749,
+                                lineNumber: 752,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 744,
+                        lineNumber: 747,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1456,14 +1458,14 @@ function DataTableComponent(props) {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 774,
+                                        lineNumber: 777,
                                         columnNumber: 29
                                     }, this),
                                     "Previous"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 768,
+                                lineNumber: 771,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1476,12 +1478,12 @@ function DataTableComponent(props) {
                                         children: pageNum
                                     }, pageNum, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 780,
+                                        lineNumber: 783,
                                         columnNumber: 33
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 778,
+                                lineNumber: 781,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1495,31 +1497,31 @@ function DataTableComponent(props) {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/DataTable.tsx",
-                                        lineNumber: 799,
+                                        lineNumber: 802,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/DataTable.tsx",
-                                lineNumber: 792,
+                                lineNumber: 795,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/DataTable.tsx",
-                        lineNumber: 767,
+                        lineNumber: 770,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/DataTable.tsx",
-                lineNumber: 743,
+                lineNumber: 746,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/DataTable.tsx",
-        lineNumber: 558,
+        lineNumber: 561,
         columnNumber: 9
     }, this);
 }
@@ -1641,11 +1643,11 @@ function getHealthStatusInfo(healthStatus, timeSince) {
 function getJobTypeName(jobType) {
     const types = {
         1: 'Intune Audit Report',
-        2: 'Entra Audit Report',
-        3: 'Compliance Report',
-        4: 'Security Report',
-        5: 'Configuration Backup',
-        6: 'Automated Remediation',
+        //2: 'Entra Audit Report',
+        //3: 'Compliance Report',
+        //4: 'Security Report',
+        //5: 'Configuration Backup',
+        //6: 'Automated Remediation',
         7: 'Configuration Drift Monitor'
     };
     return types[jobType] || "Job Type ".concat(jobType);
@@ -2129,17 +2131,38 @@ function WorkerJobsPage() {
                             const worker = workerData === null || workerData === void 0 ? void 0 : (_workerData_workers = workerData.workers) === null || _workerData_workers === void 0 ? void 0 : _workerData_workers.find({
                                 "WorkerJobsPage.useMemo[columns]": (w)=>w.workerRegistrationId === value
                             }["WorkerJobsPage.useMemo[columns]"]);
-                            if (!worker) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                className: "text-xs text-gray-400 font-mono",
-                                children: [
-                                    String(value).substring(0, 8),
-                                    "…"
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 467,
-                                columnNumber: 37
-                            }, this);
+                            if (!worker) {
+                                if (!value || value === 'null') {
+                                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "inline-flex items-center gap-1 text-xs text-gray-400 italic",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "bg-gray-300 inline-block"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/worker/jobs/page.tsx",
+                                                lineNumber: 471,
+                                                columnNumber: 33
+                                            }, this),
+                                            "None"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/worker/jobs/page.tsx",
+                                        lineNumber: 470,
+                                        columnNumber: 29
+                                    }, this);
+                                }
+                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-xs text-gray-400 font-mono",
+                                    children: [
+                                        String(value).substring(0, 8),
+                                        "…"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                    lineNumber: 476,
+                                    columnNumber: 28
+                                }, this);
+                            }
                             return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2147,7 +2170,7 @@ function WorkerJobsPage() {
                                         children: worker.machineName
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 470,
+                                        lineNumber: 480,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2155,13 +2178,13 @@ function WorkerJobsPage() {
                                         children: worker.workerInstanceId
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 471,
+                                        lineNumber: 481,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 469,
+                                lineNumber: 479,
                                 columnNumber: 21
                             }, this);
                         }
@@ -2187,7 +2210,7 @@ function WorkerJobsPage() {
                                     children: "—"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 487,
+                                    lineNumber: 497,
                                     columnNumber: 28
                                 }, this);
                             }
@@ -2198,7 +2221,7 @@ function WorkerJobsPage() {
                                         children: displayName
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 491,
+                                        lineNumber: 501,
                                         columnNumber: 41
                                     }, this),
                                     tenantId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2207,13 +2230,13 @@ function WorkerJobsPage() {
                                         children: tenantId
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 493,
+                                        lineNumber: 503,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 490,
+                                lineNumber: 500,
                                 columnNumber: 21
                             }, this);
                         }
@@ -2236,14 +2259,14 @@ function WorkerJobsPage() {
                                                 className: "h-3 w-3 mr-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 510,
+                                                lineNumber: 520,
                                                 columnNumber: 99
                                             }, this),
                                             "Enabled"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 510,
+                                        lineNumber: 520,
                                         columnNumber: 31
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
                                         variant: "secondary",
@@ -2253,14 +2276,14 @@ function WorkerJobsPage() {
                                                 className: "h-3 w-3 mr-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 511,
+                                                lineNumber: 521,
                                                 columnNumber: 76
                                             }, this),
                                             "Disabled"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 511,
+                                        lineNumber: 521,
                                         columnNumber: 31
                                     }, this),
                                     job.isPoisoned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2270,20 +2293,20 @@ function WorkerJobsPage() {
                                                 className: "h-3 w-3 mr-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 514,
+                                                lineNumber: 524,
                                                 columnNumber: 93
                                             }, this),
                                             "Poisoned"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 514,
+                                        lineNumber: 524,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 508,
+                                lineNumber: 518,
                                 columnNumber: 21
                             }, this);
                         }
@@ -2303,7 +2326,7 @@ function WorkerJobsPage() {
                                         children: getRelativeTime(iso)
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 528,
+                                        lineNumber: 538,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2311,13 +2334,13 @@ function WorkerJobsPage() {
                                         children: formatDateTime(iso)
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 529,
+                                        lineNumber: 539,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 527,
+                                lineNumber: 537,
                                 columnNumber: 21
                             }, this);
                         }
@@ -2339,7 +2362,7 @@ function WorkerJobsPage() {
                                         children: rel
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 543,
+                                        lineNumber: 553,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2347,13 +2370,13 @@ function WorkerJobsPage() {
                                         children: formatDateTime(iso)
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 544,
+                                        lineNumber: 554,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 542,
+                                lineNumber: 552,
                                 columnNumber: 21
                             }, this);
                         }
@@ -2377,7 +2400,7 @@ function WorkerJobsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 557,
+                                        lineNumber: 567,
                                         columnNumber: 25
                                     }, this),
                                     h >= 24 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2388,13 +2411,13 @@ function WorkerJobsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 558,
+                                        lineNumber: 568,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 556,
+                                lineNumber: 566,
                                 columnNumber: 21
                             }, this);
                         }
@@ -2416,14 +2439,14 @@ function WorkerJobsPage() {
                                             className: "h-3 w-3 mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 570,
+                                            lineNumber: 580,
                                             columnNumber: 95
                                         }, this),
                                         "Never Run"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 570,
+                                    lineNumber: 580,
                                     columnNumber: 28
                                 }, this);
                             }
@@ -2437,14 +2460,14 @@ function WorkerJobsPage() {
                                         className: "h-3 w-3 mr-1"
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 576,
+                                        lineNumber: 586,
                                         columnNumber: 81
                                     }, this),
                                     "Failed"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 576,
+                                lineNumber: 586,
                                 columnNumber: 23
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
                                 className: "bg-green-500 hover:bg-green-600 text-white",
@@ -2453,14 +2476,14 @@ function WorkerJobsPage() {
                                         className: "h-3 w-3 mr-1"
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 577,
+                                        lineNumber: 587,
                                         columnNumber: 85
                                     }, this),
                                     "Success"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 577,
+                                lineNumber: 587,
                                 columnNumber: 23
                             }, this);
                         }
@@ -2489,12 +2512,12 @@ function WorkerJobsPage() {
                                     className: "h-4 w-4"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 594,
+                                    lineNumber: 604,
                                     columnNumber: 25
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 587,
+                                lineNumber: 597,
                                 columnNumber: 21
                             }, this);
                         }
@@ -2513,12 +2536,12 @@ function WorkerJobsPage() {
                 className: "h-8 w-8 animate-spin text-blue-500"
             }, void 0, false, {
                 fileName: "[project]/app/worker/jobs/page.tsx",
-                lineNumber: 606,
+                lineNumber: 616,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/worker/jobs/page.tsx",
-            lineNumber: 605,
+            lineNumber: 615,
             columnNumber: 13
         }, this);
     }
@@ -2534,7 +2557,7 @@ function WorkerJobsPage() {
                             className: "h-5 w-5 text-red-600"
                         }, void 0, false, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 616,
+                            lineNumber: 626,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2542,7 +2565,7 @@ function WorkerJobsPage() {
                             children: error
                         }, void 0, false, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 617,
+                            lineNumber: 627,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2555,30 +2578,30 @@ function WorkerJobsPage() {
                                     className: "h-4 w-4 mr-2"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 619,
+                                    lineNumber: 629,
                                     columnNumber: 29
                                 }, this),
                                 "Retry"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 618,
+                            lineNumber: 628,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/worker/jobs/page.tsx",
-                    lineNumber: 615,
+                    lineNumber: 625,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/worker/jobs/page.tsx",
-                lineNumber: 614,
+                lineNumber: 624,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/worker/jobs/page.tsx",
-            lineNumber: 613,
+            lineNumber: 623,
             columnNumber: 13
         }, this);
     }
@@ -2598,14 +2621,14 @@ function WorkerJobsPage() {
                                         className: "h-8 w-8 text-blue-500"
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 634,
+                                        lineNumber: 644,
                                         columnNumber: 25
                                     }, this),
                                     "Job Management"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 633,
+                                lineNumber: 643,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2613,7 +2636,7 @@ function WorkerJobsPage() {
                                 children: "Monitor and manage all worker jobs"
                             }, void 0, false, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 637,
+                                lineNumber: 647,
                                 columnNumber: 21
                             }, this),
                             lastRefreshed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2624,13 +2647,13 @@ function WorkerJobsPage() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 639,
+                                lineNumber: 649,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/worker/jobs/page.tsx",
-                        lineNumber: 632,
+                        lineNumber: 642,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2645,7 +2668,7 @@ function WorkerJobsPage() {
                                         onCheckedChange: setAutoRefresh
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 644,
+                                        lineNumber: 654,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
@@ -2654,13 +2677,13 @@ function WorkerJobsPage() {
                                         children: "Auto-refresh (30s)"
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 645,
+                                        lineNumber: 655,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 643,
+                                lineNumber: 653,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2673,14 +2696,14 @@ function WorkerJobsPage() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 648,
+                                        lineNumber: 658,
                                         columnNumber: 25
                                     }, this),
                                     "Create Job"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 647,
+                                lineNumber: 657,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2692,26 +2715,26 @@ function WorkerJobsPage() {
                                         className: "h-4 w-4 mr-2 ".concat(loading ? 'animate-spin' : '')
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 651,
+                                        lineNumber: 661,
                                         columnNumber: 25
                                     }, this),
                                     "Refresh"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 650,
+                                lineNumber: 660,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/worker/jobs/page.tsx",
-                        lineNumber: 642,
+                        lineNumber: 652,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/worker/jobs/page.tsx",
-                lineNumber: 631,
+                lineNumber: 641,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2768,7 +2791,7 @@ function WorkerJobsPage() {
                                                 children: label
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 670,
+                                                lineNumber: 680,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2776,42 +2799,42 @@ function WorkerJobsPage() {
                                                 children: value
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 671,
+                                                lineNumber: 681,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 669,
+                                        lineNumber: 679,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Icon, {
                                         className: "h-8 w-8 opacity-30 ".concat(color)
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 673,
+                                        lineNumber: 683,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 668,
+                                lineNumber: 678,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 667,
+                            lineNumber: 677,
                             columnNumber: 25
                         }, this)
                     }, label, false, {
                         fileName: "[project]/app/worker/jobs/page.tsx",
-                        lineNumber: 666,
+                        lineNumber: 676,
                         columnNumber: 21
                     }, this);
                 })
             }, void 0, false, {
                 fileName: "[project]/app/worker/jobs/page.tsx",
-                lineNumber: 657,
+                lineNumber: 667,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2831,7 +2854,7 @@ function WorkerJobsPage() {
                                                 className: "h-5 w-5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 688,
+                                                lineNumber: 698,
                                                 columnNumber: 29
                                             }, this),
                                             "Filters",
@@ -2839,19 +2862,19 @@ function WorkerJobsPage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 691,
+                                                lineNumber: 701,
                                                 columnNumber: 35
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 692,
+                                                lineNumber: 702,
                                                 columnNumber: 35
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 684,
+                                        lineNumber: 694,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2866,7 +2889,7 @@ function WorkerJobsPage() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 697,
+                                                lineNumber: 707,
                                                 columnNumber: 33
                                             }, this),
                                             activeFilterCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2878,26 +2901,26 @@ function WorkerJobsPage() {
                                                         className: "h-4 w-4 mr-1"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                        lineNumber: 703,
+                                                        lineNumber: 713,
                                                         columnNumber: 37
                                                     }, this),
                                                     "Clear All"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 702,
+                                                lineNumber: 712,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 695,
+                                        lineNumber: 705,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 683,
+                                lineNumber: 693,
                                 columnNumber: 21
                             }, this),
                             !isFiltersExpanded && activeFilterCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2912,7 +2935,7 @@ function WorkerJobsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 714,
+                                        lineNumber: 724,
                                         columnNumber: 33
                                     }, this),
                                     filterCustomer !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2924,7 +2947,7 @@ function WorkerJobsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 717,
+                                        lineNumber: 727,
                                         columnNumber: 33
                                     }, this),
                                     filterWorker !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2936,7 +2959,7 @@ function WorkerJobsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 722,
+                                        lineNumber: 732,
                                         columnNumber: 33
                                     }, this),
                                     filterEnabled !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2948,19 +2971,19 @@ function WorkerJobsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 727,
+                                        lineNumber: 737,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 712,
+                                lineNumber: 722,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/worker/jobs/page.tsx",
-                        lineNumber: 682,
+                        lineNumber: 692,
                         columnNumber: 17
                     }, this),
                     isFiltersExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2973,7 +2996,7 @@ function WorkerJobsPage() {
                                         className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 739,
+                                        lineNumber: 749,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2984,7 +3007,7 @@ function WorkerJobsPage() {
                                         className: "w-full pl-9 pr-9 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/50"
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 740,
+                                        lineNumber: 750,
                                         columnNumber: 29
                                     }, this),
                                     searchQuery && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2994,18 +3017,18 @@ function WorkerJobsPage() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 752,
+                                            lineNumber: 762,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 748,
+                                        lineNumber: 758,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 738,
+                                lineNumber: 748,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3019,7 +3042,7 @@ function WorkerJobsPage() {
                                                 children: "Customer"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 761,
+                                                lineNumber: 771,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -3032,7 +3055,7 @@ function WorkerJobsPage() {
                                                         children: "All Customers"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                        lineNumber: 767,
+                                                        lineNumber: 777,
                                                         columnNumber: 41
                                                     }, this),
                                                     uniqueCustomers.map((c)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -3040,19 +3063,19 @@ function WorkerJobsPage() {
                                                             children: c.label
                                                         }, c.id, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 769,
+                                                            lineNumber: 779,
                                                             columnNumber: 45
                                                         }, this))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 762,
+                                                lineNumber: 772,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 760,
+                                        lineNumber: 770,
                                         columnNumber: 33
                                     }, this),
                                     (workerData === null || workerData === void 0 ? void 0 : workerData.workers) && workerData.workers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3063,7 +3086,7 @@ function WorkerJobsPage() {
                                                 children: "Worker"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 778,
+                                                lineNumber: 788,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -3076,7 +3099,7 @@ function WorkerJobsPage() {
                                                         children: "All Workers"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                        lineNumber: 784,
+                                                        lineNumber: 794,
                                                         columnNumber: 41
                                                     }, this),
                                                     workerData.workers.map((w)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -3088,19 +3111,19 @@ function WorkerJobsPage() {
                                                             ]
                                                         }, w.workerRegistrationId, true, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 786,
+                                                            lineNumber: 796,
                                                             columnNumber: 45
                                                         }, this))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 779,
+                                                lineNumber: 789,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 777,
+                                        lineNumber: 787,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3111,7 +3134,7 @@ function WorkerJobsPage() {
                                                 children: "Status"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 796,
+                                                lineNumber: 806,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3129,38 +3152,38 @@ function WorkerJobsPage() {
                                                                 className: "h-3 w-3 mr-1"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                lineNumber: 805,
+                                                                lineNumber: 815,
                                                                 columnNumber: 65
                                                             }, this),
                                                             f === 'disabled' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$zap$2d$off$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ZapOff$3e$__["ZapOff"], {
                                                                 className: "h-3 w-3 mr-1"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                lineNumber: 806,
+                                                                lineNumber: 816,
                                                                 columnNumber: 66
                                                             }, this),
                                                             f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)
                                                         ]
                                                     }, f, true, {
                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                        lineNumber: 799,
+                                                        lineNumber: 809,
                                                         columnNumber: 41
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 797,
+                                                lineNumber: 807,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 795,
+                                        lineNumber: 805,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 757,
+                                lineNumber: 767,
                                 columnNumber: 25
                             }, this),
                             activeFilterCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3171,7 +3194,7 @@ function WorkerJobsPage() {
                                         children: "Active filters:"
                                     }, void 0, false, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 817,
+                                        lineNumber: 827,
                                         columnNumber: 33
                                     }, this),
                                     searchQuery && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3187,18 +3210,18 @@ function WorkerJobsPage() {
                                                     className: "h-3 w-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 822,
+                                                    lineNumber: 832,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 821,
+                                                lineNumber: 831,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 819,
+                                        lineNumber: 829,
                                         columnNumber: 37
                                     }, this),
                                     filterCustomer !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3214,18 +3237,18 @@ function WorkerJobsPage() {
                                                     className: "h-3 w-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 830,
+                                                    lineNumber: 840,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 829,
+                                                lineNumber: 839,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 827,
+                                        lineNumber: 837,
                                         columnNumber: 37
                                     }, this),
                                     filterWorker !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3241,18 +3264,18 @@ function WorkerJobsPage() {
                                                     className: "h-3 w-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 838,
+                                                    lineNumber: 848,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 837,
+                                                lineNumber: 847,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 835,
+                                        lineNumber: 845,
                                         columnNumber: 37
                                     }, this),
                                     filterEnabled !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3268,36 +3291,36 @@ function WorkerJobsPage() {
                                                     className: "h-3 w-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 846,
+                                                    lineNumber: 856,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 845,
+                                                lineNumber: 855,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                        lineNumber: 843,
+                                        lineNumber: 853,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                lineNumber: 816,
+                                lineNumber: 826,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/worker/jobs/page.tsx",
-                        lineNumber: 736,
+                        lineNumber: 746,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/worker/jobs/page.tsx",
-                lineNumber: 681,
+                lineNumber: 691,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3311,7 +3334,7 @@ function WorkerJobsPage() {
                                     className: "h-5 w-5"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 860,
+                                    lineNumber: 870,
                                     columnNumber: 25
                                 }, this),
                                 "Jobs",
@@ -3320,18 +3343,18 @@ function WorkerJobsPage() {
                                     children: filteredJobs.length
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 862,
+                                    lineNumber: 872,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 859,
+                            lineNumber: 869,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/worker/jobs/page.tsx",
-                        lineNumber: 858,
+                        lineNumber: 868,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3343,7 +3366,7 @@ function WorkerJobsPage() {
                             onRowClick: (row)=>router.push("/worker/jobs/".concat(row.id))
                         }, void 0, false, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 867,
+                            lineNumber: 877,
                             columnNumber: 25
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "text-center py-12",
@@ -3352,7 +3375,7 @@ function WorkerJobsPage() {
                                     className: "h-12 w-12 mx-auto text-gray-400 mb-4"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 876,
+                                    lineNumber: 886,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3360,7 +3383,7 @@ function WorkerJobsPage() {
                                     children: activeFilterCount > 0 ? 'No jobs match your filters' : 'No jobs configured yet'
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 877,
+                                    lineNumber: 887,
                                     columnNumber: 29
                                 }, this),
                                 activeFilterCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3369,24 +3392,24 @@ function WorkerJobsPage() {
                                     children: "Clear All Filters"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 881,
+                                    lineNumber: 891,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 875,
+                            lineNumber: 885,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/worker/jobs/page.tsx",
-                        lineNumber: 865,
+                        lineNumber: 875,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/worker/jobs/page.tsx",
-                lineNumber: 857,
+                lineNumber: 867,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -3407,27 +3430,27 @@ function WorkerJobsPage() {
                                             className: "h-5 w-5 text-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 895,
+                                            lineNumber: 905,
                                             columnNumber: 29
                                         }, this),
                                         "Create New Job"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 894,
+                                    lineNumber: 904,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                     children: "Configure a new worker job"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 897,
+                                    lineNumber: 907,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 893,
+                            lineNumber: 903,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3440,14 +3463,14 @@ function WorkerJobsPage() {
                                             className: "h-4 w-4 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 903,
+                                            lineNumber: 913,
                                             columnNumber: 33
                                         }, this),
                                         createSuccess
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 902,
+                                    lineNumber: 912,
                                     columnNumber: 29
                                 }, this),
                                 createError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3457,14 +3480,14 @@ function WorkerJobsPage() {
                                             className: "h-4 w-4 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 908,
+                                            lineNumber: 918,
                                             columnNumber: 33
                                         }, this),
                                         createError
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 907,
+                                    lineNumber: 917,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3474,7 +3497,7 @@ function WorkerJobsPage() {
                                             children: "Job Type *"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 914,
+                                            lineNumber: 924,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -3487,47 +3510,7 @@ function WorkerJobsPage() {
                                                     children: "Intune Audit Report"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 920,
-                                                    columnNumber: 33
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: 2,
-                                                    children: "Entra Audit Report"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 921,
-                                                    columnNumber: 33
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: 3,
-                                                    children: "Compliance Report"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 922,
-                                                    columnNumber: 33
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: 4,
-                                                    children: "Security Report"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 923,
-                                                    columnNumber: 33
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: 5,
-                                                    children: "Configuration Backup"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 924,
-                                                    columnNumber: 33
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: 6,
-                                                    children: "Automated Remediation"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 925,
+                                                    lineNumber: 930,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -3535,19 +3518,19 @@ function WorkerJobsPage() {
                                                     children: "Configuration Drift Monitor"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 926,
+                                                    lineNumber: 936,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 915,
+                                            lineNumber: 925,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 913,
+                                    lineNumber: 923,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3557,7 +3540,7 @@ function WorkerJobsPage() {
                                             children: "Job Name *"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 932,
+                                            lineNumber: 942,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -3566,13 +3549,13 @@ function WorkerJobsPage() {
                                             placeholder: "e.g., Weekly Intune Audit Report"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 933,
+                                            lineNumber: 943,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 931,
+                                    lineNumber: 941,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3585,7 +3568,7 @@ function WorkerJobsPage() {
                                                     children: "Enable Job"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 939,
+                                                    lineNumber: 949,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3593,13 +3576,13 @@ function WorkerJobsPage() {
                                                     children: "Start executing immediately after creation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 940,
+                                                    lineNumber: 950,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 938,
+                                            lineNumber: 948,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$switch$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Switch"], {
@@ -3607,13 +3590,13 @@ function WorkerJobsPage() {
                                             onCheckedChange: setFormIsEnabled
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 942,
+                                            lineNumber: 952,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 937,
+                                    lineNumber: 947,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3623,7 +3606,7 @@ function WorkerJobsPage() {
                                             children: "Interval (hours) *"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 947,
+                                            lineNumber: 957,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -3635,7 +3618,7 @@ function WorkerJobsPage() {
                                             className: "max-w-xs"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 948,
+                                            lineNumber: 958,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3643,13 +3626,13 @@ function WorkerJobsPage() {
                                             children: "24 = daily · 168 = weekly · 720 = monthly"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 949,
+                                            lineNumber: 959,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 946,
+                                    lineNumber: 956,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3662,14 +3645,14 @@ function WorkerJobsPage() {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 954,
+                                                    lineNumber: 964,
                                                     columnNumber: 72
                                                 }, this),
                                                 "First Run At (optional)"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 954,
+                                            lineNumber: 964,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -3680,7 +3663,7 @@ function WorkerJobsPage() {
                                             className: "max-w-xs"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 955,
+                                            lineNumber: 965,
                                             columnNumber: 29
                                         }, this),
                                         formFirstRunAt && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3694,13 +3677,13 @@ function WorkerJobsPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 963,
+                                            lineNumber: 973,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 953,
+                                    lineNumber: 963,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3713,14 +3696,14 @@ function WorkerJobsPage() {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 969,
+                                                    lineNumber: 979,
                                                     columnNumber: 72
                                                 }, this),
                                                 "Select Workers *"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 969,
+                                            lineNumber: 979,
                                             columnNumber: 29
                                         }, this),
                                         (workerData === null || workerData === void 0 ? void 0 : (_workerData_workers2 = workerData.workers) === null || _workerData_workers2 === void 0 ? void 0 : _workerData_workers2.length) ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3735,7 +3718,7 @@ function WorkerJobsPage() {
                                                                 className: "absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                lineNumber: 975,
+                                                                lineNumber: 985,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3746,7 +3729,7 @@ function WorkerJobsPage() {
                                                                 className: "w-full pl-8 pr-7 py-1.5 text-xs rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                lineNumber: 976,
+                                                                lineNumber: 986,
                                                                 columnNumber: 45
                                                             }, this),
                                                             formWorkerSearch && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3757,23 +3740,23 @@ function WorkerJobsPage() {
                                                                     className: "h-3.5 w-3.5"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                    lineNumber: 989,
+                                                                    lineNumber: 999,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                lineNumber: 984,
+                                                                lineNumber: 994,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                        lineNumber: 974,
+                                                        lineNumber: 984,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 973,
+                                                    lineNumber: 983,
                                                     columnNumber: 37
                                                 }, this),
                                                 (()=>{
@@ -3800,7 +3783,7 @@ function WorkerJobsPage() {
                                                                         className: "h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                        lineNumber: 1011,
+                                                                        lineNumber: 1021,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3808,13 +3791,13 @@ function WorkerJobsPage() {
                                                                         children: q ? "Select all approved in results (".concat(approvedVisible.length, ")") : "Select all approved (".concat(totalApproved, " of ").concat(workerData.workers.length, ")")
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                        lineNumber: 1022,
+                                                                        lineNumber: 1032,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                lineNumber: 1010,
+                                                                lineNumber: 1020,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3828,7 +3811,7 @@ function WorkerJobsPage() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                    lineNumber: 1032,
+                                                                    lineNumber: 1042,
                                                                     columnNumber: 57
                                                                 }, this) : visibleWorkers.map((w)=>{
                                                                     const health = getHealthStatusInfo(w.healthStatus, w.timeSinceLastHeartbeat);
@@ -3851,7 +3834,7 @@ function WorkerJobsPage() {
                                                                                 className: "h-4 w-4"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                                lineNumber: 1051,
+                                                                                lineNumber: 1061,
                                                                                 columnNumber: 69
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3865,7 +3848,7 @@ function WorkerJobsPage() {
                                                                                                 children: w.machineName
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                                                lineNumber: 1067,
+                                                                                                lineNumber: 1077,
                                                                                                 columnNumber: 77
                                                                                             }, this),
                                                                                             !isApproved && registrationLabel && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3874,13 +3857,13 @@ function WorkerJobsPage() {
                                                                                                 children: registrationLabel
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                                                lineNumber: 1069,
+                                                                                                lineNumber: 1079,
                                                                                                 columnNumber: 81
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                                        lineNumber: 1066,
+                                                                                        lineNumber: 1076,
                                                                                         columnNumber: 73
                                                                                     }, this),
                                                                                     w.tenantDisplayName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3888,7 +3871,7 @@ function WorkerJobsPage() {
                                                                                         children: w.tenantDisplayName
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                                        lineNumber: 1075,
+                                                                                        lineNumber: 1085,
                                                                                         columnNumber: 77
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3896,13 +3879,13 @@ function WorkerJobsPage() {
                                                                                         children: w.workerInstanceId
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                                        lineNumber: 1077,
+                                                                                        lineNumber: 1087,
                                                                                         columnNumber: 73
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                                lineNumber: 1065,
+                                                                                lineNumber: 1075,
                                                                                 columnNumber: 69
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3910,19 +3893,19 @@ function WorkerJobsPage() {
                                                                                 children: health.label
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                                lineNumber: 1079,
+                                                                                lineNumber: 1089,
                                                                                 columnNumber: 69
                                                                             }, this)
                                                                         ]
                                                                     }, w.workerRegistrationId, true, {
                                                                         fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                        lineNumber: 1043,
+                                                                        lineNumber: 1053,
                                                                         columnNumber: 65
                                                                     }, this);
                                                                 })
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                                lineNumber: 1030,
+                                                                lineNumber: 1040,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
@@ -3931,7 +3914,7 @@ function WorkerJobsPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 971,
+                                            lineNumber: 981,
                                             columnNumber: 33
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 flex items-center gap-2 text-yellow-700",
@@ -3940,7 +3923,7 @@ function WorkerJobsPage() {
                                                     className: "h-4 w-4 shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1091,
+                                                    lineNumber: 1101,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3948,13 +3931,13 @@ function WorkerJobsPage() {
                                                     children: "No workers available. Please register a worker first."
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1092,
+                                                    lineNumber: 1102,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1090,
+                                            lineNumber: 1100,
                                             columnNumber: 33
                                         }, this),
                                         formSelectedWorkers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3966,18 +3949,136 @@ function WorkerJobsPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1096,
+                                            lineNumber: 1106,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 968,
+                                    lineNumber: 978,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1100,
+                                    lineNumber: 1110,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "space-y-4",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "text-sm font-semibold flex items-center gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$mail$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Mail$3e$__["Mail"], {
+                                                    className: "h-4 w-4"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                                    lineNumber: 1115,
+                                                    columnNumber: 33
+                                                }, this),
+                                                "Notifications"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/worker/jobs/page.tsx",
+                                            lineNumber: 1114,
+                                            columnNumber: 29
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "space-y-1.5",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
+                                                    className: "flex items-center gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$mail$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Mail$3e$__["Mail"], {
+                                                            className: "h-4 w-4"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/worker/jobs/page.tsx",
+                                                            lineNumber: 1119,
+                                                            columnNumber: 76
+                                                        }, this),
+                                                        "Recipient Email *"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                                    lineNumber: 1119,
+                                                    columnNumber: 33
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
+                                                    type: "email",
+                                                    value: formRecipientEmail,
+                                                    onChange: (e)=>setFormRecipientEmail(e.target.value),
+                                                    placeholder: "admin@contoso.com"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                                    lineNumber: 1120,
+                                                    columnNumber: 33
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-xs text-gray-500",
+                                                    children: "Job reports and alerts will be sent to this address."
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                                    lineNumber: 1121,
+                                                    columnNumber: 33
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/worker/jobs/page.tsx",
+                                            lineNumber: 1118,
+                                            columnNumber: 29
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "space-y-1.5",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
+                                                    children: [
+                                                        "CC Emails ",
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "text-gray-400 font-normal",
+                                                            children: "(optional)"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/worker/jobs/page.tsx",
+                                                            lineNumber: 1125,
+                                                            columnNumber: 50
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                                    lineNumber: 1125,
+                                                    columnNumber: 33
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
+                                                    value: formCcEmails,
+                                                    onChange: (e)=>setFormCcEmails(e.target.value),
+                                                    placeholder: "manager@contoso.com, security@contoso.com"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                                    lineNumber: 1126,
+                                                    columnNumber: 33
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-xs text-gray-500",
+                                                    children: "Comma-separated list of additional recipients."
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                                    lineNumber: 1127,
+                                                    columnNumber: 33
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/worker/jobs/page.tsx",
+                                            lineNumber: 1124,
+                                            columnNumber: 29
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                    lineNumber: 1113,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
+                                    fileName: "[project]/app/worker/jobs/page.tsx",
+                                    lineNumber: 1131,
                                     columnNumber: 25
                                 }, this),
                                 formJobType === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3990,83 +4091,14 @@ function WorkerJobsPage() {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1106,
+                                                    lineNumber: 1137,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Intune Audit Report Configuration"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1105,
-                                            columnNumber: 33
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "space-y-1.5",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
-                                                    className: "flex items-center gap-2",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$mail$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Mail$3e$__["Mail"], {
-                                                            className: "h-4 w-4"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1110,
-                                                            columnNumber: 80
-                                                        }, this),
-                                                        "Recipient Email *"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1110,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
-                                                    type: "email",
-                                                    value: formRecipientEmail,
-                                                    onChange: (e)=>setFormRecipientEmail(e.target.value),
-                                                    placeholder: "admin@contoso.com"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1111,
-                                                    columnNumber: 37
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1109,
-                                            columnNumber: 33
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "space-y-1.5",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
-                                                    children: "CC Emails (optional)"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1115,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
-                                                    value: formCcEmails,
-                                                    onChange: (e)=>setFormCcEmails(e.target.value),
-                                                    placeholder: "manager@contoso.com, security@contoso.com"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1116,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-xs text-gray-500",
-                                                    children: "Comma-separated"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1117,
-                                                    columnNumber: 37
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1114,
+                                            lineNumber: 1136,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4077,7 +4109,7 @@ function WorkerJobsPage() {
                                                     children: "Target Tenant"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1122,
+                                                    lineNumber: 1142,
                                                     columnNumber: 37
                                                 }, this),
                                                 selectedTenant ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -4087,7 +4119,7 @@ function WorkerJobsPage() {
                                                             children: selectedTenant.displayName || selectedTenant.domainName
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1125,
+                                                            lineNumber: 1145,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4095,7 +4127,7 @@ function WorkerJobsPage() {
                                                             children: selectedTenant.tenantId
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1126,
+                                                            lineNumber: 1146,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
@@ -4104,20 +4136,20 @@ function WorkerJobsPage() {
                                                     children: effectiveTenantId
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1129,
+                                                    lineNumber: 1149,
                                                     columnNumber: 41
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                     className: "text-amber-600 mt-0.5",
                                                     children: "No tenant available — please log in again"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1131,
+                                                    lineNumber: 1151,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1121,
+                                            lineNumber: 1141,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4130,7 +4162,7 @@ function WorkerJobsPage() {
                                                             children: "Lookback Days"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1137,
+                                                            lineNumber: 1157,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -4141,13 +4173,13 @@ function WorkerJobsPage() {
                                                             onChange: (e)=>setFormLookbackDays(Number(e.target.value))
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1138,
+                                                            lineNumber: 1158,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1136,
+                                                    lineNumber: 1156,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4157,7 +4189,7 @@ function WorkerJobsPage() {
                                                             children: "Max Events"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1141,
+                                                            lineNumber: 1161,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -4168,19 +4200,19 @@ function WorkerJobsPage() {
                                                             onChange: (e)=>setFormMaxEvents(Number(e.target.value))
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1142,
+                                                            lineNumber: 1162,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1140,
+                                                    lineNumber: 1160,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1135,
+                                            lineNumber: 1155,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4190,7 +4222,7 @@ function WorkerJobsPage() {
                                                     children: "Categories (optional)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1147,
+                                                    lineNumber: 1167,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -4199,7 +4231,7 @@ function WorkerJobsPage() {
                                                     placeholder: "Application, Policy, Device, Role"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1148,
+                                                    lineNumber: 1168,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4207,13 +4239,13 @@ function WorkerJobsPage() {
                                                     children: "Comma-separated"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1149,
+                                                    lineNumber: 1169,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1146,
+                                            lineNumber: 1166,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4226,7 +4258,7 @@ function WorkerJobsPage() {
                                                             children: "Only Report If Events Found"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1154,
+                                                            lineNumber: 1174,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4234,13 +4266,13 @@ function WorkerJobsPage() {
                                                             children: "Skip sending if no events found"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                                            lineNumber: 1155,
+                                                            lineNumber: 1175,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1153,
+                                                    lineNumber: 1173,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$switch$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Switch"], {
@@ -4248,25 +4280,25 @@ function WorkerJobsPage() {
                                                     onCheckedChange: setFormOnlyReportIfEventsFound
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1157,
+                                                    lineNumber: 1177,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1152,
+                                            lineNumber: 1172,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1104,
+                                    lineNumber: 1135,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 900,
+                            lineNumber: 910,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -4281,7 +4313,7 @@ function WorkerJobsPage() {
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1164,
+                                    lineNumber: 1184,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4293,7 +4325,7 @@ function WorkerJobsPage() {
                                                 className: "h-4 w-4 mr-2 animate-spin"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 1168,
+                                                lineNumber: 1188,
                                                 columnNumber: 43
                                             }, this),
                                             "Creating…"
@@ -4304,7 +4336,7 @@ function WorkerJobsPage() {
                                                 className: "h-4 w-4 mr-2"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 1168,
+                                                lineNumber: 1188,
                                                 columnNumber: 109
                                             }, this),
                                             "Create Job"
@@ -4312,24 +4344,24 @@ function WorkerJobsPage() {
                                     }, void 0, true)
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1167,
+                                    lineNumber: 1187,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 1163,
+                            lineNumber: 1183,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/worker/jobs/page.tsx",
-                    lineNumber: 892,
+                    lineNumber: 902,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/worker/jobs/page.tsx",
-                lineNumber: 891,
+                lineNumber: 901,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -4352,27 +4384,27 @@ function WorkerJobsPage() {
                                             className: "h-5 w-5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1179,
+                                            lineNumber: 1199,
                                             columnNumber: 29
                                         }, this),
                                         "Delete Job"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1178,
+                                    lineNumber: 1198,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                     children: "This action cannot be undone."
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1181,
+                                    lineNumber: 1201,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 1177,
+                            lineNumber: 1197,
                             columnNumber: 21
                         }, this),
                         jobToDelete && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4386,7 +4418,7 @@ function WorkerJobsPage() {
                                             children: jobToDelete.jobName
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1187,
+                                            lineNumber: 1207,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4397,7 +4429,7 @@ function WorkerJobsPage() {
                                                     children: getJobTypeName(jobToDelete.jobType)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1189,
+                                                    lineNumber: 1209,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4408,19 +4440,19 @@ function WorkerJobsPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                                    lineNumber: 1190,
+                                                    lineNumber: 1210,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1188,
+                                            lineNumber: 1208,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1186,
+                                    lineNumber: 1206,
                                     columnNumber: 29
                                 }, this),
                                 deleteError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4430,14 +4462,14 @@ function WorkerJobsPage() {
                                             className: "h-4 w-4 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1196,
+                                            lineNumber: 1216,
                                             columnNumber: 37
                                         }, this),
                                         deleteError
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1195,
+                                    lineNumber: 1215,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4447,26 +4479,26 @@ function WorkerJobsPage() {
                                             className: "h-4 w-4 text-amber-500 mt-0.5 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1201,
+                                            lineNumber: 1221,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             children: "All scheduled executions and execution history will be permanently removed."
                                         }, void 0, false, {
                                             fileName: "[project]/app/worker/jobs/page.tsx",
-                                            lineNumber: 1202,
+                                            lineNumber: 1222,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1200,
+                                    lineNumber: 1220,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 1185,
+                            lineNumber: 1205,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -4481,7 +4513,7 @@ function WorkerJobsPage() {
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1208,
+                                    lineNumber: 1228,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4494,7 +4526,7 @@ function WorkerJobsPage() {
                                                 className: "h-4 w-4 mr-2 animate-spin"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 1210,
+                                                lineNumber: 1230,
                                                 columnNumber: 43
                                             }, this),
                                             "Deleting…"
@@ -4505,7 +4537,7 @@ function WorkerJobsPage() {
                                                 className: "h-4 w-4 mr-2"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/worker/jobs/page.tsx",
-                                                lineNumber: 1210,
+                                                lineNumber: 1230,
                                                 columnNumber: 109
                                             }, this),
                                             "Delete"
@@ -4513,30 +4545,30 @@ function WorkerJobsPage() {
                                     }, void 0, true)
                                 }, void 0, false, {
                                     fileName: "[project]/app/worker/jobs/page.tsx",
-                                    lineNumber: 1209,
+                                    lineNumber: 1229,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/worker/jobs/page.tsx",
-                            lineNumber: 1207,
+                            lineNumber: 1227,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/worker/jobs/page.tsx",
-                    lineNumber: 1176,
+                    lineNumber: 1196,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/worker/jobs/page.tsx",
-                lineNumber: 1175,
+                lineNumber: 1195,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/worker/jobs/page.tsx",
-        lineNumber: 628,
+        lineNumber: 638,
         columnNumber: 9
     }, this);
 }

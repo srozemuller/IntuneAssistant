@@ -464,7 +464,17 @@ export default function WorkerJobsPage() {
             width: 200,
             render: (value: unknown) => {
                 const worker = workerData?.workers?.find(w => w.workerRegistrationId === value);
-                if (!worker) return <span className="text-xs text-gray-400 font-mono">{String(value).substring(0, 8)}…</span>;
+                if (!worker) {
+                    if (!value || value === 'null') {
+                        return (
+                            <span className="inline-flex items-center gap-1 text-xs text-gray-400 italic">
+                                <span className="bg-gray-300 inline-block" />
+                                None
+                            </span>
+                        );
+                    }
+                    return <span className="text-xs text-gray-400 font-mono">{String(value).substring(0, 8)}…</span>;
+                }
                 return (
                     <div>
                         <div className="text-sm font-medium">{worker.machineName}</div>
@@ -1099,23 +1109,33 @@ export default function WorkerJobsPage() {
 
                         <Separator />
 
+                        {/* Notifications — always required regardless of job type */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-semibold flex items-center gap-2">
+                                <Mail className="h-4 w-4" />Notifications
+                            </h3>
+
+                            <div className="space-y-1.5">
+                                <Label className="flex items-center gap-2"><Mail className="h-4 w-4" />Recipient Email *</Label>
+                                <Input type="email" value={formRecipientEmail} onChange={e => setFormRecipientEmail(e.target.value)} placeholder="admin@contoso.com" />
+                                <p className="text-xs text-gray-500">Job reports and alerts will be sent to this address.</p>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <Label>CC Emails <span className="text-gray-400 font-normal">(optional)</span></Label>
+                                <Input value={formCcEmails} onChange={e => setFormCcEmails(e.target.value)} placeholder="manager@contoso.com, security@contoso.com" />
+                                <p className="text-xs text-gray-500">Comma-separated list of additional recipients.</p>
+                            </div>
+                        </div>
+
+                        <Separator />
+
                         {/* Job-specific config — currently only type 1 has a UI */}
                         {formJobType === 1 && (
                             <div className="space-y-4">
                                 <h3 className="text-sm font-semibold flex items-center gap-2">
                                     <Settings className="h-4 w-4" />Intune Audit Report Configuration
                                 </h3>
-
-                                <div className="space-y-1.5">
-                                    <Label className="flex items-center gap-2"><Mail className="h-4 w-4" />Recipient Email *</Label>
-                                    <Input type="email" value={formRecipientEmail} onChange={e => setFormRecipientEmail(e.target.value)} placeholder="admin@contoso.com" />
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <Label>CC Emails (optional)</Label>
-                                    <Input value={formCcEmails} onChange={e => setFormCcEmails(e.target.value)} placeholder="manager@contoso.com, security@contoso.com" />
-                                    <p className="text-xs text-gray-500">Comma-separated</p>
-                                </div>
 
                                 {/* Tenant info (read-only) */}
                                 <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 text-sm">

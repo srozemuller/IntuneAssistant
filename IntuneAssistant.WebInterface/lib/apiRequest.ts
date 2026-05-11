@@ -4,12 +4,14 @@ import { UserConsentRequiredError } from '@/lib/errors';
 export class ApiError extends Error {
     public correlationId?: string | null;
     public status?: number;
+    public responseData?: unknown;
 
-    constructor(message: string, correlationId?: string | null, status?: number) {
+    constructor(message: string, correlationId?: string | null, status?: number, responseData?: unknown) {
         super(message);
         this.name = 'ApiError';
         this.correlationId = correlationId;
         this.status = status;
+        this.responseData = responseData;
     }
 }
 
@@ -83,7 +85,7 @@ export async function apiRequest<T>(url: string, options: RequestInit = {}, toke
             const errorMessage = `API request failed: ${response.status} - ${response.statusText || 'HTTP Error'}`;
 
             console.log("Final error message:", errorMessage);
-            throw new ApiError(errorMessage, correlationId, response.status);
+            throw new ApiError(errorMessage, correlationId, response.status, data);
         }
 
         // Success case - log correlation ID if available
