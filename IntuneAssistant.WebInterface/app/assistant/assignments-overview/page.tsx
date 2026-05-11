@@ -1,5 +1,6 @@
 'use client';
 import React, {useState, useEffect} from 'react';
+import {useRouter} from 'next/navigation';
 import {useMsal} from '@azure/msal-react';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
@@ -15,13 +16,14 @@ import {
     ShieldCheck,
     ChevronDown,
     ChevronUp,
-    XCircle, Blocks, CircleQuestionMark, TriangleAlert
+    XCircle, Blocks, CircleQuestionMark, TriangleAlert, Hammer
 } from 'lucide-react';
 import {
     ASSIGNMENTS_ENDPOINT,
     ASSIGNMENTS_FILTERS_ENDPOINT,
     ITEMS_PER_PAGE,
-    ROLE_SCOPETAGS_ENDPOINT
+    ROLE_SCOPETAGS_ENDPOINT,
+    MIGRATION_BUILDER_SESSION_KEY
 } from '@/lib/constants';
 
 import {MultiSelect, Option} from '@/components/ui/multi-select';
@@ -83,6 +85,7 @@ export default function AssignmentsOverview() {
     // API CALLS
     const { instance, accounts } = useMsal();
     const { request, cancel } = useApiRequest();
+    const router = useRouter();
     // Consent dialog state when not enough permissions
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -570,6 +573,12 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         setRoleScopeTagFilter([]);
     };
 
+    const openInMigrationBuilder = () => {
+        const dataToExport = getSearchFilteredData(filteredAssignments);
+        sessionStorage.setItem(MIGRATION_BUILDER_SESSION_KEY, JSON.stringify(dataToExport));
+        router.push('/assistant/migration-builder');
+    };
+
     // Group dialog handlers
     const handleResourceClick = (resourceId: string, assignmentType: string) => {
         if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
@@ -880,6 +889,15 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                                 size="sm"
                                 tenantId={instance.getActiveAccount()?.tenantId || accounts[0]?.tenantId || ''}
                             />
+                            <Button
+                                onClick={openInMigrationBuilder}
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-2"
+                            >
+                                <Hammer className="h-4 w-4"/>
+                                Open in Migration Builder
+                            </Button>
                         </>
                     ) : (
                         <>

@@ -23,17 +23,27 @@ import {
     ArrowLeft,
     ExternalLink,
     Plus,
+    Trash2,
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { useMsal } from '@azure/msal-react';
-import { WORKER_OVERVIEW_ENDPOINT, WORKER_CONFIG_ENDPOINT } from '@/lib/constants';
+import { apiRequest, ApiError } from '@/lib/apiRequest';
+import { apiScope } from '@/lib/msalConfig';
+import { WORKER_OVERVIEW_ENDPOINT, WORKER_CONFIG_ENDPOINT, WORKER_REGISTRATION_DELETE_ENDPOINT } from '@/lib/constants';
 import { WorkerOverview, WorkerInstance, HealthStatus, RegistrationStatus } from '@/types/worker';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface ApiResponse {
     status: string;
     message: string;
     details: unknown[];
     data: WorkerOverview;
+}
+
+interface ConnectedJob {
+    jobId: string;
+    jobName: string;
+    jobType: string;
 }
 
 function parseTimeSince(ts: string): { totalSeconds: number; display: string } {
@@ -141,7 +151,7 @@ function compareVersions(current: string, available: string): boolean {
 export default function WorkerDetailPage() {
     const params = useParams();
     const router = useRouter();
-    const { accounts } = useMsal();
+    const { instance, accounts } = useMsal();
     const { request } = useApiRequest();
     
     const workerId = params.id as string;
@@ -151,7 +161,11 @@ export default function WorkerDetailPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
+    const [connectedJobs, setConnectedJobs] = useState<ConnectedJob[]>([]);
+
     // Form state
     const [autoUpdate, setAutoUpdate] = useState(false);
     const [updateRing, setUpdateRing] = useState(2);
@@ -236,6 +250,47 @@ export default function WorkerDetailPage() {
         }
     };
 
+    const handleDeleteWorker = async () => {
+        if (!worker) return;
+        setDeleting(true);
+        setDeleteError(null);
+        setConnectedJobs([]);
+        try {
+            // Use apiRequest directly — useApiRequest swallows errors internally
+            // and we need the structured error body (connectedJobs) from ApiError.responseData
+            let accessToken: string | undefined;
+            if (accounts.length > 0) {
+                const tokenResponse = await instance.acquireTokenSilent({
+                    scopes: [apiScope],
+                    account: accounts[0],
+                });
+                accessToken = tokenResponse.accessToken;
+            }
+            await apiRequest(
+                WORKER_REGISTRATION_DELETE_ENDPOINT(worker.workerRegistrationId),
+                { method: 'DELETE' },
+                accessToken
+            );
+            // 2xx → success
+            router.push('/worker');
+        } catch (err) {
+            if (err instanceof ApiError) {
+                const body = err.responseData as { message?: string; data?: { connectedJobs?: ConnectedJob[] } } | undefined;
+                const jobs = body?.data?.connectedJobs ?? [];
+                if (jobs.length > 0) {
+                    setConnectedJobs(jobs);
+                    setDeleteError(body?.message ?? 'Cannot delete worker registration');
+                } else {
+                    setDeleteError(body?.message ?? err.message);
+                }
+            } else {
+                setDeleteError(err instanceof Error ? err.message : 'Failed to delete worker registration');
+            }
+        } finally {
+            setDeleting(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-96">
@@ -312,6 +367,13 @@ export default function WorkerDetailPage() {
                             Dashboard
                         </Button>
                     )}
+                    <Button
+                        variant="destructive"
+                        onClick={() => { setDeleteError(null); setConnectedJobs([]); setDeleteDialogOpen(true); }}
+                    >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Registration
+                    </Button>
                 </div>
             </div>
 
@@ -523,6 +585,106 @@ export default function WorkerDetailPage() {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onOpenChange={open => { if (!deleting) { setDeleteDialogOpen(open); } }}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                            <Trash2 className="h-5 w-5" />
+                            Delete Worker Registration
+                        </DialogTitle>
+                        <DialogDescription asChild>
+                            <div className="space-y-3 pt-2">
+                                {/* Blocking state — jobs still assigned */}
+                                {connectedJobs.length > 0 ? (
+                                    <>
+                                        <div className="flex items-start gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                                            <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                                            <p className="text-sm text-orange-800 dark:text-orange-200">
+                                                {deleteError}
+                                            </p>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">
+                                            Reassign or delete the following jobs before removing this worker registration:
+                                        </p>
+                                        <div className="rounded-lg border border-border divide-y divide-border max-h-64 overflow-y-auto">
+                                            {connectedJobs.map(job => (
+                                                <div key={job.jobId} className="flex items-center justify-between px-3 py-2.5 gap-3">
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-medium text-foreground truncate">{job.jobName}</p>
+                                                        <p className="text-xs text-muted-foreground">{job.jobType}</p>
+                                                    </div>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="shrink-0 text-xs h-7"
+                                                        onClick={() => router.push(`/worker/jobs/${job.jobId}`)}
+                                                    >
+                                                        Open Job
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="text-sm text-muted-foreground">
+                                            Are you sure you want to delete the registration for{' '}
+                                            <span className="font-semibold text-foreground">{worker.machineName}</span>?
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            This will remove registration{' '}
+                                            <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+                                                {worker.workerRegistrationId}
+                                            </code>{' '}
+                                            from Intune Assistant. The worker process on the host machine will no longer be able to connect.
+                                        </p>
+                                        <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                                            This action cannot be undone.
+                                        </p>
+                                        {deleteError && (
+                                            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-300">
+                                                <XCircle className="h-4 w-4 shrink-0" />
+                                                {deleteError}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteDialogOpen(false)}
+                            disabled={deleting}
+                        >
+                            {connectedJobs.length > 0 ? 'Close' : 'Cancel'}
+                        </Button>
+                        {connectedJobs.length === 0 && (
+                            <Button
+                                variant="destructive"
+                                onClick={handleDeleteWorker}
+                                disabled={deleting}
+                            >
+                                {deleting ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        Deleting…
+                                    </>
+                                ) : (
+                                    <>
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete Registration
+                                    </>
+                                )}
+                            </Button>
+                        )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

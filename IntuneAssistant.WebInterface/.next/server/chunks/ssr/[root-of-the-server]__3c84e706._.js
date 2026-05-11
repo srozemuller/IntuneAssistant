@@ -2958,6 +2958,7 @@ function AssignmentRolloutContent() {
     // State management
     const [currentStep, setCurrentStep] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('upload');
     const [csvData, setCsvData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [fromMigrationBuilder, setFromMigrationBuilder] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [comparisonResults, setComparisonResults] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [selectedRows, setSelectedRows] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [migratedRowIds, setMigratedRowIds] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]); // frozen snapshot of what was actually migrated
@@ -3196,7 +3197,7 @@ function AssignmentRolloutContent() {
                             className: "h-5 w-5 text-blue-600"
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 544,
+                            lineNumber: 546,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -3210,13 +3211,13 @@ function AssignmentRolloutContent() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 545,
+                            lineNumber: 547,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 543,
+                    lineNumber: 545,
                     columnNumber: 17
                 }, this),
                 step === 'validate' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3230,7 +3231,7 @@ function AssignmentRolloutContent() {
                                     children: "Items validated"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 558,
+                                    lineNumber: 560,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3238,13 +3239,13 @@ function AssignmentRolloutContent() {
                                     children: validatedItemsCount
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 559,
+                                    lineNumber: 561,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 557,
+                            lineNumber: 559,
                             columnNumber: 25
                         }, this),
                         verifiedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3255,7 +3256,7 @@ function AssignmentRolloutContent() {
                                     children: "Verified successfully"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 563,
+                                    lineNumber: 565,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3263,13 +3264,13 @@ function AssignmentRolloutContent() {
                                     children: verifiedCount
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 564,
+                                    lineNumber: 566,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 562,
+                            lineNumber: 564,
                             columnNumber: 29
                         }, this),
                         masterTrackingData.filter((r)=>r.masterStatus === 'validation_failed').length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3280,7 +3281,7 @@ function AssignmentRolloutContent() {
                                     children: "Verification failed"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 569,
+                                    lineNumber: 571,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3288,19 +3289,19 @@ function AssignmentRolloutContent() {
                                     children: masterTrackingData.filter((r)=>r.masterStatus === 'validation_failed').length
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 570,
+                                    lineNumber: 572,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 568,
+                            lineNumber: 570,
                             columnNumber: 29
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 556,
+                    lineNumber: 558,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-sm",
@@ -3313,7 +3314,7 @@ function AssignmentRolloutContent() {
                                     children: "Rows uploaded using CSV"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 578,
+                                    lineNumber: 580,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3321,13 +3322,13 @@ function AssignmentRolloutContent() {
                                     children: uploadedCount
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 579,
+                                    lineNumber: 581,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 577,
+                            lineNumber: 579,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3338,7 +3339,7 @@ function AssignmentRolloutContent() {
                                     children: "Rows valid in CSV"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 582,
+                                    lineNumber: 584,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3346,13 +3347,13 @@ function AssignmentRolloutContent() {
                                     children: validCount
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 583,
+                                    lineNumber: 585,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 581,
+                            lineNumber: 583,
                             columnNumber: 25
                         }, this),
                         invalidCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3363,7 +3364,7 @@ function AssignmentRolloutContent() {
                                     children: "Row invalid in CSV"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 587,
+                                    lineNumber: 589,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3371,13 +3372,13 @@ function AssignmentRolloutContent() {
                                     children: invalidCount
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 588,
+                                    lineNumber: 590,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 586,
+                            lineNumber: 588,
                             columnNumber: 29
                         }, this),
                         step !== 'upload' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -3390,7 +3391,7 @@ function AssignmentRolloutContent() {
                                             children: "Ready for migration"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 596,
+                                            lineNumber: 598,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3398,13 +3399,13 @@ function AssignmentRolloutContent() {
                                             children: readyCount
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 597,
+                                            lineNumber: 599,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 595,
+                                    lineNumber: 597,
                                     columnNumber: 33
                                 }, this),
                                 compareFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3415,7 +3416,7 @@ function AssignmentRolloutContent() {
                                             children: "Compare Failed"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 601,
+                                            lineNumber: 603,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3423,13 +3424,13 @@ function AssignmentRolloutContent() {
                                             children: compareFailedCount
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 602,
+                                            lineNumber: 604,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 600,
+                                    lineNumber: 602,
                                     columnNumber: 37
                                 }, this)
                             ]
@@ -3444,7 +3445,7 @@ function AssignmentRolloutContent() {
                                             children: "Migrated"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 612,
+                                            lineNumber: 614,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3452,13 +3453,13 @@ function AssignmentRolloutContent() {
                                             children: migratedSuccessCount
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 613,
+                                            lineNumber: 615,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 611,
+                                    lineNumber: 613,
                                     columnNumber: 33
                                 }, this),
                                 migratedFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3469,7 +3470,7 @@ function AssignmentRolloutContent() {
                                             children: "Failed"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 617,
+                                            lineNumber: 619,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3477,13 +3478,13 @@ function AssignmentRolloutContent() {
                                             children: migratedFailedCount
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 618,
+                                            lineNumber: 620,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 616,
+                                    lineNumber: 618,
                                     columnNumber: 37
                                 }, this),
                                 migratedSkippedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3494,7 +3495,7 @@ function AssignmentRolloutContent() {
                                             children: "Skipped"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 623,
+                                            lineNumber: 625,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3502,13 +3503,13 @@ function AssignmentRolloutContent() {
                                             children: migratedSkippedCount
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 624,
+                                            lineNumber: 626,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 622,
+                                    lineNumber: 624,
                                     columnNumber: 37
                                 }, this)
                             ]
@@ -3516,13 +3517,13 @@ function AssignmentRolloutContent() {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 575,
+                    lineNumber: 577,
                     columnNumber: 21
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/deployment/assignments/page.tsx",
-            lineNumber: 542,
+            lineNumber: 544,
             columnNumber: 13
         }, this);
     };
@@ -3556,12 +3557,12 @@ function AssignmentRolloutContent() {
                             className: "h-5 w-5 text-red-500"
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 661,
+                            lineNumber: 663,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 655,
+                        lineNumber: 657,
                         columnNumber: 21
                     }, this),
                     showTooltip && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$dom$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].createPortal(/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3575,7 +3576,7 @@ function AssignmentRolloutContent() {
                                 className: "absolute -top-1 left-4 w-2 h-2 bg-red-50 dark:bg-red-900 border-l border-t border-red-200 dark:border-red-700 transform rotate-45"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 671,
+                                lineNumber: 673,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3583,7 +3584,7 @@ function AssignmentRolloutContent() {
                                 children: "Validation Errors:"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 673,
+                                lineNumber: 675,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -3596,18 +3597,18 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, idx, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 677,
+                                        lineNumber: 679,
                                         columnNumber: 37
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 675,
+                                lineNumber: 677,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 664,
+                        lineNumber: 666,
                         columnNumber: 25
                     }, this), document.body)
                 ]
@@ -3619,12 +3620,12 @@ function AssignmentRolloutContent() {
                 className: "h-5 w-5 text-green-500"
             }, void 0, false, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 689,
+                lineNumber: 691,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/deployment/assignments/page.tsx",
-            lineNumber: 688,
+            lineNumber: 690,
             columnNumber: 13
         }, this);
     };
@@ -3646,7 +3647,7 @@ function AssignmentRolloutContent() {
                     csvRow: csvRow
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 708,
+                    lineNumber: 710,
                     columnNumber: 24
                 }, this);
             }
@@ -3667,12 +3668,12 @@ function AssignmentRolloutContent() {
                         children: "Missing"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 723,
+                        lineNumber: 725,
                         columnNumber: 43
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 720,
+                    lineNumber: 722,
                     columnNumber: 21
                 }, this);
             }
@@ -3693,19 +3694,19 @@ function AssignmentRolloutContent() {
                         children: "Missing"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 741,
+                        lineNumber: 743,
                         columnNumber: 55
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                         className: "text-xs text-gray-500",
                         children: "None"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 741,
+                        lineNumber: 743,
                         columnNumber: 110
                     }, this))
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 737,
+                    lineNumber: 739,
                     columnNumber: 21
                 }, this);
             }
@@ -3726,14 +3727,14 @@ function AssignmentRolloutContent() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 758,
+                                lineNumber: 760,
                                 columnNumber: 29
                             }, this),
                             "Missing"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 757,
+                        lineNumber: 759,
                         columnNumber: 25
                     }, this);
                 }
@@ -3743,7 +3744,7 @@ function AssignmentRolloutContent() {
                     children: csvRow.AssignmentDirection
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 765,
+                    lineNumber: 767,
                     columnNumber: 21
                 }, this);
             }
@@ -3767,14 +3768,14 @@ function AssignmentRolloutContent() {
                                         className: "h-3 w-3 mr-1"
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 787,
+                                        lineNumber: 789,
                                         columnNumber: 33
                                     }, this),
                                     "Invalid"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 786,
+                                lineNumber: 788,
                                 columnNumber: 29
                             }, this),
                             csvRow.originalActionValue && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3786,13 +3787,13 @@ function AssignmentRolloutContent() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 791,
+                                lineNumber: 793,
                                 columnNumber: 33
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 785,
+                        lineNumber: 787,
                         columnNumber: 25
                     }, this);
                 }
@@ -3805,7 +3806,7 @@ function AssignmentRolloutContent() {
                                 children: "Invalid"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 802,
+                                lineNumber: 804,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3817,13 +3818,13 @@ function AssignmentRolloutContent() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 803,
+                                lineNumber: 805,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 801,
+                        lineNumber: 803,
                         columnNumber: 25
                     }, this);
                 }
@@ -3833,7 +3834,7 @@ function AssignmentRolloutContent() {
                     children: csvRow.AssignmentAction
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 811,
+                    lineNumber: 813,
                     columnNumber: 21
                 }, this);
             }
@@ -3851,14 +3852,14 @@ function AssignmentRolloutContent() {
                     children: csvRow.FilterName
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 838,
+                    lineNumber: 840,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                     className: "text-xs text-gray-500",
                     children: "None"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 844,
+                    lineNumber: 846,
                     columnNumber: 21
                 }, this);
             }
@@ -3876,14 +3877,14 @@ function AssignmentRolloutContent() {
                     children: csvRow.FilterType
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 856,
+                    lineNumber: 858,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                     className: "text-xs text-gray-500",
                     children: "None"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 863,
+                    lineNumber: 865,
                     columnNumber: 21
                 }, this);
             }
@@ -3926,25 +3927,25 @@ function AssignmentRolloutContent() {
                                     className: "h-5 w-5 text-blue-600 animate-pulse"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 905,
+                                    lineNumber: 907,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute inset-0 rounded-full bg-blue-400 opacity-50 animate-ping"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 906,
+                                    lineNumber: 908,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 904,
+                            lineNumber: 906,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 898,
+                        lineNumber: 900,
                         columnNumber: 21
                     }, this),
                     showTooltip && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$dom$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].createPortal(/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3958,7 +3959,7 @@ function AssignmentRolloutContent() {
                                 className: "absolute -top-1 left-4 w-2 h-2 bg-blue-50 dark:bg-blue-900 border-l border-t border-blue-200 dark:border-blue-700 transform rotate-45"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 917,
+                                lineNumber: 919,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3966,7 +3967,7 @@ function AssignmentRolloutContent() {
                                 children: "Processing Migration..."
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 918,
+                                lineNumber: 920,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3974,13 +3975,13 @@ function AssignmentRolloutContent() {
                                 children: "This row is being migrated"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 919,
+                                lineNumber: 921,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 910,
+                        lineNumber: 912,
                         columnNumber: 25
                     }, this), document.body)
                 ]
@@ -3999,12 +4000,12 @@ function AssignmentRolloutContent() {
                             className: "h-5 w-5 text-blue-500"
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 937,
+                            lineNumber: 939,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 931,
+                        lineNumber: 933,
                         columnNumber: 21
                     }, this),
                     showTooltip && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$dom$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].createPortal(/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4018,7 +4019,7 @@ function AssignmentRolloutContent() {
                                 className: "absolute -top-1 left-4 w-2 h-2 bg-blue-50 dark:bg-blue-900 border-l border-t border-blue-200 dark:border-blue-700 transform rotate-45"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 947,
+                                lineNumber: 949,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4026,13 +4027,13 @@ function AssignmentRolloutContent() {
                                 children: "Already Migrated"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 949,
+                                lineNumber: 951,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 940,
+                        lineNumber: 942,
                         columnNumber: 25
                     }, this), document.body)
                 ]
@@ -4069,12 +4070,12 @@ function AssignmentRolloutContent() {
                             className: "h-5 w-5 text-red-500"
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 997,
+                            lineNumber: 999,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 991,
+                        lineNumber: 993,
                         columnNumber: 21
                     }, this),
                     showTooltip && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$dom$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].createPortal(/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4088,7 +4089,7 @@ function AssignmentRolloutContent() {
                                 className: "absolute -top-1 left-4 w-2 h-2 bg-red-50 dark:bg-red-900 border-l border-t border-red-200 dark:border-red-700 transform rotate-45"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1007,
+                                lineNumber: 1009,
                                 columnNumber: 29
                             }, this),
                             errors.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -4098,7 +4099,7 @@ function AssignmentRolloutContent() {
                                         children: "Migration Check Errors:"
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 1011,
+                                        lineNumber: 1013,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -4111,12 +4112,12 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, idx, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1015,
+                                                lineNumber: 1017,
                                                 columnNumber: 45
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 1013,
+                                        lineNumber: 1015,
                                         columnNumber: 37
                                     }, this)
                                 ]
@@ -4128,7 +4129,7 @@ function AssignmentRolloutContent() {
                                         children: "Compatibility Issues:"
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 1022,
+                                        lineNumber: 1024,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -4141,12 +4142,12 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, idx, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1026,
+                                                lineNumber: 1028,
                                                 columnNumber: 45
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 1024,
+                                        lineNumber: 1026,
                                         columnNumber: 37
                                     }, this)
                                 ]
@@ -4154,7 +4155,7 @@ function AssignmentRolloutContent() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1000,
+                        lineNumber: 1002,
                         columnNumber: 25
                     }, this), document.body)
                 ]
@@ -4173,12 +4174,12 @@ function AssignmentRolloutContent() {
                             className: "h-5 w-5 text-yellow-500"
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1048,
+                            lineNumber: 1050,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1042,
+                        lineNumber: 1044,
                         columnNumber: 21
                     }, this),
                     showTooltip && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$dom$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].createPortal(/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4192,7 +4193,7 @@ function AssignmentRolloutContent() {
                                 className: "absolute -top-1 left-4 w-2 h-2 bg-yellow-50 dark:bg-yellow-900 border-l border-t border-yellow-200 dark:border-yellow-700 transform rotate-45"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1058,
+                                lineNumber: 1060,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4200,7 +4201,7 @@ function AssignmentRolloutContent() {
                                 children: "Filter Warnings:"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1060,
+                                lineNumber: 1062,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -4213,18 +4214,18 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, idx, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 1064,
+                                        lineNumber: 1066,
                                         columnNumber: 37
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1062,
+                                lineNumber: 1064,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1051,
+                        lineNumber: 1053,
                         columnNumber: 25
                     }, this), document.body)
                 ]
@@ -4240,25 +4241,25 @@ function AssignmentRolloutContent() {
                         className: "h-5 w-5 text-green-500 fill-green-100 dark:fill-green-900/30"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1078,
+                        lineNumber: 1080,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$up$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowUp$3e$__["ArrowUp"], {
                         className: "h-3 w-3 text-gray-700 dark:text-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1079,
+                        lineNumber: 1081,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 1077,
+                lineNumber: 1079,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/deployment/assignments/page.tsx",
-            lineNumber: 1076,
+            lineNumber: 1078,
             columnNumber: 13
         }, this);
     };
@@ -4300,12 +4301,12 @@ function AssignmentRolloutContent() {
                         className: isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1099,
+                        lineNumber: 1101,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1098,
+                    lineNumber: 1100,
                     columnNumber: 21
                 }, this);
             }
@@ -4339,7 +4340,7 @@ function AssignmentRolloutContent() {
                     result: result
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1171,
+                    lineNumber: 1173,
                     columnNumber: 24
                 }, this);
             }
@@ -4368,18 +4369,18 @@ function AssignmentRolloutContent() {
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1194,
+                                lineNumber: 1196,
                                 columnNumber: 39
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1195,
+                                lineNumber: 1197,
                                 columnNumber: 39
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1188,
+                            lineNumber: 1190,
                             columnNumber: 29
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4393,7 +4394,7 @@ function AssignmentRolloutContent() {
                                             children: displayPolicy.name || 'Unknown Policy'
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 1200,
+                                            lineNumber: 1202,
                                             columnNumber: 33
                                         }, this),
                                         hasDuplicates && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -4405,7 +4406,7 @@ function AssignmentRolloutContent() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 1205,
+                                            lineNumber: 1207,
                                             columnNumber: 37
                                         }, this),
                                         result.csvRows && result.csvRows.length > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -4417,13 +4418,13 @@ function AssignmentRolloutContent() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 1210,
+                                            lineNumber: 1212,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1199,
+                                    lineNumber: 1201,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4435,19 +4436,19 @@ function AssignmentRolloutContent() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1215,
+                                    lineNumber: 1217,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1198,
+                            lineNumber: 1200,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1186,
+                    lineNumber: 1188,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "text-red-600 text-sm",
@@ -4456,7 +4457,7 @@ function AssignmentRolloutContent() {
                             className: "h-4 w-4 inline mr-1"
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1222,
+                            lineNumber: 1224,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4466,7 +4467,7 @@ function AssignmentRolloutContent() {
                                     children: result.providedPolicyName || 'Unknown policy name'
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1224,
+                                    lineNumber: 1226,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4474,19 +4475,19 @@ function AssignmentRolloutContent() {
                                     children: "Policy not found"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1226,
+                                    lineNumber: 1228,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1223,
+                            lineNumber: 1225,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1221,
+                    lineNumber: 1223,
                     columnNumber: 21
                 }, this);
             }
@@ -4520,14 +4521,14 @@ function AssignmentRolloutContent() {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1249,
+                    lineNumber: 1251,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
                     variant: "destructive",
                     children: "N/A"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1260,
+                    lineNumber: 1262,
                     columnNumber: 21
                 }, this);
             }
@@ -4548,7 +4549,7 @@ function AssignmentRolloutContent() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1273,
+                        lineNumber: 1275,
                         columnNumber: 25
                     }, this);
                 }
@@ -4558,7 +4559,7 @@ function AssignmentRolloutContent() {
                     children: "None"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1281,
+                    lineNumber: 1283,
                     columnNumber: 23
                 }, this);
             }
@@ -4575,7 +4576,7 @@ function AssignmentRolloutContent() {
                     children: result.assignmentDirection
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1292,
+                    lineNumber: 1294,
                     columnNumber: 21
                 }, this) : null;
             }
@@ -4592,7 +4593,7 @@ function AssignmentRolloutContent() {
                     children: result.assignmentAction
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1306,
+                    lineNumber: 1308,
                     columnNumber: 21
                 }, this) : null;
             }
@@ -4610,7 +4611,7 @@ function AssignmentRolloutContent() {
                     children: "None"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1325,
+                    lineNumber: 1327,
                     columnNumber: 23
                 }, this);
             }
@@ -4629,7 +4630,7 @@ function AssignmentRolloutContent() {
                         children: "None"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1338,
+                        lineNumber: 1340,
                         columnNumber: 28
                     }, this);
                 }
@@ -4639,7 +4640,7 @@ function AssignmentRolloutContent() {
                     children: filterType
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1342,
+                    lineNumber: 1344,
                     columnNumber: 21
                 }, this);
             }
@@ -4660,7 +4661,7 @@ function AssignmentRolloutContent() {
                         children: "None"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1363,
+                        lineNumber: 1365,
                         columnNumber: 28
                     }, this);
                 }
@@ -4674,13 +4675,13 @@ function AssignmentRolloutContent() {
                             children: tagName
                         }, index, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1371,
+                            lineNumber: 1373,
                             columnNumber: 33
                         }, this);
                     })
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1367,
+                    lineNumber: 1369,
                     columnNumber: 21
                 }, this);
             }
@@ -4707,14 +4708,14 @@ function AssignmentRolloutContent() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1401,
+                                lineNumber: 1403,
                                 columnNumber: 29
                             }, this),
                             "Success"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1400,
+                        lineNumber: 1402,
                         columnNumber: 25
                     }, this);
                 } else if (result.status === 'Skipped') {
@@ -4726,14 +4727,14 @@ function AssignmentRolloutContent() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1408,
+                                lineNumber: 1410,
                                 columnNumber: 29
                             }, this),
                             "Skipped"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1407,
+                        lineNumber: 1409,
                         columnNumber: 25
                     }, this);
                 } else {
@@ -4744,14 +4745,14 @@ function AssignmentRolloutContent() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1415,
+                                lineNumber: 1417,
                                 columnNumber: 29
                             }, this),
                             "Failed"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1414,
+                        lineNumber: 1416,
                         columnNumber: 25
                     }, this);
                 }
@@ -4778,14 +4779,14 @@ function AssignmentRolloutContent() {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1438,
+                    lineNumber: 1440,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                     className: "text-xs text-gray-500",
                     children: "None"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1442,
+                    lineNumber: 1444,
                     columnNumber: 21
                 }, this);
             }
@@ -4800,7 +4801,7 @@ function AssignmentRolloutContent() {
                     children: String(value)
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1451,
+                    lineNumber: 1453,
                     columnNumber: 17
                 }, this)
         },
@@ -4816,14 +4817,14 @@ function AssignmentRolloutContent() {
                     children: group
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1463,
+                    lineNumber: 1465,
                     columnNumber: 23
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                     className: "text-xs text-gray-500",
                     children: "None"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1464,
+                    lineNumber: 1466,
                     columnNumber: 23
                 }, this);
             }
@@ -4845,7 +4846,7 @@ function AssignmentRolloutContent() {
                     children: action
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1480,
+                    lineNumber: 1482,
                     columnNumber: 21
                 }, this);
             }
@@ -4867,7 +4868,7 @@ function AssignmentRolloutContent() {
                     children: action
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1498,
+                    lineNumber: 1500,
                     columnNumber: 21
                 }, this);
             }
@@ -4887,7 +4888,7 @@ function AssignmentRolloutContent() {
                         children: "None"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1518,
+                        lineNumber: 1520,
                         columnNumber: 28
                     }, this);
                 }
@@ -4902,7 +4903,7 @@ function AssignmentRolloutContent() {
                                 children: filterType
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1525,
+                                lineNumber: 1527,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4910,13 +4911,13 @@ function AssignmentRolloutContent() {
                                 children: "None"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1530,
+                                lineNumber: 1532,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1524,
+                        lineNumber: 1526,
                         columnNumber: 25
                     }, this);
                 }
@@ -4930,7 +4931,7 @@ function AssignmentRolloutContent() {
                             children: filterType
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1538,
+                            lineNumber: 1540,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4939,13 +4940,13 @@ function AssignmentRolloutContent() {
                             children: filterName
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1543,
+                            lineNumber: 1545,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1537,
+                    lineNumber: 1539,
                     columnNumber: 21
                 }, this);
             }
@@ -4962,7 +4963,7 @@ function AssignmentRolloutContent() {
                         children: "Successfully migrated"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1557,
+                        lineNumber: 1559,
                         columnNumber: 28
                     }, this);
                 } else if (result.status === 'Skipped') {
@@ -4971,7 +4972,7 @@ function AssignmentRolloutContent() {
                         children: String(value) || 'Skipped - not selected for migration'
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1559,
+                        lineNumber: 1561,
                         columnNumber: 28
                     }, this);
                 }
@@ -4981,7 +4982,7 @@ function AssignmentRolloutContent() {
                     children: String(value)
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1562,
+                    lineNumber: 1564,
                     columnNumber: 21
                 }, this);
             }
@@ -4995,7 +4996,7 @@ function AssignmentRolloutContent() {
                     children: new Date(String(value)).toLocaleString()
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1573,
+                    lineNumber: 1575,
                     columnNumber: 17
                 }, this)
         },
@@ -5025,7 +5026,7 @@ function AssignmentRolloutContent() {
                                 className: "animate-spin rounded-full h-3 w-3 border-b-2 border-current mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1604,
+                                lineNumber: 1606,
                                 columnNumber: 33
                             }, this),
                             "Retrying..."
@@ -5036,7 +5037,7 @@ function AssignmentRolloutContent() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1609,
+                                lineNumber: 1611,
                                 columnNumber: 33
                             }, this),
                             "Retry"
@@ -5044,7 +5045,7 @@ function AssignmentRolloutContent() {
                     }, void 0, true)
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1592,
+                    lineNumber: 1594,
                     columnNumber: 21
                 }, this);
             }
@@ -5063,14 +5064,14 @@ function AssignmentRolloutContent() {
                     children: result.policy.name
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1627,
+                    lineNumber: 1629,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                     className: "text-red-600",
                     children: "Policy not found"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1632,
+                    lineNumber: 1634,
                     columnNumber: 21
                 }, this);
             }
@@ -5088,14 +5089,14 @@ function AssignmentRolloutContent() {
                     children: result.csvRow?.GroupName
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1645,
+                    lineNumber: 1647,
                     columnNumber: 21
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                     className: "text-xs text-gray-500",
                     children: "None"
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1654,
+                    lineNumber: 1656,
                     columnNumber: 21
                 }, this);
             }
@@ -5111,7 +5112,7 @@ function AssignmentRolloutContent() {
                     children: result.csvRow.AssignmentAction
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1665,
+                    lineNumber: 1667,
                     columnNumber: 21
                 }, this) : null;
             }
@@ -5131,14 +5132,14 @@ function AssignmentRolloutContent() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1681,
+                                lineNumber: 1683,
                                 columnNumber: 29
                             }, this),
                             "Valid"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1680,
+                        lineNumber: 1682,
                         columnNumber: 25
                     }, this);
                 }
@@ -5150,14 +5151,14 @@ function AssignmentRolloutContent() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1689,
+                                lineNumber: 1691,
                                 columnNumber: 29
                             }, this),
                             "Invalid"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1688,
+                        lineNumber: 1690,
                         columnNumber: 25
                     }, this);
                 }
@@ -5170,14 +5171,14 @@ function AssignmentRolloutContent() {
                                 className: "h-3 w-3 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 1697,
+                                lineNumber: 1699,
                                 columnNumber: 29
                             }, this),
                             "Warning"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1696,
+                        lineNumber: 1698,
                         columnNumber: 25
                     }, this);
                 }
@@ -5187,7 +5188,7 @@ function AssignmentRolloutContent() {
                         children: "Pending"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1703,
+                        lineNumber: 1705,
                         columnNumber: 28
                     }, this);
                 }
@@ -5207,12 +5208,12 @@ function AssignmentRolloutContent() {
                         children: "None"
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 1716,
+                        lineNumber: 1718,
                         columnNumber: 50
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1715,
+                    lineNumber: 1717,
                     columnNumber: 21
                 }, this);
             }
@@ -5320,7 +5321,7 @@ function AssignmentRolloutContent() {
                                     className: "h-3 w-3"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1835,
+                                    lineNumber: 1837,
                                     columnNumber: 25
                                 }, this),
                                 result.policies.length,
@@ -5328,7 +5329,7 @@ function AssignmentRolloutContent() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1834,
+                            lineNumber: 1836,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -5343,7 +5344,7 @@ function AssignmentRolloutContent() {
                                                 children: "#"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1841,
+                                                lineNumber: 1843,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5351,7 +5352,7 @@ function AssignmentRolloutContent() {
                                                 children: "Policy ID"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1842,
+                                                lineNumber: 1844,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5359,7 +5360,7 @@ function AssignmentRolloutContent() {
                                                 children: "Name"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1843,
+                                                lineNumber: 1845,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5367,7 +5368,7 @@ function AssignmentRolloutContent() {
                                                 children: "Type"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1844,
+                                                lineNumber: 1846,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5375,7 +5376,7 @@ function AssignmentRolloutContent() {
                                                 children: "Platform"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1845,
+                                                lineNumber: 1847,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5383,7 +5384,7 @@ function AssignmentRolloutContent() {
                                                 children: "Scope Tags"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1846,
+                                                lineNumber: 1848,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5391,18 +5392,18 @@ function AssignmentRolloutContent() {
                                                 children: "Assigned"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1847,
+                                                lineNumber: 1849,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 1840,
+                                        lineNumber: 1842,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1839,
+                                    lineNumber: 1841,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -5414,7 +5415,7 @@ function AssignmentRolloutContent() {
                                                     children: idx + 1
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1856,
+                                                    lineNumber: 1858,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5423,7 +5424,7 @@ function AssignmentRolloutContent() {
                                                     children: policy.id
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1857,
+                                                    lineNumber: 1859,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5431,7 +5432,7 @@ function AssignmentRolloutContent() {
                                                     children: policy.name || '—'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1860,
+                                                    lineNumber: 1862,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5439,7 +5440,7 @@ function AssignmentRolloutContent() {
                                                     children: policy.policyType || '—'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1861,
+                                                    lineNumber: 1863,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5447,7 +5448,7 @@ function AssignmentRolloutContent() {
                                                     children: policy.platform || '—'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1862,
+                                                    lineNumber: 1864,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5457,12 +5458,12 @@ function AssignmentRolloutContent() {
                                                         children: "None"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 1866,
+                                                        lineNumber: 1868,
                                                         columnNumber: 47
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1863,
+                                                    lineNumber: 1865,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5473,35 +5474,35 @@ function AssignmentRolloutContent() {
                                                         children: policy.isAssigned ? 'Yes' : 'No'
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 1869,
+                                                        lineNumber: 1871,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1868,
+                                                    lineNumber: 1870,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, policy.id || idx, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 1852,
+                                            lineNumber: 1854,
                                             columnNumber: 33
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1850,
+                                    lineNumber: 1852,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1838,
+                            lineNumber: 1840,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1833,
+                    lineNumber: 1835,
                     columnNumber: 17
                 }, this),
                 attemptedRows.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5513,7 +5514,7 @@ function AssignmentRolloutContent() {
                                     className: "h-3 w-3"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1883,
+                                    lineNumber: 1885,
                                     columnNumber: 29
                                 }, this),
                                 attemptedRows.length,
@@ -5523,7 +5524,7 @@ function AssignmentRolloutContent() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1882,
+                            lineNumber: 1884,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -5538,7 +5539,7 @@ function AssignmentRolloutContent() {
                                                 children: "#"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1889,
+                                                lineNumber: 1891,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5546,7 +5547,7 @@ function AssignmentRolloutContent() {
                                                 children: "Group"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1890,
+                                                lineNumber: 1892,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5554,7 +5555,7 @@ function AssignmentRolloutContent() {
                                                 children: "Direction"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1891,
+                                                lineNumber: 1893,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5562,7 +5563,7 @@ function AssignmentRolloutContent() {
                                                 children: "Action"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1892,
+                                                lineNumber: 1894,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5570,7 +5571,7 @@ function AssignmentRolloutContent() {
                                                 children: "Filter"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1893,
+                                                lineNumber: 1895,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5578,18 +5579,18 @@ function AssignmentRolloutContent() {
                                                 children: "Filter Type"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 1894,
+                                                lineNumber: 1896,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 1888,
+                                        lineNumber: 1890,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1887,
+                                    lineNumber: 1889,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -5601,7 +5602,7 @@ function AssignmentRolloutContent() {
                                                     children: idx + 1
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1903,
+                                                    lineNumber: 1905,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5611,12 +5612,12 @@ function AssignmentRolloutContent() {
                                                         children: "—"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 1904,
+                                                        lineNumber: 1906,
                                                         columnNumber: 102
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1904,
+                                                    lineNumber: 1906,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5627,12 +5628,12 @@ function AssignmentRolloutContent() {
                                                         children: csvRow.AssignmentDirection
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 1906,
+                                                        lineNumber: 1908,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1905,
+                                                    lineNumber: 1907,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5640,7 +5641,7 @@ function AssignmentRolloutContent() {
                                                     children: csvRow.AssignmentAction
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1910,
+                                                    lineNumber: 1912,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5650,12 +5651,12 @@ function AssignmentRolloutContent() {
                                                         children: "—"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 1911,
+                                                        lineNumber: 1913,
                                                         columnNumber: 124
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1911,
+                                                    lineNumber: 1913,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5665,41 +5666,41 @@ function AssignmentRolloutContent() {
                                                         children: "—"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 1912,
+                                                        lineNumber: 1914,
                                                         columnNumber: 124
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 1912,
+                                                    lineNumber: 1914,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, idx, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 1899,
+                                            lineNumber: 1901,
                                             columnNumber: 37
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 1897,
+                                    lineNumber: 1899,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 1886,
+                            lineNumber: 1888,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 1881,
+                    lineNumber: 1883,
                     columnNumber: 21
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/deployment/assignments/page.tsx",
-            lineNumber: 1831,
+            lineNumber: 1833,
             columnNumber: 13
         }, this);
     };
@@ -7008,7 +7009,7 @@ function AssignmentRolloutContent() {
                                     className: "h-5 w-5"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3494,
+                                    lineNumber: 3496,
                                     columnNumber: 25
                                 }, this),
                                 "Current Assignments (",
@@ -7017,12 +7018,12 @@ function AssignmentRolloutContent() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 3493,
+                            lineNumber: 3495,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 3492,
+                        lineNumber: 3494,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7054,7 +7055,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-4 w-4 text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3527,
+                                                        lineNumber: 3529,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7062,7 +7063,7 @@ function AssignmentRolloutContent() {
                                                         children: targetLabel
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3528,
+                                                        lineNumber: 3530,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -7071,13 +7072,13 @@ function AssignmentRolloutContent() {
                                                         children: assignmentDirection
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3529,
+                                                        lineNumber: 3531,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3526,
+                                                lineNumber: 3528,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7088,18 +7089,18 @@ function AssignmentRolloutContent() {
                                                     children: "Filtered"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3536,
+                                                    lineNumber: 3538,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3533,
+                                                lineNumber: 3535,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3525,
+                                        lineNumber: 3527,
                                         columnNumber: 33
                                     }, this),
                                     (isGroupAssignment || isExcludeAssignment) && groupId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7111,7 +7112,7 @@ function AssignmentRolloutContent() {
                                                     className: "h-4 w-4 animate-spin"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3547,
+                                                    lineNumber: 3549,
                                                     columnNumber: 49
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7119,20 +7120,20 @@ function AssignmentRolloutContent() {
                                                     children: "Loading group details..."
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3548,
+                                                    lineNumber: 3550,
                                                     columnNumber: 49
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3546,
+                                            lineNumber: 3548,
                                             columnNumber: 45
                                         }, this) : groupData?.error ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "text-sm text-red-500",
                                             children: "Failed to load group details"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3551,
+                                            lineNumber: 3553,
                                             columnNumber: 45
                                         }, this) : groupData ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "space-y-2",
@@ -7148,13 +7149,13 @@ function AssignmentRolloutContent() {
                                                                     className: "h-3 w-3 text-purple-500 shrink-0"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 3560,
+                                                                    lineNumber: 3562,
                                                                     columnNumber: 61
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 3557,
+                                                            lineNumber: 3559,
                                                             columnNumber: 53
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -7169,20 +7170,20 @@ function AssignmentRolloutContent() {
                                                                     className: "h-3 w-3 mr-1"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 3571,
+                                                                    lineNumber: 3573,
                                                                     columnNumber: 57
                                                                 }, this),
                                                                 "View Details"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 3563,
+                                                            lineNumber: 3565,
                                                             columnNumber: 53
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3556,
+                                                    lineNumber: 3558,
                                                     columnNumber: 49
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7190,7 +7191,7 @@ function AssignmentRolloutContent() {
                                                     children: groupData.description || 'No description available'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3575,
+                                                    lineNumber: 3577,
                                                     columnNumber: 49
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7203,7 +7204,7 @@ function AssignmentRolloutContent() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 3579,
+                                                            lineNumber: 3581,
                                                             columnNumber: 53
                                                         }, this),
                                                         groupData.groupCount && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -7215,7 +7216,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 3582,
+                                                                    lineNumber: 3584,
                                                                     columnNumber: 61
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7225,7 +7226,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 3583,
+                                                                    lineNumber: 3585,
                                                                     columnNumber: 61
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7235,7 +7236,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 3584,
+                                                                    lineNumber: 3586,
                                                                     columnNumber: 61
                                                                 }, this)
                                                             ]
@@ -7243,13 +7244,13 @@ function AssignmentRolloutContent() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3578,
+                                                    lineNumber: 3580,
                                                     columnNumber: 49
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3555,
+                                            lineNumber: 3557,
                                             columnNumber: 45
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "text-sm text-gray-500",
@@ -7259,12 +7260,12 @@ function AssignmentRolloutContent() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3590,
+                                            lineNumber: 3592,
                                             columnNumber: 45
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3544,
+                                        lineNumber: 3546,
                                         columnNumber: 37
                                     }, this),
                                     isAllDevices && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7277,7 +7278,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-4 w-4 text-gray-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3600,
+                                                        lineNumber: 3602,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7285,13 +7286,13 @@ function AssignmentRolloutContent() {
                                                         children: "All Devices"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3601,
+                                                        lineNumber: 3603,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3599,
+                                                lineNumber: 3601,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7299,13 +7300,13 @@ function AssignmentRolloutContent() {
                                                 children: "This assignment targets all enrolled devices in your organization."
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3603,
+                                                lineNumber: 3605,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3598,
+                                        lineNumber: 3600,
                                         columnNumber: 37
                                     }, this),
                                     isAllUsers && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7318,7 +7319,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-4 w-4 text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3612,
+                                                        lineNumber: 3614,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7326,13 +7327,13 @@ function AssignmentRolloutContent() {
                                                         children: "All Licensed Users"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3613,
+                                                        lineNumber: 3615,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3611,
+                                                lineNumber: 3613,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7340,13 +7341,13 @@ function AssignmentRolloutContent() {
                                                 children: "This assignment targets all licensed users in your organization."
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3615,
+                                                lineNumber: 3617,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3610,
+                                        lineNumber: 3612,
                                         columnNumber: 37
                                     }, this),
                                     !isGroupAssignment && !isExcludeAssignment && !isAllDevices && !isAllUsers && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7359,7 +7360,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-4 w-4 text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3624,
+                                                        lineNumber: 3626,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7367,13 +7368,13 @@ function AssignmentRolloutContent() {
                                                         children: "All Users & Devices"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3625,
+                                                        lineNumber: 3627,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3623,
+                                                lineNumber: 3625,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7381,13 +7382,13 @@ function AssignmentRolloutContent() {
                                                 children: "This assignment applies to all users and devices in your organization."
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3627,
+                                                lineNumber: 3629,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3622,
+                                        lineNumber: 3624,
                                         columnNumber: 37
                                     }, this),
                                     assignment.target?.deviceAndAppManagementAssignmentFilterId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7398,14 +7399,14 @@ function AssignmentRolloutContent() {
                                                 children: "Filter:"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3635,
+                                                lineNumber: 3637,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: assignment.target.deviceAndAppManagementAssignmentFilterType
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3636,
+                                                lineNumber: 3638,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7417,38 +7418,54 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3637,
+                                                lineNumber: 3639,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3634,
+                                        lineNumber: 3636,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, assignment.id, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3524,
+                                lineNumber: 3526,
                                 columnNumber: 29
                             }, this);
                         })
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 3499,
+                        lineNumber: 3501,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 3491,
+                lineNumber: 3493,
                 columnNumber: 13
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/deployment/assignments/page.tsx",
-            lineNumber: 3490,
+            lineNumber: 3492,
             columnNumber: 9
         }, this);
+    // ── Auto-load from Migration Builder ─────────────────────────────────────
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        const stored = sessionStorage.getItem(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MIGRATION_BUILDER_DEPLOYMENT_KEY"]);
+        if (!stored) return;
+        sessionStorage.removeItem(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MIGRATION_BUILDER_DEPLOYMENT_KEY"]); // consume once
+        try {
+            const parsed = parseCSV(stored);
+            setCsvData(parsed);
+            setFromMigrationBuilder(true);
+            setCurrentStep('upload'); // land on the upload/preview step so user can review & compare
+        } catch (e) {
+            console.error('Failed to load migration builder data', e);
+        }
+    // parseCSV is stable (defined in render scope but doesn't change)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         let filtered = comparisonResults;
         console.log('Compare Filter Debug:', {
@@ -7532,7 +7549,7 @@ function AssignmentRolloutContent() {
                                 children: "Assignments Manager"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3715,
+                                lineNumber: 3734,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7540,13 +7557,13 @@ function AssignmentRolloutContent() {
                                 children: "Upload, compare, and migrate policy assignments in bulk using a CSV file."
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3716,
+                                lineNumber: 3735,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 3714,
+                        lineNumber: 3733,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -7557,20 +7574,20 @@ function AssignmentRolloutContent() {
                                 className: "h-4 w-4 mr-2"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3721,
+                                lineNumber: 3740,
                                 columnNumber: 21
                             }, this),
                             "Start Over"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 3720,
+                        lineNumber: 3739,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 3713,
+                lineNumber: 3732,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -7634,12 +7651,12 @@ function AssignmentRolloutContent() {
                                                     className: "h-5 w-5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3757,
+                                                    lineNumber: 3776,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3749,
+                                                lineNumber: 3768,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7647,42 +7664,42 @@ function AssignmentRolloutContent() {
                                                 children: step.label
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3759,
+                                                lineNumber: 3778,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3748,
+                                        lineNumber: 3767,
                                         columnNumber: 37
                                     }, this),
                                     index < 5 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
                                         className: `h-4 w-4 mx-4 ${isCompleted ? 'text-green-600' : 'text-gray-300'}`
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3770,
+                                        lineNumber: 3789,
                                         columnNumber: 41
                                     }, this)
                                 ]
                             }, step.key, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3747,
+                                lineNumber: 3766,
                                 columnNumber: 33
                             }, this);
                         })
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 3729,
+                        lineNumber: 3748,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 3728,
+                    lineNumber: 3747,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 3727,
+                lineNumber: 3746,
                 columnNumber: 13
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -7697,7 +7714,7 @@ function AssignmentRolloutContent() {
                                     className: "h-5 w-5"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3787,
+                                    lineNumber: 3806,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7705,20 +7722,20 @@ function AssignmentRolloutContent() {
                                     children: "Error:"
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3788,
+                                    lineNumber: 3807,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                     children: error
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3789,
+                                    lineNumber: 3808,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 3786,
+                            lineNumber: 3805,
                             columnNumber: 25
                         }, this),
                         currentStep === 'upload' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -7728,7 +7745,7 @@ function AssignmentRolloutContent() {
                                     children: "Error occurred while processing the CSV file. Please check the file format and try again."
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3795,
+                                    lineNumber: 3814,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -7740,14 +7757,14 @@ function AssignmentRolloutContent() {
                                             className: "h-4 w-4 mr-2"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3804,
+                                            lineNumber: 3823,
                                             columnNumber: 37
                                         }, this),
                                         "Clear Error"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3799,
+                                    lineNumber: 3818,
                                     columnNumber: 33
                                 }, this)
                             ]
@@ -7759,7 +7776,7 @@ function AssignmentRolloutContent() {
                                     children: "Error occurred while comparing assignments. Please check your connection and try again."
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3812,
+                                    lineNumber: 3831,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -7771,14 +7788,14 @@ function AssignmentRolloutContent() {
                                             className: "h-4 w-4 mr-2"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3821,
+                                            lineNumber: 3840,
                                             columnNumber: 37
                                         }, this),
                                         "Try Comparison Again"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3816,
+                                    lineNumber: 3835,
                                     columnNumber: 33
                                 }, this)
                             ]
@@ -7790,7 +7807,7 @@ function AssignmentRolloutContent() {
                                     children: "Error occurred during migration. The operation may be partially completed."
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3829,
+                                    lineNumber: 3848,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -7802,14 +7819,14 @@ function AssignmentRolloutContent() {
                                             className: "h-4 w-4 mr-2"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3837,
+                                            lineNumber: 3856,
                                             columnNumber: 37
                                         }, this),
                                         "Retry Migration"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3832,
+                                    lineNumber: 3851,
                                     columnNumber: 33
                                 }, this)
                             ]
@@ -7821,7 +7838,7 @@ function AssignmentRolloutContent() {
                                     children: "Error occurred while validating assignments. This doesn't affect your migrations."
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3845,
+                                    lineNumber: 3864,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -7833,14 +7850,14 @@ function AssignmentRolloutContent() {
                                             className: "h-4 w-4 mr-2"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3854,
+                                            lineNumber: 3873,
                                             columnNumber: 37
                                         }, this),
                                         "Retry Validation"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 3849,
+                                    lineNumber: 3868,
                                     columnNumber: 33
                                 }, this)
                             ]
@@ -7848,12 +7865,12 @@ function AssignmentRolloutContent() {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                    lineNumber: 3785,
+                    lineNumber: 3804,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 3784,
+                lineNumber: 3803,
                 columnNumber: 17
             }, this),
             currentStep === 'upload' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -7865,14 +7882,14 @@ function AssignmentRolloutContent() {
                                 className: "h-12 w-12 text-yellow-500 mx-auto mb-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3868,
+                                lineNumber: 3887,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardTitle"], {
                                 children: "Upload Assignment CSV"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3869,
+                                lineNumber: 3888,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7880,18 +7897,87 @@ function AssignmentRolloutContent() {
                                 children: "Upload a CSV file containing policy assignments to compare and migrate"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3870,
+                                lineNumber: 3889,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 3867,
+                        lineNumber: 3886,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                         className: "space-y-6",
                         children: [
+                            fromMigrationBuilder && csvData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-start gap-3 rounded-lg border border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700 px-4 py-3",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+                                        className: "h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 shrink-0"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                        lineNumber: 3897,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex-1 text-sm",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "font-semibold text-purple-800 dark:text-purple-200",
+                                                children: [
+                                                    csvData.length,
+                                                    " rows loaded from the Migration Builder"
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                lineNumber: 3899,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-purple-700 dark:text-purple-300 mt-0.5",
+                                                children: [
+                                                    "Review the rows below, then click ",
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                        children: "Compare Assignments"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                        lineNumber: 3903,
+                                                        columnNumber: 75
+                                                    }, this),
+                                                    " to continue."
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                lineNumber: 3902,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                        lineNumber: 3898,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        className: "text-purple-400 hover:text-purple-600",
+                                        onClick: ()=>setFromMigrationBuilder(false),
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
+                                            className: "h-4 w-4"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/deployment/assignments/page.tsx",
+                                            lineNumber: 3908,
+                                            columnNumber: 37
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                        lineNumber: 3906,
+                                        columnNumber: 33
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                lineNumber: 3896,
+                                columnNumber: 29
+                            }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: `border-2 border-dashed rounded-lg p-8 text-center transition-colors ${isDragOver ? 'border-yellow-500 bg-blue-50' : 'border-gray-300'}`,
                                 onDragOver: handleDragOver,
@@ -7902,7 +7988,7 @@ function AssignmentRolloutContent() {
                                         className: `h-8 w-8 mx-auto mb-4 ${isDragOver ? 'text-yellow-500' : 'text-gray-400'}`
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3885,
+                                        lineNumber: 3923,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7910,7 +7996,7 @@ function AssignmentRolloutContent() {
                                         children: isDragOver ? 'Drop your CSV file here' : 'Drop your CSV file here or click to browse'
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3888,
+                                        lineNumber: 3926,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -7921,7 +8007,7 @@ function AssignmentRolloutContent() {
                                         className: "hidden"
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3893,
+                                        lineNumber: 3931,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -7929,13 +8015,13 @@ function AssignmentRolloutContent() {
                                         children: "Select CSV File"
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3900,
+                                        lineNumber: 3938,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3875,
+                                lineNumber: 3913,
                                 columnNumber: 25
                             }, this),
                             csvData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7950,7 +8036,7 @@ function AssignmentRolloutContent() {
                                                     className: "h-6 w-6 text-red-600 mt-0.5 flex-shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3913,
+                                                    lineNumber: 3951,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7966,7 +8052,7 @@ function AssignmentRolloutContent() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 3915,
+                                                            lineNumber: 3953,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7977,14 +8063,14 @@ function AssignmentRolloutContent() {
                                                                     children: "excluded from migration"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 3919,
+                                                                    lineNumber: 3957,
                                                                     columnNumber: 72
                                                                 }, this),
                                                                 " due to missing or invalid required fields."
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 3918,
+                                                            lineNumber: 3956,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7999,7 +8085,7 @@ function AssignmentRolloutContent() {
                                                                             children: count
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                            lineNumber: 3934,
+                                                                            lineNumber: 3972,
                                                                             columnNumber: 67
                                                                         }, this),
                                                                         " row",
@@ -8010,19 +8096,19 @@ function AssignmentRolloutContent() {
                                                                             children: field
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                            lineNumber: 3935,
+                                                                            lineNumber: 3973,
                                                                             columnNumber: 76
                                                                         }, this)
                                                                     ]
                                                                 }, field, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 3932,
+                                                                    lineNumber: 3970,
                                                                     columnNumber: 61
                                                                 }, this);
                                                             })
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 3924,
+                                                            lineNumber: 3962,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8030,31 +8116,31 @@ function AssignmentRolloutContent() {
                                                             children: "💡 Hover over the warning icon (⚠️) in each row to see specific validation errors."
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 3942,
+                                                            lineNumber: 3980,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 3914,
+                                                    lineNumber: 3952,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 3912,
+                                            lineNumber: 3950,
                                             columnNumber: 41
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3910,
+                                        lineNumber: 3948,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(MigrationSummaryCard, {
                                         step: "upload"
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3952,
+                                        lineNumber: 3990,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8071,7 +8157,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3955,
+                                                lineNumber: 3993,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -8080,13 +8166,13 @@ function AssignmentRolloutContent() {
                                                 children: loading ? 'Comparing...' : `Compare ${csvData.filter((r)=>r.isValid).length} Valid Rows`
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3959,
+                                                lineNumber: 3997,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3954,
+                                        lineNumber: 3992,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8099,7 +8185,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-5 w-5 text-blue-600 dark:text-blue-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3971,
+                                                        lineNumber: 4009,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8110,7 +8196,7 @@ function AssignmentRolloutContent() {
                                                                 children: "CSV Upload Summary"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 3973,
+                                                                lineNumber: 4011,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8118,19 +8204,19 @@ function AssignmentRolloutContent() {
                                                                 children: "This data is from your uploaded CSV file, not live environment data. Click “Compare” to check against your actual Intune assignments."
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 3976,
+                                                                lineNumber: 4014,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3972,
+                                                        lineNumber: 4010,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3970,
+                                                lineNumber: 4008,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8144,7 +8230,7 @@ function AssignmentRolloutContent() {
                                                                 children: csvData.filter((r)=>r.isValid).length
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 3985,
+                                                                lineNumber: 4023,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8152,13 +8238,13 @@ function AssignmentRolloutContent() {
                                                                 children: "Valid Rows in CSV"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 3987,
+                                                                lineNumber: 4025,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3984,
+                                                        lineNumber: 4022,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8169,7 +8255,7 @@ function AssignmentRolloutContent() {
                                                                 children: csvData.filter((r)=>r.isValid && r.AssignmentAction === 'Add').length
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 3990,
+                                                                lineNumber: 4028,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8177,13 +8263,13 @@ function AssignmentRolloutContent() {
                                                                 children: "Add Actions"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 3993,
+                                                                lineNumber: 4031,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3989,
+                                                        lineNumber: 4027,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8194,7 +8280,7 @@ function AssignmentRolloutContent() {
                                                                 children: csvData.filter((r)=>r.isValid && r.AssignmentAction === 'Remove').length
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 3996,
+                                                                lineNumber: 4034,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8202,13 +8288,13 @@ function AssignmentRolloutContent() {
                                                                 children: "Remove Actions"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 3999,
+                                                                lineNumber: 4037,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 3995,
+                                                        lineNumber: 4033,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8219,7 +8305,7 @@ function AssignmentRolloutContent() {
                                                                 children: csvData.filter((r)=>r.isValid && r.AssignmentAction === 'NoAssignment').length
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 4002,
+                                                                lineNumber: 4040,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8227,13 +8313,13 @@ function AssignmentRolloutContent() {
                                                                 children: "Clear Actions"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 4005,
+                                                                lineNumber: 4043,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4001,
+                                                        lineNumber: 4039,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8244,7 +8330,7 @@ function AssignmentRolloutContent() {
                                                                 children: csvData.filter((r)=>r.isValid && r.FilterName).length
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 4008,
+                                                                lineNumber: 4046,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8252,25 +8338,25 @@ function AssignmentRolloutContent() {
                                                                 children: "With Filters"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 4011,
+                                                                lineNumber: 4049,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4007,
+                                                        lineNumber: 4045,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 3982,
+                                                lineNumber: 4020,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 3968,
+                                        lineNumber: 4006,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8296,37 +8382,37 @@ function AssignmentRolloutContent() {
                                                         searchPlaceholder: "Search CSV data..."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4019,
+                                                        lineNumber: 4057,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4018,
+                                                lineNumber: 4056,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4016,
+                                        lineNumber: 4054,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 3907,
+                                lineNumber: 3945,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 3874,
+                        lineNumber: 3893,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 3866,
+                lineNumber: 3885,
                 columnNumber: 17
             }, this),
             currentStep === 'compare' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -8337,7 +8423,7 @@ function AssignmentRolloutContent() {
                                 children: "Assignment Comparison"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4045,
+                                lineNumber: 4083,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8345,13 +8431,13 @@ function AssignmentRolloutContent() {
                                 children: "Review current assignments vs. planned changes"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4046,
+                                lineNumber: 4084,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4044,
+                        lineNumber: 4082,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -8361,18 +8447,18 @@ function AssignmentRolloutContent() {
                             children: loading ? 'Comparing...' : csvData.filter((r)=>!r.isValidAction).length > 0 ? `Compare ${csvData.filter((r)=>r.isValidAction).length} Valid Rows (${csvData.filter((r)=>!r.isValidAction).length} Excluded)` : `Compare ${csvData.filter((r)=>r.isValidAction).length} Assignments`
                         }, void 0, false, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 4051,
+                            lineNumber: 4089,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4050,
+                        lineNumber: 4088,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 4043,
+                lineNumber: 4081,
                 columnNumber: 17
             }, this),
             currentStep === 'migrate' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -8387,7 +8473,7 @@ function AssignmentRolloutContent() {
                                             children: "Migration Ready"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4068,
+                                            lineNumber: 4106,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8395,13 +8481,13 @@ function AssignmentRolloutContent() {
                                             children: "Select assignments to migrate"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4069,
+                                            lineNumber: 4107,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4067,
+                                    lineNumber: 4105,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8417,7 +8503,7 @@ function AssignmentRolloutContent() {
                                                         className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4083,
+                                                        lineNumber: 4121,
                                                         columnNumber: 49
                                                     }, this),
                                                     "Cancelling..."
@@ -8428,7 +8514,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-4 w-4 mr-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4088,
+                                                        lineNumber: 4126,
                                                         columnNumber: 49
                                                     }, this),
                                                     "Cancel Migration"
@@ -8436,7 +8522,7 @@ function AssignmentRolloutContent() {
                                             }, void 0, true)
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4076,
+                                            lineNumber: 4114,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8457,7 +8543,7 @@ function AssignmentRolloutContent() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4097,
+                                                    lineNumber: 4135,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -8467,7 +8553,7 @@ function AssignmentRolloutContent() {
                                                     children: backupLoading ? 'Creating Backup...' : 'Backup Ready Policies'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4113,
+                                                    lineNumber: 4151,
                                                     columnNumber: 37
                                                 }, this),
                                                 !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -8482,30 +8568,30 @@ function AssignmentRolloutContent() {
                                                     }).length} Selected`
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4122,
+                                                    lineNumber: 4160,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4096,
+                                            lineNumber: 4134,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4073,
+                                    lineNumber: 4111,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 4066,
+                            lineNumber: 4104,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4065,
+                        lineNumber: 4103,
                         columnNumber: 21
                     }, this),
                     migrationChunkProgress.isProcessing && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8523,7 +8609,7 @@ function AssignmentRolloutContent() {
                                                     className: "animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4151,
+                                                    lineNumber: 4189,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -8531,13 +8617,13 @@ function AssignmentRolloutContent() {
                                                     children: migrationChunkProgress.totalChunks === 0 && migrationChunkProgress.currentChunk === 0 ? 'Preparing to Retry Rate-Limited Items...' : migrationChunkProgress.currentChunk > 0 && migrationResults.filter((r)=>r.status === 'Failed' && (r.errorMessage?.includes('429') || r.errorMessage?.toLowerCase().includes('rate limit'))).length > 0 ? 'Retrying Rate-Limited Items' : 'Migration in Progress'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4152,
+                                                    lineNumber: 4190,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4150,
+                                            lineNumber: 4188,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8554,7 +8640,7 @@ function AssignmentRolloutContent() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4164,
+                                                        lineNumber: 4202,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8562,7 +8648,7 @@ function AssignmentRolloutContent() {
                                                         children: "Processing in batches of 20"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4167,
+                                                        lineNumber: 4205,
                                                         columnNumber: 49
                                                     }, this)
                                                 ]
@@ -8571,18 +8657,18 @@ function AssignmentRolloutContent() {
                                                 children: "Waiting 5 seconds before retry..."
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4172,
+                                                lineNumber: 4210,
                                                 columnNumber: 45
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4161,
+                                            lineNumber: 4199,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4149,
+                                    lineNumber: 4187,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8595,7 +8681,7 @@ function AssignmentRolloutContent() {
                                                     children: "Overall Progress"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4182,
+                                                    lineNumber: 4220,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -8606,13 +8692,13 @@ function AssignmentRolloutContent() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4183,
+                                                    lineNumber: 4221,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4181,
+                                            lineNumber: 4219,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8627,17 +8713,17 @@ function AssignmentRolloutContent() {
                                                     children: migrationChunkProgress.processedItems
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4195,
+                                                    lineNumber: 4233,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4188,
+                                                lineNumber: 4226,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4187,
+                                            lineNumber: 4225,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8653,7 +8739,7 @@ function AssignmentRolloutContent() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4202,
+                                                    lineNumber: 4240,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -8663,19 +8749,19 @@ function AssignmentRolloutContent() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4205,
+                                                    lineNumber: 4243,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4201,
+                                            lineNumber: 4239,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4180,
+                                    lineNumber: 4218,
                                     columnNumber: 33
                                 }, this),
                                 migrationResults.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8689,7 +8775,7 @@ function AssignmentRolloutContent() {
                                                     children: migrationResults.filter((r)=>r.status === 'Success').length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4215,
+                                                    lineNumber: 4253,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8697,13 +8783,13 @@ function AssignmentRolloutContent() {
                                                     children: "Successful"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4218,
+                                                    lineNumber: 4256,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4214,
+                                            lineNumber: 4252,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8714,7 +8800,7 @@ function AssignmentRolloutContent() {
                                                     children: migrationResults.filter((r)=>r.status === 'Failed').length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4221,
+                                                    lineNumber: 4259,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8722,13 +8808,13 @@ function AssignmentRolloutContent() {
                                                     children: "Failed"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4224,
+                                                    lineNumber: 4262,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4220,
+                                            lineNumber: 4258,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8739,7 +8825,7 @@ function AssignmentRolloutContent() {
                                                     children: migrationResults.filter((r)=>r.status === 'Skipped').length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4227,
+                                                    lineNumber: 4265,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8747,19 +8833,19 @@ function AssignmentRolloutContent() {
                                                     children: "Skipped"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4230,
+                                                    lineNumber: 4268,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4226,
+                                            lineNumber: 4264,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4213,
+                                    lineNumber: 4251,
                                     columnNumber: 37
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8769,25 +8855,25 @@ function AssignmentRolloutContent() {
                                             className: "h-3 w-3 inline mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4237,
+                                            lineNumber: 4275,
                                             columnNumber: 37
                                         }, this),
                                         migrationChunkProgress.totalChunks === 0 && migrationChunkProgress.currentChunk === 0 ? 'Detected rate-limited items. Waiting 5 seconds before automatic retry...' : 'Table rows are updating in real-time as each batch completes'
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4236,
+                                    lineNumber: 4274,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 4147,
+                            lineNumber: 4185,
                             columnNumber: 29
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4146,
+                        lineNumber: 4184,
                         columnNumber: 25
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -8796,7 +8882,7 @@ function AssignmentRolloutContent() {
                                 step: "migrate"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4249,
+                                lineNumber: 4287,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8812,7 +8898,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4259,
+                                                lineNumber: 4297,
                                                 columnNumber: 33
                                             }, this),
                                             "All (",
@@ -8821,7 +8907,7 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4253,
+                                        lineNumber: 4291,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -8837,20 +8923,20 @@ function AssignmentRolloutContent() {
                                                         className: "h-5 w-5 text-green-500 fill-green-100 dark:fill-green-900/30"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4269,
+                                                        lineNumber: 4307,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$up$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowUp$3e$__["ArrowUp"], {
                                                         className: "h-3 w-3 text-gray-700 dark:text-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4270,
+                                                        lineNumber: 4308,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4268,
+                                                lineNumber: 4306,
                                                 columnNumber: 33
                                             }, this),
                                             "Ready for Migration (",
@@ -8859,7 +8945,7 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4262,
+                                        lineNumber: 4300,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -8872,7 +8958,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4 text-blue-500"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4280,
+                                                lineNumber: 4318,
                                                 columnNumber: 33
                                             }, this),
                                             "Already Migrated (",
@@ -8881,7 +8967,7 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4274,
+                                        lineNumber: 4312,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -8894,7 +8980,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4 text-red-500"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4289,
+                                                lineNumber: 4327,
                                                 columnNumber: 33
                                             }, this),
                                             "Compare Failed (",
@@ -8903,7 +8989,7 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4283,
+                                        lineNumber: 4321,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -8916,7 +9002,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4 text-orange-500"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4298,
+                                                lineNumber: 4336,
                                                 columnNumber: 33
                                             }, this),
                                             "Warnings (",
@@ -8925,13 +9011,13 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4292,
+                                        lineNumber: 4330,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4252,
+                                lineNumber: 4290,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8945,7 +9031,7 @@ function AssignmentRolloutContent() {
                                                 children: "Filter by Role Scope Tags"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4305,
+                                                lineNumber: 4343,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -8955,13 +9041,13 @@ function AssignmentRolloutContent() {
                                                 placeholder: "Select scope tags..."
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4308,
+                                                lineNumber: 4346,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4304,
+                                        lineNumber: 4342,
                                         columnNumber: 29
                                     }, this),
                                     roleScopeTagFilter.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -8971,13 +9057,13 @@ function AssignmentRolloutContent() {
                                         children: "Clear Filter"
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4316,
+                                        lineNumber: 4354,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4303,
+                                lineNumber: 4341,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8991,14 +9077,14 @@ function AssignmentRolloutContent() {
                                                     children: filteredComparisonResults.filter((r)=>r.isReadyForMigration && !r.isMigrated).length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4330,
+                                                    lineNumber: 4368,
                                                     columnNumber: 25
                                                 }, this),
                                                 " ready for migration"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4329,
+                                            lineNumber: 4367,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9007,14 +9093,14 @@ function AssignmentRolloutContent() {
                                                     children: filteredComparisonResults.filter((r)=>r.isMigrated).length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4333,
+                                                    lineNumber: 4371,
                                                     columnNumber: 25
                                                 }, this),
                                                 " migrated"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4332,
+                                            lineNumber: 4370,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9023,25 +9109,25 @@ function AssignmentRolloutContent() {
                                                     children: selectedRows.length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4336,
+                                                    lineNumber: 4374,
                                                     columnNumber: 25
                                                 }, this),
                                                 " selected"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4335,
+                                            lineNumber: 4373,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4328,
+                                    lineNumber: 4366,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4327,
+                                lineNumber: 4365,
                                 columnNumber: 25
                             }, this),
                             comparisonResults.length > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9059,7 +9145,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4345,
+                                                lineNumber: 4383,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9085,7 +9171,7 @@ function AssignmentRolloutContent() {
                                                         className: "mr-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4348,
+                                                        lineNumber: 4386,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -9093,19 +9179,19 @@ function AssignmentRolloutContent() {
                                                         children: "Select all ready for migration"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4369,
+                                                        lineNumber: 4407,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4347,
+                                                lineNumber: 4385,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4344,
+                                        lineNumber: 4382,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DataTable$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DataTable"], {
@@ -9146,7 +9232,7 @@ function AssignmentRolloutContent() {
                                         }
                                     }, `compare-table-${migrationResults.length}-${migrationChunkProgress.processedItems}`, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4372,
+                                        lineNumber: 4410,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9160,14 +9246,14 @@ function AssignmentRolloutContent() {
                                                             children: comparisonResults.filter((r)=>r.isReadyForMigration && !r.isMigrated).length
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4419,
+                                                            lineNumber: 4457,
                                                             columnNumber: 21
                                                         }, this),
                                                         " ready for migration"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4418,
+                                                    lineNumber: 4456,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9176,14 +9262,14 @@ function AssignmentRolloutContent() {
                                                             children: comparisonResults.filter((r)=>r.isMigrated).length
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4422,
+                                                            lineNumber: 4460,
                                                             columnNumber: 21
                                                         }, this),
                                                         " migrated"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4421,
+                                                    lineNumber: 4459,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9192,31 +9278,31 @@ function AssignmentRolloutContent() {
                                                             children: selectedRows.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4425,
+                                                            lineNumber: 4463,
                                                             columnNumber: 21
                                                         }, this),
                                                         " selected"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4424,
+                                                    lineNumber: 4462,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4417,
+                                            lineNumber: 4455,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4415,
+                                        lineNumber: 4453,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4343,
+                                lineNumber: 4381,
                                 columnNumber: 29
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "text-center py-8 text-gray-500",
@@ -9224,24 +9310,24 @@ function AssignmentRolloutContent() {
                                     children: "No comparison results available. Please run the comparison first."
                                 }, void 0, false, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4432,
+                                    lineNumber: 4470,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4431,
+                                lineNumber: 4469,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4246,
+                        lineNumber: 4284,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 4064,
+                lineNumber: 4102,
                 columnNumber: 17
             }, this),
             currentStep === 'results' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -9256,7 +9342,7 @@ function AssignmentRolloutContent() {
                                             children: "Migration Results"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4445,
+                                            lineNumber: 4483,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9264,13 +9350,13 @@ function AssignmentRolloutContent() {
                                             children: "Review the outcome of the migration process"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4446,
+                                            lineNumber: 4484,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4444,
+                                    lineNumber: 4482,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -9280,25 +9366,25 @@ function AssignmentRolloutContent() {
                                             className: "h-4 w-4 mr-2"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4453,
+                                            lineNumber: 4491,
                                             columnNumber: 33
                                         }, this),
                                         "Proceed to Verification"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4450,
+                                    lineNumber: 4488,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 4443,
+                            lineNumber: 4481,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4442,
+                        lineNumber: 4480,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -9307,7 +9393,7 @@ function AssignmentRolloutContent() {
                                 step: "results"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4460,
+                                lineNumber: 4498,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9322,7 +9408,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4469,
+                                                lineNumber: 4507,
                                                 columnNumber: 33
                                             }, this),
                                             "All (",
@@ -9331,7 +9417,7 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4464,
+                                        lineNumber: 4502,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -9343,7 +9429,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4477,
+                                                lineNumber: 4515,
                                                 columnNumber: 33
                                             }, this),
                                             "Successful (",
@@ -9352,7 +9438,7 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4472,
+                                        lineNumber: 4510,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -9364,7 +9450,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4485,
+                                                lineNumber: 4523,
                                                 columnNumber: 33
                                             }, this),
                                             "Failed (",
@@ -9373,7 +9459,7 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4480,
+                                        lineNumber: 4518,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -9385,7 +9471,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4493,
+                                                lineNumber: 4531,
                                                 columnNumber: 33
                                             }, this),
                                             "Skipped (",
@@ -9394,7 +9480,7 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4488,
+                                        lineNumber: 4526,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -9406,7 +9492,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4501,
+                                                lineNumber: 4539,
                                                 columnNumber: 33
                                             }, this),
                                             "Not Started (",
@@ -9415,13 +9501,13 @@ function AssignmentRolloutContent() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4496,
+                                        lineNumber: 4534,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4463,
+                                lineNumber: 4501,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9439,12 +9525,12 @@ function AssignmentRolloutContent() {
                                                             className: "h-5 w-5 text-green-600 dark:text-green-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4511,
+                                                            lineNumber: 4549,
                                                             columnNumber: 41
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4510,
+                                                        lineNumber: 4548,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9452,13 +9538,13 @@ function AssignmentRolloutContent() {
                                                         children: "Successful"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4513,
+                                                        lineNumber: 4551,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4509,
+                                                lineNumber: 4547,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9466,13 +9552,13 @@ function AssignmentRolloutContent() {
                                                 children: migrationResults.filter((r)=>r.status === 'Success').length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4515,
+                                                lineNumber: 4553,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4508,
+                                        lineNumber: 4546,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9487,12 +9573,12 @@ function AssignmentRolloutContent() {
                                                             className: "h-5 w-5 text-red-600 dark:text-red-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4522,
+                                                            lineNumber: 4560,
                                                             columnNumber: 41
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4521,
+                                                        lineNumber: 4559,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9500,13 +9586,13 @@ function AssignmentRolloutContent() {
                                                         children: "Failed"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4524,
+                                                        lineNumber: 4562,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4520,
+                                                lineNumber: 4558,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9514,13 +9600,13 @@ function AssignmentRolloutContent() {
                                                 children: migrationResults.filter((r)=>r.status === 'Failed').length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4526,
+                                                lineNumber: 4564,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4519,
+                                        lineNumber: 4557,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9535,12 +9621,12 @@ function AssignmentRolloutContent() {
                                                             className: "h-5 w-5 text-gray-600 dark:text-gray-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4533,
+                                                            lineNumber: 4571,
                                                             columnNumber: 41
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4532,
+                                                        lineNumber: 4570,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9548,13 +9634,13 @@ function AssignmentRolloutContent() {
                                                         children: "Skipped"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4535,
+                                                        lineNumber: 4573,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4531,
+                                                lineNumber: 4569,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9562,13 +9648,13 @@ function AssignmentRolloutContent() {
                                                 children: migrationResults.filter((r)=>r.status === 'Skipped').length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4537,
+                                                lineNumber: 4575,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4530,
+                                        lineNumber: 4568,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9583,12 +9669,12 @@ function AssignmentRolloutContent() {
                                                             className: "h-5 w-5 text-yellow-600 dark:text-yellow-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4544,
+                                                            lineNumber: 4582,
                                                             columnNumber: 41
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4543,
+                                                        lineNumber: 4581,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9596,13 +9682,13 @@ function AssignmentRolloutContent() {
                                                         children: "Not Started"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4546,
+                                                        lineNumber: 4584,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4542,
+                                                lineNumber: 4580,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9610,13 +9696,13 @@ function AssignmentRolloutContent() {
                                                 children: migrationResults.filter((r)=>r.status === 'NotStarted').length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4548,
+                                                lineNumber: 4586,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4541,
+                                        lineNumber: 4579,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9631,12 +9717,12 @@ function AssignmentRolloutContent() {
                                                             className: "h-5 w-5 text-blue-600 dark:text-blue-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4555,
+                                                            lineNumber: 4593,
                                                             columnNumber: 41
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4554,
+                                                        lineNumber: 4592,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9644,13 +9730,13 @@ function AssignmentRolloutContent() {
                                                         children: "Total"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4557,
+                                                        lineNumber: 4595,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4553,
+                                                lineNumber: 4591,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9658,19 +9744,19 @@ function AssignmentRolloutContent() {
                                                 children: migrationResults.length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4559,
+                                                lineNumber: 4597,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4552,
+                                        lineNumber: 4590,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4507,
+                                lineNumber: 4545,
                                 columnNumber: 25
                             }, this),
                             migrationResultFilter !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9683,7 +9769,7 @@ function AssignmentRolloutContent() {
                                             children: filteredMigrationResults.length
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4569,
+                                            lineNumber: 4607,
                                             columnNumber: 45
                                         }, this),
                                         " of ",
@@ -9691,7 +9777,7 @@ function AssignmentRolloutContent() {
                                             children: migrationResults.length
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4569,
+                                            lineNumber: 4607,
                                             columnNumber: 99
                                         }, this),
                                         " results",
@@ -9702,12 +9788,12 @@ function AssignmentRolloutContent() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4568,
+                                    lineNumber: 4606,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4567,
+                                lineNumber: 4605,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DataTable$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DataTable"], {
@@ -9720,19 +9806,19 @@ function AssignmentRolloutContent() {
                                 onPageChange: setCurrentPage
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4579,
+                                lineNumber: 4617,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4458,
+                        lineNumber: 4496,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 4441,
+                lineNumber: 4479,
                 columnNumber: 17
             }, this),
             currentStep === 'validate' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -9747,7 +9833,7 @@ function AssignmentRolloutContent() {
                                             children: "Final Verification"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4597,
+                                            lineNumber: 4635,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9755,13 +9841,13 @@ function AssignmentRolloutContent() {
                                             children: "Re-run comparison to verify all assignments in their final state"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4598,
+                                            lineNumber: 4636,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4596,
+                                    lineNumber: 4634,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9777,14 +9863,14 @@ function AssignmentRolloutContent() {
                                                         className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4607,
+                                                        lineNumber: 4645,
                                                         columnNumber: 49
                                                     }, this),
                                                     "Verifying..."
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4606,
+                                                lineNumber: 4644,
                                                 columnNumber: 45
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                                                 children: [
@@ -9792,7 +9878,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-4 w-4 mr-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4613,
+                                                        lineNumber: 4651,
                                                         columnNumber: 49
                                                     }, this),
                                                     "Run Verification"
@@ -9800,7 +9886,7 @@ function AssignmentRolloutContent() {
                                             }, void 0, true)
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4604,
+                                            lineNumber: 4642,
                                             columnNumber: 37
                                         }, this),
                                         validationComplete && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -9810,31 +9896,31 @@ function AssignmentRolloutContent() {
                                                     className: "h-4 w-4 mr-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4621,
+                                                    lineNumber: 4659,
                                                     columnNumber: 41
                                                 }, this),
                                                 "View Summary"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4620,
+                                            lineNumber: 4658,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4602,
+                                    lineNumber: 4640,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                            lineNumber: 4595,
+                            lineNumber: 4633,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4594,
+                        lineNumber: 4632,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -9843,7 +9929,7 @@ function AssignmentRolloutContent() {
                                 step: "validate"
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4630,
+                                lineNumber: 4668,
                                 columnNumber: 48
                             }, this),
                             !validationComplete && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9855,7 +9941,7 @@ function AssignmentRolloutContent() {
                                             className: "h-5 w-5 text-blue-600 mt-0.5 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4636,
+                                            lineNumber: 4674,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9865,7 +9951,7 @@ function AssignmentRolloutContent() {
                                                     children: "How Verification Works"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4638,
+                                                    lineNumber: 4676,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9876,31 +9962,31 @@ function AssignmentRolloutContent() {
                                                             children: migratedRowIds.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4642,
+                                                            lineNumber: 4680,
                                                             columnNumber: 92
                                                         }, this),
                                                         " rows that were migrated in this session against your current Intune environment to verify the final state."
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4641,
+                                                    lineNumber: 4679,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4637,
+                                            lineNumber: 4675,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4635,
+                                    lineNumber: 4673,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4634,
+                                lineNumber: 4672,
                                 columnNumber: 29
                             }, this),
                             validationComplete && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9912,7 +9998,7 @@ function AssignmentRolloutContent() {
                                             className: "h-5 w-5 text-green-600 mt-0.5 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4653,
+                                            lineNumber: 4691,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9923,7 +10009,7 @@ function AssignmentRolloutContent() {
                                                     children: "Verification Complete"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4655,
+                                                    lineNumber: 4693,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9935,24 +10021,24 @@ function AssignmentRolloutContent() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4658,
+                                                    lineNumber: 4696,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4654,
+                                            lineNumber: 4692,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4652,
+                                    lineNumber: 4690,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4651,
+                                lineNumber: 4689,
                                 columnNumber: 29
                             }, this),
                             validationComplete && validatedItemsCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9970,7 +10056,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4670,
+                                                lineNumber: 4708,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Badge"], {
@@ -9979,13 +10065,13 @@ function AssignmentRolloutContent() {
                                                 children: "Re-compared against live environment"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4672,
+                                                lineNumber: 4710,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4669,
+                                        lineNumber: 4707,
                                         columnNumber: 33
                                     }, this),
                                     validatedItems.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9995,12 +10081,12 @@ function AssignmentRolloutContent() {
                                             children: "No validation results found in table data. Check browser console for debug info."
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4679,
+                                            lineNumber: 4717,
                                             columnNumber: 41
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4678,
+                                        lineNumber: 4716,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10023,35 +10109,35 @@ function AssignmentRolloutContent() {
                                                 searchPlaceholder: "Search verified items..."
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4687,
+                                                lineNumber: 4725,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4686,
+                                            lineNumber: 4724,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4685,
+                                        lineNumber: 4723,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4668,
+                                lineNumber: 4706,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4628,
+                        lineNumber: 4666,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 4593,
+                lineNumber: 4631,
                 columnNumber: 17
             }, this),
             currentStep === 'summary' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -10071,12 +10157,12 @@ function AssignmentRolloutContent() {
                                                         className: "h-6 w-6 text-white"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4719,
+                                                        lineNumber: 4757,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4718,
+                                                    lineNumber: 4756,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10086,7 +10172,7 @@ function AssignmentRolloutContent() {
                                                             children: "Migration Summary"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4722,
+                                                            lineNumber: 4760,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10094,19 +10180,19 @@ function AssignmentRolloutContent() {
                                                             children: "End-to-end overview of what happened to every row in your CSV"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4723,
+                                                            lineNumber: 4761,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4721,
+                                                    lineNumber: 4759,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4717,
+                                            lineNumber: 4755,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10186,7 +10272,7 @@ function AssignmentRolloutContent() {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4729,
+                                                    lineNumber: 4767,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -10197,31 +10283,31 @@ function AssignmentRolloutContent() {
                                                             className: "h-4 w-4 mr-2"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4767,
+                                                            lineNumber: 4805,
                                                             columnNumber: 41
                                                         }, this),
                                                         "New Migration"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4766,
+                                                    lineNumber: 4804,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4728,
+                                            lineNumber: 4766,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 4716,
+                                    lineNumber: 4754,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4715,
+                                lineNumber: 4753,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -10241,7 +10327,7 @@ function AssignmentRolloutContent() {
                                                             className: "h-4 w-4 text-orange-500 mt-0.5 shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4784,
+                                                            lineNumber: 4822,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10254,7 +10340,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4786,
+                                                                    lineNumber: 4824,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10262,19 +10348,19 @@ function AssignmentRolloutContent() {
                                                                     children: "Bad format / missing required fields"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4787,
+                                                                    lineNumber: 4825,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4785,
+                                                            lineNumber: 4823,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4783,
+                                                    lineNumber: 4821,
                                                     columnNumber: 45
                                                 }, this),
                                                 compareFailed.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10284,7 +10370,7 @@ function AssignmentRolloutContent() {
                                                             className: "h-4 w-4 text-red-500 mt-0.5 shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4793,
+                                                            lineNumber: 4831,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10297,7 +10383,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4795,
+                                                                    lineNumber: 4833,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10305,19 +10391,19 @@ function AssignmentRolloutContent() {
                                                                     children: "Policy or group not found / duplicate"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4796,
+                                                                    lineNumber: 4834,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4794,
+                                                            lineNumber: 4832,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4792,
+                                                    lineNumber: 4830,
                                                     columnNumber: 45
                                                 }, this),
                                                 notStarted.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10327,7 +10413,7 @@ function AssignmentRolloutContent() {
                                                             className: "h-4 w-4 text-yellow-600 mt-0.5 shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4802,
+                                                            lineNumber: 4840,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10340,7 +10426,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4804,
+                                                                    lineNumber: 4842,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10348,19 +10434,19 @@ function AssignmentRolloutContent() {
                                                                     children: "Sent to API but never processed 👻"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4805,
+                                                                    lineNumber: 4843,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4803,
+                                                            lineNumber: 4841,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4801,
+                                                    lineNumber: 4839,
                                                     columnNumber: 45
                                                 }, this),
                                                 migFailed.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10370,7 +10456,7 @@ function AssignmentRolloutContent() {
                                                             className: "h-4 w-4 text-red-500 mt-0.5 shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4811,
+                                                            lineNumber: 4849,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10383,7 +10469,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4813,
+                                                                    lineNumber: 4851,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10391,19 +10477,19 @@ function AssignmentRolloutContent() {
                                                                     children: "API / permission error during migrate"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4814,
+                                                                    lineNumber: 4852,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4812,
+                                                            lineNumber: 4850,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4810,
+                                                    lineNumber: 4848,
                                                     columnNumber: 45
                                                 }, this),
                                                 migNotVerified.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10413,7 +10499,7 @@ function AssignmentRolloutContent() {
                                                             className: "h-4 w-4 text-blue-500 mt-0.5 shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4820,
+                                                            lineNumber: 4858,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10426,7 +10512,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4822,
+                                                                    lineNumber: 4860,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10434,19 +10520,19 @@ function AssignmentRolloutContent() {
                                                                     children: "Run verification or check portal"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4823,
+                                                                    lineNumber: 4861,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4821,
+                                                            lineNumber: 4859,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4819,
+                                                    lineNumber: 4857,
                                                     columnNumber: 45
                                                 }, this),
                                                 valFailed.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10456,7 +10542,7 @@ function AssignmentRolloutContent() {
                                                             className: "h-4 w-4 text-red-500 mt-0.5 shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4829,
+                                                            lineNumber: 4867,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10469,7 +10555,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4831,
+                                                                    lineNumber: 4869,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10477,19 +10563,19 @@ function AssignmentRolloutContent() {
                                                                     children: "Not found after migration — check portal"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4832,
+                                                                    lineNumber: 4870,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4830,
+                                                            lineNumber: 4868,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4828,
+                                                    lineNumber: 4866,
                                                     columnNumber: 45
                                                 }, this),
                                                 skipped.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10499,7 +10585,7 @@ function AssignmentRolloutContent() {
                                                             className: "h-4 w-4 text-gray-400 mt-0.5 shrink-0"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4838,
+                                                            lineNumber: 4876,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10512,7 +10598,7 @@ function AssignmentRolloutContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4840,
+                                                                    lineNumber: 4878,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10520,25 +10606,25 @@ function AssignmentRolloutContent() {
                                                                     children: "Not selected for migration"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                    lineNumber: 4841,
+                                                                    lineNumber: 4879,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                            lineNumber: 4839,
+                                                            lineNumber: 4877,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 4837,
+                                                    lineNumber: 4875,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 4781,
+                                            lineNumber: 4819,
                                             columnNumber: 37
                                         }, this);
                                     })(),
@@ -10556,33 +10642,33 @@ function AssignmentRolloutContent() {
                                                                 className: "h-5 w-5 text-blue-600"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 4856,
+                                                                lineNumber: 4894,
                                                                 columnNumber: 41
                                                             }, this),
                                                             "Migration Statistics"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4855,
+                                                        lineNumber: 4893,
                                                         columnNumber: 37
                                                     }, this),
                                                     isSummaryExpanded ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                         className: "h-4 w-4 text-gray-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4860,
+                                                        lineNumber: 4898,
                                                         columnNumber: 43
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                         className: "h-4 w-4 text-gray-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4861,
+                                                        lineNumber: 4899,
                                                         columnNumber: 43
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4851,
+                                                lineNumber: 4889,
                                                 columnNumber: 33
                                             }, this),
                                             isSummaryExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10605,176 +10691,12 @@ function AssignmentRolloutContent() {
                                                                                         className: "h-4 w-4 text-blue-500"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4886,
+                                                                                        lineNumber: 4924,
                                                                                         columnNumber: 57
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                                         className: "text-sm font-medium text-gray-700 dark:text-gray-300",
                                                                                         children: "Total Uploaded"
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4887,
-                                                                                        columnNumber: 57
-                                                                                    }, this)
-                                                                                ]
-                                                                            }, void 0, true, {
-                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4885,
-                                                                                columnNumber: 53
-                                                                            }, this),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-lg font-bold text-gray-900 dark:text-gray-100",
-                                                                                children: totalUploaded
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4889,
-                                                                                columnNumber: 53
-                                                                            }, this)
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 4884,
-                                                                        columnNumber: 49
-                                                                    }, this),
-                                                                    csvInvalidCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 ml-4",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                className: "flex items-center gap-2",
-                                                                                children: [
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
-                                                                                        className: "h-4 w-4 text-red-500"
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4895,
-                                                                                        columnNumber: 61
-                                                                                    }, this),
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                        className: "text-sm text-red-700 dark:text-red-300",
-                                                                                        children: "CSV Invalid"
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4896,
-                                                                                        columnNumber: 61
-                                                                                    }, this)
-                                                                                ]
-                                                                            }, void 0, true, {
-                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4894,
-                                                                                columnNumber: 57
-                                                                            }, this),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-sm font-bold text-red-700 dark:text-red-300",
-                                                                                children: csvInvalidCount
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4898,
-                                                                                columnNumber: 57
-                                                                            }, this)
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 4893,
-                                                                        columnNumber: 53
-                                                                    }, this),
-                                                                    compareFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800 ml-4",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                className: "flex items-center gap-2",
-                                                                                children: [
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
-                                                                                        className: "h-4 w-4 text-orange-500"
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4905,
-                                                                                        columnNumber: 61
-                                                                                    }, this),
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                        className: "text-sm text-orange-700 dark:text-orange-300",
-                                                                                        children: "Compare Failed"
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4906,
-                                                                                        columnNumber: 61
-                                                                                    }, this)
-                                                                                ]
-                                                                            }, void 0, true, {
-                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4904,
-                                                                                columnNumber: 57
-                                                                            }, this),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-sm font-bold text-orange-700 dark:text-orange-300",
-                                                                                children: compareFailedCount
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4908,
-                                                                                columnNumber: 57
-                                                                            }, this)
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 4903,
-                                                                        columnNumber: 53
-                                                                    }, this),
-                                                                    notSelectedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 ml-4",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                className: "flex items-center gap-2",
-                                                                                children: [
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Circle$3e$__["Circle"], {
-                                                                                        className: "h-4 w-4 text-gray-400"
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4915,
-                                                                                        columnNumber: 61
-                                                                                    }, this),
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                        className: "text-sm text-gray-600 dark:text-gray-400",
-                                                                                        children: "Not Selected for Migration"
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4916,
-                                                                                        columnNumber: 61
-                                                                                    }, this)
-                                                                                ]
-                                                                            }, void 0, true, {
-                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4914,
-                                                                                columnNumber: 57
-                                                                            }, this),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-sm font-bold text-gray-600 dark:text-gray-400",
-                                                                                children: notSelectedCount
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4918,
-                                                                                columnNumber: 57
-                                                                            }, this)
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 4913,
-                                                                        columnNumber: 53
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-400 dark:border-blue-600 ml-4",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                className: "flex items-center gap-2",
-                                                                                children: [
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__["CheckCircle"], {
-                                                                                        className: "h-4 w-4 text-blue-600"
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4924,
-                                                                                        columnNumber: 57
-                                                                                    }, this),
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                        className: "text-sm font-semibold text-blue-700 dark:text-blue-300",
-                                                                                        children: "Ready for Migration"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
                                                                                         lineNumber: 4925,
@@ -10787,8 +10709,8 @@ function AssignmentRolloutContent() {
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "text-lg font-bold text-blue-700 dark:text-blue-300",
-                                                                                children: readyForMigrationCount
+                                                                                className: "text-lg font-bold text-gray-900 dark:text-gray-100",
+                                                                                children: totalUploaded
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
                                                                                 lineNumber: 4927,
@@ -10799,11 +10721,175 @@ function AssignmentRolloutContent() {
                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
                                                                         lineNumber: 4922,
                                                                         columnNumber: 49
+                                                                    }, this),
+                                                                    csvInvalidCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 ml-4",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "flex items-center gap-2",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
+                                                                                        className: "h-4 w-4 text-red-500"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                        lineNumber: 4933,
+                                                                                        columnNumber: 61
+                                                                                    }, this),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                        className: "text-sm text-red-700 dark:text-red-300",
+                                                                                        children: "CSV Invalid"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                        lineNumber: 4934,
+                                                                                        columnNumber: 61
+                                                                                    }, this)
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                lineNumber: 4932,
+                                                                                columnNumber: 57
+                                                                            }, this),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                className: "text-sm font-bold text-red-700 dark:text-red-300",
+                                                                                children: csvInvalidCount
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                lineNumber: 4936,
+                                                                                columnNumber: 57
+                                                                            }, this)
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                        lineNumber: 4931,
+                                                                        columnNumber: 53
+                                                                    }, this),
+                                                                    compareFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800 ml-4",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "flex items-center gap-2",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
+                                                                                        className: "h-4 w-4 text-orange-500"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                        lineNumber: 4943,
+                                                                                        columnNumber: 61
+                                                                                    }, this),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                        className: "text-sm text-orange-700 dark:text-orange-300",
+                                                                                        children: "Compare Failed"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                        lineNumber: 4944,
+                                                                                        columnNumber: 61
+                                                                                    }, this)
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                lineNumber: 4942,
+                                                                                columnNumber: 57
+                                                                            }, this),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                className: "text-sm font-bold text-orange-700 dark:text-orange-300",
+                                                                                children: compareFailedCount
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                lineNumber: 4946,
+                                                                                columnNumber: 57
+                                                                            }, this)
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                        lineNumber: 4941,
+                                                                        columnNumber: 53
+                                                                    }, this),
+                                                                    notSelectedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 ml-4",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "flex items-center gap-2",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Circle$3e$__["Circle"], {
+                                                                                        className: "h-4 w-4 text-gray-400"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                        lineNumber: 4953,
+                                                                                        columnNumber: 61
+                                                                                    }, this),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                        className: "text-sm text-gray-600 dark:text-gray-400",
+                                                                                        children: "Not Selected for Migration"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                        lineNumber: 4954,
+                                                                                        columnNumber: 61
+                                                                                    }, this)
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                lineNumber: 4952,
+                                                                                columnNumber: 57
+                                                                            }, this),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                className: "text-sm font-bold text-gray-600 dark:text-gray-400",
+                                                                                children: notSelectedCount
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                lineNumber: 4956,
+                                                                                columnNumber: 57
+                                                                            }, this)
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                        lineNumber: 4951,
+                                                                        columnNumber: 53
+                                                                    }, this),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-400 dark:border-blue-600 ml-4",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "flex items-center gap-2",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__["CheckCircle"], {
+                                                                                        className: "h-4 w-4 text-blue-600"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                        lineNumber: 4962,
+                                                                                        columnNumber: 57
+                                                                                    }, this),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                        className: "text-sm font-semibold text-blue-700 dark:text-blue-300",
+                                                                                        children: "Ready for Migration"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                        lineNumber: 4963,
+                                                                                        columnNumber: 57
+                                                                                    }, this)
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                lineNumber: 4961,
+                                                                                columnNumber: 53
+                                                                            }, this),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                className: "text-lg font-bold text-blue-700 dark:text-blue-300",
+                                                                                children: readyForMigrationCount
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                                lineNumber: 4965,
+                                                                                columnNumber: 53
+                                                                            }, this)
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/app/deployment/assignments/page.tsx",
+                                                                        lineNumber: 4960,
+                                                                        columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 4883,
+                                                                lineNumber: 4921,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10816,7 +10902,7 @@ function AssignmentRolloutContent() {
                                                                                 className: "h-4 w-4"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4934,
+                                                                                lineNumber: 4972,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             "From ",
@@ -10825,7 +10911,7 @@ function AssignmentRolloutContent() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 4933,
+                                                                        lineNumber: 4971,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     (()=>{
@@ -10840,7 +10926,7 @@ function AssignmentRolloutContent() {
                                                                                     children: "Selected for migration:"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                    lineNumber: 4953,
+                                                                                    lineNumber: 4991,
                                                                                     columnNumber: 61
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10852,19 +10938,19 @@ function AssignmentRolloutContent() {
                                                                                             children: "⚠️"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                            lineNumber: 4957,
+                                                                                            lineNumber: 4995,
                                                                                             columnNumber: 69
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                    lineNumber: 4954,
+                                                                                    lineNumber: 4992,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                            lineNumber: 4952,
+                                                                            lineNumber: 4990,
                                                                             columnNumber: 57
                                                                         }, this);
                                                                     })(),
@@ -10880,7 +10966,7 @@ function AssignmentRolloutContent() {
                                                                                             className: "h-4 w-4 text-orange-600"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                            lineNumber: 4970,
+                                                                                            lineNumber: 5008,
                                                                                             columnNumber: 65
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10888,13 +10974,13 @@ function AssignmentRolloutContent() {
                                                                                             children: "Not Processed (use filter below)"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                            lineNumber: 4971,
+                                                                                            lineNumber: 5009,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                    lineNumber: 4969,
+                                                                                    lineNumber: 5007,
                                                                                     columnNumber: 61
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10902,13 +10988,13 @@ function AssignmentRolloutContent() {
                                                                                     children: notProcessed
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                    lineNumber: 4973,
+                                                                                    lineNumber: 5011,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                            lineNumber: 4968,
+                                                                            lineNumber: 5006,
                                                                             columnNumber: 57
                                                                         }, this);
                                                                     })(),
@@ -10922,7 +11008,7 @@ function AssignmentRolloutContent() {
                                                                                         className: "h-4 w-4 text-green-600"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4981,
+                                                                                        lineNumber: 5019,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10930,13 +11016,13 @@ function AssignmentRolloutContent() {
                                                                                         children: "Successfully Migrated"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4982,
+                                                                                        lineNumber: 5020,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4980,
+                                                                                lineNumber: 5018,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10944,13 +11030,13 @@ function AssignmentRolloutContent() {
                                                                                 children: migrationSuccessCount + verifiedCount + verifyFailedCount
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4984,
+                                                                                lineNumber: 5022,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 4979,
+                                                                        lineNumber: 5017,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     migrationSkippedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10963,7 +11049,7 @@ function AssignmentRolloutContent() {
                                                                                         className: "h-4 w-4 text-gray-400"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4991,
+                                                                                        lineNumber: 5029,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10971,13 +11057,13 @@ function AssignmentRolloutContent() {
                                                                                         children: "Skipped"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 4992,
+                                                                                        lineNumber: 5030,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4990,
+                                                                                lineNumber: 5028,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10985,13 +11071,13 @@ function AssignmentRolloutContent() {
                                                                                 children: migrationSkippedCount
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 4994,
+                                                                                lineNumber: 5032,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 4989,
+                                                                        lineNumber: 5027,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     notStartedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11004,7 +11090,7 @@ function AssignmentRolloutContent() {
                                                                                         className: "h-4 w-4 text-yellow-600"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 5001,
+                                                                                        lineNumber: 5039,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11012,13 +11098,13 @@ function AssignmentRolloutContent() {
                                                                                         children: "Not Started"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 5002,
+                                                                                        lineNumber: 5040,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 5000,
+                                                                                lineNumber: 5038,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11026,13 +11112,13 @@ function AssignmentRolloutContent() {
                                                                                 children: notStartedCount
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 5004,
+                                                                                lineNumber: 5042,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 4999,
+                                                                        lineNumber: 5037,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     migrationFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11045,7 +11131,7 @@ function AssignmentRolloutContent() {
                                                                                         className: "h-4 w-4 text-red-500"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 5011,
+                                                                                        lineNumber: 5049,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11053,13 +11139,13 @@ function AssignmentRolloutContent() {
                                                                                         children: "Migration Failed"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 5012,
+                                                                                        lineNumber: 5050,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 5010,
+                                                                                lineNumber: 5048,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11067,13 +11153,13 @@ function AssignmentRolloutContent() {
                                                                                 children: migrationFailedCount
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 5014,
+                                                                                lineNumber: 5052,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 5009,
+                                                                        lineNumber: 5047,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     verifiedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11086,7 +11172,7 @@ function AssignmentRolloutContent() {
                                                                                         className: "h-5 w-5 text-emerald-600"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 5021,
+                                                                                        lineNumber: 5059,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11094,13 +11180,13 @@ function AssignmentRolloutContent() {
                                                                                         children: "Verified in Intune"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 5022,
+                                                                                        lineNumber: 5060,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 5020,
+                                                                                lineNumber: 5058,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11108,13 +11194,13 @@ function AssignmentRolloutContent() {
                                                                                 children: verifiedCount
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 5024,
+                                                                                lineNumber: 5062,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 5019,
+                                                                        lineNumber: 5057,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     verifyFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11127,7 +11213,7 @@ function AssignmentRolloutContent() {
                                                                                         className: "h-4 w-4 text-red-500"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 5031,
+                                                                                        lineNumber: 5069,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11135,13 +11221,13 @@ function AssignmentRolloutContent() {
                                                                                         children: "Verification Failed"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                        lineNumber: 5032,
+                                                                                        lineNumber: 5070,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 5030,
+                                                                                lineNumber: 5068,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11149,37 +11235,37 @@ function AssignmentRolloutContent() {
                                                                                 children: verifyFailedCount
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                                lineNumber: 5034,
+                                                                                lineNumber: 5072,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                        lineNumber: 5029,
+                                                                        lineNumber: 5067,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                                lineNumber: 4932,
+                                                                lineNumber: 4970,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 4881,
+                                                        lineNumber: 4919,
                                                         columnNumber: 41
                                                     }, this);
                                                 })()
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 4864,
+                                                lineNumber: 4902,
                                                 columnNumber: 55
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 4850,
+                                        lineNumber: 4888,
                                         columnNumber: 29
                                     }, this),
                                     summaryStats.verifiedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11189,7 +11275,7 @@ function AssignmentRolloutContent() {
                                                 className: "h-5 w-5 text-green-600 shrink-0"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5047,
+                                                lineNumber: 5085,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11199,32 +11285,32 @@ function AssignmentRolloutContent() {
                                                         children: summaryStats.verifiedCount
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5049,
+                                                        lineNumber: 5087,
                                                         columnNumber: 41
                                                     }, this),
                                                     " assignment(s) successfully migrated and verified in Intune."
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5048,
+                                                lineNumber: 5086,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 5046,
+                                        lineNumber: 5084,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 4772,
+                                lineNumber: 4810,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 4714,
+                        lineNumber: 4752,
                         columnNumber: 21
                     }, this),
                     masterTrackingData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -11237,7 +11323,7 @@ function AssignmentRolloutContent() {
                                             className: "h-5 w-5 text-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 5061,
+                                            lineNumber: 5099,
                                             columnNumber: 37
                                         }, this),
                                         "Row Changelog",
@@ -11246,18 +11332,18 @@ function AssignmentRolloutContent() {
                                             children: "— every CSV row and its final state"
                                         }, void 0, false, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 5063,
+                                            lineNumber: 5101,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                    lineNumber: 5060,
+                                    lineNumber: 5098,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 5059,
+                                lineNumber: 5097,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -11275,7 +11361,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5077,
+                                                        lineNumber: 5115,
                                                         columnNumber: 41
                                                     }, this),
                                                     "All (",
@@ -11284,7 +11370,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5071,
+                                                lineNumber: 5109,
                                                 columnNumber: 37
                                             }, this),
                                             summaryStats.csvInvalidCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11297,7 +11383,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-red-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5087,
+                                                        lineNumber: 5125,
                                                         columnNumber: 45
                                                     }, this),
                                                     "CSV Invalid (",
@@ -11306,7 +11392,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5081,
+                                                lineNumber: 5119,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.compareFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11319,7 +11405,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-orange-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5098,
+                                                        lineNumber: 5136,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Compare Failed (",
@@ -11328,7 +11414,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5092,
+                                                lineNumber: 5130,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.notSelectedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11341,7 +11427,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5109,
+                                                        lineNumber: 5147,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Not Selected (",
@@ -11350,7 +11436,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5103,
+                                                lineNumber: 5141,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.notProcessedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11363,7 +11449,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-orange-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5120,
+                                                        lineNumber: 5158,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Not Processed (",
@@ -11372,7 +11458,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5114,
+                                                lineNumber: 5152,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.alreadyMigratedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11385,7 +11471,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5131,
+                                                        lineNumber: 5169,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Already Migrated (",
@@ -11394,7 +11480,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5125,
+                                                lineNumber: 5163,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.notProcessedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11407,7 +11493,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-orange-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5142,
+                                                        lineNumber: 5180,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Not Processed (",
@@ -11416,7 +11502,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5136,
+                                                lineNumber: 5174,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.migrationSuccessCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11429,7 +11515,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5153,
+                                                        lineNumber: 5191,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Migrated (Not Verified) (",
@@ -11438,7 +11524,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5147,
+                                                lineNumber: 5185,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.verifiedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11451,7 +11537,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-emerald-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5164,
+                                                        lineNumber: 5202,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Migrated (Verified) (",
@@ -11460,7 +11546,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5158,
+                                                lineNumber: 5196,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.migrationFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11473,7 +11559,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-red-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5175,
+                                                        lineNumber: 5213,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Migration Failed (",
@@ -11482,7 +11568,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5169,
+                                                lineNumber: 5207,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.migrationSkippedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11495,7 +11581,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-gray-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5186,
+                                                        lineNumber: 5224,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Skipped (",
@@ -11504,7 +11590,7 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5180,
+                                                lineNumber: 5218,
                                                 columnNumber: 41
                                             }, this),
                                             summaryStats.verifyFailedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -11517,7 +11603,7 @@ function AssignmentRolloutContent() {
                                                         className: "h-3 w-3 text-red-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5197,
+                                                        lineNumber: 5235,
                                                         columnNumber: 45
                                                     }, this),
                                                     "Verify Failed (",
@@ -11526,13 +11612,13 @@ function AssignmentRolloutContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                lineNumber: 5191,
+                                                lineNumber: 5229,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 5070,
+                                        lineNumber: 5108,
                                         columnNumber: 33
                                     }, this),
                                     summaryStatusFilter !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11545,7 +11631,7 @@ function AssignmentRolloutContent() {
                                                     children: filteredSummaryTableData.length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 5207,
+                                                    lineNumber: 5245,
                                                     columnNumber: 53
                                                 }, this),
                                                 " of ",
@@ -11553,7 +11639,7 @@ function AssignmentRolloutContent() {
                                                     children: summaryTableData.length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                    lineNumber: 5207,
+                                                    lineNumber: 5245,
                                                     columnNumber: 107
                                                 }, this),
                                                 " rows",
@@ -11568,12 +11654,12 @@ function AssignmentRolloutContent() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/deployment/assignments/page.tsx",
-                                            lineNumber: 5206,
+                                            lineNumber: 5244,
                                             columnNumber: 41
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 5205,
+                                        lineNumber: 5243,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DataTable$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DataTable"], {
@@ -11598,14 +11684,14 @@ function AssignmentRolloutContent() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5235,
+                                                        lineNumber: 5273,
                                                         columnNumber: 53
                                                     }, void 0) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-sm text-gray-400",
                                                         children: "-"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5239,
+                                                        lineNumber: 5277,
                                                         columnNumber: 53
                                                     }, void 0);
                                                 }
@@ -11619,7 +11705,7 @@ function AssignmentRolloutContent() {
                                                         children: String(v)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5247,
+                                                        lineNumber: 5285,
                                                         columnNumber: 49
                                                     }, void 0)
                                             },
@@ -11639,7 +11725,7 @@ function AssignmentRolloutContent() {
                                                         children: val
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5261,
+                                                        lineNumber: 5299,
                                                         columnNumber: 56
                                                     }, void 0);
                                                 }
@@ -11653,7 +11739,7 @@ function AssignmentRolloutContent() {
                                                         children: String(v)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5267,
+                                                        lineNumber: 5305,
                                                         columnNumber: 60
                                                     }, void 0)
                                             },
@@ -11667,7 +11753,7 @@ function AssignmentRolloutContent() {
                                                         children: val
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5274,
+                                                        lineNumber: 5312,
                                                         columnNumber: 56
                                                     }, void 0);
                                                 }
@@ -11680,7 +11766,7 @@ function AssignmentRolloutContent() {
                                                         children: String(v)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5280,
+                                                        lineNumber: 5318,
                                                         columnNumber: 60
                                                     }, void 0)
                                             },
@@ -11748,7 +11834,7 @@ function AssignmentRolloutContent() {
                                                         children: entry.label
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5302,
+                                                        lineNumber: 5340,
                                                         columnNumber: 56
                                                     }, void 0);
                                                 }
@@ -11766,14 +11852,14 @@ function AssignmentRolloutContent() {
                                                         children: corrId
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5313,
+                                                        lineNumber: 5351,
                                                         columnNumber: 53
                                                     }, void 0) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-sm text-gray-400",
                                                         children: "—"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5317,
+                                                        lineNumber: 5355,
                                                         columnNumber: 53
                                                     }, void 0);
                                                 }
@@ -11791,14 +11877,14 @@ function AssignmentRolloutContent() {
                                                         children: corrId
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5329,
+                                                        lineNumber: 5367,
                                                         columnNumber: 53
                                                     }, void 0) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-sm text-gray-400",
                                                         children: "—"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5333,
+                                                        lineNumber: 5371,
                                                         columnNumber: 53
                                                     }, void 0);
                                                 }
@@ -11816,14 +11902,14 @@ function AssignmentRolloutContent() {
                                                         children: corrId
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5345,
+                                                        lineNumber: 5383,
                                                         columnNumber: 53
                                                     }, void 0) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-sm text-gray-400",
                                                         children: "—"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5349,
+                                                        lineNumber: 5387,
                                                         columnNumber: 53
                                                     }, void 0);
                                                 }
@@ -11838,7 +11924,7 @@ function AssignmentRolloutContent() {
                                                         children: "—"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5358,
+                                                        lineNumber: 5396,
                                                         columnNumber: 73
                                                     }, void 0);
                                                     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11847,7 +11933,7 @@ function AssignmentRolloutContent() {
                                                         children: val
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                                        lineNumber: 5359,
+                                                        lineNumber: 5397,
                                                         columnNumber: 56
                                                     }, void 0);
                                                 }
@@ -11858,26 +11944,26 @@ function AssignmentRolloutContent() {
                                         searchPlaceholder: "Search rows..."
                                     }, void 0, false, {
                                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                                        lineNumber: 5220,
+                                        lineNumber: 5258,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                                lineNumber: 5068,
+                                lineNumber: 5106,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/deployment/assignments/page.tsx",
-                        lineNumber: 5058,
+                        lineNumber: 5096,
                         columnNumber: 25
                     }, this)
                 ]
             }, void 0, true),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(AssignmentsDialog, {}, void 0, false, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 5372,
+                lineNumber: 5410,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$GroupDetailsDialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["GroupDetailsDialog"], {
@@ -11886,20 +11972,20 @@ function AssignmentRolloutContent() {
                 onClose: closeDialog
             }, void 0, false, {
                 fileName: "[project]/app/deployment/assignments/page.tsx",
-                lineNumber: 5373,
+                lineNumber: 5411,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/deployment/assignments/page.tsx",
-        lineNumber: 3712,
+        lineNumber: 3731,
         columnNumber: 9
     }, this);
 }
 function AssignmentRolloutPage() {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(AssignmentRolloutContent, {}, void 0, false, {
         fileName: "[project]/app/deployment/assignments/page.tsx",
-        lineNumber: 5383,
+        lineNumber: 5421,
         columnNumber: 12
     }, this);
 }
