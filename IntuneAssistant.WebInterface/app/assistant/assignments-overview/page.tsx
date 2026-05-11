@@ -35,6 +35,7 @@ import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
 import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
 import {AssignmentFilter} from "@/types/assignmentFilter";
+import { useCustomer, hasAssignmentsManagerLicense } from '@/contexts/CustomerContext';
 
 
 interface ApiResponse {
@@ -86,6 +87,8 @@ export default function AssignmentsOverview() {
     const { instance, accounts } = useMsal();
     const { request, cancel } = useApiRequest();
     const router = useRouter();
+    const { customerData } = useCustomer();
+    const hasBuilderAccess = hasAssignmentsManagerLicense(customerData);
     // Consent dialog state when not enough permissions
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -894,6 +897,8 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                                 variant="outline"
                                 size="sm"
                                 className="flex items-center gap-2"
+                                disabled={!hasBuilderAccess}
+                                title={!hasBuilderAccess ? 'Assignments Manager license required' : 'Open current filtered results in the Migration Builder'}
                             >
                                 <Hammer className="h-4 w-4"/>
                                 Open in Migration Builder

@@ -16,7 +16,7 @@ import {
     ArrowLeft, Download, RefreshCw, Edit2, RotateCcw,
     Search, Shield, ShieldCheck, Users, FileSpreadsheet, CheckCircle2,
     Filter, X, ChevronDown, ChevronUp, CirclePlus, CircleMinus, Sparkles,
-    Eye, SendHorizonal, AlertTriangle, Monitor,
+    Eye, SendHorizonal, AlertTriangle, Monitor, Crown, ExternalLink,
 } from 'lucide-react';
 import {
     ASSIGNMENTS_FILTERS_ENDPOINT,
@@ -27,6 +27,7 @@ import {
 } from '@/lib/constants';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { AssignmentFilter } from '@/types/assignmentFilter';
+import { useCustomer, hasAssignmentsManagerLicense } from '@/contexts/CustomerContext';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -241,6 +242,8 @@ export default function MigrationBuilderPage() {
     const router = useRouter();
     const { accounts } = useMsal();
     const { request } = useApiRequest();
+    const { customerData } = useCustomer();
+    const hasBuilderAccess = hasAssignmentsManagerLicense(customerData);
 
     const [rows, setRows] = useState<BuilderRow[]>([]);
     const [groups, setGroups] = useState<GroupItem[]>([]);
@@ -449,6 +452,23 @@ export default function MigrationBuilderPage() {
     return (
         <div className="p-4 lg:p-8 space-y-5 w-full max-w-none">
 
+            {/* ── License gate banner ──────────────────────────────────────── */}
+            {!hasBuilderAccess && (
+                <div className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/20 px-4 py-4">
+                    <Crown className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                        <p className="font-semibold text-amber-800 dark:text-amber-200">Assignments Manager license required</p>
+                        <p className="text-sm text-amber-700 dark:text-amber-300 mt-0.5">
+                            The Migration Builder is part of the <strong>Assignments Manager</strong> add-on.
+                            You can explore the interface, but sending data to Deployment is disabled until a valid license is active.
+                        </p>
+                        <a href="/plans" className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-amber-700 dark:text-amber-300 underline hover:text-amber-900 dark:hover:text-amber-100">
+                            View plans &amp; upgrade <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                    </div>
+                </div>
+            )}
+
             {/* ── Header ───────────────────────────────────────────────────── */}
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
@@ -481,8 +501,8 @@ export default function MigrationBuilderPage() {
                         </Button>
                     )}
                     <Button onClick={() => setReviewOpen(true)} size="sm"
-                        disabled={generatedRows.length === 0}
-                        title={generatedRows.length === 0 ? 'Generate ring rows first (Steps 2 & 3)' : 'Review generated rows before sending to Deployment'}>
+                        disabled={generatedRows.length === 0 || !hasBuilderAccess}
+                        title={!hasBuilderAccess ? 'Assignments Manager license required' : generatedRows.length === 0 ? 'Generate ring rows first (Steps 2 & 3)' : 'Review generated rows before sending to Deployment'}>
                         <FileSpreadsheet className="h-4 w-4 mr-2" />Send to Deployment
                     </Button>
                 </div>
@@ -912,6 +932,8 @@ export default function MigrationBuilderPage() {
                                 <Download className="h-3.5 w-3.5 mr-1.5" />Export CSV
                             </Button>
                             <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white gap-1.5"
+                                disabled={!hasBuilderAccess}
+                                title={!hasBuilderAccess ? 'Assignments Manager license required' : undefined}
                                 onClick={() => { setReviewOpen(false); sendToDeployment(); }}>
                                 <SendHorizonal className="h-3.5 w-3.5" />
                                 Send {generatedRows.length} rows to Deployment

@@ -379,7 +379,7 @@ export function Sidebar() {
                     href: "/deployment",
                     submenu: [
                         { title: "Intune Assignments", href: "/deployment/assignments" },
-                        { title: "Migration Builder", href: "/assistant/migration-builder" },
+                        { title: "Migration Builder", href: "/assistant/migration-builder",isBeta: true, },
                         ...(isBetaTester() ? [{ title: "Conditional Access Assignments", href: "/deployment/conditional-access" }] : [])
                     ]
                 }

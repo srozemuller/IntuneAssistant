@@ -1190,11 +1190,15 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$send$2d$horizontal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__SendHorizonal$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/send-horizontal.js [app-client] (ecmascript) <export default as SendHorizonal>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/triangle-alert.js [app-client] (ecmascript) <export default as AlertTriangle>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$monitor$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Monitor$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/monitor.js [app-client] (ecmascript) <export default as Monitor>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$crown$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Crown$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/crown.js [app-client] (ecmascript) <export default as Crown>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$external$2d$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ExternalLink$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/external-link.js [app-client] (ecmascript) <export default as ExternalLink>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/constants.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useApiRequest.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$contexts$2f$CustomerContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/contexts/CustomerContext.tsx [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.signature(), _s2 = __turbopack_context__.k.signature();
 'use client';
+;
 ;
 ;
 ;
@@ -1295,7 +1299,7 @@ function GroupPicker(param) {
                         className: "absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 172,
+                        lineNumber: 173,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1306,13 +1310,13 @@ function GroupPicker(param) {
                         autoComplete: "off"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 173,
+                        lineNumber: 174,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 171,
+                lineNumber: 172,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1327,14 +1331,14 @@ function GroupPicker(param) {
                                 children: search.trim()
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 180,
+                                lineNumber: 181,
                                 columnNumber: 35
                             }, this),
                             '" as-is'
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 178,
+                        lineNumber: 179,
                         columnNumber: 21
                     }, this),
                     SPECIAL_TARGETS.filter((s)=>!search.trim() || s.toLowerCase().includes(search.toLowerCase())).map((s)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1343,7 +1347,7 @@ function GroupPicker(param) {
                             children: s
                         }, s, false, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 184,
+                            lineNumber: 185,
                             columnNumber: 21
                         }, this)),
                     filtered.length === 0 && !search.trim() && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1351,7 +1355,7 @@ function GroupPicker(param) {
                         children: "Type to search groups…"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 188,
+                        lineNumber: 189,
                         columnNumber: 21
                     }, this),
                     filtered.map((g)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1362,7 +1366,7 @@ function GroupPicker(param) {
                                     children: g.displayName
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 193,
+                                    lineNumber: 194,
                                     columnNumber: 25
                                 }, this),
                                 g.membershipRule && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1370,19 +1374,19 @@ function GroupPicker(param) {
                                     children: "Dynamic group"
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 194,
+                                    lineNumber: 195,
                                     columnNumber: 46
                                 }, this)
                             ]
                         }, g.id, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 191,
+                            lineNumber: 192,
                             columnNumber: 21
                         }, this))
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 176,
+                lineNumber: 177,
                 columnNumber: 13
             }, this),
             selectedName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1393,19 +1397,19 @@ function GroupPicker(param) {
                         children: selectedName
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 198,
+                        lineNumber: 199,
                         columnNumber: 89
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 198,
+                lineNumber: 199,
                 columnNumber: 30
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-        lineNumber: 170,
+        lineNumber: 171,
         columnNumber: 9
     }, this);
 }
@@ -1436,7 +1440,7 @@ function FilterPicker(param) {
                         className: "absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 218,
+                        lineNumber: 219,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1447,13 +1451,13 @@ function FilterPicker(param) {
                         autoComplete: "off"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 219,
+                        lineNumber: 220,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 217,
+                lineNumber: 218,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1467,12 +1471,12 @@ function FilterPicker(param) {
                             children: "— No Filter —"
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 224,
+                            lineNumber: 225,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 223,
+                        lineNumber: 224,
                         columnNumber: 17
                     }, this),
                     filtered.map((f)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1483,7 +1487,7 @@ function FilterPicker(param) {
                                     children: f.displayName
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 229,
+                                    lineNumber: 230,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1495,25 +1499,25 @@ function FilterPicker(param) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 230,
+                                    lineNumber: 231,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, f.id, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 227,
+                            lineNumber: 228,
                             columnNumber: 21
                         }, this))
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 222,
+                lineNumber: 223,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-        lineNumber: 216,
+        lineNumber: 217,
         columnNumber: 9
     }, this);
 }
@@ -1524,6 +1528,8 @@ function MigrationBuilderPage() {
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const { accounts } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMsal"])();
     const { request } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApiRequest"])();
+    const { customerData } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$contexts$2f$CustomerContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCustomer"])();
+    const hasBuilderAccess = (0, __TURBOPACK__imported__module__$5b$project$5d2f$contexts$2f$CustomerContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["hasAssignmentsManagerLicense"])(customerData);
     const [rows, setRows] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [groups, setGroups] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [filters, setFilters] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
@@ -1913,6 +1919,75 @@ function MigrationBuilderPage() {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "p-4 lg:p-8 space-y-5 w-full max-w-none",
         children: [
+            !hasBuilderAccess && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/20 px-4 py-4",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$crown$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Crown$3e$__["Crown"], {
+                        className: "h-5 w-5 text-amber-500 shrink-0 mt-0.5"
+                    }, void 0, false, {
+                        fileName: "[project]/app/assistant/migration-builder/page.tsx",
+                        lineNumber: 458,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex-1",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "font-semibold text-amber-800 dark:text-amber-200",
+                                children: "Assignments Manager license required"
+                            }, void 0, false, {
+                                fileName: "[project]/app/assistant/migration-builder/page.tsx",
+                                lineNumber: 460,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "text-sm text-amber-700 dark:text-amber-300 mt-0.5",
+                                children: [
+                                    "The Migration Builder is part of the ",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                        children: "Assignments Manager"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/assistant/migration-builder/page.tsx",
+                                        lineNumber: 462,
+                                        columnNumber: 66
+                                    }, this),
+                                    " add-on. You can explore the interface, but sending data to Deployment is disabled until a valid license is active."
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/assistant/migration-builder/page.tsx",
+                                lineNumber: 461,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                href: "/plans",
+                                className: "inline-flex items-center gap-1 mt-2 text-sm font-medium text-amber-700 dark:text-amber-300 underline hover:text-amber-900 dark:hover:text-amber-100",
+                                children: [
+                                    "View plans & upgrade ",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$external$2d$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ExternalLink$3e$__["ExternalLink"], {
+                                        className: "h-3.5 w-3.5"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/assistant/migration-builder/page.tsx",
+                                        lineNumber: 466,
+                                        columnNumber: 54
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/assistant/migration-builder/page.tsx",
+                                lineNumber: 465,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/assistant/migration-builder/page.tsx",
+                        lineNumber: 459,
+                        columnNumber: 21
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/assistant/migration-builder/page.tsx",
+                lineNumber: 457,
+                columnNumber: 17
+            }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4",
                 children: [
@@ -1928,14 +2003,14 @@ function MigrationBuilderPage() {
                                         className: "h-4 w-4 mr-1"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 456,
+                                        lineNumber: 476,
                                         columnNumber: 25
                                     }, this),
                                     " Back"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 455,
+                                lineNumber: 475,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -1943,7 +2018,7 @@ function MigrationBuilderPage() {
                                 children: "Assignment Migration Builder"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 458,
+                                lineNumber: 478,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1951,13 +2026,13 @@ function MigrationBuilderPage() {
                                 children: "Configure a ring template → select policies → generate Include & Exclude rows → review → deploy"
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 459,
+                                lineNumber: 479,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 454,
+                        lineNumber: 474,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1973,14 +2048,14 @@ function MigrationBuilderPage() {
                                         className: "h-4 w-4 mr-2 ".concat(loading ? 'animate-spin' : '')
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 465,
+                                        lineNumber: 485,
                                         columnNumber: 25
                                     }, this),
                                     dataLoaded ? 'Refresh Data' : 'Load Reference Data'
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 464,
+                                lineNumber: 484,
                                 columnNumber: 21
                             }, this),
                             dataLoaded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -1991,7 +2066,7 @@ function MigrationBuilderPage() {
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 470,
+                                        lineNumber: 490,
                                         columnNumber: 29
                                     }, this),
                                     groups.length,
@@ -2003,7 +2078,7 @@ function MigrationBuilderPage() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 469,
+                                lineNumber: 489,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2016,14 +2091,14 @@ function MigrationBuilderPage() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 475,
+                                        lineNumber: 495,
                                         columnNumber: 25
                                     }, this),
                                     "Export CSV"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 474,
+                                lineNumber: 494,
                                 columnNumber: 21
                             }, this),
                             generatedRows.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2036,7 +2111,7 @@ function MigrationBuilderPage() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 479,
+                                        lineNumber: 499,
                                         columnNumber: 29
                                     }, this),
                                     "Review (",
@@ -2045,39 +2120,39 @@ function MigrationBuilderPage() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 478,
+                                lineNumber: 498,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                 onClick: ()=>setReviewOpen(true),
                                 size: "sm",
-                                disabled: generatedRows.length === 0,
-                                title: generatedRows.length === 0 ? 'Generate ring rows first (Steps 2 & 3)' : 'Review generated rows before sending to Deployment',
+                                disabled: generatedRows.length === 0 || !hasBuilderAccess,
+                                title: !hasBuilderAccess ? 'Assignments Manager license required' : generatedRows.length === 0 ? 'Generate ring rows first (Steps 2 & 3)' : 'Review generated rows before sending to Deployment',
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$spreadsheet$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileSpreadsheet$3e$__["FileSpreadsheet"], {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 486,
+                                        lineNumber: 506,
                                         columnNumber: 25
                                     }, this),
                                     "Send to Deployment"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 483,
+                                lineNumber: 503,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 463,
+                        lineNumber: 483,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 453,
+                lineNumber: 473,
                 columnNumber: 13
             }, this),
             rows.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2091,7 +2166,7 @@ function MigrationBuilderPage() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 494,
+                        lineNumber: 514,
                         columnNumber: 21
                     }, this),
                     displayedRows.length !== rows.length && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2102,7 +2177,7 @@ function MigrationBuilderPage() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 495,
+                        lineNumber: 515,
                         columnNumber: 62
                     }, this),
                     modifiedCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2113,7 +2188,7 @@ function MigrationBuilderPage() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 496,
+                        lineNumber: 516,
                         columnNumber: 43
                     }, this),
                     generatedRows.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2125,7 +2200,7 @@ function MigrationBuilderPage() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 498,
+                        lineNumber: 518,
                         columnNumber: 25
                     }, this),
                     selectedIds.size > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2136,7 +2211,7 @@ function MigrationBuilderPage() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 502,
+                        lineNumber: 522,
                         columnNumber: 46
                     }, this),
                     !dataLoaded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2145,13 +2220,13 @@ function MigrationBuilderPage() {
                         children: "⚠ Load reference data to enable editing"
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 503,
+                        lineNumber: 523,
                         columnNumber: 37
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 493,
+                lineNumber: 513,
                 columnNumber: 17
             }, this),
             rows.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2163,7 +2238,7 @@ function MigrationBuilderPage() {
                             className: "h-16 w-16 mx-auto text-gray-400 mb-4"
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 511,
+                            lineNumber: 531,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -2171,7 +2246,7 @@ function MigrationBuilderPage() {
                             children: "No assignments loaded"
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 512,
+                            lineNumber: 532,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2182,14 +2257,14 @@ function MigrationBuilderPage() {
                                     children: '"Open in Migration Builder"'
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 514,
+                                    lineNumber: 534,
                                     columnNumber: 88
                                 }, this),
                                 "."
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 513,
+                            lineNumber: 533,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2199,25 +2274,25 @@ function MigrationBuilderPage() {
                                     className: "h-4 w-4 mr-2"
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 517,
+                                    lineNumber: 537,
                                     columnNumber: 29
                                 }, this),
                                 "Go to Assignments Overview"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 516,
+                            lineNumber: 536,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                    lineNumber: 510,
+                    lineNumber: 530,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 509,
+                lineNumber: 529,
                 columnNumber: 17
             }, this),
             rows.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -2239,7 +2314,7 @@ function MigrationBuilderPage() {
                                                         className: "h-4 w-4 text-purple-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 531,
+                                                        lineNumber: 551,
                                                         columnNumber: 33
                                                     }, this),
                                                     "Step 1 — Configure Ring Template",
@@ -2252,7 +2327,7 @@ function MigrationBuilderPage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 534,
+                                                        lineNumber: 554,
                                                         columnNumber: 39
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
                                                         variant: "outline",
@@ -2260,26 +2335,26 @@ function MigrationBuilderPage() {
                                                         children: "not configured"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 535,
+                                                        lineNumber: 555,
                                                         columnNumber: 39
                                                     }, this),
                                                     templatePanelOpen ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$up$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronUp$3e$__["ChevronUp"], {
                                                         className: "h-3.5 w-3.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 536,
+                                                        lineNumber: 556,
                                                         columnNumber: 54
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                         className: "h-3.5 w-3.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 536,
+                                                        lineNumber: 556,
                                                         columnNumber: 94
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 529,
+                                                lineNumber: 549,
                                                 columnNumber: 29
                                             }, this),
                                             templateReady && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2294,20 +2369,20 @@ function MigrationBuilderPage() {
                                                         className: "h-3 w-3 mr-1"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 541,
+                                                        lineNumber: 561,
                                                         columnNumber: 37
                                                     }, this),
                                                     "Reset"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 539,
+                                                lineNumber: 559,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 528,
+                                        lineNumber: 548,
                                         columnNumber: 25
                                     }, this),
                                     !templatePanelOpen && templateReady && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2321,20 +2396,20 @@ function MigrationBuilderPage() {
                                                         children: template.groupName
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 547,
+                                                        lineNumber: 567,
                                                         columnNumber: 46
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 547,
+                                                lineNumber: 567,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "·"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 548,
+                                                lineNumber: 568,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2345,20 +2420,20 @@ function MigrationBuilderPage() {
                                                         children: template.assignmentAction
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 549,
+                                                        lineNumber: 569,
                                                         columnNumber: 47
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 549,
+                                                lineNumber: 569,
                                                 columnNumber: 33
                                             }, this),
                                             template.filterName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "·"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 550,
+                                                lineNumber: 570,
                                                 columnNumber: 57
                                             }, this),
                                             template.filterName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2374,13 +2449,13 @@ function MigrationBuilderPage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 551,
+                                                        lineNumber: 571,
                                                         columnNumber: 71
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 551,
+                                                lineNumber: 571,
                                                 columnNumber: 57
                                             }, this),
                                             template.scopeTagIds.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -2389,7 +2464,7 @@ function MigrationBuilderPage() {
                                                         children: "·"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 552,
+                                                        lineNumber: 572,
                                                         columnNumber: 71
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2400,13 +2475,13 @@ function MigrationBuilderPage() {
                                                                 children: resolvedScopeTagNames(template.scopeTagIds)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 552,
+                                                                lineNumber: 572,
                                                                 columnNumber: 97
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 552,
+                                                        lineNumber: 572,
                                                         columnNumber: 85
                                                     }, this)
                                                 ]
@@ -2414,13 +2489,13 @@ function MigrationBuilderPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 546,
+                                        lineNumber: 566,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 527,
+                                lineNumber: 547,
                                 columnNumber: 21
                             }, this),
                             templatePanelOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2436,7 +2511,7 @@ function MigrationBuilderPage() {
                                                     children: "Template Name"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 560,
+                                                    lineNumber: 580,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2449,7 +2524,7 @@ function MigrationBuilderPage() {
                                                             }))
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 561,
+                                                    lineNumber: 581,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2457,13 +2532,13 @@ function MigrationBuilderPage() {
                                                     children: "Label shown on generated rows."
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 563,
+                                                    lineNumber: 583,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 559,
+                                            lineNumber: 579,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2478,13 +2553,13 @@ function MigrationBuilderPage() {
                                                             children: "*"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 566,
+                                                            lineNumber: 586,
                                                             columnNumber: 82
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 566,
+                                                    lineNumber: 586,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GroupPicker, {
@@ -2500,13 +2575,13 @@ function MigrationBuilderPage() {
                                                             }))
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 567,
+                                                    lineNumber: 587,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 565,
+                                            lineNumber: 585,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2517,7 +2592,7 @@ function MigrationBuilderPage() {
                                                     children: "Assignment Action"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 572,
+                                                    lineNumber: 592,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -2531,12 +2606,12 @@ function MigrationBuilderPage() {
                                                             className: "h-8 text-sm",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectValue"], {}, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 574,
+                                                                lineNumber: 594,
                                                                 columnNumber: 80
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 574,
+                                                            lineNumber: 594,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -2546,7 +2621,7 @@ function MigrationBuilderPage() {
                                                                     children: "Add"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 576,
+                                                                    lineNumber: 596,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2554,7 +2629,7 @@ function MigrationBuilderPage() {
                                                                     children: "Remove"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 577,
+                                                                    lineNumber: 597,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2562,7 +2637,7 @@ function MigrationBuilderPage() {
                                                                     children: "Replace"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 578,
+                                                                    lineNumber: 598,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2570,26 +2645,26 @@ function MigrationBuilderPage() {
                                                                     children: "NoAssignment"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 579,
+                                                                    lineNumber: 599,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 575,
+                                                            lineNumber: 595,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 573,
+                                                    lineNumber: 593,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {
                                                     className: "my-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 582,
+                                                    lineNumber: 602,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
@@ -2601,13 +2676,13 @@ function MigrationBuilderPage() {
                                                             children: "(optional)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 583,
+                                                            lineNumber: 603,
                                                             columnNumber: 83
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 583,
+                                                    lineNumber: 603,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(FilterPicker, {
@@ -2629,7 +2704,7 @@ function MigrationBuilderPage() {
                                                             }))
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 584,
+                                                    lineNumber: 604,
                                                     columnNumber: 37
                                                 }, this),
                                                 template.filterId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2640,7 +2715,7 @@ function MigrationBuilderPage() {
                                                             children: "Filter Type"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 590,
+                                                            lineNumber: 610,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -2654,12 +2729,12 @@ function MigrationBuilderPage() {
                                                                     className: "h-8 text-sm",
                                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectValue"], {}, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 592,
+                                                                        lineNumber: 612,
                                                                         columnNumber: 88
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 592,
+                                                                    lineNumber: 612,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -2669,7 +2744,7 @@ function MigrationBuilderPage() {
                                                                             children: "Include"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                            lineNumber: 594,
+                                                                            lineNumber: 614,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2677,31 +2752,31 @@ function MigrationBuilderPage() {
                                                                             children: "Exclude"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                            lineNumber: 595,
+                                                                            lineNumber: 615,
                                                                             columnNumber: 53
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 593,
+                                                                    lineNumber: 613,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 591,
+                                                            lineNumber: 611,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 589,
+                                                    lineNumber: 609,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 571,
+                                            lineNumber: 591,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2716,13 +2791,13 @@ function MigrationBuilderPage() {
                                                             children: "(optional)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 602,
+                                                            lineNumber: 622,
                                                             columnNumber: 87
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 602,
+                                                    lineNumber: 622,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -2735,30 +2810,30 @@ function MigrationBuilderPage() {
                                                     placeholder: "Select scope tags…"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 603,
+                                                    lineNumber: 623,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 601,
+                                            lineNumber: 621,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 558,
+                                    lineNumber: 578,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 557,
+                                lineNumber: 577,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 526,
+                        lineNumber: 546,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2776,7 +2851,7 @@ function MigrationBuilderPage() {
                                                     className: "absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 617,
+                                                    lineNumber: 637,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2787,7 +2862,7 @@ function MigrationBuilderPage() {
                                                     autoComplete: "off"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 618,
+                                                    lineNumber: 638,
                                                     columnNumber: 33
                                                 }, this),
                                                 policySearch && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2797,18 +2872,18 @@ function MigrationBuilderPage() {
                                                         className: "h-3.5 w-3.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 622,
+                                                        lineNumber: 642,
                                                         columnNumber: 77
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 621,
+                                                    lineNumber: 641,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 616,
+                                            lineNumber: 636,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2819,7 +2894,7 @@ function MigrationBuilderPage() {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 627,
+                                                    lineNumber: 647,
                                                     columnNumber: 33
                                                 }, this),
                                                 "Filters",
@@ -2828,26 +2903,26 @@ function MigrationBuilderPage() {
                                                     children: activeFilterCount
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 629,
+                                                    lineNumber: 649,
                                                     columnNumber: 59
                                                 }, this),
                                                 filterPanelOpen ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$up$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronUp$3e$__["ChevronUp"], {
                                                     className: "h-3.5 w-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 630,
+                                                    lineNumber: 650,
                                                     columnNumber: 52
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                     className: "h-3.5 w-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 630,
+                                                    lineNumber: 650,
                                                     columnNumber: 92
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 625,
+                                            lineNumber: 645,
                                             columnNumber: 29
                                         }, this),
                                         (activeFilterCount > 0 || policySearch) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2860,20 +2935,20 @@ function MigrationBuilderPage() {
                                                     className: "h-3 w-3 mr-1"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 634,
+                                                    lineNumber: 654,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Clear all"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 633,
+                                            lineNumber: 653,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 615,
+                                    lineNumber: 635,
                                     columnNumber: 25
                                 }, this),
                                 filterPanelOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2889,14 +2964,14 @@ function MigrationBuilderPage() {
                                                             className: "h-3 w-3"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 642,
+                                                            lineNumber: 662,
                                                             columnNumber: 100
                                                         }, this),
                                                         "Platform"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 642,
+                                                    lineNumber: 662,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -2906,13 +2981,13 @@ function MigrationBuilderPage() {
                                                     placeholder: "All platforms…"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 643,
+                                                    lineNumber: 663,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 641,
+                                            lineNumber: 661,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2923,7 +2998,7 @@ function MigrationBuilderPage() {
                                                     children: "Resource Type"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 647,
+                                                    lineNumber: 667,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -2933,13 +3008,13 @@ function MigrationBuilderPage() {
                                                     placeholder: "All types…"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 648,
+                                                    lineNumber: 668,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 646,
+                                            lineNumber: 666,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2950,7 +3025,7 @@ function MigrationBuilderPage() {
                                                     children: "Scope Tags"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 652,
+                                                    lineNumber: 672,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -2960,13 +3035,13 @@ function MigrationBuilderPage() {
                                                     placeholder: "All tags…"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 653,
+                                                    lineNumber: 673,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 651,
+                                            lineNumber: 671,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2977,7 +3052,7 @@ function MigrationBuilderPage() {
                                                     children: "Assignment Action"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 657,
+                                                    lineNumber: 677,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -2987,30 +3062,30 @@ function MigrationBuilderPage() {
                                                     placeholder: "All actions…"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 658,
+                                                    lineNumber: 678,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 656,
+                                            lineNumber: 676,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 640,
+                                    lineNumber: 660,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 613,
+                            lineNumber: 633,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 612,
+                        lineNumber: 632,
                         columnNumber: 17
                     }, this),
                     selectedIds.size > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3030,7 +3105,7 @@ function MigrationBuilderPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 671,
+                                        lineNumber: 691,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3044,14 +3119,14 @@ function MigrationBuilderPage() {
                                                 className: "h-3.5 w-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 678,
+                                                lineNumber: 698,
                                                 columnNumber: 37
                                             }, this),
                                             "Step 2 — Add as Include"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 674,
+                                        lineNumber: 694,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3065,14 +3140,14 @@ function MigrationBuilderPage() {
                                                 className: "h-3.5 w-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 684,
+                                                lineNumber: 704,
                                                 columnNumber: 37
                                             }, this),
                                             "Step 3 — Add as Exclude"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 680,
+                                        lineNumber: 700,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3089,14 +3164,14 @@ function MigrationBuilderPage() {
                                                 className: "h-3.5 w-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 688,
+                                                lineNumber: 708,
                                                 columnNumber: 37
                                             }, this),
                                             "Edit first selected"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 686,
+                                        lineNumber: 706,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3109,14 +3184,14 @@ function MigrationBuilderPage() {
                                                 className: "h-3 w-3 mr-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 691,
+                                                lineNumber: 711,
                                                 columnNumber: 37
                                             }, this),
                                             "Deselect all"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 690,
+                                        lineNumber: 710,
                                         columnNumber: 33
                                     }, this),
                                     !templateReady && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3124,23 +3199,23 @@ function MigrationBuilderPage() {
                                         children: "⚠ Configure template first"
                                     }, void 0, false, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 693,
+                                        lineNumber: 713,
                                         columnNumber: 52
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 670,
+                                lineNumber: 690,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 669,
+                            lineNumber: 689,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 668,
+                        lineNumber: 688,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3162,23 +3237,23 @@ function MigrationBuilderPage() {
                                                 children: "click to select · use Steps 2 & 3 to generate ring rows"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                lineNumber: 705,
+                                                lineNumber: 725,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                        lineNumber: 703,
+                                        lineNumber: 723,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 702,
+                                    lineNumber: 722,
                                     columnNumber: 25
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 701,
+                                lineNumber: 721,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3202,19 +3277,19 @@ function MigrationBuilderPage() {
                                                                     "aria-label": "Select all"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 715,
+                                                                    lineNumber: 735,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 714,
+                                                                lineNumber: 734,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
                                                                 className: "px-2 py-2.5 w-5"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 719,
+                                                                lineNumber: 739,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3222,7 +3297,7 @@ function MigrationBuilderPage() {
                                                                 children: "Policy"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 720,
+                                                                lineNumber: 740,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3230,7 +3305,7 @@ function MigrationBuilderPage() {
                                                                 children: "Platform"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 721,
+                                                                lineNumber: 741,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3238,7 +3313,7 @@ function MigrationBuilderPage() {
                                                                 children: "Group"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 722,
+                                                                lineNumber: 742,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3246,7 +3321,7 @@ function MigrationBuilderPage() {
                                                                 children: "Direction"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 723,
+                                                                lineNumber: 743,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3254,7 +3329,7 @@ function MigrationBuilderPage() {
                                                                 children: "Action"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 724,
+                                                                lineNumber: 744,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3262,7 +3337,7 @@ function MigrationBuilderPage() {
                                                                 children: "Filter"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 725,
+                                                                lineNumber: 745,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3270,7 +3345,7 @@ function MigrationBuilderPage() {
                                                                 children: "Filter Type"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 726,
+                                                                lineNumber: 746,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3278,7 +3353,7 @@ function MigrationBuilderPage() {
                                                                 children: "Scope Tags"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 727,
+                                                                lineNumber: 747,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3286,18 +3361,18 @@ function MigrationBuilderPage() {
                                                                 children: "Edit"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 728,
+                                                                lineNumber: 748,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 713,
+                                                        lineNumber: 733,
                                                         columnNumber: 37
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 712,
+                                                    lineNumber: 732,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -3319,12 +3394,12 @@ function MigrationBuilderPage() {
                                                                         onCheckedChange: ()=>toggleRow(row.id)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 748,
+                                                                        lineNumber: 768,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 747,
+                                                                    lineNumber: 767,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3334,19 +3409,19 @@ function MigrationBuilderPage() {
                                                                         title: row.ringLabel
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 752,
+                                                                        lineNumber: 772,
                                                                         columnNumber: 59
                                                                     }, this) : row.isModified ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                         className: "h-2 w-2 rounded-full bg-yellow-500 mx-auto",
                                                                         title: "Modified"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 753,
+                                                                        lineNumber: 773,
                                                                         columnNumber: 76
                                                                     }, this) : null
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 750,
+                                                                    lineNumber: 770,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3360,12 +3435,12 @@ function MigrationBuilderPage() {
                                                                                 children: "—"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                lineNumber: 757,
+                                                                                lineNumber: 777,
                                                                                 columnNumber: 76
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                            lineNumber: 756,
+                                                                            lineNumber: 776,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3376,7 +3451,7 @@ function MigrationBuilderPage() {
                                                                                     children: row.resourceType
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                    lineNumber: 760,
+                                                                                    lineNumber: 780,
                                                                                     columnNumber: 57
                                                                                 }, this),
                                                                                 row.ringLabel && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3384,19 +3459,19 @@ function MigrationBuilderPage() {
                                                                                     children: row.ringLabel
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                    lineNumber: 762,
+                                                                                    lineNumber: 782,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                            lineNumber: 759,
+                                                                            lineNumber: 779,
                                                                             columnNumber: 53
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 755,
+                                                                    lineNumber: 775,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3406,12 +3481,12 @@ function MigrationBuilderPage() {
                                                                         children: row.platform
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 769,
+                                                                        lineNumber: 789,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 768,
+                                                                    lineNumber: 788,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3424,17 +3499,17 @@ function MigrationBuilderPage() {
                                                                             children: "None"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                            lineNumber: 773,
+                                                                            lineNumber: 793,
                                                                             columnNumber: 75
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 772,
+                                                                        lineNumber: 792,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 771,
+                                                                    lineNumber: 791,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3445,12 +3520,12 @@ function MigrationBuilderPage() {
                                                                         children: row.assignmentDirection
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 777,
+                                                                        lineNumber: 797,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 776,
+                                                                    lineNumber: 796,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3461,12 +3536,12 @@ function MigrationBuilderPage() {
                                                                         children: row.assignmentAction
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 782,
+                                                                        lineNumber: 802,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 781,
+                                                                    lineNumber: 801,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3479,17 +3554,17 @@ function MigrationBuilderPage() {
                                                                             children: "—"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                            lineNumber: 788,
+                                                                            lineNumber: 808,
                                                                             columnNumber: 76
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 787,
+                                                                        lineNumber: 807,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 786,
+                                                                    lineNumber: 806,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3502,32 +3577,32 @@ function MigrationBuilderPage() {
                                                                                 className: "h-2 w-2 mr-0.5 inline"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                lineNumber: 794,
+                                                                                lineNumber: 814,
                                                                                 columnNumber: 93
                                                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"], {
                                                                                 className: "h-2 w-2 mr-0.5 inline"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                lineNumber: 794,
+                                                                                lineNumber: 814,
                                                                                 columnNumber: 140
                                                                             }, this),
                                                                             row.filterType
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 793,
+                                                                        lineNumber: 813,
                                                                         columnNumber: 57
                                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                         className: "text-muted-foreground text-[10px]",
                                                                         children: "—"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 797,
+                                                                        lineNumber: 817,
                                                                         columnNumber: 57
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 791,
+                                                                    lineNumber: 811,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3535,7 +3610,7 @@ function MigrationBuilderPage() {
                                                                     children: row.scopeTagIds.length > 0 ? resolvedScopeTagNames(row.scopeTagIds) : '—'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 799,
+                                                                    lineNumber: 819,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3554,12 +3629,12 @@ function MigrationBuilderPage() {
                                                                                     className: "h-3 w-3"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                    lineNumber: 805,
+                                                                                    lineNumber: 825,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                lineNumber: 804,
+                                                                                lineNumber: 824,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             row.isModified && !row.isGenerated && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3572,12 +3647,12 @@ function MigrationBuilderPage() {
                                                                                     className: "h-3 w-3"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                    lineNumber: 809,
+                                                                                    lineNumber: 829,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                lineNumber: 808,
+                                                                                lineNumber: 828,
                                                                                 columnNumber: 61
                                                                             }, this),
                                                                             row.isGenerated && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3590,41 +3665,41 @@ function MigrationBuilderPage() {
                                                                                     className: "h-3 w-3"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                    lineNumber: 814,
+                                                                                    lineNumber: 834,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                                lineNumber: 813,
+                                                                                lineNumber: 833,
                                                                                 columnNumber: 61
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                        lineNumber: 803,
+                                                                        lineNumber: 823,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                    lineNumber: 802,
+                                                                    lineNumber: 822,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, row.id, true, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 735,
+                                                            lineNumber: 755,
                                                             columnNumber: 45
                                                         }, this);
                                                     })
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 731,
+                                                    lineNumber: 751,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 711,
+                                            lineNumber: 731,
                                             columnNumber: 29
                                         }, this),
                                         displayedRows.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3632,24 +3707,24 @@ function MigrationBuilderPage() {
                                             children: "No rows match the current filters."
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 825,
+                                            lineNumber: 845,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 710,
+                                    lineNumber: 730,
                                     columnNumber: 25
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                lineNumber: 709,
+                                lineNumber: 729,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                        lineNumber: 700,
+                        lineNumber: 720,
                         columnNumber: 17
                     }, this)
                 ]
@@ -3670,7 +3745,7 @@ function MigrationBuilderPage() {
                                             className: "h-5 w-5 text-purple-500"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 837,
+                                            lineNumber: 857,
                                             columnNumber: 29
                                         }, this),
                                         "Review — ",
@@ -3680,20 +3755,20 @@ function MigrationBuilderPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 836,
+                                    lineNumber: 856,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                     children: "These are the rows that will be sent to Deployment. Review carefully before continuing."
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 840,
+                                    lineNumber: 860,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 835,
+                            lineNumber: 855,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3708,13 +3783,13 @@ function MigrationBuilderPage() {
                                             children: template.name
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 847,
+                                            lineNumber: 867,
                                             columnNumber: 99
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 847,
+                                    lineNumber: 867,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3727,20 +3802,20 @@ function MigrationBuilderPage() {
                                                     children: template.groupName || '—'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 849,
+                                                    lineNumber: 869,
                                                     columnNumber: 42
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 849,
+                                            lineNumber: 869,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "·"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 850,
+                                            lineNumber: 870,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3750,13 +3825,13 @@ function MigrationBuilderPage() {
                                                     children: template.assignmentAction
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 851,
+                                                    lineNumber: 871,
                                                     columnNumber: 43
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 851,
+                                            lineNumber: 871,
                                             columnNumber: 29
                                         }, this),
                                         template.filterName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3771,13 +3846,13 @@ function MigrationBuilderPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 852,
+                                                    lineNumber: 872,
                                                     columnNumber: 67
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 852,
+                                            lineNumber: 872,
                                             columnNumber: 53
                                         }, this),
                                         template.scopeTagIds.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3787,25 +3862,25 @@ function MigrationBuilderPage() {
                                                     children: resolvedScopeTagNames(template.scopeTagIds)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 853,
+                                                    lineNumber: 873,
                                                     columnNumber: 77
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 853,
+                                            lineNumber: 873,
                                             columnNumber: 65
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 848,
+                                    lineNumber: 868,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 846,
+                            lineNumber: 866,
                             columnNumber: 21
                         }, this),
                         reviewGroups.some((g)=>g.include.length === 0 || g.exclude.length === 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3815,7 +3890,7 @@ function MigrationBuilderPage() {
                                     className: "h-4 w-4 shrink-0 mt-0.5"
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 860,
+                                    lineNumber: 880,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3825,20 +3900,20 @@ function MigrationBuilderPage() {
                                             children: "or"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 861,
+                                            lineNumber: 881,
                                             columnNumber: 70
                                         }, this),
                                         " an Exclude row — not both. Go back if you need to add the missing side."
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 861,
+                                    lineNumber: 881,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 859,
+                            lineNumber: 879,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3857,7 +3932,7 @@ function MigrationBuilderPage() {
                                                     children: policy
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 870,
+                                                    lineNumber: 890,
                                                     columnNumber: 37
                                                 }, this),
                                                 include[0] && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3869,13 +3944,13 @@ function MigrationBuilderPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 871,
+                                                    lineNumber: 891,
                                                     columnNumber: 52
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 869,
+                                            lineNumber: 889,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3889,7 +3964,7 @@ function MigrationBuilderPage() {
                                                                 children: "Include"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 876,
+                                                                lineNumber: 896,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3897,7 +3972,7 @@ function MigrationBuilderPage() {
                                                                 children: r.groupName
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 877,
+                                                                lineNumber: 897,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3906,7 +3981,7 @@ function MigrationBuilderPage() {
                                                                 children: r.assignmentAction
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 878,
+                                                                lineNumber: 898,
                                                                 columnNumber: 45
                                                             }, this),
                                                             r.filterName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3919,13 +3994,13 @@ function MigrationBuilderPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 879,
+                                                                lineNumber: 899,
                                                                 columnNumber: 62
                                                             }, this)
                                                         ]
                                                     }, r.id, true, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 875,
+                                                        lineNumber: 895,
                                                         columnNumber: 41
                                                     }, this)),
                                                 exclude.map((r)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3936,7 +4011,7 @@ function MigrationBuilderPage() {
                                                                 children: "Exclude"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 884,
+                                                                lineNumber: 904,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3944,7 +4019,7 @@ function MigrationBuilderPage() {
                                                                 children: r.groupName
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 885,
+                                                                lineNumber: 905,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3953,7 +4028,7 @@ function MigrationBuilderPage() {
                                                                 children: r.assignmentAction
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 886,
+                                                                lineNumber: 906,
                                                                 columnNumber: 45
                                                             }, this),
                                                             r.filterName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3966,13 +4041,13 @@ function MigrationBuilderPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                                lineNumber: 887,
+                                                                lineNumber: 907,
                                                                 columnNumber: 62
                                                             }, this)
                                                         ]
                                                     }, r.id, true, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 883,
+                                                        lineNumber: 903,
                                                         columnNumber: 41
                                                     }, this)),
                                                 include.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3982,14 +4057,14 @@ function MigrationBuilderPage() {
                                                             className: "h-3 w-3"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 892,
+                                                            lineNumber: 912,
                                                             columnNumber: 45
                                                         }, this),
                                                         "No Include row"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 891,
+                                                    lineNumber: 911,
                                                     columnNumber: 41
                                                 }, this),
                                                 exclude.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3999,32 +4074,32 @@ function MigrationBuilderPage() {
                                                             className: "h-3 w-3"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 897,
+                                                            lineNumber: 917,
                                                             columnNumber: 45
                                                         }, this),
                                                         "No Exclude row"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 896,
+                                                    lineNumber: 916,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 873,
+                                            lineNumber: 893,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, policy, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 868,
+                                    lineNumber: 888,
                                     columnNumber: 29
                                 }, this);
                             })
                         }, void 0, false, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 866,
+                            lineNumber: 886,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4039,14 +4114,14 @@ function MigrationBuilderPage() {
                                             className: "h-3.5 w-3.5 mr-1.5"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 908,
+                                            lineNumber: 928,
                                             columnNumber: 29
                                         }, this),
                                         "Back to Builder"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 907,
+                                    lineNumber: 927,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4063,19 +4138,21 @@ function MigrationBuilderPage() {
                                                     className: "h-3.5 w-3.5 mr-1.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 912,
+                                                    lineNumber: 932,
                                                     columnNumber: 33
                                                 }, this),
                                                 "Export CSV"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 911,
+                                            lineNumber: 931,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                             size: "sm",
                                             className: "bg-purple-600 hover:bg-purple-700 text-white gap-1.5",
+                                            disabled: !hasBuilderAccess,
+                                            title: !hasBuilderAccess ? 'Assignments Manager license required' : undefined,
                                             onClick: ()=>{
                                                 setReviewOpen(false);
                                                 sendToDeployment();
@@ -4085,7 +4162,7 @@ function MigrationBuilderPage() {
                                                     className: "h-3.5 w-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 916,
+                                                    lineNumber: 938,
                                                     columnNumber: 33
                                                 }, this),
                                                 "Send ",
@@ -4094,30 +4171,30 @@ function MigrationBuilderPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 914,
+                                            lineNumber: 934,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 910,
+                                    lineNumber: 930,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 906,
+                            lineNumber: 926,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                    lineNumber: 834,
+                    lineNumber: 854,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 833,
+                lineNumber: 853,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -4135,7 +4212,7 @@ function MigrationBuilderPage() {
                                     children: "Edit Assignment Row"
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 928,
+                                    lineNumber: 950,
                                     columnNumber: 25
                                 }, this),
                                 editingRow && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4143,13 +4220,13 @@ function MigrationBuilderPage() {
                                     children: editingRow.policyName
                                 }, void 0, false, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 929,
+                                    lineNumber: 951,
                                     columnNumber: 40
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 927,
+                            lineNumber: 949,
                             columnNumber: 21
                         }, this),
                         editingRow && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4163,7 +4240,7 @@ function MigrationBuilderPage() {
                                             children: "Group (Target Name)"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 934,
+                                            lineNumber: 956,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GroupPicker, {
@@ -4179,13 +4256,13 @@ function MigrationBuilderPage() {
                                                     } : null)
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 935,
+                                            lineNumber: 957,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 933,
+                                    lineNumber: 955,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4196,7 +4273,7 @@ function MigrationBuilderPage() {
                                             children: "Assignment Action"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 940,
+                                            lineNumber: 962,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -4210,12 +4287,12 @@ function MigrationBuilderPage() {
                                                     className: "h-8 text-sm",
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectValue"], {}, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 942,
+                                                        lineNumber: 964,
                                                         columnNumber: 76
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 942,
+                                                    lineNumber: 964,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -4225,7 +4302,7 @@ function MigrationBuilderPage() {
                                                             children: "Add"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 944,
+                                                            lineNumber: 966,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -4233,7 +4310,7 @@ function MigrationBuilderPage() {
                                                             children: "Remove"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 945,
+                                                            lineNumber: 967,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -4241,7 +4318,7 @@ function MigrationBuilderPage() {
                                                             children: "Replace"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 946,
+                                                            lineNumber: 968,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -4249,25 +4326,25 @@ function MigrationBuilderPage() {
                                                             children: "NoAssignment"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 947,
+                                                            lineNumber: 969,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 943,
+                                                    lineNumber: 965,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 941,
+                                            lineNumber: 963,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 939,
+                                    lineNumber: 961,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4278,7 +4355,7 @@ function MigrationBuilderPage() {
                                             children: "Filter"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 952,
+                                            lineNumber: 974,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(FilterPicker, {
@@ -4300,13 +4377,13 @@ function MigrationBuilderPage() {
                                                     } : null)
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 953,
+                                            lineNumber: 975,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 951,
+                                    lineNumber: 973,
                                     columnNumber: 29
                                 }, this),
                                 editingRow.filterId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4317,7 +4394,7 @@ function MigrationBuilderPage() {
                                             children: "Filter Type"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 960,
+                                            lineNumber: 982,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -4331,12 +4408,12 @@ function MigrationBuilderPage() {
                                                     className: "h-8 text-sm",
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectValue"], {}, void 0, false, {
                                                         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                        lineNumber: 962,
+                                                        lineNumber: 984,
                                                         columnNumber: 80
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 962,
+                                                    lineNumber: 984,
                                                     columnNumber: 41
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -4346,7 +4423,7 @@ function MigrationBuilderPage() {
                                                             children: "Include"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 964,
+                                                            lineNumber: 986,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -4354,7 +4431,7 @@ function MigrationBuilderPage() {
                                                             children: "Exclude"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 965,
+                                                            lineNumber: 987,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -4362,25 +4439,25 @@ function MigrationBuilderPage() {
                                                             children: "None"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                            lineNumber: 966,
+                                                            lineNumber: 988,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 963,
+                                                    lineNumber: 985,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 961,
+                                            lineNumber: 983,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 959,
+                                    lineNumber: 981,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4391,7 +4468,7 @@ function MigrationBuilderPage() {
                                             children: "Scope Tags"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 972,
+                                            lineNumber: 994,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$multi$2d$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["MultiSelect"], {
@@ -4404,13 +4481,13 @@ function MigrationBuilderPage() {
                                             placeholder: "Select scope tags…"
                                         }, void 0, false, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 973,
+                                            lineNumber: 995,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 971,
+                                    lineNumber: 993,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4429,14 +4506,14 @@ function MigrationBuilderPage() {
                                                     className: "h-3.5 w-3.5 mr-1"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 979,
+                                                    lineNumber: 1001,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Reset to Original"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 977,
+                                            lineNumber: 999,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4449,7 +4526,7 @@ function MigrationBuilderPage() {
                                                     children: "Cancel"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 982,
+                                                    lineNumber: 1004,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4458,50 +4535,51 @@ function MigrationBuilderPage() {
                                                     children: "Save Changes"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                                    lineNumber: 983,
+                                                    lineNumber: 1005,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                            lineNumber: 981,
+                                            lineNumber: 1003,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                                    lineNumber: 976,
+                                    lineNumber: 998,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                            lineNumber: 932,
+                            lineNumber: 954,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                    lineNumber: 926,
+                    lineNumber: 948,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/assistant/migration-builder/page.tsx",
-                lineNumber: 925,
+                lineNumber: 947,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/assistant/migration-builder/page.tsx",
-        lineNumber: 450,
+        lineNumber: 453,
         columnNumber: 9
     }, this);
 }
-_s2(MigrationBuilderPage, "hzYGldGzE5kQVLORGI9Z/p1U8Bg=", false, function() {
+_s2(MigrationBuilderPage, "lfay6pxhxEc/BeYF2R1pjgFfd0o=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMsal"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApiRequest"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApiRequest"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$contexts$2f$CustomerContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCustomer"]
     ];
 });
 _c2 = MigrationBuilderPage;

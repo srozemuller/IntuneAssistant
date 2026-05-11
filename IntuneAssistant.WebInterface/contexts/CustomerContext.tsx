@@ -85,6 +85,12 @@ interface CustomerProviderProps {
 }
 
 // In your CustomerContext file, add this helper function
+// licenseType 1 = Assignments Manager (required for the Migration Builder)
+export const hasAssignmentsManagerLicense = (customerData: CustomerData | null): boolean => {
+    if (!customerData?.licenses) return false;
+    return customerData.licenses.some(l => l.licenseType === 2 && l.isActive);
+};
+
 export const hasTenantsNeedingConsent = (customerData: any): boolean => {
     if (!customerData?.licenses || !customerData?.tenants) return false;
 
