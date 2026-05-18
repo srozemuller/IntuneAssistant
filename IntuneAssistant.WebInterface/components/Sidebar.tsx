@@ -89,9 +89,11 @@ interface MenuItem {
     submenu?: Array<{
         title: string;
         href: string;
+        isBeta?: boolean;
         submenu?: Array<{
             title: string;
             href: string;
+            isBeta?: boolean;
         }>;
     }>;
 }
@@ -125,6 +127,12 @@ export function Sidebar() {
     };
 
     const handleLogout = () => {
+        // Clear all app-specific storage on logout
+        localStorage.removeItem('selectedTenant');
+        localStorage.removeItem('auditFilterPresets');
+        sessionStorage.removeItem('ia_consent_verified');
+        sessionStorage.removeItem('ia_consent_minimized');
+        sessionStorage.removeItem('customerPageScrollPosition');
         instance.logoutRedirect({
             postLogoutRedirectUri: '/',
         });
@@ -306,7 +314,8 @@ export function Sidebar() {
                     icon: "ArrowLeftRight",
                     href: "/compare",
                     submenu: [
-                        { title: "Policies & Settings", href: "/compare/policies" }
+                        { title: "Policies & Settings", href: "/compare/policies" },
+                        { title: "Compare External", href: "/compare/configuration" },
                     ]
                 }
             ]
@@ -371,7 +380,9 @@ export function Sidebar() {
                     icon: "Rocket",
                     href: "/deployment",
                     submenu: [
-                        { title: "Deploy Assignments", href: "/deployment/assignments" }
+                        { title: "Intune Assignments", href: "/deployment/assignments" },
+                        { title: "Migration Builder", href: "/assistant/migration-builder", isBeta: true, },
+                        ...(isBetaTester() ? [{ title: "Conditional Access Assignments", href: "/deployment/conditional-access" }] : [])
                     ]
                 }
             ]
@@ -414,16 +425,6 @@ export function Sidebar() {
                     title: "Docs",
                     icon: "BookOpen",
                     href: "https://docs.intuneassistant.cloud"
-                }
-            ]
-        },
-        {
-            title: "Enterprise",
-            items: [
-                {
-                    title: "Plans",
-                    icon: "Crown",
-                    href: "/plans"
                 }
             ]
         }

@@ -6,9 +6,7 @@ import { useConsent } from '@/contexts/ConsentContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Shield, ExternalLink, Minimize2, Maximize2, AlertTriangle, RefreshCw, CheckCircle2 } from 'lucide-react';
-import { useMsal } from '@azure/msal-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
-import { apiScope } from '@/lib/msalConfig';
 import { IA_VERIFY_ENDPOINT } from '@/lib/constants';
 
 interface ConsentVerifyResponse {
@@ -20,7 +18,6 @@ interface ConsentVerifyResponse {
 
 export function ConsentBanner() {
     const { needsConsent, consentUrl, requiredPermissions, isMinimized, minimize, maximize, setConsentNeeded, clearConsent } = useConsent();
-    const { instance, accounts } = useMsal();
     const { request } = useApiRequest();
     const [verifying, setVerifying] = useState(false);
     const [verifyError, setVerifyError] = useState<string | null>(null);
@@ -43,24 +40,19 @@ export function ConsentBanner() {
         setVerifying(true);
         setVerifyError(null);
         try {
-            // Force-refresh the MSAL token so new permissions are picked up
-            await instance.acquireTokenSilent({
-                scopes: [apiScope],
-                account: accounts[0],
-                forceRefresh: true,
-            });
-
-            // Re-verify with the backend
+            // Re-verify with the backend, forcing a fresh token so new permissions are included
             const response = await request<ConsentVerifyResponse>(
                 IA_VERIFY_ENDPOINT,
-                { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+                { method: 'GET', headers: { 'Content-Type': 'application/json' } },
+                undefined,
+                true  // forceTokenRefresh — ensures post-consent token carries new scopes
             );
 
             const payload = response?.data;
 
             if (payload?.status === 0) {
-                // All permissions granted — clear session flag and hide banner
-                sessionStorage.removeItem('ia_consent_verified');
+                // All permissions granted — mark session as verified so VerifyConsentOnMount won't re-run
+                sessionStorage.setItem('ia_consent_verified', 'true');
                 setConsentDone(true);
                 setTimeout(() => clearConsent(), 1500);
             } else if (payload?.status === 3) {

@@ -33,15 +33,33 @@ import {
     AlertTriangle,
     Play,
     History as HistoryIcon,
+    Server,
+    UserMinus,
+    RefreshCw,
+    Trash2,
 } from 'lucide-react';
 import { useApiRequest } from '@/hooks/useApiRequest';
+import { apiRequest, ApiError } from '@/lib/apiRequest';
+import { apiScope } from '@/lib/msalConfig';
 import { 
     WORKER_JOB_BY_ID_ENDPOINT, 
     WORKER_JOB_RUN_NOW_ENDPOINT, 
     WORKER_JOB_EXECUTION_ENDPOINT, 
     WORKER_JOB_LATEST_EXECUTION_ENDPOINT,
-    WORKER_JOB_EXECUTIONS_ENDPOINT
+    WORKER_JOB_EXECUTIONS_ENDPOINT,
+    WORKER_OVERVIEW_ENDPOINT,
+    API_BASE_URL,
 } from '@/lib/constants';
+
+// Inline until TS cache refreshes
+const WORKER_JOB_WORKER_ENDPOINT = (jobId: string) => `${API_BASE_URL}/worker/management/jobs/${jobId}/worker`;
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -137,12 +155,24 @@ interface ConfigurationDriftJobConfig {
 
 type JobConfig = IntuneAuditJobConfig | ConfigurationDriftJobConfig;
 
+interface WorkerInstance {
+    workerRegistrationId: string;
+    machineName: string;
+    healthStatus: number;
+    workerVersion: string;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function getJobTypeName(jobType: number): string {
     const types: Record<number, string> = {
-        1: 'Audit Report',
-        7: 'Drift Check',
+        1: 'Intune Audit Report',
+        2: 'Entra Audit Report',
+        3: 'Compliance Report',
+        4: 'Security Report',
+        5: 'Configuration Backup',
+        6: 'Automated Remediation',
+        7: 'Configuration Drift Monitor',
     };
     return types[jobType] || `Job Type ${jobType}`;
 }
@@ -150,6 +180,11 @@ function getJobTypeName(jobType: number): string {
 function getJobTypeColor(jobType: number): string {
     const colors: Record<number, string> = {
         1: 'bg-blue-500',
+        2: 'bg-purple-500',
+        3: 'bg-green-500',
+        4: 'bg-orange-500',
+        5: 'bg-cyan-500',
+        6: 'bg-red-500',
         7: 'bg-yellow-500',
     };
     return colors[jobType] || 'bg-gray-500';
@@ -174,11 +209,13 @@ function getExecutionStatusText(status: number): string {
     const statuses: Record<number, string> = {
         0: 'Pending',
         1: 'Claimed',
-        2: 'Running',
-        3: 'Completed',
+        2: 'In Progress',
+        3: 'Success',
         4: 'Failed',
+        5: 'Expired',
+        6: 'Cancelled',
     };
-    return statuses[status] || 'Unknown';
+    return statuses[status] ?? 'Unknown';
 }
 
 function getExecutionStatusColor(status: number): string {
@@ -188,12 +225,15 @@ function getExecutionStatusColor(status: number): string {
         2: 'bg-yellow-500',
         3: 'bg-green-500',
         4: 'bg-red-500',
+        5: 'bg-orange-500',
+        6: 'bg-gray-400',
     };
-    return colors[status] || 'bg-gray-500';
+    return colors[status] ?? 'bg-gray-500';
 }
 
 function isExecutionCompleted(status: number): boolean {
-    return status === 3 || status === 4; // Completed or Failed
+    // Success(3), Failed(4), Expired(5), Cancelled(6) are all terminal states
+    return status >= 3;
 }
 
 function parseJobConfig(json: string, jobType: number): JobConfig {
@@ -261,7 +301,7 @@ function isConfigurationDriftConfig(config: JobConfig, jobType: number): config 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function EditJobPage() {
-    const { accounts } = useMsal();
+    const { instance, accounts } = useMsal();
     const { request } = useApiRequest();
     const router = useRouter();
     const params = useParams();
@@ -277,6 +317,21 @@ export default function EditJobPage() {
     const [loadingExecutions, setLoadingExecutions] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    // Worker assignment state
+    const [availableWorkers, setAvailableWorkers] = useState<WorkerInstance[]>([]);
+    const [showAssignDialog, setShowAssignDialog] = useState(false);
+    const [showRemoveWorkerDialog, setShowRemoveWorkerDialog] = useState(false);
+    const [selectedWorkerId, setSelectedWorkerId] = useState<string>('');
+    const [assigningWorker, setAssigningWorker] = useState(false);
+    const [removingWorker, setRemovingWorker] = useState(false);
+    const [workerActionError, setWorkerActionError] = useState<string | null>(null);
+    const [resetPoisonStatus, setResetPoisonStatus] = useState(false);
+
+    // Delete job state
+    const [showDeleteJobDialog, setShowDeleteJobDialog] = useState(false);
+    const [deletingJob, setDeletingJob] = useState(false);
+    const [deleteJobError, setDeleteJobError] = useState<string | null>(null);
 
     // Form state
     const [isEnabled, setIsEnabled] = useState(true);
@@ -310,7 +365,7 @@ export default function EditJobPage() {
                     setRunning(false);
 
                     if (execution.status === 3) {
-                        // Completed successfully
+                        // Success
                         setSuccessMessage('Job completed successfully!');
                         // Refresh job data inline
                         const jobResult = await request<ApiResponse>(WORKER_JOB_BY_ID_ENDPOINT(jobId));
@@ -425,6 +480,7 @@ export default function EditJobPage() {
         fetchJob();
         checkForActiveExecution();
         fetchExecutions();
+        fetchWorkers();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [jobId, accounts.length]); // Only run when jobId or accounts.length changes
 
@@ -435,6 +491,88 @@ export default function EditJobPage() {
         };
     }, [stopPolling]);
 
+    // ── Worker assignment helpers ─────────────────────────────────────────────
+
+    const fetchWorkers = useCallback(async () => {
+        try {
+            const result = await request<{ status: string; data: { workers: WorkerInstance[] } }>(WORKER_OVERVIEW_ENDPOINT);
+            const workers = result?.data?.data?.workers ?? [];
+            setAvailableWorkers(workers);
+        } catch {
+            // non-critical, just leave empty
+        }
+    }, [request]);
+
+    const getToken = useCallback(async () => {
+        if (!accounts.length) return undefined;
+        const t = await instance.acquireTokenSilent({ scopes: [apiScope], account: accounts[0] });
+        return t.accessToken;
+    }, [instance, accounts]);
+
+    const handleAssignWorker = async () => {
+        if (!selectedWorkerId) return;
+        setAssigningWorker(true);
+        setWorkerActionError(null);
+        try {
+            const token = await getToken();
+            await apiRequest(
+                WORKER_JOB_WORKER_ENDPOINT(jobId),
+                { method: 'PUT', body: JSON.stringify({ workerRegistrationId: selectedWorkerId }) },
+                token
+            );
+            setShowAssignDialog(false);
+            setSuccessMessage('Worker assigned successfully');
+            setTimeout(() => setSuccessMessage(null), 3000);
+            fetchJob();
+        } catch (err) {
+            const body = (err instanceof ApiError ? err.responseData : undefined) as { message?: string } | undefined;
+            setWorkerActionError(body?.message ?? (err instanceof Error ? err.message : 'Failed to assign worker'));
+        } finally {
+            setAssigningWorker(false);
+        }
+    };
+
+    const handleRemoveWorker = async () => {
+        setRemovingWorker(true);
+        setWorkerActionError(null);
+        try {
+            const token = await getToken();
+            await apiRequest(
+                WORKER_JOB_WORKER_ENDPOINT(jobId),
+                { method: 'DELETE' },
+                token
+            );
+            setShowRemoveWorkerDialog(false);
+            setSuccessMessage('Worker removed from job');
+            setTimeout(() => setSuccessMessage(null), 3000);
+            fetchJob();
+        } catch (err) {
+            const body = (err instanceof ApiError ? err.responseData : undefined) as { message?: string } | undefined;
+            setWorkerActionError(body?.message ?? (err instanceof Error ? err.message : 'Failed to remove worker'));
+        } finally {
+            setRemovingWorker(false);
+        }
+    };
+
+
+    const handleDeleteJob = async () => {
+        setDeletingJob(true);
+        setDeleteJobError(null);
+        try {
+            const token = await getToken();
+            await apiRequest(
+                WORKER_JOB_BY_ID_ENDPOINT(jobId),
+                { method: 'DELETE' },
+                token
+            );
+            router.push('/worker/jobs');
+        } catch (err) {
+            const body = (err instanceof ApiError ? err.responseData : undefined) as { message?: string } | undefined;
+            setDeleteJobError(body?.message ?? (err instanceof Error ? err.message : 'Failed to delete job'));
+        } finally {
+            setDeletingJob(false);
+        }
+    };
 
     const handleSave = async () => {
         if (!job || !config) return;
@@ -456,6 +594,7 @@ export default function EditJobPage() {
                 intervalHours,
                 nextScheduledRun,
                 jobConfigurationJson: JSON.stringify(configForBackend),
+                ...(resetPoisonStatus && { resetPoisonStatus: true }),
             };
 
             const result = await request<ApiResponse>(
@@ -469,6 +608,7 @@ export default function EditJobPage() {
             if (result?.data?.data) {
                 setSuccessMessage('Job updated successfully');
                 setJob(result.data.data);
+                setResetPoisonStatus(false);
                 // Refresh config from updated job
                 setConfig(parseJobConfig(result.data.data.jobConfigurationJson, result.data.data.jobType));
                 
@@ -606,6 +746,14 @@ export default function EditJobPage() {
                                 Run Now
                             </>
                         )}
+                    </Button>
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => { setDeleteJobError(null); setShowDeleteJobDialog(true); }}
+                    >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Job
                     </Button>
                     <Badge className={`${getJobTypeColor(job.jobType)} text-white`}>
                         {getJobTypeName(job.jobType)}
@@ -830,9 +978,78 @@ export default function EditJobPage() {
                 </CardContent>
             </Card>
 
+            {/* ── Worker Assignment Card ───────────────────────────────────────── */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Server className="h-5 w-5" />
+                        Worker Assignment
+                    </CardTitle>
+                    <CardDescription>Control which worker instance runs this job</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {/* Current assignment */}
+                    <div className="flex items-center justify-between p-4 rounded-lg border bg-gray-50 dark:bg-gray-800/50">
+                        <div className="flex items-center gap-3">
+                            <Server className="h-5 w-5 text-gray-400" />
+                            <div>
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    {job.workerRegistrationId
+                                        ? (availableWorkers.find(w => w.workerRegistrationId === job.workerRegistrationId)?.machineName ?? 'Unknown worker')
+                                        : 'No worker assigned'}
+                                </p>
+                                {job.workerRegistrationId && (
+                                    <p className="text-xs font-mono text-gray-500 mt-0.5">{job.workerRegistrationId}</p>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => { setSelectedWorkerId(job.workerRegistrationId ?? ''); setWorkerActionError(null); setShowAssignDialog(true); }}
+                            >
+                                <RefreshCw className="h-4 w-4 mr-1.5" />
+                                {job.workerRegistrationId ? 'Reassign' : 'Assign Worker'}
+                            </Button>
+                            {job.workerRegistrationId && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                    onClick={() => { setWorkerActionError(null); setShowRemoveWorkerDialog(true); }}
+                                >
+                                    <UserMinus className="h-4 w-4 mr-1.5" />
+                                    Remove
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Poison status reset */}
+                    {job.isPoisoned && (
+                        <div className="flex items-center justify-between p-4 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+                            <div className="flex items-start gap-3">
+                                <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+                                <div>
+                                    <p className="text-sm font-medium text-red-800 dark:text-red-200">Job is poisoned</p>
+                                    <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">
+                                        Too many consecutive failures. Enable &quot;Reset poison status&quot; and save to allow the job to run again.
+                                    </p>
+                                </div>
+                            </div>
+                            <Switch
+                                checked={resetPoisonStatus}
+                                onCheckedChange={setResetPoisonStatus}
+                                id="resetPoison"
+                            />
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
             {/* ── Configuration & History Tabs ─────────────────────────────────── */}
-            <Tabs defaultValue="configuration" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+            <Tabs defaultValue="configuration" className="w-full">                <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="configuration" className="flex items-center gap-2">
                         <Settings className="h-4 w-4" />
                         Configuration
@@ -1039,24 +1256,28 @@ export default function EditJobPage() {
                                             <div className="flex items-start justify-between gap-4">
                                                 <div className="flex items-start gap-3 flex-1">
                                                     <div className="mt-1">
-                                                        {execution.status === 2 ? (
-                                                            <Loader2 className="h-5 w-5 text-yellow-500 animate-spin" />
-                                                        ) : execution.status === 3 ? (
-                                                            <CheckCircle className="h-5 w-5 text-green-500" />
-                                                        ) : execution.status === 4 ? (
-                                                            <XCircle className="h-5 w-5 text-red-500" />
-                                                        ) : execution.status === 1 ? (
-                                                            <Clock className="h-5 w-5 text-blue-500" />
-                                                        ) : (
-                                                            <Clock className="h-5 w-5 text-gray-500" />
-                                                        )}
+                                        {execution.status === 2 ? (
+                                            <Loader2 className="h-5 w-5 text-yellow-500 animate-spin" />
+                                        ) : execution.status === 3 ? (
+                                            <CheckCircle className="h-5 w-5 text-green-500" />
+                                        ) : execution.status === 4 ? (
+                                            <XCircle className="h-5 w-5 text-red-500" />
+                                        ) : execution.status === 5 ? (
+                                            <XCircle className="h-5 w-5 text-orange-500" />
+                                        ) : execution.status === 6 ? (
+                                            <XCircle className="h-5 w-5 text-gray-400" />
+                                        ) : execution.status === 1 ? (
+                                            <Clock className="h-5 w-5 text-blue-500" />
+                                        ) : (
+                                            <Clock className="h-5 w-5 text-gray-500" />
+                                        )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <Badge className={`${getExecutionStatusColor(execution.status)} text-white`}>
                                                                 {getExecutionStatusText(execution.status)}
                                                             </Badge>
-                                                            {index === 0 && execution.status < 3 && (
+                                                            {index === 0 && !isExecutionCompleted(execution.status) && (
                                                                 <Badge variant="outline" className="border-blue-500 text-blue-600">
                                                                     Latest
                                                                 </Badge>
@@ -1143,6 +1364,98 @@ export default function EditJobPage() {
                 </Button>
             </div>
 
+            {/* ── Assign Worker Dialog ──────────────────────────────────────── */}
+            <Dialog open={showAssignDialog} onOpenChange={open => { if (!assigningWorker) setShowAssignDialog(open); }}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Server className="h-5 w-5 text-blue-500" />
+                            {job?.workerRegistrationId ? 'Reassign Worker' : 'Assign Worker'}
+                        </DialogTitle>
+                        <DialogDescription>
+                            Select the worker instance that should run this job.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        {availableWorkers.length === 0 ? (
+                            <p className="text-sm text-muted-foreground text-center py-4">No registered workers found.</p>
+                        ) : (
+                            <div className="space-y-2">
+                                <Label>Worker Instance</Label>
+                                <Select value={selectedWorkerId} onValueChange={setSelectedWorkerId}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a worker…" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availableWorkers.map(w => (
+                                            <SelectItem key={w.workerRegistrationId} value={w.workerRegistrationId}>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`h-2 w-2 rounded-full shrink-0 ${w.healthStatus === 0 ? 'bg-green-500' : w.healthStatus === 1 ? 'bg-yellow-500' : 'bg-red-500'}`} />
+                                                    <span className="font-medium">{w.machineName}</span>
+                                                    <span className="text-xs text-muted-foreground font-mono">{w.workerVersion}</span>
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-xs text-muted-foreground">
+                                    🟢 Healthy &nbsp; 🟡 Stale &nbsp; 🔴 Offline
+                                </p>
+                            </div>
+                        )}
+                        {workerActionError && (
+                            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-300">
+                                <XCircle className="h-4 w-4 shrink-0" />
+                                {workerActionError}
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowAssignDialog(false)} disabled={assigningWorker}>Cancel</Button>
+                        <Button onClick={handleAssignWorker} disabled={assigningWorker || !selectedWorkerId}>
+                            {assigningWorker ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Assigning…</> : <><Server className="h-4 w-4 mr-2" />Assign Worker</>}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* ── Remove Worker Confirmation Dialog ─────────────────────────── */}
+            <Dialog open={showRemoveWorkerDialog} onOpenChange={open => { if (!removingWorker) setShowRemoveWorkerDialog(open); }}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                            <UserMinus className="h-5 w-5" />
+                            Remove Worker Assignment
+                        </DialogTitle>
+                        <DialogDescription asChild>
+                            <div className="space-y-2 pt-1">
+                                <p className="text-sm text-muted-foreground">
+                                    This will unassign the worker from <span className="font-semibold text-foreground">{job?.jobName}</span>.
+                                    The job will not run until a worker is reassigned.
+                                </p>
+                                {job?.workerRegistrationId && (
+                                    <p className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded">
+                                        {availableWorkers.find(w => w.workerRegistrationId === job.workerRegistrationId)?.machineName ?? job.workerRegistrationId}
+                                    </p>
+                                )}
+                                {workerActionError && (
+                                    <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-300">
+                                        <XCircle className="h-4 w-4 shrink-0" />
+                                        {workerActionError}
+                                    </div>
+                                )}
+                            </div>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowRemoveWorkerDialog(false)} disabled={removingWorker}>Cancel</Button>
+                        <Button variant="destructive" onClick={handleRemoveWorker} disabled={removingWorker}>
+                            {removingWorker ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Removing…</> : <><UserMinus className="h-4 w-4 mr-2" />Remove Worker</>}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             {/* ── Run Now Confirmation Dialog ────────────────────────────────── */}
             <Dialog open={showRunConfirmDialog} onOpenChange={setShowRunConfirmDialog}>
                 <DialogContent className="sm:max-w-md">
@@ -1198,6 +1511,62 @@ export default function EditJobPage() {
                                     <Play className="h-4 w-4 mr-2" />
                                     Run Now
                                 </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* ── Delete Job Confirmation Dialog ─────────────────────────────── */}
+            <Dialog open={showDeleteJobDialog} onOpenChange={open => { if (!deletingJob) setShowDeleteJobDialog(open); }}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                            <Trash2 className="h-5 w-5" />
+                            Delete Job
+                        </DialogTitle>
+                        <DialogDescription asChild>
+                            <div className="space-y-3 pt-1">
+                                <p className="text-sm text-muted-foreground">
+                                    Are you sure you want to delete{' '}
+                                    <span className="font-semibold text-foreground">{job.jobName}</span>?
+                                </p>
+                                <div className="p-3 rounded-lg bg-muted text-sm space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <Badge className={`${getJobTypeColor(job.jobType)} text-white text-xs`}>
+                                            {getJobTypeName(job.jobType)}
+                                        </Badge>
+                                    </div>
+                                    {job.workerRegistrationId && (
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            Assigned to:{' '}
+                                            <span className="font-mono">
+                                                {availableWorkers.find(w => w.workerRegistrationId === job.workerRegistrationId)?.machineName ?? job.workerRegistrationId}
+                                            </span>
+                                        </p>
+                                    )}
+                                </div>
+                                <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                                    This action cannot be undone. All execution history will be lost.
+                                </p>
+                                {deleteJobError && (
+                                    <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-300">
+                                        <XCircle className="h-4 w-4 shrink-0" />
+                                        {deleteJobError}
+                                    </div>
+                                )}
+                            </div>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowDeleteJobDialog(false)} disabled={deletingJob}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={handleDeleteJob} disabled={deletingJob}>
+                            {deletingJob ? (
+                                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Deleting…</>
+                            ) : (
+                                <><Trash2 className="h-4 w-4 mr-2" />Delete Job</>
                             )}
                         </Button>
                     </DialogFooter>

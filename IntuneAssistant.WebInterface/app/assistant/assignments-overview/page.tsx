@@ -1,5 +1,6 @@
 'use client';
 import React, {useState, useEffect} from 'react';
+import {useRouter} from 'next/navigation';
 import {useMsal} from '@azure/msal-react';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
@@ -15,13 +16,14 @@ import {
     ShieldCheck,
     ChevronDown,
     ChevronUp,
-    XCircle, Blocks, CircleQuestionMark
+    XCircle, Blocks, CircleQuestionMark, TriangleAlert, Hammer
 } from 'lucide-react';
 import {
     ASSIGNMENTS_ENDPOINT,
     ASSIGNMENTS_FILTERS_ENDPOINT,
     ITEMS_PER_PAGE,
-    ROLE_SCOPETAGS_ENDPOINT
+    ROLE_SCOPETAGS_ENDPOINT,
+    MIGRATION_BUILDER_SESSION_KEY
 } from '@/lib/constants';
 
 import {MultiSelect, Option} from '@/components/ui/multi-select';
@@ -33,6 +35,7 @@ import {CancelledCard} from "@/components/CancelledCard";
 import {FilterDetailsDialog} from "@/components/FilterDialog";
 import {AssignmentsTableSkeleton} from "@/components/AssignmentsTableSkeleton";
 import {AssignmentFilter} from "@/types/assignmentFilter";
+import { useCustomer, hasAssignmentsManagerLicense } from '@/contexts/CustomerContext';
 
 
 interface ApiResponse {
@@ -59,6 +62,7 @@ interface Assignments extends Record<string, unknown> {
     assignmentDirection: string;
     isExcluded: boolean;
     scopeTagIds?: string[];
+    warnings?: string[];
     group?: {
         id: string;
         displayName: string;
@@ -82,6 +86,9 @@ export default function AssignmentsOverview() {
     // API CALLS
     const { instance, accounts } = useMsal();
     const { request, cancel } = useApiRequest();
+    const router = useRouter();
+    const { customerData } = useCustomer();
+    const hasBuilderAccess = hasAssignmentsManagerLicense(customerData);
     // Consent dialog state when not enough permissions
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -569,6 +576,12 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
         setRoleScopeTagFilter([]);
     };
 
+    const openInMigrationBuilder = () => {
+        const dataToExport = getSearchFilteredData(filteredAssignments);
+        sessionStorage.setItem(MIGRATION_BUILDER_SESSION_KEY, JSON.stringify(dataToExport));
+        router.push('/assistant/migration-builder');
+    };
+
     // Group dialog handlers
     const handleResourceClick = (resourceId: string, assignmentType: string) => {
         if ((assignmentType === 'Entra ID Group' || assignmentType === 'Entra ID Group Exclude' || assignmentType === 'GroupAssignment') && resourceId) {
@@ -588,17 +601,31 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                 const resourceType = String(row.resourceType);
                 const subResourceType = String(row.subResourceType);
                 const resourceId = String(row.resourceId);
+                const warnings = (row.warnings as string[] | undefined) ?? [];
+                const hasWarnings = warnings.length > 0;
+
+                const warningIcon = hasWarnings ? (
+                    <span
+                        title={warnings.join('\n')}
+                        className="inline-flex shrink-0 items-center cursor-help ml-1"
+                    >
+                        <TriangleAlert className="h-3 w-3 text-amber-400 dark:text-amber-500" />
+                    </span>
+                ) : null;
 
                 if (resourceType === 'Group' && resourceId && resourceName !== 'N/A') {
                     return (
                         <div className="space-y-0.5">
-                            <button
-                                onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
-                                className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate block w-full text-left"
-                                title={resourceName}
-                            >
-                                {resourceName}
-                            </button>
+                            <div className="flex items-center gap-0.5">
+                                <button
+                                    onClick={() => handleResourceClick(resourceId, String(row.assignmentType))}
+                                    className="text-yellow-400 hover:text-yellow-500 underline text-sm font-medium cursor-pointer truncate text-left"
+                                    title={resourceName}
+                                >
+                                    {resourceName}
+                                </button>
+                                {warningIcon}
+                            </div>
                             <span className="text-xs text-gray-400 block">
                                 {subResourceType && subResourceType !== 'undefined' && subResourceType !== 'null'
                                     ? `${resourceType} - ${subResourceType}`
@@ -610,9 +637,12 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
 
                 return (
                     <div className="space-y-0.5">
-                        <span className="font-medium text-sm truncate block w-full" title={resourceName}>
-                            {resourceName}
-                        </span>
+                        <div className="flex items-center gap-0.5">
+                            <span className="font-medium text-sm truncate" title={resourceName}>
+                                {resourceName}
+                            </span>
+                            {warningIcon}
+                        </div>
                         <span className="text-xs text-gray-400 block">
                             {subResourceType && subResourceType !== 'undefined' && subResourceType !== 'null'
                                 ? `${resourceType} - ${subResourceType}`
@@ -862,6 +892,17 @@ const displayedAssignments = getSearchFilteredData(filteredAssignments);
                                 size="sm"
                                 tenantId={instance.getActiveAccount()?.tenantId || accounts[0]?.tenantId || ''}
                             />
+                            <Button
+                                onClick={openInMigrationBuilder}
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-2"
+                                disabled={!hasBuilderAccess}
+                                title={!hasBuilderAccess ? 'Assignments Manager license required' : 'Open current filtered results in the Migration Builder'}
+                            >
+                                <Hammer className="h-4 w-4"/>
+                                Open in Migration Builder
+                            </Button>
                         </>
                     ) : (
                         <>

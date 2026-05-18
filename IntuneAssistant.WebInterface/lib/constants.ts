@@ -41,7 +41,14 @@ export const DEVICES_STATS_ENDPOINT = `${DEVICES_ENDPOINT}/stats`;
 export const GROUPS_LIST_ENDPOINT = `${API_BASE_URL}/groups/list`;
 
 export const COMPARE_ENDPOINT = `${API_BASE_URL}/compare`;
+
+export const CA_ASSIGNMENTS_COMPARE_ENDPOINT = `${API_BASE_URL}/assignments/ca/compare`;
+export const CA_ASSIGNMENTS_MIGRATE_ENDPOINT = `${API_BASE_URL}/assignments/ca/migrate`;
+// Dedicated post-migration validation endpoint for CA assignments
+export const CA_ASSIGNMENTS_VALIDATE_ENDPOINT = `${API_BASE_URL}/assignments/ca/validate`;
+export const COMPARE_SET_ANALYSIS_ENDPOINT = (policyType: string) => `${API_BASE_URL}/compare/${policyType}/set-analysis`;
 export const CUSTOMER_ENDPOINT = `${API_BASE_URL}/customer`;
+export const CUSTOMER_TENANTS_ENDPOINT = `${API_BASE_URL}/customer/tenants`;
 
 export const POLICIES_ENDPOINT = `${API_BASE_URL}/policies`;
 export const EXPORT_ENDPOINT = `${API_BASE_URL}/export`;
@@ -54,6 +61,10 @@ export const ASSIGNMENTS_FILTERS_ENDPOINT = `${API_BASE_URL}/assignments/filters
 export const ASSIGNMENTS_WITH_FILTER_ENDPOINT = `${API_BASE_URL}/assignments/with-filter`;
 export const ASSIGNMENTS_COMPARE_ENDPOINT = `${API_BASE_URL}/assignments/compare`;
 export const POLICY_SETTINGS_ENDPOINT = `${CONFIGURATION_POLICIES_ENDPOINT}/settings`;
+export const POLICY_SETTINGS_CATALOG_ENDPOINT = `${POLICIES_ENDPOINT}/settings/catalog`;
+export const POLICY_SETTINGS_DEVICECONFIG_ENDPOINT = `${POLICIES_ENDPOINT}/settings/deviceconfig`;
+export const POLICY_SETTINGS_GROUPPOLICY_ENDPOINT = `${POLICIES_ENDPOINT}/settings/grouppolicy`;
+export const SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT = `${API_BASE_URL}/settings/definitions/resolve`;
 
 export const ROLE_SCOPETAGS_ENDPOINT = `${API_BASE_URL}/roles/scopeTags`;
 export const GROUP_POLICY_SETTINGS_ENDPOINT = `${POLICIES_ENDPOINT}/group/settings`;
@@ -75,14 +86,19 @@ export const AUDIT_LOGS_INTUNE_FILTER = `${API_BASE_URL}/audit/intune/filter`;
 export const MONITOR_CONFIGURATION_SNAPSHOTS = `${API_BASE_URL}/monitor/snapshots`;
 export const ITEMS_PER_PAGE = 25;
 
+export const MIGRATION_BUILDER_SESSION_KEY = 'assignmentMigrationBuilderData';
+export const MIGRATION_BUILDER_DEPLOYMENT_KEY = 'assignmentMigrationDeploymentCSV';
+
 export const WORKER_ENDPOINT = `${API_BASE_URL}/worker`;
 export const WORKER_OVERVIEW_ENDPOINT = `${WORKER_ENDPOINT}/management/overview`;
 export const WORKER_CONFIG_ENDPOINT = `${WORKER_ENDPOINT}/management/settings`;
 export const WORKER_JOBS_ENDPOINT = `${WORKER_ENDPOINT}/management/jobs`;
 export const WORKER_JOB_BY_ID_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}`;
 export const WORKER_JOB_RUN_NOW_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}/run-now`;
+export const WORKER_JOB_WORKER_ENDPOINT = (jobId: string) => `${WORKER_ENDPOINT}/management/jobs/${jobId}/worker`;
 export const WORKER_JOB_EXECUTION_ENDPOINT = (jobId: string, executionId: string) => `${WORKER_ENDPOINT}/management/jobs/${jobId}/executions/${executionId}`;
 export const WORKER_JOB_LATEST_EXECUTION_ENDPOINT = (jobId: string) => `${WORKER_ENDPOINT}/management/jobs/${jobId}/executions/latest`;
 export const WORKER_JOB_EXECUTIONS_ENDPOINT = (jobId: string) => `${WORKER_ENDPOINT}/management/jobs/${jobId}/executions`;
 export const WORKER_JOB_HISTORY_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}/history`;
 export const WORKER_JOB_CLONE_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}/clone`;
+export const WORKER_REGISTRATION_DELETE_ENDPOINT = (registrationId: string) => `${WORKER_ENDPOINT}/management/registrations/${registrationId}`;

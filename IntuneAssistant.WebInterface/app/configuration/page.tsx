@@ -56,7 +56,8 @@ export default function DeviceConfigurationLandingPage() {
             ],
             badge: "SETTINGS",
             highlight: "Advanced"
-        }
+        },
+
     ];
 
     const quickFeatures = [
@@ -211,7 +212,7 @@ export default function DeviceConfigurationLandingPage() {
             </div>
 
             {/* Main Configuration Blocks */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {configurationBlocks.map((block, index) => (
                     <Card key={index} className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] ${block.borderColor}`}>
                         <div className={`absolute inset-0 bg-gradient-to-br ${block.bgGradient}`}></div>

@@ -8,7 +8,7 @@ import type {ExportColumn} from '@/components/ExportButton';
 import {Badge} from '@/components/ui/badge';
 import {
     Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
-    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet, BarChart3
+    Play, RotateCcw, Eye, ArrowRight, ArrowUp, Shield, Users, Info, X, RefreshCw, Circle, Blocks, CheckCircle, FileSpreadsheet, BarChart3, ChevronDown, ChevronRight
 } from 'lucide-react';
 import {useMsal} from '@azure/msal-react';
 import {
@@ -18,7 +18,8 @@ import {
     GROUPS_ENDPOINT,
     ASSIGNMENTS_FILTERS_ENDPOINT,
     ITEMS_PER_PAGE,
-    ROLE_SCOPETAGS_ENDPOINT
+    ROLE_SCOPETAGS_ENDPOINT,
+    MIGRATION_BUILDER_DEPLOYMENT_KEY,
 } from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";
 import {useGroupDetails} from '@/hooks/useGroupDetails';
@@ -29,6 +30,7 @@ import {useApiRequest} from "@/hooks/useApiRequest";
 import {UserConsentRequiredError} from '@/lib/errors';
 import {PlanProtection} from '@/components/PlanProtection';
 import {MultiSelect} from "@/components/ui/multi-select";
+import {GroupDetailsDialog} from '@/components/GroupDetailsDialog';
 
 interface AssignmentCompareApiResponse {
     status: string;
@@ -117,6 +119,7 @@ interface ComparisonResult {
         settingCount: number;
         platform: string;
         settings: PolicySettings;
+        scopeTagIds?: string[];
     }>;
     providedPolicyName?: string;
     assignedGroups?: AssignedGroup[];
@@ -139,22 +142,23 @@ interface ComparisonResult {
     isMigrated?: boolean;
     excludeGroupFromSource?: boolean;
     removeGroupFromSource?: boolean;
-    isReadyForMigration?: boolean;
+    isReadyForMigration?: boolean | null;
     migrationCheckResult?: {
-        assignmentExists: boolean;
+        assignmentExists: boolean | null;
         policyExists: boolean;
-        policyIsUnique: boolean;
-        groupExists: boolean;
-        correctAssignmentTypeProvided: boolean;
+        policyIsUnique: boolean | null;
+        groupExists: boolean | null;
+        correctAssignmentTypeProvided: boolean | null;
         correctAssignmentActionProvided: boolean;
-        filterExist: boolean;
-        filterIsUnique: boolean;
-        correctFilterPlatform: boolean;
-        correctFilterTypeProvided: boolean;
-        assignmentIsCompatible: boolean;
+        filterExist: boolean | null;
+        filterIsUnique: boolean | null;
+        correctFilterPlatform: boolean | null;
+        correctFilterTypeProvided: boolean | null;
+        assignmentIsCompatible: boolean | null;
         compatibilityErrors: string[];
     };
     csvRow?: CSVRow;
+    csvRows?: CSVRow[]; // all original CSV rows when this is a consolidated duplicate row
     isBackedUp?: boolean;
     validationStatus?: 'pending' | 'valid' | 'invalid' | 'warning';
     validationMessage?: string;
@@ -278,6 +282,7 @@ function AssignmentRolloutContent() {
     const [currentStep, setCurrentStep] = useState<'upload' | 'compare' | 'migrate' | 'results' | 'validate' | 'summary'>('upload');
 
     const [csvData, setCsvData] = useState<CSVRow[]>([]);
+    const [fromMigrationBuilder, setFromMigrationBuilder] = useState(false);
     const [comparisonResults, setComparisonResults] = useState<ComparisonResult[]>([]);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [migratedRowIds, setMigratedRowIds] = useState<string[]>([]); // frozen snapshot of what was actually migrated
@@ -312,6 +317,7 @@ function AssignmentRolloutContent() {
     const [migrationResultFilter, setMigrationResultFilter] = useState<'all' | 'success' | 'failed' | 'skipped' | 'notstarted'>('all');
     const [compareStatusFilter, setCompareStatusFilter] = useState<'all' | 'ready' | 'migrated' | 'warnings' | 'failed'>('all');
     const [summaryStatusFilter, setSummaryStatusFilter] = useState<'all' | 'csv_invalid' | 'compare_failed' | 'compare_ready' | 'already_migrated' | 'migration_ready' | 'migration_success' | 'migration_failed' | 'migration_skipped' | 'migration_notstarted' | 'validation_success' | 'validation_failed'>('all');
+    const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
 
     // Add pagination logic before the return statement
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
@@ -383,7 +389,7 @@ function AssignmentRolloutContent() {
         // Ready for migration = items ready this session + items migrated this session
         const readyForMigrationCount = compareReadyThisSession.length + migratedThisSession.length;
 
-        console.log('📊 SUMMARY STATS BREAKDOWN:', {
+        console.log('SUMMARY STATS BREAKDOWN:', {
             totalUploaded: csvData.length,
             compareReady_NotSelected: compareReadyThisSession.length,
             notProcessed_NotStarted: masterTrackingData.filter(r => r.masterStatus === 'migration_notstarted').length,
@@ -459,7 +465,7 @@ function AssignmentRolloutContent() {
         // Debug: Count batches in summaryTableData AFTER mapping
         const withBatch = data.filter(r => r.batch !== null).length;
         const withoutBatch = data.filter(r => r.batch === null).length;
-        console.log(`📊 summaryTableData: ${withBatch} rows with batch, ${withoutBatch} without batch`);
+        console.log(`summaryTableData: ${withBatch} rows with batch, ${withoutBatch} without batch`);
         if (withBatch > 0) {
             console.log('Sample summaryTableData with batch:', data.filter(r => r.batch !== null).slice(0, 3).map(r => ({
                 policy: r.policy,
@@ -734,7 +740,7 @@ function AssignmentRolloutContent() {
                         hasError ? 'text-red-600 font-bold' :
                             csvRow.AssignmentAction === 'NoAssignment' ? 'text-gray-400' : ''
                     }`} title={String(value)}>
-                        {String(value) || (hasError ? <span className="text-red-500 italic">Missing</span> : '-')}
+                        {String(value) || (hasError ? <span className="text-red-500 italic">Missing</span> : <span className="text-xs text-gray-500">None</span>)}
                     </div>
                 );
             }
@@ -837,7 +843,7 @@ function AssignmentRolloutContent() {
                         {csvRow.FilterName}
                     </div>
                 ) : (
-                    <span className="text-gray-400">-</span>
+                    <span className="text-xs text-gray-500">None</span>
                 );
             }
         },
@@ -856,7 +862,7 @@ function AssignmentRolloutContent() {
                         {csvRow.FilterType}
                     </Badge>
                 ) : (
-                    <span className="text-gray-400">-</span>
+                    <span className="text-xs text-gray-500">None</span>
                 );
             }
         }
@@ -950,9 +956,12 @@ function AssignmentRolloutContent() {
             );
         }
 
-        const allChecksPass = check.policyExists && check.policyIsUnique &&
-            check.groupExists && check.correctAssignmentTypeProvided &&
-            check.correctAssignmentActionProvided && check.assignmentIsCompatible;
+        const allChecksPass = check.policyExists &&
+            check.policyIsUnique !== false &&
+            check.groupExists !== false &&
+            check.correctAssignmentTypeProvided !== false &&
+            check.correctAssignmentActionProvided &&
+            check.assignmentIsCompatible !== false;
 
         const hasWarnings = check.filterExist === false || check.filterIsUnique === false ||
             check.correctFilterPlatform === false || check.correctFilterTypeProvided === false;
@@ -962,9 +971,9 @@ function AssignmentRolloutContent() {
         const compatibilityErrors: string[] = [];
 
         if (!check.policyExists) errors.push("Policy not found");
-        if (!check.policyIsUnique) errors.push("Multiple policies found");
-        if (!check.groupExists) errors.push("Group not found");
-        if (!check.correctAssignmentTypeProvided) errors.push("Invalid assignment type");
+        if (check.policyIsUnique === false) errors.push("Multiple policies found");
+        if (check.groupExists === false) errors.push("Group not found");
+        if (check.correctAssignmentTypeProvided === false) errors.push("Invalid assignment type");
         if (!check.correctAssignmentActionProvided) errors.push("Invalid assignment action");
 
         if (check.filterExist === false) warnings.push("Filter not found");
@@ -1140,9 +1149,12 @@ function AssignmentRolloutContent() {
 
                 if (hasCompatibilityErrors) return 0;
 
-                const allChecksPass = check.policyExists && check.policyIsUnique &&
-                    check.groupExists && check.correctAssignmentTypeProvided &&
-                    check.correctAssignmentActionProvided && check.assignmentIsCompatible;
+                const allChecksPass = check.policyExists &&
+                    check.policyIsUnique !== false &&
+                    check.groupExists !== false &&
+                    check.correctAssignmentTypeProvided !== false &&
+                    check.correctAssignmentActionProvided &&
+                    check.assignmentIsCompatible !== false;
 
                 // If checks fail, return 0 (errors)
                 if (!allChecksPass) return 0;
@@ -1176,10 +1188,13 @@ function AssignmentRolloutContent() {
                     <div className="flex items-center gap-2">
                         {hasDuplicates && (
                             <button
-                                onClick={() => toggleExpanded(result.id)}
-                                className="text-blue-500 hover:text-blue-700"
+                                onClick={(e) => { e.stopPropagation(); toggleExpanded(result.id); }}
+                                className="flex-shrink-0 text-blue-500 hover:text-blue-700 p-0.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                                title="Show duplicate policies"
                             >
-                                {isExpanded ? '▼' : '▶'}
+                                {isExpanded
+                                    ? <ChevronDown className="h-4 w-4" />
+                                    : <ChevronRight className="h-4 w-4" />}
                             </button>
                         )}
                         <div>
@@ -1189,8 +1204,13 @@ function AssignmentRolloutContent() {
                                     {displayPolicy.name || 'Unknown Policy'}
                                 </div>
                                 {hasDuplicates && (
-                                    <Badge variant="secondary" className="text-xs">
-                                        {result.policies?.length || 0} duplicates
+                                    <Badge variant="secondary" className="text-xs whitespace-nowrap">
+                                        {result.policies?.length || 0} policies found
+                                    </Badge>
+                                )}
+                                {result.csvRows && result.csvRows.length > 1 && (
+                                    <Badge variant="outline" className="text-xs whitespace-nowrap border-orange-400 text-orange-700 dark:text-orange-300">
+                                        {result.csvRows.length} assignments
                                     </Badge>
                                 )}
                             </div>
@@ -1250,7 +1270,17 @@ function AssignmentRolloutContent() {
             width: 180,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
-                return result.groupToMigrate || result.csvRow?.GroupName || '-';
+                if (result.csvRows && result.csvRows.length > 1) {
+                    return (
+                        <span className="text-xs text-orange-600 dark:text-orange-400 italic">
+                            {result.csvRows.length} groups (see details)
+                        </span>
+                    );
+                }
+                const groupName = result.groupToMigrate || result.csvRow?.GroupName;
+                return groupName
+                    ? groupName
+                    : <span className="text-xs text-gray-500">None</span>;
             }
         },
         {
@@ -1291,7 +1321,10 @@ function AssignmentRolloutContent() {
             width: 130,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
-                return result.filterName || result.csvRow?.FilterName || '-';
+                const filterName = result.filterName || result.csvRow?.FilterName;
+                return filterName
+                    ? filterName
+                    : <span className="text-xs text-gray-500">None</span>;
             }
         },
         {
@@ -1301,22 +1334,17 @@ function AssignmentRolloutContent() {
             width: 110,
             render: (_: unknown, row: Record<string, unknown>) => {
                 const result = row as unknown as ComparisonResult;
-                if (!result.filterType) return null;
+                const filterType = result.filterType || result.csvRow?.FilterType;
 
-                if (result.filterType.toLowerCase() === 'none') {
-                    return (
-                        <Badge variant="outline"
-                               className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                            {result.filterType}
-                        </Badge>
-                    );
+                if (!filterType || filterType.toLowerCase() === 'none') {
+                    return <span className="text-xs text-gray-500">None</span>;
                 }
 
                 return (
-                    <Badge variant={result.filterType === 'include' ? 'default' : 'destructive'}
-                           className={result.filterType === 'include' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
+                    <Badge variant={filterType.toLowerCase() === 'include' ? 'default' : 'destructive'}
+                           className={filterType.toLowerCase() === 'include' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
                     >
-                        {result.filterType}
+                        {filterType}
                     </Badge>
 
                 );
@@ -1413,7 +1441,7 @@ function AssignmentRolloutContent() {
                         #{batchNumber}
                     </Badge>
                 ) : (
-                    <span className="text-sm text-gray-400">-</span>
+                    <span className="text-xs text-gray-500">None</span>
                 );
             }
         },
@@ -1431,11 +1459,12 @@ function AssignmentRolloutContent() {
             key: 'groupToMigrate',
             label: 'Group',
             minWidth: 150,
-            render: (value: unknown) => (
-                <span className="text-sm" title={String(value)}>
-                    {String(value)}
-                </span>
-            )
+            render: (value: unknown) => {
+                const group = value as string | null | undefined;
+                return group
+                    ? <span className="text-sm" title={group}>{group}</span>
+                    : <span className="text-xs text-gray-500">None</span>;
+            }
         },
         {
             key: 'assignmentAction',
@@ -1486,14 +1515,9 @@ function AssignmentRolloutContent() {
                 const filterType = result.filterType;
                 const filterName = result.filterName;
 
-                // If no filter type or it's 'None', show None badge
+                // If no filter type or it's 'None', show None
                 if (!filterType || filterType.toLowerCase() === 'none') {
-                    return (
-                        <Badge variant="outline"
-                               className="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                            None
-                        </Badge>
-                    );
+                    return <span className="text-xs text-gray-500">None</span>;
                 }
 
                 // If filter type exists but no name
@@ -1505,7 +1529,7 @@ function AssignmentRolloutContent() {
                             >
                                 {filterType}
                             </Badge>
-                            <span className="text-gray-400 text-sm">-</span>
+                            <span className="text-xs text-gray-500">None</span>
                         </div>
                     );
                 }
@@ -1629,7 +1653,7 @@ function AssignmentRolloutContent() {
                         {result.csvRow?.GroupName}
                     </div>
                 ) : (
-                    <span className="text-red-600">-</span>
+                    <span className="text-xs text-gray-500">None</span>
                 );
             }
         },
@@ -1691,7 +1715,7 @@ function AssignmentRolloutContent() {
                 const result = row as unknown as ComparisonResult;
                 return (
                     <span className="text-sm font-medium text-left">
-                    {result.validationMessage || '-'}
+                    {result.validationMessage || <span className="text-xs text-gray-500">None</span>}
                 </span>
                 );
             }
@@ -1798,6 +1822,106 @@ function AssignmentRolloutContent() {
         );
     };
 
+    const renderExpandedDuplicates = (row: Record<string, unknown>): React.ReactNode | null => {
+        const result = row as unknown as ComparisonResult;
+        if (!expandedRows.includes(result.id)) return null;
+        if (!result.policies || result.policies.length <= 1) return null;
+
+        const attemptedRows = result.csvRows && result.csvRows.length > 0 ? result.csvRows : (result.csvRow ? [result.csvRow] : []);
+
+        return (
+            <div className="px-6 py-3 border-t border-blue-200 dark:border-blue-800 space-y-3">
+                {/* Duplicate policies found */}
+                <div>
+                    <div className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" />
+                        {result.policies.length} duplicate policies found — please make the policy name unique before migrating
+                    </div>
+                    <table className="w-full text-xs border border-blue-200 dark:border-blue-800 rounded overflow-hidden">
+                        <thead>
+                            <tr className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
+                                <th className="text-left px-3 py-1.5 font-medium">#</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Policy ID</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Name</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Type</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Platform</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Scope Tags</th>
+                                <th className="text-left px-3 py-1.5 font-medium">Assigned</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {result.policies.map((policy, idx) => (
+                                <tr key={policy.id || idx}
+                                    className={idx % 2 === 0
+                                        ? 'bg-white dark:bg-gray-900'
+                                        : 'bg-blue-50/40 dark:bg-blue-900/10'}>
+                                    <td className="px-3 py-1.5 text-gray-500">{idx + 1}</td>
+                                    <td className="px-3 py-1.5 font-mono text-gray-600 dark:text-gray-400 max-w-[180px] truncate" title={policy.id}>
+                                        {policy.id}
+                                    </td>
+                                    <td className="px-3 py-1.5 font-medium">{policy.name || '—'}</td>
+                                    <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{policy.policyType || '—'}</td>
+                                    <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{policy.platform || '—'}</td>
+                                    <td className="px-3 py-1.5">
+                                        {policy.scopeTagIds && policy.scopeTagIds.length > 0
+                                            ? getRoleScopeTagNames(policy.scopeTagIds).join(', ')
+                                            : <span className="text-gray-400">None</span>}
+                                    </td>
+                                    <td className="px-3 py-1.5">
+                                        <Badge variant={policy.isAssigned ? 'default' : 'outline'} className="text-xs">
+                                            {policy.isAssigned ? 'Yes' : 'No'}
+                                        </Badge>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Attempted CSV assignments (only shown when multiple CSV rows were consolidated) */}
+                {attemptedRows.length > 0 && (
+                    <div>
+                        <div className="text-xs font-semibold text-orange-700 dark:text-orange-300 mb-2 flex items-center gap-1">
+                            <FileText className="h-3 w-3" />
+                            {attemptedRows.length} assignment{attemptedRows.length > 1 ? 's' : ''} from CSV — blocked until policy name is unique
+                        </div>
+                        <table className="w-full text-xs border border-orange-200 dark:border-orange-800 rounded overflow-hidden">
+                            <thead>
+                                <tr className="bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-200">
+                                    <th className="text-left px-3 py-1.5 font-medium">#</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Group</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Direction</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Action</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Filter</th>
+                                    <th className="text-left px-3 py-1.5 font-medium">Filter Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {attemptedRows.map((csvRow, idx) => (
+                                    <tr key={idx}
+                                        className={idx % 2 === 0
+                                            ? 'bg-white dark:bg-gray-900'
+                                            : 'bg-orange-50/40 dark:bg-orange-900/10'}>
+                                        <td className="px-3 py-1.5 text-gray-500">{idx + 1}</td>
+                                        <td className="px-3 py-1.5 font-medium">{csvRow.GroupName || <span className="text-gray-400">—</span>}</td>
+                                        <td className="px-3 py-1.5">
+                                            <Badge variant={csvRow.AssignmentDirection === 'Include' ? 'default' : 'destructive'} className="text-xs">
+                                                {csvRow.AssignmentDirection}
+                                            </Badge>
+                                        </td>
+                                        <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{csvRow.AssignmentAction}</td>
+                                        <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{csvRow.FilterName || <span className="text-gray-400">—</span>}</td>
+                                        <td className="px-3 py-1.5 text-gray-600 dark:text-gray-400">{csvRow.FilterType || <span className="text-gray-400">—</span>}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     // CSV File Processing
     const parseCSV = (content: string): CSVRow[] => {
         const lines = content.split('\n').filter(line => line.trim());
@@ -1807,7 +1931,8 @@ function AssignmentRolloutContent() {
             const values = line.split(';');
             const validationErrors: CSVValidationError[] = [];
 
-            const nullIfEmpty = (value: string) => value?.trim() === '' ? null : value?.trim() || null;
+            // Keep raw values for the compare payload — do NOT trim
+            const nullIfEmpty = (value: string) => value === '' || value == null ? null : value;
 
             const getAssignmentDirection = (value: string): 'Include' | 'Exclude' => {
                 const normalized = value?.trim().toLowerCase();
@@ -1841,17 +1966,23 @@ function AssignmentRolloutContent() {
             console.log('FilterName raw value:', values[4]);
             console.log('FilterName after nullIfEmpty:', nullIfEmpty(values[4]));
 
-            // Validate required fields
-            const policyName = values[0]?.trim() || '';
-            const groupName = values[1]?.trim() || '';
-            const assignmentDirection = values[2]?.trim() || '';
-            const assignmentAction = values[3]?.trim() || '';
+            // Raw values — used in the compare payload, spaces preserved
+            const policyName = values[0] ?? '';
+            const groupName  = values[1] ?? '';
+            const assignmentDirection = values[2] ?? '';
+            const assignmentAction    = values[3] ?? '';
+
+            // Trimmed copies — used only for validation / empty-checks
+            const policyNameTrimmed        = policyName.trim();
+            const groupNameTrimmed         = groupName.trim();
+            const assignmentDirectionTrimmed = assignmentDirection.trim();
+            const assignmentActionTrimmed  = assignmentAction.trim();
 
             // Get action result first to determine if other fields are needed
-            const actionResult = getAssignmentAction(assignmentAction);
+            const actionResult = getAssignmentAction(assignmentActionTrimmed);
 
             // Check PolicyName (always required)
-            if (!policyName) {
+            if (!policyNameTrimmed) {
                 validationErrors.push({
                     rowIndex: index + 2,
                     field: 'PolicyName',
@@ -1862,7 +1993,7 @@ function AssignmentRolloutContent() {
             // Only validate GroupName and AssignmentDirection if action is not 'NoAssignment'
             if (actionResult.action !== 'NoAssignment') {
                 // Check GroupName
-                if (!groupName) {
+                if (!groupNameTrimmed) {
                     validationErrors.push({
                         rowIndex: index + 2,
                         field: 'GroupName',
@@ -1871,7 +2002,7 @@ function AssignmentRolloutContent() {
                 }
 
                 // Check AssignmentDirection
-                if (!assignmentDirection) {
+                if (!assignmentDirectionTrimmed) {
                     validationErrors.push({
                         rowIndex: index + 2,
                         field: 'AssignmentDirection',
@@ -1881,7 +2012,7 @@ function AssignmentRolloutContent() {
             }
 
             // Check AssignmentAction validity
-            if (!assignmentAction) {
+            if (!assignmentActionTrimmed) {
                 validationErrors.push({
                     rowIndex: index + 2,
                     field: 'AssignmentAction',
@@ -1896,12 +2027,12 @@ function AssignmentRolloutContent() {
             }
 
             return {
-                PolicyName: policyName,
-                GroupName: groupName,
+                PolicyName: policyName,            // raw — preserves spaces for compare
+                GroupName: groupName,              // raw — preserves spaces for compare
                 AssignmentDirection: getAssignmentDirection(assignmentDirection),
                 AssignmentAction: actionResult.action,
-                FilterName: nullIfEmpty(values[4]),
-                FilterType: nullIfEmpty(values[5]),
+                FilterName: nullIfEmpty(values[4] ?? ''),
+                FilterType: nullIfEmpty(values[5] ?? ''),
                 isValidAction: actionResult.isValid,
                 originalActionValue: actionResult.originalValue,
                 validationErrors,
@@ -1917,7 +2048,7 @@ function AssignmentRolloutContent() {
         if (!accounts.length) return;
 
         try {
-            const responseData = await request<{ data: RoleScopeTag[] }>(ROLE_SCOPETAGS_ENDPOINT, {
+            const responseData = await request<{ status: string; data: RoleScopeTag[] }>(ROLE_SCOPETAGS_ENDPOINT, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1930,8 +2061,8 @@ function AssignmentRolloutContent() {
                 return;
             }
 
-            if (responseData.data && Array.isArray(responseData.data)) {
-                setRoleScopeTags(responseData.data);
+            if (responseData.data.data && Array.isArray(responseData.data.data)) {
+                setRoleScopeTags(responseData.data.data);
             }
         } catch (error) {
             console.error('Failed to fetch role scope tags:', error);
@@ -1944,7 +2075,7 @@ function AssignmentRolloutContent() {
 
         return scopeTagIds
             .map(id => {
-                const tag = roleScopeTags.find(t => t.id === id);
+                const tag = roleScopeTags.find(t => String(t.id) === String(id));
                 return tag?.displayName || `Unknown (${id})`;
             })
             .filter(Boolean);
@@ -1959,7 +2090,7 @@ function AssignmentRolloutContent() {
 
         return Array.from(tagIds)
             .map(id => {
-                const tag = roleScopeTags.find(t => t.id === id);
+                const tag = roleScopeTags.find(t => String(t.id) === String(id));
                 return {
                     label: tag?.displayName || `Unknown (${id})`,
                     value: id
@@ -2151,7 +2282,7 @@ function AssignmentRolloutContent() {
 
             // Capture correlation ID from compare step
             const compareCorrelationId = apiResponse.correlationId;
-            console.log('📊 Compare correlation ID:', compareCorrelationId || '(not available)');
+            console.log('Compare correlation ID:', compareCorrelationId || '(not available)');
 
             const enhancedResults = apiResponse.data.data.map((item: ComparisonResult, index: number) => {
                 // Get the original CSV row to preserve its unique rowId
@@ -2162,7 +2293,28 @@ function AssignmentRolloutContent() {
                 let masterStatusMessage = '';
                 let failureReason = '';
 
-                if (item.isReadyForMigration) {
+                // Log first few items to diagnose API response shape
+                if (index < 3) {
+                    console.log(`Compare item[${index}]:`, {
+                        isReadyForMigration: item.isReadyForMigration,
+                        isMigrated: item.isMigrated,
+                        checkResult: item.migrationCheckResult
+                    });
+                }
+
+                // isReadyForMigration can be true/false/null from the API.
+                // null means "not yet determined" — derive from migrationCheckResult.
+                const check = item.migrationCheckResult;
+                const derivedReady = item.isReadyForMigration === true ||
+                    (item.isReadyForMigration === null && check != null &&
+                        check.policyExists &&
+                        check.policyIsUnique !== false &&
+                        check.groupExists !== false &&
+                        check.correctAssignmentTypeProvided !== false &&
+                        check.correctAssignmentActionProvided &&
+                        check.assignmentIsCompatible !== false);
+
+                if (derivedReady) {
                     // Check if already migrated from a previous session
                     if (item.isMigrated) {
                         masterStatus = 'already_migrated';
@@ -2175,15 +2327,14 @@ function AssignmentRolloutContent() {
                     masterStatus = 'compare_failed';
 
                     // Build detailed failure reason from migrationCheckResult
-                    const check = item.migrationCheckResult;
                     if (check) {
                         const failures: string[] = [];
                         if (!check.policyExists) failures.push('Policy not found');
-                        if (!check.policyIsUnique) failures.push('Multiple policies found with same name');
-                        if (!check.groupExists) failures.push('Group not found');
-                        if (!check.correctAssignmentTypeProvided) failures.push('Invalid assignment type');
+                        if (check.policyIsUnique === false) failures.push('Multiple policies found with same name');
+                        if (check.groupExists === false) failures.push('Group not found');
+                        if (check.correctAssignmentTypeProvided === false) failures.push('Invalid assignment type');
                         if (!check.correctAssignmentActionProvided) failures.push('Invalid assignment action');
-                        if (!check.assignmentIsCompatible && check.compatibilityErrors) {
+                        if (check.assignmentIsCompatible === false && check.compatibilityErrors) {
                             failures.push(...check.compatibilityErrors);
                         }
                         failureReason = failures.join('; ');
@@ -2193,11 +2344,13 @@ function AssignmentRolloutContent() {
                     masterStatusMessage = `Cannot migrate: ${failureReason}`;
                 }
 
+                const isReadyForMigration = derivedReady;
+
                 return {
                     ...item,
-                    id: originalCsvRow.rowId || item.id, // Use original CSV rowId for tracking
+                    id: originalCsvRow.rowId || item.id,
                     csvRow: originalCsvRow,
-                    isReadyForMigration: item.isReadyForMigration,
+                    isReadyForMigration,
                     isMigrated: item.isMigrated || false,
                     isBackedUp: false,
                     validationStatus: 'pending' as const,
@@ -2274,7 +2427,7 @@ function AssignmentRolloutContent() {
 
             const migrationPayload = selectedComparisonResults.map(result => ({
                 PolicyId: result.policy?.id || '',
-                PolicyName: result.policy?.name || result.providedPolicyName || '',
+                PolicyName: result.csvRow?.PolicyName || result.policy?.name || result.providedPolicyName || '',
                 PolicyType: result.policy?.policyType || '',
                 AssignmentResourceName: result.csvRow?.GroupName || result.groupToMigrate || '',
                 AssignmentDirection: result.csvRow?.AssignmentDirection || result.assignmentDirection || 'Include',
@@ -2333,7 +2486,7 @@ function AssignmentRolloutContent() {
 
                 // Capture correlation ID for this chunk
                 const migrateCorrelationId = apiResponse.correlationId;
-                console.log(`📊 Migrate chunk ${chunkIndex + 1} correlation ID:`, migrateCorrelationId || '(not available)');
+                console.log(`Migrate chunk ${chunkIndex + 1} correlation ID:`, migrateCorrelationId || '(not available)');
 
                 // Extract actual data
                 const responseData = apiResponse.data;
@@ -2979,7 +3132,7 @@ function AssignmentRolloutContent() {
 
             // Capture correlation ID from verify step
             const verifyCorrelationId = validationData.correlationId;
-            console.log('📊 Verify correlation ID:', verifyCorrelationId || '(not available)');
+            console.log('Verify correlation ID:', verifyCorrelationId || '(not available)');
 
             // Extract actual data
             const responseData = validationData.data;
@@ -3038,9 +3191,9 @@ function AssignmentRolloutContent() {
                     const failures: string[] = [];
                     if (check) {
                         if (!check.policyExists) failures.push('Policy not found');
-                        if (!check.policyIsUnique) failures.push('Multiple policies found');
-                        if (!check.groupExists) failures.push('Group not found');
-                        if (!check.assignmentIsCompatible && check.compatibilityErrors) {
+                        if (check.policyIsUnique === false) failures.push('Multiple policies found');
+                        if (check.groupExists === false) failures.push('Group not found');
+                        if (check.assignmentIsCompatible === false && check.compatibilityErrors) {
                             failures.push(...check.compatibilityErrors);
                         }
                     }
@@ -3347,8 +3500,11 @@ const validateAssignments = async () => {
 
                 <div className="space-y-4">
                     {selectedAssignments.map((assignment) => {
-                        const isGroupAssignment = assignment.target?.['@odata.type']?.includes('groupAssignmentTarget');
-                        const isExcludeAssignment = assignment.target?.['@odata.type']?.includes('exclusionGroupAssignmentTarget');
+                        const odataType = assignment.target?.['@odata.type'] ?? '';
+                        const isGroupAssignment = odataType.includes('groupAssignmentTarget');
+                        const isExcludeAssignment = odataType.includes('exclusionGroupAssignmentTarget');
+                        const isAllDevices = odataType.includes('allDevicesAssignmentTarget');
+                        const isAllUsers = odataType.includes('allLicensedUsersAssignmentTarget');
                         const groupId = assignment.target?.groupId;
                         const groupData = groupId ? assignmentGroups[groupId] : null;
                         const isLoading = groupId ? loadingAssignmentGroups.includes(groupId) : false;
@@ -3357,20 +3513,28 @@ const validateAssignments = async () => {
                         const assignmentDirection = isExcludeAssignment ? 'Exclude' : 'Include';
                         const directionColor = isExcludeAssignment ? 'destructive' : 'default';
 
+                        // Label for the header
+                        const targetLabel = isGroupAssignment || isExcludeAssignment
+                            ? 'Group Assignment'
+                            : isAllDevices
+                                ? 'All Devices'
+                                : isAllUsers
+                                    ? 'All Licensed Users'
+                                    : 'All Users & Devices';
+
                         return (
                             <div key={assignment.id} className="border rounded-lg p-4 space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Shield className="h-4 w-4 text-blue-500"/>
-                                        <span className="font-medium">
-                                        {isGroupAssignment ? 'Group Assignment' : 'All Users/Devices'}
-                                    </span>
+                                        <span className="font-medium">{targetLabel}</span>
                                         <Badge variant={directionColor} className="text-xs">
                                             {assignmentDirection}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        {assignment.target?.deviceAndAppManagementAssignmentFilterType !== 'None' && (
+                                        {assignment.target?.deviceAndAppManagementAssignmentFilterType &&
+                                            assignment.target.deviceAndAppManagementAssignmentFilterType !== 'None' && (
                                             <Badge variant="outline" className="text-xs">
                                                 Filtered
                                             </Badge>
@@ -3378,7 +3542,7 @@ const validateAssignments = async () => {
                                     </div>
                                 </div>
 
-                                {isGroupAssignment && groupId && (
+                                {(isGroupAssignment || isExcludeAssignment) && groupId && (
                                     <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
                                         {isLoading ? (
                                             <div className="flex items-center gap-2">
@@ -3395,7 +3559,7 @@ const validateAssignments = async () => {
                                                     <h4 className="font-medium text-sm flex items-center gap-1">
                                                         {groupData.displayName}
                                                         {groupData.membershipRule && groupData.membershipRule.trim() !== '' && (
-                                                            <Blocks className="h-3 w-3 text-purple-500 flex-shrink-0"/>
+                                                            <Blocks className="h-3 w-3 text-purple-500 shrink-0"/>
                                                         )}
                                                     </h4>
                                                     <Button
@@ -3432,24 +3596,47 @@ const validateAssignments = async () => {
                                     </div>
                                 )}
 
-                                {!isGroupAssignment && (
+                                {isAllDevices && (
+                                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 text-gray-500"/>
+                                            <span className="text-sm font-medium">All Devices</span>
+                                        </div>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            This assignment targets all enrolled devices in your organization.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {isAllUsers && (
                                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
                                         <div className="flex items-center gap-2">
                                             <Users className="h-4 w-4 text-blue-500"/>
-                                            <span className="text-sm font-medium">All Users and Devices</span>
+                                            <span className="text-sm font-medium">All Licensed Users</span>
                                         </div>
                                         <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                            This assignment applies to all users and devices in your organization
+                                            This assignment targets all licensed users in your organization.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {!isGroupAssignment && !isExcludeAssignment && !isAllDevices && !isAllUsers && (
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 text-blue-500"/>
+                                            <span className="text-sm font-medium">All Users &amp; Devices</span>
+                                        </div>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                            This assignment applies to all users and devices in your organization.
                                         </p>
                                     </div>
                                 )}
 
                                 {assignment.target?.deviceAndAppManagementAssignmentFilterId && (
-                                    <div className="text-xs text-gray-500">
-                                        <span
-                                            className="font-medium">Filter:</span> {assignment.target.deviceAndAppManagementAssignmentFilterType}
-                                        <span
-                                            className="ml-2">ID: {assignment.target.deviceAndAppManagementAssignmentFilterId}</span>
+                                    <div className="text-xs text-gray-500 bg-amber-50 dark:bg-amber-900/20 rounded p-2 flex gap-2">
+                                        <span className="font-medium">Filter:</span>
+                                        <span>{assignment.target.deviceAndAppManagementAssignmentFilterType}</span>
+                                        <span className="text-gray-400 font-mono truncate">({assignment.target.deviceAndAppManagementAssignmentFilterId})</span>
                                     </div>
                                 )}
                             </div>
@@ -3460,17 +3647,34 @@ const validateAssignments = async () => {
         </Dialog>
     );
 
+    // ── Auto-load from Migration Builder ─────────────────────────────────────
+    useEffect(() => {
+        const stored = sessionStorage.getItem(MIGRATION_BUILDER_DEPLOYMENT_KEY);
+        if (!stored) return;
+        sessionStorage.removeItem(MIGRATION_BUILDER_DEPLOYMENT_KEY); // consume once
+        try {
+            const parsed = parseCSV(stored);
+            setCsvData(parsed);
+            setFromMigrationBuilder(true);
+            setCurrentStep('upload'); // land on the upload/preview step so user can review & compare
+        } catch (e) {
+            console.error('Failed to load migration builder data', e);
+        }
+        // parseCSV is stable (defined in render scope but doesn't change)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     useEffect(() => {
         let filtered = comparisonResults;
 
-        console.log('📊 Compare Filter Debug:', {
+        console.log('Compare Filter Debug:', {
             totalComparisonResults: comparisonResults.length,
             compareStatusFilter,
             statusBreakdown: {
                 ready: comparisonResults.filter(r => r.isReadyForMigration && !r.isMigrated).length,
                 migrated: comparisonResults.filter(r => r.isMigrated).length,
                 warnings: comparisonResults.filter(r => !r.isReadyForMigration && !r.isMigrated && r.masterStatus !== 'compare_failed').length,
-                failed: comparisonResults.filter(r => r.masterStatus === 'compare_failed' || (!r.isReadyForMigration && !r.isMigrated)).length,
+                failed: comparisonResults.filter(r => r.masterStatus === 'compare_failed').length,
             }
         });
 
@@ -3478,7 +3682,7 @@ const validateAssignments = async () => {
         if (roleScopeTagFilter.length > 0) {
             filtered = filtered.filter((result) => {
                 const displayPolicy = result.policy || (result.policies ? result.policies[0] : null);
-                return displayPolicy?.scopeTagIds?.some(id => roleScopeTagFilter.includes(id));
+                return displayPolicy?.scopeTagIds?.some(id => roleScopeTagFilter.map(String).includes(String(id)));
             });
         }
 
@@ -3495,7 +3699,32 @@ const validateAssignments = async () => {
         // 'all' doesn't need additional filtering
 
         console.log('Filtered results:', filtered.length);
-        setFilteredComparisonResults(filtered);
+
+        // Consolidate rows with the same providedPolicyName that have duplicate policies (policyIsUnique === false)
+        const consolidated: ComparisonResult[] = [];
+        const seenDuplicatePolicy = new Map<string, ComparisonResult>();
+
+        for (const result of filtered) {
+            const isDuplicate = result.migrationCheckResult?.policyIsUnique === false;
+            const key = result.providedPolicyName || result.policy?.name || '';
+
+            if (isDuplicate && key) {
+                if (seenDuplicatePolicy.has(key)) {
+                    // Merge this row into the existing consolidated row
+                    const existing = seenDuplicatePolicy.get(key)!;
+                    existing.csvRows = [...(existing.csvRows || [existing.csvRow].filter(Boolean) as CSVRow[]), ...(result.csvRow ? [result.csvRow] : [])];
+                } else {
+                    // First occurrence — keep as-is but initialise csvRows
+                    const merged = { ...result, csvRows: result.csvRow ? [result.csvRow] : [] };
+                    seenDuplicatePolicy.set(key, merged);
+                    consolidated.push(merged);
+                }
+            } else {
+                consolidated.push(result);
+            }
+        }
+
+        setFilteredComparisonResults(consolidated);
     }, [comparisonResults, roleScopeTagFilter, compareStatusFilter]);
 
     return (
@@ -3662,6 +3891,25 @@ const validateAssignments = async () => {
                         </p>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                        {/* Banner when loaded from Migration Builder */}
+                        {fromMigrationBuilder && csvData.length > 0 && (
+                            <div className="flex items-start gap-3 rounded-lg border border-purple-300 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-700 px-4 py-3">
+                                <CheckCircle2 className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 shrink-0" />
+                                <div className="flex-1 text-sm">
+                                    <p className="font-semibold text-purple-800 dark:text-purple-200">
+                                        {csvData.length} rows loaded from the Migration Builder
+                                    </p>
+                                    <p className="text-purple-700 dark:text-purple-300 mt-0.5">
+                                        Review the rows below, then click <strong>Compare Assignments</strong> to continue.
+                                    </p>
+                                </div>
+                                <button className="text-purple-400 hover:text-purple-600"
+                                    onClick={() => setFromMigrationBuilder(false)}>
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
+                        )}
+
                         <div
                             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                                 isDragOver
@@ -4177,6 +4425,7 @@ const validateAssignments = async () => {
                                     showPagination={true}
                                     onSelectionChange={setSelectedRows}
                                     searchPlaceholder="Search policies..."
+                                    expandedRowRender={renderExpandedDuplicates}
                                     rowClassName={(row) => {
                                         const result = row as unknown as ComparisonResult;
                                         const isProcessing = migrationChunkProgress.isProcessing &&
@@ -4636,11 +4885,21 @@ const validateAssignments = async () => {
                             })()}
 
                             {/* ── Migration Statistics Summary ── */}
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                                    <BarChart3 className="h-5 w-5 text-blue-600"/>
-                                    Migration Statistics
-                                </h3>
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                <button
+                                    onClick={() => setIsSummaryExpanded(prev => !prev)}
+                                    className="w-full flex items-center justify-between p-6 text-left"
+                                >
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                        <BarChart3 className="h-5 w-5 text-blue-600"/>
+                                        Migration Statistics
+                                    </h3>
+                                    {isSummaryExpanded
+                                        ? <ChevronDown className="h-4 w-4 text-gray-500"/>
+                                        : <ChevronRight className="h-4 w-4 text-gray-500"/>
+                                    }
+                                </button>
+                                {isSummaryExpanded && <div className="px-6 pb-6">
                                 {(() => {
                                     const {
                                         totalUploaded,
@@ -4817,6 +5076,7 @@ const validateAssignments = async () => {
                                         </div>
                                     );
                                 })()}
+                                </div>}
                             </div>
 
                             {/* ── Success banner ── */}
@@ -5147,6 +5407,12 @@ const validateAssignments = async () => {
                     )}
                 </>
             )}
+            <AssignmentsDialog />
+            <GroupDetailsDialog
+                groupId={selectedGroup?.id ?? null}
+                isOpen={isDialogOpen}
+                onClose={closeDialog}
+            />
         </div>
     );
 }

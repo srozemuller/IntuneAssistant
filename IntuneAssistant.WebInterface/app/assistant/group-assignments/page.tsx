@@ -20,7 +20,7 @@ import {
     Shield,
     ShieldCheck,
     ChevronDown,
-    ChevronUp, XCircle, Computer, Blocks
+    ChevronUp, XCircle, Computer, Blocks, TriangleAlert
 } from 'lucide-react';
 import {ASSIGNMENTS_ENDPOINT, GROUPS_ENDPOINT, ASSIGNMENTS_FILTERS_ENDPOINT, ITEMS_PER_PAGE} from '@/lib/constants';
 import {apiScope} from "@/lib/msalConfig";

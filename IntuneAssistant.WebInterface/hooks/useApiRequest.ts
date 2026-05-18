@@ -18,7 +18,8 @@ export function useApiRequest() {
     const request = useCallback(async function<T>(
         url: string,
         options: RequestInit = {},
-        onConsentComplete?: () => Promise<ApiResponseWithCorrelation<T>>
+        onConsentComplete?: () => Promise<ApiResponseWithCorrelation<T>>,
+        forceTokenRefresh = false
     ): Promise<ApiResponseWithCorrelation<T> | undefined> {
         // Cancel previous request if still running
         clearError();
@@ -37,6 +38,7 @@ export function useApiRequest() {
                 const response = await instance.acquireTokenSilent({
                     scopes: [apiScope],
                     account: accounts[0],
+                    forceRefresh: forceTokenRefresh,
                 });
                 accessToken = response.accessToken;
             }

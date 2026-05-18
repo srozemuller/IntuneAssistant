@@ -14,7 +14,6 @@ import {
     Shield,
     CheckCircle,
     RefreshCw,
-    Loader2,
     XCircle,
     ExternalLink
 } from 'lucide-react';
@@ -187,16 +186,54 @@ export function MonitorLandingPage() {
                 </div>
             </div>
 
-            {/* UTCM Permission Status Card */}
+            {/* UTCM Permission Status Skeleton */}
             {loading && (
-                <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3">
-                            <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
-                            <span className="text-gray-900 dark:text-gray-100">Verifying UTCM permissions...</span>
-                        </div>
-                    </CardContent>
-                </Card>
+                <div className="space-y-6 animate-pulse">
+                    {/* Permission status card skeleton */}
+                    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                        <CardContent className="p-6">
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="flex items-start gap-4 flex-1">
+                                    <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex-shrink-0 mt-0.5" />
+                                    <div className="flex-1 space-y-2">
+                                        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-64" />
+                                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full max-w-lg" />
+                                    </div>
+                                </div>
+                                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-24 flex-shrink-0" />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Monitor blocks skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[...Array(3)].map((_, i) => (
+                            <Card key={i} className="relative overflow-hidden border border-gray-200 dark:border-gray-700">
+                                <CardHeader>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+                                        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20" />
+                                    </div>
+                                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2" />
+                                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+                                </CardHeader>
+                                <CardContent className="pt-0 space-y-4">
+                                    <div className="space-y-2">
+                                        {[...Array(3)].map((_, j) => (
+                                            <div key={j} className="flex items-center gap-2">
+                                                <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded-full flex-shrink-0" />
+                                                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                                        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
             )}
 
             {error && !loading && (
