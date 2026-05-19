@@ -19,13 +19,11 @@ import {
     PlusCircle,
     ArrowLeftRight,
     Info,
-    Filter,
     Download,
     BarChart3,
     Layers,
     ShieldCheck,
     ShieldAlert,
-    TrendingUp,
 } from 'lucide-react';
 import {
     POLICY_SETTINGS_CATALOG_ENDPOINT,
@@ -905,11 +903,14 @@ const occurrenceStatusCfg = {
     conflict: { short: 'Conflict', badge: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300',           icon: <AlertTriangle className="h-3 w-3" /> },
 };
 
-function ConfigCoverageRows({ settingAnalyses, policyKey }: {
+function ConfigCoverageRows({ settingAnalyses, policyKey, externalFilter }: {
     settingAnalyses: SettingAnalysis[];
     policyKey: string;
+    externalFilter?: CoverageStatus | 'all';
 }) {
-    const [filter, setFilter] = useState<CoverageStatus | 'all'>('all');
+    const [localFilter, setLocalFilter] = useState<CoverageStatus | 'all'>('all');
+    const filter = externalFilter ?? localFilter;
+    const setFilter = (f: CoverageStatus | 'all') => { if (!externalFilter) setLocalFilter(f); };
     const [search, setSearch] = useState('');
     const [sourceOnly, setSourceOnly] = useState(false);
     const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -954,7 +955,7 @@ function ConfigCoverageRows({ settingAnalyses, policyKey }: {
 
             {/* Filters + search */}
             <div className="flex items-center gap-2 flex-wrap">
-                {([
+                {!externalFilter && ([
                     ['all',           `All (${settingAnalyses.length})`],
                     ['covered',       `Covered (${counts.covered})`],
                     ['conflict',      `Conflict (${counts.conflict})`],
@@ -1349,7 +1350,8 @@ export default function ConfigurationComparePage() {
     const [loadingPhase, setLoadingPhase] = useState<'idle' | 'fetching' | 'resolving'>('idle');
     const [error, setError] = useState<string | null>(null);
     const [expandedPolicies, setExpandedPolicies] = useState<Set<string>>(new Set());
-    const [activeTab, setActiveTab] = useState<'detail' | 'perPolicy' | 'summary'>('detail');
+    const [activeTab, setActiveTab] = useState<'detail' | 'perPolicy'>('detail');
+    const [globalCoverageFilter, setGlobalCoverageFilter] = useState<CoverageStatus | 'all'>('all');
     const [uploadCollapsed, setUploadCollapsed] = useState(false);
     const [filesListCollapsed, setFilesListCollapsed] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1872,16 +1874,14 @@ export default function ConfigurationComparePage() {
 
                     {/* Tabs */}
                     <div className="flex gap-2 border-b">
-                        {(['detail', 'perPolicy', 'summary'] as const).map(tab => (
+                        {(['detail', 'perPolicy'] as const).map(tab => (
                             <button key={tab}
                                 className={`pb-2 px-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
                                 onClick={() => setActiveTab(tab)}
                             >
                                 {tab === 'detail'
                                     ? <><Layers className="h-4 w-4 inline mr-1" />Coverage</>
-                                    : tab === 'perPolicy'
-                                    ? <><ShieldCheck className="h-4 w-4 inline mr-1" />Per-Policy Detail</>
-                                    : <><BarChart3 className="h-4 w-4 inline mr-1" />Deep Analytics</>}
+                                    : <><ShieldCheck className="h-4 w-4 inline mr-1" />Per-Policy Detail</>}
                             </button>
                         ))}
                     </div>
@@ -1909,204 +1909,46 @@ export default function ConfigurationComparePage() {
                         </div>
                     )}
 
-                    {/* ── SUMMARY TAB ── */}
-                    {activeTab === 'summary' && (
-                        <div className="space-y-6">
-
-                            {/* ── Overall coverage summary ── */}
-                            <Card>
-                                <CardHeader className="pb-3">
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <TrendingUp className="h-4 w-4 text-primary" />
-                                        Settings Coverage
-                                    </CardTitle>
-                                    <CardDescription>
-                                        How many of the settings in your uploaded files are already covered in the tenant (matched or conflicting vs. completely absent).
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    {/* Overall totals */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                            <span className="font-medium text-foreground text-sm">
-                                                Overall — {globalSummary.totalSettings} settings across {globalSummary.totalPolicies} {globalSummary.totalPolicies === 1 ? 'policy' : 'policies'}
-                                            </span>
-                                            <span>{globalSummary.matchSettings + globalSummary.conflictSettings} covered · {globalSummary.missingSettings} not in tenant</span>
-                                        </div>
-                                        <div className="flex h-4 w-full rounded-full overflow-hidden gap-0.5 bg-muted">
-                                            {globalSummary.overallMatchPercent > 0 && <div className="bg-green-500 h-full transition-all" style={{ width: `${globalSummary.overallMatchPercent}%` }} title={`Match: ${globalSummary.matchSettings}`} />}
-                                            {globalSummary.overallConflictPercent > 0 && <div className="bg-amber-400 h-full transition-all" style={{ width: `${globalSummary.overallConflictPercent}%` }} title={`Conflict: ${globalSummary.conflictSettings}`} />}
-                                            {globalSummary.overallMissingPercent > 0 && <div className="bg-red-400 h-full transition-all" style={{ width: `${globalSummary.overallMissingPercent}%` }} title={`Missing: ${globalSummary.missingSettings}`} />}
-                                        </div>
-                                        <div className="flex gap-4 text-xs text-muted-foreground">
-                                            <span className="flex items-center gap-1"><span className="inline-block w-2.5 h-2.5 rounded-sm bg-green-500" />Match {globalSummary.overallMatchPercent}%</span>
-                                            <span className="flex items-center gap-1"><span className="inline-block w-2.5 h-2.5 rounded-sm bg-amber-400" />Conflict {globalSummary.overallConflictPercent}%</span>
-                                            <span className="flex items-center gap-1"><span className="inline-block w-2.5 h-2.5 rounded-sm bg-red-400" />Not in tenant {globalSummary.overallMissingPercent}%</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Per-policy cards grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                                        {analyses.map(a => {
-                                            const covered = a.summary.matchSettings + a.summary.conflictSettings;
-                                            const coveredPct = a.summary.totalSettings === 0 ? 0 : Math.round((covered / a.summary.totalSettings) * 100);
-                                            const coverColor = coveredPct >= 80 ? 'text-green-600 dark:text-green-400' : coveredPct >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400';
-                                            return (
-                                                <Card key={a.uploadedPolicy.fileName} className="border-2">
-                                                    <CardContent className="pt-4 space-y-3">
-                                                        {/* Header row */}
-                                                        <div className="flex items-start justify-between gap-2">
-                                                            <div className="min-w-0">
-                                                                <p className="font-semibold text-sm leading-tight">{a.uploadedPolicy.name}</p>
-                                                                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                                                                    <Badge className={`text-xs ${kindColor[a.uploadedPolicy.kind]}`}>{kindLabel[a.uploadedPolicy.kind]}</Badge>
-                                                                    {a.uploadedPolicy.platform && <Badge variant="outline" className="text-xs">{a.uploadedPolicy.platform}</Badge>}
-                                                                    <span className="text-xs text-muted-foreground">{a.summary.totalSettings} settings</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-right flex-shrink-0">
-                                                                <p className={`text-2xl font-bold ${coverColor}`}>{coveredPct}%</p>
-                                                                <p className="text-xs text-muted-foreground">covered</p>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Stacked bar */}
-                                                        <div className="flex h-3 w-full rounded-full overflow-hidden gap-0.5 bg-muted">
-                                                            {a.summary.matchPercent > 0 && <div className="bg-green-500 h-full" style={{ width: `${a.summary.matchPercent}%` }} />}
-                                                            {a.summary.conflictPercent > 0 && <div className="bg-amber-400 h-full" style={{ width: `${a.summary.conflictPercent}%` }} />}
-                                                            {a.summary.missingPercent > 0 && <div className="bg-red-400 h-full" style={{ width: `${a.summary.missingPercent}%` }} />}
-                                                        </div>
-
-                                                        {/* Stat pills */}
-                                                        <div className="grid grid-cols-3 gap-2">
-                                                            <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-2 py-1.5 text-center">
-                                                                <p className="text-lg font-bold text-green-600 dark:text-green-400">{a.summary.matchSettings}</p>
-                                                                <p className="text-[10px] text-green-700 dark:text-green-300">match</p>
-                                                                <p className="text-[10px] text-muted-foreground">{a.summary.matchPercent}%</p>
-                                                                {a.summary.assignedMatchSettings > 0 && (
-                                                                    <p className="text-[10px] text-primary font-medium mt-0.5">{a.summary.assignedMatchSettings} assigned</p>
-                                                                )}
-                                                            </div>
-                                                            <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-2 py-1.5 text-center">
-                                                                <p className="text-lg font-bold text-amber-600 dark:text-amber-400">{a.summary.conflictSettings}</p>
-                                                                <p className="text-[10px] text-amber-700 dark:text-amber-300">conflict</p>
-                                                                <p className="text-[10px] text-muted-foreground">{a.summary.conflictPercent}%</p>
-                                                                {a.summary.assignedConflictSettings > 0 && (
-                                                                    <p className="text-[10px] text-amber-600 font-medium mt-0.5">{a.summary.assignedConflictSettings} assigned</p>
-                                                                )}
-                                                            </div>
-                                                            <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-2 py-1.5 text-center">
-                                                                <p className="text-lg font-bold text-red-600 dark:text-red-400">{a.summary.missingSettings}</p>
-                                                                <p className="text-[10px] text-red-700 dark:text-red-300">not in tenant</p>
-                                                                <p className="text-[10px] text-muted-foreground">{a.summary.missingPercent}%</p>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Platform footnote */}
-                                                        <p className="text-[11px] text-muted-foreground text-right">
-                                                            {a.summary.platformMatchedPolicyCount} of {a.summary.totalTenantPoliciesOfKind} tenant policies matched platform
-                                                        </p>
-                                                    </CardContent>
-                                                </Card>
-                                            );
-                                        })}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2"><TrendingUp className="h-4 w-4" />Per-Policy Match Breakdown</CardTitle>
-                                    <CardDescription>Match, conflict, and missing percentages per uploaded policy, filtered by platform.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-5">
-                                    {globalSummary.platformBreakdown.map(pb => (
-                                        <div key={pb.policy} className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <span className="font-medium text-sm">{pb.policy}</span>
-                                                    {pb.platform && <Badge variant="outline" className="text-xs">{pb.platform}</Badge>}
-                                                </div>
-                                                <span className="text-xs text-muted-foreground flex-shrink-0">
-                                                    {pb.platformMatchedCount} of {pb.totalKindCount} tenant policies matched platform
-                                                </span>
-                                            </div>
-                                            <div className="grid grid-cols-3 gap-3 text-xs">
-                                                {[
-                                                    { label: 'Match', pct: pb.matchPercent, bar: 'bg-green-500', text: 'text-green-600' },
-                                                    { label: 'Conflict', pct: pb.conflictPercent, bar: 'bg-amber-500', text: 'text-amber-600' },
-                                                    { label: 'Missing', pct: pb.missingPercent, bar: 'bg-red-500', text: 'text-red-600' },
-                                                ].map(item => (
-                                                    <div key={item.label} className="space-y-1">
-                                                        <div className="flex justify-between">
-                                                            <span className={item.text}>{item.label}</span>
-                                                            <span className="font-medium">{item.pct}%</span>
-                                                        </div>
-                                                        <ProgressBar value={item.pct} color={item.bar} />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </CardContent>
-                            </Card>
-
-                            {/* Platform filter stats */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2"><Filter className="h-4 w-4" />Platform Filtering</CardTitle>
-                                    <CardDescription>How many tenant policies were considered per uploaded policy after platform matching.</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="divide-y">
-                                        {analyses.map(a => (
-                                            <div key={a.uploadedPolicy.fileName} className="py-3 flex items-center justify-between">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <FileJson className="h-4 w-4 text-muted-foreground" />
-                                                    <span className="text-sm font-medium">{a.uploadedPolicy.name}</span>
-                                                    {a.uploadedPolicy.platform && <Badge variant="outline" className="text-xs">{a.uploadedPolicy.platform}</Badge>}
-                                                    <Badge className={`text-xs ${kindColor[a.uploadedPolicy.kind]}`}>{kindLabel[a.uploadedPolicy.kind]}</Badge>
-                                                </div>
-                                                <div className="text-right text-sm">
-                                                    <span className="font-semibold">{a.summary.platformMatchedPolicyCount}</span>
-                                                    <span className="text-muted-foreground"> / {a.summary.totalTenantPoliciesOfKind} tenant policies</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Top conflict hotspots */}
-                            {globalSummary.topConflicts.length > 0 && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-500" />Top Conflict Hotspots</CardTitle>
-                                        <CardDescription>Settings that have conflicting values across the most uploaded policies.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2">
-                                                        {globalSummary.topConflicts.map(([settingId, count]) => (
-                                                            <div key={settingId} className="flex items-center justify-between p-2 rounded border bg-amber-50/50 dark:bg-amber-900/10">
-                                                                <div className="min-w-0 mr-3">
-                                                                    <span className="text-xs font-medium break-words">{humanizeSettingId(settingId)}</span>
-                                                                    <span className="block font-mono text-[10px] text-muted-foreground/60 break-all leading-tight">{settingId}</span>
-                                                                </div>
-                                                                <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 flex-shrink-0">
-                                                                    {count} {count === 1 ? 'policy' : 'policies'}
-                                                                </Badge>
-                                                            </div>
-                                                        ))}
-                                    </CardContent>
-                                </Card>
-                            )}
-                        </div>
-                    )}
-
                     {/* ── DETAIL TAB ── */}
                     {activeTab === 'detail' && (
                         <div className="space-y-4">
+                            {/* Global filter bar */}
+                            {(() => {
+                                const allSettings = analyses.flatMap(a => a.settingAnalyses);
+                                const totalAll     = allSettings.length;
+                                const totalCovered = allSettings.filter(sa => settingCoverageStatus(sa) === 'covered').length;
+                                const totalConflict = allSettings.filter(sa => settingCoverageStatus(sa) === 'conflict').length;
+                                const totalMissing = allSettings.filter(sa => settingCoverageStatus(sa) === 'notConfigured').length;
+                                return (
+                                    <div className="flex items-center gap-2 flex-wrap p-3 bg-muted/20 rounded-lg border">
+                                        <span className="text-xs font-medium text-muted-foreground mr-1">Show:</span>
+                                        {([
+                                            ['all',           `All (${totalAll})`,                  ''],
+                                            ['covered',       `Covered (${totalCovered})`,        'text-green-700 dark:text-green-300'],
+                                            ['conflict',      `Conflict (${totalConflict})`,      'text-red-700 dark:text-red-300'],
+                                            ['notConfigured', `Not in tenant (${totalMissing})`,  'text-slate-600 dark:text-slate-300'],
+                                        ] as [string, string, string][]).map(([f, lbl, cls]) => (
+                                            <button key={f}
+                                                onClick={() => setGlobalCoverageFilter(f as CoverageStatus | 'all')}
+                                                className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${globalCoverageFilter === f ? 'bg-primary text-primary-foreground border-primary' : `border-input hover:bg-muted/50 ${cls}`}`}>
+                                                {lbl}
+                                            </button>
+                                        ))}
+                                        {globalCoverageFilter !== 'all' && (
+                                            <button onClick={() => setGlobalCoverageFilter('all')}
+                                                className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+                                                <X className="h-3.5 w-3.5" />Clear filter
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })()}
+
                             {/* Per-policy cards */}
                             {analyses.map(analysis => {
-                                const isExpanded = expandedPolicies.has(analysis.uploadedPolicy.fileName);
+                                const isExpanded = globalCoverageFilter !== 'all'
+                                    ? true  // auto-expand when a filter is active
+                                    : expandedPolicies.has(analysis.uploadedPolicy.fileName);
 
                                 return (
                                     <Card key={analysis.uploadedPolicy.fileName} className="overflow-hidden">
@@ -2145,6 +1987,7 @@ export default function ConfigurationComparePage() {
                                                     <ConfigCoverageRows
                                                         settingAnalyses={analysis.settingAnalyses}
                                                         policyKey={analysis.uploadedPolicy.fileName}
+                                                        externalFilter={globalCoverageFilter !== 'all' ? globalCoverageFilter : undefined}
                                                     />
                                                 )}
                                             </CardContent>

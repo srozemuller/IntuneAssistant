@@ -1530,13 +1530,13 @@ export default function PolicyComparison() {
                 const allOnlyRight = states.every(s => s === 'InChecked');
 
                 if (hasMatch) {
-                    row.overallStatus = 'covered';        // ✅ covered by at least one
+                    row.overallStatus = 'covered';        //  covered by at least one
                 } else if (hasConflict) {
-                    row.overallStatus = 'conflict';       // ⚠️ exists but wrong value
+                    row.overallStatus = 'conflict';       //  exists but wrong value
                 } else if (hasInSource || (!hasMatch && !hasConflict && !allOnlyRight)) {
                     row.overallStatus = 'notCovered';     // ➖ gap — not in any right policy
                 } else if (allOnlyRight) {
-                    row.overallStatus = 'onlyInRight';    // 🟣 only in right, not in source
+                    row.overallStatus = 'onlyInRight';    //  only in right, not in source
                 }
             }
         }

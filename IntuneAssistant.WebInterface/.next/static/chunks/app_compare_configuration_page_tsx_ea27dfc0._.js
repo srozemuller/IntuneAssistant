@@ -26,13 +26,10 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$minus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MinusCircle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-minus.js [app-client] (ecmascript) <export default as MinusCircle>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$left$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowLeftRight$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/arrow-left-right.js [app-client] (ecmascript) <export default as ArrowLeftRight>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/info.js [app-client] (ecmascript) <export default as Info>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$funnel$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Filter$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/funnel.js [app-client] (ecmascript) <export default as Filter>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$download$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Download$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/download.js [app-client] (ecmascript) <export default as Download>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$column$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BarChart3$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chart-column.js [app-client] (ecmascript) <export default as BarChart3>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$layers$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Layers$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/layers.js [app-client] (ecmascript) <export default as Layers>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield-check.js [app-client] (ecmascript) <export default as ShieldCheck>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldAlert$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield-alert.js [app-client] (ecmascript) <export default as ShieldAlert>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$up$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingUp$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/trending-up.js [app-client] (ecmascript) <export default as TrendingUp>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/constants.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useApiRequest.ts [app-client] (ecmascript)");
 ;
@@ -676,12 +673,12 @@ function ProgressBar(param) {
             }
         }, void 0, false, {
             fileName: "[project]/app/compare/configuration/page.tsx",
-            lineNumber: 768,
+            lineNumber: 766,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 767,
+        lineNumber: 765,
         columnNumber: 9
     }, this);
 }
@@ -706,7 +703,7 @@ _c = ProgressBar;
                                     children: phaseLabel
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 786,
+                                    lineNumber: 784,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -714,13 +711,13 @@ _c = ProgressBar;
                                     children: phaseDesc
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 787,
+                                    lineNumber: 785,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/configuration/page.tsx",
-                            lineNumber: 785,
+                            lineNumber: 783,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -733,20 +730,20 @@ _c = ProgressBar;
                                     className: "h-4 w-4"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 795,
+                                    lineNumber: 793,
                                     columnNumber: 25
                                 }, this),
                                 "Cancel"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/compare/configuration/page.tsx",
-                            lineNumber: 789,
+                            lineNumber: 787,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/compare/configuration/page.tsx",
-                    lineNumber: 784,
+                    lineNumber: 782,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -756,27 +753,27 @@ _c = ProgressBar;
                             className: "h-3 w-2/5 rounded bg-muted animate-pulse"
                         }, void 0, false, {
                             fileName: "[project]/app/compare/configuration/page.tsx",
-                            lineNumber: 802,
+                            lineNumber: 800,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "h-3 w-1/5 rounded bg-muted animate-pulse"
                         }, void 0, false, {
                             fileName: "[project]/app/compare/configuration/page.tsx",
-                            lineNumber: 803,
+                            lineNumber: 801,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "h-3 w-16 rounded bg-muted animate-pulse ml-auto"
                         }, void 0, false, {
                             fileName: "[project]/app/compare/configuration/page.tsx",
-                            lineNumber: 804,
+                            lineNumber: 802,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/compare/configuration/page.tsx",
-                    lineNumber: 801,
+                    lineNumber: 799,
                     columnNumber: 17
                 }, this),
                 [
@@ -794,7 +791,7 @@ _c = ProgressBar;
                                 className: "h-8 w-8 rounded bg-muted animate-pulse flex-shrink-0"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 810,
+                                lineNumber: 808,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -807,7 +804,7 @@ _c = ProgressBar;
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 812,
+                                        lineNumber: 810,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -817,37 +814,37 @@ _c = ProgressBar;
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 813,
+                                        lineNumber: 811,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 811,
+                                lineNumber: 809,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "h-5 w-20 rounded-full bg-muted animate-pulse flex-shrink-0"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 815,
+                                lineNumber: 813,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, i, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 809,
+                        lineNumber: 807,
                         columnNumber: 21
                     }, this))
             ]
         }, void 0, true, {
             fileName: "[project]/app/compare/configuration/page.tsx",
-            lineNumber: 782,
+            lineNumber: 780,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 781,
+        lineNumber: 779,
         columnNumber: 9
     }, this);
 }
@@ -873,7 +870,7 @@ _c1 = LoadingBanner;
                 children: display
             }, void 0, false, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 842,
+                lineNumber: 840,
                 columnNumber: 13
             }, this),
             showRaw && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -881,13 +878,13 @@ _c1 = LoadingBanner;
                 children: id
             }, void 0, false, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 844,
+                lineNumber: 842,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 841,
+        lineNumber: 839,
         columnNumber: 9
     }, this);
 }
@@ -903,7 +900,7 @@ _c2 = FriendlyName;
         children: "(empty)"
     }, void 0, false, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 856,
+        lineNumber: 854,
         columnNumber: 22
     }, this);
     const suffix = settingId && raw.toLowerCase().startsWith(settingId.toLowerCase() + '_') ? raw.slice(settingId.length + 1) : null;
@@ -928,7 +925,7 @@ _c2 = FriendlyName;
                 children: primary
             }, void 0, false, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 879,
+                lineNumber: 877,
                 columnNumber: 13
             }, this),
             showRaw && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -936,13 +933,13 @@ _c2 = FriendlyName;
                 children: raw
             }, void 0, false, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 881,
+                lineNumber: 879,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 878,
+        lineNumber: 876,
         columnNumber: 9
     }, this);
 }
@@ -961,7 +958,7 @@ const coverageStatusCfg = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/configuration/page.tsx",
-            lineNumber: 898,
+            lineNumber: 896,
             columnNumber: 196
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -973,7 +970,7 @@ const coverageStatusCfg = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/configuration/page.tsx",
-            lineNumber: 899,
+            lineNumber: 897,
             columnNumber: 196
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -985,7 +982,7 @@ const coverageStatusCfg = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/configuration/page.tsx",
-            lineNumber: 900,
+            lineNumber: 898,
             columnNumber: 196
         }, ("TURBOPACK compile-time value", void 0))
     }
@@ -998,7 +995,7 @@ const occurrenceStatusCfg = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/configuration/page.tsx",
-            lineNumber: 904,
+            lineNumber: 902,
             columnNumber: 139
         }, ("TURBOPACK compile-time value", void 0))
     },
@@ -1009,15 +1006,19 @@ const occurrenceStatusCfg = {
             className: "h-3 w-3"
         }, void 0, false, {
             fileName: "[project]/app/compare/configuration/page.tsx",
-            lineNumber: 905,
+            lineNumber: 903,
             columnNumber: 138
         }, ("TURBOPACK compile-time value", void 0))
     }
 };
 function ConfigCoverageRows(param) {
-    let { settingAnalyses, policyKey } = param;
+    let { settingAnalyses, policyKey, externalFilter } = param;
     _s();
-    const [filter, setFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('all');
+    const [localFilter, setLocalFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('all');
+    const filter = externalFilter !== null && externalFilter !== void 0 ? externalFilter : localFilter;
+    const setFilter = (f)=>{
+        if (!externalFilter) setLocalFilter(f);
+    };
     const [search, setSearch] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
     const [sourceOnly, setSourceOnly] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [expanded, setExpanded] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Set());
@@ -1085,7 +1086,7 @@ function ConfigCoverageRows(param) {
                                     className: "w-2 h-2 rounded-sm inline-block ".concat(x.color)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 947,
+                                    lineNumber: 948,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1096,7 +1097,7 @@ function ConfigCoverageRows(param) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 948,
+                                    lineNumber: 949,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1104,13 +1105,13 @@ function ConfigCoverageRows(param) {
                                     children: counts[x.k]
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 949,
+                                    lineNumber: 950,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, x.k, true, {
                             fileName: "[project]/app/compare/configuration/page.tsx",
-                            lineNumber: 946,
+                            lineNumber: 947,
                             columnNumber: 21
                         }, this)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1121,19 +1122,19 @@ function ConfigCoverageRows(param) {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 952,
+                        lineNumber: 953,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 940,
+                lineNumber: 941,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "flex items-center gap-2 flex-wrap",
                 children: [
-                    [
+                    !externalFilter && [
                         [
                             'all',
                             "All (".concat(settingAnalyses.length, ")")
@@ -1158,7 +1159,7 @@ function ConfigCoverageRows(param) {
                             children: lbl
                         }, f, false, {
                             fileName: "[project]/app/compare/configuration/page.tsx",
-                            lineNumber: 963,
+                            lineNumber: 964,
                             columnNumber: 21
                         }, this);
                     }),
@@ -1175,21 +1176,21 @@ function ConfigCoverageRows(param) {
                                         className: "rounded border-input h-3.5 w-3.5 accent-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 970,
+                                        lineNumber: 971,
                                         columnNumber: 25
                                     }, this),
                                     "Source settings only"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 969,
+                                lineNumber: 970,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$search$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Search$3e$__["Search"], {
                                 className: "h-3.5 w-3.5 text-muted-foreground"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 974,
+                                lineNumber: 975,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1200,7 +1201,7 @@ function ConfigCoverageRows(param) {
                                 className: "border rounded px-2 py-1 text-xs bg-background w-44 outline-none focus:ring-1 focus:ring-primary/50"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 975,
+                                lineNumber: 976,
                                 columnNumber: 21
                             }, this),
                             search && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1209,24 +1210,24 @@ function ConfigCoverageRows(param) {
                                     className: "h-3.5 w-3.5 text-muted-foreground"
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 977,
+                                    lineNumber: 978,
                                     columnNumber: 70
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 977,
+                                lineNumber: 978,
                                 columnNumber: 32
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 968,
+                        lineNumber: 969,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 956,
+                lineNumber: 957,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1239,14 +1240,14 @@ function ConfigCoverageRows(param) {
                                 className: "w-5"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 985,
+                                lineNumber: 986,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 children: "Setting"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 986,
+                                lineNumber: 987,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1254,7 +1255,7 @@ function ConfigCoverageRows(param) {
                                 children: "Uploaded value"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 987,
+                                lineNumber: 988,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1262,13 +1263,13 @@ function ConfigCoverageRows(param) {
                                 children: "Status"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 988,
+                                lineNumber: 989,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 984,
+                        lineNumber: 985,
                         columnNumber: 17
                     }, this),
                     filtered.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1276,7 +1277,7 @@ function ConfigCoverageRows(param) {
                         children: "No settings match."
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 992,
+                        lineNumber: 993,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1301,24 +1302,24 @@ function ConfigCoverageRows(param) {
                                                     className: "h-3.5 w-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1018,
+                                                    lineNumber: 1019,
                                                     columnNumber: 57
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                     className: "h-3.5 w-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1018,
+                                                    lineNumber: 1019,
                                                     columnNumber: 99
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "w-3.5 h-3.5 block"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1019,
+                                                    lineNumber: 1020,
                                                     columnNumber: 47
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1016,
+                                                lineNumber: 1017,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1329,7 +1330,7 @@ function ConfigCoverageRows(param) {
                                                         children: sa.setting.displayName !== sa.setting.id ? sa.setting.displayName : humanizeSettingId(sa.setting.id)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1022,
+                                                        lineNumber: 1023,
                                                         columnNumber: 41
                                                     }, this),
                                                     sa.setting.displayName !== sa.setting.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1337,13 +1338,13 @@ function ConfigCoverageRows(param) {
                                                         children: sa.setting.id
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1026,
+                                                        lineNumber: 1027,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1021,
+                                                lineNumber: 1022,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1354,19 +1355,19 @@ function ConfigCoverageRows(param) {
                                                     children: uploadedDisplay
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1031,
+                                                    lineNumber: 1032,
                                                     columnNumber: 47
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "italic text-muted-foreground/50",
                                                     children: "—"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1032,
+                                                    lineNumber: 1033,
                                                     columnNumber: 47
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1029,
+                                                lineNumber: 1030,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1379,18 +1380,18 @@ function ConfigCoverageRows(param) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1035,
+                                                    lineNumber: 1036,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1034,
+                                                lineNumber: 1035,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1012,
+                                        lineNumber: 1013,
                                         columnNumber: 33
                                     }, this),
                                     isOpen && hasOccurrences && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1411,7 +1412,7 @@ function ConfigCoverageRows(param) {
                                                                     children: occ.tenantPolicy.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 1056,
+                                                                    lineNumber: 1057,
                                                                     columnNumber: 61
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1422,7 +1423,7 @@ function ConfigCoverageRows(param) {
                                                                             children: occ.tenantPolicy.platform
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1059,
+                                                                            lineNumber: 1060,
                                                                             columnNumber: 69
                                                                         }, this),
                                                                         occ.tenantPolicy.isAssigned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1430,19 +1431,19 @@ function ConfigCoverageRows(param) {
                                                                             children: "Assigned"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1062,
+                                                                            lineNumber: 1063,
                                                                             columnNumber: 69
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 1057,
+                                                                    lineNumber: 1058,
                                                                     columnNumber: 61
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 1055,
+                                                            lineNumber: 1056,
                                                             columnNumber: 57
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1452,12 +1453,12 @@ function ConfigCoverageRows(param) {
                                                                 children: "—"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1067,
+                                                                lineNumber: 1068,
                                                                 columnNumber: 79
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 1066,
+                                                            lineNumber: 1067,
                                                             columnNumber: 57
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1470,57 +1471,57 @@ function ConfigCoverageRows(param) {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1070,
+                                                                lineNumber: 1071,
                                                                 columnNumber: 61
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 1069,
+                                                            lineNumber: 1070,
                                                             columnNumber: 57
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1054,
+                                                    lineNumber: 1055,
                                                     columnNumber: 53
                                                 }, this)
                                             }, j, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1053,
+                                                lineNumber: 1054,
                                                 columnNumber: 49
                                             }, this);
                                         })
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1043,
+                                        lineNumber: 1044,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, key, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1010,
+                                lineNumber: 1011,
                                 columnNumber: 29
                             }, this);
                         })
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 995,
+                        lineNumber: 996,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 982,
+                lineNumber: 983,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 938,
+        lineNumber: 939,
         columnNumber: 9
     }, this);
 }
-_s(ConfigCoverageRows, "TyV9CQnmdqX8cRCiyGwsvkohWBE=");
+_s(ConfigCoverageRows, "0q3Mf75LBiljkN5rd4gXk2WJkXw=");
 _c4 = ConfigCoverageRows;
 const configStateLabel = {
     match: 'Match',
@@ -1535,14 +1536,14 @@ const configStateIcon = {
         className: "h-3 w-3"
     }, void 0, false, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 1119,
+        lineNumber: 1120,
         columnNumber: 15
     }, ("TURBOPACK compile-time value", void 0)),
     conflict: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
         className: "h-3 w-3"
     }, void 0, false, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 1120,
+        lineNumber: 1121,
         columnNumber: 15
     }, ("TURBOPACK compile-time value", void 0))
 };
@@ -1597,13 +1598,13 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                         className: "h-4 w-4 text-muted-foreground shrink-0"
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1165,
+                        lineNumber: 1166,
                         columnNumber: 23
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                         className: "h-4 w-4 text-muted-foreground shrink-0"
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1166,
+                        lineNumber: 1167,
                         columnNumber: 23
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1614,7 +1615,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                 children: row.tenantPolicy.name
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1168,
+                                lineNumber: 1169,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1631,7 +1632,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1171,
+                                        lineNumber: 1172,
                                         columnNumber: 25
                                     }, this),
                                     conflicts > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1644,7 +1645,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1172,
+                                        lineNumber: 1173,
                                         columnNumber: 43
                                     }, this),
                                     row.tenantPolicy.isAssigned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1652,19 +1653,19 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         children: "· Assigned"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1173,
+                                        lineNumber: 1174,
                                         columnNumber: 57
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1169,
+                                lineNumber: 1170,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1167,
+                        lineNumber: 1168,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1677,14 +1678,14 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1177,
+                                        lineNumber: 1178,
                                         columnNumber: 78
                                     }, this),
                                     same
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1177,
+                                lineNumber: 1178,
                                 columnNumber: 21
                             }, this),
                             conflicts > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1694,26 +1695,26 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1178,
+                                        lineNumber: 1179,
                                         columnNumber: 94
                                     }, this),
                                     conflicts
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1178,
+                                lineNumber: 1179,
                                 columnNumber: 39
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1176,
+                        lineNumber: 1177,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 1162,
+                lineNumber: 1163,
                 columnNumber: 13
             }, this),
             isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1751,7 +1752,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         children: k.count
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1192,
+                                        lineNumber: 1193,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1759,7 +1760,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         children: k.label
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1193,
+                                        lineNumber: 1194,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1767,18 +1768,18 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         children: k.pct
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1194,
+                                        lineNumber: 1195,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, k.label, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1191,
+                                lineNumber: 1192,
                                 columnNumber: 29
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1185,
+                        lineNumber: 1186,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1794,7 +1795,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1202,
+                                        lineNumber: 1203,
                                         columnNumber: 53
                                     }, this),
                                     conflictPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1804,13 +1805,13 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1203,
+                                        lineNumber: 1204,
                                         columnNumber: 53
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1201,
+                                lineNumber: 1202,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1823,7 +1824,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                 className: "inline-block w-2 h-2 rounded-sm bg-green-500"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1206,
+                                                lineNumber: 1207,
                                                 columnNumber: 71
                                             }, this),
                                             "Match ",
@@ -1832,7 +1833,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1206,
+                                        lineNumber: 1207,
                                         columnNumber: 29
                                     }, this),
                                     conflictPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1842,7 +1843,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                 className: "inline-block w-2 h-2 rounded-sm bg-red-400"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1207,
+                                                lineNumber: 1208,
                                                 columnNumber: 95
                                             }, this),
                                             "Conflict ",
@@ -1851,19 +1852,19 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1207,
+                                        lineNumber: 1208,
                                         columnNumber: 53
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1205,
+                                lineNumber: 1206,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1200,
+                        lineNumber: 1201,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1877,7 +1878,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         children: "Uploaded policy"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1214,
+                                        lineNumber: 1215,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1885,13 +1886,13 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         children: row.uploadedPolicyName
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1215,
+                                        lineNumber: 1216,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1213,
+                                lineNumber: 1214,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1902,7 +1903,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         children: "Tenant policy"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1218,
+                                        lineNumber: 1219,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1913,7 +1914,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                 children: row.tenantPolicy.name
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1220,
+                                                lineNumber: 1221,
                                                 columnNumber: 33
                                             }, this),
                                             row.tenantPolicy.isAssigned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1921,25 +1922,25 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                 children: "Assigned"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1222,
+                                                lineNumber: 1223,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1219,
+                                        lineNumber: 1220,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1217,
+                                lineNumber: 1218,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1212,
+                        lineNumber: 1213,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1955,7 +1956,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                     children: f === 'all' ? "All (".concat(total, ")") : "".concat(configStateLabel[f], " (").concat(f === 'match' ? same : conflicts, ")")
                                 }, f, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 1231,
+                                    lineNumber: 1232,
                                     columnNumber: 29
                                 }, this)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1965,7 +1966,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         className: "h-3.5 w-3.5 text-muted-foreground"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1237,
+                                        lineNumber: 1238,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1976,7 +1977,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                         className: "border rounded px-2 py-1 text-xs bg-background w-44 focus:ring-1 focus:ring-primary/50 outline-none"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1238,
+                                        lineNumber: 1239,
                                         columnNumber: 29
                                     }, this),
                                     search && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1985,24 +1986,24 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                             className: "h-3.5 w-3.5 text-muted-foreground"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                            lineNumber: 1240,
+                                            lineNumber: 1241,
                                             columnNumber: 78
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1240,
+                                        lineNumber: 1241,
                                         columnNumber: 40
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1236,
+                                lineNumber: 1237,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1229,
+                        lineNumber: 1230,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2012,21 +2013,21 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                 children: "Setting"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1246,
+                                lineNumber: 1247,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 children: "Uploaded value"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1247,
+                                lineNumber: 1248,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 children: "Tenant value"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1248,
+                                lineNumber: 1249,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2034,13 +2035,13 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                 children: "Status"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1249,
+                                lineNumber: 1250,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1245,
+                        lineNumber: 1246,
                         columnNumber: 21
                     }, this),
                     filtered.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2048,7 +2049,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                         children: "No settings match current filter."
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1253,
+                        lineNumber: 1254,
                         columnNumber: 27
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "divide-y",
@@ -2074,13 +2075,13 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                         className: "h-3 w-3 text-muted-foreground mt-0.5 shrink-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1282,
+                                                        lineNumber: 1283,
                                                         columnNumber: 59
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                         className: "h-3 w-3 text-muted-foreground mt-0.5 shrink-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1283,
+                                                        lineNumber: 1284,
                                                         columnNumber: 59
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2091,7 +2092,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                                 children: s.displayName !== s.id ? s.displayName : humanizeSettingId(s.id)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1285,
+                                                                lineNumber: 1286,
                                                                 columnNumber: 57
                                                             }, this),
                                                             s.displayName !== s.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2099,19 +2100,19 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                                 children: s.id
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1289,
+                                                                lineNumber: 1290,
                                                                 columnNumber: 61
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1284,
+                                                        lineNumber: 1285,
                                                         columnNumber: 53
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1280,
+                                                lineNumber: 1281,
                                                 columnNumber: 49
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2121,19 +2122,19 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                     children: uploadedDisplay
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1295,
+                                                    lineNumber: 1296,
                                                     columnNumber: 59
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "italic text-muted-foreground/50",
                                                     children: "—"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1296,
+                                                    lineNumber: 1297,
                                                     columnNumber: 59
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1293,
+                                                lineNumber: 1294,
                                                 columnNumber: 49
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2143,19 +2144,19 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                     children: tenantDisplay
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1300,
+                                                    lineNumber: 1301,
                                                     columnNumber: 59
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "italic text-muted-foreground/50",
                                                     children: "—"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1301,
+                                                    lineNumber: 1302,
                                                     columnNumber: 59
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1298,
+                                                lineNumber: 1299,
                                                 columnNumber: 49
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2168,18 +2169,18 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1304,
+                                                    lineNumber: 1305,
                                                     columnNumber: 53
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1303,
+                                                lineNumber: 1304,
                                                 columnNumber: 49
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1278,
+                                        lineNumber: 1279,
                                         columnNumber: 45
                                     }, this),
                                     isSettingExpanded && hasChildren && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2192,34 +2193,34 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                         children: "Child setting"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1314,
+                                                        lineNumber: 1315,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         children: "Uploaded"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1314,
+                                                        lineNumber: 1315,
                                                         columnNumber: 83
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         children: "Tenant"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1314,
+                                                        lineNumber: 1315,
                                                         columnNumber: 104
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "w-28"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1314,
+                                                        lineNumber: 1315,
                                                         columnNumber: 123
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1313,
+                                                lineNumber: 1314,
                                                 columnNumber: 53
                                             }, this),
                                             s.childSettings.map((child, ci)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2230,7 +2231,7 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                             children: child.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 1318,
+                                                            lineNumber: 1319,
                                                             columnNumber: 61
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2239,12 +2240,12 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                                 children: "—"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1319,
+                                                                lineNumber: 1320,
                                                                 columnNumber: 83
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 1319,
+                                                            lineNumber: 1320,
                                                             columnNumber: 61
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2252,50 +2253,50 @@ const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$projec
                                                             children: "—"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 1320,
+                                                            lineNumber: 1321,
                                                             columnNumber: 61
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             className: "w-28"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 1321,
+                                                            lineNumber: 1322,
                                                             columnNumber: 61
                                                         }, this)
                                                     ]
                                                 }, ci, true, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1317,
+                                                    lineNumber: 1318,
                                                     columnNumber: 57
                                                 }, this))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1312,
+                                        lineNumber: 1313,
                                         columnNumber: 49
                                     }, this)
                                 ]
                             }, i, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1277,
+                                lineNumber: 1278,
                                 columnNumber: 41
                             }, this);
                         })
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1255,
+                        lineNumber: 1256,
                         columnNumber: 29
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 1183,
+                lineNumber: 1184,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 1160,
+        lineNumber: 1161,
         columnNumber: 9
     }, this);
 }, "CNOchhNlA3SNs+bsMDw5sCnZGX0="));
@@ -2314,6 +2315,7 @@ function ConfigurationComparePage() {
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [expandedPolicies, setExpandedPolicies] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Set());
     const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('detail');
+    const [globalCoverageFilter, setGlobalCoverageFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('all');
     const [uploadCollapsed, setUploadCollapsed] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [filesListCollapsed, setFilesListCollapsed] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const fileInputRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(null);
@@ -2757,14 +2759,14 @@ function ConfigurationComparePage() {
                                         className: "h-6 w-6 text-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1667,
+                                        lineNumber: 1669,
                                         columnNumber: 25
                                     }, this),
                                     "External Policy Comparison"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1666,
+                                lineNumber: 1668,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2772,13 +2774,13 @@ function ConfigurationComparePage() {
                                 children: "Upload JSON policy files and compare their settings against your tenant. Only tenant policies matching the same platform are included."
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1670,
+                                lineNumber: 1672,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1665,
+                        lineNumber: 1667,
                         columnNumber: 17
                     }, this),
                     analyses.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2794,14 +2796,14 @@ function ConfigurationComparePage() {
                                         className: "h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1679,
+                                        lineNumber: 1681,
                                         columnNumber: 33
                                     }, this),
                                     "Cancel"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1678,
+                                lineNumber: 1680,
                                 columnNumber: 29
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                 variant: "outline",
@@ -2813,14 +2815,14 @@ function ConfigurationComparePage() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1684,
+                                        lineNumber: 1686,
                                         columnNumber: 33
                                     }, this),
                                     "Refresh Tenant Data"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1683,
+                                lineNumber: 1685,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2833,26 +2835,26 @@ function ConfigurationComparePage() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1689,
+                                        lineNumber: 1691,
                                         columnNumber: 29
                                     }, this),
                                     "Export CSV"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1688,
+                                lineNumber: 1690,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1676,
+                        lineNumber: 1678,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 1664,
+                lineNumber: 1666,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2872,13 +2874,13 @@ function ConfigurationComparePage() {
                                                 className: "h-4 w-4 text-muted-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1705,
+                                                lineNumber: 1707,
                                                 columnNumber: 52
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                 className: "h-4 w-4 text-muted-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1705,
+                                                lineNumber: 1707,
                                                 columnNumber: 113
                                             }, this),
                                             "Upload Policy Files",
@@ -2889,18 +2891,18 @@ function ConfigurationComparePage() {
                                                         children: p.name
                                                     }, p.fileName, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1710,
+                                                        lineNumber: 1712,
                                                         columnNumber: 45
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1708,
+                                                lineNumber: 1710,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1704,
+                                        lineNumber: 1706,
                                         columnNumber: 29
                                     }, this),
                                     !uploadCollapsed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -2911,30 +2913,30 @@ function ConfigurationComparePage() {
                                                 children: "Refresh Tenant Data"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1718,
+                                                lineNumber: 1720,
                                                 columnNumber: 70
                                             }, this),
                                             " to re-fetch."
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1716,
+                                        lineNumber: 1718,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1703,
+                                lineNumber: 1705,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/compare/configuration/page.tsx",
-                            lineNumber: 1702,
+                            lineNumber: 1704,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1698,
+                        lineNumber: 1700,
                         columnNumber: 17
                     }, this),
                     !uploadCollapsed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2958,7 +2960,7 @@ function ConfigurationComparePage() {
                                         className: "h-10 w-10 mx-auto mb-3 ".concat(isDragging ? 'text-primary' : 'text-muted-foreground')
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1733,
+                                        lineNumber: 1735,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2966,7 +2968,7 @@ function ConfigurationComparePage() {
                                         children: isDragging ? 'Drop files here' : 'Click or drag & drop JSON files here'
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1734,
+                                        lineNumber: 1736,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2974,7 +2976,7 @@ function ConfigurationComparePage() {
                                         children: "Supports multiple files. JSON format only."
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1735,
+                                        lineNumber: 1737,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2986,13 +2988,13 @@ function ConfigurationComparePage() {
                                         onChange: handleFileChange
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1736,
+                                        lineNumber: 1738,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1726,
+                                lineNumber: 1728,
                                 columnNumber: 21
                             }, this),
                             uploadedPolicies.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3010,13 +3012,13 @@ function ConfigurationComparePage() {
                                                 className: "h-3.5 w-3.5 shrink-0"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1748,
+                                                lineNumber: 1750,
                                                 columnNumber: 39
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                 className: "h-3.5 w-3.5 shrink-0"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1749,
+                                                lineNumber: 1751,
                                                 columnNumber: 39
                                             }, this),
                                             uploadedPolicies.length,
@@ -3030,18 +3032,18 @@ function ConfigurationComparePage() {
                                                         children: p.name
                                                     }, p.fileName, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1754,
+                                                        lineNumber: 1756,
                                                         columnNumber: 45
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1752,
+                                                lineNumber: 1754,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1742,
+                                        lineNumber: 1744,
                                         columnNumber: 29
                                     }, this),
                                     !filesListCollapsed && uploadedPolicies.map((policy)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3051,7 +3053,7 @@ function ConfigurationComparePage() {
                                                     className: "h-4 w-4 text-muted-foreground shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1763,
+                                                    lineNumber: 1765,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3064,7 +3066,7 @@ function ConfigurationComparePage() {
                                                                 children: policy.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1766,
+                                                                lineNumber: 1768,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3072,7 +3074,7 @@ function ConfigurationComparePage() {
                                                                 children: kindLabel[policy.kind]
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1767,
+                                                                lineNumber: 1769,
                                                                 columnNumber: 45
                                                             }, this),
                                                             policy.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3081,7 +3083,7 @@ function ConfigurationComparePage() {
                                                                 children: policy.platform
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1768,
+                                                                lineNumber: 1770,
                                                                 columnNumber: 65
                                                             }, this),
                                                             policy.error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3090,7 +3092,7 @@ function ConfigurationComparePage() {
                                                                 children: policy.error
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1769,
+                                                                lineNumber: 1771,
                                                                 columnNumber: 62
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3101,18 +3103,18 @@ function ConfigurationComparePage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1770,
+                                                                lineNumber: 1772,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1765,
+                                                        lineNumber: 1767,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1764,
+                                                    lineNumber: 1766,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3127,24 +3129,24 @@ function ConfigurationComparePage() {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1774,
+                                                        lineNumber: 1776,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1773,
+                                                    lineNumber: 1775,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, policy.fileName, true, {
                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                            lineNumber: 1762,
+                                            lineNumber: 1764,
                                             columnNumber: 33
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1740,
+                                lineNumber: 1742,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3160,14 +3162,14 @@ function ConfigurationComparePage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1783,
+                                                lineNumber: 1785,
                                                 columnNumber: 29
                                             }, this),
                                             hasFetched ? 'Re-run Analysis' : 'Compare Against Tenant'
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1782,
+                                        lineNumber: 1784,
                                         columnNumber: 25
                                     }, this),
                                     uploadedPolicies.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3182,7 +3184,7 @@ function ConfigurationComparePage() {
                                         children: "Clear All"
                                     }, void 0, false, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1787,
+                                        lineNumber: 1789,
                                         columnNumber: 29
                                     }, this),
                                     !accounts.length && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3192,32 +3194,32 @@ function ConfigurationComparePage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1793,
+                                                lineNumber: 1795,
                                                 columnNumber: 33
                                             }, this),
                                             " Please sign in first."
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1792,
+                                        lineNumber: 1794,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1781,
+                                lineNumber: 1783,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1725,
+                        lineNumber: 1727,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 1697,
+                lineNumber: 1699,
                 columnNumber: 13
             }, this),
             loading && loadingPhase !== 'idle' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(LoadingBanner, {
@@ -3225,7 +3227,7 @@ function ConfigurationComparePage() {
                 onCancel: cancelFetch
             }, void 0, false, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 1803,
+                lineNumber: 1805,
                 columnNumber: 17
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3239,24 +3241,24 @@ function ConfigurationComparePage() {
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1810,
+                                lineNumber: 1812,
                                 columnNumber: 29
                             }, this),
                             error
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1809,
+                        lineNumber: 1811,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/compare/configuration/page.tsx",
-                    lineNumber: 1808,
+                    lineNumber: 1810,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 1807,
+                lineNumber: 1809,
                 columnNumber: 17
             }, this),
             analyses.length > 0 && globalSummary && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3277,12 +3279,12 @@ function ConfigurationComparePage() {
                                                     className: "h-5 w-5 text-primary"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1825,
+                                                    lineNumber: 1827,
                                                     columnNumber: 83
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1825,
+                                                lineNumber: 1827,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3292,7 +3294,7 @@ function ConfigurationComparePage() {
                                                         children: "Policies Uploaded"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1827,
+                                                        lineNumber: 1829,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3300,7 +3302,7 @@ function ConfigurationComparePage() {
                                                         children: globalSummary.totalPolicies
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1828,
+                                                        lineNumber: 1830,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3311,29 +3313,29 @@ function ConfigurationComparePage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1829,
+                                                        lineNumber: 1831,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1826,
+                                                lineNumber: 1828,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1824,
+                                        lineNumber: 1826,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 1823,
+                                    lineNumber: 1825,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1822,
+                                lineNumber: 1824,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3348,12 +3350,12 @@ function ConfigurationComparePage() {
                                                     className: "h-5 w-5 text-green-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1837,
+                                                    lineNumber: 1839,
                                                     columnNumber: 85
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1837,
+                                                lineNumber: 1839,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3363,7 +3365,7 @@ function ConfigurationComparePage() {
                                                         children: "Matched"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1839,
+                                                        lineNumber: 1841,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3374,7 +3376,7 @@ function ConfigurationComparePage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1840,
+                                                        lineNumber: 1842,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3387,29 +3389,29 @@ function ConfigurationComparePage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1841,
+                                                        lineNumber: 1843,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1838,
+                                                lineNumber: 1840,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1836,
+                                        lineNumber: 1838,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 1835,
+                                    lineNumber: 1837,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1834,
+                                lineNumber: 1836,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3424,12 +3426,12 @@ function ConfigurationComparePage() {
                                                     className: "h-5 w-5 text-amber-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1849,
+                                                    lineNumber: 1851,
                                                     columnNumber: 85
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1849,
+                                                lineNumber: 1851,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3439,7 +3441,7 @@ function ConfigurationComparePage() {
                                                         children: "Conflict"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1851,
+                                                        lineNumber: 1853,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3450,7 +3452,7 @@ function ConfigurationComparePage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1852,
+                                                        lineNumber: 1854,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3463,29 +3465,29 @@ function ConfigurationComparePage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1853,
+                                                        lineNumber: 1855,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1850,
+                                                lineNumber: 1852,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1848,
+                                        lineNumber: 1850,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 1847,
+                                    lineNumber: 1849,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1846,
+                                lineNumber: 1848,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3500,12 +3502,12 @@ function ConfigurationComparePage() {
                                                     className: "h-5 w-5 text-red-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 1861,
+                                                    lineNumber: 1863,
                                                     columnNumber: 83
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1861,
+                                                lineNumber: 1863,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3515,7 +3517,7 @@ function ConfigurationComparePage() {
                                                         children: "Missing"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1863,
+                                                        lineNumber: 1865,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3526,7 +3528,7 @@ function ConfigurationComparePage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1864,
+                                                        lineNumber: 1866,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3539,43 +3541,42 @@ function ConfigurationComparePage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1865,
+                                                        lineNumber: 1867,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1862,
+                                                lineNumber: 1864,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1860,
+                                        lineNumber: 1862,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                    lineNumber: 1859,
+                                    lineNumber: 1861,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1858,
+                                lineNumber: 1860,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1821,
+                        lineNumber: 1823,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex gap-2 border-b",
                         children: [
                             'detail',
-                            'perPolicy',
-                            'summary'
+                            'perPolicy'
                         ].map((tab)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 className: "pb-2 px-3 text-sm font-medium border-b-2 transition-colors ".concat(activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'),
                                 onClick: ()=>setActiveTab(tab),
@@ -3585,42 +3586,31 @@ function ConfigurationComparePage() {
                                             className: "h-4 w-4 inline mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                            lineNumber: 1881,
+                                            lineNumber: 1883,
                                             columnNumber: 41
                                         }, this),
                                         "Coverage"
                                     ]
-                                }, void 0, true) : tab === 'perPolicy' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"], {
-                                            className: "h-4 w-4 inline mr-1"
-                                        }, void 0, false, {
-                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                            lineNumber: 1883,
-                                            columnNumber: 41
-                                        }, this),
-                                        "Per-Policy Detail"
-                                    ]
                                 }, void 0, true) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$column$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BarChart3$3e$__["BarChart3"], {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"], {
                                             className: "h-4 w-4 inline mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/app/compare/configuration/page.tsx",
                                             lineNumber: 1884,
                                             columnNumber: 41
                                         }, this),
-                                        "Deep Analytics"
+                                        "Per-Policy Detail"
                                     ]
                                 }, void 0, true)
                             }, tab, false, {
                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1876,
+                                lineNumber: 1878,
                                 columnNumber: 29
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 1874,
+                        lineNumber: 1876,
                         columnNumber: 21
                     }, this),
                     activeTab === 'perPolicy' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3667,1198 +3657,352 @@ function ConfigurationComparePage() {
                         lineNumber: 1891,
                         columnNumber: 25
                     }, this),
-                    activeTab === 'summary' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "space-y-6",
+                    activeTab === 'detail' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "space-y-4",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
-                                        className: "pb-3",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                                className: "text-base flex items-center gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$up$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingUp$3e$__["TrendingUp"], {
-                                                        className: "h-4 w-4 text-primary"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1920,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    "Settings Coverage"
-                                                ]
-                                            }, void 0, true, {
+                            (()=>{
+                                const allSettings = analyses.flatMap((a)=>a.settingAnalyses);
+                                const totalAll = allSettings.length;
+                                const totalCovered = allSettings.filter((sa)=>settingCoverageStatus(sa) === 'covered').length;
+                                const totalConflict = allSettings.filter((sa)=>settingCoverageStatus(sa) === 'conflict').length;
+                                const totalMissing = allSettings.filter((sa)=>settingCoverageStatus(sa) === 'notConfigured').length;
+                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center gap-2 flex-wrap p-3 bg-muted/20 rounded-lg border",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-xs font-medium text-muted-foreground mr-1",
+                                            children: "Show:"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1924,
+                                            columnNumber: 41
+                                        }, this),
+                                        [
+                                            [
+                                                'all',
+                                                "All (".concat(totalAll, ")"),
+                                                ''
+                                            ],
+                                            [
+                                                'covered',
+                                                "Covered (".concat(totalCovered, ")"),
+                                                'text-green-700 dark:text-green-300'
+                                            ],
+                                            [
+                                                'conflict',
+                                                "Conflict (".concat(totalConflict, ")"),
+                                                'text-red-700 dark:text-red-300'
+                                            ],
+                                            [
+                                                'notConfigured',
+                                                "Not in tenant (".concat(totalMissing, ")"),
+                                                'text-slate-600 dark:text-slate-300'
+                                            ]
+                                        ].map((param)=>{
+                                            let [f, lbl, cls] = param;
+                                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: ()=>setGlobalCoverageFilter(f),
+                                                className: "px-3 py-1.5 rounded text-xs font-medium border transition-colors ".concat(globalCoverageFilter === f ? 'bg-primary text-primary-foreground border-primary' : "border-input hover:bg-muted/50 ".concat(cls)),
+                                                children: lbl
+                                            }, f, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1919,
-                                                columnNumber: 37
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                                children: "How many of the settings in your uploaded files are already covered in the tenant (matched or conflicting vs. completely absent)."
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1923,
-                                                columnNumber: 37
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1918,
-                                        columnNumber: 33
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
-                                        className: "space-y-4",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "space-y-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center justify-between text-xs text-muted-foreground",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "font-medium text-foreground text-sm",
-                                                                children: [
-                                                                    "Overall — ",
-                                                                    globalSummary.totalSettings,
-                                                                    " settings across ",
-                                                                    globalSummary.totalPolicies,
-                                                                    " ",
-                                                                    globalSummary.totalPolicies === 1 ? 'policy' : 'policies'
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1931,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                children: [
-                                                                    globalSummary.matchSettings + globalSummary.conflictSettings,
-                                                                    " covered · ",
-                                                                    globalSummary.missingSettings,
-                                                                    " not in tenant"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1934,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1930,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex h-4 w-full rounded-full overflow-hidden gap-0.5 bg-muted",
-                                                        children: [
-                                                            globalSummary.overallMatchPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "bg-green-500 h-full transition-all",
-                                                                style: {
-                                                                    width: "".concat(globalSummary.overallMatchPercent, "%")
-                                                                },
-                                                                title: "Match: ".concat(globalSummary.matchSettings)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1937,
-                                                                columnNumber: 87
-                                                            }, this),
-                                                            globalSummary.overallConflictPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "bg-amber-400 h-full transition-all",
-                                                                style: {
-                                                                    width: "".concat(globalSummary.overallConflictPercent, "%")
-                                                                },
-                                                                title: "Conflict: ".concat(globalSummary.conflictSettings)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1938,
-                                                                columnNumber: 90
-                                                            }, this),
-                                                            globalSummary.overallMissingPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "bg-red-400 h-full transition-all",
-                                                                style: {
-                                                                    width: "".concat(globalSummary.overallMissingPercent, "%")
-                                                                },
-                                                                title: "Missing: ".concat(globalSummary.missingSettings)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1939,
-                                                                columnNumber: 89
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1936,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex gap-4 text-xs text-muted-foreground",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "flex items-center gap-1",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "inline-block w-2.5 h-2.5 rounded-sm bg-green-500"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                        lineNumber: 1942,
-                                                                        columnNumber: 87
-                                                                    }, this),
-                                                                    "Match ",
-                                                                    globalSummary.overallMatchPercent,
-                                                                    "%"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1942,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "flex items-center gap-1",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "inline-block w-2.5 h-2.5 rounded-sm bg-amber-400"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                        lineNumber: 1943,
-                                                                        columnNumber: 87
-                                                                    }, this),
-                                                                    "Conflict ",
-                                                                    globalSummary.overallConflictPercent,
-                                                                    "%"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1943,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "flex items-center gap-1",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "inline-block w-2.5 h-2.5 rounded-sm bg-red-400"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                        lineNumber: 1944,
-                                                                        columnNumber: 87
-                                                                    }, this),
-                                                                    "Not in tenant ",
-                                                                    globalSummary.overallMissingPercent,
-                                                                    "%"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 1944,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1941,
-                                                        columnNumber: 41
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1929,
-                                                columnNumber: 37
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "grid grid-cols-1 md:grid-cols-2 gap-4 pt-2",
-                                                children: analyses.map((a)=>{
-                                                    const covered = a.summary.matchSettings + a.summary.conflictSettings;
-                                                    const coveredPct = a.summary.totalSettings === 0 ? 0 : Math.round(covered / a.summary.totalSettings * 100);
-                                                    const coverColor = coveredPct >= 80 ? 'text-green-600 dark:text-green-400' : coveredPct >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400';
-                                                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                                                        className: "border-2",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
-                                                            className: "pt-4 space-y-3",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "flex items-start justify-between gap-2",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "min-w-0",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "font-semibold text-sm leading-tight",
-                                                                                    children: a.uploadedPolicy.name
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1960,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                    className: "flex items-center gap-1.5 mt-1 flex-wrap",
-                                                                                    children: [
-                                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                                                            className: "text-xs ".concat(kindColor[a.uploadedPolicy.kind]),
-                                                                                            children: kindLabel[a.uploadedPolicy.kind]
-                                                                                        }, void 0, false, {
-                                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                            lineNumber: 1962,
-                                                                                            columnNumber: 69
-                                                                                        }, this),
-                                                                                        a.uploadedPolicy.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                                                            variant: "outline",
-                                                                                            className: "text-xs",
-                                                                                            children: a.uploadedPolicy.platform
-                                                                                        }, void 0, false, {
-                                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                            lineNumber: 1963,
-                                                                                            columnNumber: 99
-                                                                                        }, this),
-                                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                            className: "text-xs text-muted-foreground",
-                                                                                            children: [
-                                                                                                a.summary.totalSettings,
-                                                                                                " settings"
-                                                                                            ]
-                                                                                        }, void 0, true, {
-                                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                            lineNumber: 1964,
-                                                                                            columnNumber: 69
-                                                                                        }, this)
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1961,
-                                                                                    columnNumber: 65
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1959,
-                                                                            columnNumber: 61
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "text-right flex-shrink-0",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-2xl font-bold ".concat(coverColor),
-                                                                                    children: [
-                                                                                        coveredPct,
-                                                                                        "%"
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1968,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-xs text-muted-foreground",
-                                                                                    children: "covered"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1969,
-                                                                                    columnNumber: 65
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1967,
-                                                                            columnNumber: 61
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 1958,
-                                                                    columnNumber: 57
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "flex h-3 w-full rounded-full overflow-hidden gap-0.5 bg-muted",
-                                                                    children: [
-                                                                        a.summary.matchPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "bg-green-500 h-full",
-                                                                            style: {
-                                                                                width: "".concat(a.summary.matchPercent, "%")
-                                                                            }
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1975,
-                                                                            columnNumber: 92
-                                                                        }, this),
-                                                                        a.summary.conflictPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "bg-amber-400 h-full",
-                                                                            style: {
-                                                                                width: "".concat(a.summary.conflictPercent, "%")
-                                                                            }
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1976,
-                                                                            columnNumber: 95
-                                                                        }, this),
-                                                                        a.summary.missingPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "bg-red-400 h-full",
-                                                                            style: {
-                                                                                width: "".concat(a.summary.missingPercent, "%")
-                                                                            }
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1977,
-                                                                            columnNumber: 94
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 1974,
-                                                                    columnNumber: 57
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "grid grid-cols-3 gap-2",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-2 py-1.5 text-center",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-lg font-bold text-green-600 dark:text-green-400",
-                                                                                    children: a.summary.matchSettings
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1983,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-[10px] text-green-700 dark:text-green-300",
-                                                                                    children: "match"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1984,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-[10px] text-muted-foreground",
-                                                                                    children: [
-                                                                                        a.summary.matchPercent,
-                                                                                        "%"
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1985,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                a.summary.assignedMatchSettings > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-[10px] text-primary font-medium mt-0.5",
-                                                                                    children: [
-                                                                                        a.summary.assignedMatchSettings,
-                                                                                        " assigned"
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1987,
-                                                                                    columnNumber: 69
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1982,
-                                                                            columnNumber: 61
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-2 py-1.5 text-center",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-lg font-bold text-amber-600 dark:text-amber-400",
-                                                                                    children: a.summary.conflictSettings
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1991,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-[10px] text-amber-700 dark:text-amber-300",
-                                                                                    children: "conflict"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1992,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-[10px] text-muted-foreground",
-                                                                                    children: [
-                                                                                        a.summary.conflictPercent,
-                                                                                        "%"
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1993,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                a.summary.assignedConflictSettings > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-[10px] text-amber-600 font-medium mt-0.5",
-                                                                                    children: [
-                                                                                        a.summary.assignedConflictSettings,
-                                                                                        " assigned"
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1995,
-                                                                                    columnNumber: 69
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1990,
-                                                                            columnNumber: 61
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-2 py-1.5 text-center",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-lg font-bold text-red-600 dark:text-red-400",
-                                                                                    children: a.summary.missingSettings
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 1999,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-[10px] text-red-700 dark:text-red-300",
-                                                                                    children: "not in tenant"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 2000,
-                                                                                    columnNumber: 65
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                    className: "text-[10px] text-muted-foreground",
-                                                                                    children: [
-                                                                                        a.summary.missingPercent,
-                                                                                        "%"
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                    lineNumber: 2001,
-                                                                                    columnNumber: 65
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                            lineNumber: 1998,
-                                                                            columnNumber: 61
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 1981,
-                                                                    columnNumber: 57
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                    className: "text-[11px] text-muted-foreground text-right",
-                                                                    children: [
-                                                                        a.summary.platformMatchedPolicyCount,
-                                                                        " of ",
-                                                                        a.summary.totalTenantPoliciesOfKind,
-                                                                        " tenant policies matched platform"
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 2006,
-                                                                    columnNumber: 57
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 1956,
-                                                            columnNumber: 53
-                                                        }, this)
-                                                    }, a.uploadedPolicy.fileName, false, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 1955,
-                                                        columnNumber: 49
-                                                    }, this);
-                                                })
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 1949,
-                                                columnNumber: 37
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 1927,
-                                        columnNumber: 33
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 1917,
-                                columnNumber: 29
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                                className: "text-base flex items-center gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$up$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingUp$3e$__["TrendingUp"], {
-                                                        className: "h-4 w-4"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2018,
-                                                        columnNumber: 94
-                                                    }, this),
-                                                    "Per-Policy Match Breakdown"
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2018,
-                                                columnNumber: 37
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                                children: "Match, conflict, and missing percentages per uploaded policy, filtered by platform."
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2019,
-                                                columnNumber: 37
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 2017,
-                                        columnNumber: 33
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
-                                        className: "space-y-5",
-                                        children: globalSummary.platformBreakdown.map((pb)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "space-y-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center justify-between",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "flex items-center gap-2 flex-wrap",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "font-medium text-sm",
-                                                                        children: pb.policy
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                        lineNumber: 2026,
-                                                                        columnNumber: 53
-                                                                    }, this),
-                                                                    pb.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                                        variant: "outline",
-                                                                        className: "text-xs",
-                                                                        children: pb.platform
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                        lineNumber: 2027,
-                                                                        columnNumber: 69
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2025,
-                                                                columnNumber: 49
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "text-xs text-muted-foreground flex-shrink-0",
-                                                                children: [
-                                                                    pb.platformMatchedCount,
-                                                                    " of ",
-                                                                    pb.totalKindCount,
-                                                                    " tenant policies matched platform"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2029,
-                                                                columnNumber: 49
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2024,
-                                                        columnNumber: 45
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "grid grid-cols-3 gap-3 text-xs",
-                                                        children: [
-                                                            {
-                                                                label: 'Match',
-                                                                pct: pb.matchPercent,
-                                                                bar: 'bg-green-500',
-                                                                text: 'text-green-600'
-                                                            },
-                                                            {
-                                                                label: 'Conflict',
-                                                                pct: pb.conflictPercent,
-                                                                bar: 'bg-amber-500',
-                                                                text: 'text-amber-600'
-                                                            },
-                                                            {
-                                                                label: 'Missing',
-                                                                pct: pb.missingPercent,
-                                                                bar: 'bg-red-500',
-                                                                text: 'text-red-600'
-                                                            }
-                                                        ].map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "space-y-1",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex justify-between",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: item.text,
-                                                                                children: item.label
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                lineNumber: 2041,
-                                                                                columnNumber: 61
-                                                                            }, this),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: "font-medium",
-                                                                                children: [
-                                                                                    item.pct,
-                                                                                    "%"
-                                                                                ]
-                                                                            }, void 0, true, {
-                                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                                lineNumber: 2042,
-                                                                                columnNumber: 61
-                                                                            }, this)
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                        lineNumber: 2040,
-                                                                        columnNumber: 57
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ProgressBar, {
-                                                                        value: item.pct,
-                                                                        color: item.bar
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                        lineNumber: 2044,
-                                                                        columnNumber: 57
-                                                                    }, this)
-                                                                ]
-                                                            }, item.label, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2039,
-                                                                columnNumber: 53
-                                                            }, this))
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2033,
-                                                        columnNumber: 45
-                                                    }, this)
-                                                ]
-                                            }, pb.policy, true, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2023,
-                                                columnNumber: 41
-                                            }, this))
-                                    }, void 0, false, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 2021,
-                                        columnNumber: 33
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 2016,
-                                columnNumber: 29
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                                className: "text-base flex items-center gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$funnel$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Filter$3e$__["Filter"], {
-                                                        className: "h-4 w-4"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2056,
-                                                        columnNumber: 94
-                                                    }, this),
-                                                    "Platform Filtering"
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2056,
-                                                columnNumber: 37
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                                children: "How many tenant policies were considered per uploaded policy after platform matching."
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2057,
-                                                columnNumber: 37
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 2055,
-                                        columnNumber: 33
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "divide-y",
-                                            children: analyses.map((a)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "py-3 flex items-center justify-between",
+                                                lineNumber: 1931,
+                                                columnNumber: 45
+                                            }, this);
+                                        }),
+                                        globalCoverageFilter !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            onClick: ()=>setGlobalCoverageFilter('all'),
+                                            className: "ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
+                                                    className: "h-3.5 w-3.5"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1940,
+                                                    columnNumber: 49
+                                                }, this),
+                                                "Clear filter"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1938,
+                                            columnNumber: 45
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1923,
+                                    columnNumber: 37
+                                }, this);
+                            })(),
+                            analyses.map((analysis)=>{
+                                const isExpanded = globalCoverageFilter !== 'all' ? true // auto-expand when a filter is active
+                                 : expandedPolicies.has(analysis.uploadedPolicy.fileName);
+                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                                    className: "overflow-hidden",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/30 transition-colors",
+                                            onClick: ()=>togglePolicy(analysis.uploadedPolicy.fileName),
+                                            children: [
+                                                isExpanded ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
+                                                    className: "h-4 w-4 text-muted-foreground"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1957,
+                                                    columnNumber: 59
+                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
+                                                    className: "h-4 w-4 text-muted-foreground"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1957,
+                                                    columnNumber: 119
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$json$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileJson$3e$__["FileJson"], {
+                                                    className: "h-5 w-5 text-primary"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1958,
+                                                    columnNumber: 45
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex-1 min-w-0",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "flex items-center gap-2 flex-wrap",
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$json$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileJson$3e$__["FileJson"], {
-                                                                    className: "h-4 w-4 text-muted-foreground"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 2064,
-                                                                    columnNumber: 53
-                                                                }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-sm font-medium",
-                                                                    children: a.uploadedPolicy.name
+                                                                    className: "font-semibold",
+                                                                    children: analysis.uploadedPolicy.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 2065,
+                                                                    lineNumber: 1961,
                                                                     columnNumber: 53
-                                                                }, this),
-                                                                a.uploadedPolicy.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                                    variant: "outline",
-                                                                    className: "text-xs",
-                                                                    children: a.uploadedPolicy.platform
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 2066,
-                                                                    columnNumber: 83
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                                    className: "text-xs ".concat(kindColor[a.uploadedPolicy.kind]),
-                                                                    children: kindLabel[a.uploadedPolicy.kind]
+                                                                    className: "text-xs ".concat(kindColor[analysis.uploadedPolicy.kind]),
+                                                                    children: kindLabel[analysis.uploadedPolicy.kind]
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 2067,
+                                                                    lineNumber: 1962,
                                                                     columnNumber: 53
+                                                                }, this),
+                                                                analysis.uploadedPolicy.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                                    variant: "outline",
+                                                                    className: "text-xs",
+                                                                    children: analysis.uploadedPolicy.platform
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1963,
+                                                                    columnNumber: 90
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 2063,
+                                                            lineNumber: 1960,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "text-right text-sm",
+                                                            className: "flex items-center gap-3 mt-1 text-xs text-muted-foreground",
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "font-semibold",
-                                                                    children: a.summary.platformMatchedPolicyCount
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 2070,
-                                                                    columnNumber: 53
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-muted-foreground",
                                                                     children: [
-                                                                        " / ",
-                                                                        a.summary.totalTenantPoliciesOfKind,
-                                                                        " tenant policies"
+                                                                        analysis.summary.totalSettings,
+                                                                        " settings"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                    lineNumber: 2071,
+                                                                    lineNumber: 1966,
+                                                                    columnNumber: 53
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: "·"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1967,
+                                                                    columnNumber: 53
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: [
+                                                                        analysis.summary.platformMatchedPolicyCount,
+                                                                        " tenant policies (platform match)"
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1968,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 2069,
+                                                            lineNumber: 1965,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
-                                                }, a.uploadedPolicy.fileName, true, {
+                                                }, void 0, true, {
                                                     fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 2062,
+                                                    lineNumber: 1959,
                                                     columnNumber: 45
-                                                }, this))
-                                        }, void 0, false, {
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex gap-3 text-xs flex-shrink-0",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "flex items-center gap-1 text-green-600 dark:text-green-400",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+                                                                    className: "h-3 w-3"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1972,
+                                                                    columnNumber: 126
+                                                                }, this),
+                                                                analysis.summary.matchPercent,
+                                                                "%"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1972,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "flex items-center gap-1 text-amber-600 dark:text-amber-400",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
+                                                                    className: "h-3 w-3"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1973,
+                                                                    columnNumber: 126
+                                                                }, this),
+                                                                analysis.summary.conflictPercent,
+                                                                "%"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1973,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "flex items-center gap-1 text-red-600 dark:text-red-400",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
+                                                                    className: "h-3 w-3"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1974,
+                                                                    columnNumber: 122
+                                                                }, this),
+                                                                analysis.summary.missingPercent,
+                                                                "%"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1974,
+                                                            columnNumber: 49
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1971,
+                                                    columnNumber: 45
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
                                             fileName: "[project]/app/compare/configuration/page.tsx",
-                                            lineNumber: 2060,
-                                            columnNumber: 37
-                                        }, this)
-                                    }, void 0, false, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 2059,
-                                        columnNumber: 33
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 2054,
-                                columnNumber: 29
-                            }, this),
-                            globalSummary.topConflicts.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                                className: "text-base flex items-center gap-2",
+                                            lineNumber: 1956,
+                                            columnNumber: 41
+                                        }, this),
+                                        isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                                            className: "pt-0 pb-0 px-0",
+                                            children: analysis.summary.platformMatchedPolicyCount === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "mx-4 mb-4 rounded-lg border border-dashed p-6 text-center text-muted-foreground",
                                                 children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
-                                                        className: "h-4 w-4 text-amber-500"
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$minus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MinusCircle$3e$__["MinusCircle"], {
+                                                        className: "h-8 w-8 mx-auto mb-2 opacity-50"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2083,
-                                                        columnNumber: 98
+                                                        lineNumber: 1982,
+                                                        columnNumber: 57
                                                     }, this),
-                                                    "Top Conflict Hotspots"
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-sm",
+                                                        children: [
+                                                            "No tenant policies matched platform ",
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                children: analysis.uploadedPolicy.platform || '(unknown)'
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1983,
+                                                                columnNumber: 116
+                                                            }, this),
+                                                            "."
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1983,
+                                                        columnNumber: 57
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs mt-1",
+                                                        children: [
+                                                            "All ",
+                                                            analysis.summary.totalTenantPoliciesOfKind,
+                                                            " tenant ",
+                                                            kindLabel[analysis.uploadedPolicy.kind],
+                                                            " policies were excluded."
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1984,
+                                                        columnNumber: 57
+                                                    }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2083,
-                                                columnNumber: 41
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                                children: "Settings that have conflicting values across the most uploaded policies."
+                                                lineNumber: 1981,
+                                                columnNumber: 53
+                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ConfigCoverageRows, {
+                                                settingAnalyses: analysis.settingAnalyses,
+                                                policyKey: analysis.uploadedPolicy.fileName,
+                                                externalFilter: globalCoverageFilter !== 'all' ? globalCoverageFilter : undefined
                                             }, void 0, false, {
                                                 fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2084,
-                                                columnNumber: 41
+                                                lineNumber: 1987,
+                                                columnNumber: 53
                                             }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 2082,
-                                        columnNumber: 37
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
-                                        className: "space-y-2",
-                                        children: globalSummary.topConflicts.map((param)=>{
-                                            let [settingId, count] = param;
-                                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center justify-between p-2 rounded border bg-amber-50/50 dark:bg-amber-900/10",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "min-w-0 mr-3",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "text-xs font-medium break-words",
-                                                                children: humanizeSettingId(settingId)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2090,
-                                                                columnNumber: 69
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "block font-mono text-[10px] text-muted-foreground/60 break-all leading-tight",
-                                                                children: settingId
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2091,
-                                                                columnNumber: 69
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2089,
-                                                        columnNumber: 65
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                        className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 flex-shrink-0",
-                                                        children: [
-                                                            count,
-                                                            " ",
-                                                            count === 1 ? 'policy' : 'policies'
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2093,
-                                                        columnNumber: 65
-                                                    }, this)
-                                                ]
-                                            }, settingId, true, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2088,
-                                                columnNumber: 61
-                                            }, this);
-                                        })
-                                    }, void 0, false, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 2086,
-                                        columnNumber: 37
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 2081,
-                                columnNumber: 33
-                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1979,
+                                            columnNumber: 45
+                                        }, this)
+                                    ]
+                                }, analysis.uploadedPolicy.fileName, true, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1954,
+                                    columnNumber: 37
+                                }, this);
+                            })
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/compare/configuration/page.tsx",
                         lineNumber: 1914,
                         columnNumber: 25
-                    }, this),
-                    activeTab === 'detail' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "space-y-4",
-                        children: analyses.map((analysis)=>{
-                            const isExpanded = expandedPolicies.has(analysis.uploadedPolicy.fileName);
-                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                                className: "overflow-hidden",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/30 transition-colors",
-                                        onClick: ()=>togglePolicy(analysis.uploadedPolicy.fileName),
-                                        children: [
-                                            isExpanded ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
-                                                className: "h-4 w-4 text-muted-foreground"
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2115,
-                                                columnNumber: 59
-                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
-                                                className: "h-4 w-4 text-muted-foreground"
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2115,
-                                                columnNumber: 119
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$json$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileJson$3e$__["FileJson"], {
-                                                className: "h-5 w-5 text-primary"
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2116,
-                                                columnNumber: 45
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex-1 min-w-0",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center gap-2 flex-wrap",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "font-semibold",
-                                                                children: analysis.uploadedPolicy.name
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2119,
-                                                                columnNumber: 53
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                                className: "text-xs ".concat(kindColor[analysis.uploadedPolicy.kind]),
-                                                                children: kindLabel[analysis.uploadedPolicy.kind]
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2120,
-                                                                columnNumber: 53
-                                                            }, this),
-                                                            analysis.uploadedPolicy.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
-                                                                variant: "outline",
-                                                                className: "text-xs",
-                                                                children: analysis.uploadedPolicy.platform
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2121,
-                                                                columnNumber: 90
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2118,
-                                                        columnNumber: 49
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center gap-3 mt-1 text-xs text-muted-foreground",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                children: [
-                                                                    analysis.summary.totalSettings,
-                                                                    " settings"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2124,
-                                                                columnNumber: 53
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                children: "·"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2125,
-                                                                columnNumber: 53
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                children: [
-                                                                    analysis.summary.platformMatchedPolicyCount,
-                                                                    " tenant policies (platform match)"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2126,
-                                                                columnNumber: 53
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2123,
-                                                        columnNumber: 49
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2117,
-                                                columnNumber: 45
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex gap-3 text-xs flex-shrink-0",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "flex items-center gap-1 text-green-600 dark:text-green-400",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
-                                                                className: "h-3 w-3"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2130,
-                                                                columnNumber: 126
-                                                            }, this),
-                                                            analysis.summary.matchPercent,
-                                                            "%"
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2130,
-                                                        columnNumber: 49
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "flex items-center gap-1 text-amber-600 dark:text-amber-400",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
-                                                                className: "h-3 w-3"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2131,
-                                                                columnNumber: 126
-                                                            }, this),
-                                                            analysis.summary.conflictPercent,
-                                                            "%"
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2131,
-                                                        columnNumber: 49
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "flex items-center gap-1 text-red-600 dark:text-red-400",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
-                                                                className: "h-3 w-3"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                                lineNumber: 2132,
-                                                                columnNumber: 122
-                                                            }, this),
-                                                            analysis.summary.missingPercent,
-                                                            "%"
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                                        lineNumber: 2132,
-                                                        columnNumber: 49
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                                lineNumber: 2129,
-                                                columnNumber: 45
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 2114,
-                                        columnNumber: 41
-                                    }, this),
-                                    isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
-                                        className: "pt-0 pb-0 px-0",
-                                        children: analysis.summary.platformMatchedPolicyCount === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "mx-4 mb-4 rounded-lg border border-dashed p-6 text-center text-muted-foreground",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$minus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MinusCircle$3e$__["MinusCircle"], {
-                                                    className: "h-8 w-8 mx-auto mb-2 opacity-50"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 2140,
-                                                    columnNumber: 57
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-sm",
-                                                    children: [
-                                                        "No tenant policies matched platform ",
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                            children: analysis.uploadedPolicy.platform || '(unknown)'
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                                            lineNumber: 2141,
-                                                            columnNumber: 116
-                                                        }, this),
-                                                        "."
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 2141,
-                                                    columnNumber: 57
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-xs mt-1",
-                                                    children: [
-                                                        "All ",
-                                                        analysis.summary.totalTenantPoliciesOfKind,
-                                                        " tenant ",
-                                                        kindLabel[analysis.uploadedPolicy.kind],
-                                                        " policies were excluded."
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/app/compare/configuration/page.tsx",
-                                                    lineNumber: 2142,
-                                                    columnNumber: 57
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                            lineNumber: 2139,
-                                            columnNumber: 53
-                                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ConfigCoverageRows, {
-                                            settingAnalyses: analysis.settingAnalyses,
-                                            policyKey: analysis.uploadedPolicy.fileName
-                                        }, void 0, false, {
-                                            fileName: "[project]/app/compare/configuration/page.tsx",
-                                            lineNumber: 2145,
-                                            columnNumber: 53
-                                        }, this)
-                                    }, void 0, false, {
-                                        fileName: "[project]/app/compare/configuration/page.tsx",
-                                        lineNumber: 2137,
-                                        columnNumber: 45
-                                    }, this)
-                                ]
-                            }, analysis.uploadedPolicy.fileName, true, {
-                                fileName: "[project]/app/compare/configuration/page.tsx",
-                                lineNumber: 2112,
-                                columnNumber: 37
-                            }, this);
-                        })
-                    }, void 0, false, {
-                        fileName: "[project]/app/compare/configuration/page.tsx",
-                        lineNumber: 2106,
-                        columnNumber: 25
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/compare/configuration/page.tsx",
-                lineNumber: 1818,
+                lineNumber: 1820,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/compare/configuration/page.tsx",
-        lineNumber: 1662,
+        lineNumber: 1664,
         columnNumber: 9
     }, this);
 }
-_s2(ConfigurationComparePage, "7/EyGLl95sUzxsIJOwNIjCf9vvQ=", false, function() {
+_s2(ConfigurationComparePage, "Q/qVc8XVeLV8SyLjd1dDA0O6wXA=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMsal"],
         __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApiRequest"]
