@@ -146,6 +146,18 @@ Intune has three engines for device configuration:
 
 ---
 
+### 🔔 Message Center
+
+> **Path in the app:** User menu (avatar, bottom of sidebar) → Message Center
+
+The Message Center is where the IntuneAssistant platform communicates directly with you. It carries maintenance notices, feature announcements, warnings, and general information messages — filtered by your license so you only see what is relevant to your subscription.
+
+| Page | What It Does |
+|---|---|
+| [Message Center](./message-center/README.md) | View, filter, and manage platform messages — mark individual messages or all messages as read or unread |
+
+---
+
 ## Getting Started
 
 If you are new to Intune Assistant, here is the recommended starting path:

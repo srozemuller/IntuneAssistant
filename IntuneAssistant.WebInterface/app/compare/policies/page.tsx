@@ -171,7 +171,7 @@ type StatusFilter = 'all' | CheckState;
 const stateLabel: Record<CheckState, string> = {
     InBothTheSame:   'Already covered',
     InBothDifferent: 'Conflict',
-    InSource:        'New — not elsewhere',
+    InSource:        'Not configured in right policy',
     InChecked:       'Only in existing',
 };
 
@@ -527,37 +527,40 @@ function DecisionCard({ results }: { results: PolicyCompareResult[] }) {
 
 // ── Coverage tab ───────────────────────────────────────────────────────────────
 
-type SettingOverallStatus = 'covered' | 'conflict' | 'notInTenant';
+type SettingOverallStatus = 'covered' | 'conflict' | 'notCovered' | 'onlyInRight';
+
+interface SettingPerPolicyEntry {
+    policyId: string;
+    policyName: string;
+    state: CheckState;
+    checkedValue: string;
+    differences?: string;
+    childSettings?: ChildSetting[];
+}
+
 interface SettingCoverageRow {
-    id: string;
     definitionId: string;
     name: string;
     sourceValue: string;
-    status: SettingOverallStatus;
-    matchedIn: { policyName: string; value: string }[];
-    conflictedIn: { policyName: string; value: string }[];
+    perPolicy: SettingPerPolicyEntry[];
+    overallStatus: SettingOverallStatus;
 }
 
-const coverageStatusConfig: Record<SettingOverallStatus, { label: string; bg: string; text: string; icon: React.ReactNode }> = {
-    covered:     { label: 'Covered',       bg: 'bg-green-50/60 dark:bg-green-900/10',   text: 'text-green-700 dark:text-green-300',  icon: <CheckCircle2 className="h-4 w-4 text-green-600" /> },
-    conflict:    { label: 'Conflict',      bg: 'bg-red-50/60 dark:bg-red-900/10',        text: 'text-red-700 dark:text-red-300',      icon: <AlertTriangle className="h-4 w-4 text-red-500" /> },
-    notInTenant: { label: 'Not in tenant', bg: 'bg-blue-50/40 dark:bg-blue-900/10',      text: 'text-blue-700 dark:text-blue-300',    icon: <Sparkles className="h-4 w-4 text-blue-500" /> },
+const stateConfig: Record<CheckState, { label: string; short: string; badge: string; icon: React.ReactNode }> = {
+    InBothTheSame:   { label: 'Same value',         short: 'Match',      badge: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300',    icon: <CheckCircle2 className="h-3 w-3" /> },
+    InBothDifferent: { label: 'Different value',    short: 'Conflict',   badge: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300',              icon: <AlertTriangle className="h-3 w-3" /> },
+    InSource:        { label: 'Not configured',     short: 'Not configured', badge: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300',  icon: <MinusCircle className="h-3 w-3" /> },
+    InChecked:       { label: 'Not in source',      short: 'Not in src', badge: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300', icon: <Sparkles className="h-3 w-3" /> },
 };
 
-function CoverageTab({ rows, summary, resolvedMap }: {
+function CoverageTab({ rows, resolvedMap }: {
     rows: SettingCoverageRow[];
-    summary: { total: number; covered: number; conflict: number; notInTenant: number };
     resolvedMap: ResolvedMap;
 }) {
     const [filter, setFilter] = useState<SettingOverallStatus | 'all'>('all');
     const [search, setSearch] = useState('');
     const [expanded, setExpanded] = useState<Set<string>>(new Set());
-
-    const filtered = useMemo(() => rows.filter(r => {
-        if (filter !== 'all' && r.status !== filter) return false;
-        if (search && !r.name.toLowerCase().includes(search.toLowerCase())) return false;
-        return true;
-    }), [rows, filter, search]);
+    const [sourceOnly, setSourceOnly] = useState(false);
 
     const toggle = (id: string) => setExpanded(prev => {
         const next = new Set(prev);
@@ -565,160 +568,184 @@ function CoverageTab({ rows, summary, resolvedMap }: {
         return next;
     });
 
-    // Coverage bar widths
-    const covPct  = summary.total === 0 ? 0 : Math.round((summary.covered / summary.total) * 100);
-    const confPct = summary.total === 0 ? 0 : Math.round((summary.conflict / summary.total) * 100);
-    const notPct  = summary.total === 0 ? 0 : Math.round((summary.notInTenant / summary.total) * 100);
+    const counts = useMemo(() => {
+        const c: Record<SettingOverallStatus, number> = { covered: 0, conflict: 0, notCovered: 0, onlyInRight: 0 };
+        rows.forEach(r => c[r.overallStatus]++);
+        return c;
+    }, [rows]);
+
+    const statusCfg: Record<SettingOverallStatus, { label: string; badge: string; rowBg: string; icon: React.ReactNode }> = {
+        covered:     { label: 'Covered',       badge: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300',      rowBg: 'bg-green-50/30 dark:bg-green-900/5',    icon: <CheckCircle2 className="h-3 w-3" /> },
+        conflict:    { label: 'Conflict',      badge: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300',                rowBg: 'bg-red-50/30 dark:bg-red-900/5',        icon: <AlertTriangle className="h-3 w-3" /> },
+        notCovered:  { label: 'Not covered',   badge: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300',         rowBg: '',                                      icon: <MinusCircle className="h-3 w-3" /> },
+        onlyInRight: { label: 'Only in right', badge: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300', rowBg: 'bg-purple-50/20 dark:bg-purple-900/5',  icon: <Sparkles className="h-3 w-3" /> },
+    };
+
+    const filtered = useMemo(() => rows.filter(r => {
+        if (sourceOnly && r.overallStatus === 'onlyInRight') return false;
+        if (filter !== 'all' && r.overallStatus !== filter) return false;
+        return !search || r.name.toLowerCase().includes(search.toLowerCase());
+    }), [rows, filter, search, sourceOnly]);
 
     return (
         <div className="space-y-4">
-            {/* Big coverage bar */}
+            {/* Summary strip */}
             <Card>
-                <CardContent className="pt-5 pb-5">
-                    <div className="flex items-end justify-between mb-3">
-                        <div>
-                            <p className="text-sm font-semibold">Overall setting coverage across all compared policies</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                                Each setting in your new policy — is it covered by at least one existing policy?
-                            </p>
-                        </div>
-                        <span className={`text-3xl font-bold ${covPct >= 80 ? 'text-green-600' : covPct >= 50 ? 'text-amber-600' : 'text-red-600'}`}>{covPct}%</span>
-                    </div>
-                    <div className="flex h-4 w-full rounded-full overflow-hidden bg-muted gap-0.5">
-                        {covPct  > 0 && <div className="bg-green-500 h-full transition-all" style={{ width: `${covPct}%` }} title={`${summary.covered} covered`} />}
-                        {confPct > 0 && <div className="bg-red-400 h-full transition-all"   style={{ width: `${confPct}%` }} title={`${summary.conflict} conflict`} />}
-                        {notPct  > 0 && <div className="bg-blue-400 h-full transition-all"  style={{ width: `${notPct}%` }} title={`${summary.notInTenant} not in tenant`} />}
-                    </div>
-                    <div className="flex gap-4 mt-3 text-xs flex-wrap">
-                        {[
-                            { label: 'Covered',       n: summary.covered,      pct: covPct,  color: 'bg-green-500' },
-                            { label: 'Conflict only', n: summary.conflict,     pct: confPct, color: 'bg-red-400' },
-                            { label: 'Not in tenant', n: summary.notInTenant,  pct: notPct,  color: 'bg-blue-400' },
-                        ].map(k => (
-                            <span key={k.label} className="flex items-center gap-1.5">
-                                <span className={`inline-block w-2.5 h-2.5 rounded-sm ${k.color}`} />
-                                <span className="text-muted-foreground">{k.label}</span>
-                                <span className="font-semibold">{k.n}</span>
-                                <span className="text-muted-foreground/60">({k.pct}%)</span>
+                <CardContent className="pt-4 pb-4">
+                    <div className="flex items-center gap-6 flex-wrap text-xs">
+                        {([
+                            { k: 'covered',     label: 'Covered',       color: 'bg-green-500',  desc: 'Matched in at least one right policy' },
+                            { k: 'conflict',    label: 'Conflict',      color: 'bg-red-400',    desc: 'Exists in right policy but with a different value' },
+                            { k: 'notCovered',  label: 'Not covered',   color: 'bg-slate-400',  desc: 'Source setting is missing from all right policies' },
+                            { k: 'onlyInRight', label: 'Only in right', color: 'bg-purple-400', desc: 'Only in right policies, not in source' },
+                        ] as { k: SettingOverallStatus; label: string; color: string; desc: string }[]).map(x => (
+                            <span key={x.k} className="flex items-center gap-1.5 cursor-default" title={x.desc}>
+                                <span className={`w-2.5 h-2.5 rounded-sm inline-block ${x.color}`} />
+                                <span className="text-muted-foreground">{x.label}:</span>
+                                <span className="font-semibold">{counts[x.k]}</span>
                             </span>
                         ))}
+                        <span className="ml-auto text-muted-foreground">{rows.length} unique settings</span>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Filter + search toolbar */}
+            {/* Filters + search */}
             <div className="flex items-center gap-2 flex-wrap">
-                {(['all', 'covered', 'conflict', 'notInTenant'] as const).map(f => (
-                    <button key={f} onClick={() => setFilter(f)}
-                        className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${filter === f ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-muted/50'}`}>
-                        {f === 'all' ? `All (${rows.length})` :
-                         f === 'covered' ? `Covered (${summary.covered})` :
-                         f === 'conflict' ? `Conflict (${summary.conflict})` :
-                         `Not in tenant (${summary.notInTenant})`}
+                {([
+                    ['all',         `All (${rows.length})`],
+                    ['covered',     `Covered (${counts.covered})`],
+                    ['conflict',    `Conflict (${counts.conflict})`],
+                    ['notCovered',  `Not covered (${counts.notCovered})`],
+                    ['onlyInRight', `Only in right (${counts.onlyInRight})`],
+                ] as [string, string][]).map(([f, lbl]) => (
+                    <button key={f}
+                        disabled={sourceOnly && f === 'onlyInRight'}
+                        onClick={() => setFilter(f as SettingOverallStatus | 'all')}
+                        className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors
+                            ${filter === f ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-muted/50'}
+                            ${sourceOnly && f === 'onlyInRight' ? 'opacity-30 cursor-not-allowed' : ''}`}>
+                        {lbl}
                     </button>
                 ))}
                 <div className="flex items-center gap-1.5 ml-auto">
+                    <label className="flex items-center gap-1.5 cursor-pointer select-none text-xs text-muted-foreground hover:text-foreground mr-3">
+                        <input
+                            type="checkbox"
+                            checked={sourceOnly}
+                            onChange={e => { setSourceOnly(e.target.checked); if (e.target.checked && filter === 'onlyInRight') setFilter('all'); }}
+                            className="rounded border-input h-3.5 w-3.5 accent-primary"
+                        />
+                        Source settings only
+                    </label>
                     <Search className="h-3.5 w-3.5 text-muted-foreground" />
                     <input type="text" placeholder="Search settings…" value={search} onChange={e => setSearch(e.target.value)}
-                        className="border rounded px-2 py-1 text-xs bg-background w-48 focus:ring-1 focus:ring-primary/50 outline-none" />
+                        className="border rounded px-2 py-1 text-xs bg-background w-48 outline-none focus:ring-1 focus:ring-primary/50" />
                     {search && <button onClick={() => setSearch('')}><X className="h-3.5 w-3.5 text-muted-foreground" /></button>}
                 </div>
             </div>
 
-            {/* Settings table */}
+            {/* Settings list */}
             <Card className="overflow-hidden">
-                {/* Header */}
-                <div className="grid grid-cols-[2fr_1fr_auto] gap-3 px-4 py-2.5 bg-muted/20 border-b text-xs font-medium text-muted-foreground">
+                <div className="grid grid-cols-[auto_1fr_auto_auto] px-4 py-2 bg-muted/20 border-b text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <span className="w-5" />
                     <span>Setting</span>
-                    <span>Value in new policy</span>
-                    <span className="w-36 text-right">Overall status</span>
+                    <span className="px-4 w-48">Source value</span>
+                    <span className="w-32 text-right">Status</span>
                 </div>
 
-                {filtered.length === 0 ? (
-                    <div className="p-8 text-center text-sm text-muted-foreground">No settings match the current filter.</div>
-                ) : (
-                    <div className="divide-y">
-                        {filtered.map(row => {
-                            const cfg = coverageStatusConfig[row.status];
-                            const isExpanded = expanded.has(row.id);
-                            const hasDetail = row.matchedIn.length > 0 || row.conflictedIn.length > 0;
-                            return (
-                                <div key={row.id} className={cfg.bg}>
-                                    {/* Main row */}
-                                    <div
-                                        className={`grid grid-cols-[2fr_1fr_auto] gap-3 px-4 py-3 items-center text-sm ${hasDetail ? 'cursor-pointer hover:brightness-95' : ''}`}
-                                        onClick={() => hasDetail && toggle(row.id)}
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            {hasDetail
-                                                ? (isExpanded
-                                                    ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                                                    : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />)
-                                                : <span className="w-3.5" />
-                                            }
-                                            <div className="min-w-0">
-                                                <p className="text-xs font-semibold truncate">{row.name}</p>
-                                                {hasDetail && (
-                                                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                                                        {row.matchedIn.length > 0 && `${row.matchedIn.length} polic${row.matchedIn.length !== 1 ? 'ies' : 'y'} match`}
-                                                        {row.matchedIn.length > 0 && row.conflictedIn.length > 0 && ' · '}
-                                                        {row.conflictedIn.length > 0 && <span className="text-red-600">{row.conflictedIn.length} conflict{row.conflictedIn.length !== 1 ? 's' : ''}</span>}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <ValueCell value={row.sourceValue} definitionId={row.definitionId} resolvedMap={resolvedMap} />
-                                        <div className="w-36 flex justify-end">
-                                            <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full border ${
-                                                row.status === 'covered'     ? 'bg-green-100 border-green-200 text-green-800 dark:bg-green-900/30 dark:border-green-700 dark:text-green-300' :
-                                                row.status === 'conflict'    ? 'bg-red-100 border-red-200 text-red-800 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300' :
-                                                                               'bg-blue-100 border-blue-200 text-blue-800 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'
-                                            }`}>
-                                                {cfg.icon}{cfg.label}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* Expanded detail */}
-                                    {isExpanded && (
-                                        <div className="px-4 pb-3 pt-0 space-y-3 border-t bg-background/50">
-                                            {row.matchedIn.length > 0 && (
-                                                <div className="pt-3">
-                                                    <p className="text-[10px] font-semibold uppercase text-green-700 dark:text-green-400 mb-1.5 flex items-center gap-1">
-                                                        <CheckCircle2 className="h-3 w-3" />Matched in {row.matchedIn.length} polic{row.matchedIn.length !== 1 ? 'ies' : 'y'}
-                                                    </p>
-                                                    <div className="space-y-1">
-                                                        {row.matchedIn.map((m, i) => (
-                                                            <div key={i} className="flex items-center justify-between text-xs bg-green-50 dark:bg-green-900/20 rounded px-2.5 py-1.5 border border-green-100 dark:border-green-800">
-                                                                <span className="font-medium truncate mr-3">{m.policyName}</span>
-                                                                <ValueCell value={m.value} definitionId={row.definitionId} resolvedMap={resolvedMap} />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {row.conflictedIn.length > 0 && (
-                                                <div className={row.matchedIn.length === 0 ? 'pt-3' : ''}>
-                                                    <p className="text-[10px] font-semibold uppercase text-red-700 dark:text-red-400 mb-1.5 flex items-center gap-1">
-                                                        <AlertTriangle className="h-3 w-3" />Different value in {row.conflictedIn.length} polic{row.conflictedIn.length !== 1 ? 'ies' : 'y'}
-                                                    </p>
-                                                    <div className="space-y-1">
-                                                        {row.conflictedIn.map((c, i) => (
-                                                            <div key={i} className="flex items-center justify-between text-xs bg-red-50 dark:bg-red-900/20 rounded px-2.5 py-1.5 border border-red-100 dark:border-red-800">
-                                                                <span className="font-medium truncate mr-3">{c.policyName}</span>
-                                                                <ValueCell value={c.value} definitionId={row.definitionId} resolvedMap={resolvedMap} />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
+                {filtered.length === 0 && (
+                    <div className="p-8 text-center text-sm text-muted-foreground">No settings match.</div>
                 )}
+
+                <div className="divide-y">
+                    {filtered.map(row => {
+                        const isOpen = expanded.has(row.definitionId);
+                        const cfg = statusCfg[row.overallStatus];
+                        return (
+                            <div key={row.definitionId} className={cfg.rowBg}>
+                                {/* Setting header — click to expand */}
+                                <div
+                                    className="grid grid-cols-[auto_1fr_auto_auto] px-4 py-3 items-center cursor-pointer hover:bg-black/2 dark:hover:bg-white/2 transition-colors"
+                                    onClick={() => toggle(row.definitionId)}
+                                >
+                                    <span className="w-5 shrink-0 text-muted-foreground">
+                                        {isOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                                    </span>
+                                    <span className="text-xs font-medium pr-4">{row.name}</span>
+                                    <span className="px-4 w-48 min-w-0" onClick={e => e.stopPropagation()}>
+                                        {row.sourceValue
+                                            ? <ValueCell value={row.sourceValue} definitionId={row.definitionId} resolvedMap={resolvedMap} />
+                                            : <span className="text-xs italic text-muted-foreground/50">—</span>}
+                                    </span>
+                                    <span className="w-32 flex justify-end shrink-0">
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[10px] font-medium ${cfg.badge}`}>
+                                            {cfg.icon}{cfg.label}
+                                        </span>
+                                    </span>
+                                </div>
+
+                                {/* Expanded: per right-policy breakdown */}
+                                {isOpen && (
+                                    <div className="border-t bg-background/60 divide-y">
+                                        {row.perPolicy.length === 0 && (
+                                            <p className="px-10 py-2 text-xs text-muted-foreground italic">No right policies compared.</p>
+                                        )}
+                                        {row.perPolicy.map(entry => {
+                                            const sc = stateConfig[entry.state];
+                                            // Detect "phantom conflict": parent values look the same but child differs
+                                            const phantomConflict = entry.state === 'InBothDifferent'
+                                                && entry.checkedValue
+                                                && row.sourceValue === entry.checkedValue
+                                                && (entry.childSettings?.length ?? 0) > 0;
+                                            return (
+                                                <div key={entry.policyId} className="text-xs border-b last:border-b-0">
+                                                    {/* Policy name + top-level values + badge */}
+                                                    <div className="grid grid-cols-[1fr_auto_auto] gap-4 px-10 py-2 items-center">
+                                                        <span className="text-muted-foreground font-medium truncate">{entry.policyName}</span>
+                                                        <span className="w-48 min-w-0">
+                                                            {entry.checkedValue && entry.state !== 'InSource'
+                                                                ? <ValueCell value={entry.checkedValue} definitionId={row.definitionId} resolvedMap={resolvedMap} />
+                                                                : <span className="italic text-muted-foreground/40">—</span>}
+                                                        </span>
+                                                        <span className="w-32 flex justify-end shrink-0">
+                                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[10px] font-medium ${sc.badge}`}>
+                                                                {sc.icon}{sc.short}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Child setting differences — shown when conflict is in a child */}
+                                                    {phantomConflict && entry.childSettings!.map((child, ci) => {
+                                                        const isDiff = child.sourceValue !== child.targetValue;
+                                                        if (!isDiff) return null;
+                                                        return (
+                                                            <div key={ci} className="mx-10 mb-2 rounded border border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/10 px-3 py-2 space-y-1">
+                                                                <p className="text-[10px] font-semibold text-red-700 dark:text-red-400 uppercase tracking-wide">
+                                                                    Child conflict — {child.name}
+                                                                </p>
+                                                                <div className="grid grid-cols-2 gap-2">
+                                                                    <div>
+                                                                        <p className="text-[10px] text-muted-foreground mb-0.5">Source</p>
+                                                                        <span className="text-xs font-medium">{child.sourceValue}</span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-[10px] text-muted-foreground mb-0.5">This policy</p>
+                                                                        <span className="text-xs font-medium text-red-700 dark:text-red-400">{child.targetValue}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
             </Card>
         </div>
     );
@@ -1047,7 +1074,7 @@ function SetAnalysisView({ items, summary, resolvedMap }: {
             <Card className="overflow-hidden">
                 <div className="grid grid-cols-[2fr_2fr_2fr_auto] gap-3 px-4 py-2.5 bg-muted/10 border-b text-xs font-medium text-muted-foreground">
                     <span>Setting</span>
-                    <span className="text-blue-700 dark:text-blue-300">← Left policies</span>
+                    <span className="text-blue-700 dark:text-blue-300">← Source value</span>
                     <span className="text-purple-700 dark:text-purple-300">Right policies →</span>
                     <span className="w-32 text-right">Status</span>
                 </div>
@@ -1058,109 +1085,68 @@ function SetAnalysisView({ items, summary, resolvedMap }: {
                         const isExpanded = expandedIds.has(item.settingDefinitionId);
                         return (
                             <div key={item.settingDefinitionId} className={`border-b last:border-b-0 ${cfg.row}`}>
-                                {/* Collapsed row */}
                                 <div className="grid grid-cols-[2fr_2fr_2fr_auto] gap-3 px-4 py-2.5 items-start cursor-pointer hover:bg-muted/10"
                                     onClick={() => toggle(item.settingDefinitionId)}>
-                                    {/* Setting name */}
                                     <div className="flex items-start gap-1.5 min-w-0">
-                                        {isExpanded
-                                            ? <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
-                                            : <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />}
+                                        {isExpanded ? <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" /> : <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />}
                                         <div className="min-w-0">
-                                            <span className="text-xs font-medium break-words">{item.settingName}</span>
-                                            {item.settingName !== item.settingDefinitionId && (
-                                                <span className="block font-mono text-[10px] text-muted-foreground/50 break-all">{item.settingDefinitionId}</span>
-                                            )}
+                                            <span className="text-xs font-medium">{item.settingName}</span>
                                         </div>
                                     </div>
-                                    {/* Left summary */}
-                                    <div className="min-w-0 space-y-0.5" onClick={e => e.stopPropagation()}>
+                                    <div className="min-w-0 space-y-0.5">
                                         {item.leftOccurrences.length === 0
                                             ? <span className="italic text-muted-foreground/50 text-xs">—</span>
-                                            : (() => {
-                                                const uniqueVals = [...new Map(item.leftOccurrences.map(o => [o.value, o])).values()];
-                                                return uniqueVals.map((o, i) => {
-                                                    const friendly = resolvedMap.size > 0
-                                                        ? resolveValue(o.value, item.settingDefinitionId, resolvedMap).primary
-                                                        : o.value;
-                                                    return <div key={i} className="text-xs text-blue-800 dark:text-blue-200">{friendly}</div>;
-                                                });
-                                            })()
+                                            : [...new Map(item.leftOccurrences.map(o => [o.value, o])).values()].map((o, i) => (
+                                                <div key={i} className="text-xs text-blue-800 dark:text-blue-200">
+                                                    <ValueCell value={o.value} definitionId={item.settingDefinitionId} resolvedMap={resolvedMap} />
+                                                </div>
+                                            ))
                                         }
-                                        {item.leftOccurrences.length > 0 && (
-                                            <span className="text-[10px] text-muted-foreground">{item.leftOccurrences.length} {item.leftOccurrences.length === 1 ? 'policy' : 'policies'}</span>
-                                        )}
+                                        {item.leftOccurrences.length > 0 && <span className="text-[10px] text-muted-foreground">{item.leftOccurrences.length} {item.leftOccurrences.length === 1 ? 'policy' : 'policies'}</span>}
                                     </div>
-                                    {/* Right summary */}
-                                    <div className="min-w-0 space-y-0.5" onClick={e => e.stopPropagation()}>
+                                    <div className="min-w-0 space-y-0.5">
                                         {item.rightOccurrences.length === 0
                                             ? <span className="italic text-muted-foreground/50 text-xs">—</span>
-                                            : (() => {
-                                                const uniqueVals = [...new Map(item.rightOccurrences.map(o => [o.value, o])).values()];
-                                                return uniqueVals.map((o, i) => {
-                                                    const friendly = resolvedMap.size > 0
-                                                        ? resolveValue(o.value, item.settingDefinitionId, resolvedMap).primary
-                                                        : o.value;
-                                                    return <div key={i} className="text-xs text-purple-800 dark:text-purple-200">{friendly}</div>;
-                                                });
-                                            })()
+                                            : [...new Map(item.rightOccurrences.map(o => [o.value, o])).values()].map((o, i) => (
+                                                <div key={i} className="text-xs text-purple-800 dark:text-purple-200">
+                                                    <ValueCell value={o.value} definitionId={item.settingDefinitionId} resolvedMap={resolvedMap} />
+                                                </div>
+                                            ))
                                         }
-                                        {item.rightOccurrences.length > 0 && (
-                                            <span className="text-[10px] text-muted-foreground">{item.rightOccurrences.length} {item.rightOccurrences.length === 1 ? 'policy' : 'policies'}</span>
-                                        )}
+                                        {item.rightOccurrences.length > 0 && <span className="text-[10px] text-muted-foreground">{item.rightOccurrences.length} {item.rightOccurrences.length === 1 ? 'policy' : 'policies'}</span>}
                                     </div>
-                                    <div className="shrink-0 w-32 flex justify-end">
+                                    <div className="w-32 flex justify-end">
                                         <SetAnalysisStatusBadge status={item.status} />
                                     </div>
                                 </div>
-
-                                {/* Expanded per-policy detail */}
                                 {isExpanded && (
-                                    <div className="px-4 pb-4 pt-2 border-t bg-muted/5">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p className="text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase tracking-wider mb-2">
-                                                    Left — {item.leftOccurrences.length} {item.leftOccurrences.length === 1 ? 'policy' : 'policies'}
-                                                </p>
-                                                {item.leftOccurrences.length === 0
-                                                    ? <span className="italic text-xs text-muted-foreground/50">Not present</span>
-                                                    : <div className="space-y-1.5">
-                                                        {item.leftOccurrences.map((o, i) => {
-                                                            const friendly = resolvedMap.size > 0
-                                                                ? resolveValue(o.value, item.settingDefinitionId, resolvedMap).primary
-                                                                : o.value;
-                                                            return (
-                                                                <div key={i} className="text-xs space-y-0.5">
-                                                                    <p className="font-medium text-blue-700 dark:text-blue-300 truncate" title={o.policyName}>{o.policyName}</p>
-                                                                    <p className="text-muted-foreground">{friendly}</p>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                }
+                                    <div className="px-4 pb-3 pt-0 border-t bg-background/50 space-y-3">
+                                        {item.leftOccurrences.length > 0 && (
+                                            <div className="pt-3">
+                                                <p className="text-[10px] font-semibold uppercase text-blue-700 mb-1.5">Left policies</p>
+                                                <div className="space-y-1">
+                                                    {item.leftOccurrences.map((o, i) => (
+                                                        <div key={i} className="flex items-center justify-between text-xs bg-blue-50 dark:bg-blue-900/20 rounded px-2.5 py-1.5 border border-blue-100 dark:border-blue-800 gap-3">
+                                                            <span className="font-medium truncate">{o.policyName}</span>
+                                                            <ValueCell value={o.value} definitionId={item.settingDefinitionId} resolvedMap={resolvedMap} />
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-[10px] font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider mb-2">
-                                                    Right — {item.rightOccurrences.length} {item.rightOccurrences.length === 1 ? 'policy' : 'policies'}
-                                                </p>
-                                                {item.rightOccurrences.length === 0
-                                                    ? <span className="italic text-xs text-muted-foreground/50">Not present</span>
-                                                    : <div className="space-y-1.5">
-                                                        {item.rightOccurrences.map((o, i) => {
-                                                            const friendly = resolvedMap.size > 0
-                                                                ? resolveValue(o.value, item.settingDefinitionId, resolvedMap).primary
-                                                                : o.value;
-                                                            return (
-                                                                <div key={i} className="text-xs space-y-0.5">
-                                                                    <p className="font-medium text-purple-700 dark:text-purple-300 truncate" title={o.policyName}>{o.policyName}</p>
-                                                                    <p className="text-muted-foreground">{friendly}</p>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                }
+                                        )}
+                                        {item.rightOccurrences.length > 0 && (
+                                            <div className={item.leftOccurrences.length === 0 ? 'pt-3' : ''}>
+                                                <p className="text-[10px] font-semibold uppercase text-purple-700 mb-1.5">Right policies</p>
+                                                <div className="space-y-1">
+                                                    {item.rightOccurrences.map((o, i) => (
+                                                        <div key={i} className="flex items-center justify-between text-xs bg-purple-50 dark:bg-purple-900/20 rounded px-2.5 py-1.5 border border-purple-100 dark:border-purple-800 gap-3">
+                                                            <span className="font-medium truncate">{o.policyName}</span>
+                                                            <ValueCell value={o.value} definitionId={item.settingDefinitionId} resolvedMap={resolvedMap} />
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -1168,35 +1154,28 @@ function SetAnalysisView({ items, summary, resolvedMap }: {
                     })
                 }
             </Card>
-            <p className="text-xs text-muted-foreground text-right">Showing {filtered.length} of {total} settings</p>
         </div>
     );
 }
 
-// ── Scope tag filter ───────────────────────────────────────────────────────────
+// ── ScopeTagFilter ─────────────────────────────────────────────────────────────
 
 function ScopeTagFilter({ scopeTags, value, onChange, label }: {
-    scopeTags: ScopeTag[];
-    value: string;
-    onChange: (v: string) => void;
-    label: string;
+    scopeTags: ScopeTag[]; value: string; onChange: (v: string) => void; label?: string;
 }) {
+    if (!scopeTags.length) return null;
     return (
         <div className="flex items-center gap-2">
-            <label className="text-xs text-muted-foreground whitespace-nowrap">{label}</label>
+            {label && <span className="text-xs text-muted-foreground shrink-0">{label}</span>}
             <select value={value} onChange={e => onChange(e.target.value)}
-                className="flex-1 rounded border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary/50">
+                className="border rounded px-2 py-1 text-xs bg-background outline-none focus:ring-1 focus:ring-primary/50 flex-1">
                 <option value="">All scope tags</option>
                 {scopeTags.map(t => <option key={t.id} value={t.id}>{t.displayName}</option>)}
             </select>
-            {value && (
-                <button onClick={() => onChange('')} className="text-muted-foreground hover:text-foreground">
-                    <X className="h-3.5 w-3.5" />
-                </button>
-            )}
+            {value && <button onClick={() => onChange('')} className="text-muted-foreground hover:text-foreground"><X className="h-3.5 w-3.5" /></button>}
         </div>
     );
-}
+    }
 
 // ── Main page ──────────────────────────────────────────────────────────────────
 
@@ -1494,56 +1473,87 @@ export default function PolicyComparison() {
         };
     }, [results]);
 
-    /** Per-setting aggregate across ALL compared policies.
-     *  Priority: InBothTheSame > InBothDifferent > InSource (not in any policy) */
     const settingCoverage = useMemo((): SettingCoverageRow[] => {
         if (!results.length) return [];
-        // Collect all settings that come from the source (new) policy
-        // i.e. InSource, InBothTheSame, InBothDifferent — anything the new policy *has*
+
         const map = new Map<string, SettingCoverageRow>();
 
         for (const r of results) {
             for (const c of r.checkResults ?? []) {
-                if (c.settingCheckState === 'InChecked') continue; // only in existing, not in new policy
-                const key = c.id;
+                // Normalize key: strip child-instance numeric suffix (_1, _2 …) so that
+                // "...dynamiccodesettings_1" merges into "...dynamiccodesettings".
+                const rawKey = c.definitionId ?? c.id;
+                const key = rawKey.replace(/_\d+$/, '');
+                const isInChecked = c.settingCheckState === 'InChecked';
+
                 if (!map.has(key)) {
                     map.set(key, {
-                        id: c.id,
-                        definitionId: c.definitionId ?? c.id,
+                        definitionId: key,
                         name: c.name,
-                        sourceValue: c.values?.sourceValue ?? '',
-                        status: 'notInTenant',
-                        matchedIn: [],
-                        conflictedIn: [],
+                        sourceValue: isInChecked ? '' : (c.values?.sourceValue ?? ''),
+                        perPolicy: [],
+                        overallStatus: 'notCovered',
+                    });
+                } else if (!map.get(key)!.name.includes('(') && c.name.includes('(')) {
+                    // Parent name (no suffix) wins over child name like "Dynamic Code Settings (Device)"
+                    // — do nothing, keep existing name
+                } else if (map.get(key)!.name.includes('(') && !c.name.includes('(')) {
+                    // If we stored a child name first, replace with the cleaner parent name
+                    map.get(key)!.name = c.name;
+                }
+
+                const row = map.get(key)!;
+
+                // Keep sourceValue from the first non-checked entry
+                if (!isInChecked && !row.sourceValue) {
+                    row.sourceValue = c.values?.sourceValue ?? '';
+                }
+
+                // One entry per checked policy (dedup)
+                if (!row.perPolicy.some(e => e.policyId === r.checkedPolicyId)) {
+                    row.perPolicy.push({
+                        policyId:     r.checkedPolicyId,
+                        policyName:   r.checkedPolicyName,
+                        state:        c.settingCheckState,
+                        checkedValue: c.values?.checkedValue ?? '',
+                        differences:  c.differences ?? undefined,
+                        childSettings: (c.childSettings?.length ?? 0) > 0 ? c.childSettings : undefined,
                     });
                 }
-                const row = map.get(key)!;
-                if (c.settingCheckState === 'InBothTheSame') {
-                    row.matchedIn.push({ policyName: r.checkedPolicyName, value: c.values?.checkedValue ?? '' });
-                } else if (c.settingCheckState === 'InBothDifferent') {
-                    row.conflictedIn.push({ policyName: r.checkedPolicyName, value: c.values?.checkedValue ?? '' });
-                }
-                // Re-derive status from accumulated data
-                if (row.matchedIn.length > 0) {
-                    row.status = 'covered';
-                } else if (row.conflictedIn.length > 0) {
-                    row.status = 'conflict';
+
+                // Derive overall status from ALL perPolicy entries collected so far:
+                // Priority: covered > conflict > notCovered > onlyInRight
+                const states = row.perPolicy.map(e => e.state);
+                const hasMatch    = states.includes('InBothTheSame');
+                const hasConflict = states.includes('InBothDifferent');
+                const hasInSource = states.includes('InSource');
+                const allOnlyRight = states.every(s => s === 'InChecked');
+
+                if (hasMatch) {
+                    row.overallStatus = 'covered';        //  covered by at least one
+                } else if (hasConflict) {
+                    row.overallStatus = 'conflict';       //  exists but wrong value
+                } else if (hasInSource || (!hasMatch && !hasConflict && !allOnlyRight)) {
+                    row.overallStatus = 'notCovered';     // ➖ gap — not in any right policy
+                } else if (allOnlyRight) {
+                    row.overallStatus = 'onlyInRight';    //  only in right, not in source
                 }
             }
         }
 
-        // Sort: notInTenant first, then conflict, then covered
-        const order: Record<SettingOverallStatus, number> = { notInTenant: 0, conflict: 1, covered: 2 };
-        return [...map.values()].sort((a, b) => order[a.status] - order[b.status]);
+        // Sort: conflict → notCovered → covered → onlyInRight
+        const order: Record<SettingOverallStatus, number> = { conflict: 0, notCovered: 1, covered: 2, onlyInRight: 3 };
+        return [...map.values()].sort((a, b) => order[a.overallStatus] - order[b.overallStatus]);
     }, [results]);
 
     const coverageSummary = useMemo(() => {
         if (!settingCoverage.length) return null;
-        const total = settingCoverage.length;
-        const covered = settingCoverage.filter(s => s.status === 'covered').length;
-        const conflict = settingCoverage.filter(s => s.status === 'conflict').length;
-        const notInTenant = settingCoverage.filter(s => s.status === 'notInTenant').length;
-        return { total, covered, conflict, notInTenant };
+        const total      = settingCoverage.length;
+        const covered    = settingCoverage.filter(s => s.overallStatus === 'covered').length;
+        const conflict   = settingCoverage.filter(s => s.overallStatus === 'conflict').length;
+        const notCovered = settingCoverage.filter(s => s.overallStatus === 'notCovered').length;
+        const onlyInRight = settingCoverage.filter(s => s.overallStatus === 'onlyInRight').length;
+        return { total, covered, conflict, notCovered, onlyInRight };
     }, [settingCoverage]);
 
     const exportCSV = () => {
@@ -1783,9 +1793,9 @@ export default function PolicyComparison() {
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-blue-500/10"><Sparkles className="h-5 w-5 text-blue-600" /></div>
                                         <div>
-                                            <p className="text-xs text-muted-foreground">Not in tenant</p>
-                                            <p className={`text-2xl font-bold ${coverageSummary.notInTenant > 0 ? 'text-blue-600' : 'text-green-600'}`}>{smartPct(coverageSummary.notInTenant, coverageSummary.total)}</p>
-                                            <p className="text-xs text-muted-foreground">{coverageSummary.notInTenant} of {coverageSummary.total} settings</p>
+                                            <p className="text-xs text-muted-foreground">Not covered</p>
+                                            <p className={`text-2xl font-bold ${coverageSummary.notCovered > 0 ? 'text-amber-600' : 'text-green-600'}`}>{smartPct(coverageSummary.notCovered, coverageSummary.total)}</p>
+                                            <p className="text-xs text-muted-foreground">{coverageSummary.notCovered} of {coverageSummary.total} settings</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -1823,7 +1833,6 @@ export default function PolicyComparison() {
                     {activeTab === 'coverage' && coverageSummary && (
                         <CoverageTab
                             rows={settingCoverage}
-                            summary={coverageSummary}
                             resolvedMap={resolvedMap}
                         />
                     )}

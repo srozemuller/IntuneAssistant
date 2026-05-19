@@ -1,0 +1,4026 @@
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([typeof document === "object" ? document.currentScript : undefined,
+"[project]/app/compare/configuration/page.tsx [app-client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>ConfigurationComparePage
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@azure/msal-react/dist/index.js [app-client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@azure/msal-react/dist/hooks/useMsal.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/ui/button.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/ui/card.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/ui/badge.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/upload.js [app-client] (ecmascript) <export default as Upload>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$json$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileJson$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/file-json.js [app-client] (ecmascript) <export default as FileJson>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/x.js [app-client] (ecmascript) <export default as X>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$search$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Search$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/search.js [app-client] (ecmascript) <export default as Search>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/refresh-cw.js [app-client] (ecmascript) <export default as RefreshCw>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-down.js [app-client] (ecmascript) <export default as ChevronDown>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-right.js [app-client] (ecmascript) <export default as ChevronRight>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-check.js [app-client] (ecmascript) <export default as CheckCircle2>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-x.js [app-client] (ecmascript) <export default as XCircle>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/triangle-alert.js [app-client] (ecmascript) <export default as AlertTriangle>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$minus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MinusCircle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-minus.js [app-client] (ecmascript) <export default as MinusCircle>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$left$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowLeftRight$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/arrow-left-right.js [app-client] (ecmascript) <export default as ArrowLeftRight>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/info.js [app-client] (ecmascript) <export default as Info>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$download$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Download$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/download.js [app-client] (ecmascript) <export default as Download>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$layers$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Layers$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/layers.js [app-client] (ecmascript) <export default as Layers>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield-check.js [app-client] (ecmascript) <export default as ShieldCheck>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldAlert$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield-alert.js [app-client] (ecmascript) <export default as ShieldAlert>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/constants.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useApiRequest.ts [app-client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.signature(), _s2 = __turbopack_context__.k.signature();
+'use client';
+;
+;
+;
+;
+;
+;
+;
+;
+// ── OData type → PolicyKind ───────────────────────────────────────────────────
+function detectPolicyKind(odataType) {
+    const t = odataType.toLowerCase();
+    if (t.includes('devicemanagementconfigurationpolicy')) return 'SettingsCatalog';
+    if (t.includes('grouppolicyconfiguration')) return 'GroupPolicy';
+    if (t.includes('deviceconfiguration') || t.includes('android') || t.includes('ios') || t.includes('macos') || t.includes('windows')) return 'DeviceConfig';
+    return 'Unknown';
+}
+// ── JSON parsers ──────────────────────────────────────────────────────────────
+function buildDefinitionMap(raw) {
+    const map = new Map();
+    const defs = raw['settingDefinitions'];
+    if (!defs) return map;
+    for (const def of defs){
+        var _this;
+        const id = (_this = def['id']) === null || _this === void 0 ? void 0 : _this.toLowerCase();
+        if (!id) continue;
+        const displayName = def['displayName'] || def['name'] || id;
+        const optionMap = new Map();
+        const options = def['options'];
+        if (options) {
+            for (const opt of options){
+                var _this1;
+                const itemId = (_this1 = opt['itemId']) === null || _this1 === void 0 ? void 0 : _this1.toLowerCase();
+                const label = opt['displayName'] || opt['name'] || '';
+                if (itemId && label) optionMap.set(itemId, label);
+            }
+        }
+        map.set(id, {
+            displayName,
+            optionMap
+        });
+    }
+    return map;
+}
+function parseSettingInstance(instance, defMap) {
+    const defId = instance['settingDefinitionId'];
+    if (!defId) return null;
+    let value = '';
+    let friendlyValue;
+    const children = [];
+    const defEntry = defMap === null || defMap === void 0 ? void 0 : defMap.get(defId.toLowerCase());
+    var _defEntry_displayName;
+    const displayName = (_defEntry_displayName = defEntry === null || defEntry === void 0 ? void 0 : defEntry.displayName) !== null && _defEntry_displayName !== void 0 ? _defEntry_displayName : defId;
+    const choiceVal = instance['choiceSettingValue'];
+    const simpleVal = instance['simpleSettingValue'];
+    const collectionVal = instance['choiceSettingCollectionValue'];
+    const simpleCollectionVal = instance['simpleSettingCollectionValue'];
+    if (choiceVal) {
+        var _ref;
+        value = (_ref = choiceVal['value']) !== null && _ref !== void 0 ? _ref : '';
+        // Friendly: options map → strip prefix suffix → raw
+        const fv = defEntry === null || defEntry === void 0 ? void 0 : defEntry.optionMap.get(value.toLowerCase());
+        const suffix = value.toLowerCase().startsWith(defId.toLowerCase() + '_') ? value.slice(defId.length + 1) : undefined;
+        const candidate = fv !== null && fv !== void 0 ? fv : suffix;
+        if (candidate && candidate !== value) friendlyValue = candidate;
+        const childArr = choiceVal['children'];
+        if (childArr) {
+            for (const child of childArr){
+                const cp = parseSettingInstance(child, defMap);
+                if (cp) children.push({
+                    name: cp.id,
+                    value: cp.value,
+                    friendlyName: cp.displayName !== cp.id ? cp.displayName : undefined,
+                    friendlyValue: cp.friendlyValue
+                });
+            }
+        }
+    } else if (simpleVal) {
+        var _simpleVal_value;
+        value = String((_simpleVal_value = simpleVal['value']) !== null && _simpleVal_value !== void 0 ? _simpleVal_value : '');
+    } else if (collectionVal) {
+        value = collectionVal.map((c)=>{
+            var _ref;
+            return (_ref = c['value']) !== null && _ref !== void 0 ? _ref : '';
+        }).join(', ');
+        const fvParts = collectionVal.map((c)=>{
+            var _ref;
+            const raw = (_ref = c['value']) !== null && _ref !== void 0 ? _ref : '';
+            const mapped = defEntry === null || defEntry === void 0 ? void 0 : defEntry.optionMap.get(raw.toLowerCase());
+            const suffix = raw.toLowerCase().startsWith(defId.toLowerCase() + '_') ? raw.slice(defId.length + 1) : undefined;
+            var _ref1;
+            return (_ref1 = mapped !== null && mapped !== void 0 ? mapped : suffix) !== null && _ref1 !== void 0 ? _ref1 : raw;
+        });
+        const joined = fvParts.join(', ');
+        if (joined !== value) friendlyValue = joined;
+    } else if (simpleCollectionVal) {
+        value = simpleCollectionVal.map((c)=>{
+            var _c_value;
+            return String((_c_value = c['value']) !== null && _c_value !== void 0 ? _c_value : '');
+        }).join(', ');
+    }
+    return {
+        id: defId,
+        displayName,
+        value,
+        friendlyValue,
+        childSettings: children.length ? children : undefined
+    };
+}
+function extractSettingsCatalogSettings(raw, defMap) {
+    const settings = raw['settings'];
+    if (!settings) return [];
+    const result = [];
+    for (const s of settings){
+        const instance = s['settingInstance'];
+        if (!instance) continue;
+        const parsed = parseSettingInstance(instance, defMap);
+        if (parsed) result.push(parsed);
+    }
+    return result;
+}
+const EXCLUDED_DEVICE_CONFIG_KEYS = new Set([
+    '@odata.context',
+    '@odata.type',
+    '@odata.id',
+    '@odata.editLink',
+    'id',
+    'createdDateTime',
+    'lastModifiedDateTime',
+    'version',
+    'supportsScopeTags',
+    'roleScopeTagIds',
+    'assignments',
+    'description',
+    'displayName',
+    'name',
+    'deviceManagementApplicabilityRuleOsEdition',
+    'deviceManagementApplicabilityRuleOsVersion',
+    'deviceManagementApplicabilityRuleDeviceMode',
+    'createdDateTimeOdataType',
+    'lastModifiedDateTimeOdataType',
+    'roleScopeTagIdsOdataType',
+    'omaSettings',
+    'deviceConfigSettings',
+    'kioskProfiles'
+]);
+/** Extract an app identifier from a kiosk app object (various Graph API shapes) */ function extractKioskAppId(app) {
+    var _ref, _ref1, _ref2, _ref3;
+    return (_ref3 = (_ref2 = (_ref1 = (_ref = app['appUserModelId']) !== null && _ref !== void 0 ? _ref : app['desktopApplicationId']) !== null && _ref1 !== void 0 ? _ref1 : app['storeAppIdentifier']) !== null && _ref2 !== void 0 ? _ref2 : app['packageFamilyName']) !== null && _ref3 !== void 0 ? _ref3 : '';
+}
+/** Format a kioskProfile object into a summary string matching the tenant API format.
+ *  Tenant format: "Profile: {name}, Users: {type}, AppType: MultiApp, TaskbarOff, Apps: [id1 | id2]"
+ */ function formatKioskProfile(profile) {
+    var _ref;
+    const profileName = (_ref = profile['profileName']) !== null && _ref !== void 0 ? _ref : '';
+    const appCfg = profile['appConfiguration'];
+    var _appCfg_odatatype;
+    const appType = (_appCfg_odatatype = appCfg === null || appCfg === void 0 ? void 0 : appCfg['@odata.type']) !== null && _appCfg_odatatype !== void 0 ? _appCfg_odatatype : '';
+    const isMultiApp = appType.toLowerCase().includes('multipleapps') || appType.toLowerCase().includes('multiapp');
+    const appTypeLabel = isMultiApp ? 'MultiApp' : 'SingleApp';
+    // Apps
+    const apps = [];
+    if (isMultiApp) {
+        const appArr = appCfg === null || appCfg === void 0 ? void 0 : appCfg['apps'];
+        appArr === null || appArr === void 0 ? void 0 : appArr.forEach((a)=>{
+            const id = extractKioskAppId(a);
+            if (id) apps.push(id);
+        });
+    } else {
+        const singleApp = appCfg === null || appCfg === void 0 ? void 0 : appCfg['app'];
+        if (singleApp) {
+            const id = extractKioskAppId(singleApp);
+            if (id) apps.push(id);
+        }
+    }
+    // Taskbar
+    const showTaskBar = appCfg === null || appCfg === void 0 ? void 0 : appCfg['showTaskBar'];
+    const taskbarPart = showTaskBar === false ? ', TaskbarOff' : '';
+    // Users — tenant shows "Unknown" when userAccountsConfiguration is empty/autologon
+    const userCfg = profile['userAccountsConfiguration'];
+    var _ref1;
+    const userType = userCfg && userCfg.length > 0 ? ((_ref1 = userCfg[0]['@odata.type']) !== null && _ref1 !== void 0 ? _ref1 : 'Unknown').replace('#microsoft.graph.', '') : 'Unknown';
+    const appsStr = apps.length > 0 ? ", Apps: [".concat(apps.join(' | '), "]") : '';
+    const value = "Profile: ".concat(profileName, ", Users: ").concat(userType, ", AppType: ").concat(appTypeLabel).concat(taskbarPart).concat(appsStr);
+    const displayName = "KioskProfile: ".concat(profileName || 'unnamed', " (").concat(appTypeLabel, ")");
+    return {
+        value,
+        displayName
+    };
+}
+/** Compare an uploaded kiosk profile formatted value against the tenant's summary string.
+ *  Checks app IDs, app type, and taskbar setting. */ function compareKioskValues(uploadedValue, tenantValue) {
+    const t = tenantValue.toLowerCase();
+    const u = uploadedValue.toLowerCase();
+    // Must agree on MultiApp vs SingleApp
+    const uMulti = u.includes('multiapp');
+    const tMulti = t.includes('multiapp');
+    if (uMulti !== tMulti) return false;
+    // Taskbar: if uploaded says TaskbarOff, tenant must too (and vice versa)
+    const uTaskbarOff = u.includes('taskbaroff');
+    const tTaskbarOff = t.includes('taskbaroff');
+    if (uTaskbarOff !== tTaskbarOff) return false;
+    // Apps: every app ID in the uploaded value must appear in the tenant value
+    const appsMatch = u.match(/apps:\s*\[([^\]]*)\]/);
+    if (appsMatch) {
+        const uploadedApps = appsMatch[1].split('|').map((a)=>a.trim()).filter(Boolean);
+        if (!uploadedApps.every((a)=>t.includes(a))) return false;
+    }
+    return true;
+}
+function extractDeviceConfigSettings(raw) {
+    // 0. Kiosk profiles: windows10KioskConfiguration has kioskProfiles[] where each
+    //    profile maps to a KioskProfile[{id}] entry in the tenant response.
+    const kioskProfiles = raw['kioskProfiles'];
+    if (Array.isArray(kioskProfiles) && kioskProfiles.length > 0) {
+        return kioskProfiles.map((profile)=>{
+            var _ref;
+            const id = (_ref = profile['id']) !== null && _ref !== void 0 ? _ref : '';
+            const { value, displayName } = formatKioskProfile(profile);
+            return {
+                id: "KioskProfile[".concat(id, "]"),
+                displayName,
+                value,
+                friendlyValue: value
+            };
+        });
+    }
+    // 1. Raw Graph API format: omaSettings[] — windows10CustomConfiguration exported directly from Graph
+    const omaArr = raw['omaSettings'];
+    if (Array.isArray(omaArr) && omaArr.length > 0) {
+        return omaArr.map((s)=>{
+            var _ref;
+            const omaUri = (_ref = s['omaUri']) !== null && _ref !== void 0 ? _ref : '';
+            var _ref1;
+            const displayName = (_ref1 = s['displayName']) !== null && _ref1 !== void 0 ? _ref1 : omaUri;
+            var _ref2;
+            const odataType = ((_ref2 = s['@odata.type']) !== null && _ref2 !== void 0 ? _ref2 : '').toLowerCase();
+            // XML settings (e.g. AssignedAccess kiosk config) — the value is base64 binary.
+            // Use the fileName as the friendly value; keep base64 as raw value so it's preserved.
+            if (odataType.includes('omasettingstringxml')) {
+                var _ref3;
+                const fileName = (_ref3 = s['fileName']) !== null && _ref3 !== void 0 ? _ref3 : 'config.xml';
+                var _s_value;
+                return {
+                    id: omaUri,
+                    displayName,
+                    value: String((_s_value = s['value']) !== null && _s_value !== void 0 ? _s_value : ''),
+                    friendlyValue: "XML: ".concat(fileName)
+                };
+            }
+            var _s_value1;
+            const value = String((_s_value1 = s['value']) !== null && _s_value1 !== void 0 ? _s_value1 : '');
+            return {
+                id: omaUri,
+                displayName,
+                value
+            };
+        });
+    }
+    // 2. Backend-normalized format: deviceConfigSettings[] with omaUri/name/value
+    const dcArr = raw['deviceConfigSettings'];
+    if (Array.isArray(dcArr) && dcArr.length > 0) {
+        return dcArr.map((s)=>{
+            var _ref;
+            const omaUri = (_ref = s['omaUri']) !== null && _ref !== void 0 ? _ref : '';
+            var _ref1;
+            const name = (_ref1 = s['name']) !== null && _ref1 !== void 0 ? _ref1 : omaUri;
+            var _s_value;
+            const value = String((_s_value = s['value']) !== null && _s_value !== void 0 ? _s_value : '');
+            return {
+                id: omaUri || name,
+                displayName: name,
+                value
+            };
+        });
+    }
+    // 3. Generic flat DeviceConfig: extract meaningful top-level scalar fields,
+    //    skipping all metadata, navigation/association links, action links and nulls.
+    const result = [];
+    for (const [key, val] of Object.entries(raw)){
+        if (val === null || val === undefined) continue;
+        if (EXCLUDED_DEVICE_CONFIG_KEYS.has(key)) continue;
+        // Skip @odata.* annotation keys (e.g. "assignments@odata.context")
+        if (key.includes('@odata.')) continue;
+        // Skip #microsoft.graph.* action link keys
+        if (key.startsWith('#')) continue;
+        // Skip OdataType suffixes
+        if (key.endsWith('OdataType')) continue;
+        // Use String() for primitives so strings aren't wrapped in extra quotes
+        // (JSON.stringify("http://bing.com") → '"http://bing.com"' which mismatches tenant)
+        // For objects: store raw JSON as value (used for comparison) and formatted string as friendlyValue
+        let strVal;
+        let friendlyValue;
+        if (typeof val === 'object') {
+            strVal = JSON.stringify(val);
+            const formatted = formatObjectValue(val);
+            if (formatted) friendlyValue = formatted;
+        } else {
+            strVal = String(val);
+        }
+        result.push({
+            id: key,
+            displayName: key,
+            value: strVal,
+            friendlyValue
+        });
+    }
+    return result;
+}
+function extractGroupPolicySettings(raw) {
+    const defs = raw['definitionValues'];
+    if (!defs) return [];
+    return defs.map((d, i)=>{
+        const def = d['definition'];
+        var _ref;
+        const name = (_ref = def === null || def === void 0 ? void 0 : def['displayName']) !== null && _ref !== void 0 ? _ref : "setting_".concat(i);
+        const enabled = d['enabled'];
+        const pv = d['presentationValues'];
+        let value = enabled === true ? 'Enabled' : enabled === false ? 'Disabled' : 'Unknown';
+        if (pv && pv.length > 0) {
+            const vals = pv.map((p)=>{
+                var _p_presentation, _p_value;
+                return "".concat((_p_presentation = p['presentation']) !== null && _p_presentation !== void 0 ? _p_presentation : '', ": ").concat((_p_value = p['value']) !== null && _p_value !== void 0 ? _p_value : '');
+            }).join('; ');
+            value += " | ".concat(vals);
+        }
+        return {
+            id: name,
+            displayName: name,
+            value
+        };
+    });
+}
+function parseUploadedFile(fileName, raw) {
+    var _ref;
+    const odataType = (_ref = raw['@odata.type']) !== null && _ref !== void 0 ? _ref : '';
+    const kind = detectPolicyKind(odataType);
+    var _ref1, _ref2;
+    const name = (_ref2 = (_ref1 = raw['name']) !== null && _ref1 !== void 0 ? _ref1 : raw['displayName']) !== null && _ref2 !== void 0 ? _ref2 : fileName.replace(/\.json$/i, '');
+    var _ref3, _ref4;
+    const platform = (_ref4 = (_ref3 = raw['platforms']) !== null && _ref3 !== void 0 ? _ref3 : raw['platform']) !== null && _ref4 !== void 0 ? _ref4 : '';
+    const definitionMap = buildDefinitionMap(raw);
+    let settings = [];
+    if (kind === 'SettingsCatalog') settings = extractSettingsCatalogSettings(raw, definitionMap);
+    else if (kind === 'DeviceConfig') settings = extractDeviceConfigSettings(raw);
+    else if (kind === 'GroupPolicy') settings = extractGroupPolicySettings(raw);
+    else settings = extractDeviceConfigSettings(raw);
+    return {
+        fileName,
+        raw,
+        kind,
+        name,
+        platform,
+        odataType,
+        settings,
+        definitionMap
+    };
+}
+// ── Platform matching ─────────────────────────────────────────────────────────
+function normalizePlatform(p) {
+    return p.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+function platformMatches(uploadedPlatform, tenantPlatform) {
+    if (!uploadedPlatform || !tenantPlatform) return true;
+    const u = normalizePlatform(uploadedPlatform);
+    const t = normalizePlatform(tenantPlatform);
+    if (u === t) return true;
+    if ((u.includes('windows') || u.includes('win10') || u.includes('win11')) && (t.includes('windows') || t.includes('win10') || t.includes('win11'))) return true;
+    if (u.includes('ios') && t.includes('ios')) return true;
+    if (u.includes('macos') && t.includes('macos')) return true;
+    if (u.includes('android') && t.includes('android')) return true;
+    return u.includes(t) || t.includes(u);
+}
+// ── Tenant settings normalizer ────────────────────────────────────────────────
+function normalizeTenantSettings(policy) {
+    var _policy_settings, _policy_deviceConfigSettings, _policy_groupPolicySettings;
+    if ((_policy_settings = policy.settings) === null || _policy_settings === void 0 ? void 0 : _policy_settings.length) {
+        return policy.settings.map((s)=>{
+            var _s_settingDefinitions_find, _s_settingDefinitions, _s_childSettingInfo;
+            var _s_settingName, _ref;
+            const displayName = (_ref = (_s_settingName = s.settingName) !== null && _s_settingName !== void 0 ? _s_settingName : (_s_settingDefinitions = s.settingDefinitions) === null || _s_settingDefinitions === void 0 ? void 0 : (_s_settingDefinitions_find = _s_settingDefinitions.find((d)=>d.id === s.id)) === null || _s_settingDefinitions_find === void 0 ? void 0 : _s_settingDefinitions_find.displayName) !== null && _ref !== void 0 ? _ref : s.id;
+            var _s_settingValue, _ref1, _s_settingValueId;
+            return {
+                id: s.id,
+                displayName,
+                value: (_ref1 = (_s_settingValue = s.settingValue) !== null && _s_settingValue !== void 0 ? _s_settingValue : (_s_childSettingInfo = s.childSettingInfo) === null || _s_childSettingInfo === void 0 ? void 0 : _s_childSettingInfo.filter((c)=>c.value != null).map((c)=>"".concat(c.name, ": ").concat(c.value)).join(', ')) !== null && _ref1 !== void 0 ? _ref1 : '',
+                valueId: (_s_settingValueId = s.settingValueId) !== null && _s_settingValueId !== void 0 ? _s_settingValueId : undefined
+            };
+        });
+    }
+    if ((_policy_deviceConfigSettings = policy.deviceConfigSettings) === null || _policy_deviceConfigSettings === void 0 ? void 0 : _policy_deviceConfigSettings.length) {
+        return policy.deviceConfigSettings.map((s)=>{
+            // Use omaUri when present; fall back to name (handles KioskProfile[guid] entries where omaUri is null)
+            const id = s.omaUri && s.omaUri.trim() ? s.omaUri : s.name;
+            return {
+                id,
+                displayName: s.name,
+                value: s.value
+            };
+        });
+    }
+    if ((_policy_groupPolicySettings = policy.groupPolicySettings) === null || _policy_groupPolicySettings === void 0 ? void 0 : _policy_groupPolicySettings.length) {
+        return policy.groupPolicySettings.map((s)=>({
+                id: s.definition.displayName,
+                displayName: s.definition.displayName,
+                value: s.enabled ? 'Enabled' : 'Disabled'
+            }));
+    }
+    return [];
+}
+// ── Value normalization for comparison ────────────────────────────────────────
+//
+// Primary: compare uploaded raw value (full option item ID) against tenant settingValueId.
+// Both are full option item IDs so they can be compared directly as strings.
+// Fallback (DeviceConfig / GroupPolicy): strip the settingId prefix suffix and compare.
+// Special case: JSON object values (e.g. windowsKioskForceUpdateSchedule) — compare
+// the meaningful fields from the uploaded object against the tenant's "Key: Value, ..." string.
+function extractOptionSuffix(settingId, optionId) {
+    const prefix = settingId.toLowerCase() + '_';
+    const lower = optionId.toLowerCase();
+    if (lower.startsWith(prefix)) return lower.slice(prefix.length);
+    return optionId;
+}
+/** Format an ISO datetime string to HH:MM */ function isoToTime(val) {
+    const m = val.match(/T(\d{2}:\d{2})/);
+    return m ? m[1] : val;
+}
+/**
+ * Format a complex object (e.g. windowsKioskForceUpdateSchedule) into a
+ * human-readable "Key: Value, ..." string for display.
+ * Skips @odata.* metadata fields and false boolean flags.
+ */ function formatObjectValue(obj) {
+    const parts = [];
+    for (const [key, val] of Object.entries(obj)){
+        if (key.includes('@odata.') || val === null || val === undefined) continue;
+        // Suppress false booleans (they're the default / unset state)
+        if (typeof val === 'boolean' && !val) continue;
+        // PascalCase key (dayofWeek → DayofWeek, startDateTime → StartDateTime)
+        const fKey = key.charAt(0).toUpperCase() + key.slice(1);
+        let fVal;
+        if (typeof val === 'string' && val.match(/^\d{4}-\d{2}-\d{2}T/)) {
+            fVal = isoToTime(val);
+        } else if (typeof val === 'string') {
+            fVal = val.charAt(0).toUpperCase() + val.slice(1);
+        } else {
+            fVal = String(val);
+        }
+        parts.push("".concat(fKey, ": ").concat(fVal));
+    }
+    return parts.join(', ');
+}
+/**
+ * Compare a JSON-object uploaded value against the tenant's "Key: Value, ..." string.
+ * Extracts all meaningful scalar values from the uploaded object and checks
+ * whether every one of them appears (case-insensitively) in the tenant string.
+ */ function compareObjectWithTenant(uploadedJson, tenantValue) {
+    try {
+        const obj = JSON.parse(uploadedJson);
+        if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return false;
+        const uploaded = [];
+        for (const [key, val] of Object.entries(obj)){
+            if (key.includes('@odata.') || val === null || val === undefined) continue;
+            if (typeof val === 'boolean') {
+                if (!val) continue;
+                uploaded.push('true');
+                continue;
+            }
+            if (typeof val === 'string') {
+                uploaded.push(val.match(/^\d{4}-\d{2}-\d{2}T/) ? isoToTime(val).toLowerCase() : val.toLowerCase());
+            } else if (typeof val === 'number') {
+                uploaded.push(String(val));
+            }
+        }
+        if (uploaded.length === 0) return false;
+        const tenantLower = tenantValue.toLowerCase();
+        return uploaded.every((v)=>tenantLower.includes(v));
+    } catch (e) {
+        return false;
+    }
+}
+function valuesMatch(settingId, uploadedRawValue, tenantValue, tenantValueId) {
+    // Best path: compare full option IDs directly
+    if (tenantValueId) {
+        return uploadedRawValue.toLowerCase() === tenantValueId.toLowerCase();
+    }
+    // KioskProfile[guid] — semantic comparison of formatted summary strings
+    if (settingId.toLowerCase().startsWith('kioskprofile[')) {
+        return compareKioskValues(uploadedRawValue, tenantValue);
+    }
+    // If uploaded value is a JSON object (e.g. windowsKioskForceUpdateSchedule),
+    // do semantic field-level comparison against the tenant's "Key: Value, ..." string
+    const trimmed = uploadedRawValue.trim();
+    if (trimmed.startsWith('{')) {
+        return compareObjectWithTenant(trimmed, tenantValue);
+    }
+    // Fallback: strip prefix from uploaded value and compare against tenant human-readable value
+    const uploadedSuffix = extractOptionSuffix(settingId, uploadedRawValue);
+    // Case-insensitive trim comparison (handles "True" vs "true", "http://…" vs extra whitespace)
+    return uploadedSuffix.toLowerCase().trim() === tenantValue.toLowerCase().trim();
+}
+// ── Analysis engine ───────────────────────────────────────────────────────────
+function analyzePolicy(uploaded, allTenantPolicies) {
+    const platformMatchedPolicies = allTenantPolicies.filter((tp)=>platformMatches(uploaded.platform, tp.platform));
+    // Build map: settingId (lower) → [{policy, value, valueId, displayName}]
+    const tenantSettingMap = new Map();
+    for (const tp of platformMatchedPolicies){
+        for (const ts of normalizeTenantSettings(tp)){
+            const key = ts.id.toLowerCase();
+            if (!tenantSettingMap.has(key)) tenantSettingMap.set(key, []);
+            tenantSettingMap.get(key).push({
+                policy: tp,
+                value: ts.value,
+                valueId: ts.valueId,
+                displayName: ts.displayName
+            });
+        }
+    }
+    const settingAnalyses = uploaded.settings.map((setting)=>{
+        var _hits_find;
+        var _tenantSettingMap_get;
+        let hits = (_tenantSettingMap_get = tenantSettingMap.get(setting.id.toLowerCase())) !== null && _tenantSettingMap_get !== void 0 ? _tenantSettingMap_get : [];
+        // KioskProfile[guid] — GUIDs differ between tenants/policies.
+        // Fall back to content-based matching against ANY KioskProfile[*] tenant entries.
+        if (hits.length === 0 && /^kioskprofile\[/i.test(setting.id)) {
+            for (const [key, tenantHits] of tenantSettingMap.entries()){
+                if (/^kioskprofile\[/i.test(key)) hits = [
+                    ...hits,
+                    ...tenantHits
+                ];
+            }
+        }
+        var _hits_find_displayName;
+        // Resolve friendly setting name from tenant data
+        const resolvedDisplayName = setting.displayName !== setting.id ? setting.displayName : (_hits_find_displayName = (_hits_find = hits.find((h)=>h.displayName && h.displayName !== setting.id)) === null || _hits_find === void 0 ? void 0 : _hits_find.displayName) !== null && _hits_find_displayName !== void 0 ? _hits_find_displayName : setting.id;
+        // Resolve friendly value for the UPLOADED setting:
+        // 1. Already set from options map in uploaded JSON
+        // 2. Borrow tenant's human-readable settingValue when its settingValueId matches our raw value
+        // 3. Suffix-strip fallback (handled by FriendlyValue component)
+        let resolvedFriendlyValue = setting.friendlyValue;
+        if (!resolvedFriendlyValue) {
+            const matchingHit = hits.find((h)=>h.valueId && h.valueId.toLowerCase() === setting.value.toLowerCase());
+            if (matchingHit && matchingHit.value && matchingHit.value !== setting.value) {
+                resolvedFriendlyValue = matchingHit.value;
+            }
+        }
+        const enrichedSetting = resolvedDisplayName !== setting.displayName || resolvedFriendlyValue !== setting.friendlyValue ? {
+            ...setting,
+            displayName: resolvedDisplayName,
+            friendlyValue: resolvedFriendlyValue
+        } : setting;
+        if (hits.length === 0) return {
+            setting: enrichedSetting,
+            occurrences: [],
+            isMissing: true
+        };
+        const defEntry = uploaded.definitionMap.get(setting.id.toLowerCase());
+        const occurrences = hits.map((param)=>{
+            let { policy, value, valueId } = param;
+            const fv = defEntry === null || defEntry === void 0 ? void 0 : defEntry.optionMap.get((valueId !== null && valueId !== void 0 ? valueId : value).toLowerCase());
+            const status = valuesMatch(setting.id, setting.value, value, valueId) ? 'match' : 'conflict';
+            return {
+                tenantPolicy: policy,
+                tenantValue: value,
+                tenantValueId: valueId,
+                friendlyTenantValue: fv && fv !== value ? fv : undefined,
+                status
+            };
+        });
+        // Sort occurrences: assigned (production) first
+        occurrences.sort((a, b)=>(b.tenantPolicy.isAssigned ? 1 : 0) - (a.tenantPolicy.isAssigned ? 1 : 0));
+        return {
+            setting: enrichedSetting,
+            occurrences,
+            isMissing: false
+        };
+    });
+    const totalSettings = uploaded.settings.length;
+    const matchSettings = settingAnalyses.filter((sa)=>!sa.isMissing && sa.occurrences.some((o)=>o.status === 'match')).length;
+    const conflictSettings = settingAnalyses.filter((sa)=>!sa.isMissing && sa.occurrences.every((o)=>o.status === 'conflict')).length;
+    const missingSettings = settingAnalyses.filter((sa)=>sa.isMissing).length;
+    // Assigned (production) breakdown — only considers occurrences from assigned policies
+    const assignedMatchSettings = settingAnalyses.filter((sa)=>!sa.isMissing && sa.occurrences.some((o)=>o.status === 'match' && o.tenantPolicy.isAssigned)).length;
+    const assignedConflictSettings = settingAnalyses.filter((sa)=>!sa.isMissing && sa.occurrences.filter((o)=>o.tenantPolicy.isAssigned).length > 0 && sa.occurrences.filter((o)=>o.tenantPolicy.isAssigned).every((o)=>o.status === 'conflict')).length;
+    return {
+        uploadedPolicy: uploaded,
+        platformMatchedPolicies,
+        settingAnalyses,
+        summary: {
+            totalSettings,
+            matchSettings,
+            conflictSettings,
+            missingSettings,
+            matchPercent: totalSettings === 0 ? 0 : Math.round(matchSettings / totalSettings * 100),
+            conflictPercent: totalSettings === 0 ? 0 : Math.round(conflictSettings / totalSettings * 100),
+            missingPercent: totalSettings === 0 ? 0 : Math.round(missingSettings / totalSettings * 100),
+            platformMatchedPolicyCount: platformMatchedPolicies.length,
+            totalTenantPoliciesOfKind: allTenantPolicies.length,
+            assignedMatchSettings,
+            assignedConflictSettings,
+            assignedMatchPercent: totalSettings === 0 ? 0 : Math.round(assignedMatchSettings / totalSettings * 100),
+            assignedConflictPercent: totalSettings === 0 ? 0 : Math.round(assignedConflictSettings / totalSettings * 100)
+        }
+    };
+}
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function endpointForKind(kind) {
+    if (kind === 'SettingsCatalog') return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["POLICY_SETTINGS_CATALOG_ENDPOINT"];
+    if (kind === 'DeviceConfig') return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["POLICY_SETTINGS_DEVICECONFIG_ENDPOINT"];
+    if (kind === 'GroupPolicy') return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["POLICY_SETTINGS_GROUPPOLICY_ENDPOINT"];
+    return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["POLICY_SETTINGS_DEVICECONFIG_ENDPOINT"];
+}
+const kindLabel = {
+    SettingsCatalog: 'Settings Catalog',
+    DeviceConfig: 'Device Configuration',
+    GroupPolicy: 'Administrative Templates',
+    Unknown: 'Unknown'
+};
+const kindColor = {
+    SettingsCatalog: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    DeviceConfig: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+    GroupPolicy: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+    Unknown: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+};
+function scoreColor(score) {
+    if (score >= 80) return 'text-green-600 dark:text-green-400';
+    if (score >= 50) return 'text-amber-600 dark:text-amber-400';
+    return 'text-red-600 dark:text-red-400';
+}
+function ProgressBar(param) {
+    let { value, color } = param;
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "w-full bg-muted rounded-full h-2 overflow-hidden",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "h-2 rounded-full transition-all ".concat(color),
+            style: {
+                width: "".concat(Math.min(value, 100), "%")
+            }
+        }, void 0, false, {
+            fileName: "[project]/app/compare/configuration/page.tsx",
+            lineNumber: 766,
+            columnNumber: 13
+        }, this)
+    }, void 0, false, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 765,
+        columnNumber: 9
+    }, this);
+}
+_c = ProgressBar;
+/** Skeleton loading banner shown while fetching / resolving */ function LoadingBanner(param) {
+    let { phase, onCancel } = param;
+    const phaseLabel = phase === 'fetching' ? 'Fetching tenant policies…' : 'Resolving setting definitions…';
+    const phaseDesc = phase === 'fetching' ? 'Downloading policy data from your tenant. This may take a moment.' : 'Looking up friendly names for settings not found in the tenant.';
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+        className: "border overflow-hidden",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+            className: "p-4 space-y-4",
+            children: [
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex items-center justify-between gap-4",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "min-w-0",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-sm font-semibold",
+                                    children: phaseLabel
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 784,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-xs text-muted-foreground mt-0.5",
+                                    children: phaseDesc
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 785,
+                                    columnNumber: 25
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 783,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                            variant: "outline",
+                            size: "sm",
+                            onClick: onCancel,
+                            className: "flex-shrink-0 border-destructive/50 text-destructive hover:bg-destructive/10 gap-1.5",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
+                                    className: "h-4 w-4"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 793,
+                                    columnNumber: 25
+                                }, this),
+                                "Cancel"
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 787,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/app/compare/configuration/page.tsx",
+                    lineNumber: 782,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex gap-3 items-center px-1",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "h-3 w-2/5 rounded bg-muted animate-pulse"
+                        }, void 0, false, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 800,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "h-3 w-1/5 rounded bg-muted animate-pulse"
+                        }, void 0, false, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 801,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "h-3 w-16 rounded bg-muted animate-pulse ml-auto"
+                        }, void 0, false, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 802,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/app/compare/configuration/page.tsx",
+                    lineNumber: 799,
+                    columnNumber: 17
+                }, this),
+                [
+                    1,
+                    0.65,
+                    0.4,
+                    0.2
+                ].map((opacity, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex gap-3 items-center px-1",
+                        style: {
+                            opacity
+                        },
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "h-8 w-8 rounded bg-muted animate-pulse flex-shrink-0"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 808,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex-1 space-y-1.5 min-w-0",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "h-2.5 rounded bg-muted animate-pulse",
+                                        style: {
+                                            width: "".concat(60 + i * 7 % 25, "%")
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 810,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "h-2 rounded bg-muted/60 animate-pulse",
+                                        style: {
+                                            width: "".concat(35 + i * 11 % 20, "%")
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 811,
+                                        columnNumber: 29
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 809,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "h-5 w-20 rounded-full bg-muted animate-pulse flex-shrink-0"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 813,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, i, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 807,
+                        columnNumber: 21
+                    }, this))
+            ]
+        }, void 0, true, {
+            fileName: "[project]/app/compare/configuration/page.tsx",
+            lineNumber: 780,
+            columnNumber: 13
+        }, this)
+    }, void 0, false, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 779,
+        columnNumber: 9
+    }, this);
+}
+_c1 = LoadingBanner;
+/** Turns a raw setting ID into a best-effort human readable string by taking
+ *  the last meaningful segment (after known vendor prefixes) and title-casing it. */ function humanizeSettingId(id) {
+    // Strip common vendor prefix segments
+    const stripped = id.replace(/^device_vendor_msft_/i, '').replace(/^user_vendor_msft_/i, '');
+    // Take the last segment as the most specific part
+    const parts = stripped.split('_');
+    // Title-case each word
+    return parts.map((p)=>p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+}
+/** Shows the friendly name prominently; raw ID in muted small text underneath (only if different) */ function FriendlyName(param) {
+    let { id, friendly } = param;
+    const display = friendly && friendly !== id ? friendly : humanizeSettingId(id);
+    const showRaw = display !== id; // always show raw ID underneath when we have a better name
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "min-w-0",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                className: "text-xs font-medium break-words",
+                children: display
+            }, void 0, false, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 840,
+                columnNumber: 13
+            }, this),
+            showRaw && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                className: "block font-mono text-[10px] text-muted-foreground/60 break-all leading-tight",
+                children: id
+            }, void 0, false, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 842,
+                columnNumber: 17
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 839,
+        columnNumber: 9
+    }, this);
+}
+_c2 = FriendlyName;
+/** Shows the value in the most readable form:
+ *  - If friendlyValue and suffix both exist → "suffix (friendlyValue)"
+ *  - If only friendlyValue → "friendlyValue"
+ *  - If only suffix → "suffix"
+ *  Raw option ID shown in muted small text underneath when it differs from the display. */ function FriendlyValue(param) {
+    let { raw, friendly, settingId } = param;
+    if (!raw) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+        className: "italic text-muted-foreground text-xs",
+        children: "(empty)"
+    }, void 0, false, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 854,
+        columnNumber: 22
+    }, this);
+    const suffix = settingId && raw.toLowerCase().startsWith(settingId.toLowerCase() + '_') ? raw.slice(settingId.length + 1) : null;
+    // Build primary display: "suffix (friendly)" or "friendly" or "suffix" or raw
+    let primary;
+    if (suffix && friendly && friendly !== suffix && friendly !== raw) {
+        primary = "".concat(suffix, " (").concat(friendly, ")");
+    } else if (friendly && friendly !== raw) {
+        primary = friendly;
+    } else if (suffix && suffix !== raw) {
+        primary = suffix;
+    } else {
+        primary = raw;
+    }
+    // Always show raw underneath when it differs from primary
+    const showRaw = primary !== raw;
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "min-w-0",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                className: "text-xs font-medium break-words",
+                children: primary
+            }, void 0, false, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 877,
+                columnNumber: 13
+            }, this),
+            showRaw && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                className: "block font-mono text-[10px] text-muted-foreground/60 break-all leading-tight",
+                children: raw
+            }, void 0, false, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 879,
+                columnNumber: 17
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 876,
+        columnNumber: 9
+    }, this);
+}
+_c3 = FriendlyValue;
+function settingCoverageStatus(sa) {
+    if (sa.isMissing) return 'notConfigured';
+    if (sa.occurrences.some((o)=>o.status === 'match')) return 'covered';
+    return 'conflict';
+}
+const coverageStatusCfg = {
+    covered: {
+        label: 'Covered',
+        badge: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300',
+        rowBg: 'bg-green-50/30 dark:bg-green-900/5',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+            className: "h-3 w-3"
+        }, void 0, false, {
+            fileName: "[project]/app/compare/configuration/page.tsx",
+            lineNumber: 896,
+            columnNumber: 196
+        }, ("TURBOPACK compile-time value", void 0))
+    },
+    conflict: {
+        label: 'Conflict',
+        badge: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300',
+        rowBg: 'bg-red-50/30 dark:bg-red-900/5',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
+            className: "h-3 w-3"
+        }, void 0, false, {
+            fileName: "[project]/app/compare/configuration/page.tsx",
+            lineNumber: 897,
+            columnNumber: 196
+        }, ("TURBOPACK compile-time value", void 0))
+    },
+    notConfigured: {
+        label: 'Not configured',
+        badge: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300',
+        rowBg: '',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$minus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MinusCircle$3e$__["MinusCircle"], {
+            className: "h-3 w-3"
+        }, void 0, false, {
+            fileName: "[project]/app/compare/configuration/page.tsx",
+            lineNumber: 898,
+            columnNumber: 196
+        }, ("TURBOPACK compile-time value", void 0))
+    }
+};
+const occurrenceStatusCfg = {
+    match: {
+        short: 'Match',
+        badge: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+            className: "h-3 w-3"
+        }, void 0, false, {
+            fileName: "[project]/app/compare/configuration/page.tsx",
+            lineNumber: 902,
+            columnNumber: 139
+        }, ("TURBOPACK compile-time value", void 0))
+    },
+    conflict: {
+        short: 'Conflict',
+        badge: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
+            className: "h-3 w-3"
+        }, void 0, false, {
+            fileName: "[project]/app/compare/configuration/page.tsx",
+            lineNumber: 903,
+            columnNumber: 138
+        }, ("TURBOPACK compile-time value", void 0))
+    }
+};
+function ConfigCoverageRows(param) {
+    let { settingAnalyses, policyKey, externalFilter } = param;
+    _s();
+    const [localFilter, setLocalFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('all');
+    const filter = externalFilter !== null && externalFilter !== void 0 ? externalFilter : localFilter;
+    const setFilter = (f)=>{
+        if (!externalFilter) setLocalFilter(f);
+    };
+    const [search, setSearch] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [sourceOnly, setSourceOnly] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [expanded, setExpanded] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Set());
+    const toggle = (id)=>setExpanded((prev)=>{
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    const counts = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "ConfigCoverageRows.useMemo[counts]": ()=>{
+            const c = {
+                covered: 0,
+                conflict: 0,
+                notConfigured: 0
+            };
+            settingAnalyses.forEach({
+                "ConfigCoverageRows.useMemo[counts]": (sa)=>c[settingCoverageStatus(sa)]++
+            }["ConfigCoverageRows.useMemo[counts]"]);
+            return c;
+        }
+    }["ConfigCoverageRows.useMemo[counts]"], [
+        settingAnalyses
+    ]);
+    const filtered = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "ConfigCoverageRows.useMemo[filtered]": ()=>settingAnalyses.filter({
+                "ConfigCoverageRows.useMemo[filtered]": (sa)=>{
+                    const status = settingCoverageStatus(sa);
+                    if (filter !== 'all' && status !== filter) return false;
+                    if (search && !sa.setting.displayName.toLowerCase().includes(search.toLowerCase()) && !sa.setting.id.toLowerCase().includes(search.toLowerCase())) return false;
+                    return true;
+                }
+            }["ConfigCoverageRows.useMemo[filtered]"])
+    }["ConfigCoverageRows.useMemo[filtered]"], [
+        settingAnalyses,
+        filter,
+        search
+    ]);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "space-y-3 px-4 pb-4",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex items-center gap-5 flex-wrap text-xs bg-muted/10 rounded-lg px-3 py-2 border",
+                children: [
+                    [
+                        {
+                            k: 'covered',
+                            label: 'Covered',
+                            color: 'bg-green-500'
+                        },
+                        {
+                            k: 'conflict',
+                            label: 'Conflict',
+                            color: 'bg-red-400'
+                        },
+                        {
+                            k: 'notConfigured',
+                            label: 'Not in tenant',
+                            color: 'bg-slate-400'
+                        }
+                    ].map((x)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                            className: "flex items-center gap-1.5",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "w-2 h-2 rounded-sm inline-block ".concat(x.color)
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 948,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-muted-foreground",
+                                    children: [
+                                        x.label,
+                                        ":"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 949,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "font-semibold",
+                                    children: counts[x.k]
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 950,
+                                    columnNumber: 25
+                                }, this)
+                            ]
+                        }, x.k, true, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 947,
+                            columnNumber: 21
+                        }, this)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: "ml-auto text-muted-foreground",
+                        children: [
+                            settingAnalyses.length,
+                            " settings"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 953,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 941,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex items-center gap-2 flex-wrap",
+                children: [
+                    !externalFilter && [
+                        [
+                            'all',
+                            "All (".concat(settingAnalyses.length, ")")
+                        ],
+                        [
+                            'covered',
+                            "Covered (".concat(counts.covered, ")")
+                        ],
+                        [
+                            'conflict',
+                            "Conflict (".concat(counts.conflict, ")")
+                        ],
+                        [
+                            'notConfigured',
+                            "Not in tenant (".concat(counts.notConfigured, ")")
+                        ]
+                    ].map((param)=>{
+                        let [f, lbl] = param;
+                        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>setFilter(f),
+                            className: "px-3 py-1.5 rounded text-xs font-medium border transition-colors ".concat(filter === f ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-muted/50'),
+                            children: lbl
+                        }, f, false, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 964,
+                            columnNumber: 21
+                        }, this);
+                    }),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex items-center gap-1.5 ml-auto",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "flex items-center gap-1.5 cursor-pointer select-none text-xs text-muted-foreground hover:text-foreground mr-3",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                        type: "checkbox",
+                                        checked: sourceOnly,
+                                        onChange: (e)=>setSourceOnly(e.target.checked),
+                                        className: "rounded border-input h-3.5 w-3.5 accent-primary"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 971,
+                                        columnNumber: 25
+                                    }, this),
+                                    "Source settings only"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 970,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$search$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Search$3e$__["Search"], {
+                                className: "h-3.5 w-3.5 text-muted-foreground"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 975,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                type: "text",
+                                placeholder: "Search settings…",
+                                value: search,
+                                onChange: (e)=>setSearch(e.target.value),
+                                className: "border rounded px-2 py-1 text-xs bg-background w-44 outline-none focus:ring-1 focus:ring-primary/50"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 976,
+                                columnNumber: 21
+                            }, this),
+                            search && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>setSearch(''),
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
+                                    className: "h-3.5 w-3.5 text-muted-foreground"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 978,
+                                    columnNumber: 70
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 978,
+                                columnNumber: 32
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 969,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 957,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "rounded-lg border overflow-hidden",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "grid grid-cols-[auto_1fr_auto_auto] px-4 py-2 bg-muted/20 border-b text-[10px] font-semibold uppercase tracking-wide text-muted-foreground",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "w-5"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 986,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                children: "Setting"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 987,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "px-4 w-48",
+                                children: "Uploaded value"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 988,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "w-32 text-right",
+                                children: "Status"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 989,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 985,
+                        columnNumber: 17
+                    }, this),
+                    filtered.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "p-8 text-center text-sm text-muted-foreground",
+                        children: "No settings match."
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 993,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "divide-y",
+                        children: filtered.map((sa)=>{
+                            const status = settingCoverageStatus(sa);
+                            const cfg = coverageStatusCfg[status];
+                            const key = "".concat(policyKey, "__").concat(sa.setting.id);
+                            const isOpen = expanded.has(key);
+                            const hasOccurrences = sa.occurrences.length > 0;
+                            const uploadedDisplay = sa.setting.friendlyValue && sa.setting.friendlyValue !== sa.setting.value ? sa.setting.friendlyValue : sa.setting.value.toLowerCase().startsWith(sa.setting.id.toLowerCase() + '_') ? sa.setting.value.slice(sa.setting.id.length + 1) : sa.setting.value;
+                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: cfg.rowBg,
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "grid grid-cols-[auto_1fr_auto_auto] px-4 py-3 items-center transition-colors ".concat(hasOccurrences ? 'cursor-pointer hover:bg-black/2 dark:hover:bg-white/2' : ''),
+                                        onClick: ()=>hasOccurrences && toggle(key),
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "w-5 shrink-0 text-muted-foreground",
+                                                children: hasOccurrences ? isOpen ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
+                                                    className: "h-3.5 w-3.5"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1019,
+                                                    columnNumber: 57
+                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
+                                                    className: "h-3.5 w-3.5"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1019,
+                                                    columnNumber: 99
+                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "w-3.5 h-3.5 block"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1020,
+                                                    columnNumber: 47
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1017,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "min-w-0 pr-4",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs font-medium leading-snug",
+                                                        children: sa.setting.displayName !== sa.setting.id ? sa.setting.displayName : humanizeSettingId(sa.setting.id)
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1023,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    sa.setting.displayName !== sa.setting.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "font-mono text-[10px] text-muted-foreground/50 break-all leading-tight",
+                                                        children: sa.setting.id
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1027,
+                                                        columnNumber: 45
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1022,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "px-4 w-48 min-w-0 text-xs",
+                                                onClick: (e)=>e.stopPropagation(),
+                                                children: uploadedDisplay ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "font-medium",
+                                                    children: uploadedDisplay
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1032,
+                                                    columnNumber: 47
+                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "italic text-muted-foreground/50",
+                                                    children: "—"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1033,
+                                                    columnNumber: 47
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1030,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "w-32 flex justify-end shrink-0",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[10px] font-medium ".concat(cfg.badge),
+                                                    children: [
+                                                        cfg.icon,
+                                                        cfg.label
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1036,
+                                                    columnNumber: 41
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1035,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1013,
+                                        columnNumber: 33
+                                    }, this),
+                                    isOpen && hasOccurrences && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "border-t bg-background/60 divide-y",
+                                        children: sa.occurrences.map((occ, j)=>{
+                                            const sc = occurrenceStatusCfg[occ.status];
+                                            const tenantDisplay = occ.friendlyTenantValue && occ.friendlyTenantValue !== occ.tenantValue ? occ.friendlyTenantValue : occ.tenantValue.toLowerCase().startsWith(sa.setting.id.toLowerCase() + '_') ? occ.tenantValue.slice(sa.setting.id.length + 1) : occ.tenantValue;
+                                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-xs",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "grid grid-cols-[1fr_auto_auto] gap-4 px-10 py-2 items-center",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "min-w-0",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "font-medium text-muted-foreground",
+                                                                    children: occ.tenantPolicy.name
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1057,
+                                                                    columnNumber: 61
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex items-center gap-1.5 mt-0.5 flex-wrap",
+                                                                    children: [
+                                                                        occ.tenantPolicy.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            className: "text-[10px] text-muted-foreground/60",
+                                                                            children: occ.tenantPolicy.platform
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                            lineNumber: 1060,
+                                                                            columnNumber: 69
+                                                                        }, this),
+                                                                        occ.tenantPolicy.isAssigned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            className: "text-[10px] px-1.5 py-0 rounded border bg-primary/10 text-primary border-primary/20 font-medium",
+                                                                            children: "Assigned"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                            lineNumber: 1063,
+                                                                            columnNumber: 69
+                                                                        }, this)
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1058,
+                                                                    columnNumber: 61
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1056,
+                                                            columnNumber: 57
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "w-48 min-w-0 font-medium",
+                                                            children: tenantDisplay || /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "italic text-muted-foreground/40",
+                                                                children: "—"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1068,
+                                                                columnNumber: 79
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1067,
+                                                            columnNumber: 57
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "w-32 flex justify-end shrink-0",
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[10px] font-medium ".concat(sc.badge),
+                                                                children: [
+                                                                    sc.icon,
+                                                                    sc.short
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1071,
+                                                                columnNumber: 61
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1070,
+                                                            columnNumber: 57
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1055,
+                                                    columnNumber: 53
+                                                }, this)
+                                            }, j, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1054,
+                                                columnNumber: 49
+                                            }, this);
+                                        })
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1044,
+                                        columnNumber: 37
+                                    }, this)
+                                ]
+                            }, key, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1011,
+                                columnNumber: 29
+                            }, this);
+                        })
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 996,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 983,
+                columnNumber: 13
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 939,
+        columnNumber: 9
+    }, this);
+}
+_s(ConfigCoverageRows, "0q3Mf75LBiljkN5rd4gXk2WJkXw=");
+_c4 = ConfigCoverageRows;
+const configStateLabel = {
+    match: 'Match',
+    conflict: 'Conflict'
+};
+const configStateBadge = {
+    match: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-300',
+    conflict: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300'
+};
+const configStateIcon = {
+    match: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+        className: "h-3 w-3"
+    }, void 0, false, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 1120,
+        columnNumber: 15
+    }, ("TURBOPACK compile-time value", void 0)),
+    conflict: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
+        className: "h-3 w-3"
+    }, void 0, false, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 1121,
+        columnNumber: 15
+    }, ("TURBOPACK compile-time value", void 0))
+};
+function smartPctCfg(count, total) {
+    if (total === 0) return '0%';
+    if (count === 0) return '0%';
+    const pct = count / total * 100;
+    if (pct < 1) return '<1%';
+    return "".concat(Math.round(pct), "%");
+}
+const ConfigResultCard = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].memo(_s1(function ConfigResultCard(param) {
+    let { row } = param;
+    _s1();
+    const [filter, setFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('all');
+    const [search, setSearch] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [expandedSettings, setExpandedSettings] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Set());
+    const [isExpanded, setIsExpanded] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const total = row.settings.length;
+    const same = row.settings.filter((s)=>s.status === 'match').length;
+    const conflicts = row.settings.filter((s)=>s.status === 'conflict').length;
+    const safePercent = total === 0 ? 0 : Math.round(same / total * 100);
+    const conflictPercent = total === 0 ? 0 : Math.round(conflicts / total * 100);
+    const filtered = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "ConfigResultCard.ConfigResultCard.useMemo[filtered]": ()=>row.settings.filter({
+                "ConfigResultCard.ConfigResultCard.useMemo[filtered]": (s)=>{
+                    if (filter !== 'all' && s.status !== filter) return false;
+                    if (search && !s.displayName.toLowerCase().includes(search.toLowerCase()) && !s.id.toLowerCase().includes(search.toLowerCase())) return false;
+                    return true;
+                }
+            }["ConfigResultCard.ConfigResultCard.useMemo[filtered]"])
+    }["ConfigResultCard.ConfigResultCard.useMemo[filtered]"], [
+        row.settings,
+        filter,
+        search
+    ]);
+    const toggleSetting = (key)=>setExpandedSettings((prev)=>{
+            const next = new Set(prev);
+            if (next.has(key)) next.delete(key);
+            else next.add(key);
+            return next;
+        });
+    const scoreColor = safePercent >= 80 ? 'text-green-600' : safePercent >= 50 ? 'text-amber-600' : 'text-red-600';
+    const conflictColor = conflictPercent > 30 ? 'text-red-600' : conflictPercent > 0 ? 'text-amber-600' : 'text-muted-foreground';
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+        className: "overflow-hidden",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/30 transition-colors border-b",
+                onClick: ()=>setIsExpanded((e)=>!e),
+                children: [
+                    isExpanded ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
+                        className: "h-4 w-4 text-muted-foreground shrink-0"
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1166,
+                        columnNumber: 23
+                    }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
+                        className: "h-4 w-4 text-muted-foreground shrink-0"
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1167,
+                        columnNumber: 23
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex-1 min-w-0",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "font-semibold text-sm truncate",
+                                children: row.tenantPolicy.name
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1169,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "text-xs text-muted-foreground mt-0.5",
+                                children: [
+                                    total,
+                                    " settings compared ·",
+                                    ' ',
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "font-medium ".concat(scoreColor),
+                                        children: [
+                                            safePercent,
+                                            "% match"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1172,
+                                        columnNumber: 25
+                                    }, this),
+                                    conflicts > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "ml-2 font-medium ".concat(conflictColor),
+                                        children: [
+                                            "· ",
+                                            conflicts,
+                                            " conflict",
+                                            conflicts !== 1 ? 's' : ''
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1173,
+                                        columnNumber: 43
+                                    }, this),
+                                    row.tenantPolicy.isAssigned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "ml-2 text-primary font-medium",
+                                        children: "· Assigned"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1174,
+                                        columnNumber: 57
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1170,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1168,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex gap-3 text-xs shrink-0",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "flex items-center gap-1 text-green-600",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+                                        className: "h-3 w-3"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1178,
+                                        columnNumber: 78
+                                    }, this),
+                                    same
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1178,
+                                columnNumber: 21
+                            }, this),
+                            conflicts > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "flex items-center gap-1 text-red-600",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
+                                        className: "h-3 w-3"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1179,
+                                        columnNumber: 94
+                                    }, this),
+                                    conflicts
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1179,
+                                columnNumber: 39
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1177,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 1163,
+                columnNumber: 13
+            }, this),
+            isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                className: "pt-0 pb-4 px-0",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "px-4 py-3 grid grid-cols-2 md:grid-cols-3 gap-3 border-b",
+                        children: [
+                            {
+                                label: 'Match',
+                                count: same,
+                                pct: smartPctCfg(same, total),
+                                bg: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
+                                cls: 'text-green-600 dark:text-green-400'
+                            },
+                            {
+                                label: 'Conflict',
+                                count: conflicts,
+                                pct: smartPctCfg(conflicts, total),
+                                bg: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
+                                cls: 'text-red-600 dark:text-red-400'
+                            },
+                            {
+                                label: 'Total',
+                                count: total,
+                                pct: '100%',
+                                bg: 'bg-muted border-border',
+                                cls: 'text-muted-foreground'
+                            }
+                        ].map((k)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "rounded-lg border px-3 py-2 text-center ".concat(k.bg),
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-xl font-bold ".concat(k.cls),
+                                        children: k.count
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1193,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-[10px] font-medium ".concat(k.cls),
+                                        children: k.label
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1194,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-[10px] text-muted-foreground",
+                                        children: k.pct
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1195,
+                                        columnNumber: 33
+                                    }, this)
+                                ]
+                            }, k.label, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1192,
+                                columnNumber: 29
+                            }, this))
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1186,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "px-4 py-2 border-b space-y-1",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex h-2.5 w-full rounded-full overflow-hidden bg-muted",
+                                children: [
+                                    safePercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "bg-green-500 h-full",
+                                        style: {
+                                            width: "".concat(safePercent, "%")
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1203,
+                                        columnNumber: 53
+                                    }, this),
+                                    conflictPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "bg-red-400 h-full",
+                                        style: {
+                                            width: "".concat(conflictPercent, "%")
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1204,
+                                        columnNumber: 53
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1202,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex gap-3 text-[10px] text-muted-foreground flex-wrap",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "flex items-center gap-1",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "inline-block w-2 h-2 rounded-sm bg-green-500"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1207,
+                                                columnNumber: 71
+                                            }, this),
+                                            "Match ",
+                                            safePercent,
+                                            "%"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1207,
+                                        columnNumber: 29
+                                    }, this),
+                                    conflictPercent > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "flex items-center gap-1",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "inline-block w-2 h-2 rounded-sm bg-red-400"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1208,
+                                                columnNumber: 95
+                                            }, this),
+                                            "Conflict ",
+                                            conflictPercent,
+                                            "%"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1208,
+                                        columnNumber: 53
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1206,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1201,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "px-4 py-3 grid grid-cols-2 gap-3 border-b",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "bg-blue-50 dark:bg-blue-950/50 p-2.5 rounded border-l-4 border-blue-400",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-[10px] text-blue-600 font-medium uppercase",
+                                        children: "Uploaded policy"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1215,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-xs font-medium text-blue-900 dark:text-blue-200 mt-0.5",
+                                        children: row.uploadedPolicyName
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1216,
+                                        columnNumber: 29
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1214,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "bg-muted p-2.5 rounded border-l-4 border-border",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-[10px] text-muted-foreground font-medium uppercase",
+                                        children: "Tenant policy"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1219,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-1.5 mt-0.5 flex-wrap",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-xs font-medium",
+                                                children: row.tenantPolicy.name
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1221,
+                                                columnNumber: 33
+                                            }, this),
+                                            row.tenantPolicy.isAssigned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-[10px] px-1.5 py-0 rounded border bg-primary/10 text-primary border-primary/20 font-medium",
+                                                children: "Assigned"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1223,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1220,
+                                        columnNumber: 29
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1218,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1213,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "px-4 py-3 flex items-center gap-2 flex-wrap border-b",
+                        children: [
+                            [
+                                'all',
+                                'match',
+                                'conflict'
+                            ].map((f)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>setFilter(f),
+                                    className: "px-2.5 py-1 rounded text-xs font-medium border transition-colors ".concat(filter === f ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-muted/50'),
+                                    children: f === 'all' ? "All (".concat(total, ")") : "".concat(configStateLabel[f], " (").concat(f === 'match' ? same : conflicts, ")")
+                                }, f, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1232,
+                                    columnNumber: 29
+                                }, this)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-center gap-1.5 ml-auto",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$search$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Search$3e$__["Search"], {
+                                        className: "h-3.5 w-3.5 text-muted-foreground"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1238,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                        type: "text",
+                                        placeholder: "Search settings…",
+                                        value: search,
+                                        onChange: (e)=>setSearch(e.target.value),
+                                        className: "border rounded px-2 py-1 text-xs bg-background w-44 focus:ring-1 focus:ring-primary/50 outline-none"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1239,
+                                        columnNumber: 29
+                                    }, this),
+                                    search && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>setSearch(''),
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
+                                            className: "h-3.5 w-3.5 text-muted-foreground"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1241,
+                                            columnNumber: 78
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1241,
+                                        columnNumber: 40
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1237,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1230,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "grid grid-cols-[2fr_1fr_1fr_auto] gap-2 px-4 py-2 bg-muted/10 text-xs font-medium text-muted-foreground border-b",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                children: "Setting"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1247,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                children: "Uploaded value"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1248,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                children: "Tenant value"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1249,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "w-28 text-right",
+                                children: "Status"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1250,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1246,
+                        columnNumber: 21
+                    }, this),
+                    filtered.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "p-6 text-center text-sm text-muted-foreground",
+                        children: "No settings match current filter."
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1254,
+                        columnNumber: 27
+                    }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "divide-y",
+                        children: filtered.map((s, i)=>{
+                            var _s_childSettings;
+                            const key = "".concat(row.tenantPolicy.id, "__").concat(s.id, "__").concat(i);
+                            const isSettingExpanded = expandedSettings.has(key);
+                            var _s_childSettings_length;
+                            const hasChildren = ((_s_childSettings_length = (_s_childSettings = s.childSettings) === null || _s_childSettings === void 0 ? void 0 : _s_childSettings.length) !== null && _s_childSettings_length !== void 0 ? _s_childSettings_length : 0) > 0;
+                            const rowBg = s.status === 'match' ? 'bg-green-50/30 dark:bg-green-900/10' : 'bg-red-50/30 dark:bg-red-900/10';
+                            const uploadedDisplay = s.uploadedFriendlyValue && s.uploadedFriendlyValue !== s.uploadedValue ? s.uploadedFriendlyValue : s.uploadedValue.toLowerCase().startsWith(s.id.toLowerCase() + '_') ? s.uploadedValue.slice(s.id.length + 1) : s.uploadedValue;
+                            const tenantDisplay = s.tenantFriendlyValue && s.tenantFriendlyValue !== s.tenantValue ? s.tenantFriendlyValue : s.tenantValue.toLowerCase().startsWith(s.id.toLowerCase() + '_') ? s.tenantValue.slice(s.id.length + 1) : s.tenantValue;
+                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "grid grid-cols-[2fr_1fr_1fr_auto] gap-2 px-4 py-2.5 items-start cursor-pointer hover:bg-muted/10 ".concat(rowBg),
+                                        onClick: ()=>toggleSetting(key),
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "flex items-start gap-2 min-w-0",
+                                                children: [
+                                                    isSettingExpanded ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
+                                                        className: "h-3 w-3 text-muted-foreground mt-0.5 shrink-0"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1283,
+                                                        columnNumber: 59
+                                                    }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
+                                                        className: "h-3 w-3 text-muted-foreground mt-0.5 shrink-0"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1284,
+                                                        columnNumber: 59
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "min-w-0",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                className: "text-xs font-medium leading-snug",
+                                                                children: s.displayName !== s.id ? s.displayName : humanizeSettingId(s.id)
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1286,
+                                                                columnNumber: 57
+                                                            }, this),
+                                                            s.displayName !== s.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                className: "font-mono text-[10px] text-muted-foreground/50 break-all leading-tight",
+                                                                children: s.id
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1290,
+                                                                columnNumber: 61
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1285,
+                                                        columnNumber: 53
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1281,
+                                                columnNumber: 49
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-xs min-w-0",
+                                                children: uploadedDisplay ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "font-medium",
+                                                    children: uploadedDisplay
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1296,
+                                                    columnNumber: 59
+                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "italic text-muted-foreground/50",
+                                                    children: "—"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1297,
+                                                    columnNumber: 59
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1294,
+                                                columnNumber: 49
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-xs min-w-0",
+                                                children: tenantDisplay ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: s.status === 'conflict' ? 'font-medium text-red-700 dark:text-red-400' : 'font-medium',
+                                                    children: tenantDisplay
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1301,
+                                                    columnNumber: 59
+                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "italic text-muted-foreground/50",
+                                                    children: "—"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1302,
+                                                    columnNumber: 59
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1299,
+                                                columnNumber: 49
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "w-28 flex justify-end shrink-0",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[10px] font-medium ".concat(configStateBadge[s.status]),
+                                                    children: [
+                                                        configStateIcon[s.status],
+                                                        configStateLabel[s.status]
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1305,
+                                                    columnNumber: 53
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1304,
+                                                columnNumber: 49
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1279,
+                                        columnNumber: 45
+                                    }, this),
+                                    isSettingExpanded && hasChildren && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "border-t bg-muted/5 ".concat(rowBg),
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "grid grid-cols-[2fr_1fr_1fr_auto] gap-2 px-9 py-1.5 text-[10px] font-medium text-muted-foreground bg-muted/20 border-b",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        children: "Child setting"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1315,
+                                                        columnNumber: 57
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        children: "Uploaded"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1315,
+                                                        columnNumber: 83
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        children: "Tenant"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1315,
+                                                        columnNumber: 104
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "w-28"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1315,
+                                                        columnNumber: 123
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1314,
+                                                columnNumber: 53
+                                            }, this),
+                                            s.childSettings.map((child, ci)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "grid grid-cols-[2fr_1fr_1fr_auto] gap-2 px-9 py-2 text-xs items-start border-b last:border-b-0",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "font-medium",
+                                                            children: child.name
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1319,
+                                                            columnNumber: 61
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            children: child.value || /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "italic text-muted-foreground/50",
+                                                                children: "—"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1320,
+                                                                columnNumber: 83
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1320,
+                                                            columnNumber: 61
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "italic text-muted-foreground/50",
+                                                            children: "—"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1321,
+                                                            columnNumber: 61
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "w-28"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1322,
+                                                            columnNumber: 61
+                                                        }, this)
+                                                    ]
+                                                }, ci, true, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1318,
+                                                    columnNumber: 57
+                                                }, this))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1313,
+                                        columnNumber: 49
+                                    }, this)
+                                ]
+                            }, i, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1278,
+                                columnNumber: 41
+                            }, this);
+                        })
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1256,
+                        columnNumber: 29
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 1184,
+                columnNumber: 17
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 1161,
+        columnNumber: 9
+    }, this);
+}, "CNOchhNlA3SNs+bsMDw5sCnZGX0="));
+_c5 = ConfigResultCard;
+function ConfigurationComparePage() {
+    _s2();
+    const { accounts } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMsal"])();
+    const { request } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApiRequest"])();
+    const [uploadedPolicies, setUploadedPolicies] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [isDragging, setIsDragging] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [tenantPoliciesCache, setTenantPoliciesCache] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Map());
+    const [resolvedDefinitionsCache, setResolvedDefinitionsCache] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Map());
+    const [hasFetched, setHasFetched] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [loadingPhase, setLoadingPhase] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('idle');
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [expandedPolicies, setExpandedPolicies] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Set());
+    const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('detail');
+    const [globalCoverageFilter, setGlobalCoverageFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('all');
+    const [uploadCollapsed, setUploadCollapsed] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [filesListCollapsed, setFilesListCollapsed] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const fileInputRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const abortRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    // ── Derived analyses via useMemo ──────────────────────────────────────────
+    const analyses = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "ConfigurationComparePage.useMemo[analyses]": ()=>{
+            if (!hasFetched || !uploadedPolicies.length) return [];
+            return uploadedPolicies.map({
+                "ConfigurationComparePage.useMemo[analyses]": (uploaded)=>{
+                    var _tenantPoliciesCache_get;
+                    const tenantPolicies = (_tenantPoliciesCache_get = tenantPoliciesCache.get(uploaded.kind)) !== null && _tenantPoliciesCache_get !== void 0 ? _tenantPoliciesCache_get : [];
+                    const analysis = analyzePolicy(uploaded, tenantPolicies);
+                    // Enrich settings with resolved definitions (missing + non-missing with option-ID values)
+                    if (resolvedDefinitionsCache.size === 0) return analysis;
+                    const enrichedSettingAnalyses = analysis.settingAnalyses.map({
+                        "ConfigurationComparePage.useMemo[analyses].enrichedSettingAnalyses": (sa)=>{
+                            var _resolved_options;
+                            const resolved = resolvedDefinitionsCache.get(sa.setting.id.toLowerCase());
+                            if (!resolved) return sa;
+                            // Build option map: full itemId (lower) → displayName
+                            const optionMap = new Map();
+                            (_resolved_options = resolved.options) === null || _resolved_options === void 0 ? void 0 : _resolved_options.forEach({
+                                "ConfigurationComparePage.useMemo[analyses].enrichedSettingAnalyses": (o)=>optionMap.set(o.itemId.toLowerCase(), o.displayName)
+                            }["ConfigurationComparePage.useMemo[analyses].enrichedSettingAnalyses"]);
+                            // Resolve friendly value from options map
+                            const rawLower = sa.setting.value.toLowerCase();
+                            const suffix = rawLower.startsWith(sa.setting.id.toLowerCase() + '_') ? sa.setting.value.slice(sa.setting.id.length + 1) : null;
+                            var _optionMap_get // exact full itemId → displayName e.g. "Enabled"
+                            , _ref // bare suffix → displayName
+                            , _ref1 // bare suffix as last resort e.g. "1"
+                            ;
+                            const resolvedFriendlyValue = (_ref1 = (_ref = (_optionMap_get = optionMap.get(rawLower)) !== null && _optionMap_get !== void 0 ? _optionMap_get : suffix ? optionMap.get(suffix.toLowerCase()) : undefined) !== null && _ref !== void 0 ? _ref : suffix) !== null && _ref1 !== void 0 ? _ref1 : undefined;
+                            // Always prefer a proper displayName from the options map over a bare suffix.
+                            // e.g. replace "1" with "Enabled" when the map has a better label.
+                            const currentFriendly = sa.setting.friendlyValue;
+                            const isBareShortSuffix = currentFriendly !== undefined && /^[\w]{1,5}$/.test(currentFriendly);
+                            const friendlyValue = resolvedFriendlyValue && resolvedFriendlyValue !== sa.setting.value && (!currentFriendly || isBareShortSuffix || currentFriendly === resolvedFriendlyValue) ? resolvedFriendlyValue : currentFriendly;
+                            // Only update displayName for missing settings (non-missing already have it from tenant)
+                            const displayName = sa.isMissing ? resolved.displayName : sa.setting.displayName;
+                            if (friendlyValue === sa.setting.friendlyValue && displayName === sa.setting.displayName) return sa;
+                            return {
+                                ...sa,
+                                setting: {
+                                    ...sa.setting,
+                                    displayName,
+                                    friendlyValue
+                                }
+                            };
+                        }
+                    }["ConfigurationComparePage.useMemo[analyses].enrichedSettingAnalyses"]);
+                    return {
+                        ...analysis,
+                        settingAnalyses: enrichedSettingAnalyses
+                    };
+                }
+            }["ConfigurationComparePage.useMemo[analyses]"]);
+        }
+    }["ConfigurationComparePage.useMemo[analyses]"], [
+        uploadedPolicies,
+        tenantPoliciesCache,
+        resolvedDefinitionsCache,
+        hasFetched
+    ]);
+    // ── Per-tenant-policy inversion ───────────────────────────────────────────
+    const perPolicyRows = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "ConfigurationComparePage.useMemo[perPolicyRows]": ()=>{
+            const map = new Map();
+            for (const analysis of analyses){
+                for (const sa of analysis.settingAnalyses){
+                    if (sa.isMissing) continue; // missing = no tenant policy occurrence
+                    for (const occ of sa.occurrences){
+                        const pKey = occ.tenantPolicy.id;
+                        if (!map.has(pKey)) {
+                            map.set(pKey, {
+                                tenantPolicy: occ.tenantPolicy,
+                                uploadedPolicyName: analysis.uploadedPolicy.name,
+                                settings: []
+                            });
+                        }
+                        map.get(pKey).settings.push({
+                            id: sa.setting.id,
+                            displayName: sa.setting.displayName,
+                            uploadedValue: sa.setting.value,
+                            uploadedFriendlyValue: sa.setting.friendlyValue,
+                            tenantValue: occ.tenantValue,
+                            tenantFriendlyValue: occ.friendlyTenantValue,
+                            status: occ.status,
+                            childSettings: sa.setting.childSettings
+                        });
+                    }
+                }
+            }
+            // Sort: assigned first, then by conflict count desc
+            return [
+                ...map.values()
+            ].sort({
+                "ConfigurationComparePage.useMemo[perPolicyRows]": (a, b)=>{
+                    if (b.tenantPolicy.isAssigned !== a.tenantPolicy.isAssigned) return b.tenantPolicy.isAssigned ? 1 : -1;
+                    const aConflicts = a.settings.filter({
+                        "ConfigurationComparePage.useMemo[perPolicyRows]": (s)=>s.status === 'conflict'
+                    }["ConfigurationComparePage.useMemo[perPolicyRows]"]).length;
+                    const bConflicts = b.settings.filter({
+                        "ConfigurationComparePage.useMemo[perPolicyRows]": (s)=>s.status === 'conflict'
+                    }["ConfigurationComparePage.useMemo[perPolicyRows]"]).length;
+                    return bConflicts - aConflicts;
+                }
+            }["ConfigurationComparePage.useMemo[perPolicyRows]"]);
+        }
+    }["ConfigurationComparePage.useMemo[perPolicyRows]"], [
+        analyses
+    ]);
+    // ── Global summary ────────────────────────────────────────────────────────
+    const globalSummary = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "ConfigurationComparePage.useMemo[globalSummary]": ()=>{
+            if (!analyses.length) return null;
+            const totalSettings = analyses.reduce({
+                "ConfigurationComparePage.useMemo[globalSummary].totalSettings": (s, a)=>s + a.summary.totalSettings
+            }["ConfigurationComparePage.useMemo[globalSummary].totalSettings"], 0);
+            const matchSettings = analyses.reduce({
+                "ConfigurationComparePage.useMemo[globalSummary].matchSettings": (s, a)=>s + a.summary.matchSettings
+            }["ConfigurationComparePage.useMemo[globalSummary].matchSettings"], 0);
+            const conflictSettings = analyses.reduce({
+                "ConfigurationComparePage.useMemo[globalSummary].conflictSettings": (s, a)=>s + a.summary.conflictSettings
+            }["ConfigurationComparePage.useMemo[globalSummary].conflictSettings"], 0);
+            const missingSettings = analyses.reduce({
+                "ConfigurationComparePage.useMemo[globalSummary].missingSettings": (s, a)=>s + a.summary.missingSettings
+            }["ConfigurationComparePage.useMemo[globalSummary].missingSettings"], 0);
+            const platformBreakdown = analyses.map({
+                "ConfigurationComparePage.useMemo[globalSummary].platformBreakdown": (a)=>({
+                        policy: a.uploadedPolicy.name,
+                        platform: a.uploadedPolicy.platform,
+                        platformMatchedCount: a.summary.platformMatchedPolicyCount,
+                        totalKindCount: a.summary.totalTenantPoliciesOfKind,
+                        matchPercent: a.summary.matchPercent,
+                        conflictPercent: a.summary.conflictPercent,
+                        missingPercent: a.summary.missingPercent
+                    })
+            }["ConfigurationComparePage.useMemo[globalSummary].platformBreakdown"]);
+            const conflictMap = new Map();
+            for (const a of analyses){
+                for (const sa of a.settingAnalyses){
+                    if (!sa.isMissing && sa.occurrences.every({
+                        "ConfigurationComparePage.useMemo[globalSummary]": (o)=>o.status === 'conflict'
+                    }["ConfigurationComparePage.useMemo[globalSummary]"])) {
+                        var _conflictMap_get;
+                        conflictMap.set(sa.setting.displayName, ((_conflictMap_get = conflictMap.get(sa.setting.displayName)) !== null && _conflictMap_get !== void 0 ? _conflictMap_get : 0) + 1);
+                    }
+                }
+            }
+            const topConflicts = [
+                ...conflictMap.entries()
+            ].sort({
+                "ConfigurationComparePage.useMemo[globalSummary].topConflicts": (a, b)=>b[1] - a[1]
+            }["ConfigurationComparePage.useMemo[globalSummary].topConflicts"]).slice(0, 5);
+            return {
+                totalPolicies: analyses.length,
+                totalSettings,
+                matchSettings,
+                conflictSettings,
+                missingSettings,
+                overallMatchPercent: totalSettings === 0 ? 0 : Math.round(matchSettings / totalSettings * 100),
+                overallConflictPercent: totalSettings === 0 ? 0 : Math.round(conflictSettings / totalSettings * 100),
+                overallMissingPercent: totalSettings === 0 ? 0 : Math.round(missingSettings / totalSettings * 100),
+                platformBreakdown,
+                topConflicts
+            };
+        }
+    }["ConfigurationComparePage.useMemo[globalSummary]"], [
+        analyses
+    ]);
+    // ── File handling ─────────────────────────────────────────────────────────
+    const processFiles = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "ConfigurationComparePage.useCallback[processFiles]": (files)=>{
+            const fileArray = Array.from(files).filter({
+                "ConfigurationComparePage.useCallback[processFiles].fileArray": (f)=>f.name.endsWith('.json')
+            }["ConfigurationComparePage.useCallback[processFiles].fileArray"]);
+            if (!fileArray.length) return;
+            const readers = fileArray.map({
+                "ConfigurationComparePage.useCallback[processFiles].readers": (file)=>new Promise({
+                        "ConfigurationComparePage.useCallback[processFiles].readers": (resolve)=>{
+                            const reader = new FileReader();
+                            reader.onload = ({
+                                "ConfigurationComparePage.useCallback[processFiles].readers": (e)=>{
+                                    try {
+                                        var _e_target;
+                                        const raw = JSON.parse((_e_target = e.target) === null || _e_target === void 0 ? void 0 : _e_target.result);
+                                        resolve(parseUploadedFile(file.name, raw));
+                                    } catch (e) {
+                                        resolve({
+                                            fileName: file.name,
+                                            raw: {},
+                                            kind: 'Unknown',
+                                            name: file.name,
+                                            platform: '',
+                                            odataType: '',
+                                            settings: [],
+                                            definitionMap: new Map(),
+                                            error: 'Invalid JSON'
+                                        });
+                                    }
+                                }
+                            })["ConfigurationComparePage.useCallback[processFiles].readers"];
+                            reader.readAsText(file);
+                        }
+                    }["ConfigurationComparePage.useCallback[processFiles].readers"])
+            }["ConfigurationComparePage.useCallback[processFiles].readers"]);
+            Promise.all(readers).then({
+                "ConfigurationComparePage.useCallback[processFiles]": (newPolicies)=>{
+                    setUploadedPolicies({
+                        "ConfigurationComparePage.useCallback[processFiles]": (prev)=>{
+                            const existingNames = new Set(prev.map({
+                                "ConfigurationComparePage.useCallback[processFiles]": (p)=>p.fileName
+                            }["ConfigurationComparePage.useCallback[processFiles]"]));
+                            return [
+                                ...prev,
+                                ...newPolicies.filter({
+                                    "ConfigurationComparePage.useCallback[processFiles]": (p)=>!existingNames.has(p.fileName)
+                                }["ConfigurationComparePage.useCallback[processFiles]"])
+                            ];
+                        }
+                    }["ConfigurationComparePage.useCallback[processFiles]"]);
+                    setFilesListCollapsed(true);
+                }
+            }["ConfigurationComparePage.useCallback[processFiles]"]);
+        }
+    }["ConfigurationComparePage.useCallback[processFiles]"], []);
+    const handleDrop = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "ConfigurationComparePage.useCallback[handleDrop]": (e)=>{
+            e.preventDefault();
+            setIsDragging(false);
+            processFiles(e.dataTransfer.files);
+        }
+    }["ConfigurationComparePage.useCallback[handleDrop]"], [
+        processFiles
+    ]);
+    const handleFileChange = (e)=>{
+        if (e.target.files) processFiles(e.target.files);
+    };
+    const removeUploadedPolicy = (fileName)=>{
+        setUploadedPolicies((prev)=>prev.filter((p)=>p.fileName !== fileName));
+    };
+    // ── Fetch / refresh ───────────────────────────────────────────────────────
+    const cancelFetch = ()=>{
+        var _abortRef_current;
+        (_abortRef_current = abortRef.current) === null || _abortRef_current === void 0 ? void 0 : _abortRef_current.abort();
+        abortRef.current = null;
+        setLoading(false);
+        setLoadingPhase('idle');
+    };
+    const fetchTenantData = async function() {
+        let clearCache = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : false;
+        var // Cancel any in-flight request
+        _abortRef_current;
+        if (!uploadedPolicies.length || !accounts.length) return;
+        (_abortRef_current = abortRef.current) === null || _abortRef_current === void 0 ? void 0 : _abortRef_current.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+        setLoading(true);
+        setLoadingPhase('fetching');
+        setError(null);
+        const cache = clearCache ? new Map() : new Map(tenantPoliciesCache);
+        const kinds = new Set(uploadedPolicies.map((p)=>p.kind).filter((k)=>k !== 'Unknown'));
+        const toFetch = [
+            ...kinds
+        ].filter((k)=>!cache.has(k));
+        try {
+            await Promise.all(toFetch.map(async (kind)=>{
+                if (controller.signal.aborted) return;
+                const endpoint = endpointForKind(kind);
+                if (!endpoint) return;
+                try {
+                    var _response_data;
+                    const response = await request(endpoint, {
+                        method: 'GET',
+                        signal: controller.signal
+                    });
+                    var _response_data_data;
+                    cache.set(kind, (_response_data_data = response === null || response === void 0 ? void 0 : (_response_data = response.data) === null || _response_data === void 0 ? void 0 : _response_data.data) !== null && _response_data_data !== void 0 ? _response_data_data : []);
+                } catch (e) {
+                    var _this;
+                    if (((_this = e) === null || _this === void 0 ? void 0 : _this.name) === 'AbortError') throw e;
+                    cache.set(kind, []);
+                }
+            }));
+            if (controller.signal.aborted) return;
+            setTenantPoliciesCache(cache);
+            setHasFetched(true);
+            setUploadCollapsed(true);
+            setExpandedPolicies(new Set(uploadedPolicies.map((p)=>p.fileName)));
+            // ── Resolve setting definitions (missing + any with option-ID values) ──
+            const quickAnalyses = uploadedPolicies.map((uploaded)=>{
+                var _cache_get;
+                const tenantPolicies = (_cache_get = cache.get(uploaded.kind)) !== null && _cache_get !== void 0 ? _cache_get : [];
+                return analyzePolicy(uploaded, tenantPolicies);
+            });
+            const settingIdsToResolve = new Set();
+            for (const a of quickAnalyses){
+                for (const sa of a.settingAnalyses){
+                    // Always resolve missing settings
+                    if (sa.isMissing) {
+                        settingIdsToResolve.add(sa.setting.id);
+                        continue;
+                    }
+                    // Also resolve when the uploaded value looks like a full option item ID
+                    // (starts with settingId + '_') — even if a bare suffix is already set,
+                    // we want the proper displayName (e.g. "Enabled") not just "1"
+                    if (sa.setting.value.toLowerCase().startsWith(sa.setting.id.toLowerCase() + '_')) {
+                        settingIdsToResolve.add(sa.setting.id);
+                    }
+                }
+            }
+            const existingCache = clearCache ? new Map() : new Map(resolvedDefinitionsCache);
+            const toResolve = [
+                ...settingIdsToResolve
+            ].filter((id)=>!existingCache.has(id.toLowerCase()));
+            if (toResolve.length > 0 && !controller.signal.aborted) {
+                setLoadingPhase('resolving');
+                try {
+                    const resolveResponse = await request(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$constants$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SETTINGS_DEFINITIONS_RESOLVE_ENDPOINT"], {
+                        method: 'POST',
+                        body: JSON.stringify(toResolve),
+                        signal: controller.signal
+                    });
+                    if (!controller.signal.aborted) {
+                        var _resolveResponse_data;
+                        var _resolveResponse_data_data;
+                        const definitions = (_resolveResponse_data_data = resolveResponse === null || resolveResponse === void 0 ? void 0 : (_resolveResponse_data = resolveResponse.data) === null || _resolveResponse_data === void 0 ? void 0 : _resolveResponse_data.data) !== null && _resolveResponse_data_data !== void 0 ? _resolveResponse_data_data : [];
+                        for (const def of definitions){
+                            existingCache.set(def.id.toLowerCase(), def);
+                        }
+                        setResolvedDefinitionsCache(new Map(existingCache));
+                    }
+                } catch (e) {
+                    var _this;
+                    if (((_this = e) === null || _this === void 0 ? void 0 : _this.name) !== 'AbortError') {
+                    // resolve failed silently — analyses still work without friendly names
+                    }
+                }
+            }
+        } catch (err) {
+            var _this1;
+            if (((_this1 = err) === null || _this1 === void 0 ? void 0 : _this1.name) !== 'AbortError') {
+                setError(err instanceof Error ? err.message : 'Fetch failed');
+            }
+        } finally{
+            if (!controller.signal.aborted) {
+                abortRef.current = null;
+                setLoading(false);
+                setLoadingPhase('idle');
+            }
+        }
+    };
+    // ── UI helpers ────────────────────────────────────────────────────────────
+    const togglePolicy = (key)=>setExpandedPolicies((prev)=>{
+            const next = new Set(prev);
+            if (next.has(key)) next.delete(key);
+            else next.add(key);
+            return next;
+        });
+    const exportResults = ()=>{
+        const rows = [];
+        for (const a of analyses){
+            for (const sa of a.settingAnalyses){
+                if (sa.occurrences.length === 0) {
+                    var _sa_setting_friendlyValue;
+                    rows.push({
+                        'Uploaded Policy': a.uploadedPolicy.name,
+                        Platform: a.uploadedPolicy.platform,
+                        Setting: sa.setting.displayName,
+                        'Setting ID': sa.setting.id,
+                        'Uploaded Value': (_sa_setting_friendlyValue = sa.setting.friendlyValue) !== null && _sa_setting_friendlyValue !== void 0 ? _sa_setting_friendlyValue : sa.setting.value,
+                        'Uploaded Value (Raw)': sa.setting.value,
+                        'Tenant Policy': '—',
+                        'Tenant Value': '—',
+                        'Tenant Value (Raw)': '—',
+                        Status: 'Missing in Tenant'
+                    });
+                } else {
+                    for (const occ of sa.occurrences){
+                        var _sa_setting_friendlyValue1, _occ_friendlyTenantValue;
+                        rows.push({
+                            'Uploaded Policy': a.uploadedPolicy.name,
+                            Platform: a.uploadedPolicy.platform,
+                            Setting: sa.setting.displayName,
+                            'Setting ID': sa.setting.id,
+                            'Uploaded Value': (_sa_setting_friendlyValue1 = sa.setting.friendlyValue) !== null && _sa_setting_friendlyValue1 !== void 0 ? _sa_setting_friendlyValue1 : sa.setting.value,
+                            'Uploaded Value (Raw)': sa.setting.value,
+                            'Tenant Policy': occ.tenantPolicy.name,
+                            'Tenant Value': (_occ_friendlyTenantValue = occ.friendlyTenantValue) !== null && _occ_friendlyTenantValue !== void 0 ? _occ_friendlyTenantValue : occ.tenantValue,
+                            'Tenant Value (Raw)': occ.tenantValue,
+                            Status: occ.status === 'match' ? 'Match' : 'Conflict'
+                        });
+                    }
+                }
+            }
+        }
+        const headers = [
+            'Uploaded Policy',
+            'Platform',
+            'Setting',
+            'Setting ID',
+            'Uploaded Value',
+            'Uploaded Value (Raw)',
+            'Tenant Policy',
+            'Tenant Value',
+            'Tenant Value (Raw)',
+            'Status'
+        ];
+        const csv = [
+            headers.join(','),
+            ...rows.map((r)=>headers.map((h)=>{
+                    var _r_h;
+                    return '"'.concat(((_r_h = r[h]) !== null && _r_h !== void 0 ? _r_h : '').replace(/"/g, '""'), '"');
+                }).join(','))
+        ].join('\n');
+        const blob = new Blob([
+            csv
+        ], {
+            type: 'text/csv'
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'policy-comparison.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "container mx-auto p-6 space-y-6",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex items-start justify-between",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                                className: "text-2xl font-bold flex items-center gap-2",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$left$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowLeftRight$3e$__["ArrowLeftRight"], {
+                                        className: "h-6 w-6 text-primary"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1669,
+                                        columnNumber: 25
+                                    }, this),
+                                    "External Policy Comparison"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1668,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "text-muted-foreground mt-1",
+                                children: "Upload JSON policy files and compare their settings against your tenant. Only tenant policies matching the same platform are included."
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1672,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1667,
+                        columnNumber: 17
+                    }, this),
+                    analyses.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex gap-2",
+                        children: [
+                            loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                variant: "outline",
+                                size: "sm",
+                                onClick: cancelFetch,
+                                className: "border-destructive/50 text-destructive hover:bg-destructive/10 gap-1.5",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
+                                        className: "h-4 w-4"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1681,
+                                        columnNumber: 33
+                                    }, this),
+                                    "Cancel"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1680,
+                                columnNumber: 29
+                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                variant: "outline",
+                                size: "sm",
+                                onClick: ()=>fetchTenantData(true),
+                                disabled: loading,
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__["RefreshCw"], {
+                                        className: "h-4 w-4 mr-2"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1686,
+                                        columnNumber: 33
+                                    }, this),
+                                    "Refresh Tenant Data"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1685,
+                                columnNumber: 29
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                variant: "outline",
+                                size: "sm",
+                                onClick: exportResults,
+                                disabled: loading,
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$download$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Download$3e$__["Download"], {
+                                        className: "h-4 w-4 mr-2"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1691,
+                                        columnNumber: 29
+                                    }, this),
+                                    "Export CSV"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1690,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1678,
+                        columnNumber: 21
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 1666,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
+                        className: "cursor-pointer select-none",
+                        onClick: ()=>setUploadCollapsed((c)=>!c),
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex items-center justify-between",
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex-1",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
+                                        className: "text-base flex items-center gap-2",
+                                        children: [
+                                            uploadCollapsed ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
+                                                className: "h-4 w-4 text-muted-foreground"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1707,
+                                                columnNumber: 52
+                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
+                                                className: "h-4 w-4 text-muted-foreground"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1707,
+                                                columnNumber: 113
+                                            }, this),
+                                            "Upload Policy Files",
+                                            uploadCollapsed && uploadedPolicies.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "ml-2 flex gap-1.5 flex-wrap",
+                                                children: uploadedPolicies.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                        className: "text-xs ".concat(kindColor[p.kind]),
+                                                        children: p.name
+                                                    }, p.fileName, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1712,
+                                                        columnNumber: 45
+                                                    }, this))
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1710,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1706,
+                                        columnNumber: 29
+                                    }, this),
+                                    !uploadCollapsed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
+                                        className: "mt-1",
+                                        children: [
+                                            "Drop exported Intune policy JSON files. Policy type and platform are auto-detected. Tenant data is fetched once and reused — use ",
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                children: "Refresh Tenant Data"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1720,
+                                                columnNumber: 70
+                                            }, this),
+                                            " to re-fetch."
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1718,
+                                        columnNumber: 33
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1705,
+                                columnNumber: 25
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 1704,
+                            columnNumber: 21
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1700,
+                        columnNumber: 17
+                    }, this),
+                    !uploadCollapsed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                        className: "space-y-4",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ".concat(isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/30'),
+                                onDragOver: (e)=>{
+                                    e.preventDefault();
+                                    setIsDragging(true);
+                                },
+                                onDragLeave: ()=>setIsDragging(false),
+                                onDrop: handleDrop,
+                                onClick: (e)=>{
+                                    var _fileInputRef_current;
+                                    e.stopPropagation();
+                                    (_fileInputRef_current = fileInputRef.current) === null || _fileInputRef_current === void 0 ? void 0 : _fileInputRef_current.click();
+                                },
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__["Upload"], {
+                                        className: "h-10 w-10 mx-auto mb-3 ".concat(isDragging ? 'text-primary' : 'text-muted-foreground')
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1735,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "font-medium text-sm",
+                                        children: isDragging ? 'Drop files here' : 'Click or drag & drop JSON files here'
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1736,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-xs text-muted-foreground mt-1",
+                                        children: "Supports multiple files. JSON format only."
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1737,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                        ref: fileInputRef,
+                                        type: "file",
+                                        accept: ".json",
+                                        multiple: true,
+                                        className: "hidden",
+                                        onChange: handleFileChange
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1738,
+                                        columnNumber: 25
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1728,
+                                columnNumber: 21
+                            }, this),
+                            uploadedPolicies.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "space-y-1.5",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        type: "button",
+                                        className: "flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-full text-left",
+                                        onClick: (e)=>{
+                                            e.stopPropagation();
+                                            setFilesListCollapsed((c)=>!c);
+                                        },
+                                        children: [
+                                            filesListCollapsed ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
+                                                className: "h-3.5 w-3.5 shrink-0"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1750,
+                                                columnNumber: 39
+                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
+                                                className: "h-3.5 w-3.5 shrink-0"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1751,
+                                                columnNumber: 39
+                                            }, this),
+                                            uploadedPolicies.length,
+                                            " file",
+                                            uploadedPolicies.length !== 1 ? 's' : '',
+                                            " loaded",
+                                            filesListCollapsed && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "flex gap-1 ml-1 flex-wrap",
+                                                children: uploadedPolicies.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                        className: "text-xs ".concat(kindColor[p.kind]),
+                                                        children: p.name
+                                                    }, p.fileName, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1756,
+                                                        columnNumber: 45
+                                                    }, this))
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1754,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1744,
+                                        columnNumber: 29
+                                    }, this),
+                                    !filesListCollapsed && uploadedPolicies.map((policy)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center gap-3 p-2.5 rounded-lg border bg-muted/20",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$json$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileJson$3e$__["FileJson"], {
+                                                    className: "h-4 w-4 text-muted-foreground shrink-0"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1765,
+                                                    columnNumber: 37
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex-1 min-w-0",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "flex items-center gap-2 flex-wrap",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "font-medium text-sm truncate",
+                                                                children: policy.name
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1768,
+                                                                columnNumber: 45
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                                className: "text-xs ".concat(kindColor[policy.kind]),
+                                                                children: kindLabel[policy.kind]
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1769,
+                                                                columnNumber: 45
+                                                            }, this),
+                                                            policy.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                                variant: "outline",
+                                                                className: "text-xs",
+                                                                children: policy.platform
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1770,
+                                                                columnNumber: 65
+                                                            }, this),
+                                                            policy.error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                                variant: "destructive",
+                                                                className: "text-xs",
+                                                                children: policy.error
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1771,
+                                                                columnNumber: 62
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "text-xs text-muted-foreground",
+                                                                children: [
+                                                                    policy.settings.length,
+                                                                    " settings"
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1772,
+                                                                columnNumber: 45
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1767,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1766,
+                                                    columnNumber: 37
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                                    variant: "ghost",
+                                                    size: "sm",
+                                                    className: "h-7 w-7 p-0 shrink-0",
+                                                    onClick: (e)=>{
+                                                        e.stopPropagation();
+                                                        removeUploadedPolicy(policy.fileName);
+                                                    },
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
+                                                        className: "h-4 w-4"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1776,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1775,
+                                                    columnNumber: 37
+                                                }, this)
+                                            ]
+                                        }, policy.fileName, true, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1764,
+                                            columnNumber: 33
+                                        }, this))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1742,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-center gap-3",
+                                onClick: (e)=>e.stopPropagation(),
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                        onClick: ()=>fetchTenantData(false),
+                                        disabled: !uploadedPolicies.length || loading || !accounts.length,
+                                        className: "gap-2",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$search$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Search$3e$__["Search"], {
+                                                className: "h-4 w-4"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1785,
+                                                columnNumber: 29
+                                            }, this),
+                                            hasFetched ? 'Re-run Analysis' : 'Compare Against Tenant'
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1784,
+                                        columnNumber: 25
+                                    }, this),
+                                    uploadedPolicies.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                        variant: "outline",
+                                        size: "sm",
+                                        onClick: ()=>{
+                                            setUploadedPolicies([]);
+                                            setHasFetched(false);
+                                            setResolvedDefinitionsCache(new Map());
+                                            setUploadCollapsed(false);
+                                        },
+                                        children: "Clear All"
+                                    }, void 0, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1789,
+                                        columnNumber: 29
+                                    }, this),
+                                    !accounts.length && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "text-sm text-amber-600 flex items-center gap-1",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__["Info"], {
+                                                className: "h-4 w-4"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1795,
+                                                columnNumber: 33
+                                            }, this),
+                                            " Please sign in first."
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1794,
+                                        columnNumber: 29
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1783,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1727,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 1699,
+                columnNumber: 13
+            }, this),
+            loading && loadingPhase !== 'idle' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(LoadingBanner, {
+                phase: loadingPhase,
+                onCancel: cancelFetch
+            }, void 0, false, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 1805,
+                columnNumber: 17
+            }, this),
+            error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                className: "border-destructive",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                    className: "pt-4",
+                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "text-destructive text-sm flex items-center gap-2",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
+                                className: "h-4 w-4"
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1812,
+                                columnNumber: 29
+                            }, this),
+                            error
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1811,
+                        columnNumber: 25
+                    }, this)
+                }, void 0, false, {
+                    fileName: "[project]/app/compare/configuration/page.tsx",
+                    lineNumber: 1810,
+                    columnNumber: 21
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 1809,
+                columnNumber: 17
+            }, this),
+            analyses.length > 0 && globalSummary && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "space-y-6",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "grid grid-cols-2 md:grid-cols-4 gap-4",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                                    className: "pt-5",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "p-2 rounded-lg bg-primary/10",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$json$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileJson$3e$__["FileJson"], {
+                                                    className: "h-5 w-5 text-primary"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1827,
+                                                    columnNumber: 83
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1827,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs text-muted-foreground",
+                                                        children: "Policies Uploaded"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1829,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-2xl font-bold",
+                                                        children: globalSummary.totalPolicies
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1830,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs text-muted-foreground",
+                                                        children: [
+                                                            globalSummary.totalSettings,
+                                                            " total settings"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1831,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1828,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1826,
+                                        columnNumber: 33
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1825,
+                                    columnNumber: 29
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1824,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                                    className: "pt-5",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "p-2 rounded-lg bg-green-500/10",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"], {
+                                                    className: "h-5 w-5 text-green-600"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1839,
+                                                    columnNumber: 85
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1839,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs text-muted-foreground",
+                                                        children: "Matched"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1841,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-2xl font-bold ".concat(scoreColor(globalSummary.overallMatchPercent)),
+                                                        children: [
+                                                            globalSummary.overallMatchPercent,
+                                                            "%"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1842,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs text-muted-foreground",
+                                                        children: [
+                                                            globalSummary.matchSettings,
+                                                            " / ",
+                                                            globalSummary.totalSettings,
+                                                            " settings"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1843,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1840,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1838,
+                                        columnNumber: 33
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1837,
+                                    columnNumber: 29
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1836,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                                    className: "pt-5",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "p-2 rounded-lg bg-amber-500/10",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldAlert$3e$__["ShieldAlert"], {
+                                                    className: "h-5 w-5 text-amber-600"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1851,
+                                                    columnNumber: 85
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1851,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs text-muted-foreground",
+                                                        children: "Conflict"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1853,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-2xl font-bold text-amber-600",
+                                                        children: [
+                                                            globalSummary.overallConflictPercent,
+                                                            "%"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1854,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs text-muted-foreground",
+                                                        children: [
+                                                            globalSummary.conflictSettings,
+                                                            " / ",
+                                                            globalSummary.totalSettings,
+                                                            " settings"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1855,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1852,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1850,
+                                        columnNumber: 33
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1849,
+                                    columnNumber: 29
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1848,
+                                columnNumber: 25
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                                    className: "pt-5",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "p-2 rounded-lg bg-red-500/10",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
+                                                    className: "h-5 w-5 text-red-600"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1863,
+                                                    columnNumber: 83
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1863,
+                                                columnNumber: 37
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs text-muted-foreground",
+                                                        children: "Missing"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1865,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-2xl font-bold text-red-600",
+                                                        children: [
+                                                            globalSummary.overallMissingPercent,
+                                                            "%"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1866,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs text-muted-foreground",
+                                                        children: [
+                                                            globalSummary.missingSettings,
+                                                            " / ",
+                                                            globalSummary.totalSettings,
+                                                            " settings"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1867,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1864,
+                                                columnNumber: 37
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1862,
+                                        columnNumber: 33
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1861,
+                                    columnNumber: 29
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1860,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1823,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex gap-2 border-b",
+                        children: [
+                            'detail',
+                            'perPolicy'
+                        ].map((tab)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                className: "pb-2 px-3 text-sm font-medium border-b-2 transition-colors ".concat(activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'),
+                                onClick: ()=>setActiveTab(tab),
+                                children: tab === 'detail' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$layers$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Layers$3e$__["Layers"], {
+                                            className: "h-4 w-4 inline mr-1"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1883,
+                                            columnNumber: 41
+                                        }, this),
+                                        "Coverage"
+                                    ]
+                                }, void 0, true) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"], {
+                                            className: "h-4 w-4 inline mr-1"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1884,
+                                            columnNumber: 41
+                                        }, this),
+                                        "Per-Policy Detail"
+                                    ]
+                                }, void 0, true)
+                            }, tab, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1878,
+                                columnNumber: 29
+                            }, this))
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1876,
+                        columnNumber: 21
+                    }, this),
+                    activeTab === 'perPolicy' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "space-y-4",
+                        children: perPolicyRows.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                                className: "p-8 text-center text-sm text-muted-foreground",
+                                children: "No tenant policies matched. Run the analysis first."
+                            }, void 0, false, {
+                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                lineNumber: 1894,
+                                columnNumber: 37
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/app/compare/configuration/page.tsx",
+                            lineNumber: 1893,
+                            columnNumber: 33
+                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-xs text-muted-foreground",
+                                    children: [
+                                        perPolicyRows.length,
+                                        " tenant ",
+                                        perPolicyRows.length === 1 ? 'policy' : 'policies',
+                                        " matched · assigned policies shown first · sorted by conflict count"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1900,
+                                    columnNumber: 37
+                                }, this),
+                                perPolicyRows.map((row)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ConfigResultCard, {
+                                        row: row
+                                    }, row.tenantPolicy.id, false, {
+                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                        lineNumber: 1905,
+                                        columnNumber: 41
+                                    }, this))
+                            ]
+                        }, void 0, true)
+                    }, void 0, false, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1891,
+                        columnNumber: 25
+                    }, this),
+                    activeTab === 'detail' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "space-y-4",
+                        children: [
+                            (()=>{
+                                const allSettings = analyses.flatMap((a)=>a.settingAnalyses);
+                                const totalAll = allSettings.length;
+                                const totalCovered = allSettings.filter((sa)=>settingCoverageStatus(sa) === 'covered').length;
+                                const totalConflict = allSettings.filter((sa)=>settingCoverageStatus(sa) === 'conflict').length;
+                                const totalMissing = allSettings.filter((sa)=>settingCoverageStatus(sa) === 'notConfigured').length;
+                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center gap-2 flex-wrap p-3 bg-muted/20 rounded-lg border",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-xs font-medium text-muted-foreground mr-1",
+                                            children: "Show:"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1924,
+                                            columnNumber: 41
+                                        }, this),
+                                        [
+                                            [
+                                                'all',
+                                                "All (".concat(totalAll, ")"),
+                                                ''
+                                            ],
+                                            [
+                                                'covered',
+                                                "Covered (".concat(totalCovered, ")"),
+                                                'text-green-700 dark:text-green-300'
+                                            ],
+                                            [
+                                                'conflict',
+                                                "Conflict (".concat(totalConflict, ")"),
+                                                'text-red-700 dark:text-red-300'
+                                            ],
+                                            [
+                                                'notConfigured',
+                                                "Not in tenant (".concat(totalMissing, ")"),
+                                                'text-slate-600 dark:text-slate-300'
+                                            ]
+                                        ].map((param)=>{
+                                            let [f, lbl, cls] = param;
+                                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: ()=>setGlobalCoverageFilter(f),
+                                                className: "px-3 py-1.5 rounded text-xs font-medium border transition-colors ".concat(globalCoverageFilter === f ? 'bg-primary text-primary-foreground border-primary' : "border-input hover:bg-muted/50 ".concat(cls)),
+                                                children: lbl
+                                            }, f, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1931,
+                                                columnNumber: 45
+                                            }, this);
+                                        }),
+                                        globalCoverageFilter !== 'all' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            onClick: ()=>setGlobalCoverageFilter('all'),
+                                            className: "ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
+                                                    className: "h-3.5 w-3.5"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1940,
+                                                    columnNumber: 49
+                                                }, this),
+                                                "Clear filter"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1938,
+                                            columnNumber: 45
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1923,
+                                    columnNumber: 37
+                                }, this);
+                            })(),
+                            analyses.map((analysis)=>{
+                                const isExpanded = globalCoverageFilter !== 'all' ? true // auto-expand when a filter is active
+                                 : expandedPolicies.has(analysis.uploadedPolicy.fileName);
+                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                                    className: "overflow-hidden",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/30 transition-colors",
+                                            onClick: ()=>togglePolicy(analysis.uploadedPolicy.fileName),
+                                            children: [
+                                                isExpanded ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
+                                                    className: "h-4 w-4 text-muted-foreground"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1957,
+                                                    columnNumber: 59
+                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
+                                                    className: "h-4 w-4 text-muted-foreground"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1957,
+                                                    columnNumber: 119
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$json$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileJson$3e$__["FileJson"], {
+                                                    className: "h-5 w-5 text-primary"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1958,
+                                                    columnNumber: 45
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex-1 min-w-0",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex items-center gap-2 flex-wrap",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "font-semibold",
+                                                                    children: analysis.uploadedPolicy.name
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1961,
+                                                                    columnNumber: 53
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                                    className: "text-xs ".concat(kindColor[analysis.uploadedPolicy.kind]),
+                                                                    children: kindLabel[analysis.uploadedPolicy.kind]
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1962,
+                                                                    columnNumber: 53
+                                                                }, this),
+                                                                analysis.uploadedPolicy.platform && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
+                                                                    variant: "outline",
+                                                                    className: "text-xs",
+                                                                    children: analysis.uploadedPolicy.platform
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1963,
+                                                                    columnNumber: 90
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1960,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex items-center gap-3 mt-1 text-xs text-muted-foreground",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: [
+                                                                        analysis.summary.totalSettings,
+                                                                        " settings"
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1966,
+                                                                    columnNumber: 53
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: "·"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1967,
+                                                                    columnNumber: 53
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: [
+                                                                        analysis.summary.platformMatchedPolicyCount,
+                                                                        " tenant policies (platform match)"
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1968,
+                                                                    columnNumber: 53
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1965,
+                                                            columnNumber: 49
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1959,
+                                                    columnNumber: 45
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex gap-3 text-xs flex-shrink-0",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "flex items-center gap-1 text-green-600 dark:text-green-400",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+                                                                    className: "h-3 w-3"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1972,
+                                                                    columnNumber: 126
+                                                                }, this),
+                                                                analysis.summary.matchPercent,
+                                                                "%"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1972,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "flex items-center gap-1 text-amber-600 dark:text-amber-400",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
+                                                                    className: "h-3 w-3"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1973,
+                                                                    columnNumber: 126
+                                                                }, this),
+                                                                analysis.summary.conflictPercent,
+                                                                "%"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1973,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "flex items-center gap-1 text-red-600 dark:text-red-400",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$x$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__XCircle$3e$__["XCircle"], {
+                                                                    className: "h-3 w-3"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                    lineNumber: 1974,
+                                                                    columnNumber: 122
+                                                                }, this),
+                                                                analysis.summary.missingPercent,
+                                                                "%"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                                            lineNumber: 1974,
+                                                            columnNumber: 49
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                                    lineNumber: 1971,
+                                                    columnNumber: 45
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1956,
+                                            columnNumber: 41
+                                        }, this),
+                                        isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                                            className: "pt-0 pb-0 px-0",
+                                            children: analysis.summary.platformMatchedPolicyCount === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "mx-4 mb-4 rounded-lg border border-dashed p-6 text-center text-muted-foreground",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$minus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MinusCircle$3e$__["MinusCircle"], {
+                                                        className: "h-8 w-8 mx-auto mb-2 opacity-50"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1982,
+                                                        columnNumber: 57
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-sm",
+                                                        children: [
+                                                            "No tenant policies matched platform ",
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                children: analysis.uploadedPolicy.platform || '(unknown)'
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                                lineNumber: 1983,
+                                                                columnNumber: 116
+                                                            }, this),
+                                                            "."
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1983,
+                                                        columnNumber: 57
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs mt-1",
+                                                        children: [
+                                                            "All ",
+                                                            analysis.summary.totalTenantPoliciesOfKind,
+                                                            " tenant ",
+                                                            kindLabel[analysis.uploadedPolicy.kind],
+                                                            " policies were excluded."
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/app/compare/configuration/page.tsx",
+                                                        lineNumber: 1984,
+                                                        columnNumber: 57
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1981,
+                                                columnNumber: 53
+                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ConfigCoverageRows, {
+                                                settingAnalyses: analysis.settingAnalyses,
+                                                policyKey: analysis.uploadedPolicy.fileName,
+                                                externalFilter: globalCoverageFilter !== 'all' ? globalCoverageFilter : undefined
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/compare/configuration/page.tsx",
+                                                lineNumber: 1987,
+                                                columnNumber: 53
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/compare/configuration/page.tsx",
+                                            lineNumber: 1979,
+                                            columnNumber: 45
+                                        }, this)
+                                    ]
+                                }, analysis.uploadedPolicy.fileName, true, {
+                                    fileName: "[project]/app/compare/configuration/page.tsx",
+                                    lineNumber: 1954,
+                                    columnNumber: 37
+                                }, this);
+                            })
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/compare/configuration/page.tsx",
+                        lineNumber: 1914,
+                        columnNumber: 25
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/app/compare/configuration/page.tsx",
+                lineNumber: 1820,
+                columnNumber: 17
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/app/compare/configuration/page.tsx",
+        lineNumber: 1664,
+        columnNumber: 9
+    }, this);
+}
+_s2(ConfigurationComparePage, "Q/qVc8XVeLV8SyLjd1dDA0O6wXA=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$azure$2f$msal$2d$react$2f$dist$2f$hooks$2f$useMsal$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMsal"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useApiRequest$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApiRequest"]
+    ];
+});
+_c6 = ConfigurationComparePage;
+var _c, _c1, _c2, _c3, _c4, _c5, _c6;
+__turbopack_context__.k.register(_c, "ProgressBar");
+__turbopack_context__.k.register(_c1, "LoadingBanner");
+__turbopack_context__.k.register(_c2, "FriendlyName");
+__turbopack_context__.k.register(_c3, "FriendlyValue");
+__turbopack_context__.k.register(_c4, "ConfigCoverageRows");
+__turbopack_context__.k.register(_c5, "ConfigResultCard");
+__turbopack_context__.k.register(_c6, "ConfigurationComparePage");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+]);
+
+//# sourceMappingURL=app_compare_configuration_page_tsx_ea27dfc0._.js.map
