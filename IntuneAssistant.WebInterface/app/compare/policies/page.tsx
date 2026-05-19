@@ -560,6 +560,7 @@ function CoverageTab({ rows, resolvedMap }: {
     const [filter, setFilter] = useState<SettingOverallStatus | 'all'>('all');
     const [search, setSearch] = useState('');
     const [expanded, setExpanded] = useState<Set<string>>(new Set());
+    const [sourceOnly, setSourceOnly] = useState(false);
 
     const toggle = (id: string) => setExpanded(prev => {
         const next = new Set(prev);
@@ -581,9 +582,10 @@ function CoverageTab({ rows, resolvedMap }: {
     };
 
     const filtered = useMemo(() => rows.filter(r => {
+        if (sourceOnly && r.overallStatus === 'onlyInRight') return false;
         if (filter !== 'all' && r.overallStatus !== filter) return false;
         return !search || r.name.toLowerCase().includes(search.toLowerCase());
-    }), [rows, filter, search]);
+    }), [rows, filter, search, sourceOnly]);
 
     return (
         <div className="space-y-4">
@@ -617,12 +619,25 @@ function CoverageTab({ rows, resolvedMap }: {
                     ['notCovered',  `Not covered (${counts.notCovered})`],
                     ['onlyInRight', `Only in right (${counts.onlyInRight})`],
                 ] as [string, string][]).map(([f, lbl]) => (
-                    <button key={f} onClick={() => setFilter(f as SettingOverallStatus | 'all')}
-                        className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${filter === f ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-muted/50'}`}>
+                    <button key={f}
+                        disabled={sourceOnly && f === 'onlyInRight'}
+                        onClick={() => setFilter(f as SettingOverallStatus | 'all')}
+                        className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors
+                            ${filter === f ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-muted/50'}
+                            ${sourceOnly && f === 'onlyInRight' ? 'opacity-30 cursor-not-allowed' : ''}`}>
                         {lbl}
                     </button>
                 ))}
                 <div className="flex items-center gap-1.5 ml-auto">
+                    <label className="flex items-center gap-1.5 cursor-pointer select-none text-xs text-muted-foreground hover:text-foreground mr-3">
+                        <input
+                            type="checkbox"
+                            checked={sourceOnly}
+                            onChange={e => { setSourceOnly(e.target.checked); if (e.target.checked && filter === 'onlyInRight') setFilter('all'); }}
+                            className="rounded border-input h-3.5 w-3.5 accent-primary"
+                        />
+                        Source settings only
+                    </label>
                     <Search className="h-3.5 w-3.5 text-muted-foreground" />
                     <input type="text" placeholder="Search settings…" value={search} onChange={e => setSearch(e.target.value)}
                         className="border rounded px-2 py-1 text-xs bg-background w-48 outline-none focus:ring-1 focus:ring-primary/50" />
