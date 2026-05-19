@@ -84,6 +84,8 @@ export const AUDIT_LOGS_INTUNE_FILTER = `${API_BASE_URL}/audit/intune/filter`;
 
 
 export const MONITOR_CONFIGURATION_SNAPSHOTS = `${API_BASE_URL}/monitor/snapshots`;
+export const MONITOR_SNAPSHOTS_JOB_BY_ID = (jobId: string) => `${API_BASE_URL}/monitor/snapshots/jobs/${jobId}`;
+export const MONITOR_SNAPSHOT_BY_ID = (snapshotId: string) => `${API_BASE_URL}/monitor/snapshots/${snapshotId}`;
 export const ITEMS_PER_PAGE = 25;
 
 export const MIGRATION_BUILDER_SESSION_KEY = 'assignmentMigrationBuilderData';
@@ -102,3 +104,6 @@ export const WORKER_JOB_EXECUTIONS_ENDPOINT = (jobId: string) => `${WORKER_ENDPO
 export const WORKER_JOB_HISTORY_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}/history`;
 export const WORKER_JOB_CLONE_ENDPOINT = (id: string) => `${WORKER_ENDPOINT}/management/jobs/${id}/clone`;
 export const WORKER_REGISTRATION_DELETE_ENDPOINT = (registrationId: string) => `${WORKER_ENDPOINT}/management/registrations/${registrationId}`;
+
+export const MESSAGE_CENTER_ENDPOINT = `${API_BASE_URL}/message-center`;
+
